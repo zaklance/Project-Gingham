@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData, Column, Integer, String, Text, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import MetaData, Column, Integer, String, Text, DateTime, ForeignKey, Boolean
+from sqlalchemy.orm import relationship, validates
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_bcrypt import Bcrypt
 from sqlalchemy.dialects.postgresql import JSON
@@ -38,6 +38,50 @@ class User(db.Model):
     markets = relationship('Market', back_populates='user')
     vendors = relationship('Vendor', back_populates='user')
 
+    @validates('username')
+    def validate_username(self, key, value):
+        if not value:
+            raise ValueError("Username is required")
+        if len(value) < 3 or len(value) > 50:
+            raise ValueError("Username must be between 3 and 50 characters")
+        return value
+
+    @validates('first_name')
+    def validate_first_name(self, key, value):
+        if not value:
+            raise ValueError("First name is required")
+        if len(value) < 1 or len(value) > 16:
+            raise ValueError("First name must be between 1 and 16 characters")
+        return value
+
+    @validates('last_name')
+    def validate_last_name(self, key, value):
+        if not value:
+            raise ValueError("Last name is required")
+        if len(value) < 1 or len(value) > 16:
+            raise ValueError("Last name must be between 1 and 16 characters")
+        return value
+
+    @validates('address')
+    def validate_address(self, key, value):
+        if value and len(value) > 100:
+            raise ValueError("Address cannot be longer than 100 characters")
+        return value
+
+    @validates('email')
+    def validate_email(self, key, value):
+        if not value:
+            raise ValueError("Email is required")
+        if "@" not in value or "." not in value:
+            raise ValueError("Invalid email address")
+        return value
+
+    @validates('favorite_markets', 'favorite_vendors')
+    def validate_json(self, key, value):
+        if value is not None and not isinstance(value, list):
+            raise ValueError(f"{key} must be a list")
+        return value
+    
     @hybrid_property
     def password(self):
         return self._password
@@ -62,12 +106,25 @@ class Market(db.Model):
     name = Column(String, nullable=False)
     location = Column(String, nullable=False)
     hours = Column(String, nullable=True)
-    events = Column(String, nullable=True)
-    zipcode = Column(Integer, nullable=True)
+    year_round = Column(Boolean, nullable=True)
+    zipcode = Column(String, nullable=True)
 
     # Relationships
     reviews = relationship('MarketReview', back_populates='market')
     users = relationship('User', secondary='user_markets',)
+
+    # Validations
+    @validates('name', 'location', 'hours')
+    def validates_not_empty(self, key, value):
+        if not value:
+            raise ValueError(f"{key} cannot be empty")
+        return value
+
+    @validates('zipcode')
+    def validate_zipcode(self, key, value):
+        if value and len(value) != 5:
+            raise ValueError("Zipcode must be 5 characters long")
+        return value
 
     def __repr__(self) -> str:
         return f"<Market {self.name}>"
@@ -84,6 +141,19 @@ class Vendor(db.Model):
     # Relationships
     reviews = relationship('VendorReview', back_populates='vendor')
     users = relationship('User', back_populates='vendor')
+
+    # Validations
+    @validates('name', 'product')
+    def validates_not_empty(self, key, value):
+        if not value:
+            raise ValueError(f"{key} cannot be empty")
+        return value
+
+    @validates('based_out_of', 'locations')
+    def validate_optional_string(self, key, value):
+        if value and len(value) == 0:
+            raise ValueError(f"{key} cannot be empty")
+        return value
 
     def __repr__(self) -> str:
         return f"<Vendor {self.name}>"
@@ -104,6 +174,12 @@ class MarketReview(db.Model):
     def __repr__(self) -> str:
         return f"<MarketReview {self.id}>"
 
+    @validates('review_text')
+    def validates_not_empty(self, key, value):
+        if not value:
+            raise ValueError(f"Review text cannot be empty")
+        return value
+
 class VendorReview(db.Model):
     __tablename__ = 'vendor_reviews'
 
@@ -119,3 +195,9 @@ class VendorReview(db.Model):
 
     def __repr__(self) -> str:
         return f"<VendorReview {self.id}>"
+
+    @validates('review_text')
+    def validates_not_empty(self, key, value):
+        if not value:
+            raise ValueError(f"Review text cannot be empty")
+        return value
