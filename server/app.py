@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, make_response, jsonify, session
-from models import db, Pet, Owner, User
+from models import db, User, Market, Vendor, MarketReview, VendorReview
 from flask_migrate import Migrate
 from flask_cors import CORS
 
