@@ -1,11 +1,62 @@
+//Vite
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
-import routes from './assets/js/routes';
 
+//React Router
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-        <App />
-    </React.StrictMode>,
-)
+//CSS
+import './assets/css/index.css';
+
+//Components
+import App from './App.jsx';
+import Cart from './components/Cart.jsx';
+import Checkout from './components/Checkout.jsx';
+import ErrorPage from './components/ErrorPage.jsx';
+import Home from './components/Home.jsx';
+import Login from './components/Login.jsx';
+import Markets from './components/Markets.jsx';
+import NavBar from './components/NavBar.jsx';
+import Profile from './components/Profile.jsx';
+import Vendors from './components/Vendors.jsx';
+
+const router = createBrowserRouter([
+    {
+        path: "/", 
+        element: <App />,
+        errorElement: <ErrorPage />,
+        children: [
+            {
+                path: "/",
+                element: <Home />
+            },
+            {
+                path: "login",
+                element: <Login />
+            }, 
+            {
+                path: "markets",
+                element: <Markets />
+            },
+            {
+                path: "vendors",
+                element: <Vendors />
+            }, 
+            {
+                path: "profile", 
+                element: <Profile />
+            },
+            {
+                path: "cart", 
+                element: <Cart />
+            },
+            {
+                path: "checkout",
+                element: <Checkout />
+            }
+        ]
+    }
+]);
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render( <RouterProvider router={router} /> )

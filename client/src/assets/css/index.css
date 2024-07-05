@@ -1,0 +1,142 @@
+/* Reset some default browser styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Basic typography */
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    color: #333;
+  }
+  
+  /* Container for centering content */
+  .container {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #a7a7a7; 
+    display: box;
+    justify-content: space-between;
+    padding: 20px 20px; /* Adjust padding as needed */
+    box-shadow: 0 4px 2px -2px #ff7b8a;
+  }
+
+  /* Header styling */
+  header {
+    background: #333;
+    color: #b5b5b5;
+    padding: 10px 0;
+    text-align: center;
+  }
+  
+  /* Main content area */
+  main {
+    padding: 20px;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px #b5b5b5;
+    margin: 20px 0;
+  }
+  
+  
+  ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      width: 100%;
+  }
+
+  li {
+      display: inline;
+  }
+
+  button {
+      background: none;
+      border: none;
+      font-size: 16px; /* Adjust font size as needed */
+      cursor: pointer;
+      padding: 10px 20px;
+  }
+
+  button a {
+      text-decoration: none;
+      color: black; /* Adjust link color as needed */
+  }
+
+  button a.active {
+      font-weight: bold; /* Styling for active link */
+  }
+  
+  button:hover {
+    background: #555;
+  }
+  
+  /* Basic form styling */
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  form input,
+  form textarea {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  /* Utility classes */
+  .text-center {
+    text-align: center;
+  }
+  
+  .mt-20 {
+    margin-top: 20px;
+  }
+  
+  .mb-20 {
+    margin-bottom: 20px;
+  }
+  
+  .p-20 {
+    padding: 20px;
+  }
+  
+  .center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f0f0f0; /* Optional: Add background color */
+}
+
+.form {
+    background: #fff;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+  flex: 1;
+  padding: 8px;
+  box-sizing: border-box;
+}
