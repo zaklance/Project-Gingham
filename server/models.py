@@ -1,9 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData, Column, Integer, String, Text, DateTime, ForeignKey, Boolean
-from sqlalchemy.orm import relationship, validates
+from sqlalchemy import MetaData
+from sqlalchemy.orm import validates
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_bcrypt import Bcrypt
-from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy_serializer import SerializerMixin
 import datetime
 
 convention = {
@@ -19,24 +19,44 @@ metadata = MetaData(naming_convention=convention)
 db = SQLAlchemy(metadata=metadata)
 bcrypt = Bcrypt()
 
-class User(db.Model):
-    __tablename__ = 'users'
+class UserMarket(db.Model, SerializerMixin):
+    __tablename__ = 'user_markets'
 
-    id = Column(Integer, primary_key=True)
-    username = Column(String, unique=True, nullable=False)
-    _password = Column(String, nullable=False)
-    first_name = Column(String, nullable=False)
-    last_name = Column(String, nullable=False)
-    address = Column(String, nullable=True)
-    email = Column(String, unique=True, nullable=False)
-    favorite_markets = Column(JSON, nullable=True)
-    favorite_vendors = Column(JSON, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), primary_key=True)
 
     # Relationships
-    market_reviews = relationship('MarketReview', back_populates='user')
-    vendor_reviews = relationship('VendorReview', back_populates='user')
-    markets = relationship('Market', back_populates='user')
-    vendors = relationship('Vendor', back_populates='user')
+    user = db.relationship('User', back_populates='user_markets')
+    market = db.relationship('Market', back_populates='user_markets')
+
+class UserVendor(db.Model, SerializerMixin):
+    __tablename__ = 'user_vendors'
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), primary_key=True)
+
+    # Relationships
+    user = db.relationship('User', back_populates='user_vendors')
+    vendor = db.relationship('Vendor', back_populates='user_vendors')
+
+class User(db.Model, SerializerMixin):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, unique=True, nullable=False)
+    _password = db.Column(db.String, nullable=False)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    address = db.Column(db.String, nullable=True)
+    email = db.Column(db.String, unique=True, nullable=False)
+    favorite_markets = db.Column(db.String, nullable=True)
+    favorite_vendors = db.Column(db.String, nullable=True)
+
+    # Relationships
+    market_reviews = db.relationship('MarketReview', back_populates='user')
+    vendor_reviews = db.relationship('VendorReview', back_populates='user')
+    user_markets = db.relationship('UserMarket', back_populates='user')
+    user_vendors = db.relationship('UserVendor', back_populates='user')
 
     @validates('username')
     def validate_username(self, key, value):
@@ -76,12 +96,6 @@ class User(db.Model):
             raise ValueError("Invalid email address")
         return value
 
-    @validates('favorite_markets', 'favorite_vendors')
-    def validate_json(self, key, value):
-        if value is not None and not isinstance(value, list):
-            raise ValueError(f"{key} must be a list")
-        return value
-    
     @hybrid_property
     def password(self):
         return self._password
@@ -99,19 +113,19 @@ class User(db.Model):
     def __repr__(self) -> str:
         return f"<User {self.username}>"
 
-class Market(db.Model):
+class Market(db.Model, SerializerMixin):
     __tablename__ = 'markets'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    location = Column(String, nullable=False)
-    hours = Column(String, nullable=True)
-    year_round = Column(Boolean, nullable=True)
-    zipcode = Column(String, nullable=True)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    location = db.Column(db.String, nullable=False)
+    hours = db.Column(db.String, nullable=True)
+    year_round = db.Column(db.Boolean, nullable=True)
+    zipcode = db.Column(db.String, nullable=True)
 
     # Relationships
-    reviews = relationship('MarketReview', back_populates='market')
-    users = relationship('User', secondary='user_markets',)
+    reviews = db.relationship('MarketReview', back_populates='market')
+    user_markets = db.relationship('UserMarket', back_populates='market')
 
     # Validations
     @validates('name', 'location', 'hours')
@@ -129,18 +143,18 @@ class Market(db.Model):
     def __repr__(self) -> str:
         return f"<Market {self.name}>"
 
-class Vendor(db.Model):
+class Vendor(db.Model, SerializerMixin):
     __tablename__ = 'vendors'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    based_out_of = Column(String, nullable=True)
-    locations = Column(String, nullable=True)
-    product = Column(String, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    based_out_of = db.Column(db.String, nullable=True)
+    locations = db.Column(db.String, nullable=True)
+    product = db.Column(db.String, nullable=False)
 
     # Relationships
-    reviews = relationship('VendorReview', back_populates='vendor')
-    users = relationship('User', back_populates='vendor')
+    reviews = db.relationship('VendorReview', back_populates='vendor')
+    user_vendors = db.relationship('UserVendor', back_populates='vendor')
 
     # Validations
     @validates('name', 'product')
@@ -158,18 +172,18 @@ class Vendor(db.Model):
     def __repr__(self) -> str:
         return f"<Vendor {self.name}>"
 
-class MarketReview(db.Model):
+class MarketReview(db.Model, SerializerMixin):
     __tablename__ = 'market_reviews'
 
-    id = Column(Integer, primary_key=True)
-    review_text = Column(Text, nullable=False)
-    market_id = Column(Integer, ForeignKey('markets.id'), nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    date_time = Column(DateTime, default=datetime.datetime.utcnow)
+    id = db.Column(db.Integer, primary_key=True)
+    review_text = db.Column(db.String, nullable=False)
+    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    date_time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     # Relationships
-    market = relationship('Market', back_populates='reviews')
-    user = relationship('User', back_populates='market_reviews')
+    market = db.relationship('Market', back_populates='reviews')
+    user = db.relationship('User', back_populates='market_reviews')
 
     def __repr__(self) -> str:
         return f"<MarketReview {self.id}>"
@@ -180,18 +194,18 @@ class MarketReview(db.Model):
             raise ValueError(f"Review text cannot be empty")
         return value
 
-class VendorReview(db.Model):
+class VendorReview(db.Model, SerializerMixin):
     __tablename__ = 'vendor_reviews'
 
-    id = Column(Integer, primary_key=True)
-    review_text = Column(Text, nullable=False)
-    vendor_id = Column(Integer, ForeignKey('vendors.id'), nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    date_time = Column(DateTime, default=datetime.datetime.utcnow)
+    id = db.Column(db.Integer, primary_key=True)
+    review_text = db.Column(db.String, nullable=False)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    date_time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     # Relationships
-    vendor = relationship('Vendor', back_populates='reviews')
-    user = relationship('User', back_populates='vendor_reviews')
+    vendor = db.relationship('Vendor', back_populates='reviews')
+    user = db.relationship('User', back_populates='vendor_reviews')
 
     def __repr__(self) -> str:
         return f"<VendorReview {self.id}>"
