@@ -31,6 +31,7 @@
     color: #b5b5b5;
     padding: 10px 0;
     text-align: center;
+    font-size: 24px;
   }
   
   /* Main content area */
@@ -42,6 +43,9 @@
     margin: 20px 0;
   }
   
+  h4 {
+    text-align: center;
+  }
   
   ul {
       list-style-type: none;
@@ -139,4 +143,33 @@
   flex: 1;
   padding: 8px;
   box-sizing: border-box;
+}
+
+.markets-container {
+  width: 100%;
+  max-width: 1200px; /* Adjust as needed */
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.market-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Adjust the gap between cards */
+  justify-content: center;
+}
+
+.market-cards-container > * {
+  flex: 0 0 calc(33.33% - 20px); /* Adjust to make three cards fit per row */
+  max-width: calc(33.33% - 20px); /* Adjust max-width based on desired spacing */
+}
+
+.market-card {
+  border: 1px solid #ccc; /* Example border styling */
+  padding: 10px;
+  width: 100%; /* Adjust width as needed */
+  max-width: 300px; /* Example max-width */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Example shadow */
+  background-color: #fff; /* Example background color */
+  text-align: center;
 }
