@@ -1,16 +1,11 @@
-import React from 'react';
-import '../assets/css/index.css';
+import react from 'react';
 
-function VendorCard({ vendorData }) {
+
+function VendorCard() {
     return (
-        <div className="market-card">
-            <img src={vendorData.image} alt="Vendor Image" style={{width: '260px'}}/>
-            <h2>{vendorData.name}</h2>
-            <h4>{vendorData.based_out_of}</h4>
-            <h4>{vendorData.locations}</h4>
-            <h4>{vendorData.product}</h4>
-            <button className="market-card-button">Buy a Farmers Market Basket!</button>
-        </div>
+        <>
+        </>
     )
 }
+
 export default VendorCard;
