@@ -1,8 +1,11 @@
 import os
 from flask import Flask, request, make_response, jsonify, session
 from models import db, User, Market, Vendor, MarketReview, VendorReview
-# from flask_migrate import Migrate
+from dotenv import load_dotenv
+from flask_migrate import Migrate
 # from flask_cors import CORS
+
+load_dotenv()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URI']  # how to connect to the db
@@ -10,7 +13,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # optional performance thi
 app.secret_key = os.environ['SECRET_KEY']  # grab the secret key from env variables
 
 db.init_app(app)  # link sqlalchemy with flask
-# Migrate(app, db)  # set up db migration tool (alembic)
+Migrate(app, db)  # set up db migration tool (alembic)
 # CORS(app, supports_credentials=True)  # set up cors
 
 @app.route('/', methods=['GET'])
