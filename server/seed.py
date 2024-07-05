@@ -1,15 +1,16 @@
 from app import app
 from faker import Faker
-from random import random, choice
+from random import random, choice, randint
 from models import db, User, Market, Vendor, MarketReview, VendorReview
+import json
 
 fake = Faker()
 
 def run():
     Market.query.delete()
     Vendor.query.delete()
+    db.session.commit()
 
-def create_markets():
     markets = [
         Market(
             name='175th Street Greenmarket',
@@ -295,13 +296,13 @@ def create_markets():
     db.session.add_all(markets)
     db.session.commit()
 
-def create_vendors():
     vendors = []
-    for _ in range(150):
-        name=f'{fake.first_name_nonbinary()} + {fake.company()}',
-        based_out_of=f"{fake.city()}'s, + {fake.country_code}",
-        locations= random.sample(range(0, 40), 3),
-        product= str(random.choice('art', 'baked goods', 'cheese', 'cider', 'ceramics', 'coffee/tea', 'fish', 'flowers', 'fruit', 'gifts', 'honey', 'international', 'juice', 'maple syrup', 'meats', 'nuts', 'pasta', 'pickles', 'spirits', 'vegetables'))
+    products = ['art', 'baked goods', 'cheese', 'cider', 'ceramics', 'coffee/tea', 'fish', 'flowers', 'fruit', 'gifts', 'honey', 'international', 'juice', 'maple syrup', 'meats', 'nuts', 'pasta', 'pickles', 'spirits', 'vegetables']
+    for i in range(150):
+        name = f'{fake.first_name_nonbinary()} + {fake.company()}'
+        based_out_of = f"{fake.city()}\'s, + {fake.country_code()}"
+        locations = str([randint(0, 40) for _ in range(randint(1, 3))])
+        product = str(choice(products))
 
         v = Vendor(
             name=name,
@@ -311,5 +312,9 @@ def create_vendors():
         )
         vendors.append(v)
 
-    db.session.add(vendors)
+    db.session.add_all(vendors)
     db.session.commit()
+    
+if __name__ == '__main__':
+    with app.app_context():
+        run()
