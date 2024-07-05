@@ -21,6 +21,12 @@ function NavBar() {
                         <li>
                             <button><NavLink to="/markets">Markets</NavLink></button>
                         </li>
+                        <li>
+                            <button><NavLink to="/vendors">Vendors</NavLink></button>
+                        </li>
+                        <li style={{ marginLeft: 'auto' }}>
+                            <button><NavLink to="/cart">Cart</NavLink></button>
+                        </li>
                         <li style={{ marginLeft: 'auto' }}>
                             <button>Logout</button>
                         </li>
