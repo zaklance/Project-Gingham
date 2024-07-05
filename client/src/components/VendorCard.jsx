@@ -9,6 +9,7 @@ function VendorCard({ vendorData }) {
             <h4>{vendorData.based_out_of}</h4>
             <h4>{vendorData.locations}</h4>
             <h4>{vendorData.product}</h4>
+            <button className="market-card-button">Buy a Farmers Market Basket!</button>
         </div>
     )
 }

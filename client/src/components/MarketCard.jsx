@@ -8,6 +8,7 @@ function MarketCard({ marketData }) {
             <h2>{marketData.name}</h2>
             <h4>{marketData.location}</h4>
             <h4>{marketData.hours}</h4>
+            <button className="market-card-button">Learn More!</button>
         </div>
     )
 }
