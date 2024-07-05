@@ -1,19 +1,21 @@
 import React from 'react';
-import { Outlet, use } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
+//CSS
+import './assets/css/index.css';
 
+//Components
+import NavBar from './components/NavBar.jsx';
 
 function App() {
     return (
         <>
-            <header>
-                <NavBar />
-            </header>
-            <div className="wrapper" onCopy={handleCopy}>
-                <Outlet />
+            <div className="container">
+                <header> <NavBar /> </header>
+                <main> <Outlet /> </main>
             </div>
         </>
     );
-};
+}
 
 export default App;
