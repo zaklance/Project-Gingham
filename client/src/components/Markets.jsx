@@ -1,6 +1,7 @@
-import react from 'react';
+import React from 'react';
 import MarketCard from './MarketCard';
 import { Map, Marker } from 'mapkit-react';
+import { useState, useEffect } from 'react';
 import '../assets/css/index.css';
 // import REACT_MAP_KEY from '../../.env';
 
