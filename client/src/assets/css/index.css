@@ -27,8 +27,8 @@
 
   /* Header styling */
   header {
-    background: #333;
-    color: #b5b5b5;
+    background: #ff3399;
+    color: #fff;
     padding: 10px 0;
     text-align: center;
     font-size: 24px;
@@ -172,4 +172,18 @@
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Example shadow */
   background-color: #fff; /* Example background color */
   text-align: center;
+}
+
+.market-card-button {
+  display: block;
+  width: 100%;
+  max-width: 200px; /* Example max-width for the button */
+  margin: 10px auto; /* Center align the button */
+  padding: 8px 16px;
+  border: 1px solid #ff3399; /* Border color for the button */
+  background-color: #ff6699; /* Button background color */
+  color: #fff; /* Button text color */
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
 }
