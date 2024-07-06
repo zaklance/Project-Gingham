@@ -355,13 +355,11 @@ def run():
         review_text = str(fake.paragraph(nb_sentences=rev_len))
         market_id = str(randint(1, 41))
         user_id = str(randint(1, 201))
-        date_time = f'{fake.date_this_year()}, {fake.time()}'
 
         mr = MarketReview(
             review_text=review_text,
             market_id=market_id,
             user_id=user_id,
-            date_time=date_time
         )
         market_revs.append(mr)
 
@@ -376,13 +374,11 @@ def run():
         review_text = fake.paragraph(nb_sentences=rev_len)
         vendor_id = str(randint(1, 41))
         user_id = str(randint(1, 201))
-        date_time = f'{fake.date_this_year()}, {fake.time()}'
 
         vr = VendorReview(
             review_text=review_text,
             vendor_id=vendor_id,
             user_id=user_id,
-            date_time=date_time
         )
         vendor_revs.append(vr)
 
