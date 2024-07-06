@@ -6,7 +6,7 @@ const VendorDetail = () => {
     const [vendor, setVendor] = useState(null);
 
     useEffect(() => {
-        fetch(`http://localhost:3000/vendors/${id}`)
+        fetch(`http://127.0.0.1:5555/vendors/${id}`)
             .then(response => response.json())
             .then(data => setVendor(data))
             .catch(error => console.error('Error fetching vendor data:', error));

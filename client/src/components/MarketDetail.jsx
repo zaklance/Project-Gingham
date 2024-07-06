@@ -6,7 +6,7 @@ const MarketDetail = () => {
     const [market, setMarket] = useState(null);
 
     useEffect(() => {
-        fetch(`http://localhost:3000/markets/${id}`)
+        fetch(`http://127.0.0.1:5555/markets/${id}`)
             .then(response => response.json())
             .then(data => setMarket(data))
             .catch(error => console.error('Error fetching market data:', error));
