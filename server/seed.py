@@ -296,12 +296,13 @@ def run():
     db.session.add_all(markets)
     db.session.commit()
 
+
     vendors = []
     products = ['art', 'baked goods', 'cheese', 'cider', 'ceramics', 'coffee/tea', 'fish', 'flowers', 'fruit', 'gifts', 'honey', 'international', 'juice', 'maple syrup', 'meats', 'nuts', 'pasta', 'pickles', 'spirits', 'vegetables']
     for i in range(150):
         name = f'{fake.first_name_nonbinary()} + {fake.company()}'
         based_out_of = f"{fake.city()}\'s, + {fake.country_code()}"
-        locations = str([randint(0, 40) for _ in range(randint(1, 3))])
+        locations = str([randint(1, 41) for _ in range(randint(1, 3))])
         product = str(choice(products))
 
         v = Vendor(
@@ -314,6 +315,76 @@ def run():
 
     db.session.add_all(vendors)
     db.session.commit()
+
+
+    users = []
+    for i in range(200):
+        username = fake.user_name()
+        _password = fake.user_name()
+        first_name = fake.first_name()
+        last_name = fake.last_name()
+        address = fake.address()
+        email = fake.ascii_free_email()
+        favorite_markets = str([randint(1, 41) for _ in range(randint(1, 3))])
+        favorite_vendors = str([randint(1, 151) for _ in range(randint(3, 9))])
+
+        u = User(
+            username=username,
+            _password=_password,
+            first_name=first_name,
+            last_name=last_name,
+            address=address,
+            email=email,
+            favorite_markets=favorite_markets,
+            favorite_vendors=favorite_vendors
+        )
+        users.append(u)
+
+    db.session.add_all(users)
+    db.session.commit()
+
+
+    market_revs = []
+    for i in range(100):
+        rev_len = randint(1, 3)
+
+        review_text = fake.paragraph(nb_sentences=rev_len)
+        market_id = str(randint(1, 41))
+        user_id = str(randint(1, 200))
+        date_time = f'{fake.date_this_year()}, {fake.time()}'
+
+        mr = MarketReview(
+            review_text=review_text,
+            market_id=market_id,
+            user_id=user_id,
+            date_time=date_time
+        )
+        market_revs.append(mr)
+
+    db.session.add_all(market_revs)
+    db.session.commit()
+
+
+    vendor_revs = []
+    for i in range(100):
+        rev_len = randint(1, 3)
+
+        review_text = fake.paragraph(nb_sentences=rev_len)
+        vendor_id = str(randint(1, 41))
+        user_id = str(randint(1, 200))
+        date_time = f'{fake.date_this_year()}, {fake.time()}'
+
+        vr = MarketReview(
+            review_text=review_text,
+            vendor_id=vendor_id,
+            user_id=user_id,
+            date_time=date_time
+        )
+        vendor_revs.append(vr)
+
+    db.session.add_all(vendor_revs)
+    db.session.commit()
+
     
 if __name__ == '__main__':
     with app.app_context():
