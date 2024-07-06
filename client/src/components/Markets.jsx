@@ -1,43 +1,50 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import MarketCard from './MarketCard';
 import { Map, Marker } from 'mapkit-react';
-import { useState, useEffect } from 'react';
 import '../assets/css/index.css';
-// import REACT_MAP_KEY from '../../.env';
 
 function Markets() {
-    const [ market, setMarket] = useState([]);
-    
+    const [markets, setMarkets] = useState([]);
+
     useEffect(() => {
-        fetch("http://localhost:3000/markets")
-        .then(response => response.json())
-        .then(data => setMarket(data))
+        fetch("http://127.0.0.1:5555/markets")
+            .then(response => response.json())
+            .then(markets => setMarkets(markets))
+            .catch(error => console.error('Error fetching markets', error));
     }, []);
 
     return (
         <div className="markets-container">
-            <br/>
+            <br />
             <header>FIND A FARMERS MARKET TODAY</header>
             <h4>Click on the image to learn more</h4>
             {/* <div id='map'>
                 <h2>Please Work</h2>
-                <Map token={import.meta.env.REACT_MAP_KEY} >
-                    <Marker latitude={46.52} longitude={6.57} />
+                <Map token={process.env.REACT_APP_MAP_KEY}>
+                    {markets.map((market) => (
+                        <Marker 
+                            key={market.id} 
+                            latitude={market.latitude} 
+                            longitude={market.longitude} 
+                            title={market.name} 
+                        />
+                    ))}
                 </Map>
-            </div >
+            </div>
             <script src="https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.core.js"
                 crossOrigin='async'
                 data-callback="initMapKit"
                 data-libraries="services,full-map,geojson">
-            </script> */}
-            <br/>
+            </script>
+            <br /> */}
             <div className="market-cards-container">
-                {market.map((marketData) => (
+                {markets.map((marketData) => (
                     <MarketCard key={marketData.id} marketData={marketData} />
                 ))}
             </div>
         </div>
-    )
+    );
 }
 
 export default Markets;
+

@@ -11,10 +11,11 @@ function MarketCard({ marketData }) {
 
     return (
         <div className="market-card">
-            <img src={marketData.image} alt="Market Image" style={{width: '260px'}}/>
-            <h2>{marketData.name}</h2>
-            <h4>{marketData.location}</h4>
-            <h4>{marketData.hours}</h4>
+            <h3>{marketData.name}</h3>
+            <p><strong>Location:</strong> {marketData.location}</p>
+            <p><strong>Hours:</strong> {marketData.hours}</p>
+            <p><strong>Open Year Round:</strong> {marketData.year_round ? "Yes" : "No"}</p>
+            <p><strong>Zipcode:</strong> {marketData.zipcode}</p>
             <button className="market-card-button" onClick={handleLearnMore}>Learn More!</button>
         </div>
     );
