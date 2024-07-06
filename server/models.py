@@ -3,7 +3,6 @@ from sqlalchemy import MetaData
 from sqlalchemy.orm import validates, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_bcrypt import Bcrypt
-import datetime
 from sqlalchemy_serializer import SerializerMixin
 
 convention = {
@@ -186,7 +185,6 @@ class MarketReview(db.Model, SerializerMixin):
     review_text = db.Column(db.String, nullable=False)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    date_time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     # Relationships
     market = db.relationship('Market', back_populates='reviews')
@@ -211,7 +209,6 @@ class VendorReview(db.Model, SerializerMixin):
     review_text = db.Column(db.String, nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    date_time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     # Relationships
     vendor = db.relationship('Vendor', back_populates='reviews')
