@@ -9,6 +9,10 @@ fake = Faker()
 def run():
     Market.query.delete()
     Vendor.query.delete()
+    User.query.delete()
+    MarketReview.query.delete()
+    VendorReview.query.delete()
+
     db.session.commit()
 
     markets = [
@@ -299,7 +303,7 @@ def run():
 
     vendors = []
     products = ['art', 'baked goods', 'cheese', 'cider', 'ceramics', 'coffee/tea', 'fish', 'flowers', 'fruit', 'gifts', 'honey', 'international', 'juice', 'maple syrup', 'meats', 'nuts', 'pasta', 'pickles', 'spirits', 'vegetables']
-    for i in range(150):
+    for i in range(151):
         name = f'{fake.first_name_nonbinary()} + {fake.company()}'
         based_out_of = f"{fake.city()}\'s, + {fake.country_code()}"
         locations = str([randint(1, 41) for _ in range(randint(1, 3))])
@@ -318,7 +322,7 @@ def run():
 
 
     users = []
-    for i in range(200):
+    for i in range(201):
         username = fake.user_name()
         _password = fake.user_name()
         first_name = fake.first_name()
@@ -345,12 +349,12 @@ def run():
 
 
     market_revs = []
-    for i in range(100):
+    for i in range(101):
         rev_len = randint(1, 3)
 
-        review_text = fake.paragraph(nb_sentences=rev_len)
+        review_text = str(fake.paragraph(nb_sentences=rev_len))
         market_id = str(randint(1, 41))
-        user_id = str(randint(1, 200))
+        user_id = str(randint(1, 201))
         date_time = f'{fake.date_this_year()}, {fake.time()}'
 
         mr = MarketReview(
@@ -366,15 +370,15 @@ def run():
 
 
     vendor_revs = []
-    for i in range(100):
+    for i in range(101):
         rev_len = randint(1, 3)
 
         review_text = fake.paragraph(nb_sentences=rev_len)
         vendor_id = str(randint(1, 41))
-        user_id = str(randint(1, 200))
+        user_id = str(randint(1, 201))
         date_time = f'{fake.date_this_year()}, {fake.time()}'
 
-        vr = MarketReview(
+        vr = VendorReview(
             review_text=review_text,
             vendor_id=vendor_id,
             user_id=user_id,
