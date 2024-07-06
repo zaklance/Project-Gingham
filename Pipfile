@@ -12,6 +12,7 @@ py-bcrypt = "*"
 flask-migrate = "*"
 cors = "*"
 flask-cors = "*"
+flask-bcrypt = "*"
 
 [dev-packages]
 

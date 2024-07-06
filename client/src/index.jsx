@@ -16,9 +16,11 @@ import ErrorPage from './components/ErrorPage.jsx';
 import Home from './components/Home.jsx';
 import Login from './components/Login.jsx';
 import Markets from './components/Markets.jsx';
+import MarketDetail from './components/MarketDetail.jsx';
 import NavBar from './components/NavBar.jsx';
 import Profile from './components/Profile.jsx';
 import Vendors from './components/Vendors.jsx';
+import VendorDetail from './components/VendorDetail.jsx';
 
 const router = createBrowserRouter([
     {
@@ -39,8 +41,16 @@ const router = createBrowserRouter([
                 element: <Markets />
             },
             {
+                path: "markets/:id",
+                element: <MarketDetail />
+            },
+            {
                 path: "vendors",
                 element: <Vendors />
+            },
+            {
+                path: "vendors/:id",
+                element: <VendorDetail />
             }, 
             {
                 path: "profile", 
