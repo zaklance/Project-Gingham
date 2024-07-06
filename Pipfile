@@ -13,6 +13,7 @@ flask-migrate = "*"
 cors = "*"
 flask-cors = "*"
 flask-bcrypt = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
