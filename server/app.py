@@ -3,7 +3,7 @@ from flask import Flask, request, make_response, jsonify, session
 from models import db, User, Market, Vendor, MarketReview, VendorReview
 from dotenv import load_dotenv
 from flask_migrate import Migrate
-# from flask_cors import CORS
+from flask_cors import CORS
 
 load_dotenv()
 
@@ -14,7 +14,7 @@ app.secret_key = os.environ['SECRET_KEY']  # grab the secret key from env variab
 
 db.init_app(app)  # link sqlalchemy with flask
 Migrate(app, db)  # set up db migration tool (alembic)
-# CORS(app, supports_credentials=True)  # set up cors
+CORS(app, supports_credentials=True)  # set up cors
 
 @app.route('/', methods=['GET'])
 def homepage():
@@ -147,4 +147,4 @@ def profile(id):
         return user.to_dict(), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=5555, debug=True)
