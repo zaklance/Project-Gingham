@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import validates, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_bcrypt import Bcrypt
 from sqlalchemy_serializer import SerializerMixin
@@ -20,29 +20,29 @@ bcrypt = Bcrypt()
 
 class UserMarket(db.Model, SerializerMixin):
     __tablename__ = 'user_markets'
-
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), primary_key=True)
-
-    # Relationships
-    user = db.relationship('User', back_populates='user_markets')
     market = db.relationship('Market', back_populates='user_markets')
+    user = db.relationship('User', back_populates='user_markets')
+
+    serialize_rules = ('-user.user_markets', '-market.user_markets')
+
 
 class UserVendor(db.Model, SerializerMixin):
     __tablename__ = 'user_vendors'
-
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), primary_key=True)
-
-    # Relationships
-    user = db.relationship('User', back_populates='user_vendors')
     vendor = db.relationship('Vendor', back_populates='user_vendors')
+    user = db.relationship('User', back_populates='user_vendors')
+
+    serialize_rules = ('-user.user_vendors', '-vendor.user_vendors')
+
 
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, unique=False, nullable=False)
+    username = db.Column(db.String, unique=True, nullable=False)
     _password = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
@@ -56,6 +56,8 @@ class User(db.Model, SerializerMixin):
     vendor_reviews = db.relationship('VendorReview', back_populates='user')
     user_markets = db.relationship('UserMarket', back_populates='user')
     user_vendors = db.relationship('UserVendor', back_populates='user')
+
+    serialize_rules = ('-_password', '-market_reviews.user', '-vendor_reviews.user', '-user_markets.user', '-user_vendors.user')
 
     @validates('username')
     def validate_username(self, key, value):
@@ -106,11 +108,10 @@ class User(db.Model, SerializerMixin):
 
     def authenticate(self, password):
         return bcrypt.check_password_hash(self._password, password.encode('utf-8'))
-    
-    serialize_rules = ['-_password']
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"
+
 
 class Market(db.Model, SerializerMixin):
     __tablename__ = 'markets'
@@ -125,6 +126,8 @@ class Market(db.Model, SerializerMixin):
     # Relationships
     reviews = db.relationship('MarketReview', back_populates='market')
     user_markets = db.relationship('UserMarket', back_populates='market')
+
+    serialize_rules = ('-reviews.market', '-user_markets.market')
 
     # Validations
     @validates('name', 'location', 'hours')
@@ -142,6 +145,7 @@ class Market(db.Model, SerializerMixin):
     def __repr__(self) -> str:
         return f"<Market {self.name}>"
 
+
 class Vendor(db.Model, SerializerMixin):
     __tablename__ = 'vendors'
 
@@ -154,6 +158,8 @@ class Vendor(db.Model, SerializerMixin):
     # Relationships
     reviews = db.relationship('VendorReview', back_populates='vendor')
     user_vendors = db.relationship('UserVendor', back_populates='vendor')
+
+    serialize_rules = ('-reviews.vendor', '-user_vendors.vendor')
 
     # Validations
     @validates('name', 'product')
@@ -171,6 +177,7 @@ class Vendor(db.Model, SerializerMixin):
     def __repr__(self) -> str:
         return f"<Vendor {self.name}>"
 
+
 class MarketReview(db.Model, SerializerMixin):
     __tablename__ = 'market_reviews'
 
@@ -178,11 +185,12 @@ class MarketReview(db.Model, SerializerMixin):
     review_text = db.Column(db.String, nullable=False)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    date_time = db.Column(db.String)
 
     # Relationships
     market = db.relationship('Market', back_populates='reviews')
     user = db.relationship('User', back_populates='market_reviews')
+
+    serialize_rules = ('-market.reviews', '-user.market_reviews')
 
     def __repr__(self) -> str:
         return f"<MarketReview {self.id}>"
@@ -193,6 +201,7 @@ class MarketReview(db.Model, SerializerMixin):
             raise ValueError(f"Review text cannot be empty")
         return value
 
+
 class VendorReview(db.Model, SerializerMixin):
     __tablename__ = 'vendor_reviews'
 
@@ -200,11 +209,12 @@ class VendorReview(db.Model, SerializerMixin):
     review_text = db.Column(db.String, nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    date_time = db.Column(db.String)
 
     # Relationships
     vendor = db.relationship('Vendor', back_populates='reviews')
     user = db.relationship('User', back_populates='vendor_reviews')
+
+    serialize_rules = ('-vendor.reviews', '-user.vendor_reviews')
 
     def __repr__(self) -> str:
         return f"<VendorReview {self.id}>"
