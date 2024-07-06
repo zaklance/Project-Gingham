@@ -7,7 +7,7 @@ function Vendors() {
     const [ vendor, setVendor] = useState([]);
     
     useEffect(() => {
-        fetch("http://localhost:3000/vendors")
+        fetch("http://127.0.0.1:5555/vendors")
         .then(response => response.json())
         .then(data => setVendor(data))
     }, []);
