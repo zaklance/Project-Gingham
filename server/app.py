@@ -3,6 +3,7 @@ from flask import Flask, request, make_response, jsonify, session
 from models import db, User, Market, Vendor, MarketReview, VendorReview
 from dotenv import load_dotenv
 from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 # from flask_cors import CORS
 
 load_dotenv()
