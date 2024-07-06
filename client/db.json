@@ -19,7 +19,7 @@
         "image": "https://www.grownyc.org/files/gmkt/mkts/bronxborhall_shaylahunter_re_xy4a4543.jpg"
     },
     {
-        "id": "2",
+        "id": "3",
         "name": "79th Street Greenmarket",
         "location": "79th St. & Columbus Ave.",
         "zipcode": "10024",
@@ -31,7 +31,7 @@
     "vendors": [
     {
         "id": "1",
-        "name": "Vinh's Bin of Veggies",
+        "name": "Vinh's Veggie Binh",
         "based_out_of": "Lincoln, Nebraska",
         "locations": "57th Street Greenmarket",
         "product": "Vegetables",

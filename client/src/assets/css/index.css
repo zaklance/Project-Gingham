@@ -15,7 +15,7 @@ body {
 
 /* Container for centering content */
 .container {
-  position: fixed;
+  position: relative;
   top: 0;
   width: 100%;
   background-color: #a7a7a7; 
