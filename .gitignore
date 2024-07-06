@@ -1,3 +1,7 @@
 AuthKey_MY48UQX2M2.p8
 .env
+.env
+.env.example
+.env.local
+.env.staging
 __pycache__
