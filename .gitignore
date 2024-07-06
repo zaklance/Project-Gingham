@@ -1,3 +1,11 @@
 AuthKey_MY48UQX2M2.p8
+__pycache__/
+
+# Flask
+instance/
+.webassets-cache
+
+# Environments
 .env
-__pycache__
+env/
+.venv/
