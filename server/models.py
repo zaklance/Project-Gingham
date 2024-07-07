@@ -27,7 +27,6 @@ class UserMarket(db.Model, SerializerMixin):
 
     serialize_rules = ('-user.user_markets', '-market.user_markets')
 
-
 class UserVendor(db.Model, SerializerMixin):
     __tablename__ = 'user_vendors'
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
@@ -36,7 +35,6 @@ class UserVendor(db.Model, SerializerMixin):
     user = db.relationship('User', back_populates='user_vendors')
 
     serialize_rules = ('-user.user_vendors', '-vendor.user_vendors')
-
 
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
@@ -200,7 +198,6 @@ class MarketReview(db.Model, SerializerMixin):
         if not value:
             raise ValueError(f"Review text cannot be empty")
         return value
-
 
 class VendorReview(db.Model, SerializerMixin):
     __tablename__ = 'vendor_reviews'

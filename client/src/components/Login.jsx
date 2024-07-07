@@ -1,22 +1,59 @@
+// src/components/Login.jsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../assets/css/index.css';
 
 function Login() {
-    const [loginEmail, setLoginEmail] = useState('');
+    const [loginUsername, setLoginUsername] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [signupEmail, setSignupEmail] = useState('');
     const [signupUsername, setSignupUsername] = useState('');
     const [signupPassword, setSignupPassword] = useState('');
-    const [signupAddress, setSignupAddress] = useState('');
+    const [signupFirstName, setSignupFirstName] = useState('');
+    const [signupLastName, setSignupLastName] = useState('');
+    
+    const navigate = useNavigate();
 
-    const handleLogin = (e) => {
-        e.preventDefault();
-        console.log('Login:', { loginEmail, loginPassword });
+    const handleLogin = async (event) => {
+        event.preventDefault();
+        const response = await fetch('http://127.0.0.1:5555/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username: loginUsername, password: loginPassword })
+        });
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Login successful:', data);
+            navigate(`/profile/${data.id}`);
+        } else {
+            console.log('Login failed');
+        }
     };
 
-    const handleSignup = (e) => {
-        e.preventDefault();
-        console.log('Signup:', { signupEmail, signupUsername, signupPassword, signupAddress });
+    const handleSignup = async (event) => {
+        event.preventDefault();
+        const response = await fetch('http://127.0.0.1:5555/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: signupUsername,
+                password: signupPassword,
+                email: signupEmail,
+                first_name: signupFirstName,
+                last_name: signupLastName,
+                address: signupAddress
+            })
+        });
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Signup successful:', data);
+        } else {
+            console.log('Signup failed');
+        }
     };
 
     return (
@@ -24,11 +61,11 @@ function Login() {
             <form onSubmit={handleLogin} className="form">
                 <h2>Login</h2>
                 <div className="form-group">
-                    <label>Email:</label>
+                    <label>Username:</label>
                     <input
-                        type="email"
-                        value={loginEmail}
-                        onChange={(e) => setLoginEmail(e.target.value)}
+                        type="username"
+                        value={loginUsername}
+                        onChange={(event) => setLoginUsername(event.target.value)}
                         required
                     />
                 </div>
@@ -37,7 +74,7 @@ function Login() {
                     <input
                         type="password"
                         value={loginPassword}
-                        onChange={(e) => setLoginPassword(e.target.value)}
+                        onChange={(event) => setLoginPassword(event.target.value)}
                         required
                     />
                 </div>
@@ -51,7 +88,7 @@ function Login() {
                     <input
                         type="email"
                         value={signupEmail}
-                        onChange={(e) => setSignupEmail(e.target.value)}
+                        onChange={(event) => setSignupEmail(event.target.value)}
                         required
                     />
                 </div>
@@ -60,7 +97,7 @@ function Login() {
                     <input
                         type="text"
                         value={signupUsername}
-                        onChange={(e) => setSignupUsername(e.target.value)}
+                        onChange={(event) => setSignupUsername(event.target.value)}
                         required
                     />
                 </div>
@@ -69,16 +106,25 @@ function Login() {
                     <input
                         type="password"
                         value={signupPassword}
-                        onChange={(e) => setSignupPassword(e.target.value)}
+                        onChange={(event) => setSignupPassword(event.target.value)}
                         required
                     />
                 </div>
                 <div className="form-group">
-                    <label>Address: </label>
+                    <label>First Name: </label>
                     <input
                         type="text"
-                        value={signupAddress}
-                        onChange={(e) => setSignupAddress(e.target.value)}
+                        value={signupFirstName}
+                        onChange={(event) => setSignupFirstName(event.target.value)}
+                        required
+                    />
+                </div>
+                <div className="form-group">
+                    <label>Last Name: </label>
+                    <input
+                        type="text"
+                        value={signupLastName}
+                        onChange={(event) => setSignupLastName(event.target.value)}
                         required
                     />
                 </div>
@@ -89,3 +135,4 @@ function Login() {
 }
 
 export default Login;
+

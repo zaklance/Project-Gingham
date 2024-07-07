@@ -16,7 +16,6 @@ function Vendors() {
         <div className="markets-container">
             <br/>
             <header>FIND A MARKET VENDOR TODAY</header>
-            <h4>Click on the image to learn more</h4>
             <br/>
             <div className="market-cards-container">
                 {vendor.map((vendorData) => (
