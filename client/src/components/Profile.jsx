@@ -39,7 +39,7 @@ function Profile() {
                     return { id: vendorId, name: vendorData.name };
                 } else {
                     console.log(`Failed to fetch vendor ${vendorId}`);
-                    return { id: vendorId, name: 'Unknown Vendor' }; // Handle error case
+                    return { id: vendorId, name: 'Unknown Vendor' };
                 }
             });
 
