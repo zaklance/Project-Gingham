@@ -39,7 +39,7 @@ function Profile() {
                     return { id: vendorId, name: vendorData.name };
                 } else {
                     console.log(`Failed to fetch vendor ${vendorId}`);
-                    return { id: vendorId, name: 'Unknown Vendor' }; // Handle error case
+                    return { id: vendorId, name: 'Unknown Vendor' };
                 }
             });
 
@@ -70,7 +70,7 @@ function Profile() {
                     return { id: marketId, name: marketData.name };
                 } else {
                     console.log(`Failed to fetch market ${marketId}`);
-                    return { id: marketId, name: 'Unknown Market' }; // Handle error case
+                    return { id: marketId, name: 'Unknown Market' };
                 }
             });
 
