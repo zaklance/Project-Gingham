@@ -1,4 +1,5 @@
 import os
+import json
 from flask import Flask, request, make_response, jsonify, session
 from models import db, User, Market, Vendor, MarketReview, VendorReview
 from dotenv import load_dotenv
@@ -137,14 +138,21 @@ def profile(id):
     user = User.query.filter(User.id == id).first()
     if not user:
         return {'error': 'user not found'}, 404
+
     if request.method == 'GET':
-        return user.to_dict(), 200
+        profile_data = user.to_dict()
+
+        profile_data['favorite_vendors'] = json.loads(user.favorite_vendors)
+        profile_data['favorite_markets'] = json.loads(user.favorite_markets)
+
+        return jsonify(profile_data), 200
+
     elif request.method == 'PATCH':
         data = request.get_json()
         for key, value in data.items():
             setattr(user, key, value)
         db.session.commit()
-        return user.to_dict(), 200
+        return jsonify(user.to_dict()), 200
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

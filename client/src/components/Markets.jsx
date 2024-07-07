@@ -17,7 +17,7 @@ function Markets() {
         <div className="markets-container">
             <br />
             <header>FIND A FARMERS MARKET TODAY</header>
-            <h4>Click on the image to learn more</h4>
+            <br/>
             {/* <div id='map'>
                 <h2>Please Work</h2>
                 <Map token={process.env.REACT_APP_MAP_KEY}>
