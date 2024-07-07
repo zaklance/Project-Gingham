@@ -148,11 +148,21 @@ def profile(id):
         return jsonify(profile_data), 200
 
     elif request.method == 'PATCH':
-        data = request.get_json()
-        for key, value in data.items():
-            setattr(user, key, value)
-        db.session.commit()
-        return jsonify(user.to_dict()), 200
+        try:
+            user = User.query.filter_by(id=id).first()
+            if not user:
+                return {'error': 'User not found'}, 404
+
+            data = request.get_json()
+            for key, value in data.items():
+                setattr(user, key, value)
+
+            db.session.commit()
+            return jsonify(user.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
