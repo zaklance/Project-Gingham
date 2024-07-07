@@ -70,7 +70,7 @@ function Profile() {
                     return { id: marketId, name: marketData.name };
                 } else {
                     console.log(`Failed to fetch market ${marketId}`);
-                    return { id: marketId, name: 'Unknown Market' }; // Handle error case
+                    return { id: marketId, name: 'Unknown Market' };
                 }
             });
 
@@ -113,17 +113,23 @@ function Profile() {
                 },
                 body: JSON.stringify(profileData)
             });
+    
+            console.log('Request body:', JSON.stringify(profileData));
+    
             if (response.ok) {
                 const updatedData = await response.json();
                 setProfileData(updatedData);
                 setEditMode(false);
+                console.log('Profile data updated successfully:', updatedData);
             } else {
                 console.log('Failed to save changes');
+                console.log('Response status:', response.status);
+                console.log('Response text:', await response.text());
             }
         } catch (error) {
             console.error('Error saving changes:', error);
         }
-    };
+    };    
 
     if (!profileData) {
         return <div>Loading...</div>;
