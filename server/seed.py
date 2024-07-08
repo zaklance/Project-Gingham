@@ -331,7 +331,7 @@ def run():
     ]
     for i in range(151):
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
-        based_out_of = f"{fake.city()}\'s, {choice(states)}"
+        based_out_of = f"{fake.city()}, {choice(states)}"
         locations = str([randint(1, 41) for _ in range(randint(1, 3))])
         product = str(choice(products))
         image = str(choice(images))
