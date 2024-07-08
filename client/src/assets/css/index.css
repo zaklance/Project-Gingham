@@ -19,7 +19,7 @@ body {
   background-image: url('../images/LzYeux_120719_0036_2400px.png');
   /* background-image: url('../images/gingham-pattern-1_2400px.jpg'); */
   /* background-repeat: no-repeat; */
-  background-size: cover;
+  background-size: contain;
   background-color: #a7a7a7;
   color: #333;
 }
