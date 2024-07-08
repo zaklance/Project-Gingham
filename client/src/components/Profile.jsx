@@ -12,21 +12,29 @@ function Profile() {
 
     useEffect(() => {
         const fetchProfileData = async () => {
-            const response = await fetch(`http://127.0.0.1:5555/profile/${id}`);
-            if (response.ok) {
-                const data = await response.json();
-                setProfileData({
-                    ...data,
-                    favorite_vendors: JSON.parse(data.favorite_vendors),
-                    favorite_markets: JSON.parse(data.favorite_markets)
-                });
-                setFavoriteVendors(JSON.parse(data.favorite_vendors));
-                setFavoriteMarkets(JSON.parse(data.favorite_markets));
-            } else {
-                console.log('Failed to fetch profile data');
+            try {
+                const response = await fetch(`http://127.0.0.1:5555/profile/${id}`);
+                const text = await response.text();
+                console.log('Raw response:', text);
+
+                // Check if the response is valid JSON
+                try {
+                    const data = JSON.parse(text);
+                    setProfileData({
+                        ...data,
+                        favorite_vendors: data.favorite_vendors,
+                        favorite_markets: data.favorite_markets
+                    });
+                    setFavoriteVendors(data.favorite_vendors);
+                    setFavoriteMarkets(data.favorite_markets);
+                } catch (jsonError) {
+                    console.error('Error parsing JSON:', jsonError);
+                }
+            } catch (error) {
+                console.error('Error fetching profile data:', error);
             }
         };
-    
+
         fetchProfileData();
     }, [id]);
 
