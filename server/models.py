@@ -150,7 +150,7 @@ class Vendor(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     based_out_of = db.Column(db.String, nullable=True)
-    locations = db.Column(db.String, nullable=True)
+    locations = db.Column(db.JSON)
     product = db.Column(db.String, nullable=False)
 
     # Relationships

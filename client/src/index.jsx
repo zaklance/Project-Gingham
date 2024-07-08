@@ -51,7 +51,11 @@ const router = createBrowserRouter([
             {
                 path: "vendors/:id",
                 element: <VendorDetail />
-            }, 
+            },
+            {
+                path: "profile/", 
+                element: <Profile />
+            },
             {
                 path: "profile/:id", 
                 element: <Profile />

@@ -40,6 +40,10 @@ const MarketDetail = () => {
             <p>{market.description}</p>
             <h4>Location: {market.location}</h4>
             <h4>Hours: {market.hours}</h4>
+            <br/>
+            <h2>Reviews</h2>
+            <br/>
+            <h4></h4>
         </div>
     );
 };
