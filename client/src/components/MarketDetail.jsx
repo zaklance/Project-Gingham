@@ -15,6 +15,10 @@ const MarketDetail = () => {
         'https://assets3.thrillist.com/v1/image/1725017/828x610/flatten;crop;webp=auto;jpeg_quality=60.jpg',
         'https://offloadmedia.feverup.com/secretnyc.co/wp-content/uploads/2022/04/25075251/greenmarket-grownyc-768x512.jpeg',
         'https://offloadmedia.feverup.com/secretnyc.co/wp-content/uploads/2022/04/25075224/c.-Martin-Seck-GAP-1-768x531.jpg',
+        'https://www.officialworldtradecenter.com/content/dam/wtc/site-resources/wtc-website-photography/events/WTC_Events_FarmersMarket.JPG.transform/wtc-960/image.jpeg',
+        'https://cdn.vox-cdn.com/thumbor/yPQbB1QqymUa85rML9qCDtEpSFE=/0x319:4500x2675/fit-in/1200x630/cdn.vox-cdn.com/uploads/chorus_asset/file/19184719/6329735393_3a905a118a_o.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/2/28/Union_Square_Farmers_Market.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/d/da/10292023_Broadway_farmers%27_market_Columbia_NYC.jpg',
         'https://www.officialworldtradecenter.com/content/dam/wtc/site-resources/wtc-website-photography/events/WTC_Events_FarmersMarket.JPG.transform/wtc-960/image.jpeg'
     ];
 
