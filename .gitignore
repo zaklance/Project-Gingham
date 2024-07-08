@@ -7,13 +7,7 @@ instance/
 
 # Environments
 .env
-<<<<<<< HEAD
-.env
-.env.example
-.env.local
-.env.staging
-__pycache__
-=======
 env/
 .venv/
->>>>>>> de381e29b926daead96fb95159355d2eee442698
+
+.DS_Store
