@@ -19,7 +19,7 @@ function MarketCard({ marketData }) {
         'https://upload.wikimedia.org/wikipedia/commons/2/28/Union_Square_Farmers_Market.jpg',
         'https://upload.wikimedia.org/wikipedia/commons/d/da/10292023_Broadway_farmers%27_market_Columbia_NYC.jpg',
         'https://www.officialworldtradecenter.com/content/dam/wtc/site-resources/wtc-website-photography/events/WTC_Events_FarmersMarket.JPG.transform/wtc-960/image.jpeg'
-    ];
+    ]
 
     useEffect(() => {
         const randomIndex = Math.floor(Math.random() * images.length);
