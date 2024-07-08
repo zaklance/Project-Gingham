@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 
 const MarketDetail = () => {
     const { id } = useParams();
-    const [market, setMarket] = useState(null);
+    const [ market, setMarket ] = useState(null);
     const [ randomImage, setRandomImage ] = useState('');
 
     const images = [
