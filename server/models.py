@@ -151,6 +151,7 @@ class Vendor(db.Model, SerializerMixin):
     based_out_of = db.Column(db.String, nullable=True)
     locations = db.Column(db.JSON)
     product = db.Column(db.String, nullable=False)
+    image = db.Column(db.String)
 
     # Relationships
     reviews = db.relationship('VendorReview', back_populates='vendor')

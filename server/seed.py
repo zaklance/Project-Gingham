@@ -302,19 +302,46 @@ def run():
 
 
     vendors = []
-    products = ['art', 'baked goods', 'cheese', 'cider', 'ceramics', 'coffee/tea', 'fish', 'flowers', 'fruit', 'gifts', 'honey', 'international', 'juice', 'maple syrup', 'meats', 'nuts', 'pasta', 'pickles', 'spirits', 'vegetables']
+    products = ['art', 'baked goods', 'cheese', 'cider', 'ceramics', 'coffee/tea', 'fish', 'flowers', 'fruit', 'gifts', 'honey', 'international', 'juice', 'maple syrup', 'meats', 'mushrooms' 'nuts', 'pasta', 'pickles', 'spirits', 'vegetables']
     companies = ['Goods', 'Produce', 'Farms', 'Organics', 'and Son', 'and Daughter', 'Market', 'Apothecary', 'Orchard']
+    states = ['CT', 'DE', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT']
+    images = [
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJdUQVqfYHV6YWtlJYuNouSOjUqHSEetAGSg&s',
+        'https://www.opkansas.org/wp-content/uploads/2019/06/opfm-vendor-web2.jpg',
+        'https://static.wixstatic.com/media/05bd2f_2b30b89b49eb4b2e95810360a9357bd2~mv2_d_7360_4912_s_4_2.jpeg/v1/fill/w_640,h_434,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/05bd2f_2b30b89b49eb4b2e95810360a9357bd2~mv2_d_7360_4912_s_4_2.jpeg',
+        'https://www.merriam.org/files/sharedassets/public/v/1/1.-photos/parks/farmers-market-1.jpg?dimension=pageimage&w=480',
+        'https://c8.alamy.com/comp/2R82FT1/st-jacobs-farmers-market-fruit-and-vegetable-vendors-ontario-canada-2R82FT1.jpg',
+        'https://www.fairburn.com/sites/default/files/uploads/ParksAndRecreation/document_2.jpg',
+        'https://www.lanecountyfarmersmarket.org/wp-content/uploads/2022/02/Vendor-Slider-3-scaled.jpg',
+        'https://frontierefarmhouse.wordpress.com/wp-content/uploads/2019/09/66422240_2392773677468030_9162452177778638848_o.jpg?w=1024',
+        'https://cdn.vox-cdn.com/thumbor/K7pJk3lLSH60zEbktRL0AQ-jNfA=/0x0:4500x2994/1200x900/filters:focal(1890x1137:2610x1857)/cdn.vox-cdn.com/uploads/chorus_image/image/65219436/6329735393_3a905a118a_o.0.jpg',
+        'https://dims.apnews.com/dims4/default/92713da/2147483647/strip/true/crop/5919x3946+0+0/resize/599x399!/quality/90/?url=https%3A%2F%2Fassets.apnews.com%2Faf%2F66%2F8e201f3644029f81124542a80a6b%2F128f5a1ca1754f77b141d34c6a199894',
+        'https://i2.pickpik.com/photos/363/418/522/market-stand-vegetables-market-stall-preview.jpg',
+        'https://freerangestock.com/sample/161930/fresh-fruit-assortment-on-a-market-stall.jpg',
+        'https://live.staticflickr.com/1450/24575912061_08b77ec267_b.jpg',
+        'https://cdn12.picryl.com/photo/2016/12/31/market-market-stall-seller-food-drink-29aa05-1024.jpg',
+        'https://islandinthenet.com/wp-content/uploads/2020/06/Fujifilm_X-T2_20200607_DSCF3839_blog.jpg',
+        'https://images.squarespace-cdn.com/content/v1/51e5766be4b05a1c36b7f6d2/1629745183504-2SQ6R20JGVU0GUZPH5WV/Michael_Greenmarket-1.jpg',
+        'https://live.staticflickr.com/1039/1095728401_01526e79b1_b.jpg',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTihP-5As9ouOXhk8QS6be4--GASeJNuebUHA&usqp=CAU',
+        'https://live.staticflickr.com/8172/8045956113_b76fd52b44_b.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/f/f0/Mushroom_stand_at_the_Campbell_farmers%27_market.gk.jpg',
+        'https://live.staticflickr.com/3369/3223915584_8caf5935aa_b.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/d/d6/Ballard_Farmers%27_Market_-_flowers.jpg'
+    ]
     for i in range(151):
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
-        based_out_of = f"{fake.city()}\'s, {fake.country_code()}"
+        based_out_of = f"{fake.city()}\'s, {choice(states)}"
         locations = str([randint(1, 41) for _ in range(randint(1, 3))])
         product = str(choice(products))
+        image = str(choice(images))
 
         v = Vendor(
             name=name,
             based_out_of=based_out_of,
             locations=locations,
-            product=product
+            product=product,
+            image=image
         )
         vendors.append(v)
 
