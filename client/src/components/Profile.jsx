@@ -17,7 +17,6 @@ function Profile() {
                 const text = await response.text();
                 console.log('Raw response:', text);
 
-                // Check if the response is valid JSON
                 try {
                     const data = JSON.parse(text);
                     setProfileData({
@@ -34,7 +33,6 @@ function Profile() {
                 console.error('Error fetching profile data:', error);
             }
         };
-
         fetchProfileData();
     }, [id]);
 
