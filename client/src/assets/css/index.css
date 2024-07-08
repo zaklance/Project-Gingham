@@ -9,7 +9,12 @@
 body {
   font-family: Arial, sans-serif;
   line-height: 1.6;
-  background-color: #f4f4f4;
+  /* background-image: url('../images/grass_2400px.jpg'); */
+  background-image: url('../images/LzYeux_120719_0036_2400px.png');
+  /* background-image: url('../images/gingham-pattern-1_2400px.jpg'); */
+  /* background-repeat: no-repeat; */
+  background-size: cover;
+  background-color: #a7a7a7;
   color: #333;
 }
 
@@ -17,30 +22,55 @@ body {
 .container {
   position: relative;
   top: 0;
-  width: 100%;
-  background-color: #a7a7a7; 
+  width: 90%;
+  /* background-color: #a7a7a7; */
   display: box;
   justify-content: space-between;
-  padding: 20px 20px; /* Adjust padding as needed */
-  box-shadow: 0 4px 2px -2px #ff7b8a;
+  padding: 20px 5%;
+  margin: auto;
+  border-radius: 20px;
+  /* Adjust padding as needed */
+  /* box-shadow: 0 4px 2px -2px #ff7b8a; */
 }
 
 /* Header styling */
 header {
-  background: #ff3399;
+  background: #d8f4fe;
   color: #fff;
-  padding: 10px 0;
+  padding: 0px 0 32px 0;
   text-align: center;
   font-size: 24px;
+  margin-bottom: -40px;
+  border-radius: 20px 20px 0 0;
+  ;
+}
+
+.logo {
+  width: 50px;
+  margin: 10px 10px -2px 10px;
 }
 
 /* Main content area */
 main {
   padding: 20px;
   background: #fff;
-  border-radius: 5px;
+  border-radius: 0 0 20px 20px;
   box-shadow: 0 0 10px #b5b5b5;
   margin: 20px 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Playwrite NG Modern", cursive;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+}
+
+p, li, div {
+  font-family: "Lexend Deca", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
 }
 
 h4 {
@@ -48,36 +78,74 @@ h4 {
 }
 
 ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    width: 100%;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  width: 100%;
+  ;
 }
 
 li {
-    display: inline;
+  display: inline;
 }
 
-button {
-    background: none;
-    border: none;
-    font-size: 16px; /* Adjust font size as needed */
-    cursor: pointer;
-    padding: 10px 20px;
+.nav-tab {
+  border: none;
+  font-size: 18px;
+  /* Adjust font size as needed */
+  cursor: pointer;
+  padding: 23px 24px 26px 24px;
+  margin: 0px 0 -20px 0;
+  font-family: "Lilita One", sans-serif;
+  font-weight: 400;
+  /* font-style: normal; */
+}
+
+.color-1 {
+  background: #ff7b8a;
+}
+
+.color-2 {
+  background: #ff8300;
+}
+
+.color-3 {
+  background: #ff806b;
+}
+
+.color-4 {
+  background: #ff9e5c;
+}
+
+.color-5 {
+  background: #ff6786;
+}
+
+.color-6 {
+  background: #6c7ae0;
+}
+
+.tab-right {
+  border-radius: 0 20px 0 0;;
 }
 
 button a {
-    text-decoration: none;
-    color: black; /* Adjust link color as needed */
+  text-decoration: none;
+  color: black;
+  /* Adjust link color as needed */
 }
 
 button a.active {
-    font-weight: bold; /* Styling for active link */
+  /* font-weight: bold; */
+  /* background: #fff537; */
+  padding: 10px 20px 10px 20px;
+  margin:
+  /* Styling for active link */
 }
 
 button:hover {
-  background: #555;
+  background: #fffa9c;
 }
 
 /* Basic form styling */
@@ -92,6 +160,10 @@ form textarea {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+.btn-right {
+  border-radius: 0 20px 0 0;
 }
 
 /* Utility classes */
@@ -117,7 +189,8 @@ form textarea {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-color: #f0f0f0; /* Optional: Add background color */
+  background-color: #f0f0f0;
+  /* Optional: Add background color */
 }
 
 .form {
@@ -129,9 +202,9 @@ form textarea {
 }
 
 .form-group {
-display: flex;
-align-items: center;
-margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
 .form-group label {
@@ -140,50 +213,64 @@ margin-bottom: 15px;
 }
 
 .form-group input {
-flex: 1;
-padding: 8px;
-box-sizing: border-box;
+  flex: 1;
+  padding: 8px;
+  box-sizing: border-box;
 }
 
 .markets-container {
-width: 100%;
-max-width: 1200px; /* Adjust as needed */
-margin: 0 auto;
-padding: 20px;
+  width: 100%;
+  max-width: 1200px;
+  /* Adjust as needed */
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .market-cards-container {
-display: flex;
-flex-wrap: wrap;
-gap: 20px; /* Adjust the gap between cards */
-justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  /* Adjust the gap between cards */
+  justify-content: center;
 }
 
-.market-cards-container > * {
-flex: 0 0 calc(33.33% - 20px); /* Adjust to make three cards fit per row */
-max-width: calc(33.33% - 20px); /* Adjust max-width based on desired spacing */
+.market-cards-container>* {
+  flex: 0 0 calc(33.33% - 20px);
+  /* Adjust to make three cards fit per row */
+  max-width: calc(33.33% - 20px);
+  /* Adjust max-width based on desired spacing */
 }
 
 .market-card {
-border: 1px solid #ccc; /* Example border styling */
-padding: 10px;
-width: 100%; /* Adjust width as needed */
-max-width: 300px; /* Example max-width */
-box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Example shadow */
-background-color: #fff; /* Example background color */
-text-align: center;
+  border: 1px solid #ccc;
+  /* Example border styling */
+  padding: 10px;
+  width: 100%;
+  /* Adjust width as needed */
+  max-width: 300px;
+  /* Example max-width */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  /* Example shadow */
+  background-color: #fff;
+  /* Example background color */
+  text-align: center;
 }
 
 .market-card-button {
-display: block;
-width: 100%;
-max-width: 200px; /* Example max-width for the button */
-margin: 10px auto; /* Center align the button */
-padding: 8px 16px;
-border: 1px solid #ff3399; /* Border color for the button */
-background-color: #ff6699; /* Button background color */
-color: #fff; /* Button text color */
-text-align: center;
-text-decoration: none;
-cursor: pointer;
+  display: block;
+  width: 100%;
+  max-width: 200px;
+  /* Example max-width for the button */
+  margin: 10px auto;
+  /* Center align the button */
+  padding: 8px 16px;
+  border: 1px solid #ff3399;
+  /* Border color for the button */
+  background-color: #ff6699;
+  /* Button background color */
+  color: #fff;
+  /* Button text color */
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
 }
