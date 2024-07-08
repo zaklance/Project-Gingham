@@ -11,7 +11,10 @@ flask-migrate = "*"
 cors = "*"
 flask-cors = "*"
 python-dotenv = "*"
+<<<<<<< Updated upstream
 flask-dotenv = "*"
+=======
+>>>>>>> Stashed changes
 bcrypt = "*"
 flask-bcrypt = "*"
 faker = "*"

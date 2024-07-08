@@ -304,8 +304,8 @@ def run():
     vendors = []
     products = ['art', 'baked goods', 'cheese', 'cider', 'ceramics', 'coffee/tea', 'fish', 'flowers', 'fruit', 'gifts', 'honey', 'international', 'juice', 'maple syrup', 'meats', 'nuts', 'pasta', 'pickles', 'spirits', 'vegetables']
     for i in range(151):
-        name = f'{fake.first_name_nonbinary()} + {fake.company()}'
-        based_out_of = f"{fake.city()}\'s, + {fake.country_code()}"
+        name = f'{fake.first_name_nonbinary()} {fake.company()}'
+        based_out_of = f"{fake.city()}\'s, {fake.country_code()}"
         locations = str([randint(1, 41) for _ in range(randint(1, 3))])
         product = str(choice(products))
 
