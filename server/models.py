@@ -16,7 +16,7 @@ convention = {
 metadata = MetaData(naming_convention=convention)
 
 db = SQLAlchemy(metadata=metadata)
-# bcrypt = Bcrypt()
+bcrypt = Bcrypt()
 
 class UserMarket(db.Model, SerializerMixin):
     __tablename__ = 'user_markets'
@@ -142,7 +142,6 @@ class Market(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<Market {self.name}>"
-
 
 class Vendor(db.Model, SerializerMixin):
     __tablename__ = 'vendors'

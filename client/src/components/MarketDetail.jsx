@@ -3,8 +3,9 @@ import { useParams } from 'react-router-dom';
 
 const MarketDetail = () => {
     const { id } = useParams();
-    const [ market, setMarket ] = useState(null);
-    const [ randomImage, setRandomImage ] = useState('');
+    const [market, setMarket] = useState(null);
+    const [randomImage, setRandomImage] = useState('');
+    const [marketReviews, setMarketReviews] = useState([]);
 
     const images = [
         'https://neighbors.columbia.edu/sites/default/files/content/2023/farmers-market.jpg',
@@ -15,7 +16,6 @@ const MarketDetail = () => {
         'https://offloadmedia.feverup.com/secretnyc.co/wp-content/uploads/2022/04/25075251/greenmarket-grownyc-768x512.jpeg',
         'https://offloadmedia.feverup.com/secretnyc.co/wp-content/uploads/2022/04/25075224/c.-Martin-Seck-GAP-1-768x531.jpg',
         'https://www.officialworldtradecenter.com/content/dam/wtc/site-resources/wtc-website-photography/events/WTC_Events_FarmersMarket.JPG.transform/wtc-960/image.jpeg'
-        
     ];
 
     useEffect(() => {
@@ -23,10 +23,17 @@ const MarketDetail = () => {
             .then(response => response.json())
             .then(data => {
                 setMarket(data);
-                const randomIndex= Math.floor(Math.random() * images.length);
+                const randomIndex = Math.floor(Math.random() * images.length);
                 setRandomImage(images[randomIndex]);
             })
             .catch(error => console.error('Error fetching market data:', error));
+    }, [id]);
+
+    useEffect(() => {
+        fetch(`http://127.0.0.1:5555/market_reviews/${id}`)
+            .then(response => response.json())
+            .then(data => setMarketReviews(data))
+            .catch(error => console.error('Error fetching reviews:', error));
     }, [id]);
 
     if (!market) {
@@ -36,14 +43,19 @@ const MarketDetail = () => {
     return (
         <div>
             <h2>{market.name}</h2>
-            <img src={randomImage} alt="Market Image" style={{width: '70%'}} />
+            <img src={randomImage} alt="Market Image" style={{ width: '70%' }} />
             <p>{market.description}</p>
             <h4>Location: {market.location}</h4>
             <h4>Hours: {market.hours}</h4>
-            <br/>
+            <br />
             <h2>Reviews</h2>
-            <br/>
-            <h4></h4>
+            <br />
+            {marketReviews.map((review, index) => (
+                <div key={index}>
+                    <h4>{review.user_first_name}</h4>
+                    <p>{review.review_text}</p>
+                </div>
+            ))}
         </div>
     );
 };
