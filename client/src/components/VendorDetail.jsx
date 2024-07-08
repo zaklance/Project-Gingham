@@ -6,28 +6,39 @@ const VendorDetail = () => {
     const [vendor, setVendor] = useState(null);
     const [availableBaskets, setAvailableBaskets] = useState(5);
     const [marketDetails, setMarketDetails] = useState({});
-    const [locations, setLocations] = useState([]); // Initialize as empty array
+    const [locations, setLocations] = useState([]);
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/vendors/${id}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 setVendor(data);
-                setLocations(data.locations || []);
+                const parsedLocations = JSON.parse(data.locations);
+                setLocations(parsedLocations);
             })
             .catch(error => console.error('Error fetching vendor data:', error));
     }, [id]);
 
     useEffect(() => {
-        if (Array.isArray(locations) && locations.length > 0) { // Check if locations is an array
+        if (Array.isArray(locations) && locations.length > 0) {
             const fetchMarketDetails = async () => {
                 const promises = locations.map(async marketId => {
-                    const response = await fetch(`http://127.0.0.1:5555/markets/${marketId}`);
-                    if (response.ok) {
-                        const marketData = await response.json();
-                        return { id: marketId, name: marketData.name };
-                    } else {
-                        console.log(`Failed to fetch market ${marketId}`);
+                    try {
+                        const response = await fetch(`http://127.0.0.1:5555/markets/${marketId}`);
+                        if (response.ok) {
+                            const marketData = await response.json();
+                            return { id: marketId, name: marketData.name };
+                        } else {
+                            console.log(`Failed to fetch market ${marketId}`);
+                            return { id: marketId, name: 'Unknown Market' };
+                        }
+                    } catch (error) {
+                        console.error(`Error fetching market ${marketId}:`, error);
                         return { id: marketId, name: 'Unknown Market' };
                     }
                 });
@@ -94,3 +105,4 @@ const VendorDetail = () => {
 };
 
 export default VendorDetail;
+
