@@ -303,8 +303,9 @@ def run():
 
     vendors = []
     products = ['art', 'baked goods', 'cheese', 'cider', 'ceramics', 'coffee/tea', 'fish', 'flowers', 'fruit', 'gifts', 'honey', 'international', 'juice', 'maple syrup', 'meats', 'nuts', 'pasta', 'pickles', 'spirits', 'vegetables']
+    companies = ['Goods', 'Produce', 'Farms', 'Organics', 'and Son', 'and Daughter', 'Market', 'Apothecary', 'Orchard']
     for i in range(151):
-        name = f'{fake.first_name_nonbinary()} {fake.company()}'
+        name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
         based_out_of = f"{fake.city()}\'s, {fake.country_code()}"
         locations = str([randint(1, 41) for _ in range(randint(1, 3))])
         product = str(choice(products))
@@ -329,7 +330,7 @@ def run():
         last_name = fake.last_name()
         address = fake.address()
         email = fake.ascii_free_email()
-        favorite_markets = str([randint(1, 41) for _ in range(randint(1, 3))])
+        favorite_markets = str([randint(1, 41) for _ in range(randint(2, 4))])
         favorite_vendors = str([randint(1, 151) for _ in range(randint(3, 9))])
 
         u = User(
