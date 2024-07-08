@@ -5,6 +5,12 @@
   box-sizing: border-box;
 }
 
+a {
+  color: black;
+  text-decoration: none;
+}
+
+
 /* Basic typography */
 body {
   font-family: Arial, sans-serif;
@@ -34,8 +40,7 @@ body {
   /* box-shadow: 0 4px 2px -2px #ff7b8a; */
 }
 
-.wrapper {
-}
+.wrapper {}
 
 /* Header styling */
 header {
@@ -63,14 +68,21 @@ main {
   margin: 20px 0;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: "Playwrite NG Modern", cursive;
   font-optical-sizing: auto;
   font-weight: <weight>;
   font-style: normal;
 }
 
-p, li, div {
+p,
+li,
+div {
   font-family: "Lexend Deca", sans-serif;
   font-optical-sizing: auto;
   font-weight: 300;
@@ -128,7 +140,8 @@ li {
 }
 
 .tab-right {
-  border-radius: 0 20px 0 0;;
+  border-radius: 0 20px 0 0;
+  ;
 }
 
 button a {
@@ -142,7 +155,7 @@ button a.active {
   /* background: #fff537; */
   padding: 10px 20px 10px 20px;
   margin:
-  /* Styling for active link */
+    /* Styling for active link */
 }
 
 button:hover {
@@ -152,6 +165,10 @@ button:hover {
 .big-logo {
   float: left;
   width: 300px;
+}
+
+div>a:hover {
+  background-color: #fffa9c;
 }
 
 /* Basic form styling */
