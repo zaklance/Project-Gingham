@@ -23,6 +23,7 @@ body {
   position: relative;
   top: 0;
   width: 90%;
+  max-width: 1200px;
   /* background-color: #a7a7a7; */
   display: box;
   justify-content: space-between;
@@ -31,6 +32,9 @@ body {
   border-radius: 20px;
   /* Adjust padding as needed */
   /* box-shadow: 0 4px 2px -2px #ff7b8a; */
+}
+
+.wrapper {
 }
 
 /* Header styling */
@@ -73,9 +77,6 @@ p, li, div {
   font-style: normal;
 }
 
-h4 {
-  text-align: center;
-}
 
 ul {
   list-style-type: none;
@@ -146,6 +147,11 @@ button a.active {
 
 button:hover {
   background: #fffa9c;
+}
+
+.big-logo {
+  float: left;
+  width: 300px;
 }
 
 /* Basic form styling */
