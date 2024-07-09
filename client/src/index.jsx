@@ -12,6 +12,7 @@ import './assets/css/index.css';
 import App from './App.jsx';
 import Cart from './components/Cart.jsx';
 import Checkout from './components/Checkout.jsx';
+import CheckSession from './components/CheckSession.jsx';
 import ErrorPage from './components/ErrorPage.jsx';
 import Home from './components/Home.jsx';
 import Login from './components/Login.jsx';
@@ -71,6 +72,10 @@ const router = createBrowserRouter([
             {
                 path: "checkout",
                 element: <Checkout />
+            }, 
+            {
+                path: "check_session",
+                element: <CheckSession />
             }
         ]
     }

@@ -140,6 +140,16 @@ function Login() {
                                 required
                             />
                         </div>
+                        <div className="form-group">
+                            <label>Address:</label>
+                            <input 
+                                type="text"
+                                value={signupAddress}
+                                placeholder='enter your address'
+                                onChange={(event => setSignupAddress(event.target.value))}
+                                required
+                            />
+                        </div>
                         <button type="submit">Signup</button>
                     </form>
                 </div>

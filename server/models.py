@@ -46,8 +46,8 @@ class User(db.Model, SerializerMixin):
     last_name = db.Column(db.String, nullable=False)
     address = db.Column(db.String, nullable=True)
     email = db.Column(db.String, unique=True, nullable=False)
-    favorite_markets = db.Column(db.JSON)
-    favorite_vendors = db.Column(db.JSON)
+    favorite_markets = db.Column(db.JSON, nullable=True)
+    favorite_vendors = db.Column(db.JSON, nullable=True)
 
     # Relationships
     market_reviews = db.relationship('MarketReview', back_populates='user')
