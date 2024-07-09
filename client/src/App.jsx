@@ -8,8 +8,7 @@ import './assets/css/index.css';
 import NavBar from './components/NavBar.jsx';
 
 function App() {
-    const user = useLoaderData()
-    
+
     return (
         <>
             <div className="container">
