@@ -98,10 +98,10 @@ def market_by_id(id):
         db.session.commit()
         return {}, 204
     
-@app.route('/market_reviews/<int:id>', methods=['GET'])
+@app.route('/market_reviews/<int:market_id>', methods=['GET'])
 def get_market_reviews(market_id):
-    reviews = MarketReview.query.filter(market_id==market_id).all()
-    return jsonify([marketReview.to_dict() for marketReview in reviews]), 200
+    reviews = MarketReview.query.filter(market_id == id).all()
+    return jsonify([review.to_dict() for review in reviews]), 200
 
 @app.route('/vendors', methods=['GET', 'POST'])
 def all_vendors():

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import buyabag from '../assets/images/GINGHAM_BUYABAG.png';
 
 const VendorDetail = () => {
     const { id } = useParams();
@@ -74,9 +75,20 @@ const VendorDetail = () => {
 
     return (
         <div>
+            <div style={{display:'flex'}}>
+                <div style={{display: '60%'}}>
+                    <h2>{vendor.name}</h2>
+                    <img src={vendor.image} alt="Vendor Image" style={{ width: '95%' }} />
+                </div>
+                <div style={{marginLeft:'20px'}}>
+                    <h2>Buy a Market Basket!</h2>
+                    <img src={buyabag} alt="Basket Image" style={{ width: '300px' }} /><br />
+                    <h4>$4.99</h4>
+                    <p>Available Baskets: {availableBaskets}</p>
+                    <button onClick={handleAddToCart}>Add to Cart</button>
+                </div>
+            </div>
             <div>
-                <h2>{vendor.name}</h2>
-                <img src={vendor.image} alt="Vendor Image" style={{ width: '70%' }} />
                 <h4>Based out of: {vendor.based_out_of}</h4>
                 <br />
                 <h4>Farmers Market Locations:</h4>
@@ -89,16 +101,6 @@ const VendorDetail = () => {
                 ) : (
                     <p>No market locations at this time</p>
                 )}
-            </div>
-            <div>
-                <br />
-                <h2>Buy a Market Basket for $4.99!</h2>
-                <p>Pick up your basket at 2pm!</p>
-                <h3><strong>$4.99</strong></h3>
-                <img src="https://hgtvhome.sndimg.com/content/dam/images/hgtv/products/2021/4/1/4/RX_Food-52_multi-pocket-canvas-market-tote.jpg.rend.hgtvcom.616.616.85.suffix/1617303356725.jpeg"
-                    alt="Basket Image" style={{ width: '300px' }} /><br />
-                <button onClick={handleAddToCart}>Add to Cart</button>
-                <p>Available Baskets: {availableBaskets}</p>
             </div>
         </div>
     );
