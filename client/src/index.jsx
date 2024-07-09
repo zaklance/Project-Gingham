@@ -1,14 +1,7 @@
-//Vite
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-
-//React Router
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-
-//CSS
 import './assets/css/index.css';
-
-//Components
 import App from './App.jsx';
 import Cart from './components/Cart.jsx';
 import Checkout from './components/Checkout.jsx';
@@ -22,6 +15,7 @@ import NavBar from './components/NavBar.jsx';
 import Profile from './components/Profile.jsx';
 import Vendors from './components/Vendors.jsx';
 import VendorDetail from './components/VendorDetail.jsx';
+import Logout from './components/Logout.jsx';
 
 const router = createBrowserRouter([
     {
@@ -43,7 +37,7 @@ const router = createBrowserRouter([
             }, 
             {
                 path: "logout",
-                element: <Home />
+                element: <Logout />
             }, 
             {
                 path: "markets",

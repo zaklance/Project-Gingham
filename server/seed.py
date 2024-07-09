@@ -347,25 +347,23 @@ def run():
     db.session.add_all(vendors)
     db.session.commit()
     
-    password = 'lol'
-
     # user for demo
-    # user_demo = User(
-    #     username="hamging",
-    #     password=bcrypt.generate_password_hash(password).decode('utf-8'),
-    #     first_name="Ham-man",
-    #     last_name="Gingy",
-    #     address="11 Broadway New York, NY 10004",
-    #     email="ham-man69@proton.me",
-    #     favorite_markets=str([randint(1, 41) for _ in range(randint(2, 4))]),
-    #     favorite_vendors=str([randint(1, 151) for _ in range(randint(3, 9))])
-    # )
-    # db.session.add(user_demo)
-    # db.session.commit()
+    user_demo = User(
+        username="hamging",
+        password=bcrypt.generate_password_hash("lol").decode('utf-8'),
+        first_name="Ham-man",
+        last_name="Gingy",
+        address="11 Broadway New York, NY 10004",
+        email="ham-man69@proton.me",
+        favorite_markets=str([randint(1, 41) for _ in range(randint(2, 4))]),
+        favorite_vendors=str([randint(1, 151) for _ in range(randint(3, 9))])
+    )
+    db.session.add(user_demo)
+    db.session.commit()
 
     # add fake users
     users = []
-    for i in range(1):
+    for i in range(15):
         username = fake.user_name()
         password = fake.password()
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
