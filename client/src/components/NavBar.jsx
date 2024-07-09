@@ -13,29 +13,29 @@ function NavBar() {
             <ul>
                 <img className='logo' src={ginghamLogo} alt="Gingham Logo"></img>
                 <li>
-                    <button className='nav-tab color-1'><NavLink to="/">Home</NavLink></button>
+                    <button className='nav-tab color-1'><NavLink reloadDocument to="/">Home</NavLink></button>
                 </li>
                 {isLoggedIn ? (
                     <>
                         <li>
-                            <button className='nav-tab color-2'><NavLink to="/profile">Profile</NavLink></button>
+                            <button className='nav-tab color-2'><NavLink reloadDocument to="/profile">Profile</NavLink></button>
                         </li>
                         <li>
-                            <button className='nav-tab color-3'><NavLink to="/markets">Markets</NavLink></button>
+                            <button className='nav-tab color-3'><NavLink reloadDocument to="/markets">Markets</NavLink></button>
                         </li>
                         <li>
-                            <button className='nav-tab color-4'><NavLink to="/vendors">Vendors</NavLink></button>
+                            <button className='nav-tab color-4'><NavLink reloadDocument to="/vendors">Vendors</NavLink></button>
                         </li>
                         <li>
-                            <button className='nav-tab color-5'><NavLink to="/cart">Cart</NavLink></button>
+                            <button className='nav-tab color-5'><NavLink reloadDocument to="/cart">Cart</NavLink></button>
                         </li>
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-6 tab-right'><NavLink to="/logout">Logout</NavLink></button>
+                            <button className='nav-tab color-6 tab-right'><NavLink reloadDocument to="/logout">Logout</NavLink></button>
                         </li>
                     </>
                 ) : (
                     <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-6 tab-right'><NavLink to="/login">Login/Signup</NavLink></button>
+                            <button className='nav-tab color-6 tab-right'><NavLink reloadDocument to="/login">Login/Signup</NavLink></button>
                     </li>
                 )}
             </ul>
