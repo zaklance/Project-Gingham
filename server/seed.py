@@ -365,7 +365,7 @@ def run():
 
     # add fake users
     users = []
-    for i in range(201):
+    for i in range(1):
         username = fake.user_name()
         password = fake.password()
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')

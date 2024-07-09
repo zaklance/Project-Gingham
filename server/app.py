@@ -143,8 +143,9 @@ def profile(id):
 
     if request.method == 'GET':
         profile_data = user.to_dict()
-        profile_data['favorite_vendors'] = json.loads(user.favorite_vendors)
-        profile_data['favorite_markets'] = json.loads(user.favorite_markets)
+    
+        profile_data['favorite_vendors'] = json.loads(user.favorite_vendors) if user.favorite_vendors else []
+        profile_data['favorite_markets'] = json.loads(user.favorite_markets) if user.favorite_markets else []
         return jsonify(profile_data), 200
 
     elif request.method == 'PATCH':
