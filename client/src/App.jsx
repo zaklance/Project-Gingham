@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, useLoaderData } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 //CSS
 import './assets/css/index.css';
@@ -13,7 +13,7 @@ function App() {
         <>
             <div className="container">
                 <header> <NavBar /> </header>
-                <main> <Outlet context={[user]}/> </main>
+                <main> <Outlet /> </main>
             </div>
         </>
     )
