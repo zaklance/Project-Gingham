@@ -30,7 +30,7 @@ function NavBar() {
                             <button className='nav-tab color-5'><NavLink to="/cart">Cart</NavLink></button>
                         </li>
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-6 tab-right'><NavLink to="/">Logout</NavLink></button>
+                            <button className='nav-tab color-6 tab-right'><NavLink to="/logout">Logout</NavLink></button>
                         </li>
                     </>
                 ) : (
