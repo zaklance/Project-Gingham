@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../assets/css/index.css';
+import blanket from '../assets/images/GINGHAM_PICNICBLANKET.png';
 
 function Login() {
     const [loginUsername, setLoginUsername] = useState('');
@@ -57,79 +58,91 @@ function Login() {
     };
 
     return (
-        <div className="center-container">
-            <form onSubmit={handleLogin} className="form">
-                <h2>Login</h2>
-                <div className="form-group">
-                    <label>Username:</label>
-                    <input
-                        type="username"
-                        value={loginUsername}
-                        onChange={(event) => setLoginUsername(event.target.value)}
-                        required
-                    />
+        <div>
+            <h1>WELCOME TO GINGHAM!</h1>
+            <div className='container'>
+                <div>
+                    <form onSubmit={handleLogin} className="form">
+                        <h2>Login</h2>
+                        <div className="form-group">
+                            <label>Username:</label>
+                            <input
+                                type="username"
+                                value={loginUsername}
+                                placeholder="enter your username"
+                                onChange={(event) => setLoginUsername(event.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Password:</label>
+                            <input
+                                type="password"
+                                value={loginPassword}
+                                placeholder="enter your password"
+                                onChange={(event) => setLoginPassword(event.target.value)}
+                                required
+                            />
+                        </div>
+                        <button type="submit">Login</button>
+                    </form>
                 </div>
-                <div className="form-group">
-                    <label>Password:</label>
-                    <input
-                        type="password"
-                        value={loginPassword}
-                        onChange={(event) => setLoginPassword(event.target.value)}
-                        required
-                    />
+                <img src={blanket} style={{ width: '38%' }}/>
+                <div>
+                    <form onSubmit={handleSignup} className="form">
+                        <h2>Signup</h2>
+                        <div className="form-group">
+                            <label>Email: </label>
+                            <input
+                                type="email"
+                                value={signupEmail}
+                                placeholder="enter your email"
+                                onChange={(event) => setSignupEmail(event.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Username: </label>
+                            <input
+                                type="text"
+                                value={signupUsername}
+                                placeholder='enter a username'
+                                onChange={(event) => setSignupUsername(event.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Password: </label>
+                            <input
+                                type="password"
+                                value={signupPassword}
+                                placeholder='enter a password'
+                                onChange={(event) => setSignupPassword(event.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>First Name: </label>
+                            <input
+                                type="text"
+                                value={signupFirstName}
+                                placeholder='enter your first name'
+                                onChange={(event) => setSignupFirstName(event.target.value)}
+                                required
+                            />
+                            <label>Last Name: </label>
+                            <input
+                                type="text"
+                                value={signupLastName}
+                                placeholder='enter your last name'
+                                onChange={(event) => setSignupLastName(event.target.value)}
+                                required
+                            />
+                        </div>
+                        <button type="submit">Signup</button>
+                    </form>
                 </div>
-                <button type="submit">Login</button>
-            </form>
-
-            <form onSubmit={handleSignup} className="form">
-                <h2>Signup</h2>
-                <div className="form-group">
-                    <label>Email: </label>
-                    <input
-                        type="email"
-                        value={signupEmail}
-                        onChange={(event) => setSignupEmail(event.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Username: </label>
-                    <input
-                        type="text"
-                        value={signupUsername}
-                        onChange={(event) => setSignupUsername(event.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Password: </label>
-                    <input
-                        type="password"
-                        value={signupPassword}
-                        onChange={(event) => setSignupPassword(event.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label>First Name: </label>
-                    <input
-                        type="text"
-                        value={signupFirstName}
-                        onChange={(event) => setSignupFirstName(event.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Last Name: </label>
-                    <input
-                        type="text"
-                        value={signupLastName}
-                        onChange={(event) => setSignupLastName(event.target.value)}
-                        required
-                    />
-                </div>
-                <button type="submit">Signup</button>
-            </form>
+            </div>
         </div>
     );
 }
