@@ -107,4 +107,3 @@ const VendorDetail = () => {
 };
 
 export default VendorDetail;
-
