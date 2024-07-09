@@ -5,8 +5,9 @@ import '../assets/css/index.css';
 
 function NavBar() {
     const location = useLocation();
+    const userId = localStorage.getItem('userId');
 
-    const isLoggedIn = location.pathname !== '/' && location.pathname !== '/login';
+    const isLoggedIn = userId && location.pathname !== '/' && location.pathname !== '/login';
 
     return (
         <nav className="nav-bar">
@@ -18,7 +19,7 @@ function NavBar() {
                 {isLoggedIn ? (
                     <>
                         <li>
-                            <button className='nav-tab color-2'><NavLink reloadDocument to="/profile">Profile</NavLink></button>
+                            <button className='nav-tab color-2'><NavLink reloadDocument to={`/profile/${userId}`}>Profile</NavLink></button>
                         </li>
                         <li>
                             <button className='nav-tab color-3'><NavLink reloadDocument to="/markets">Markets</NavLink></button>
