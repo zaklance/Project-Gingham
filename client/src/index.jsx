@@ -12,10 +12,11 @@ import './assets/css/index.css';
 import App from './App.jsx';
 import Cart from './components/Cart.jsx';
 import Checkout from './components/Checkout.jsx';
-import CheckSession from './components/CheckSession.jsx';
+import {userLoader} from './components/CheckSession.jsx';
 import ErrorPage from './components/ErrorPage.jsx';
 import Home from './components/Home.jsx';
 import Login from './components/Login.jsx';
+import Logout from './components/Logout.jsx';
 import Markets from './components/Markets.jsx';
 import MarketDetail from './components/MarketDetail.jsx';
 import NavBar from './components/NavBar.jsx';
@@ -39,11 +40,17 @@ const router = createBrowserRouter([
             }, 
             {
                 path: "profile",
-                element: <Login />
+                element: <Profile />,
+                loader: userLoader
+            }, 
+            {
+                path: "profile/:id",
+                element: <Profile />,
+                loader: userLoader
             }, 
             {
                 path: "logout",
-                element: <Home />
+                element: <Logout />
             }, 
             {
                 path: "markets",
@@ -62,20 +69,12 @@ const router = createBrowserRouter([
                 element: <VendorDetail />
             },
             {
-                path: "profile/:id", 
-                element: <Profile />
-            },
-            {
                 path: "cart", 
                 element: <Cart />
             },
             {
                 path: "checkout",
                 element: <Checkout />
-            }, 
-            {
-                path: "check_session",
-                element: <CheckSession />
             }
         ]
     }

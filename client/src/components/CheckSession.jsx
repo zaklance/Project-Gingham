@@ -13,4 +13,4 @@ async function userLoader({ request, params }) {
     return res
   }
 
-  export default userLoader;
+  export { userLoader };
