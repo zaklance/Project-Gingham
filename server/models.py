@@ -98,7 +98,7 @@ class User(db.Model, SerializerMixin):
     @hybrid_property
     def password(self):
         return self._password
-    
+
     @password.setter
     def password(self, new_password):
         hash = bcrypt.generate_password_hash(new_password.encode('utf-8'))
@@ -109,7 +109,6 @@ class User(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"
-
 
 class Market(db.Model, SerializerMixin):
     __tablename__ = 'markets'
@@ -174,7 +173,6 @@ class Vendor(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<Vendor {self.name}>"
-
 
 class MarketReview(db.Model, SerializerMixin):
     __tablename__ = 'market_reviews'

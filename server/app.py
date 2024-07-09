@@ -1,7 +1,7 @@
 import os
 import json
-from flask import Flask, request, make_response, jsonify, session
-from models import db, User, Market, Vendor, MarketReview, VendorReview
+from flask import Flask, request, jsonify, session
+from models import db, User, Market, Vendor, MarketReview, VendorReview, bcrypt
 from dotenv import load_dotenv
 from flask_migrate import Migrate
 from flask_cors import CORS
@@ -9,13 +9,14 @@ from flask_cors import CORS
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URI']  # how to connect to the db
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # optional performance thing
-app.secret_key = os.environ['SECRET_KEY']  # grab the secret key from env variables
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URI']
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = os.environ['SECRET_KEY']
 
-db.init_app(app)  # link sqlalchemy with flask
-Migrate(app, db)  # set up db migration tool (alembic)
-CORS(app, supports_credentials=True)  # set up cors
+db.init_app(app)
+Migrate(app, db)
+CORS(app, supports_credentials=True)
+
 
 @app.route('/', methods=['GET'])
 def homepage():
@@ -37,11 +38,12 @@ def signup():
     if user:
         return {'error': 'username already exists'}, 400
     new_user = User(
+        email=data['email'],
         username=data['username'], 
         password=data['password'],
         first_name=data['first_name'],
         last_name=data['last_name'],
-        email=data['email']
+        address=data['address']
     )
     db.session.add(new_user)
     db.session.commit()
@@ -97,11 +99,6 @@ def market_by_id(id):
         db.session.delete(market)
         db.session.commit()
         return {}, 204
-    
-@app.route('/market_reviews/<int:id>', methods=['GET'])
-def get_market_reviews(market_id):
-    reviews = MarketReview.query.filter(market_id==market_id).all()
-    return jsonify([marketReview.to_dict() for marketReview in reviews]), 200
 
 @app.route('/vendors', methods=['GET', 'POST'])
 def all_vendors():
@@ -146,10 +143,8 @@ def profile(id):
 
     if request.method == 'GET':
         profile_data = user.to_dict()
-
         profile_data['favorite_vendors'] = json.loads(user.favorite_vendors)
         profile_data['favorite_markets'] = json.loads(user.favorite_markets)
-
         return jsonify(profile_data), 200
 
     elif request.method == 'PATCH':
@@ -168,6 +163,74 @@ def profile(id):
         except Exception as e:
             db.session.rollback()
             return {'error': str(e)}, 500
+
+@app.route('/market_reviews', methods=['GET', 'POST'])
+def all_market_reviews():
+    if request.method == 'GET':
+        reviews = MarketReview.query.all()
+        return jsonify([review.to_dict() for review in reviews]), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_review = MarketReview(
+            review_text=data['review_text'],
+            market_id=data['market_id'],
+            user_id=data['user_id']
+        )
+        db.session.add(new_review)
+        db.session.commit()
+        return new_review.to_dict(), 201
+
+@app.route('/market_reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def market_review_by_id(id):
+    review = MarketReview.query.filter(MarketReview.id == id).first()
+    if not review:
+        return {'error': 'review not found'}, 404
+    if request.method == 'GET':
+        return review.to_dict(), 200
+    elif request.method == 'PATCH':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(review, key, value)
+        db.session.commit()
+        return review.to_dict(), 200
+    elif request.method == 'DELETE':
+        db.session.delete(review)
+        db.session.commit()
+        return {}, 204
+
+@app.route('/vendor_reviews', methods=['GET', 'POST'])
+def all_vendor_reviews():
+    if request.method == 'GET':
+        reviews = VendorReview.query.all()
+        return jsonify([review.to_dict() for review in reviews]), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_review = VendorReview(
+            review_text=data['review_text'],
+            vendor_id=data['vendor_id'],
+            user_id=data['user_id']
+        )
+        db.session.add(new_review)
+        db.session.commit()
+        return new_review.to_dict(), 201
+
+@app.route('/vendor_reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def vendor_review_by_id(id):
+    review = VendorReview.query.filter(VendorReview.id == id).first()
+    if not review:
+        return {'error': 'review not found'}, 404
+    if request.method == 'GET':
+        return review.to_dict(), 200
+    elif request.method == 'PATCH':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(review, key, value)
+        db.session.commit()
+        return review.to_dict(), 200
+    elif request.method == 'DELETE':
+        db.session.delete(review)
+        db.session.commit()
+        return {}, 204
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

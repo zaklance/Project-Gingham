@@ -1,4 +1,3 @@
-// src/components/Login.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../assets/css/index.css';
@@ -11,7 +10,8 @@ function Login() {
     const [signupPassword, setSignupPassword] = useState('');
     const [signupFirstName, setSignupFirstName] = useState('');
     const [signupLastName, setSignupLastName] = useState('');
-    
+    const [signupAddress, setSignupAddress] = useState('');
+
     const navigate = useNavigate();
 
     const handleLogin = async (event) => {
@@ -21,7 +21,8 @@ function Login() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username: loginUsername, password: loginPassword })
+            body: JSON.stringify({ username: loginUsername, password: loginPassword }),
+            credentials: 'include'
         });
         if (response.ok) {
             const data = await response.json();
@@ -40,13 +41,14 @@ function Login() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                email: signupEmail,
                 username: signupUsername,
                 password: signupPassword,
-                email: signupEmail,
                 first_name: signupFirstName,
                 last_name: signupLastName,
                 address: signupAddress
-            })
+            }),
+            credentials: 'include'
         });
         if (response.ok) {
             const data = await response.json();
@@ -63,7 +65,7 @@ function Login() {
                 <div className="form-group">
                     <label>Username:</label>
                     <input
-                        type="username"
+                        type="text"
                         value={loginUsername}
                         onChange={(event) => setLoginUsername(event.target.value)}
                         required
@@ -84,7 +86,7 @@ function Login() {
             <form onSubmit={handleSignup} className="form">
                 <h2>Signup</h2>
                 <div className="form-group">
-                    <label>Email: </label>
+                    <label>Email:</label>
                     <input
                         type="email"
                         value={signupEmail}
@@ -93,7 +95,7 @@ function Login() {
                     />
                 </div>
                 <div className="form-group">
-                    <label>Username: </label>
+                    <label>Username:</label>
                     <input
                         type="text"
                         value={signupUsername}
@@ -102,7 +104,7 @@ function Login() {
                     />
                 </div>
                 <div className="form-group">
-                    <label>Password: </label>
+                    <label>Password:</label>
                     <input
                         type="password"
                         value={signupPassword}
@@ -111,7 +113,7 @@ function Login() {
                     />
                 </div>
                 <div className="form-group">
-                    <label>First Name: </label>
+                    <label>First Name:</label>
                     <input
                         type="text"
                         value={signupFirstName}
@@ -120,12 +122,20 @@ function Login() {
                     />
                 </div>
                 <div className="form-group">
-                    <label>Last Name: </label>
+                    <label>Last Name:</label>
                     <input
                         type="text"
                         value={signupLastName}
                         onChange={(event) => setSignupLastName(event.target.value)}
                         required
+                    />
+                </div>
+                <div className="form-group">
+                    <label>Address:</label>
+                    <input
+                        type="text"
+                        value={signupAddress}
+                        onChange={(event) => setSignupAddress(event.target.value)}
                     />
                 </div>
                 <button type="submit">Signup</button>
@@ -135,4 +145,3 @@ function Login() {
 }
 
 export default Login;
-
