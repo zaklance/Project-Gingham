@@ -348,9 +348,23 @@ def run():
     db.session.add_all(vendors)
     db.session.commit()
 
+    # user for demo
+    user_demo = User(
+        username="hamging",
+        _password="lol",
+        first_name="Ham-man",
+        last_name="Gingy",
+        address="11 Broadway New York, NY 10004",
+        email="ham-man69@proton.me",
+        favorite_markets=str([randint(1, 41) for _ in range(randint(2, 4))]),
+        favorite_vendors=str([randint(1, 151) for _ in range(randint(3, 9))])
+    )
+    db.session.add(user_demo)
+    db.session.commit()
 
+    # add fake users
     users = []
-    for i in range(201):
+    for i in range(200):
         username = fake.user_name()
         _password = fake.user_name()
         first_name = fake.first_name()
