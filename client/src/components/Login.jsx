@@ -60,7 +60,6 @@ function Login() {
     };
 
     return (
-<<<<<<< HEAD
         <div>
             <h1>WELCOME TO GINGHAM!</h1>
             <div className='container'>
@@ -89,21 +88,7 @@ function Login() {
                         </div>
                         <button type="submit">Login</button>
                     </form>
-=======
-        <div className="center-container">
-            <form onSubmit={handleLogin} className="form">
-                <h2>Login</h2>
-                <div className="form-group">
-                    <label>Username:</label>
-                    <input
-                        type="text"
-                        value={loginUsername}
-                        onChange={(event) => setLoginUsername(event.target.value)}
-                        required
-                    />
->>>>>>> refs/remotes/origin/main
                 </div>
-                <img src={blanket} style={{ width: '38%' }}/>
                 <div>
                     <form onSubmit={handleSignup} className="form">
                         <h2>Signup</h2>
@@ -158,70 +143,7 @@ function Login() {
                         <button type="submit">Signup</button>
                     </form>
                 </div>
-<<<<<<< HEAD
             </div>
-=======
-                <button type="submit">Login</button>
-            </form>
-
-            <form onSubmit={handleSignup} className="form">
-                <h2>Signup</h2>
-                <div className="form-group">
-                    <label>Email:</label>
-                    <input
-                        type="email"
-                        value={signupEmail}
-                        onChange={(event) => setSignupEmail(event.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Username:</label>
-                    <input
-                        type="text"
-                        value={signupUsername}
-                        onChange={(event) => setSignupUsername(event.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Password:</label>
-                    <input
-                        type="password"
-                        value={signupPassword}
-                        onChange={(event) => setSignupPassword(event.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label>First Name:</label>
-                    <input
-                        type="text"
-                        value={signupFirstName}
-                        onChange={(event) => setSignupFirstName(event.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Last Name:</label>
-                    <input
-                        type="text"
-                        value={signupLastName}
-                        onChange={(event) => setSignupLastName(event.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Address:</label>
-                    <input
-                        type="text"
-                        value={signupAddress}
-                        onChange={(event) => setSignupAddress(event.target.value)}
-                    />
-                </div>
-                <button type="submit">Signup</button>
-            </form>
->>>>>>> refs/remotes/origin/main
         </div>
     );
 }
