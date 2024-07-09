@@ -323,7 +323,6 @@ def run():
         'https://islandinthenet.com/wp-content/uploads/2020/06/Fujifilm_X-T2_20200607_DSCF3839_blog.jpg',
         'https://images.squarespace-cdn.com/content/v1/51e5766be4b05a1c36b7f6d2/1629745183504-2SQ6R20JGVU0GUZPH5WV/Michael_Greenmarket-1.jpg',
         'https://live.staticflickr.com/1039/1095728401_01526e79b1_b.jpg',
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTihP-5As9ouOXhk8QS6be4--GASeJNuebUHA&usqp=CAU',
         'https://live.staticflickr.com/8172/8045956113_b76fd52b44_b.jpg',
         'https://upload.wikimedia.org/wikipedia/commons/f/f0/Mushroom_stand_at_the_Campbell_farmers%27_market.gk.jpg',
         'https://live.staticflickr.com/3369/3223915584_8caf5935aa_b.jpg',
