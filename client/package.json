@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vis.gl/react-google-maps": "^1.1.0",
     "@vitejs/plugin-react": "^4.3.1",
     "dotenv": "^16.4.5",
     "mapkit-react": "^1.15.2",

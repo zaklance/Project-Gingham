@@ -171,6 +171,19 @@ div>a:hover {
   background-color: #fffa9c;
 }
 
+.header {
+  background-color: #dbdbdb;
+}
+
+#map {
+  width: 98%;
+  height: 40vh;
+  min-height: 400px;
+  ;
+  margin: 0% 1%;
+  ;
+}
+
 /* Basic form styling */
 form {
   display: flex;

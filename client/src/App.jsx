@@ -8,6 +8,7 @@ import './assets/css/index.css';
 import NavBar from './components/NavBar.jsx';
 
 function App() {
+
     return (
         <>
             <div className="container">
@@ -15,7 +16,7 @@ function App() {
                 <main> <Outlet /> </main>
             </div>
         </>
-    );
+    )
 }
 
 export default App;
