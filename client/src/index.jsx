@@ -1,17 +1,12 @@
-//Vite
+// src/index.jsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-
-//React Router
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-
-//CSS
 import './assets/css/index.css';
-
-//Components
 import App from './App.jsx';
 import Cart from './components/Cart.jsx';
 import Checkout from './components/Checkout.jsx';
+import CheckSession from './components/CheckSession.jsx';
 import ErrorPage from './components/ErrorPage.jsx';
 import Home from './components/Home.jsx';
 import Login from './components/Login.jsx';
@@ -21,6 +16,7 @@ import NavBar from './components/NavBar.jsx';
 import Profile from './components/Profile.jsx';
 import Vendors from './components/Vendors.jsx';
 import VendorDetail from './components/VendorDetail.jsx';
+import Logout from './components/Logout.jsx';
 
 const router = createBrowserRouter([
     {
@@ -35,6 +31,14 @@ const router = createBrowserRouter([
             {
                 path: "login",
                 element: <Login />
+            }, 
+            {
+                path: "profile",
+                element: <Login />
+            }, 
+            {
+                path: "logout",
+                element: <Logout />
             }, 
             {
                 path: "markets",
@@ -53,10 +57,6 @@ const router = createBrowserRouter([
                 element: <VendorDetail />
             },
             {
-                path: "profile/", 
-                element: <Profile />
-            },
-            {
                 path: "profile/:id", 
                 element: <Profile />
             },
@@ -67,6 +67,10 @@ const router = createBrowserRouter([
             {
                 path: "checkout",
                 element: <Checkout />
+            }, 
+            {
+                path: "check_session",
+                element: <CheckSession />
             }
         ]
     }

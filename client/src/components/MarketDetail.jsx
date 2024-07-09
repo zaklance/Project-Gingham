@@ -54,12 +54,12 @@ const MarketDetail = () => {
             <br />
             <h2>Reviews</h2>
             <br />
-            {marketReviews.map((review, index) => (
+            {/* {marketReviews.map((review, index) => (
                 <div key={index}>
                     <h4>{review.user_first_name}</h4>
                     <p>{review.review_text}</p>
                 </div>
-            ))}
+            ))} */}
         </div>
     );
 };

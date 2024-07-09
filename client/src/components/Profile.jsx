@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, Navigate } from 'react-router-dom';
 
 function Profile() {
     const { id } = useParams();
+    const [user, setUser] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false); // Initialized to false
     const [profileData, setProfileData] = useState(null);
     const [favoriteVendors, setFavoriteVendors] = useState([]);
     const [favoriteMarkets, setFavoriteMarkets] = useState([]);
@@ -11,6 +13,17 @@ function Profile() {
     const [marketDetails, setMarketDetails] = useState({});
 
     useEffect(() => {
+        // const checkAuth = async () => {
+        //     const response = await fetch('http://127.0.0.1:5555/check_session', { credentials: 'include' });
+        //     if (response.ok) {
+        //         const data = await response.json();
+        //         setUser(data.user);
+        //         setIsAuthenticated(true); // Set to true if authenticated
+        //     } else {
+        //         setIsAuthenticated(false);
+        //     }
+        // };
+
         const fetchProfileData = async () => {
             try {
                 const response = await fetch(`http://127.0.0.1:5555/profile/${id}`);
@@ -33,7 +46,10 @@ function Profile() {
                 console.error('Error fetching profile data:', error);
             }
         };
+
+        // checkAuth();
         fetchProfileData();
+
     }, [id]);
 
     useEffect(() => {
@@ -100,7 +116,7 @@ function Profile() {
 
     const handleEditToggle = () => {
         setEditMode(!editMode);
-    }
+    };
 
     const handleInputChange = event => {
         const { name, value } = event.target;
@@ -119,9 +135,9 @@ function Profile() {
                 },
                 body: JSON.stringify(profileData)
             });
-    
+
             console.log('Request body:', JSON.stringify(profileData));
-    
+
             if (response.ok) {
                 const updatedData = await response.json();
                 setProfileData(updatedData);
@@ -135,7 +151,11 @@ function Profile() {
         } catch (error) {
             console.error('Error saving changes:', error);
         }
-    };    
+    };
+
+    // if (!isAuthenticated) {
+    //     return <Navigate to="/login" />;
+    // }
 
     if (!profileData) {
         return <div>Loading...</div>;
