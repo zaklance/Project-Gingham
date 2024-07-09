@@ -26,9 +26,14 @@ def homepage():
 def login():
     data = request.get_json()
     user = User.query.filter(User.username == data['username']).first()
-    if not user or not user.authenticate(data['password']):
+    if not user:
         return {'error': 'login failed'}, 401
+    
+    if not user.authenticate(data['password']):
+        return {'error': 'login failed'}, 401
+    
     session['user_id'] = user.id
+    
     return user.to_dict(), 200
 
 @app.route('/signup', methods=['POST'])
@@ -143,8 +148,9 @@ def profile(id):
 
     if request.method == 'GET':
         profile_data = user.to_dict()
-        profile_data['favorite_vendors'] = json.loads(user.favorite_vendors)
-        profile_data['favorite_markets'] = json.loads(user.favorite_markets)
+    
+        profile_data['favorite_vendors'] = json.loads(user.favorite_vendors) if user.favorite_vendors else []
+        profile_data['favorite_markets'] = json.loads(user.favorite_markets) if user.favorite_markets else []
         return jsonify(profile_data), 200
 
     elif request.method == 'PATCH':
