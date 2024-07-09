@@ -1,33 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Logout() {
     const navigate = useNavigate();
 
-    const handleLogout = async (event) => {
-        event.preventDefault();
-        try {
-            const response = await fetch('/api/http://127.0.0.1:5555/logout', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (response.ok) {
-                navigate('/login');
-            } else {
-                console.error('Logout failed');
-            }
-        } catch (error) {
-            console.error('An error occurred during logout:', error);
-        }
-    };
+    useEffect(() => {
+        fetch('http://127.0.0.1:5555/logout', {
+            method: 'DELETE',
+            credentials: 'include'
+        })
+        .then(() => {
+            navigate('/');
+        })
+        .catch((error) => {
+            console.error('Logout failed:', error);
+        });
+    }, [navigate]);
 
     return (
-        <button onClick={handleLogout}>
-            Logout
-        </button>
+        <div>
+            Logging out...
+        </div>
     );
 }
 
