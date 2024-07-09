@@ -26,9 +26,14 @@ def homepage():
 def login():
     data = request.get_json()
     user = User.query.filter(User.username == data['username']).first()
-    if not user or not user.authenticate(data['password']):
+    if not user:
         return {'error': 'login failed'}, 401
+    
+    if not user.authenticate(data['password']):
+        return {'error': 'login failed'}, 401
+    
     session['user_id'] = user.id
+    
     return user.to_dict(), 200
 
 @app.route('/signup', methods=['POST'])
