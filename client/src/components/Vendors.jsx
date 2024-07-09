@@ -23,15 +23,15 @@ function Vendors() {
     return (
         <div className="markets-container">
             <br/>
-            <header>FIND A MARKET VENDOR TODAY</header>
-            <br/>
-            <select value={selectedProduct} onChange={handleProductChange}>
-                <option value="">All Products</option>
-                {products.map(product => (
-                    <option key={product} value={product}>{product}</option>
-                ))}
-            </select>
-            <br/>
+            <div className='header'>
+                <h3>FIND A MARKET VENDOR TODAY</h3>
+                <select value={selectedProduct} onChange={handleProductChange}>
+                    <option value="">All Products</option>
+                    {products.map(product => (
+                        <option key={product} value={product}>{product}</option>
+                    ))}
+                </select>
+            </div>
             <div className="market-cards-container">
                 {filteredVendors.map((vendorData) => (
                     <VendorCard key={vendorData.id} vendorData={vendorData} />

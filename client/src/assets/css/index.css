@@ -54,6 +54,13 @@ header {
   ;
 }
 
+.header {
+  /* background-color: #d8f4fe; */
+  width: 90%;
+  margin: 0 20px 20px 20px;;
+
+}
+
 .logo {
   width: 50px;
   margin: 10px 10px -2px 10px;
@@ -141,7 +148,15 @@ li {
 
 .tab-right {
   border-radius: 0 20px 0 0;
-  ;
+}
+
+.float-left {
+  float: left;
+}
+
+.side-select {
+  margin-left: auto;
+  margin-right: 0;
 }
 
 button a {
@@ -154,12 +169,24 @@ button a.active {
   /* font-weight: bold; */
   /* background: #fff537; */
   padding: 10px 20px 10px 20px;
-  margin:
     /* Styling for active link */
 }
 
 button:hover {
   background: #fffa9c;
+}
+
+select {
+  background: #fffa9c;
+  /* -webkit-appearance: none; */
+  /* -moz-appearance: none; */
+  appearance: none;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 0;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 10pt;
 }
 
 .big-logo {
@@ -169,10 +196,6 @@ button:hover {
 
 div>a:hover {
   background-color: #fffa9c;
-}
-
-.header {
-  background-color: #dbdbdb;
 }
 
 #map {
@@ -275,6 +298,7 @@ form textarea {
   /* Adjust to make three cards fit per row */
   max-width: calc(33.33% - 20px);
   /* Adjust max-width based on desired spacing */
+  float: none;
 }
 
 .market-card {
