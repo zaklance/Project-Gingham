@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLoaderData } from 'react-router-dom';
 
 //CSS
 import './assets/css/index.css';
@@ -8,14 +8,16 @@ import './assets/css/index.css';
 import NavBar from './components/NavBar.jsx';
 
 function App() {
+    const user = useLoaderData()
+    
     return (
         <>
             <div className="container">
                 <header> <NavBar /> </header>
-                <main> <Outlet /> </main>
+                <main> <Outlet context={[user]}/> </main>
             </div>
         </>
-    );
+    )
 }
 
 export default App;
