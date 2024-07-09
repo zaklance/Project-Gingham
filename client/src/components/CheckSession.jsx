@@ -17,7 +17,7 @@ function CheckSession() {
         .then(data => {
             if (data.error) {
                 setError(data.error);
-                navigate('/login');
+                navigate('http://127.0.0.1:5173');
             } else {
                 setSessionData(data);
             }
@@ -26,7 +26,7 @@ function CheckSession() {
         .catch(error => {
             setError('Failed to check session');
             setLoading(false);
-            navigate('/login');
+            navigate('http://127.0.0.1:5173');
         });
     }, [navigate]);
 

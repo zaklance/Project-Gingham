@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../assets/css/index.css';
-import blanket from '../assets/images/GINGHAM_PICNICBLANKET.png';
 
 function Login() {
     const [loginUsername, setLoginUsername] = useState('');
@@ -27,6 +26,7 @@ function Login() {
         });
         if (response.ok) {
             const data = await response.json();
+            localStorage.setItem('userId', data.id);
             console.log('Login successful:', data);
             navigate(`/profile/${data.id}`);
         } else {
