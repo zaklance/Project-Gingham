@@ -25,11 +25,6 @@ SECRET_KEY='YOUR SECRET KEY HERE'
 VITE_GOOGLE_KEY="YOUR API KEY HERE"
 ```
 
-### Install Dependencies
-1. From the root cd into server
-3. From the root cd into client
-4. Install necessary packages for React:
-
 ## Running the Application
 ### Terminal 1, Backend Setup
 

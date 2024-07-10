@@ -6,6 +6,7 @@ const VendorDetail = () => {
     const { id } = useParams();
     const [vendor, setVendor] = useState(null);
     const [availableBaskets, setAvailableBaskets] = useState(5);
+    const [addToFav, setAddToFav] = useState([]);
     const [marketDetails, setMarketDetails] = useState({});
     const [locations, setLocations] = useState([]);
     const [vendorReviews, setVendorReviews] = useState([]);
@@ -84,6 +85,7 @@ const VendorDetail = () => {
         }
     };
 
+ 
     if (!vendor) {
         return <div>Loading...</div>;
     }
@@ -93,6 +95,7 @@ const VendorDetail = () => {
             <div style={{display:'flex'}}>
                 <div style={{display: '60%'}}>
                     <h2>{vendor.name}</h2>
+                    <button className='add-cart'> ❤️ </button>
                     <img src={vendor.image} alt="Vendor Image" style={{ width: '95%' }} />
                 </div>
                 <div className='side-basket'>

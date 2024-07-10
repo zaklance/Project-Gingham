@@ -13,17 +13,6 @@ function Profile() {
     const [marketDetails, setMarketDetails] = useState({});
 
     useEffect(() => {
-        // const checkAuth = async () => {
-        //     const response = await fetch('http://127.0.0.1:5555/check_session', { credentials: 'include' });
-        //     if (response.ok) {
-        //         const data = await response.json();
-        //         setUser(data.user);
-        //         setIsAuthenticated(true); // Set to true if authenticated
-        //     } else {
-        //         setIsAuthenticated(false);
-        //     }
-        // };
-
         const fetchProfileData = async () => {
             try {
                 const response = await fetch(`http://127.0.0.1:5555/profile/${id}`);
@@ -47,7 +36,6 @@ function Profile() {
             }
         };
 
-        // checkAuth();
         fetchProfileData();
 
     }, [id]);
@@ -152,10 +140,6 @@ function Profile() {
             console.error('Error saving changes:', error);
         }
     };
-
-    // if (!isAuthenticated) {
-    //     return <Navigate to="/login" />;
-    // }
 
     if (!profileData) {
         return <div>Loading...</div>;

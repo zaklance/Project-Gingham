@@ -392,7 +392,7 @@ def run():
 
     market_revs = []
     for i in range(101):
-        rev_len = randint(1, 3)
+        rev_len = randint(2, 5)
 
         review_text = str(fake.paragraph(nb_sentences=rev_len))
         market_id = str(randint(1, 41))
@@ -411,7 +411,7 @@ def run():
 
     vendor_revs = []
     for i in range(101):
-        rev_len = randint(1, 3)
+        rev_len = randint(2, 5)
 
         review_text = fake.paragraph(nb_sentences=rev_len)
         vendor_id = str(randint(1, 41))
