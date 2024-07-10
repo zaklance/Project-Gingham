@@ -77,6 +77,30 @@ const VendorDetail = () => {
             .catch(error => console.error('Error fetching reviews:', error));
     }, [id]);
 
+    const handleAddToFavorites = async () => {
+        if (!user || !user.id) {
+            console.error('User is not logged in');
+            return;
+        }
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/profile/${user_id}/favorites`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ vendor_id: id })
+            });
+            
+            if (response.ok) {
+                alert('Vendor added to favorites');
+            } else {
+                console.log('Failed to add to favorites:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error adding to favorites:', error);
+        }
+    };
+
     const handleAddToCart = () => {
         if (availableBaskets > 0) {
             setAvailableBaskets(prevCount => prevCount - 1);
@@ -85,7 +109,6 @@ const VendorDetail = () => {
         }
     };
 
- 
     if (!vendor) {
         return <div>Loading...</div>;
     }
@@ -95,7 +118,7 @@ const VendorDetail = () => {
             <div style={{display:'flex'}}>
                 <div style={{display: '60%'}}>
                     <h2>{vendor.name}</h2>
-                    <button className='add-cart'> ❤️ </button>
+                    <button className='add-cart' onClick={handleAddToFavorites}> ❤️ </button>
                     <img src={vendor.image} alt="Vendor Image" style={{ width: '95%' }} />
                 </div>
                 <div className='side-basket'>
