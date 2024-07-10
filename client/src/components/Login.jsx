@@ -60,9 +60,9 @@ function Login() {
     };
 
     return (
-        <div>
-            <h1>WELCOME TO GINGHAM!</h1>
+        <div className='login-bar'>
             <div className='container'>
+            <h1 className='title'>WELCOME TO GINGHAM!</h1>
                 <div>
                     <form onSubmit={handleLogin} className="form">
                         <h2>Login</h2>
