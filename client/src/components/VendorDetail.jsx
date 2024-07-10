@@ -80,12 +80,14 @@ const VendorDetail = () => {
                     <h2>{vendor.name}</h2>
                     <img src={vendor.image} alt="Vendor Image" style={{ width: '95%' }} />
                 </div>
-                <div style={{marginLeft:'20px'}}>
+                <div className='side-basket'>
                     <h2>Buy a Market Basket!</h2>
                     <img src={buyabag} alt="Basket Image" style={{ width: '300px' }} /><br />
-                    <h4>$4.99</h4>
-                    <p>Available Baskets: {availableBaskets}</p>
-                    <button onClick={handleAddToCart}>Add to Cart</button>
+                    <div className='basket-details'>
+                        <h4>$4.99</h4>
+                        <p>Available Baskets: {availableBaskets}</p>
+                    </div>
+                    <button className='add-cart' onClick={handleAddToCart}>Add to Cart</button>
                 </div>
             </div>
             <div>
