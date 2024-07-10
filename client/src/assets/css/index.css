@@ -54,6 +54,14 @@ header {
   ;
 }
 
+.header {
+  /* background-color: #d8f4fe; */
+  width: 90%;
+  margin: 0 20px 20px 20px;
+  ;
+
+}
+
 .logo {
   width: 50px;
   margin: 10px 10px -2px 10px;
@@ -141,7 +149,25 @@ li {
 
 .tab-right {
   border-radius: 0 20px 0 0;
-  ;
+}
+
+.float-left {
+  float: left;
+}
+
+.side-select {
+  margin-left: auto;
+  margin-right: 0;
+}
+.box-big {
+  float: none;
+}
+.box-big-blue {
+  float: none;
+  background-color: #d8f4fe;
+  margin-top: 48px;
+  padding: 24px;
+
 }
 
 button a {
@@ -154,12 +180,24 @@ button a.active {
   /* font-weight: bold; */
   /* background: #fff537; */
   padding: 10px 20px 10px 20px;
-  margin:
-    /* Styling for active link */
+  /* Styling for active link */
 }
 
 button:hover {
   background: #fffa9c;
+}
+
+select {
+  background: #fffa9c;
+  /* -webkit-appearance: none; */
+  /* -moz-appearance: none; */
+  appearance: none;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 0;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 10pt;
 }
 
 .big-logo {
@@ -171,15 +209,13 @@ div>a:hover {
   background-color: #fffa9c;
 }
 
-.header {
-  background-color: #dbdbdb;
-}
-
 #map {
   width: 98%;
   height: 40vh;
-  min-height: 400px;;
-  margin: 0% 1%;;
+  min-height: 400px;
+  ;
+  margin: 0% 1%;
+  ;
 }
 
 /* Basic form styling */
@@ -273,6 +309,7 @@ form textarea {
   /* Adjust to make three cards fit per row */
   max-width: calc(33.33% - 20px);
   /* Adjust max-width based on desired spacing */
+  float: none;
 }
 
 .market-card {
