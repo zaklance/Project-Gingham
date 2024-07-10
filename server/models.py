@@ -186,7 +186,7 @@ class MarketReview(db.Model, SerializerMixin):
     market = db.relationship('Market', back_populates='reviews')
     user = db.relationship('User', back_populates='market_reviews')
 
-    serialize_rules = ('-market.reviews', '-user.market_reviews')
+    serialize_rules = ('-market.reviews', '-user.market_reviews', 'user.first_name')
 
     def __repr__(self) -> str:
         return f"<MarketReview {self.id}>"
@@ -209,7 +209,7 @@ class VendorReview(db.Model, SerializerMixin):
     vendor = db.relationship('Vendor', back_populates='reviews')
     user = db.relationship('User', back_populates='vendor_reviews')
 
-    serialize_rules = ('-vendor.reviews', '-user.vendor_reviews')
+    serialize_rules = ('-vendor.reviews', '-user.vendor_reviews', 'user.first_name')
 
     def __repr__(self) -> str:
         return f"<VendorReview {self.id}>"

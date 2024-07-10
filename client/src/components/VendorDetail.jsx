@@ -8,6 +8,7 @@ const VendorDetail = () => {
     const [availableBaskets, setAvailableBaskets] = useState(5);
     const [marketDetails, setMarketDetails] = useState({});
     const [locations, setLocations] = useState([]);
+    const [vendorReviews, setVendorReviews] = useState([]);
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/vendors/${id}`)
@@ -61,6 +62,20 @@ const VendorDetail = () => {
         }
     }, [locations]);
 
+    useEffect(() => {
+        fetch(`http://127.0.0.1:5555/vendor_reviews?vendor_id=${id}`)
+            .then(response => response.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setVendorReviews(data);
+                } else {
+                    console.error('Unexpected response format:', data);
+                    setVendorReviews([]);
+                }
+            })
+            .catch(error => console.error('Error fetching reviews:', error));
+    }, [id]);
+
     const handleAddToCart = () => {
         if (availableBaskets > 0) {
             setAvailableBaskets(prevCount => prevCount - 1);
@@ -103,6 +118,19 @@ const VendorDetail = () => {
                 ) : (
                     <p>No market locations at this time</p>
                 )}
+                <br />
+                <h2>Reviews</h2>
+                <br />
+                {vendorReviews.length > 0 ? (
+                    vendorReviews.map((review, index) => (
+                        <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
+                        <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
+                        <p>{review.review_text}</p>
+                    </div>
+                ))
+            ) : (
+                <p>No reviews available.</p>
+            )}
             </div>
         </div>
     );

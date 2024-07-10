@@ -363,7 +363,7 @@ def run():
 
     # add fake users
     users = []
-    for i in range(15):
+    for i in range(50):
         username = fake.user_name()
         password = fake.password()
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -396,7 +396,7 @@ def run():
 
         review_text = str(fake.paragraph(nb_sentences=rev_len))
         market_id = str(randint(1, 41))
-        user_id = str(randint(1, 201))
+        user_id = str(randint(1, 50))
 
         mr = MarketReview(
             review_text=review_text,
@@ -415,7 +415,7 @@ def run():
 
         review_text = fake.paragraph(nb_sentences=rev_len)
         vendor_id = str(randint(1, 41))
-        user_id = str(randint(1, 201))
+        user_id = str(randint(1, 50))
 
         vr = VendorReview(
             review_text=review_text,

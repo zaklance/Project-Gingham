@@ -173,8 +173,13 @@ def profile(id):
 @app.route('/market_reviews', methods=['GET', 'POST'])
 def all_market_reviews():
     if request.method == 'GET':
-        reviews = MarketReview.query.all()
+        market_id = request.args.get('market_id')
+        if market_id:
+            reviews = MarketReview.query.filter_by(market_id=market_id).options(db.joinedload(MarketReview.user)).all()
+        else:
+            reviews = MarketReview.query.options(db.joinedload(MarketReview.user)).all()
         return jsonify([review.to_dict() for review in reviews]), 200
+    
     elif request.method == 'POST':
         data = request.get_json()
         new_review = MarketReview(
@@ -185,6 +190,7 @@ def all_market_reviews():
         db.session.add(new_review)
         db.session.commit()
         return new_review.to_dict(), 201
+
 
 @app.route('/market_reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def market_review_by_id(id):
@@ -207,8 +213,13 @@ def market_review_by_id(id):
 @app.route('/vendor_reviews', methods=['GET', 'POST'])
 def all_vendor_reviews():
     if request.method == 'GET':
-        reviews = VendorReview.query.all()
+        vendor_id = request.args.get('vendor_id')
+        if vendor_id:
+            reviews = VendorReview.query.filter_by(vendor_id=vendor_id).options(db.joinedload(VendorReview.user)).all()
+        else:
+            reviews = VendorReview.query.options(db.joinedload(VendorReview.user)).all()
         return jsonify([review.to_dict() for review in reviews]), 200
+    
     elif request.method == 'POST':
         data = request.get_json()
         new_review = VendorReview(

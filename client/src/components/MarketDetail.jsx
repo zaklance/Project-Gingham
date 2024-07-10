@@ -34,9 +34,16 @@ const MarketDetail = () => {
     }, [id]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/market_reviews/${id}`)
+        fetch(`http://127.0.0.1:5555/market_reviews?market_id=${id}`)
             .then(response => response.json())
-            .then(data => setMarketReviews(data))
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setMarketReviews(data);
+                } else {
+                    console.error('Unexpected response format:', data);
+                    setMarketReviews([]);
+                }
+            })
             .catch(error => console.error('Error fetching reviews:', error));
     }, [id]);
 
@@ -54,12 +61,16 @@ const MarketDetail = () => {
             <br />
             <h2>Reviews</h2>
             <br />
-            {/* {marketReviews.map((review, index) => (
-                <div key={index}>
-                    <h4>{review.user_first_name}</h4>
-                    <p>{review.review_text}</p>
-                </div>
-            ))} */}
+            {marketReviews.length > 0 ? (
+                marketReviews.map((review, index) => (
+                    <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
+                        <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
+                        <p>{review.review_text}</p>
+                    </div>
+                ))
+            ) : (
+                <p>No reviews available.</p>
+            )}
         </div>
     );
 };
