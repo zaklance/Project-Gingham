@@ -206,6 +206,14 @@ li {
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
 }
 
+.btn-edit {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    background-color: #dbdbdb;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+}
+
 button a {
   text-decoration: none;
   color: black;
