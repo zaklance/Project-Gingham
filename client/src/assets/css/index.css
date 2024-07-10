@@ -40,7 +40,16 @@ body {
   /* box-shadow: 0 4px 2px -2px #ff7b8a; */
 }
 
-.wrapper {}
+.wrapper {
+  background-color: white;
+  width: fit-content;
+  margin-top: 40px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 40px;
+  /* opacity: 75%; */
+  border-radius: 20px;
+}
 
 /* Header styling */
 header {
