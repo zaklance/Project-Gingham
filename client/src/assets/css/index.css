@@ -51,15 +51,12 @@ header {
   font-size: 24px;
   margin-bottom: -40px;
   border-radius: 20px 20px 0 0;
-  ;
 }
 
 .header {
   /* background-color: #d8f4fe; */
   width: 90%;
   margin: 0 20px 20px 20px;
-  ;
-
 }
 
 .logo {
@@ -76,17 +73,13 @@ main {
   margin: 20px 0;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   font-family: "Playwrite NG Modern", cursive;
   font-optical-sizing: auto;
   font-weight: <weight>;
   font-style: normal;
 }
+
 .title {
   margin:16px;
 }
@@ -123,7 +116,9 @@ li {
   margin: 0px 0 -20px 0;
   font-family: "Lilita One", sans-serif;
   font-weight: 400;
+
   /* font-style: normal; */
+  
 }
 
 .color-1 {
@@ -254,9 +249,7 @@ div>a:hover {
   width: 98%;
   height: 40vh;
   min-height: 400px;
-  ;
   margin: 0% 1%;
-  ;
 }
 
 /* Basic form styling */
@@ -351,6 +344,8 @@ form textarea {
   max-width: calc(33.33% - 20px);
   /* Adjust max-width based on desired spacing */
   float: none;
+  position: auto;
+  top: calc(20vh );
 }
 
 .market-card {

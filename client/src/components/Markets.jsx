@@ -59,7 +59,7 @@ function Markets() {
         <div className="markets-container">
             <div id='map'>
                 <APIProvider apiKey={import.meta.env.VITE_GOOGLE_KEY} onLoad={() => console.log('Maps API has loaded.')}>
-                        <Map defaultCenter={unionSquare} defaultZoom={16} map-id="MARKET_MAP">
+                        <Map defaultCenter={unionSquare} defaultZoom={13} map-id="MARKET_MAP">
                             <Marker position={unionSquare} />
                             <Marker position={market175} />
                             <Marker position={market57} />
@@ -101,7 +101,7 @@ function Markets() {
                             <Marker position={uptown} />
                     </Map>
                 </APIProvider>
-                    <gmp-map defaultCenter={unionSquare} zoom={15} map-id="DEMO_MAP_ID">
+                    <gmp-map defaultCenter={unionSquare} zoom={13} map-id="DEMO_MAP_ID">
                         <gmp-advanced-marker position={unionSquare} title="Union Square"></gmp-advanced-marker>
                 </gmp-map>
             </div>
