@@ -169,6 +169,14 @@ li {
   padding: 24px;
 
 }
+.side-basket {
+  margin-top: auto;
+  margin-bottom: 8px;
+  margin-right: 12px;
+}
+.basket-details {
+  float: left;
+}
 
 button a {
   text-decoration: none;
@@ -185,6 +193,15 @@ button a.active {
 
 button:hover {
   background: #fffa9c;
+}
+
+.add-cart {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: #dbdbdb;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+  float: right;
 }
 
 select {
