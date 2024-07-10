@@ -9,7 +9,6 @@ function Home() {
         <div className="wrapper">
             <img className='big-logo' src={ginghamLogo} alt="Gingham Logo"></img>
             <div className="sidebar">
-                <br/>
                 <h1>Project Gingham</h1>
                 <br></br>
                 <h3> MAKE A POSITIVE IMPACT BY MINIMIZING FOOD WASTE </h3><br/>
