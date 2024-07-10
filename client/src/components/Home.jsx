@@ -6,7 +6,7 @@ import blanket from '../assets/images/GINGHAM_PICNICBLANKET.png';
 
 function Home() {
     return (
-        <div className="wrapper">
+        <div>
             <img className='big-logo' src={ginghamLogo} alt="Gingham Logo"></img>
             <div className="sidebar">
                 <h1>Project Gingham</h1>
