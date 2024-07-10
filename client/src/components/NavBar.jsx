@@ -13,9 +13,6 @@ function NavBar() {
         <nav className="nav-bar">
             <ul>
                 <img className='logo' src={ginghamLogo} alt="Gingham Logo"></img>
-                <li>
-                    <button className='nav-tab color-1'><NavLink reloadDocument to="/">Home</NavLink></button>
-                </li>
                 {isLoggedIn ? (
                     <>
                         <li>
@@ -35,9 +32,14 @@ function NavBar() {
                         </li>
                     </>
                 ) : (
-                    <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-6 tab-right'><NavLink reloadDocument to="/login">Login/Signup</NavLink></button>
-                    </li>
+                    <>
+                        <li>
+                            <button className='nav-tab color-1'><NavLink reloadDocument to="/">Home</NavLink></button>
+                        </li>
+                        <li style={{ marginLeft: 'auto' }}>
+                                <button className='nav-tab color-6 tab-right'><NavLink reloadDocument to="/login">Login/Signup</NavLink></button>
+                        </li>
+                    </>
                 )}
             </ul>
         </nav>
