@@ -87,6 +87,9 @@ h6 {
   font-weight: <weight>;
   font-style: normal;
 }
+.title {
+  margin:16px;
+}
 
 p,
 li,
@@ -176,6 +179,27 @@ li {
 }
 .basket-details {
   float: left;
+}
+.login-bar {
+  width: 70%;
+  margin-left: 15%;
+  margin-right: 15%;
+}
+.login-bar {
+  font-size: 11pt;
+}
+.login-bar input {
+  margin: 0px 8px;
+}
+.login-bar button {
+  width: min-content;
+  padding: 10px 16px;
+  margin-left: auto;
+  margin-right: auto;
+  border: none;
+  border-radius: 8px;
+  background-color: #dbdbdb;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
 }
 
 button a {
