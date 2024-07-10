@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 const MarketDetail = () => {
     const { id } = useParams();
     const [market, setMarket] = useState(null);
+    const [vendorDetails, setVendorDetails] = useState({});
     const [randomImage, setRandomImage] = useState('');
     const [marketReviews, setMarketReviews] = useState([]);
 

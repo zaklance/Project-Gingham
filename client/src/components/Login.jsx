@@ -53,7 +53,7 @@ function Login() {
         });
         if (response.ok) {
             const data = await response.json();
-            console.log('Signup successful:', data);
+            alert("Sign Up Successful. Please log in!");
         } else {
             console.log('Signup failed');
         }
