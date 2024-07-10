@@ -204,15 +204,15 @@ function Profile() {
                                 onChange={handleInputChange}
                             />
                         </div>
-                        <button onClick={handleSaveChanges}>Save Changes</button>
-                        <button onClick={handleEditToggle}>Cancel</button>
+                        <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
+                        <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
                     </>
                 ) : (
                     <>
                         <p><strong>Name:</strong> {profileData.first_name} {profileData.last_name}</p>
                         <p><strong>Email:</strong> {profileData.email}</p>
                         <p><strong>Address:</strong> {profileData.address}</p>
-                        <button onClick={handleEditToggle}>Edit</button>
+                        <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                     </>
                 )}
             </div>
