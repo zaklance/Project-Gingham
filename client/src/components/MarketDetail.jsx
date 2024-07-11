@@ -63,17 +63,9 @@ const MarketDetail = () => {
             </div>
             <button className='btn-like'> ❤️ </button>
             <br />
-<<<<<<< HEAD
-            <h2>Vendors Participating:</h2>
-
-            <br />
-            <h2>Reviews</h2>
-=======
->>>>>>> refs/remotes/origin/main
             <br />
             <div>
                 <h2>Reviews</h2>
-                <br />
                 {marketReviews.length > 0 ? (
                     marketReviews.map((review, index) => (
                         <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
