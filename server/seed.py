@@ -330,7 +330,7 @@ def run():
     for i in range(151):
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
         based_out_of = f"{fake.city()}, {choice(states)}"
-        locations = str([randint(1, 41) for _ in range(randint(2, 3))])
+        locations = str([randint(1, 40) for _ in range(randint(2, 3))])
         product = str(choice(products))
         image = str(choice(images))
 
@@ -354,8 +354,8 @@ def run():
         last_name="Gingy",
         address="11 Broadway New York, NY 10004",
         email="ham-man69@proton.me",
-        favorite_markets=str([randint(1, 41) for _ in range(randint(2, 4))]),
-        favorite_vendors=str([randint(1, 151) for _ in range(randint(3, 9))])
+        favorite_markets=str([randint(1, 40) for _ in range(randint(2, 4))]),
+        favorite_vendors=str([randint(1, 150) for _ in range(randint(3, 9))])
     )
     db.session.add(user_demo)
     db.session.commit()
@@ -370,8 +370,8 @@ def run():
         last_name = fake.last_name()
         address = fake.address()
         email = fake.ascii_free_email()
-        favorite_markets = str([randint(1, 41) for _ in range(randint(2, 4))])
-        favorite_vendors = str([randint(1, 151) for _ in range(randint(3, 9))])
+        favorite_markets = str([randint(1, 40) for _ in range(randint(2, 4))])
+        favorite_vendors = str([randint(1, 150) for _ in range(randint(3, 9))])
 
         u = User(
             username=username,
@@ -394,7 +394,7 @@ def run():
         rev_len = randint(2, 5)
 
         review_text = str(fake.paragraph(nb_sentences=rev_len))
-        market_id = str(randint(1, 41))
+        market_id = str(randint(1, 40))
         user_id = str(randint(1, 50))
 
         mr = MarketReview(
@@ -413,7 +413,7 @@ def run():
         rev_len = randint(2, 5)
 
         review_text = fake.paragraph(nb_sentences=rev_len)
-        vendor_id = str(randint(1, 41))
+        vendor_id = str(randint(1, 40))
         user_id = str(randint(1, 50))
 
         vr = VendorReview(
