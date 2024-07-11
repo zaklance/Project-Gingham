@@ -1,5 +1,5 @@
 // Cart.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 
 function Cart() {
@@ -11,15 +11,22 @@ function Cart() {
         const updatedCart = cartItems.filter(item => item.id !== itemToRemove.id);
         setCartItems(updatedCart);
         setAmountInCart(amountInCart - 1);
-    }
 
+    }
+	
     function handleCheckout() {
-        alert(`Checkout successful for ${name}. Cart items cleared.`);
+		alert(`Checkout successful for ${name}. Cart items cleared.`);
         setCartItems([]);
         setName('');
         setAddress('');
         setAmountInCart(0);
     }
+	
+	useEffect(() => {
+		console.log("Amount in cart:", amountInCart);
+		console.log("Cart items:", cartItems);
+	}, [amountInCart, cartItems]);
+	
 
 	let totalPrice = 0;
 
