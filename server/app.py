@@ -249,5 +249,26 @@ def vendor_review_by_id(id):
         db.session.commit()
         return {}, 204
 
+@app.route('/profile/<int:user_id>/favorites', methods=['POST'])
+def add_favorite_vendor(user_id):
+    vendor_id = request.json.get('vendor_id')
+    
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    try:
+        current_favorites = json.loads(user.favorite_vendors)
+    except ValueError:
+        current_favorites = []
+
+    if vendor_id not in current_favorites:
+        current_favorites.append(vendor_id)
+        user.favorite_vendors = json.dumps(current_favorites)
+        db.session.commit()
+
+    return jsonify({'message': 'Vendor added to favorites'}), 200
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

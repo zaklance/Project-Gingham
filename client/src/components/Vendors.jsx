@@ -24,7 +24,7 @@ function Vendors() {
         <div className="markets-container">
             <br/>
             <div className='header'>
-                <h2>FIND A MARKET VENDOR TODAY</h2>
+                <h2 className='float-left'>FIND A MARKET VENDOR TODAY</h2>
             <select value={selectedProduct} onChange={handleProductChange}>
                 <option value="">All Products</option>
                 {products.map(product => (

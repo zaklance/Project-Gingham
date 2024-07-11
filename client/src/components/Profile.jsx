@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, Navigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 
 function Profile() {
     const { id } = useParams();
     const [user, setUser] = useState(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false); // Initialized to false
     const [profileData, setProfileData] = useState(null);
     const [favoriteVendors, setFavoriteVendors] = useState([]);
     const [favoriteMarkets, setFavoriteMarkets] = useState([]);
@@ -35,9 +34,7 @@ function Profile() {
                 console.error('Error fetching profile data:', error);
             }
         };
-
         fetchProfileData();
-
     }, [id]);
 
     useEffect(() => {
@@ -141,6 +138,26 @@ function Profile() {
         }
     };
 
+    const handleDeleteFavorite = async (type, id) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/profile/${id}/favorites/${type}/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                if (type === 'vendor') {
+                    setFavoriteVendors(favoriteVendors.filter(vendorId => vendorId !== id));
+                } else if (type === 'market') {
+                    setFavoriteMarkets(favoriteMarkets.filter(marketId => marketId !== id));
+                }
+            } else {
+                console.error('Failed to delete favorite');
+            }
+        } catch (error) {
+            console.error('Error deleting favorite:', error);
+        }
+    };
+
     if (!profileData) {
         return <div>Loading...</div>;
     }
@@ -188,15 +205,15 @@ function Profile() {
                                 onChange={handleInputChange}
                             />
                         </div>
-                        <button onClick={handleSaveChanges}>Save Changes</button>
-                        <button onClick={handleEditToggle}>Cancel</button>
+                        <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
+                        <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
                     </>
                 ) : (
                     <>
                         <p><strong>Name:</strong> {profileData.first_name} {profileData.last_name}</p>
                         <p><strong>Email:</strong> {profileData.email}</p>
                         <p><strong>Address:</strong> {profileData.address}</p>
-                        <button onClick={handleEditToggle}>Edit</button>
+                        <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                     </>
                 )}
             </div>
@@ -209,6 +226,7 @@ function Profile() {
                             favoriteVendors.map((vendorId, index) => (
                                 <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                     <Link to={`/vendors/${vendorId}`}>{vendorDetails[vendorId]}</Link>
+                                    <button className='btn-delete' onClick={() => handleDeleteFavorite('vendor', vendorId)}>Delete</button>
                                 </div>
                             ))
                         ) : (
@@ -221,6 +239,7 @@ function Profile() {
                             favoriteMarkets.map((marketId, index) => (
                                 <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                     <Link to={`/markets/${marketId}`}>{marketDetails[marketId]}</Link>
+                                    <button className='btn-delete' onClick={() => handleDeleteFavorite('market', marketId)}>Delete</button>
                                 </div>
                             ))
                         ) : (
