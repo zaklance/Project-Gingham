@@ -89,6 +89,11 @@ h1, h2, h3, h4, h5, h6 {
   font-style: normal;
 }
 
+h2 {
+  background-color: #d8f4fe;
+  width: fit-content;
+}
+
 .title {
   margin:16px;
 }
@@ -165,6 +170,12 @@ li {
 .side-select {
   margin-left: auto;
   margin-right: 0;
+}
+.side-select2 {
+  float: right;
+}
+.no-float {
+  clear:both;
 }
 .box-big {
   float: none;
@@ -283,6 +294,11 @@ select {
 .big-logo {
   float: left;
   width: 300px;
+}
+
+.cart-item {
+  margin: 8px;
+  padding: 8px;
 }
 
 div>a:hover {
