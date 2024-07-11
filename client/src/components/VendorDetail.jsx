@@ -11,6 +11,7 @@ function VendorDetail () {
     const [marketDetails, setMarketDetails] = useState({});
     const [locations, setLocations] = useState([]);
     const [vendorReviews, setVendorReviews] = useState([]);
+    const [selectedMarket, setSelectedMarket] = useState([]);
     const { amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
     const [ price, setPrice ] = useState(4.99);
 
@@ -96,6 +97,10 @@ function VendorDetail () {
         console.log("Cart items:", cartItems);
     }, [amountInCart, cartItems]);
 
+    const handleMarketChange = (event) => {
+        setSelectedMarket(event.target.value);
+    }
+
     if (!vendor) {
         return <div>Loading...</div>;
     }
@@ -113,6 +118,18 @@ function VendorDetail () {
                     <div className='basket-details'>
                         <h4>$4.99</h4>
                         <p>Available Baskets: {availableBaskets}</p>
+                        <p>Choose a Market:</p>
+                        <select value={selectedMarket} onChange={handleMarketChange}>
+                        {Array.isArray(locations) && locations.length > 0 ? (
+                            locations.map((marketId, index) => (
+                                <option key={index} value={marketId}>
+                                    {marketDetails[marketId] || 'Loading...'}
+                                </option>
+                            ))
+                        ) : (
+                            <option value="">No market locations</option>
+                        )}
+                    </select>
                     </div>
                     <button className='add-cart' onClick={handleAddToCart}>Add to Cart</button>
                 </div>
@@ -121,7 +138,8 @@ function VendorDetail () {
                 <h4 className='float-left'>Based out of: {vendor.based_out_of}</h4>
                 <button className='btn-like'> ❤️ </button>
                 <br />
-                <h4>Farmers Market Locations:</h4>
+                <br />
+                <h2>Farmers Market Locations:</h2>
                 {Array.isArray(locations) && locations.length > 0 ? (
                     locations.map((marketId, index) => (
                         <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>

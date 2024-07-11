@@ -66,7 +66,6 @@ const MarketDetail = () => {
             <br />
             <div>
                 <h2>Reviews</h2>
-                <br />
                 {marketReviews.length > 0 ? (
                     marketReviews.map((review, index) => (
                         <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
