@@ -10,6 +10,10 @@ function Logout() {
             credentials: 'include'
         })
         .then(() => {
+            localStorage.removeItem('amountInCart');
+            localStorage.removeItem('cartItems');
+            localStorage.removeItem('userId');
+
             navigate('/');
         })
         .catch((error) => {

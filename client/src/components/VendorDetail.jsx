@@ -1,8 +1,9 @@
+// VendorDetail.jsx
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useOutletContext } from 'react-router-dom';
 import buyabag from '../assets/images/GINGHAM_BUYABAG.png';
 
-const VendorDetail = () => {
+function VendorDetail () {
     const { id } = useParams();
     const [vendor, setVendor] = useState(null);
     const [availableBaskets, setAvailableBaskets] = useState(5);
@@ -10,6 +11,8 @@ const VendorDetail = () => {
     const [marketDetails, setMarketDetails] = useState({});
     const [locations, setLocations] = useState([]);
     const [vendorReviews, setVendorReviews] = useState([]);
+    const { amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
+    const [ price, setPrice ] = useState(4.99);
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/vendors/${id}`)
@@ -79,13 +82,20 @@ const VendorDetail = () => {
 
     const handleAddToCart = () => {
         if (availableBaskets > 0) {
-            setAvailableBaskets(prevCount => prevCount - 1);
+            setAvailableBaskets(availableBaskets - 1);
+            setAmountInCart(amountInCart + 1);
+            const marketLocations = locations.map(locationId => marketDetails[locationId]).join(', ');
+            setCartItems([...cartItems, { vendorName: vendor.name, location: marketLocations, id: cartItems.length + 1, price: price}]);
         } else {
             alert("Sorry, all baskets are sold out!");
         }
     };
 
- 
+    useEffect(() => {
+        console.log("Amount in cart:", amountInCart);
+        console.log("Cart items:", cartItems);
+    }, [amountInCart, cartItems]);
+
     if (!vendor) {
         return <div>Loading...</div>;
     }
