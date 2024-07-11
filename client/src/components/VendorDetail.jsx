@@ -11,9 +11,9 @@ function VendorDetail () {
     const [marketDetails, setMarketDetails] = useState({});
     const [locations, setLocations] = useState([]);
     const [vendorReviews, setVendorReviews] = useState([]);
-    const [selectedMarket, setSelectedMarket] = useState([]);
+    const [selectedMarket, setSelectedMarket] = useState('');
     const { amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
-    const [ price, setPrice ] = useState(4.99);
+    const [price, setPrice] = useState(4.99);
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/vendors/${id}`)
@@ -27,6 +27,9 @@ function VendorDetail () {
                 setVendor(data);
                 const parsedLocations = JSON.parse(data.locations);
                 setLocations(parsedLocations);
+                if (parsedLocations.length > 0) {
+                    setSelectedMarket(parsedLocations[0]);
+                }
             })
             .catch(error => console.error('Error fetching vendor data:', error));
     }, [id]);
@@ -85,8 +88,8 @@ function VendorDetail () {
         if (availableBaskets > 0) {
             setAvailableBaskets(availableBaskets - 1);
             setAmountInCart(amountInCart + 1);
-            const marketLocations = locations.map(locationId => marketDetails[locationId]).join(', ');
-            setCartItems([...cartItems, { vendorName: vendor.name, location: marketLocations, id: cartItems.length + 1, price: price}]);
+            let marketLocation = marketDetails[selectedMarket]
+            setCartItems([...cartItems, { vendorName: vendor.name, location: marketLocation, id: cartItems.length + 1, price: price }]);
         } else {
             alert("Sorry, all baskets are sold out!");
         }

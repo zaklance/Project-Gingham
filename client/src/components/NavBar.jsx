@@ -1,15 +1,15 @@
+// NavBar.jsx
 import React from 'react';
-import { NavLink, useLocation, useOutletContext } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import ginghamLogo from '../assets/images/gingham-2-alt_1200px.png';
 import '../assets/css/index.css';
 
-function NavBar() {
+function NavBar({ amountInCart }) {
     const location = useLocation();
     const userId = localStorage.getItem('userId');
 
-
     const isLoggedIn = userId && location.pathname !== '/' && location.pathname !== '/login';
-    
+
     return (
         <nav className="nav-bar">
             <ul>
@@ -33,7 +33,7 @@ function NavBar() {
                         </li>
                         <li>
                             <button className='nav-tab color-5'>
-                                <NavLink reloadDocument to="/cart">Cart</NavLink>
+                                <NavLink reloadDocument to="/cart">Cart ({amountInCart})</NavLink>
                             </button>
                         </li>
                         <li style={{ marginLeft: 'auto' }}>
