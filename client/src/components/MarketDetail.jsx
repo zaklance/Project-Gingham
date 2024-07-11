@@ -63,13 +63,6 @@ const MarketDetail = () => {
             </div>
             <button className='btn-like'> ❤️ </button>
             <br />
-<<<<<<< HEAD
-            <h2>Vendors Participating:</h2>
-
-            <br />
-            <h2>Reviews</h2>
-=======
->>>>>>> refs/remotes/origin/main
             <br />
             <div>
                 <h2>Reviews</h2>
