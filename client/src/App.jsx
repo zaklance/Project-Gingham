@@ -25,7 +25,7 @@ function App() {
     return (
         <div className="container">
             <header>
-                <NavBar />
+                <NavBar amountInCart={amountInCart} />
             </header>
             <main>
                 <Outlet context={{ amountInCart, setAmountInCart, cartItems, setCartItems }} />
