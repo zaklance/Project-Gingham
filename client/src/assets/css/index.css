@@ -206,6 +206,41 @@ li {
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
 }
 
+.btn-edit {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    background-color: #dbdbdb;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+}
+
+.btn-delete {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: none;
+  background-color: #dbdbdb;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+  float: right;
+}
+
+.btn-like {
+  margin-left: 20px;
+  margin-top: -4px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: #ffd1d8;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+}
+
+.btn-like:hover {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    background-color: #ff7b8a;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+}
+
 button a {
   text-decoration: none;
   color: black;
@@ -389,4 +424,7 @@ form textarea {
   text-align: center;
   text-decoration: none;
   cursor: pointer;
+}
+.market-card-button:hover {
+  background-color: #ff8300;
 }
