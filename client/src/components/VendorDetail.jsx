@@ -111,7 +111,8 @@ const VendorDetail = () => {
                 <h4 className='float-left'>Based out of: {vendor.based_out_of}</h4>
                 <button className='btn-like'> ❤️ </button>
                 <br />
-                <h4>Farmers Market Locations:</h4>
+                <br />
+                <h2>Farmers Market Locations:</h2>
                 {Array.isArray(locations) && locations.length > 0 ? (
                     locations.map((marketId, index) => (
                         <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
