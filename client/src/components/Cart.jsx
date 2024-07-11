@@ -45,7 +45,7 @@ function Cart() {
                         {cartItems.map((item, index) => (
                             <li className='cart-item' key={index}>
                                 <span><b>{item.vendorName}</b> at {item.location} {item.price}</span>
-                                <button className='add-cart' onClick={() => removeFromCart(item)}>Remove</button>
+                                <button className='btn-cart' onClick={() => removeFromCart(item)}>Remove</button>
                             </li>
                         ))}
                     </ul>
@@ -66,7 +66,7 @@ function Cart() {
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
                             />
-                        <button onClick={handleCheckout}>Checkout</button>
+                        <button className='btn-cart' onClick={handleCheckout}>Checkout</button>
                     </div>
                 </>
             )}
