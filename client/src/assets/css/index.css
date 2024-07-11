@@ -230,6 +230,15 @@ li {
     margin: 12px 0px;
 }
 
+.btn-cart {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    background-color: #dbdbdb;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+    margin: 12px 12px;
+}
+
 .btn-delete {
   padding: 6px 8px;
   border-radius: 8px;
