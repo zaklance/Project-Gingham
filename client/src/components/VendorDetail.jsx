@@ -117,24 +117,28 @@ function VendorDetail () {
                 </div>
                 <div className='side-basket'>
                     <h2>Buy a Market Basket!</h2>
-                    <img src={buyabag} alt="Basket Image" style={{ width: '300px' }} /><br />
+                    <img src={buyabag} alt="Basket Image" style={{ width: '200px' }} /><br />
                     <div className='basket-details'>
                         <h4>$4.99</h4>
-                        <p>Available Baskets: {availableBaskets}</p>
-                        <p>Choose a Market:</p>
-                        <select value={selectedMarket} onChange={handleMarketChange}>
-                        {Array.isArray(locations) && locations.length > 0 ? (
-                            locations.map((marketId, index) => (
-                                <option key={index} value={marketId}>
-                                    {marketDetails[marketId] || 'Loading...'}
-                                </option>
-                            ))
-                        ) : (
-                            <option value="">No market locations</option>
-                        )}
-                    </select>
+                        <div className='float-left'>
+                            <p>Available Baskets: {availableBaskets}</p>
+                            <p>Choose a Market:</p>
+                        </div>
+                        <div className='select'>
+                            <select className='float-none' value={selectedMarket} onChange={handleMarketChange}>
+                            {Array.isArray(locations) && locations.length > 0 ? (
+                                locations.map((marketId, index) => (
+                                    <option key={index} value={marketId}>
+                                        {marketDetails[marketId] || 'Loading...'}
+                                    </option>
+                                ))
+                            ) : (
+                                <option value="">No market locations</option>
+                            )}
+                            </select>
+                        </div>
+                    <button className='btn-edit' onClick={handleAddToCart}>Add to Cart</button>
                     </div>
-                    <button className='add-cart' onClick={handleAddToCart}>Add to Cart</button>
                 </div>
             </div>
             <div>
