@@ -10,17 +10,30 @@ Welcome to Phase 4's Project Gingham! This project is aimed to connect food love
 
 ### Create .env File
 1. In the root folder create a .env file
-2. In the terminal, generate a secret key:
+2. From the root folder cd into server:
+```
+cd server
+```
+3. Install necessary packages for Python:
+```
+pipenv install
+```
+4. In the terminal, generate a secret key:
 ```
 python
 >>> import secrets
 >>> secrets.token_hex(16)
 ```
-3. Add to .env file:
+5. Add to .env file:
 ```
 SECRET_KEY='YOUR SECRET KEY HERE'
+DATABASE_URI='sqlite:///app.db'
 ```
-4. Signup for google maps api and enter your key in the .env like the following
+6. Exit from python:
+```
+exit()
+```
+7. Signup for google maps api and enter your key in the .env like the following:
 ```
 VITE_GOOGLE_KEY="YOUR API KEY HERE"
 ```
@@ -28,7 +41,10 @@ VITE_GOOGLE_KEY="YOUR API KEY HERE"
 ## Running the Application
 ### Terminal 1, Backend Setup
 
-1. From root cd into server
+1. From root cd into server:
+```
+cd server
+```
 2. Install necessary packages for Python:
 ```
 pipenv install
@@ -41,7 +57,10 @@ python app.py
 
 ### Terminal 2, Frontend Setup
 
-1. From root cd into client
+1. From root cd into client:
+```
+cd client
+```
 2. Install necessary packages for React:
 ```
 npm install
