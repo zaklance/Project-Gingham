@@ -220,7 +220,7 @@ li {
   padding: 10px 12px;
   border-radius: 8px;
   border: none;
-  background-color: #f69c8a;
+  background-color: #ffd1d8;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
 }
 
@@ -228,7 +228,7 @@ li {
     padding: 10px 12px;
     border-radius: 8px;
     border: none;
-    background-color: #ff4b5a;
+    background-color: #ff7b8a;
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
 }
 
@@ -415,4 +415,7 @@ form textarea {
   text-align: center;
   text-decoration: none;
   cursor: pointer;
+}
+.market-card-button:hover {
+  background-color: #ff8300;
 }
