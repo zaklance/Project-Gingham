@@ -57,21 +57,27 @@ const MarketDetail = () => {
             <h2>{market.name}</h2>
             <img src={randomImage} alt="Market Image" style={{ width: '70%' }} />
             <p>{market.description}</p>
-            <h4>Location: {market.location}</h4>
-            <h4>Hours: {market.hours}</h4>
+            <div className='float-left'>
+                <h4>Location: {market.location}</h4>
+                <h4>Hours: {market.hours}</h4>
+            </div>
+            <button className='btn-like'> ❤️ </button>
             <br />
-            <h2>Reviews</h2>
             <br />
-            {marketReviews.length > 0 ? (
-                marketReviews.map((review, index) => (
-                    <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                        <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
-                        <p>{review.review_text}</p>
-                    </div>
-                ))
-            ) : (
-                <p>No reviews available.</p>
-            )}
+            <div>
+                <h2>Reviews</h2>
+                <br />
+                {marketReviews.length > 0 ? (
+                    marketReviews.map((review, index) => (
+                        <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
+                            <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
+                            <p>{review.review_text}</p>
+                        </div>
+                    ))
+                ) : (
+                    <p>No reviews available.</p>
+                )}
+            </div>
         </div>
     );
 };

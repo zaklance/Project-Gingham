@@ -95,7 +95,6 @@ const VendorDetail = () => {
             <div style={{display:'flex'}}>
                 <div style={{display: '60%'}}>
                     <h2>{vendor.name}</h2>
-                    <button className='add-cart'> ❤️ </button>
                     <img src={vendor.image} alt="Vendor Image" style={{ width: '95%' }} />
                 </div>
                 <div className='side-basket'>
@@ -109,7 +108,8 @@ const VendorDetail = () => {
                 </div>
             </div>
             <div>
-                <h4>Based out of: {vendor.based_out_of}</h4>
+                <h4 className='float-left'>Based out of: {vendor.based_out_of}</h4>
+                <button className='btn-like'> ❤️ </button>
                 <br />
                 <h4>Farmers Market Locations:</h4>
                 {Array.isArray(locations) && locations.length > 0 ? (
