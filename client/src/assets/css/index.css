@@ -214,6 +214,24 @@ li {
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
 }
 
+.btn-like {
+  margin-left: 20px;
+  margin-top: -4px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: #f69c8a;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+}
+
+.btn-like:hover {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    background-color: #ff4b5a;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+}
+
 button a {
   text-decoration: none;
   color: black;
