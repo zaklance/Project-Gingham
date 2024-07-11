@@ -226,7 +226,7 @@ function Profile() {
                             favoriteVendors.map((vendorId, index) => (
                                 <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                     <Link to={`/vendors/${vendorId}`}>{vendorDetails[vendorId]}</Link>
-                                    <button onClick={() => handleDeleteFavorite('vendor', vendorId)}>Delete</button>
+                                    <button className='btn-delete' onClick={() => handleDeleteFavorite('vendor', vendorId)}>Delete</button>
                                 </div>
                             ))
                         ) : (
@@ -239,7 +239,7 @@ function Profile() {
                             favoriteMarkets.map((marketId, index) => (
                                 <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                     <Link to={`/markets/${marketId}`}>{marketDetails[marketId]}</Link>
-                                    <button onClick={() => handleDeleteFavorite('market', marketId)}>Delete</button>
+                                    <button className='btn-delete' onClick={() => handleDeleteFavorite('market', marketId)}>Delete</button>
                                 </div>
                             ))
                         ) : (

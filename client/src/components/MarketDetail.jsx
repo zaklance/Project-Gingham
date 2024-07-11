@@ -60,6 +60,9 @@ const MarketDetail = () => {
             <h4>Location: {market.location}</h4>
             <h4>Hours: {market.hours}</h4>
             <br />
+            <h2>Vendors Participating:</h2>
+
+            <br />
             <h2>Reviews</h2>
             <br />
             {marketReviews.length > 0 ? (
