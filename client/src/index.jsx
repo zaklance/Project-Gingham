@@ -1,4 +1,3 @@
-// src/index.jsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -12,7 +11,6 @@ import Home from './components/Home.jsx';
 import Login from './components/Login.jsx';
 import Markets from './components/Markets.jsx';
 import MarketDetail from './components/MarketDetail.jsx';
-import NavBar from './components/NavBar.jsx';
 import Profile from './components/Profile.jsx';
 import Vendors from './components/Vendors.jsx';
 import VendorDetail from './components/VendorDetail.jsx';
@@ -33,9 +31,9 @@ const router = createBrowserRouter([
                 element: <Login />
             }, 
             {
-                path: "profile",
-                element: <Login />
-            }, 
+                path: "profile/:id", 
+                element: <Profile />
+            },
             {
                 path: "logout",
                 element: <Logout />
@@ -57,10 +55,6 @@ const router = createBrowserRouter([
                 element: <VendorDetail />
             },
             {
-                path: "profile/:id", 
-                element: <Profile />
-            },
-            {
                 path: "cart", 
                 element: <Cart />
             },
@@ -77,4 +71,4 @@ const router = createBrowserRouter([
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render( <RouterProvider router={router} /> )
+root.render(<RouterProvider router={router} />);
