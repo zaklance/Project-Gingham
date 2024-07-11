@@ -25,13 +25,14 @@ function Vendors() {
             <br/>
             <div className='header'>
                 <h2 className='float-left'>FIND A MARKET VENDOR TODAY</h2>
-            <select value={selectedProduct} onChange={handleProductChange}>
+            <select className='side-select2' value={selectedProduct} onChange={handleProductChange}>
                 <option value="">All Products</option>
                 {products.map(product => (
                     <option key={product} value={product}>{product}</option>
                 ))}
             </select>
             </div>
+            <br className='no-float'/>
             <div className="market-cards-container">
                 {filteredVendors.map((vendorData) => (
                     <VendorCard key={vendorData.id} vendorData={vendorData} />
