@@ -30,7 +30,7 @@ function Login() {
             console.log('Login successful:', data);
             navigate(`/profile/${data.id}`);
         } else {
-            console.log('Login failed');
+            alert('Login failed');
         }
     };
 
