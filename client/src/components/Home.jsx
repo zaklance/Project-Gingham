@@ -17,12 +17,7 @@ function Home() {
                     Our mission is to minimize food waste by creating a marketplace for vendors in Farmers Market's across the globe. <br/><strong>Rescue good food from going to waste today!</strong>
                 </p>
             </div>
-<<<<<<< HEAD
             <div className="box-big-blue no-float">
-=======
-            <br/>
-            <div className="box-big-blue">
->>>>>>> 7ec5b652dbfe80c8f386096bad3a5d31e378e165
                 <h3>HOW DOES GINGHAM WORK?</h3> <br/>
                 <p>
                     When vendors at farmers markets approach the end of the day, they want to start git rid of all their product, and sometimes at a cheaper price. 

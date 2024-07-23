@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import MarketCard from './MarketCard';
 import '../assets/css/index.css';
 import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
+// import { Map, Marker } from 'mapkit-react';
+
 
 
 function Markets() {
@@ -101,9 +103,9 @@ function Markets() {
                             <Marker position={uptown} />
                     </Map>
                 </APIProvider>
-                    <gmp-map defaultCenter={unionSquare} zoom={13} map-id="DEMO_MAP_ID">
-                        <gmp-advanced-marker position={unionSquare} title="Union Square"></gmp-advanced-marker>
-                </gmp-map>
+                {/* <gmp-map defaultCenter={unionSquare} zoom={13} map-id="DEMO_MAP_ID">
+                    <gmp-advanced-marker position={unionSquare} title="Union Square"></gmp-advanced-marker>
+                </gmp-map> */}
             </div>
             <br />
             <div className="market-cards-container">
