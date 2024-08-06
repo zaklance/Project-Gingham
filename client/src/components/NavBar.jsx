@@ -4,9 +4,9 @@ import { NavLink, useLocation } from 'react-router-dom';
 import ginghamLogo from '../assets/images/gingham-2-alt_1200px.png';
 import '../assets/css/index.css';
 
-function NavBar({ amountInCart }) {
+function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const location = useLocation();
-    const userId = localStorage.getItem('userId');
+    const userId = globalThis.sessionStorage.getItem('userId');
 
     const isLoggedIn = userId && location.pathname !== '/' && location.pathname !== '/login';
 
@@ -50,8 +50,8 @@ function NavBar({ amountInCart }) {
                             </button>
                         </li>
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-6 tab-right'>
-                                <NavLink reloadDocument to="/login">Login/Signup</NavLink>
+                            <button className='nav-tab color-6 tab-right' onClick={handlePopup} >
+                                Login/Signup
                             </button>
                         </li>
                     </>

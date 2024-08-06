@@ -6,7 +6,7 @@ import NavBar from './NavBar';
 function ErrorPage() {
     const error = useRouteError();
     return(
-        <div className='wrapper'>
+        <div className='wrapper-error'>
             <h1>ERROR. PAGE DOESN'T EXIST.</h1>
         </div>
     )

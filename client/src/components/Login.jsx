@@ -26,7 +26,8 @@ function Login() {
         });
         if (response.ok) {
             const data = await response.json();
-            localStorage.setItem('userId', data.id);
+            globalThis.sessionStorage.setItem('userId', data.id);
+            globalThis.sessionStorage.setItem('jwt-token', data.token)
             console.log('Login successful:', data);
             navigate(`/profile/${data.id}`);
         } else {
@@ -131,6 +132,8 @@ function Login() {
                                 onChange={(event) => setSignupFirstName(event.target.value)}
                                 required
                             />
+                        </div>
+                        <div className='form-group'>
                             <label>Last Name: </label>
                             <input
                                 type="text"
