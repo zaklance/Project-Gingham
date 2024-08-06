@@ -104,7 +104,7 @@ function Markets() {
                     </Map>
                 </APIProvider>
                 {/* <gmp-map defaultCenter={unionSquare} zoom={13} map-id="DEMO_MAP_ID">
-                    <gmp-advanced-marker position={unionSquare} title="Union Square"></gmp-advanced-marker>
+                        <gmp-advanced-marker position={unionSquare} title="Union Square"></gmp-advanced-marker>
                 </gmp-map> */}
             </div>
             <br />

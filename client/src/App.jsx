@@ -3,32 +3,55 @@ import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import './assets/css/index.css';
 import NavBar from './components/NavBar.jsx';
+import Home from './components/Home.jsx'
+import LoginPopup from './components/LoginPopup.jsx';
 
 function App() {
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const [isPopup, setIsPopup] = useState(false);
     const [amountInCart, setAmountInCart] = useState(() => {
-        return parseInt(localStorage.getItem('amountInCart') || 0);
+        return parseInt(globalThis.sessionStorage.getItem('amountInCart') || 0);
     });
 
     const [cartItems, setCartItems] = useState(() => {
-        const savedCartItems = localStorage.getItem('cartItems');
+        const savedCartItems = globalThis.sessionStorage.getItem('cartItems');
         return savedCartItems ? JSON.parse(savedCartItems) : [];
     });
 
     useEffect(() => {
-        localStorage.setItem('amountInCart', amountInCart);
+        globalThis.sessionStorage.setItem('amountInCart', amountInCart);
     }, [amountInCart]);
 
     useEffect(() => {
-        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        globalThis.sessionStorage.setItem('cartItems', JSON.stringify(cartItems));
     }, [cartItems]);
+
+    const handlePopup = () => {
+        setIsPopup(!isPopup);
+    }
+
+    const checkAuth = () => {
+        return globalThis.sessionStorage.getItem('jwt-token') !== null;
+    }
+
+    useEffect(() => {
+        setIsLoggedIn(checkAuth());
+    }, []);
 
     return (
         <div className="container">
             <header>
-                <NavBar amountInCart={amountInCart} />
+                <NavBar amountInCart={amountInCart} isPopup={isPopup} setIsPopup={setIsPopup} handlePopup={handlePopup} />
             </header>
             <main>
-                <Outlet context={{ amountInCart, setAmountInCart, cartItems, setCartItems }} />
+                <div className={`popup ${isPopup ? 'popup-on' : ''}`} style={{ top: window.scrollY }}>
+                    <LoginPopup handlePopup={handlePopup} />
+                </div>
+                {isLoggedIn ? (
+                    <Outlet context={{ amountInCart, setAmountInCart, cartItems, setCartItems }} />
+                ) : (
+                    <Home context={{ isPopup, setIsPopup, handlePopup }} />
+                )}
             </main>
         </div>
     );

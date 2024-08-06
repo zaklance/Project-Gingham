@@ -10,9 +10,9 @@ function Logout() {
             credentials: 'include'
         })
         .then(() => {
-            localStorage.removeItem('amountInCart');
-            localStorage.removeItem('cartItems');
-            localStorage.removeItem('userId');
+            globalThis.sessionStorage.removeItem('amountInCart');
+            globalThis.sessionStorage.removeItem('cartItems');
+            globalThis.sessionStorage.removeItem('userId');
 
             navigate('/');
         })

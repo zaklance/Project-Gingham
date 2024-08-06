@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
+import Login from "./Login";
 import ginghamLogo from '../assets/images/gingham-4-alt_1200px.png';
 import farmers from '../assets/images/22bitman.xlarge1.jpg';
 import howitworks from '../assets/images/GINGHAM_HOWITWORKS_cropped-alt.png';
 import blanket from '../assets/images/GINGHAM_PICNICBLANKET.png';
 
-function Home() {
+function Home({ isPopup, setIsPopup, handlePopup }) {
+
     return (
         <div>
             <img className='big-logo' src={ginghamLogo} alt="Gingham Logo"></img>
