@@ -19,8 +19,8 @@ body {
     place-items: center;
     /* min-width: 320px; */
     min-height: 100vh;
-    background-image: url('../images/LzYeux_120719_0036_2400px.png');
-    background-size: contain;
+    background-image: url('../images/gingham_seamless strawberry-01.svg');
+    background-size:auto;
 }
 
 /* Container for centering content */
@@ -97,7 +97,7 @@ main {
 h1, h2, h3, h4, h5, h6 {
   font-family: "Playwrite NG Modern", cursive;
   font-optical-sizing: auto;
-  font-weight: <weight>;
+  /* font-weight: <weight>; */
   font-style: normal;
 }
 
@@ -223,7 +223,7 @@ li {
   display: none;
   position: absolute;
   top: auto;
-  left: auto;
+  left: 20vw;
   width: 90%;
   max-width: 600px;
   /* height: fit-content; */
