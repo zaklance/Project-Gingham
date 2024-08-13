@@ -37,7 +37,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             </button>
                         </li>
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-6 tab-right'>
+                            <button className='nav-tab color-1 tab-right'>
                                 <NavLink reloadDocument to="/logout">Logout</NavLink>
                             </button>
                         </li>
@@ -50,7 +50,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             </button>
                         </li>
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-6 tab-right' onClick={handlePopup} >
+                            <button className='nav-tab color-3 tab-right' onClick={handlePopup} >
                                 Login/Signup
                             </button>
                         </li>
