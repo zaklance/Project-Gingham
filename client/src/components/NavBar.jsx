@@ -37,7 +37,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             </button>
                         </li>
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-1 tab-right'>
+                            <button className='nav-tab color-3 tab-right'>
                                 <NavLink reloadDocument to="/logout">Logout</NavLink>
                             </button>
                         </li>
