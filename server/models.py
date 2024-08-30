@@ -46,8 +46,6 @@ class User(db.Model, SerializerMixin):
     last_name = db.Column(db.String, nullable=False)
     address = db.Column(db.String, nullable=True)
     email = db.Column(db.String, unique=True, nullable=False)
-    favorite_markets = db.Column(db.JSON, nullable=True)
-    favorite_vendors = db.Column(db.JSON, nullable=True)
 
     # Relationships
     market_reviews = db.relationship('MarketReview', back_populates='user')
@@ -123,8 +121,9 @@ class Market(db.Model, SerializerMixin):
     # Relationships
     reviews = db.relationship('MarketReview', back_populates='market')
     user_markets = db.relationship('UserMarket', back_populates='market')
+    market_favorites = db.relationship('MarketFavorite', back_populates='market')
 
-    serialize_rules = ('-reviews.market', '-user_markets.market')
+    serialize_rules = ('-reviews.market', '-user_markets.market', '-market_favorites.market')
 
     # Validations
     @validates('name', 'location', 'hours')
@@ -155,8 +154,9 @@ class Vendor(db.Model, SerializerMixin):
     # Relationships
     reviews = db.relationship('VendorReview', back_populates='vendor')
     user_vendors = db.relationship('UserVendor', back_populates='vendor')
+    vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor')
 
-    serialize_rules = ('-reviews.vendor', '-user_vendors.vendor')
+    serialize_rules = ('-reviews.vendor', '-user_vendors.vendor', '-vendor_favorites.vendor')
 
     # Validations
     @validates('name', 'product')
@@ -219,3 +219,31 @@ class VendorReview(db.Model, SerializerMixin):
         if not value:
             raise ValueError(f"Review text cannot be empty")
         return value
+    
+class MarketFavorite(db.Model, SerializerMixin):
+    __tablename__ = 'market_favorites'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
+
+    market = db.relationship('Market', back_populates='market_favorites')
+
+    serialize_rules = ('-markets.favorites',)
+
+    def __repr__(self) -> str:
+        return f"<MarketFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.market_id}>"
+    
+class VendorFavorite(db.Model, SerializerMixin):
+    __tablename__ = 'vendor_favorites'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+
+    vendor = db.relationship('Vendor', back_populates='vendor_favorites')
+
+    serialize_rules = ('-vendors.favorites',)
+
+    def __repr__(self) -> str:
+        return f"<VendorFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.vendor_id}>"
