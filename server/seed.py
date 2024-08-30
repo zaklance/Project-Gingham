@@ -1,7 +1,7 @@
 from app import app
 from faker import Faker
 from random import random, choice, randint
-from models import db, User, Market, Vendor, MarketReview, VendorReview, bcrypt
+from models import db, User, Market, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, bcrypt
 import json
 
 fake = Faker()
@@ -12,6 +12,8 @@ def run():
     User.query.delete()
     MarketReview.query.delete()
     VendorReview.query.delete()
+    MarketFavorite.query.delete()
+    VendorFavorite.query.delete()
 
     db.session.commit()
 
@@ -354,8 +356,6 @@ def run():
         last_name="Gingy",
         address="11 Broadway New York, NY 10004",
         email="ham-man69@proton.me",
-        favorite_markets=str([randint(1, 40) for _ in range(randint(2, 4))]),
-        favorite_vendors=str([randint(1, 150) for _ in range(randint(3, 9))])
     )
     db.session.add(user_demo)
     db.session.commit()
@@ -370,8 +370,6 @@ def run():
         last_name = fake.last_name()
         address = fake.address()
         email = fake.ascii_free_email()
-        favorite_markets = str([randint(1, 40) for _ in range(randint(2, 4))])
-        favorite_vendors = str([randint(1, 150) for _ in range(randint(3, 9))])
 
         u = User(
             username=username,
@@ -380,8 +378,6 @@ def run():
             last_name=last_name,
             address=address,
             email=email,
-            favorite_markets=favorite_markets,
-            favorite_vendors=favorite_vendors
         )
         users.append(u)
 
@@ -425,6 +421,38 @@ def run():
 
     db.session.add_all(vendor_revs)
     db.session.commit()
+
+    market_favs = []
+    for i in range(200):
+        market_id = randint(1, 40)
+        user_id = randint(1, 50)
+
+        mf = MarketFavorite(
+            market_id=market_id,
+            user_id=user_id,
+        )
+        market_favs.append(mf)
+
+    db.session.add_all(market_favs)
+    db.session.commit()
+
+    vendor_favs = []
+    for i in range(900):
+        vendor_id = randint(1, 151)
+        user_id = randint(1, 50)
+
+        vf = VendorFavorite(
+            vendor_id=vendor_id,
+            user_id=user_id,
+        )
+        vendor_favs.append(vf)
+
+    db.session.add_all(vendor_favs)
+    db.session.commit()
+
+
+
+favorite_vendors = str([randint(1, 150) for _ in range(randint(3, 9))])
 
     
 if __name__ == '__main__':
