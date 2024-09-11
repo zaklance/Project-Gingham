@@ -351,7 +351,7 @@ def run():
     # user for demo
     user_demo = User(
         username="hamging",
-        password=bcrypt.generate_password_hash("lol").decode('utf-8'),
+        password="lol",
         first_name="Ham-man",
         last_name="Gingy",
         address="11 Broadway New York, NY 10004",
@@ -365,7 +365,6 @@ def run():
     for i in range(50):
         username = fake.user_name()
         password = fake.password()
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
         first_name = fake.first_name()
         last_name = fake.last_name()
         address = fake.address()
@@ -373,7 +372,7 @@ def run():
 
         u = User(
             username=username,
-            password=hashed_password,
+            password=password,
             first_name=first_name,
             last_name=last_name,
             address=address,
