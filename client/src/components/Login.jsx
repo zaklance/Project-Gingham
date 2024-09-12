@@ -16,22 +16,23 @@ function Login() {
 
     const handleLogin = async (event) => {
         event.preventDefault();
+        const lowercaseUsername = loginUsername.toLowerCase();
         const response = await fetch('http://127.0.0.1:5555/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username: loginUsername, password: loginPassword }),
+            body: JSON.stringify({ username: lowercaseUsername, password: loginPassword }),
             credentials: 'include'
         });
         if (response.ok) {
             const data = await response.json();
             globalThis.sessionStorage.setItem('userId', data.id);
-            globalThis.sessionStorage.setItem('jwt-token', data.token)
+            globalThis.sessionStorage.setItem('jwt-token', data.token);
             console.log('Login successful:', data);
             navigate(`/profile/${data.id}`);
         } else {
-            alert('Login failed');
+            console.log('Login failed!!!');
         }
     };
 
@@ -73,7 +74,7 @@ function Login() {
                                 type="username"
                                 value={loginUsername}
                                 placeholder="enter your username"
-                                onChange={(event) => setLoginUsername(event.target.value)}
+                                onChange={(event) => setLoginUsername(event.target.value.toLowerCase())}
                                 required
                             />
                         </div>

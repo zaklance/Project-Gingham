@@ -61,7 +61,7 @@ class User(db.Model, SerializerMixin):
             raise ValueError("Username is required")
         if len(value) < 3 or len(value) > 50:
             raise ValueError("Username must be between 3 and 50 characters")
-        return value
+        return value.lower()
 
     @validates('first_name')
     def validate_first_name(self, key, value):
