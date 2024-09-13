@@ -18,24 +18,6 @@ metadata = MetaData(naming_convention=convention)
 db = SQLAlchemy(metadata=metadata)
 bcrypt = Bcrypt()
 
-class UserMarket(db.Model, SerializerMixin):
-    __tablename__ = 'user_markets'
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), primary_key=True)
-    market = db.relationship('Market', back_populates='user_markets')
-    user = db.relationship('User', back_populates='user_markets')
-
-    serialize_rules = ('-user.user_markets', '-market.user_markets')
-
-class UserVendor(db.Model, SerializerMixin):
-    __tablename__ = 'user_vendors'
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), primary_key=True)
-    vendor = db.relationship('Vendor', back_populates='user_vendors')
-    user = db.relationship('User', back_populates='user_vendors')
-
-    serialize_rules = ('-user.user_vendors', '-vendor.user_vendors')
-
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
@@ -50,10 +32,10 @@ class User(db.Model, SerializerMixin):
     # Relationships
     market_reviews = db.relationship('MarketReview', back_populates='user')
     vendor_reviews = db.relationship('VendorReview', back_populates='user')
-    user_markets = db.relationship('UserMarket', back_populates='user')
-    user_vendors = db.relationship('UserVendor', back_populates='user')
+    market_favorites = db.relationship('MarketFavorite', back_populates='user')
+    vendor_favorites = db.relationship('VendorFavorite', back_populates='user')
 
-    serialize_rules = ('-_password', '-market_reviews.user', '-vendor_reviews.user', '-user_markets.user', '-user_vendors.user')
+    serialize_rules = ('-_password', '-market_reviews.user', '-vendor_reviews.user', '-market_favorites.user', '-vendor_favorites.user')
 
     @validates('username')
     def validate_username(self, key, value):
@@ -120,10 +102,9 @@ class Market(db.Model, SerializerMixin):
 
     # Relationships
     reviews = db.relationship('MarketReview', back_populates='market')
-    user_markets = db.relationship('UserMarket', back_populates='market')
     market_favorites = db.relationship('MarketFavorite', back_populates='market')
 
-    serialize_rules = ('-reviews.market', '-user_markets.market', '-market_favorites.market')
+    serialize_rules = ('-reviews.market', '-market_favorites.market')
 
     # Validations
     @validates('name', 'location', 'hours')
@@ -153,10 +134,9 @@ class Vendor(db.Model, SerializerMixin):
 
     # Relationships
     reviews = db.relationship('VendorReview', back_populates='vendor')
-    user_vendors = db.relationship('UserVendor', back_populates='vendor')
     vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor')
 
-    serialize_rules = ('-reviews.vendor', '-user_vendors.vendor', '-vendor_favorites.vendor')
+    serialize_rules = ('-reviews.vendor', '-vendor_favorites.vendor')
 
     # Validations
     @validates('name', 'product')
@@ -224,12 +204,13 @@ class MarketFavorite(db.Model, SerializerMixin):
     __tablename__ = 'market_favorites'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
 
+    user = db.relationship('User', back_populates='market_favorites')
     market = db.relationship('Market', back_populates='market_favorites')
 
-    serialize_rules = ('-markets.favorites',)
+    serialize_rules = ('-user.market_favorites', '-market.market_favorites',)
 
     def __repr__(self) -> str:
         return f"<MarketFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.market_id}>"
@@ -238,12 +219,13 @@ class VendorFavorite(db.Model, SerializerMixin):
     __tablename__ = 'vendor_favorites'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
 
+    user = db.relationship('User', back_populates='vendor_favorites')
     vendor = db.relationship('Vendor', back_populates='vendor_favorites')
 
-    serialize_rules = ('-vendors.favorites',)
+    serialize_rules = ('-user.vendor_favorites', '-vendor.vendor_favorites')
 
     def __repr__(self) -> str:
         return f"<VendorFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.vendor_id}>"
