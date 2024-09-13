@@ -1,6 +1,6 @@
 // VendorDetail.jsx
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useOutletContext } from 'react-router-dom';
+import { useParams, Link, useOutletContext, useNavigate } from 'react-router-dom';
 import buyabag from '../assets/images/GINGHAM_BUYABAG.png';
 
 function VendorDetail () {
@@ -14,6 +14,7 @@ function VendorDetail () {
     const [selectedMarket, setSelectedMarket] = useState('');
     const { amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
     const [price, setPrice] = useState(4.99);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/vendors/${id}`)
@@ -100,9 +101,13 @@ function VendorDetail () {
         console.log("Cart items:", cartItems);
     }, [amountInCart, cartItems]);
 
+    const handleBackButtonClick = () => {
+        navigate.push('/vendors');
+    };
+
     const handleMarketChange = (event) => {
         setSelectedMarket(event.target.value);
-    }
+    };
 
     if (!vendor) {
         return <div>Loading...</div>;
@@ -110,6 +115,9 @@ function VendorDetail () {
 
     return (
         <div>
+            <button onClick={handleBackButtonClick} style={{ margin: '10px 0', padding: '10px', backgroundColor: '#f0f0f0', border: 'none', cursor: 'pointer' }}>
+                Back to Vendors
+            </button>
             <div style={{display:'flex'}}>
                 <div style={{display: '60%'}}>
                     <h2>{vendor.name}</h2>
