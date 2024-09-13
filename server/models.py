@@ -101,8 +101,8 @@ class Market(db.Model, SerializerMixin):
     zipcode = db.Column(db.String, nullable=True)
 
     # Relationships
-    reviews = db.relationship('MarketReview', back_populates='market')
-    market_favorites = db.relationship('MarketFavorite', back_populates='market')
+    reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic')
+    market_favorites = db.relationship('MarketFavorite', back_populates='market', lazy='dynamic')
 
     serialize_rules = ('-reviews.market', '-market_favorites.market')
 
@@ -133,8 +133,8 @@ class Vendor(db.Model, SerializerMixin):
     image = db.Column(db.String)
 
     # Relationships
-    reviews = db.relationship('VendorReview', back_populates='vendor')
-    vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor')
+    reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic')
+    vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic')
 
     serialize_rules = ('-reviews.vendor', '-vendor_favorites.vendor')
 

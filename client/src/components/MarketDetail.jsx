@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const MarketDetail = () => {
     const { id } = useParams();
@@ -7,6 +7,7 @@ const MarketDetail = () => {
     const [vendorDetails, setVendorDetails] = useState({});
     const [randomImage, setRandomImage] = useState('');
     const [marketReviews, setMarketReviews] = useState([]);
+    const navigate = useNavigate();
 
     const images = [
         'https://neighbors.columbia.edu/sites/default/files/content/2023/farmers-market.jpg',
@@ -48,12 +49,19 @@ const MarketDetail = () => {
             .catch(error => console.error('Error fetching reviews:', error));
     }, [id]);
 
+    const handleBackButtonClick = () => {
+        navigate.push('/markets');
+    };
+
     if (!market) {
         return <div>Loading...</div>;
     }
 
     return (
         <div>
+            <button onClick={handleBackButtonClick} style={{ margin: '10px 0', padding: '10px', backgroundColor: '#f0f0f0', border: 'none', cursor: 'pointer' }}>
+                Back to Markets
+            </button>
             <h2>{market.name}</h2>
             <img src={randomImage} alt="Market Image" style={{ width: '70%' }} />
             <p>{market.description}</p>
