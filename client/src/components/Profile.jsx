@@ -22,11 +22,11 @@ function Profile() {
                     const data = JSON.parse(text);
                     setProfileData({
                         ...data,
-                        favorite_vendors: data.favorite_vendors,
-                        favorite_markets: data.favorite_markets
+                        vendor_favorites: data.vendor_favorites,
+                        market_favorites: data.market_favorites
                     });
-                    setFavoriteVendors(data.favorite_vendors);
-                    setFavoriteMarkets(data.favorite_markets);
+                    setFavoriteVendors(data.vendor_favorites);
+                    setFavoriteMarkets(data.market_favorites);
                 } catch (jsonError) {
                     console.error('Error parsing JSON:', jsonError);
                 }
@@ -39,17 +39,17 @@ function Profile() {
 
     useEffect(() => {
         const fetchVendorDetails = async () => {
-            const promises = favoriteVendors.map(async vendorId => {
-                const response = await fetch(`http://127.0.0.1:5555/vendors/${vendorId}`);
+            const promises = favoriteVendors.map(async (favorite) => {
+                const response = await fetch(`http://127.0.0.1:5555/vendors/${favorite.vendor_id}`);
                 if (response.ok) {
                     const vendorData = await response.json();
-                    return { id: vendorId, name: vendorData.name };
+                    return { id: favorite.vendor_id, name: vendorData.name };
                 } else {
-                    console.log(`Failed to fetch vendor ${vendorId}`);
-                    return { id: vendorId, name: 'Unknown Vendor' };
+                    console.log(`Failed to fetch vendor ${favorite.vendor_id}`);
+                    return { id: favorite.vendor_id, name: 'Unknown Vendor' };
                 }
             });
-
+            
             Promise.all(promises)
                 .then(details => {
                     const vendorDetailsMap = {};
@@ -70,14 +70,14 @@ function Profile() {
 
     useEffect(() => {
         const fetchMarketDetails = async () => {
-            const promises = favoriteMarkets.map(async marketId => {
-                const response = await fetch(`http://127.0.0.1:5555/markets/${marketId}`);
+            const promises = favoriteMarkets.map(async (favorite) => {
+                const response = await fetch(`http://127.0.0.1:5555/markets/${favorite.market_id}`);
                 if (response.ok) {
                     const marketData = await response.json();
-                    return { id: marketId, name: marketData.name };
+                    return { id: favorite.market_id, name: marketData.name };
                 } else {
-                    console.log(`Failed to fetch market ${marketId}`);
-                    return { id: marketId, name: 'Unknown Market' };
+                    console.log(`Failed to fetch market ${favorite.market_id}`);
+                    return { id: favorite.market_id, name: 'Unknown Market' };
                 }
             });
 
