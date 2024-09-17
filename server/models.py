@@ -122,6 +122,17 @@ class Market(db.Model, SerializerMixin):
     def __repr__(self) -> str:
         return f"<Market {self.name}>"
     
+    def to_dict(self, exclude=None):
+        if exclude is None:
+            exclude = []
+        result = {col.name: getattr(self, col.name) for col in self.__table__.columns}
+        for rule in self.serialize_rules:
+            if rule.startswith('-'):
+                field = rule[1:]
+                if field in result:
+                    del result[field]
+        return result
+    
 class Vendor(db.Model, SerializerMixin):
     __tablename__ = 'vendors'
 
@@ -153,6 +164,17 @@ class Vendor(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<Vendor {self.name}>"
+    
+    def to_dict(self, exclude=None):
+        if exclude is None:
+            exclude = []
+        result = {col.name: getattr(self, col.name) for col in self.__table__.columns}
+        for rule in self.serialize_rules:
+            if rule.startswith('-'):
+                field = rule[1:]
+                if field in result:
+                    del result[field]
+        return result
 
 class MarketReview(db.Model, SerializerMixin):
     __tablename__ = 'market_reviews'

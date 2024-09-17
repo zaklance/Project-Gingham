@@ -451,7 +451,7 @@ def run():
 
 
 
-favorite_vendors = str([randint(1, 150) for _ in range(randint(3, 9))])
+# favorite_vendors = str([randint(1, 150) for _ in range(randint(3, 9))])
 
     
 if __name__ == '__main__':
