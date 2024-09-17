@@ -557,3 +557,8 @@ form textarea {
 .market-card-button:hover {
   background-color: #ff8300;
 }
+
+.marker-details {
+  background-color: white;
+  width: 192px;
+}

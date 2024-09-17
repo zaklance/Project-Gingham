@@ -22,6 +22,7 @@ def run():
             name='175th Street Greenmarket',
             location='W. 175th St. bet. Wadsworth Ave. & Broadway',
             zipcode='10033',
+            coordinates={"lat": "40.84607450953993", "lng": "-73.93808039940272"},
             hours='Thursday (8 a.m. - 4 p.m.)',
             year_round=False
         ),
@@ -29,6 +30,7 @@ def run():
             name='57th Street Greenmarket',
             location='W. 57th St. & 10th Ave.',
             zipcode='10019',
+            coordinates={"lat": "40.769140743893075", "lng": "-73.98836576430834"},
             hours='Saturday (8 a.m. - 3 p.m.)',
             year_round=False
         ),
@@ -36,6 +38,7 @@ def run():
             name='79th Street Greenmarket',
             location='79th St. & Columbus Ave.',
             zipcode='10024',
+            coordinates={"lat": "40.782040858828", "lng": "-73.9759752811397"},
             hours='Sunday (9 a.m. - 4 p.m.)',
             year_round=True
         ),
@@ -43,6 +46,7 @@ def run():
             name='82nd Street Greenmarket',
             location=' 82nd St. bet. 1st & York Aves.',
             zipcode='10028',
+            coordinates={"lat": "40.77397099020891", "lng": "-73.95064361322936"},
             hours='Saturday (9 a.m. - 2:30 p.m.)',
             year_round=True
         ),
@@ -50,6 +54,7 @@ def run():
             name='94th Street Greenmarket',
             location='E. 94th St. & 1st Ave.',
             zipcode='10128',
+            coordinates={"lat": "40.78180268440337", "lng": "-73.94555998335593"},
             hours='Sunday (9 a.m. - 4 p.m.)',
             year_round=False
         ),
@@ -57,6 +62,7 @@ def run():
             name='97th Street Greenmarket',
             location='W. 97th St. bet. Columbus & Amsterdam Aves.',
             zipcode='10025',
+            coordinates={"lat": "40.79433392796688", "lng": "-73.96852339557134"},
             hours='Friday (8 a.m. - 2 p.m.)',
             year_round=True
         ),
@@ -64,6 +70,7 @@ def run():
             name='Abingdon Square Greenmarket',
             location='Hudson St. & W. 12th St.',
             zipcode='10014',
+            coordinates={"lat": "40.737268845844085", "lng": "-74.00531736212757"},
             hours='Saturday (8 a.m. - 2 p.m.)',
             year_round=True
         ),
@@ -71,6 +78,7 @@ def run():
             name='Astor Place Greenmarket',
             location='E. 8th St. & Lafayette St.',
             zipcode='10003',
+            coordinates={"lat": "40.729830818573944", "lng": "-73.99109568735417"},
             hours='Tuesday (8 a.m. - 5 p.m.)',
             year_round=False
         ),
@@ -78,6 +86,7 @@ def run():
             name='Bowling Green Greenmarket',
             location='Broadway & Battery Pl.',
             zipcode='10004',
+            coordinates={"lat": "40.704724320402526", "lng": "-74.01342009247573"},
             hours='Tuesday & Thursday (8 a.m. - 2 p.m.)',
             year_round=False
         ),
@@ -85,20 +94,23 @@ def run():
             name='Bro Sis Green Youth Market',
             location='Amsterdam Ave. bet. W. 143rd & 144th Sts. (Johnny Hartman Plaza)',
             zipcode='10031',
+            coordinates={"lat": "40.824268847996954", "lng": "-73.94880767347686"},
             hours='Wednesday (10:30 a.m. - 6 p.m.)',
             year_round=False
         ),
         Market(
-            name='Chelsea’s Down to Earth Farmers Market',
+            name="Chelsea’s Down to Earth Farmers Market",
             location='W. 23rd St. bet. 8th & 9th Aves.',
             zipcode='10011',
+            coordinates={"lat": "40.74610601822501", "lng": "-74.00012495281699"},
             hours='Saturday (9 a.m. - 2 p.m.)',
             year_round=False
         ),
         Market(
-            name='Children’s Aid Go!Healthy Food Box + Farmstand - Milbank Center',
+            name="Children’s Aid Go!Healthy Food Box + Farmstand - Milbank Center",
             location='14-32 W. 118th St.',
             zipcode='10026',
+            coordinates={"lat": "40.80245205041825", "lng": "-73.94675905810875"},
             hours='Wednesday (2 - 4:30 p.m.)',
             year_round=False
         ),
@@ -106,6 +118,7 @@ def run():
             name='Columbia Greenmarket',
             location='Broadway & 114th St.',
             zipcode='10025',
+            coordinates={"lat": "40.80711550674964", "lng": "-73.9643334908912"},
             hours='Thursday & Sunday (8 a.m. - 4 p.m.)',
             year_round=True
         ),
@@ -113,6 +126,7 @@ def run():
             name='Dag Hammarskjold Greenmarket',
             location='E. 47th St. & 2nd Ave.',
             zipcode='10017',
+            coordinates={"lat": "40.752106980482026", "lng": "-73.96813449641382"},
             hours='Wednesday (8 a.m. - 3 p.m.)',
             year_round=True
         ),
@@ -120,6 +134,7 @@ def run():
             name='Fort Washington Greenmarket',
             location='W. 168th St. & Ft. Washington Ave.',
             zipcode='10032',
+            coordinates={"lat": "40.842308310821956", "lng": "-73.94211665674466"},
             hours='Tuesday (8 a.m. - 4 p.m.)',
             year_round=False
         ),
@@ -127,6 +142,7 @@ def run():
             name='Fulton Stall Market (Indoor Farmers Market)',
             location='91 South St.',
             zipcode='10038',
+            coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
             hours='Monday - Saturday (11:30 a.m. - 5 p.m.)',
             year_round=True
         ),
@@ -134,6 +150,7 @@ def run():
             name='Gouverneur Health Farmstand',
             location='Madison St. bet. Clinton & Jefferson Sts.',
             zipcode='10002',
+            coordinates={"lat": "40.71266393582476", "lng": "-73.98847487671178"},
             hours='Thursday (9 a.m. - 2 p.m.)',
             year_round=False
         ),
@@ -141,6 +158,7 @@ def run():
             name='Grass Roots Farmers Market',
             location='W. 145th St. bet. Edgecombe & Bradhurst Aves. (Jackie Robinson Park)',
             zipcode='10039',
+            coordinates={"lat": "40.82373611412579", "lng": "-73.9435495760123"},
             hours='Tuesday & Saturday (9 a.m. - 4 p.m.)',
             year_round=False
         ),
@@ -148,6 +166,7 @@ def run():
             name='Greenmarket at the Oculus',
             location='Church & Fulton Sts. (Oculus Plaza)',
             zipcode='10006',
+            coordinates={"lat": "40.71142490993184", "lng": "-74.01076962766949"},
             hours='Tuesday (8 a.m. - 5 p.m.)',
             year_round=False
         ),
@@ -155,6 +174,7 @@ def run():
             name='Harlem Meer Farmstand',
             location='Central Park N. & Malcom X Blvd.',
             zipcode='10026',
+            coordinates={"lat": "40.79815888129796", "lng": "-73.95254032492262"},
             hours='Saturday (10 a.m. - 2 p.m.)',
             year_round=False
         ),
@@ -162,6 +182,7 @@ def run():
             name='Harvest Home East Harlem Farmers Market',
             location='E. 104th St. & 3rd Ave.',
             zipcode='10029',
+            coordinates={"lat": "40.79001677902627", "lng": "-73.94559282721028"},
             hours='Thursday (8 a.m. - 3 p.m.)',
             year_round=False
         ),
@@ -169,6 +190,7 @@ def run():
             name='Harvest Home Harlem Hospital Farmers Market',
             location='W. 137th St. & Lenox Ave.',
             zipcode='10030',
+            coordinates={"lat": "40.81542139191092", "lng": "-73.93994201397497"},
             hours='Friday (8 a.m. - 3 p.m.)',
             year_round=False
         ),
@@ -176,6 +198,7 @@ def run():
             name='Harvest Home Lenox Avenue Farm Stand',
             location='Lenox Ave. bet. W. 117th & 118th Sts.',
             zipcode='10026',
+            coordinates={"lat": "40.80272354850676", "lng": "-73.94895981440956"},
             hours='Saturday (8 a.m. - 3 p.m.)',
             year_round=False
         ),
@@ -183,6 +206,7 @@ def run():
             name='Harvest Home Metropolitan Hospital Farmers Market',
             location='97th St. & 2nd Ave.',
             zipcode='10029',
+            coordinates={"lat": "40.784947665352576", "lng": "-73.94660106093569"},
             hours='Friday (8 a.m. - 3 p.m.)',
             year_round=False
         ),
@@ -190,6 +214,7 @@ def run():
             name='Inwood Park Greenmarket',
             location='Isham St. bet. Seaman Ave. & Cooper St.',
             zipcode='10034',
+            coordinates={"lat": "40.86911825882977", "lng": "-73.92025906885881"},
             hours='Saturday (8 a.m. - 3 p.m.)',
             year_round=True
         ),
@@ -197,6 +222,7 @@ def run():
             name='Lower East Side Farmstand',
             location='Grand St. bet. Pitt & Willett Sts. (outside of Abrons Arts Center)',
             zipcode='10002',
+            coordinates={"lat": "40.715117290409026", "lng": "-73.98348650666313"},
             hours='Thursday (8:30 a.m. - 3 p.m.)',
             year_round=False
         ),
@@ -204,6 +230,7 @@ def run():
             name='Morningside Park’s Down to Earth Farmers Market',
             location='W. 110th St. & Manhattan Ave.',
             zipcode='10026',
+            coordinates={"lat": "40.801382884379336", "lng": "-73.95970142371496"},
             hours='Saturday (9 a.m. - 2 p.m.)',
             year_round=True
         ),
@@ -211,6 +238,7 @@ def run():
             name='Mount Sinai Greenmarket',
             location='Madison Ave. & 99th St.',
             zipcode='10029',
+            coordinates={"lat": "40.78944510836953", "lng": "-73.95271330705022"},
             hours='Wednesday (8 a.m. - 3 p.m.)',
             year_round=False
         ),
@@ -218,6 +246,7 @@ def run():
             name='NYP Youth Market - Audoban',
             location='21 Audoban Ave.',
             zipcode='10032',
+            coordinates={"lat": "40.839630140355446", "lng": "-73.93889062898364"},
             hours='Thursday (9 a.m. - 3 p.m.)',
             year_round=False
         ),
@@ -225,6 +254,7 @@ def run():
             name='NYP Youth Market - Broadway',
             location='4781-4783 Broadway',
             zipcode='10034',
+            coordinates={"lat": "40.86600006214813", "lng": "-73.9263264427691"},
             hours='Wednesday (9 a.m. - 3 p.m.)',
             year_round=False
         ),
@@ -232,6 +262,7 @@ def run():
             name='Project EATS Farm Stand at Essex Crossing',
             location='115 Delancey St.',
             zipcode='10002',
+            coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
             hours='Wednesday-Sunday (11 a.m. - 7 p.m.)',
             year_round=False
         ),
@@ -239,6 +270,7 @@ def run():
             name='P.S. 11 Farm Market',
             location='320 W. 21st St.',
             zipcode='10011',
+            coordinates={"lat": "40.74443551076143", "lng": "-74.00056543152783"},
             hours='Wednesday (8 a.m. - 10 a.m.)',
             year_round=False
         ),
@@ -246,6 +278,7 @@ def run():
             name='P.S. 57 Farmstand',
             location='115th St. & 3rd Ave. (SW corner)',
             zipcode='10029',
+            coordinates={"lat": "40.797300330819134", "lng": "-73.94074817230118"},
             hours='Wednesday (9:30 a.m. - 3 p.m.)',
             year_round=False
         ),
@@ -253,6 +286,7 @@ def run():
             name='Stuyvesant Town Greenmarket',
             location='South end of Stuyvesant Town Oval',
             zipcode='10009',
+            coordinates={"lat": "40.73200566470982", "lng": "-73.97761240821589"},
             hours='Sunday (9:30 a.m. - 4 p.m.)',
             year_round=False
         ),
@@ -260,6 +294,7 @@ def run():
             name='Tompkins Square Greenmarket',
             location='E. 7th St. & Avenue A',
             zipcode='10003',
+            coordinates={"lat": "40.72606737678102", "lng": "-73.98333751481684"},
             hours='Sunday (9 a.m. - 4 p.m.)',
             year_round=True
         ),
@@ -267,6 +302,7 @@ def run():
             name='Tribeca Greenmarket',
             location='Greenwich & Chambers Sts.',
             zipcode='10013',
+            coordinates={"lat": "40.71690089948348", "lng": "-74.01090464424209"},
             hours='Wednesday & Saturday (8 a.m. - 2 p.m.)',
             year_round=False
         ),
@@ -274,6 +310,7 @@ def run():
             name='Tucker Square Greenmarket',
             location='Columbus Ave. & 66th St.',
             zipcode='10023',
+            coordinates={"lat": "40.77367979894632", "lng": "-73.9819555713842"},
             hours='Thursday (8 a.m. - 3 p.m.); Saturday (8 a.m. - 4 p.m.)',
             year_round=True
         ),
@@ -281,6 +318,7 @@ def run():
             name='Two Bridges Youth Market',
             location='50 Madison St.',
             zipcode='10010',
+            coordinates={"lat": "40.86600289682479", "lng": "-73.92633729986045"},
             hours='Sunday (10:30 a.m. - 3:30 p.m.)',
             year_round=False
         ),
@@ -288,6 +326,7 @@ def run():
             name='Union Square Greenmarket',
             location='E. 17th St. & Union Square W.',
             zipcode='10003',
+            coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
             hours='Monday, Wednesday, Friday & Saturday (8 a.m. - 6 p.m.)',
             year_round=True
         ),
@@ -295,6 +334,7 @@ def run():
             name='Uptown Good Food Farm Stand',
             location='330 St. Nicholas Ave. (St. Nicholas Miracle Garden)',
             zipcode='10027',
+            coordinates={"lat": "40.811760800653175", "lng": "-73.95159181329969"},
             hours='Thursday (4 - 7 p.m.)',
             year_round=False
         )
