@@ -217,7 +217,7 @@ function Profile() {
                     </>
                 )}
             </div>
-            <div style={{ marginTop: '20px', border: '1px solid #ccc', padding: '20px', borderRadius: '8px' }}>
+            {/* <div style={{ marginTop: '20px', border: '1px solid #ccc', padding: '20px', borderRadius: '8px' }}>
                 <h2>Favorites</h2>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div style={{ flex: '1', marginRight: '10px' }}>
@@ -247,7 +247,7 @@ function Profile() {
                         )}
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }
