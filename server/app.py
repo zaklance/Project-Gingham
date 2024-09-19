@@ -1,7 +1,7 @@
 import os
 import json
 from flask import Flask, request, jsonify, session
-from models import db, User, Market, Vendor, MarketReview, VendorReview, bcrypt
+from models import db, User, Market, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, bcrypt
 from dotenv import load_dotenv
 from flask_migrate import Migrate
 from flask_cors import CORS
@@ -149,8 +149,6 @@ def profile(id):
     if request.method == 'GET':
         profile_data = user.to_dict()
     
-        # profile_data['vendor_favorites'] = json.loads(user.vendor_favorites) if user.vendor_favorites else []
-        # profile_data['market_favorites'] = json.loads(user.market_favorites) if user.market_favorites else []
         return jsonify(profile_data), 200
 
     elif request.method == 'PATCH':
@@ -249,26 +247,15 @@ def vendor_review_by_id(id):
         db.session.commit()
         return {}, 204
 
-@app.route('/profile/<int:user_id>/favorites', methods=['POST'])
-def add_favorite_vendor(user_id):
-    vendor_id = request.json.get('vendor_id')
-    
-    user = User.query.get(user_id)
+@app.route('/market_favorites', methods=['GET'])
+def all_market_favorites():
+    if request.method == 'GET':
+        marketFavorites = MarketFavorite.query.all()
+        return jsonify([marketFavorite.to_dict() for marketFavorite in marketFavorites]), 200
 
-    if not user:
-        return jsonify({'error': 'User not found'}), 404
 
-    try:
-        current_favorites = json.loads(user.favorite_vendors)
-    except ValueError:
-        current_favorites = []
-
-    if vendor_id not in current_favorites:
-        current_favorites.append(vendor_id)
-        user.favorite_vendors = json.dumps(current_favorites)
-        db.session.commit()
-
-    return jsonify({'message': 'Vendor added to favorites'}), 200
-
-if __name__ == '__main__':
-    app.run(port=5555, debug=True)
+@app.route('/vendor_favorites', methods=['GET'])
+def all_vendor_favorites():
+    if request.method == 'GET':
+        vendorFavorites = VendorFavorite.query.all()
+        return jsonify([vendorFavorite.to_dict() for vendorFavorite in vendorFavorites]), 200
