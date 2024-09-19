@@ -5,11 +5,7 @@ function Profile() {
     const { id } = useParams();
     const [user, setUser] = useState(null);
     const [profileData, setProfileData] = useState(null);
-    const [favoriteVendors, setFavoriteVendors] = useState([]);
-    const [favoriteMarkets, setFavoriteMarkets] = useState([]);
     const [editMode, setEditMode] = useState(false);
-    const [vendorDetails, setVendorDetails] = useState({});
-    const [marketDetails, setMarketDetails] = useState({});
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -21,12 +17,8 @@ function Profile() {
                 try {
                     const data = JSON.parse(text);
                     setProfileData({
-                        ...data,
-                        vendor_favorites: data.vendor_favorites,
-                        market_favorites: data.market_favorites
+                        ...data
                     });
-                    setFavoriteVendors(data.vendor_favorites);
-                    setFavoriteMarkets(data.market_favorites);
                 } catch (jsonError) {
                     console.error('Error parsing JSON:', jsonError);
                 }
@@ -36,68 +28,6 @@ function Profile() {
         };
         fetchProfileData();
     }, [id]);
-
-    useEffect(() => {
-        const fetchVendorDetails = async () => {
-            const promises = favoriteVendors.map(async (favorite) => {
-                const response = await fetch(`http://127.0.0.1:5555/vendors/${favorite.vendor_id}`);
-                if (response.ok) {
-                    const vendorData = await response.json();
-                    return { id: favorite.vendor_id, name: vendorData.name };
-                } else {
-                    console.log(`Failed to fetch vendor ${favorite.vendor_id}`);
-                    return { id: favorite.vendor_id, name: 'Unknown Vendor' };
-                }
-            });
-            
-            Promise.all(promises)
-                .then(details => {
-                    const vendorDetailsMap = {};
-                    details.forEach(detail => {
-                        vendorDetailsMap[detail.id] = detail.name;
-                    });
-                    setVendorDetails(vendorDetailsMap);
-                })
-                .catch(error => {
-                    console.error('Error fetching vendor details:', error);
-                });
-        };
-
-        if (favoriteVendors.length > 0) {
-            fetchVendorDetails();
-        }
-    }, [favoriteVendors]);
-
-    useEffect(() => {
-        const fetchMarketDetails = async () => {
-            const promises = favoriteMarkets.map(async (favorite) => {
-                const response = await fetch(`http://127.0.0.1:5555/markets/${favorite.market_id}`);
-                if (response.ok) {
-                    const marketData = await response.json();
-                    return { id: favorite.market_id, name: marketData.name };
-                } else {
-                    console.log(`Failed to fetch market ${favorite.market_id}`);
-                    return { id: favorite.market_id, name: 'Unknown Market' };
-                }
-            });
-
-            Promise.all(promises)
-                .then(details => {
-                    const marketDetailsMap = {};
-                    details.forEach(detail => {
-                        marketDetailsMap[detail.id] = detail.name;
-                    });
-                    setMarketDetails(marketDetailsMap);
-                })
-                .catch(error => {
-                    console.error('Error fetching market details:', error);
-                });
-        };
-
-        if (favoriteMarkets.length > 0) {
-            fetchMarketDetails();
-        }
-    }, [favoriteMarkets]);
 
     const handleEditToggle = () => {
         setEditMode(!editMode);
@@ -138,25 +68,6 @@ function Profile() {
         }
     };
 
-    const handleDeleteFavorite = async (type, id) => {
-        try {
-            const response = await fetch(`http://127.0.0.1:5555/profile/${id}/favorites/${type}/${id}`, {
-                method: 'DELETE'
-            });
-
-            if (response.ok) {
-                if (type === 'vendor') {
-                    setFavoriteVendors(favoriteVendors.filter(vendorId => vendorId !== id));
-                } else if (type === 'market') {
-                    setFavoriteMarkets(favoriteMarkets.filter(marketId => marketId !== id));
-                }
-            } else {
-                console.error('Failed to delete favorite');
-            }
-        } catch (error) {
-            console.error('Error deleting favorite:', error);
-        }
-    };
 
     if (!profileData) {
         return <div>Loading...</div>;
