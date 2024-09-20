@@ -6,13 +6,14 @@ function Profile() {
     const [user, setUser] = useState(null);
     const [profileData, setProfileData] = useState(null);
     const [editMode, setEditMode] = useState(false);
+    const [vendorFavs, setVendorFavs] = useState([]);
 
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
                 const response = await fetch(`http://127.0.0.1:5555/profile/${id}`);
                 const text = await response.text();
-                console.log('Raw response:', text);
+                // console.log('Raw response:', text);
 
                 try {
                     const data = JSON.parse(text);
@@ -68,15 +69,25 @@ function Profile() {
         }
     };
 
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/vendor_favorites")
+            .then(response => response.json())
+            .then(data => {
+                const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('userId')));
+                setVendorFavs(filteredData)
+            })
+            .catch(error => console.error('Error fetching favorites', error));
+    }, []);
+
 
     if (!profileData) {
         return <div>Loading...</div>;
     }
 
     return (
-        <div style={{ padding: '20px' }}>
+        <div>
             <h1>Welcome to Your Profile</h1>
-            <div style={{ marginTop: '20px', border: '1px solid #ccc', padding: '20px', borderRadius: '8px' }}>
+            <div className='bounding-box'>
                 <h2>Profile Information</h2>
                 {editMode ? (
                     <>
@@ -128,6 +139,22 @@ function Profile() {
                     </>
                 )}
             </div>
+            <div className='bounding-box'>
+                <h2>Favorites</h2>
+                <h3>Vendors</h3>
+                <ul className='favorites-list'>
+                    {vendorFavs.length > 0 ? (
+                    vendorFavs.map((data) => (
+                        <li key={data.id}>
+                            <Link to={`/vendors/${data.id}`}><b>{data.vendor.name}</b> <i>of {data.vendor.based_out_of}</i> </Link>
+                        </li>
+                    ))
+                    ) : (
+                        <p>No favorite vendors</p>
+                    )}
+                </ul>
+            </div>
+
             {/* <div style={{ marginTop: '20px', border: '1px solid #ccc', padding: '20px', borderRadius: '8px' }}>
                 <h2>Favorites</h2>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>

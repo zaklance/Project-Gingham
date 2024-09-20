@@ -562,3 +562,15 @@ form textarea {
   background-color: white;
   width: 192px;
 }
+
+.bounding-box {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.favorites-list li {
+  padding: 8px 0px;
+  border-top: 1px solid #ccc;
+}
