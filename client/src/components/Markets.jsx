@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MarketCard from './MarketCard';
-import AdvancedMarkerCard from './AdvancedMarkerCard';
+// import AdvancedMarkerCard from './AdvancedMarkerCard';
 import '../assets/css/index.css';
 import { APIProvider, Map, Marker, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
 // import { Map, Marker } from 'mapkit-react';

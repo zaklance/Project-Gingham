@@ -14,26 +14,48 @@ function Profile() {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/profile/${id}`);
-                const text = await response.text();
+                // Retrieve the JWT token from sessionStorage
+                const token = sessionStorage.getItem('jwt-token');
+    
+                // Make a request to the protected route with the Authorization header
+                const response = await fetch(`http://127.0.0.1:5555/profile/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,  // Send token 
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                const text = await response.text();  // raw response as text
                 console.log('Raw response:', text);
-
-                try {
-                    const data = JSON.parse(text);
-                    setProfileData({
-                        ...data,
-                        vendor_favorites: data.vendor_favorites,
-                        market_favorites: data.market_favorites
-                    });
-                    setFavoriteVendors(data.vendor_favorites);
-                    setFavoriteMarkets(data.market_favorites);
-                } catch (jsonError) {
-                    console.error('Error parsing JSON:', jsonError);
+    
+                if (response.ok) {
+                    // If response is successful, parse and set the profile data
+                    try {
+                        const data = JSON.parse(text);  // Parse the JSON response
+                        setProfileData({
+                            ...data,
+                            vendor_favorites: data.vendor_favorites,
+                            market_favorites: data.market_favorites
+                        });
+                        setFavoriteVendors(data.vendor_favorites);
+                        setFavoriteMarkets(data.market_favorites);
+                    } catch (jsonError) {
+                        console.error('Error parsing JSON:', jsonError);
+                    }
+                } else {
+                    console.error('Error fetching profile:', response.status);
+                    // Handle possible errors (e.g., unauthorized, invalid token)
+                    if (response.status === 401) {
+                        console.error('Unauthorized: Token may be missing or invalid');
+                        // You might want to redirect to login or show an error message
+                    }
                 }
             } catch (error) {
                 console.error('Error fetching profile data:', error);
             }
         };
+    
         fetchProfileData();
     }, [id]);
 

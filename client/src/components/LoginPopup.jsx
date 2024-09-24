@@ -17,23 +17,41 @@ function Login({ handlePopup }) {
     const handleLogin = async (event) => {
         event.preventDefault();
         const lowercaseUsername = loginUsername.toLowerCase();
-        const response = await fetch('http://127.0.0.1:5555/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username: lowercaseUsername, password: loginPassword }),
-            credentials: 'include'
-        });
-        if (response.ok) {
-            const data = await response.json();
-            globalThis.sessionStorage.setItem('userId', data.id);
-            globalThis.sessionStorage.setItem('jwt-token', data.token);
-            console.log('Login successful:', data);
-            navigate(`/profile/${data.id}`);
-            window.location.reload()
-        } else {
-            alert('Login failed');
+    
+        try {
+            const response = await fetch('http://127.0.0.1:5555/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: lowercaseUsername,
+                    password: loginPassword
+                })
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+    
+                // Store token in sessionStorage
+                sessionStorage.setItem('jwt-token', data.access_token);
+    
+                // store user ID if necessary
+                sessionStorage.setItem('userId', data.id);
+    
+                console.log('Login successful:', data);
+    
+                // Navigate to the user's profile
+                navigate(`/profile/${data.id}`);
+    
+                // refresh the page
+                window.location.reload();
+            } else {
+                alert('Login failed');
+            }
+        } catch (error) {
+            console.error('Error during login:', error);
+            alert('An error occurred. Please try again.');
         }
     };
 
