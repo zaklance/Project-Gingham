@@ -73,7 +73,7 @@ function Profile() {
         fetch("http://127.0.0.1:5555/vendor_favorites")
             .then(response => response.json())
             .then(data => {
-                const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('userId')));
+                const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
                 setVendorFavs(filteredData)
             })
             .catch(error => console.error('Error fetching favorites', error));

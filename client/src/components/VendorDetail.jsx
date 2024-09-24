@@ -5,6 +5,7 @@ import buyabag from '../assets/images/GINGHAM_BUYABAG.png';
 
 function VendorDetail () {
     const { id } = useParams();
+    
     const [vendor, setVendor] = useState(null);
     const [availableBaskets, setAvailableBaskets] = useState(5);
     const [addToFav, setAddToFav] = useState([]);
@@ -12,8 +13,12 @@ function VendorDetail () {
     const [locations, setLocations] = useState([]);
     const [vendorReviews, setVendorReviews] = useState([]);
     const [selectedMarket, setSelectedMarket] = useState('');
-    const { amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
     const [price, setPrice] = useState(4.99);
+    const [vendorFavs, setVendorFavs] = useState([]);
+    const [isClicked, setIsClicked] = useState(false);
+
+    const { amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
+    
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -102,12 +107,53 @@ function VendorDetail () {
     }, [amountInCart, cartItems]);
 
     const handleBackButtonClick = () => {
-        navigate.push('/vendors');
+        navigate('/vendors');
     };
 
     const handleMarketChange = (event) => {
         setSelectedMarket(event.target.value);
     };
+
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/vendor_favorites")
+            .then(response => response.json())
+            .then(data => {
+                const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
+                setVendorFavs(filteredData)
+            })
+            .catch(error => console.error('Error fetching favorites', error));
+    }, []);
+
+    const handleClick = async (event) => {
+        setIsClicked((isClick) => !isClick);
+        if (isClicked == false) {
+            const response = await fetch('http://127.0.0.1:5555/vendor_favorites', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: globalThis.sessionStorage.getItem('user_id'),
+                    vendor_id: vendor.id
+                })
+                // credentials: 'include'
+            }).then((resp) => {
+                return resp.json()
+            }).then(data => {
+                setVendorFavs([...vendorFavs, data])
+            });
+        } else {
+            const findVendorFavId = vendorFavs.filter(item => item.vendor_id == vendor.id)
+            for (const item of findVendorFavId) {
+                fetch(`http://127.0.0.1:5555/vendor_favorites/${item.id}`, {
+                    method: "DELETE",
+                }).then(() => {
+                    setVendorFavs((favs) => favs.filter((fav) => fav.vendor_id !== vendor.id));
+                })
+            }
+        }
+    };
+
 
     if (!vendor) {
         return <div>Loading...</div>;
@@ -151,7 +197,9 @@ function VendorDetail () {
             </div>
             <div>
                 <h4 className='float-left'>Based out of: {vendor.based_out_of}</h4>
-                <button className='btn-like'> ❤️ </button>
+                <button 
+                    className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
+                    onClick={handleClick}> ❤️ </button>
                 <br />
                 <br />
                 <h2>Farmers Market Locations:</h2>

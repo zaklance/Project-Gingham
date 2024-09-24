@@ -12,7 +12,7 @@ function Logout() {
         .then(() => {
             globalThis.sessionStorage.removeItem('amountInCart');
             globalThis.sessionStorage.removeItem('cartItems');
-            globalThis.sessionStorage.removeItem('userId');
+            globalThis.sessionStorage.removeItem('user_id');
 
             navigate('/');
         })

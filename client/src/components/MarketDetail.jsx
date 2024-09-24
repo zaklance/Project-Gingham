@@ -3,10 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 const MarketDetail = () => {
     const { id } = useParams();
+
     const [market, setMarket] = useState(null);
     const [vendorDetails, setVendorDetails] = useState({});
     const [randomImage, setRandomImage] = useState('');
     const [marketReviews, setMarketReviews] = useState([]);
+    const [marketFavs, setMarketFavs] = useState([]);
+    const [isClicked, setIsClicked] = useState(false);
+
     const navigate = useNavigate();
 
     const images = [
@@ -50,8 +54,49 @@ const MarketDetail = () => {
     }, [id]);
 
     const handleBackButtonClick = () => {
-        navigate.push('/markets');
+        navigate('/markets');
     };
+
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/market_favorites")
+            .then(response => response.json())
+            .then(data => {
+                const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
+                setMarketFavs(filteredData)
+            })
+            .catch(error => console.error('Error fetching favorites', error));
+    }, []);
+
+    const handleClick = async (event) => {
+        setIsClicked((isClick) => !isClick);
+        if (isClicked == false) {
+            const response = await fetch('http://127.0.0.1:5555/market_favorites', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: globalThis.sessionStorage.getItem('user_id'),
+                    market_id: market.id
+                })
+                // credentials: 'include'
+            }).then((resp) => {
+                return resp.json()
+            }).then(data => {
+                setMarketFavs([...marketFavs, data])
+            });
+        } else {
+            const findMarketFavId = marketFavs.filter(item => item.market_id == market.id)
+            for (const item of findMarketFavId) {
+                fetch(`http://127.0.0.1:5555/market_favorites/${item.id}`, {
+                    method: "DELETE",
+                }).then(() => {
+                    setMarketFavs((favs) => favs.filter((fav) => fav.market_id !== market.id));
+                })
+            }
+        }
+    };
+
 
     if (!market) {
         return <div>Loading...</div>;
@@ -69,7 +114,9 @@ const MarketDetail = () => {
                 <h4>Location: {market.location}</h4>
                 <h4>Hours: {market.hours}</h4>
             </div>
-            <button className='btn-like'> ❤️ </button>
+            <button
+                className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
+                onClick={handleClick}> ❤️ </button>
             <br />
             <br />
             <div>
