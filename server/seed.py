@@ -461,33 +461,33 @@ def run():
     db.session.add_all(vendor_revs)
     db.session.commit()
 
-    market_favs = []
-    for i in range(200):
-        market_id = randint(1, 40)
-        user_id = randint(1, 50)
+    # market_favs = []
+    # for i in range(200):
+    #     market_id = randint(1, 40)
+    #     user_id = randint(1, 50)
 
-        mf = MarketFavorite(
-            market_id=market_id,
-            user_id=user_id,
-        )
-        market_favs.append(mf)
+    #     mf = MarketFavorite(
+    #         market_id=market_id,
+    #         user_id=user_id,
+    #     )
+    #     market_favs.append(mf)
 
-    db.session.add_all(market_favs)
-    db.session.commit()
+    # db.session.add_all(market_favs)
+    # db.session.commit()
 
-    vendor_favs = []
-    for i in range(900):
-        vendor_id = randint(1, 151)
-        user_id = randint(1, 50)
+    # vendor_favs = []
+    # for i in range(900):
+    #     vendor_id = randint(1, 151)
+    #     user_id = randint(1, 50)
 
-        vf = VendorFavorite(
-            vendor_id=vendor_id,
-            user_id=user_id,
-        )
-        vendor_favs.append(vf)
+    #     vf = VendorFavorite(
+    #         vendor_id=vendor_id,
+    #         user_id=user_id,
+    #     )
+    #     vendor_favs.append(vf)
 
-    db.session.add_all(vendor_favs)
-    db.session.commit()
+    # db.session.add_all(vendor_favs)
+    # db.session.commit()
 
 
 
