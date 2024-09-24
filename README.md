@@ -52,7 +52,7 @@ pipenv install
 3. Set up Python environment
 ```
 pipenv shell
-python app.py
+flask run
 ```
 
 ### Terminal 2, Frontend Setup
