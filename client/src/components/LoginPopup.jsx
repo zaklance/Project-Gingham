@@ -27,7 +27,7 @@ function Login({ handlePopup }) {
         });
         if (response.ok) {
             const data = await response.json();
-            globalThis.sessionStorage.setItem('userId', data.id);
+            globalThis.sessionStorage.setItem('user_id', data.id);
             globalThis.sessionStorage.setItem('jwt-token', data.token);
             console.log('Login successful:', data);
             navigate(`/profile/${data.id}`);

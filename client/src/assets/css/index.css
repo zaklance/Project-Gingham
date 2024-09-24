@@ -334,6 +334,18 @@ ul {
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
 }
 
+.btn-like-on {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: #ff7b8a;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+}
+
+.btn-like-on:hover {
+  background-color: #ffd1d8;
+}
+
 .x-btn {
   padding: 2px 8px;
   margin-top: 4px;

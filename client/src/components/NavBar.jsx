@@ -6,9 +6,9 @@ import '../assets/css/index.css';
 
 function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const location = useLocation();
-    const userId = globalThis.sessionStorage.getItem('userId');
+    const user_id = globalThis.sessionStorage.getItem('user_id');
 
-    const isLoggedIn = userId && location.pathname !== '/' && location.pathname !== '/login';
+    const isLoggedIn = user_id && location.pathname !== '/' && location.pathname !== '/login';
 
     return (
         <nav className="nav-bar">
@@ -18,7 +18,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                     <>
                         <li>
                             <button className='nav-tab color-2'>
-                                <NavLink reloadDocument to={`/profile/${userId}`}>Profile</NavLink>
+                                <NavLink reloadDocument to={`/profile/${user_id}`}>Profile</NavLink>
                             </button>
                         </li>
                         <li>
