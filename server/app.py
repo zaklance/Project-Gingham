@@ -247,15 +247,55 @@ def vendor_review_by_id(id):
         db.session.commit()
         return {}, 204
 
-@app.route('/market_favorites', methods=['GET'])
+@app.route('/market_favorites', methods=['GET', 'POST'])
 def all_market_favorites():
     if request.method == 'GET':
         marketFavorites = MarketFavorite.query.all()
         return jsonify([marketFavorite.to_dict() for marketFavorite in marketFavorites]), 200
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_market_favorite = MarketFavorite(
+            user_id=data['user_id'],
+            market_id=data['market_id']
+        )
+        db.session.add(new_market_favorite)
+        db.session.commit()
+        return new_market_favorite.to_dict(), 201
+    
+@app.route('/market_favorites/<int:id>', methods=['GET', 'DELETE'])
+def del_market_fav(id):
+    marketFav = MarketFavorite.query.filter(MarketFavorite.id == id).first()
+    if request.method == 'GET':
+        return marketFav.to_dict(), 200
+    if request.method == 'DELETE':
+        db.session.delete(marketFav)
+        db.session.commit()
+        return {}, 204
 
 
-@app.route('/vendor_favorites', methods=['GET'])
+@app.route('/vendor_favorites', methods=['GET', 'POST'])
 def all_vendor_favorites():
     if request.method == 'GET':
         vendorFavorites = VendorFavorite.query.all()
         return jsonify([vendorFavorite.to_dict() for vendorFavorite in vendorFavorites]), 200
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_vendor_favorite = VendorFavorite(
+            user_id=data['user_id'],
+            vendor_id=data['vendor_id']
+        )
+        db.session.add(new_vendor_favorite)
+        db.session.commit()
+        return new_vendor_favorite.to_dict(), 201
+    
+@app.route('/vendor_favorites/<int:id>', methods=['GET', 'DELETE'])
+def del_vendor_fav(id):
+    vendorFav = VendorFavorite.query.filter(VendorFavorite.id == id).first()
+    if request.method == 'GET':
+        return vendorFav.to_dict(), 200
+    if request.method == 'DELETE':
+        db.session.delete(vendorFav)
+        db.session.commit()
+        return {}, 204
