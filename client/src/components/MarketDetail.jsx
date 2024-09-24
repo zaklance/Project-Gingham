@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const MarketDetail = () => {
+function MarketDetail ({ match }) {
     const { id } = useParams();
 
     const [market, setMarket] = useState(null);
-    const [vendorDetails, setVendorDetails] = useState({});
+    const [vendors, setVendors] = useState({});
     const [randomImage, setRandomImage] = useState('');
     const [marketReviews, setMarketReviews] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
@@ -52,6 +52,15 @@ const MarketDetail = () => {
             })
             .catch(error => console.error('Error fetching reviews:', error));
     }, [id]);
+
+    useEffect(() => {
+        const fetchVendors = async () => {
+            const response = await fetch(`/markets/${match.params.marketId}/vendors`);
+            const data = await response.json();
+            setVendors(data);
+        };
+        fetchVendors();
+    }, [match.params.marketId]);
 
     const handleBackButtonClick = () => {
         navigate('/markets');
@@ -118,6 +127,13 @@ const MarketDetail = () => {
                 className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
                 onClick={handleClick}> ❤️ </button>
             <br />
+            <br />
+            <h2>Vendors in this Market:</h2>
+            <ul>
+                {vendors.map((vendor) => (
+                    <li key={vendor.id}>{vendor.name}</li>
+                ))}
+            </ul>
             <br />
             <div>
                 <h2>Reviews</h2>
