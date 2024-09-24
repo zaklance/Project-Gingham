@@ -50,7 +50,7 @@ const MarketDetail = () => {
     }, [id]);
 
     const handleBackButtonClick = () => {
-        navigate.push('/markets');
+        navigate('/markets');
     };
 
     if (!market) {
