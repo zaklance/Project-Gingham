@@ -53,15 +53,6 @@ function MarketDetail ({ match }) {
             .catch(error => console.error('Error fetching reviews:', error));
     }, [id]);
 
-    useEffect(() => {
-        const fetchVendors = async () => {
-            const response = await fetch(`/markets/${match.params.marketId}/vendors`);
-            const data = await response.json();
-            setVendors(data);
-        };
-        fetchVendors();
-    }, [match.params.marketId]);
-
     const handleBackButtonClick = () => {
         navigate('/markets');
     };
@@ -130,9 +121,7 @@ function MarketDetail ({ match }) {
             <br />
             <h2>Vendors in this Market:</h2>
             <ul>
-                {vendors.map((vendor) => (
-                    <li key={vendor.id}>{vendor.name}</li>
-                ))}
+
             </ul>
             <br />
             <div>
