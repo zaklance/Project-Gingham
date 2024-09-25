@@ -14,13 +14,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
         <nav className="nav-bar">
             <ul>
                 <img className='logo' src={ginghamLogo} alt="Gingham Logo" />
-                {isLoggedIn ? (
                     <>
-                        <li>
-                            <button className='nav-tab color-2'>
-                                <NavLink reloadDocument to={`/profile/${user_id}`}>Profile</NavLink>
-                            </button>
-                        </li>
                         <li>
                             <button className='nav-tab color-3'>
                                 <NavLink reloadDocument to="/markets">Markets</NavLink>
@@ -36,6 +30,14 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                 <NavLink reloadDocument to="/cart">Cart ({amountInCart})</NavLink>
                             </button>
                         </li>
+                    </>
+                {isLoggedIn ? (
+                    <>
+                        <li>
+                            <button className='nav-tab color-2'>
+                                <NavLink reloadDocument to={`/profile/${user_id}`}>Profile</NavLink>
+                            </button>
+                        </li>
                         <li style={{ marginLeft: 'auto' }}>
                             <button className='nav-tab color-3 tab-right'>
                                 <NavLink reloadDocument to="/logout">Logout</NavLink>
@@ -44,11 +46,6 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                     </>
                 ) : (
                     <>
-                        <li>
-                            <button className='nav-tab color-1'>
-                                <NavLink reloadDocument to="/">Home</NavLink>
-                            </button>
-                        </li>
                         <li style={{ marginLeft: 'auto' }}>
                             <button className='nav-tab color-3 tab-right' onClick={handlePopup} >
                                 Login/Signup

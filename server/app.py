@@ -3,6 +3,7 @@ import json
 from flask import Flask, request, jsonify, session
 from models import db, User, Market, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, bcrypt
 from dotenv import load_dotenv
+from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate
 from flask_cors import CORS
 
@@ -16,7 +17,6 @@ app.secret_key = os.environ['SECRET_KEY']
 db.init_app(app)
 Migrate(app, db)
 CORS(app, supports_credentials=True)
-
 
 @app.route('/', methods=['GET'])
 def homepage():
@@ -39,20 +39,42 @@ def login():
 @app.route('/signup', methods=['POST'])
 def signup():
     data = request.get_json()
-    user = User.query.filter(User.username == data['username']).first()
-    if user:
-        return {'error': 'username already exists'}, 400
-    new_user = User(
-        email=data['email'],
-        username=data['username'], 
-        password=data['password'],
-        first_name=data['first_name'],
-        last_name=data['last_name'],
-        address=data['address']
-    )
-    db.session.add(new_user)
-    db.session.commit()
-    return new_user.to_dict(), 201
+
+    try: 
+        user = User.query.filter((User.username == data['username']) | (User.email == data['email'])).first()
+        if user:
+            if user.username == data['username']:
+                return {'error': 'username already exists'}, 400
+            if user.email == data['email']:
+                return {'error': 'email already exists'}, 400
+            
+        new_user = User(
+            email=data['email'],
+            username=data['username'], 
+            password=data['password'],
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            address=data['address']
+        )
+
+        db.session.add(new_user)
+        db.session.commit()
+        
+        return new_user.to_dict(), 201
+    
+    except IntegrityError as e:
+        db.session.rollback()
+        if 'username' in str(e):
+            return {'error': 'username already exists'}, 400
+        if 'email' in str(e):
+            return {'error': 'email already exists'}, 400
+        return {'error': 'database error'}, 500
+    
+    except ValueError as e:
+        return {'error': str(e)}, 400
+    
+    except Exception as e: 
+        return {'error': 'an unknown error has occured'}, 500
 
 @app.route('/logout', methods=['DELETE'])
 def logout():
