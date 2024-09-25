@@ -576,6 +576,18 @@ form textarea {
   background-color: #ff8300;
 }
 
+.market-image {
+  width: 70%;
+  max-width: 100%;
+  display: block;
+  margin: 20px 0;
+}
+
+.market-info {
+  float: left;
+  margin-bottom: 20px;
+}
+
 .marker-details {
   background-color: white;
   width: 192px;
@@ -591,4 +603,39 @@ form textarea {
 .favorites-list li {
   padding: 8px 0px;
   border-top: 1px solid #ccc;
+}
+
+.back-button {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  color: #333;
+  transition: background-color 0.5s ease;
+}
+
+.back-button:hover {
+  background-color: #e0e0e0;
+}
+
+.favorites-alert {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  font-size: 12px;
+  border-radius: 5px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 50%;
+}
+
+.favorites-alert-hidden {
+  opacity: 0;
+  transform: translate(-50%, -60%);
 }
