@@ -205,8 +205,8 @@ class MarketFavorite(db.Model, SerializerMixin):
     __tablename__ = 'market_favorites'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
 
     user = db.relationship('User', back_populates='market_favorites')
     market = db.relationship('Market', back_populates='market_favorites')
@@ -220,8 +220,8 @@ class VendorFavorite(db.Model, SerializerMixin):
     __tablename__ = 'vendor_favorites'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
 
     user = db.relationship('User', back_populates='vendor_favorites')
     vendor = db.relationship('Vendor', back_populates='vendor_favorites')

@@ -8,7 +8,7 @@ import Checkout from './components/Checkout.jsx';
 import CheckSession from './components/CheckSession.jsx';
 import ErrorPage from './components/ErrorPage.jsx';
 import Home from './components/Home.jsx';
-import Login from './components/Login.jsx';
+import Login from './components/LoginPopup.jsx';
 import Markets from './components/Markets.jsx';
 import MarketDetail from './components/MarketDetail.jsx';
 import Profile from './components/Profile.jsx';

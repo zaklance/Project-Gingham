@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Login from "./Login";
+import Login from "./LoginPopup";
 import ginghamLogo from '../assets/images/gingham-logo-2.svg';
 import farmers from '../assets/images/22bitman.xlarge1.jpg';
 import howitworks from '../assets/images/GINGHAM_HOWITWORKS_cropped-alt.png';

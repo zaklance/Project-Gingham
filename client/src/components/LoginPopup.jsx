@@ -58,7 +58,19 @@ function Login({ handlePopup }) {
             const data = await response.json();
             alert("Sign Up Successful. Please log in!");
         } else {
-            console.log('Signup failed');
+            const errorData = await response.json();
+            if (errorData.error) {
+                if (errorData.error.includes('email')) {
+                    alert("This email is already in use. Please sign in or use a different email.");
+                } else if (errorData.error.includes('username')) {
+                    alert("This username is already taken. Please choose another username.");
+                } else {
+                    alert("Signup failed: " + errorData.error);
+                    console.log('Signup failed');
+                } 
+            } else {
+                alert("Signup failed. Please check your details and try again.")
+            }
         }
     };
 
