@@ -105,11 +105,6 @@ def market_by_id(id):
         db.session.commit()
         return {}, 204
     
-@app.route('/markets/<int:market_id>/vendors', methods=['GET'])
-def get_vendors_for_market(market_id):
-    market = Market.query.get_or_404(market_id)
-    return jsonify([vendor.to_dict] for vendor in market.vendors)
-
 @app.route('/vendors', methods=['GET', 'POST'])
 def all_vendors():
     if request.method == 'GET':
