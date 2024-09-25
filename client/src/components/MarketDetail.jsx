@@ -10,6 +10,8 @@ function MarketDetail ({ match }) {
     const [marketReviews, setMarketReviews] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
+    const [alertMessage, setAlertMessage] = useState(null);
+    const [showAlert, setShowAlert] = useState(false);
 
     const navigate = useNavigate();
 
@@ -83,7 +85,8 @@ function MarketDetail ({ match }) {
             }).then((resp) => {
                 return resp.json()
             }).then(data => {
-                setMarketFavs([...marketFavs, data])
+                setMarketFavs([...marketFavs, data]);
+                setAlertMessage('added to favorites');
             });
         } else {
             const findMarketFavId = marketFavs.filter(item => item.market_id == market.id)
@@ -92,9 +95,15 @@ function MarketDetail ({ match }) {
                     method: "DELETE",
                 }).then(() => {
                     setMarketFavs((favs) => favs.filter((fav) => fav.market_id !== market.id));
+                    setAlertMessage('removed from favorites');
                 })
             }
         }
+
+        setShowAlert(true);
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 1000);
     };
 
 
@@ -104,7 +113,7 @@ function MarketDetail ({ match }) {
 
     return (
         <div>
-            <button onClick={handleBackButtonClick} style={{ margin: '10px 0', padding: '10px', backgroundColor: '#f0f0f0', border: 'none', cursor: 'pointer' }}>
+            <button onClick={handleBackButtonClick} className='back-button'>
                 Back to Markets
             </button>
             <h2>{market.name}</h2>
@@ -114,9 +123,17 @@ function MarketDetail ({ match }) {
                 <h4>Location: {market.location}</h4>
                 <h4>Hours: {market.hours}</h4>
             </div>
-            <button
-                className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
-                onClick={handleClick}> ❤️ </button>
+            <br />
+            <div>
+                <button
+                    className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
+                    onClick={handleClick}> ❤️ </button>
+                {showAlert && (
+                    <div className={`favorites-alert ${!showAlert ? 'favorites-alert-hidden' : ''}`}>
+                        {alertMessage}
+                    </div>
+                )}
+            </div>
             <br />
             <br />
             <h2>Vendors in this Market:</h2>

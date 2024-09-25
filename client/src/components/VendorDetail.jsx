@@ -15,6 +15,8 @@ function VendorDetail () {
     const [price, setPrice] = useState(4.99);
     const [vendorFavs, setVendorFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
+    const [alertMessage, setAlertMessage] = useState(null);
+    const [showAlert, setShowAlert] = useState(false);
 
     const { amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
     
@@ -140,6 +142,7 @@ function VendorDetail () {
                 return resp.json()
             }).then(data => {
                 setVendorFavs([...vendorFavs, data])
+                setAlertMessage('added to favorites');
             });
         } else {
             const findVendorFavId = vendorFavs.filter(item => item.vendor_id == vendor.id)
@@ -148,9 +151,15 @@ function VendorDetail () {
                     method: "DELETE",
                 }).then(() => {
                     setVendorFavs((favs) => favs.filter((fav) => fav.vendor_id !== vendor.id));
+                    setAlertMessage('removed from favorites');
                 })
             }
         }
+
+        setShowAlert(true);
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 1000);
     };
 
 
@@ -160,7 +169,7 @@ function VendorDetail () {
 
     return (
         <div>
-            <button onClick={handleBackButtonClick} style={{ margin: '10px 0', padding: '10px', backgroundColor: '#f0f0f0', border: 'none', cursor: 'pointer' }}>
+            <button onClick={handleBackButtonClick} className='back-button'>
                 Back to Vendors
             </button>
             <div style={{display:'flex'}}>
@@ -196,9 +205,16 @@ function VendorDetail () {
             </div>
             <div>
                 <h4 className='float-left'>Based out of: {vendor.based_out_of}</h4>
-                <button 
-                    className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
-                    onClick={handleClick}> ❤️ </button>
+                <div>
+                    <button 
+                        className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
+                        onClick={handleClick}> ❤️ </button>
+                        {showAlert && (
+                            <div className={`favorites-alert ${!showAlert ? 'favorites-alert-hidden' : ''}`}>
+                                {alertMessage}
+                            </div>
+                )}
+                </div>
                 <br />
                 <br />
                 <h2>Farmers Market Locations:</h2>
