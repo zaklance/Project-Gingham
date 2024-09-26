@@ -6,10 +6,13 @@ from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from datetime import timedelta
 
 load_dotenv()
 
 app = Flask(__name__)
+
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URI']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.environ['SECRET_KEY']
@@ -17,6 +20,9 @@ app.secret_key = os.environ['SECRET_KEY']
 db.init_app(app)
 Migrate(app, db)
 CORS(app, supports_credentials=True)
+
+jwt = JWTManager(app)
+
 
 @app.route('/', methods=['GET'])
 def homepage():
@@ -32,9 +38,9 @@ def login():
     if not user.authenticate(data['password']):
         return {'error': 'login failed'}, 401
     
-    session['user_id'] = user.id
+    access_token = create_access_token(identity=user.id, expires_delta=timedelta(minutes=30))
     
-    return user.to_dict(), 200
+    return jsonify(access_token=access_token), 200
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -82,13 +88,14 @@ def logout():
     return {}, 204
 
 @app.route('/check_session', methods=['GET'])
+@jwt_required()
 def check_session():
-    user_id = session.get('user_id')
-    if not user_id:
-        return {'error': 'authorization failed'}, 401
-    user = User.query.filter(User.id == user_id).first()
+    user_id = get_jwt_identity()  # Get the user ID from the token
+    user = User.query.filter_by(id=user_id).first()
+
     if not user:
         return {'error': 'authorization failed'}, 401
+
     return user.to_dict(), 200
 
 @app.route('/markets', methods=['GET', 'POST'])
