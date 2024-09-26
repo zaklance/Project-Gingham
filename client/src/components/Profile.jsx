@@ -32,11 +32,7 @@ function Profile() {
                         const data = JSON.parse(text);  // Parse the JSON response
                         setProfileData({
                             ...data,
-                            vendor_favorites: data.vendor_favorites,
-                            market_favorites: data.market_favorites
                         });
-                        setFavoriteVendors(data.vendor_favorites);
-                        setFavoriteMarkets(data.market_favorites);
                     } catch (jsonError) {
                         console.error('Error parsing JSON:', jsonError);
                     }
