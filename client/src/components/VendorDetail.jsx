@@ -164,7 +164,7 @@ function VendorDetail () {
         setShowAlert(true);
         setTimeout(() => {
             setShowAlert(false);
-        }, 1000);
+        }, 3000);
     };
 
 
@@ -210,12 +210,12 @@ function VendorDetail () {
             </div>
             <div>
                 <h4 className='float-left'>Based out of: {vendor.based_out_of}</h4>
-                <div className='flex-start'>
+                <div className='button-container'>
                     <button 
                         className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
                         onClick={handleClick}> ❤️ </button>
                         {showAlert && (
-                            <div className={`favorites-alert ${!showAlert ? 'favorites-alert-hidden' : ''}`}>
+                            <div className='favorites-alert'>
                                 {alertMessage}
                             </div>
                         )}
