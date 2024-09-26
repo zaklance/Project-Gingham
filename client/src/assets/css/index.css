@@ -197,6 +197,11 @@ ul {
   margin-right: 10px;
 }
 
+.flex-start {
+  display: flex;
+  justify-content: flex-start;
+}
+
 .side-select {
   margin-left: auto;
   margin-right: 0;
@@ -621,10 +626,10 @@ form textarea {
 }
 
 .favorites-alert {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  /* position: fixed; */
+  /* top: 50%;
+  left: 50%; */
+  /* transform: translate(-50%, -50%); */
   padding: 10px 20px;
   background-color: #4caf50;
   color: white;
@@ -633,9 +638,11 @@ form textarea {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: opacity 0.3s ease, transform 0.3s ease;
   opacity: 1;
+  margin-left: 24px;
 }
 
 .favorites-alert-hidden {
   opacity: 0;
-  transform: translate(-50%, -60%);
+  /* transform: translate(-50%, -60%); */
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }

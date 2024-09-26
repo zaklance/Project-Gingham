@@ -210,7 +210,7 @@ function VendorDetail () {
             </div>
             <div>
                 <h4 className='float-left'>Based out of: {vendor.based_out_of}</h4>
-                <div>
+                <div className='flex-start'>
                     <button 
                         className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
                         onClick={handleClick}> ❤️ </button>
@@ -218,7 +218,7 @@ function VendorDetail () {
                             <div className={`favorites-alert ${!showAlert ? 'favorites-alert-hidden' : ''}`}>
                                 {alertMessage}
                             </div>
-                )}
+                        )}
                 </div>
                 <br />
                 <br />

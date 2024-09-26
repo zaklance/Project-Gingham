@@ -47,11 +47,11 @@ function App() {
                 <div className={`popup ${isPopup ? 'popup-on' : ''}`} style={{ top: window.scrollY }}>
                     <LoginPopup handlePopup={handlePopup} />
                 </div>
-                {isLoggedIn ? (
+                {/* {isLoggedIn ? ( */}
                     <Outlet context={{ amountInCart, setAmountInCart, cartItems, setCartItems, isPopup, setIsPopup, handlePopup }} />
-                ) : (
-                    <Home context={{ isPopup, setIsPopup, handlePopup }} />
-                )}
+                {/* ) : ( */}
+                    {/* <Home context={{ isPopup, setIsPopup, handlePopup }} /> */}
+                {/* )} */}
             </main>
         </div>
     );
