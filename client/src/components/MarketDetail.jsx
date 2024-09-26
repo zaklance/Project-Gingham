@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 
 function MarketDetail ({ match }) {
     const { id } = useParams();
@@ -12,6 +12,8 @@ function MarketDetail ({ match }) {
     const [isClicked, setIsClicked] = useState(false);
     const [alertMessage, setAlertMessage] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
+
+    const { handlePopup, } = useOutletContext();
 
     const navigate = useNavigate();
 
@@ -70,34 +72,38 @@ function MarketDetail ({ match }) {
     }, []);
 
     const handleClick = async (event) => {
-        setIsClicked((isClick) => !isClick);
-        if (isClicked == false) {
-            const response = await fetch('http://127.0.0.1:5555/market_favorites', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    user_id: globalThis.sessionStorage.getItem('user_id'),
-                    market_id: market.id
-                })
-                // credentials: 'include'
-            }).then((resp) => {
-                return resp.json()
-            }).then(data => {
-                setMarketFavs([...marketFavs, data]);
-                setAlertMessage('added to favorites');
-            });
-        } else {
-            const findMarketFavId = marketFavs.filter(item => item.market_id == market.id)
-            for (const item of findMarketFavId) {
-                fetch(`http://127.0.0.1:5555/market_favorites/${item.id}`, {
-                    method: "DELETE",
-                }).then(() => {
-                    setMarketFavs((favs) => favs.filter((fav) => fav.market_id !== market.id));
-                    setAlertMessage('removed from favorites');
-                })
+        if (globalThis.sessionStorage.getItem('user_id') !== null) {
+            setIsClicked((isClick) => !isClick);
+            if (isClicked == false) {
+                const response = await fetch('http://127.0.0.1:5555/market_favorites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: globalThis.sessionStorage.getItem('user_id'),
+                        market_id: market.id
+                    })
+                    // credentials: 'include'
+                }).then((resp) => {
+                    return resp.json()
+                }).then(data => {
+                    setMarketFavs([...marketFavs, data]);
+                    setAlertMessage('added to favorites');
+                });
+            } else {
+                const findMarketFavId = marketFavs.filter(item => item.market_id == market.id)
+                for (const item of findMarketFavId) {
+                    fetch(`http://127.0.0.1:5555/market_favorites/${item.id}`, {
+                        method: "DELETE",
+                    }).then(() => {
+                        setMarketFavs((favs) => favs.filter((fav) => fav.market_id !== market.id));
+                        setAlertMessage('removed from favorites');
+                    })
+                }
             }
+        } else {
+            handlePopup()
         }
 
         setShowAlert(true);

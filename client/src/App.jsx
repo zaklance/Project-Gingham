@@ -48,7 +48,7 @@ function App() {
                     <LoginPopup handlePopup={handlePopup} />
                 </div>
                 {isLoggedIn ? (
-                    <Outlet context={{ amountInCart, setAmountInCart, cartItems, setCartItems }} />
+                    <Outlet context={{ amountInCart, setAmountInCart, cartItems, setCartItems, isPopup, setIsPopup, handlePopup }} />
                 ) : (
                     <Home context={{ isPopup, setIsPopup, handlePopup }} />
                 )}
