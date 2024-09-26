@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../assets/css/index.css';
 
-function Login({ handlePopup }) {
+function Login() {
     const [loginUsername, setLoginUsername] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [signupEmail, setSignupEmail] = useState('');
@@ -33,7 +33,7 @@ function Login({ handlePopup }) {
             if (response.ok) {
                 const data = await response.json();
     
-                // Store token in sessionStorage
+                // Store token in localStorage
                 sessionStorage.setItem('jwt-token', data.access_token);
     
                 // store user ID if necessary
@@ -43,9 +43,7 @@ function Login({ handlePopup }) {
     
                 // Navigate to the user's profile
                 navigate(`/profile/${data.id}`);
-    
-                // refresh the page
-                window.location.reload();
+                
             } else {
                 alert('Login failed');
             }
@@ -76,26 +74,13 @@ function Login({ handlePopup }) {
             const data = await response.json();
             alert("Sign Up Successful. Please log in!");
         } else {
-            const errorData = await response.json();
-            if (errorData.error) {
-                if (errorData.error.includes('email')) {
-                    alert("This email is already in use. Please sign in or use a different email.");
-                } else if (errorData.error.includes('username')) {
-                    alert("This username is already taken. Please choose another username.");
-                } else {
-                    alert("Signup failed: " + errorData.error);
-                    console.log('Signup failed');
-                } 
-            } else {
-                alert("Signup failed. Please check your details and try again.")
-            }
+            console.log('Signup failed');
         }
     };
 
     return (
         <div className='login-bar'>
-            <button className="btn x-btn" onClick={handlePopup}>X</button>
-            <div className='wrapper'>
+            <div className='container'>
             <h1 className='title'>WELCOME TO GINGHAM!</h1>
                 <div>
                     <form onSubmit={handleLogin} className="form">
@@ -106,7 +91,7 @@ function Login({ handlePopup }) {
                                 type="username"
                                 value={loginUsername}
                                 placeholder="enter your username"
-                                onChange={(event) => setLoginUsername(event.target.value)}
+                                onChange={(event) => setLoginUsername(event.target.value.toLowerCase())}
                                 required
                             />
                         </div>
@@ -120,7 +105,7 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <button className='btn-login' type="submit">Login</button>
+                        <button type="submit">Login</button>
                     </form>
                 </div>
                 <div>
@@ -186,7 +171,7 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <button className='btn-login' type="submit">Signup</button>
+                        <button type="submit">Signup</button>
                     </form>
                 </div>
             </div>
