@@ -18,7 +18,7 @@ function VendorDetail () {
     const [alertMessage, setAlertMessage] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
 
-    const { amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
+    const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
     
     const navigate = useNavigate();
 
@@ -126,35 +126,40 @@ function VendorDetail () {
     }, []);
 
     const handleClick = async (event) => {
-        setIsClicked((isClick) => !isClick);
-        if (isClicked == false) {
-            const response = await fetch('http://127.0.0.1:5555/vendor_favorites', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    user_id: globalThis.sessionStorage.getItem('user_id'),
-                    vendor_id: vendor.id
-                })
-                // credentials: 'include'
-            }).then((resp) => {
-                return resp.json()
-            }).then(data => {
-                setVendorFavs([...vendorFavs, data])
-                setAlertMessage('added to favorites');
-            });
-        } else {
-            const findVendorFavId = vendorFavs.filter(item => item.vendor_id == vendor.id)
-            for (const item of findVendorFavId) {
-                fetch(`http://127.0.0.1:5555/vendor_favorites/${item.id}`, {
-                    method: "DELETE",
-                }).then(() => {
-                    setVendorFavs((favs) => favs.filter((fav) => fav.vendor_id !== vendor.id));
-                    setAlertMessage('removed from favorites');
-                })
+        if (globalThis.sessionStorage.getItem('user_id') !== null) {
+            setIsClicked((isClick) => !isClick);
+            if (isClicked == false) {
+                const response = await fetch('http://127.0.0.1:5555/vendor_favorites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: globalThis.sessionStorage.getItem('user_id'),
+                        vendor_id: vendor.id
+                    })
+                    // credentials: 'include'
+                }).then((resp) => {
+                    return resp.json()
+                }).then(data => {
+                    setVendorFavs([...vendorFavs, data])
+                    setAlertMessage('added to favorites');
+                });
+            } else {
+                const findVendorFavId = vendorFavs.filter(item => item.vendor_id == vendor.id)
+                for (const item of findVendorFavId) {
+                    fetch(`http://127.0.0.1:5555/vendor_favorites/${item.id}`, {
+                        method: "DELETE",
+                    }).then(() => {
+                        setVendorFavs((favs) => favs.filter((fav) => fav.vendor_id !== vendor.id));
+                        setAlertMessage('removed from favorites');
+                    })
+                }
             }
+        } else {
+            handlePopup()
         }
+
 
         setShowAlert(true);
         setTimeout(() => {
