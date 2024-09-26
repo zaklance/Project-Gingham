@@ -38,7 +38,7 @@ def login():
     if not user.authenticate(data['password']):
         return {'error': 'login failed'}, 401
     
-    access_token = create_access_token(identity=user.id, expires_delta=timedelta(minutes=30))
+    access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=12))
     
     return jsonify(access_token=access_token), 200
 
@@ -328,3 +328,6 @@ def del_vendor_fav(id):
         db.session.delete(vendorFav)
         db.session.commit()
         return {}, 204
+    
+if __name__ == '__main__':
+    app.run(port=5555, debug=True)
