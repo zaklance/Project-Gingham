@@ -40,7 +40,7 @@ def login():
     
     access_token = create_access_token(identity=user.id, expires_delta=timedelta(minutes=30))
     
-    return jsonify(access_token=access_token), 200
+    return jsonify(access_token=access_token, user_id=user.id), 200
 
 @app.route('/signup', methods=['POST'])
 def signup():
