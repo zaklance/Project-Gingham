@@ -632,7 +632,7 @@ form textarea {
   border-radius: 5px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: opacity 0.3s ease, transform 0.3s ease;
-  opacity: 50%;
+  opacity: 1;
 }
 
 .favorites-alert-hidden {

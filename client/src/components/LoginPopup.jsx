@@ -27,22 +27,23 @@ function Login({ handlePopup }) {
                 body: JSON.stringify({
                     username: lowercaseUsername,
                     password: loginPassword
-                })
+                }),
+                credentials: 'include'
             });
     
             if (response.ok) {
                 const data = await response.json();
     
                 // Store token in sessionStorage
-                sessionStorage.setItem('jwt-token', data.access_token);
+                globalThis.sessionStorage.setItem('jwt-token', data.access_token);
     
                 // store user ID if necessary
-                sessionStorage.setItem('userId', data.id);
+                globalThis.sessionStorage.setItem('user_id', data.user_id);
     
                 console.log('Login successful:', data);
     
                 // Navigate to the user's profile
-                navigate(`/profile/${data.id}`);
+                navigate(`/profile/${data.user_id}`);
     
                 // refresh the page
                 window.location.reload();
