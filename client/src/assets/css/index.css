@@ -627,12 +627,18 @@ form textarea {
   background-color: #e0e0e0;
 }
 
+.button-container {
+  display: flex;
+  align-items: center;
+}
+
 .favorites-alert {
   margin-left: 24px;
   margin-top: -5px;
   padding: 10px 20px;
   background-color: #00bda4;
   color: white;
+  padding: 10px 20px;
   font-size: 12px;
   border-radius: 5px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
