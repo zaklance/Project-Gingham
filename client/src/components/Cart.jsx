@@ -1,7 +1,6 @@
 // Cart.jsx
 import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import Login from './LoginPopup';
 
 function Cart() {
     const { cartItems, setCartItems, amountInCart, setAmountInCart } = useOutletContext();
@@ -18,7 +17,7 @@ function Cart() {
     }
 	
     function handleCheckout() {
-		alert(`Checkout successful for ${name}. Cart items cleared.`);
+		alert(`Checkout successful for ${name}`);
         setCartItems([]);
         setName('');
         setAddress('');
