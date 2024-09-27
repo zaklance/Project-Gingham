@@ -43,7 +43,7 @@ function Login({ handlePopup }) {
                 console.log('Login successful:', data);
     
                 // Navigate to the user's profile
-                navigate(`/profile/${data.user_id}`);
+                // navigate(`/profile/${data.user_id}`);
     
                 // refresh the page
                 window.location.reload();
