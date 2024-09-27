@@ -1,11 +1,14 @@
 // Cart.jsx
 import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import Login from './LoginPopup';
 
 function Cart() {
     const { cartItems, setCartItems, amountInCart, setAmountInCart } = useOutletContext();
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
+
+    const { handlePopup, } = useOutletContext();
 
     function removeFromCart(itemToRemove) {
         const updatedCart = cartItems.filter(item => item.id !== itemToRemove.id);
@@ -67,7 +70,13 @@ function Cart() {
                                 value={address}
                                 onChange={(e) => setAddress(e.target.value)}
                                 />
-                            <button className='btn-cart' onClick={handleCheckout}>Checkout</button>
+                            <button 
+                                className='btn-cart' 
+                                onClick={(globalThis.sessionStorage.getItem('user_id') == null) ? (
+                                    handlePopup
+                                ) : (
+                                    handleCheckout)}
+                                >Checkout</button>
                         </div>
                     </div>
                 </>
