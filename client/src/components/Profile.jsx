@@ -193,7 +193,7 @@ function Profile() {
                     {marketFavs.length > 0 ? (
                     marketFavs.map((data) => (
                         <li key={data.id}>
-                            <Link to={`/marketss/${data.id}`}><b>{data.market.name}</b> <i>open {data.market.hours}</i> </Link>
+                            <Link to={`/markets/${data.id}`}><b>{data.market.name}</b> <i>open {data.market.hours}</i> </Link>
                         </li>
                     ))
                     ) : (
