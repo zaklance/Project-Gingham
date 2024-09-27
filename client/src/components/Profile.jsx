@@ -7,6 +7,7 @@ function Profile() {
     const [profileData, setProfileData] = useState(null);
     const [editMode, setEditMode] = useState(false);
     const [vendorFavs, setVendorFavs] = useState([]);
+    const [marketFavs, setMarketFavs] = useState([]);
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -101,6 +102,16 @@ function Profile() {
             .catch(error => console.error('Error fetching favorites', error));
     }, []);
 
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/market_favorites")
+            .then(response => response.json())
+            .then(data => {
+                const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
+                setMarketFavs(filteredData)
+            })
+            .catch(error => console.error('Error fetching favorites', error));
+    }, []);
+
 
     if (!profileData) {
         return <div>Loading...</div>;
@@ -163,6 +174,7 @@ function Profile() {
             </div>
             <div className='bounding-box'>
                 <h2>Favorites</h2>
+                <br/>
                 <h3>Vendors</h3>
                 <ul className='favorites-list'>
                     {vendorFavs.length > 0 ? (
@@ -175,39 +187,20 @@ function Profile() {
                         <p>No favorite vendors</p>
                     )}
                 </ul>
+                <br/>
+                <h3>Markets</h3>
+                <ul className='favorites-list'>
+                    {marketFavs.length > 0 ? (
+                    marketFavs.map((data) => (
+                        <li key={data.id}>
+                            <Link to={`/marketss/${data.id}`}><b>{data.market.name}</b> <i>open {data.market.hours}</i> </Link>
+                        </li>
+                    ))
+                    ) : (
+                        <p>No favorite markets</p>
+                    )}
+                </ul>
             </div>
-
-            {/* <div style={{ marginTop: '20px', border: '1px solid #ccc', padding: '20px', borderRadius: '8px' }}>
-                <h2>Favorites</h2>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div style={{ flex: '1', marginRight: '10px' }}>
-                        <h3>Vendors</h3>
-                        {favoriteVendors.length > 0 ? (
-                            favoriteVendors.map((vendorId, index) => (
-                                <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                                    <Link to={`/vendors/${vendorId}`}>{vendorDetails[vendorId]}</Link>
-                                    <button className='btn-delete' onClick={() => handleDeleteFavorite('vendor', vendorId)}>Delete</button>
-                                </div>
-                            ))
-                        ) : (
-                            <p>No favorite vendors</p>
-                        )}
-                    </div>
-                    <div style={{ flex: '1', marginLeft: '10px' }}>
-                        <h3>Markets</h3>
-                        {favoriteMarkets.length > 0 ? (
-                            favoriteMarkets.map((marketId, index) => (
-                                <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                                    <Link to={`/markets/${marketId}`}>{marketDetails[marketId]}</Link>
-                                    <button className='btn-delete' onClick={() => handleDeleteFavorite('market', marketId)}>Delete</button>
-                                </div>
-                            ))
-                        ) : (
-                            <p>No favorite markets</p>
-                        )}
-                    </div>
-                </div>
-            </div> */}
         </div>
     );
 }
