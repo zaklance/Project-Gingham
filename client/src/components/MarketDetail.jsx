@@ -130,7 +130,7 @@ function MarketDetail ({ match }) {
                 <h4>Hours: {market.hours}</h4>
             </div>
             <br />
-            <div>
+            <div className='flex-start'>
                 <button
                     className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
                     onClick={handleClick}> ❤️ </button>

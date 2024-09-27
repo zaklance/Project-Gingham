@@ -322,6 +322,7 @@ ul {
 }
 
 .btn-like {
+  height: fit-content;
   margin-left: 20px;
   margin-top: -4px;
   padding: 10px 12px;
@@ -332,7 +333,7 @@ ul {
 }
 
 .btn-like:hover {
-  padding: 10px 12px;
+  /* padding: 10px 12px; */
   border-radius: 8px;
   border: none;
   background-color: #ff7b8a;
@@ -345,7 +346,8 @@ ul {
 }
 
 .btn-like-on {
-  padding: 10px 12px;
+  height: fit-content;
+  /* padding: 10px 12px; */
   border-radius: 8px;
   border: none;
   background-color: #ff7b8a;
@@ -626,23 +628,46 @@ form textarea {
 }
 
 .favorites-alert {
-  /* position: fixed; */
-  /* top: 50%;
-  left: 50%; */
-  /* transform: translate(-50%, -50%); */
+  margin-left: 24px;
+  margin-top: -5px;
   padding: 10px 20px;
-  background-color: #4caf50;
+  background-color: #00bda4;
   color: white;
   font-size: 12px;
   border-radius: 5px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: opacity 0.3s ease, transform 0.3s ease;
   opacity: 1;
-  margin-left: 24px;
+  animation-name: favAnimation;
+  animation-duration: 2000ms;
+  animation-fill-mode: forwards;
 }
 
 .favorites-alert-hidden {
   opacity: 0;
-  /* transform: translate(-50%, -60%); */
   transition: opacity 0.3s ease, transform 0.3s ease;
+  margin-left: 24px;
+  
+}
+
+@keyframes favAnimation {
+  0% {
+    opacity: 1;
+    transform: rotateX(90deg);
+  }
+  45% {
+    opacity: 1;
+    /* transform: rotateX(90deg); */
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: rotateX(0deg);
+  }
+
+  100% {
+    display: none;
+    opacity: 0;
+    transform: rotateX(90deg);
+  }
 }
