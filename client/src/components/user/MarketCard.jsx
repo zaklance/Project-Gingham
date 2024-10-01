@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../assets/css/index.css';
+import '../../assets/css/index.css';
 
 function MarketCard({ marketData }) {
     const navigate = useNavigate();

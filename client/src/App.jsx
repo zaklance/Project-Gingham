@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import './assets/css/index.css';
-import NavBar from './components/NavBar.jsx';
-import Home from './components/Home.jsx'
-import LoginPopup from './components/LoginPopup.jsx';
+import NavBar from './components/user/NavBar.jsx';
+import Home from './components/user/Home.jsx'
+import LoginPopup from './components/user/LoginPopup.jsx';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false)

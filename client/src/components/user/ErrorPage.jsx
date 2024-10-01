@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouteError, Link } from "react-router-dom";
-import '../assets/css/index.css';
-import NavBar from './NavBar';
+import '../../assets/css/index.css';
+// import NavBar from './NavBar';
 
 function ErrorPage() {
     const error = useRouteError();
