@@ -1,8 +1,8 @@
 // NavBar.jsx
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import ginghamLogo from '../assets/images/gingham-logo-3.svg';
-import '../assets/css/index.css';
+import ginghamLogo from '../../assets/images/gingham-logo-3.svg';
+import '../../assets/css/index.css';
 
 function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const location = useLocation();
@@ -17,17 +17,17 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                     <>
                         <li>
                             <button className='nav-tab color-3'>
-                                <NavLink reloadDocument to="/markets">Markets</NavLink>
+                                <NavLink reloadDocument to="/user/markets">Markets</NavLink>
                             </button>
                         </li>
                         <li>
                             <button className='nav-tab color-4'>
-                                <NavLink reloadDocument to="/vendors">Vendors</NavLink>
+                            <NavLink reloadDocument to="/user/vendors">Vendors</NavLink>
                             </button>
                         </li>
                         <li>
                             <button className='nav-tab color-5'>
-                                <NavLink reloadDocument to="/cart">Cart ({amountInCart})</NavLink>
+                            <NavLink reloadDocument to="/user/cart">Cart ({amountInCart})</NavLink>
                             </button>
                         </li>
                     </>
@@ -35,12 +35,12 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                     <>
                         <li>
                             <button className='nav-tab color-2'>
-                                <NavLink reloadDocument to={`/profile/${user_id}`}>Profile</NavLink>
+                                <NavLink reloadDocument to={`/user/profile/${user_id}`}>Profile</NavLink>
                             </button>
                         </li>
                         <li style={{ marginLeft: 'auto' }}>
                             <button className='nav-tab color-3 tab-right'>
-                                <NavLink reloadDocument to="/logout">Logout</NavLink>
+                                <NavLink reloadDocument to="/user/logout">Logout</NavLink>
                             </button>
                         </li>
                     </>

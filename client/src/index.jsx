@@ -3,18 +3,18 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './assets/css/index.css';
 import App from './App.jsx';
-import Cart from './components/Cart.jsx';
-import Checkout from './components/Checkout.jsx';
-import CheckSession from './components/CheckSession.jsx';
-import ErrorPage from './components/ErrorPage.jsx';
-import Home from './components/Home.jsx';
-import Login from './components/LoginPopup.jsx';
-import Markets from './components/Markets.jsx';
-import MarketDetail from './components/MarketDetail.jsx';
-import Profile from './components/Profile.jsx';
-import Vendors from './components/Vendors.jsx';
-import VendorDetail from './components/VendorDetail.jsx';
-import Logout from './components/Logout.jsx';
+import Cart from './components/user/Cart.jsx';
+import Checkout from './components/user/Checkout.jsx';
+import CheckSession from './components/user/CheckSession.jsx';
+import ErrorPage from './components/user/ErrorPage.jsx';
+import Home from './components/user/Home.jsx';
+import Login from './components/user/LoginPopup.jsx';
+import Markets from './components/user/Markets.jsx';
+import MarketDetail from './components/user/MarketDetail.jsx';
+import Profile from './components/user/Profile.jsx';
+import Vendors from './components/user/Vendors.jsx';
+import VendorDetail from './components/user/VendorDetail.jsx';
+import Logout from './components/user/Logout.jsx';
 
 const router = createBrowserRouter([
     {
@@ -27,43 +27,43 @@ const router = createBrowserRouter([
                 element: <Home />
             },
             {
-                path: "login",
+                path: "user/login",
                 element: <Login />
             }, 
             {
-                path: "profile/:id", 
+                path: "user/profile/:id", 
                 element: <Profile />
             },
             {
-                path: "logout",
+                path: "user/logout",
                 element: <Logout />
             }, 
             {
-                path: "markets",
+                path: "user/markets",
                 element: <Markets />
             },
             {
-                path: "markets/:id",
+                path: "user/markets/:id",
                 element: <MarketDetail />
             },
             {
-                path: "vendors",
+                path: "user/vendors",
                 element: <Vendors />
             },
             {
-                path: "vendors/:id",
+                path: "user/vendors/:id",
                 element: <VendorDetail />
             },
             {
-                path: "cart", 
+                path: "user/cart", 
                 element: <Cart />
             },
             {
-                path: "checkout",
+                path: "user/checkout",
                 element: <Checkout />
             }, 
             {
-                path: "check_session",
+                path: "user/check_session",
                 element: <CheckSession />
             }
         ]

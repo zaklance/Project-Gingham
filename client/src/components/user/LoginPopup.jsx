@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../assets/css/index.css';
+import '../../assets/css/index.css';
 
 function Login({ handlePopup }) {
     const [loginUsername, setLoginUsername] = useState('');

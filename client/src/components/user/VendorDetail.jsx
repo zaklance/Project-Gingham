@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useOutletContext, useNavigate } from 'react-router-dom';
-import buyabag from '../assets/images/GINGHAM_BUYABAG.png';
+import buyabag from '../../assets/images/GINGHAM_BUYABAG.png';
 
 function VendorDetail () {
     const { id } = useParams();

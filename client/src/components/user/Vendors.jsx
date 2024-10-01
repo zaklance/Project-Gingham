@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import VendorCard from './VendorCard';
-import '../assets/css/index.css';
+import '../../assets/css/index.css';
 
 function Vendors() {
     const [vendor, setVendor] = useState([]);
