@@ -230,3 +230,87 @@ class VendorFavorite(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<VendorFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.vendor_id}>"
+
+class VendorUser(db.Model, SerializerMixin):
+    __tablename__ = 'vendor_users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String, unique=True, nullable=False)
+    _password = db.Column(db.String, nullable=False)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    phone = db.Column(db.String, nullable=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+
+    # Relationships
+    vendor = db.relationship('Vendor', back_populates='vendor_users')
+
+    serialize_rules = ('-_password', '-vendor.vendor_users')
+
+    @validates('email')
+    def validate_email(self, key, value):
+        if not value:
+            raise ValueError("Email is required")
+        if "@" not in value or "." not in value:
+            raise ValueError("Invalid email address")
+        return value
+
+    @validates('first_name', 'last_name')
+    def validate_name(self, key, value):
+        if not value:
+            raise ValueError(f"{key.replace('_', ' ').capitalize()} is required")
+        if len(value) < 1 or len(value) > 50:
+            raise ValueError(f"{key.replace('_', ' ').capitalize()} must be between 1 and 50 characters")
+        return value
+
+    @validates('phone')
+    def validate_phone(self, key, value):
+        if value and len(value) > 15:
+            raise ValueError("Phone number cannot be longer than 15 characters")
+        return value
+
+    @hybrid_property
+    def password(self):
+        return self._password
+
+    @password.setter
+    def password(self, new_password):
+        hash = bcrypt.generate_password_hash(new_password.encode('utf-8'))
+        self._password = hash
+
+    def authenticate(self, password):
+        return bcrypt.check_password_hash(self._password, password.encode('utf-8'))
+
+    def __repr__(self) -> str:
+        return f"<VendorUser {self.email}>"
+
+class VendorMarket(db.Model, SerializerMixin):
+    __tablename__ = 'vendor_markets'
+
+    id = db.Column(db.Integer, primary_key=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
+    day = db.Column(db.String, nullable=False)
+    basket = db.Column(db.Integer, nullable=False)
+    pick_up_time = db.Column(db.String, nullable=False)
+
+    # Relationships
+    vendor = db.relationship('Vendor', back_populates='vendor_markets')
+    market = db.relationship('Market', back_populates='vendor_markets')
+
+    serialize_rules = ('-vendor.vendor_markets', '-market.vendor_markets')
+
+    @validates('day', 'pick_up_time')
+    def validate_not_empty(self, key, value):
+        if not value:
+            raise ValueError(f"{key.replace('_', ' ').capitalize()} cannot be empty")
+        return value
+
+    @validates('basket')
+    def validate_basket(self, key, value):
+        if value < 0:
+            raise ValueError("Basket count cannot be negative")
+        return value
+
+    def __repr__(self) -> str:
+        return f"<VendorMarket Vendor ID: {self.vendor_id}, Market ID: {self.market_id}, Day: {self.day}, Basket: {self.basket}>"
