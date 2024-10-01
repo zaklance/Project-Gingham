@@ -65,7 +65,11 @@ const router = createBrowserRouter([
             {
                 path: "user/check_session",
                 element: <CheckSession />
-            }
+            },
+            // {
+            //     path: "vendor",
+            //     element: <HomeVendor />
+            // }
         ]
     }
 ]);

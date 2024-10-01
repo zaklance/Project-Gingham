@@ -127,6 +127,20 @@ ul {
   width: 100%;
 }
 
+.ul-footer {
+  width: fit-content;
+}
+
+.footer-li {
+  color: #3b4752;
+  margin: 4px;
+  padding: 4px;
+}
+
+.footer-li:hover {
+  background-color: #fffcbe;
+}
+
 .nav-bar ul{
   display: flex;
 }
@@ -178,6 +192,13 @@ ul {
   background: #6c7ae0;
 }
 
+.blue {
+  background-color: #d8f4fe;
+  padding-bottom: 4px;
+  border-radius: 12px 12px 0 0;
+  margin-bottom: -22px;
+}
+
 .tab-right {
   border-radius: 0 20px 0 0;
 }
@@ -200,6 +221,12 @@ ul {
 .flex-start {
   display: flex;
   justify-content: flex-start;
+}
+
+.flex-start-around {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 
 .side-select {
@@ -416,6 +443,10 @@ select:hover {
 .big-logo {
   float: left;
   width: 300px;
+}
+
+.small-logo {
+  width: 96px;
 }
 
 .checkout {
@@ -676,4 +707,12 @@ form textarea {
     opacity: 0;
     transform: rotateX(90deg);
   }
+}
+
+.footer {
+  background-color: white;
+  margin-top: 48px;;
+  margin-bottom: -20px;
+  border-radius: 20px 20px 0 0;
+  padding: 24px;
 }

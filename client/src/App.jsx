@@ -5,6 +5,7 @@ import './assets/css/index.css';
 import NavBar from './components/user/NavBar.jsx';
 import Home from './components/user/Home.jsx'
 import LoginPopup from './components/user/LoginPopup.jsx';
+import Footer from './components/user/Footer.jsx';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -53,6 +54,7 @@ function App() {
                     {/* <Home context={{ isPopup, setIsPopup, handlePopup }} /> */}
                 {/* )} */}
             </main>
+            <Footer />
         </div>
     );
 }
