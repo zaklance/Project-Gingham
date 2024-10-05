@@ -1,7 +1,7 @@
 import os
 import json
 from flask import Flask, request, jsonify, session
-from models import db, User, Market, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, bcrypt
+from models import db, User, Market, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate
@@ -328,6 +328,12 @@ def del_vendor_fav(id):
         db.session.delete(vendorFav)
         db.session.commit()
         return {}, 204
+    
+@app.route("/vendor_markets", methods=['GET',])
+def get_vendor_markets():
+    if request.method == "GET":
+        vendor_markets = VendorMarket.query.all()
+        return vendor_markets
     
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

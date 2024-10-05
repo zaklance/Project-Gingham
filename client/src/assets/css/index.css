@@ -3,10 +3,11 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  color: #3b4752;
 }
 
 a {
-  color: black;
+  color: #3b4752;
   text-decoration: none;
 }
 
@@ -97,7 +98,6 @@ main {
 h1, h2, h3, h4, h5, h6 {
   font-family: "Playwrite NG Modern", cursive;
   font-optical-sizing: auto;
-  /* font-weight: <weight>; */
   font-style: normal;
 }
 
@@ -110,9 +110,7 @@ h2 {
   margin:16px;
 }
 
-p,
-li,
-div {
+p, li, div {
   font-family: "Lexend Deca", sans-serif;
   font-optical-sizing: auto;
   font-weight: 300;
@@ -163,9 +161,7 @@ ul {
   margin: 0px 0 -20px 0;
   font-family: "Lilita One", sans-serif;
   font-weight: 400;
-
   /* font-style: normal; */
-  
 }
 
 .color-1 {
@@ -395,7 +391,7 @@ ul {
 
 button a {
   text-decoration: none;
-  color: black;
+  color: #3b4752;
   /* Adjust link color as needed */
 }
 
@@ -711,7 +707,7 @@ form textarea {
 
 .footer {
   background-color: white;
-  margin-top: 48px;;
+  margin-top: 48px;
   margin-bottom: -20px;
   border-radius: 20px 20px 0 0;
   padding: 24px;

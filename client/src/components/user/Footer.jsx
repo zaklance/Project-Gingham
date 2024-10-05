@@ -13,24 +13,24 @@ function Footer() {
                 <div className='flex-start-around blue'>
                     <ul className='ul-footer'>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/">User Home</NavLink>
+                            <NavLink reloadDocument to="/"><strong>User Home</strong></NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/">Vendor Home</NavLink>
+                            <NavLink reloadDocument to="/"><strong>Vendor Home</strong></NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/">Admin Home</NavLink>
+                            <NavLink reloadDocument to="/"><strong>Admin Home</strong></NavLink>
                         </li>
                     </ul>
                     <ul className='ul-footer'>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/">About</NavLink>
+                            <NavLink reloadDocument to="/"><strong>About</strong></NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/">Contact</NavLink>
+                            <NavLink reloadDocument to="/"><strong>Contact</strong></NavLink>
                         </li>
                         <li className='footer-li'>
-                            <a href='https://www.mufo.nyc/' target='_blank' rel="noreferrer noopener">Mû.F.O. Inc</a>
+                            <a href='https://www.mufo.nyc/' target='_blank' rel="noreferrer noopener"><strong>Mû.F.O. Inc</strong></a>
                         </li>
                     </ul>
                     <img className='small-logo' src={ginghamLogo} alt="Gingham Logo"></img>
