@@ -1,7 +1,7 @@
 from app import app
 from faker import Faker
 from random import random, choice, randint
-from models import db, User, Market, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, bcrypt
+from models import db, User, Market, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, bcrypt
 import json
 
 fake = Faker()
@@ -489,6 +489,28 @@ def run():
     # db.session.add_all(vendor_favs)
     # db.session.commit()
 
+    vendor_markets = []
+    for i in range(500):
+
+        days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+        vendor_id = str(randint(1, 151))
+        market_id = str(randint(1, 40))
+        day = str(choice(days))
+        basket = str(randint(1, 5))
+        pick_up_time = str(fake.time())
+
+        vm = VendorMarket(
+            vendor_id=vendor_id,
+            market_id=market_id,
+            day=day,
+            basket=basket,
+            pick_up_time=pick_up_time
+        )
+        vendor_markets.append(vm)
+
+    db.session.add_all(vendor_markets)
+    db.session.commit()
 
 
 # favorite_vendors = str([randint(1, 150) for _ in range(randint(3, 9))])
