@@ -243,7 +243,7 @@ class VendorUser(db.Model, SerializerMixin):
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
 
     # Relationships
-    vendor = db.relationship('Vendor', back_populates='vendor_users')
+    # vendor = db.relationship('Vendor', back_populates='vendor_users')
 
     serialize_rules = ('-_password', '-vendor.vendor_users')
 
@@ -295,8 +295,8 @@ class VendorMarket(db.Model, SerializerMixin):
     pick_up_time = db.Column(db.String, nullable=False)
 
     # Relationships
-    vendor = db.relationship('Vendor', back_populates='vendor_markets')
-    market = db.relationship('Market', back_populates='vendor_markets')
+    # vendor = db.relationship('Vendor', back_populates='vendor_markets')
+    # market = db.relationship('Market', back_populates='vendor_markets')
 
     serialize_rules = ('-vendor.vendor_markets', '-market.vendor_markets')
 

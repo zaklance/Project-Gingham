@@ -27,7 +27,7 @@ function Footer() {
                             <NavLink reloadDocument to="/"><strong>About</strong></NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/"><strong>Contact</strong></NavLink>
+                            <NavLink reloadDocument to="mailto: hello@gingham.nyc"><strong>Contact</strong></NavLink>
                         </li>
                         <li className='footer-li'>
                             <a href='https://www.mufo.nyc/' target='_blank' rel="noreferrer noopener"><strong>Mû.F.O. Inc</strong></a>
