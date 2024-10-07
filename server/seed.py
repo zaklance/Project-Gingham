@@ -1,7 +1,7 @@
 from app import app
 from faker import Faker
 from random import random, choice, randint
-from models import db, User, Market, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, bcrypt
+from models import db, User, Market, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, bcrypt
 import json
 
 fake = Faker()
@@ -423,7 +423,7 @@ def run():
     db.session.add_all(users)
     db.session.commit()
 
-
+    # add fake market reviews
     market_revs = []
     for i in range(101):
         rev_len = randint(2, 5)
@@ -442,7 +442,7 @@ def run():
     db.session.add_all(market_revs)
     db.session.commit()
 
-
+    # add fake vendor reviews
     vendor_revs = []
     for i in range(101):
         rev_len = randint(2, 5)
@@ -489,6 +489,7 @@ def run():
     # db.session.add_all(vendor_favs)
     # db.session.commit()
 
+    # add fake vendor markets
     vendor_markets = []
     for i in range(500):
 
@@ -510,6 +511,34 @@ def run():
         vendor_markets.append(vm)
 
     db.session.add_all(vendor_markets)
+    db.session.commit()
+
+
+    # add fake users
+    vendor_users = []
+    for i in range(50):
+        email = fake.ascii_free_email()
+        password = fake.password()
+        first_name = fake.first_name()
+        last_name = fake.last_name()
+        address = fake.address()
+        # phone = fake.phone_number()
+        phone = str(randint(1000000000,9999999999))
+        vendor_id = str(randint(1, 151))
+
+
+        vu = VendorUser(
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            address=address,
+            phone=phone,
+            vendor_id=vendor_id
+        )
+        vendor_users.append(vu)
+
+    db.session.add_all(vendor_users)
     db.session.commit()
 
 
