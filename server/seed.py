@@ -515,13 +515,23 @@ def run():
 
 
     # add fake users
+    # user for demo
+    vendor_user_demo = VendorUser(
+        email="hello@gingham.nyc",
+        password="lol",
+        first_name="Ham-man",
+        last_name="Gingy",
+        phone="2095553880",
+    )
+    db.session.add(vendor_user_demo)
+    db.session.commit()
+
     vendor_users = []
     for i in range(50):
         email = fake.ascii_free_email()
         password = fake.password()
         first_name = fake.first_name()
         last_name = fake.last_name()
-        address = fake.address()
         # phone = fake.phone_number()
         phone = str(randint(1000000000,9999999999))
         vendor_id = str(randint(1, 151))
@@ -532,7 +542,6 @@ def run():
             password=password,
             first_name=first_name,
             last_name=last_name,
-            address=address,
             phone=phone,
             vendor_id=vendor_id
         )
