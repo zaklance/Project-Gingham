@@ -40,22 +40,24 @@ function App() {
     }, []);
 
     return (
-        <div className="container">
-            <header>
-                <NavBar amountInCart={amountInCart} isPopup={isPopup} setIsPopup={setIsPopup} handlePopup={handlePopup} />
-            </header>
-            <main>
-                <div className={`popup ${isPopup ? 'popup-on' : ''}`} style={{ top: window.scrollY }}>
-                    <LoginPopup handlePopup={handlePopup} />
-                </div>
-                {/* {isLoggedIn ? ( */}
-                    <Outlet context={{ amountInCart, setAmountInCart, cartItems, setCartItems, isPopup, setIsPopup, handlePopup }} />
-                {/* ) : ( */}
-                    {/* <Home context={{ isPopup, setIsPopup, handlePopup }} /> */}
-                {/* )} */}
-            </main>
+        <>
+            <div className="container">
+                <header>
+                    <NavBar amountInCart={amountInCart} isPopup={isPopup} setIsPopup={setIsPopup} handlePopup={handlePopup} />
+                </header>
+                <main>
+                    <div className={`popup ${isPopup ? 'popup-on' : ''}`} style={{ top: window.scrollY }}>
+                        <LoginPopup handlePopup={handlePopup} />
+                    </div>
+                    {/* {isLoggedIn ? ( */}
+                        <Outlet context={{ amountInCart, setAmountInCart, cartItems, setCartItems, isPopup, setIsPopup, handlePopup }} />
+                    {/* ) : ( */}
+                        {/* <Home context={{ isPopup, setIsPopup, handlePopup }} /> */}
+                    {/* )} */}
+                </main>
+            </div>
             <Footer />
-        </div>
+        </>
     );
 }
 
