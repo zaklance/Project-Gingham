@@ -7,8 +7,8 @@ import '../../assets/css/index.css';
 function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const location = useLocation();
     const user_id = globalThis.sessionStorage.getItem('user_id');
-
-    const isLoggedIn = user_id && location.pathname !== '/' && location.pathname !== '/login';
+    const isLoggedIn = user_id;
+    // const isLoggedIn = user_id && location.pathname !== '/' && location.pathname !== '/login';
 
     return (
         <nav className="nav-bar">
