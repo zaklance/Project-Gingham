@@ -27,7 +27,7 @@ function MarketCard({ marketData }) {
     }, []);
 
     const handleLearnMore = () => {
-        navigate(`/markets/${marketData.id}`);
+        navigate(`/user/markets/${marketData.id}`);
     };
 
     return (

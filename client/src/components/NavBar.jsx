@@ -7,30 +7,30 @@ import '../assets/css/index.css';
 function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const location = useLocation();
     const user_id = globalThis.sessionStorage.getItem('user_id');
-
-    const isLoggedIn = user_id && location.pathname !== '/' && location.pathname !== '/login';
+    const isLoggedIn = user_id;
+    // const isLoggedIn = user_id && location.pathname !== '/' && location.pathname !== '/login';
 
     return (
         <nav className="nav-bar">
             <ul>
-                <img className='logo' src={ginghamLogo} alt="Gingham Logo" />
-                    <>
-                        <li>
-                            <button className='nav-tab color-3'>
-                                <NavLink reloadDocument to="/user/markets">Markets</NavLink>
-                            </button>
-                        </li>
-                        <li>
-                            <button className='nav-tab color-4'>
-                            <NavLink reloadDocument to="/user/vendors">Vendors</NavLink>
-                            </button>
-                        </li>
-                        <li>
-                            <button className='nav-tab color-5'>
-                            <NavLink reloadDocument to="/user/cart">Cart ({amountInCart})</NavLink>
-                            </button>
-                        </li>
-                    </>
+                <NavLink className="btn-home" reloadDocument to="/" ><img className='logo' src={ginghamLogo} alt="Gingham Logo" /></NavLink>
+                <>
+                    <li>
+                        <button className='nav-tab color-3'>
+                            <NavLink reloadDocument to="/user/markets">Markets</NavLink>
+                        </button>
+                    </li>
+                    <li>
+                        <button className='nav-tab color-4'>
+                        <NavLink reloadDocument to="/user/vendors">Vendors</NavLink>
+                        </button>
+                    </li>
+                    <li>
+                        <button className='nav-tab color-5'>
+                        <NavLink reloadDocument to="/user/cart">Cart ({amountInCart})</NavLink>
+                        </button>
+                    </li>
+                </>
                 {isLoggedIn ? (
                     <>
                         <li>
