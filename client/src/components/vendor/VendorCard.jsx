@@ -6,7 +6,7 @@ function VendorCard({ vendorData }) {
     const navigate = useNavigate();
 
     const handleLearnMore = () => {
-        navigate(`/vendors/${vendorData.id}`);
+        navigate(`/user/vendors/${vendorData.id}`);
     };
 
     return (

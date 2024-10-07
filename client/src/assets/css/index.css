@@ -11,17 +11,26 @@ a {
   text-decoration: none;
 }
 
+html {
+  height: 100%;
+}
+
 
 /* Basic typography */
 body {
   margin: 0;
-    /* margin-top: -15px; */
-    /* display: flex; */
-    place-items: center;
-    /* min-width: 320px; */
-    min-height: 100vh;
-    background-image: url('../images/gingham_seamless-strawberry-01.svg');
-    background-size: auto;
+  /* margin-top: -15px; */
+  /* display: flex; */
+  place-items: center;
+  /* min-width: 320px; */
+  min-height: 100vh;
+  background-image: url('../images/gingham_seamless-strawberry-01.svg');
+  background-size: auto;
+  moz-box-sizing: border-box;
+  box-sizing: border-box;
+  position: relative;
+  min-height: 100%;
+  padding-bottom: 80px;
 }
 
 /* Container for centering content */
@@ -30,6 +39,7 @@ body {
   top: 0;
   width: 90%;
   max-width: 1200px;
+  min-height: 100%;
   /* background-color: #a7a7a7; */
   display: box;
   justify-content: space-between;
@@ -415,6 +425,10 @@ button:hover {
   float: right;
 }
 
+.btn-home {
+  margin-bottom: -6px;
+}
+
 select {
   background: #fffa9c;
   /* -webkit-appearance: none; */
@@ -706,9 +720,18 @@ form textarea {
 }
 
 .footer {
+  /* justify-self: flex-end; */
+  position: absolute;
   background-color: white;
   margin-top: 48px;
   margin-bottom: -20px;
+  margin-left: auto;
+  margin-right: auto;
   border-radius: 20px 20px 0 0;
   padding: 24px;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  width: 80%;
+  max-width: 1056px;
 }
