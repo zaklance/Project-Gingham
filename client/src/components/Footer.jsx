@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouteError, NavLink } from "react-router-dom";
-import '../../assets/css/index.css';
-import ginghamLogo from '../../assets/images/gingham-logo-3.svg';
+import '../assets/css/index.css';
+import ginghamLogo from '../assets/images/gingham-logo-3.svg';
 // import NavBar from './NavBar';
 
 function Footer() {
@@ -16,7 +16,7 @@ function Footer() {
                             <NavLink reloadDocument to="/"><strong>User Home</strong></NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/"><strong>Vendor Home</strong></NavLink>
+                            <NavLink reloadDocument to="/vendorlogin"><strong>Vendor Home</strong></NavLink>
                         </li>
                         <li className='footer-li'>
                             <NavLink reloadDocument to="/"><strong>Admin Home</strong></NavLink>

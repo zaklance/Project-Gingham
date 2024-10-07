@@ -1,8 +1,8 @@
 // NavBar.jsx
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import ginghamLogo from '../../assets/images/gingham-logo-3.svg';
-import '../../assets/css/index.css';
+import ginghamLogo from '../assets/images/gingham-logo-3.svg';
+import '../assets/css/index.css';
 
 function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const location = useLocation();

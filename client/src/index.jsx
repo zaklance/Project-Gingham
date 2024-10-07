@@ -7,13 +7,14 @@ import Cart from './components/user/Cart.jsx';
 import Checkout from './components/user/Checkout.jsx';
 import CheckSession from './components/user/CheckSession.jsx';
 import ErrorPage from './components/user/ErrorPage.jsx';
-import Home from './components/user/Home.jsx';
+import Home from './components/Home.jsx';
 import Login from './components/user/LoginPopup.jsx';
 import Markets from './components/user/Markets.jsx';
 import MarketDetail from './components/user/MarketDetail.jsx';
 import Profile from './components/user/Profile.jsx';
 import Vendors from './components/user/Vendors.jsx';
 import VendorDetail from './components/user/VendorDetail.jsx';
+import VendorLogin from './components/vendor/VendorLogin.jsx';
 import Logout from './components/user/Logout.jsx';
 
 const router = createBrowserRouter([
@@ -66,10 +67,10 @@ const router = createBrowserRouter([
                 path: "user/check_session",
                 element: <CheckSession />
             },
-            // {
-            //     path: "vendor",
-            //     element: <HomeVendor />
-            // }
+            {
+                path: "vendorlogin",
+                element: <VendorLogin />
+            }
         ]
     }
 ]);

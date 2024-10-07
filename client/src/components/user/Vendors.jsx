@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import VendorCard from './VendorCard';
+import VendorCard from '../vendor/VendorCard';
 import '../../assets/css/index.css';
 
 function Vendors() {
