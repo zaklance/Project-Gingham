@@ -104,6 +104,7 @@ class Market(db.Model, SerializerMixin):
     # Relationships
     reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic')
     market_favorites = db.relationship('MarketFavorite', back_populates='market', lazy='dynamic')
+    vendor_markets = db.relationship('VendorMarket', back_populates='market', lazy='dynamic')
 
     serialize_rules = ('-reviews.market', '-market_favorites.market')
 
@@ -136,8 +137,9 @@ class Vendor(db.Model, SerializerMixin):
     # Relationships
     reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic')
     vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic')
+    vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor', lazy='dynamic')
 
-    serialize_rules = ('-reviews.vendor', '-vendor_favorites.vendor', '-reviews.user.market_reviews')
+    serialize_rules = ('-reviews.vendor', '-vendor_favorites.vendor', '-reviews.user.market_reviews', '-vendor_vendor_users.vendor')
 
     # Validations
     @validates('name', 'product')
@@ -230,6 +232,23 @@ class VendorFavorite(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<VendorFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.vendor_id}>"
+    
+class VendorVendorUser(db.Model, SerializerMixin):
+    __tablename__ = 'vendor_vendor_users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=False)
+    role = db.Column(db.String, nullable=True)
+
+    # Relationships
+    vendor = db.relationship('Vendor', back_populates='vendor_vendor_users')
+    vendor_user = db.relationship('VendorUser', back_populates='vendor_vendor_users')
+
+    serialize_rules = ('-vendor.vendor_vendor_users', '-vendor_user.vendor_vendor_users')
+
+    def __repr__(self) -> str:
+        return f"<VendorVendorUser Vendor ID: {self.vendor_id}, VendorUser ID: {self.vendor_user_id}>"
 
 class VendorUser(db.Model, SerializerMixin):
     __tablename__ = 'vendor_users'
@@ -243,9 +262,9 @@ class VendorUser(db.Model, SerializerMixin):
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
 
     # Relationships
-    # vendor = db.relationship('Vendor', back_populates='vendor_users')
+    vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor_user', lazy='dynamic')
 
-    serialize_rules = ('-_password', '-vendor.vendor_users')
+    serialize_rules = ('-_password', '-vendor_vendor_users.vendor_user')
 
     @validates('email')
     def validate_email(self, key, value):
@@ -295,8 +314,8 @@ class VendorMarket(db.Model, SerializerMixin):
     pick_up_time = db.Column(db.String, nullable=False)
 
     # Relationships
-    # vendor = db.relationship('Vendor', back_populates='vendor_markets')
-    # market = db.relationship('Market', back_populates='vendor_markets')
+    vendor = db.relationship('Vendor', back_populates='vendor_markets')
+    market = db.relationship('Market', back_populates='vendor_markets')
 
     serialize_rules = ('-vendor.vendor_markets', '-market.vendor_markets')
 
