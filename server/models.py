@@ -22,7 +22,6 @@ class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, unique=True, nullable=False)
     _password = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
@@ -36,14 +35,6 @@ class User(db.Model, SerializerMixin):
     vendor_favorites = db.relationship('VendorFavorite', back_populates='user')
 
     serialize_rules = ('-_password', '-market_reviews.user', '-vendor_reviews.user', '-market_favorites', '-vendor_favorites')
-
-    @validates('username')
-    def validate_username(self, key, value):
-        if not value:
-            raise ValueError("Username is required")
-        if len(value) < 3 or len(value) > 50:
-            raise ValueError("Username must be between 3 and 50 characters")
-        return value.lower()
 
     @validates('first_name')
     def validate_first_name(self, key, value):
@@ -88,7 +79,7 @@ class User(db.Model, SerializerMixin):
         return bcrypt.check_password_hash(self._password, password.encode('utf-8'))
 
     def __repr__(self) -> str:
-        return f"<User {self.username}>"
+        return f"<User {self.email}>"
 
 class Market(db.Model, SerializerMixin):
     __tablename__ = 'markets'
@@ -138,8 +129,15 @@ class Vendor(db.Model, SerializerMixin):
     reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic')
     vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic')
     vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor', lazy='dynamic')
+    vendor_markets = db.relationship('VendorMarket', back_populates='vendor', lazy='dynamic')
 
-    serialize_rules = ('-reviews.vendor', '-vendor_favorites.vendor', '-reviews.user.market_reviews', '-vendor_vendor_users.vendor')
+    serialize_rules = (
+        '-reviews.vendor', 
+        '-vendor_favorites.vendor', 
+        '-reviews.user.market_reviews',
+        '-vendor_vendor_users.vendor',
+        '-vendor_markets.vendor'
+    )
 
     # Validations
     @validates('name', 'product')
