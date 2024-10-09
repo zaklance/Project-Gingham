@@ -13,13 +13,13 @@ function Footer() {
                 <div className='flex-start-around blue'>
                     <ul className='ul-footer'>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/"><strong>User Home</strong></NavLink>
+                            <NavLink reloadDocument to="/"><strong>Gingham Home</strong></NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/vendorlogin"><strong>Vendor Home</strong></NavLink>
+                            <NavLink reloadDocument to="/vendor/login"><strong>Vendor Portal</strong></NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/"><strong>Admin Home</strong></NavLink>
+                            <NavLink reloadDocument to="/admin/login"><strong>Admin Portal</strong></NavLink>
                         </li>
                     </ul>
                     <ul className='ul-footer'>
@@ -27,7 +27,7 @@ function Footer() {
                             <NavLink reloadDocument to="/"><strong>About</strong></NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="mailto: hello@gingham.nyc" title="hello@gingham.nyc"><strong>Contact</strong></NavLink>
+                            <NavLink reloadDocument to="/contact"><strong>Contact</strong></NavLink>
                         </li>
                         <li className='footer-li'>
                             <a href='https://www.mufo.nyc/' target='_blank' rel="noreferrer noopener"><strong>Mû.F.O. Inc</strong></a>

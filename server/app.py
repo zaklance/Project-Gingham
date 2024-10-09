@@ -43,7 +43,7 @@ def login():
     return jsonify(access_token=access_token, user_id=user.id), 200
 
 # VENDOR PORTAL
-@app.route('/vendorlogin', methods=['POST'])
+@app.route('/vendor/login', methods=['POST'])
 def vendorLogin():
     data = request.get_json()
     vendorUser = VendorUser.query.filter(Vendor.email == data['email']).first()
