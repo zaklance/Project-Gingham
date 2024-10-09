@@ -433,8 +433,8 @@ def contact():
         msg['To'] = recipient_email
         msg['Subject'] = f"Contact Form Submission: {subject}"
 
-        print("Sender email:", os.getenv('EMAIL_USER'))
-        print("Email password:", os.getenv('EMAIL_PASS'))
+        # print("Sender email:", os.getenv('EMAIL_USER'))
+        # print("Email password:", os.getenv('EMAIL_PASS'))
 
         body = f"Name: {name}\nEmail: {email}\n\n Message: \n{message}"
         msg.attach(MIMEText(body, 'plain'))
@@ -442,7 +442,7 @@ def contact():
         server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
         server.starttls()
         server.login(sender_email, password)
-        print("SMTP Server is unreachable")
+        # print("SMTP Server is unreachable")
 
         server.sendmail(sender_email, recipient_email, msg.as_string())
         server.quit()
