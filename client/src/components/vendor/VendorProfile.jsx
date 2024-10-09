@@ -150,6 +150,7 @@ function VendorProfile () {
                                     <p><strong>Name:</strong> {vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : 'Loading...'}</p>
                                     <p><strong>Email:</strong> {vendorUserData ? vendorUserData.email : 'Loading...'}</p>
                                     <p><strong>Phone:</strong> {vendorUserData ? vendorUserData.phone : 'Loading...'}</p>
+                                    <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                                 </>
                             )}
                         </div>

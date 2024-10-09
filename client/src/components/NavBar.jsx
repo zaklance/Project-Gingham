@@ -1,4 +1,3 @@
-// NavBar.jsx
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import ginghamLogo from '../assets/images/gingham-logo-3.svg';
@@ -9,28 +8,31 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const user_id = globalThis.sessionStorage.getItem('user_id');
     const isLoggedIn = user_id;
     // const isLoggedIn = user_id && location.pathname !== '/' && location.pathname !== '/login';
+    const isNotUser = location.pathname.startsWith('/vendor') || location.pathname.startsWith('/admin');
 
     return (
         <nav className="nav-bar">
             <ul>
                 <NavLink className="btn-home" reloadDocument to="/" ><img className='logo' src={ginghamLogo} alt="Gingham Logo" /></NavLink>
-                <>
-                    <li>
-                        <button className='nav-tab color-3'>
-                            <NavLink reloadDocument to="/user/markets">Markets</NavLink>
-                        </button>
-                    </li>
-                    <li>
-                        <button className='nav-tab color-4'>
-                        <NavLink reloadDocument to="/user/vendors">Vendors</NavLink>
-                        </button>
-                    </li>
-                    <li>
-                        <button className='nav-tab color-5'>
-                        <NavLink reloadDocument to="/user/cart">Cart ({amountInCart})</NavLink>
-                        </button>
-                    </li>
-                </>
+                {!isNotUser && (
+                    <>
+                        <li>
+                            <button className='nav-tab color-3'>
+                                <NavLink reloadDocument to="/user/markets">Markets</NavLink>
+                            </button>
+                        </li>
+                        <li>
+                            <button className='nav-tab color-4'>
+                            <NavLink reloadDocument to="/user/vendors">Vendors</NavLink>
+                            </button>
+                        </li>
+                        <li>
+                            <button className='nav-tab color-5'>
+                            <NavLink reloadDocument to="/user/cart">Cart ({amountInCart})</NavLink>
+                            </button>
+                        </li>
+                    </>
+                )}
                 {isLoggedIn ? (
                     <>
                         <li>
@@ -45,13 +47,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         </li>
                     </>
                 ) : (
-                    <>
+                    !isNotUser && (
                         <li style={{ marginLeft: 'auto' }}>
                             <button className='nav-tab color-3 tab-right' onClick={handlePopup} >
                                 Login/Signup
                             </button>
                         </li>
-                    </>
+                    )
                 )}
             </ul>
         </nav>

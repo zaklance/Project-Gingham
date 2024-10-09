@@ -27,10 +27,10 @@ function Home({ isPopup, setIsPopup, handlePopup }) {
                 </p>
                 <img src={howitworks} style={{ width: '100%' }} />
             </div>
-            <div className="box-big">
+            {/* <div className="box-big">
                 <img src={farmers} style={{ width: '60%' }}/>
                 <img src={blanket} style={{ width: '38%' }}/>
-            </div>
+            </div> */}
         </div>
     )
 }
