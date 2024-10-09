@@ -89,6 +89,39 @@ def signup():
     except Exception as e:
         return {'error': f'Exception: {str(e)}'}, 500
 
+@app.route('/vendorsignup', methods=['POST'])
+def vendorsignup():
+    data = request.get_json()
+
+    try:
+        vendor_user = VendorUser.query.filter(VendorUser.email == data['email']).first()
+        if vendor_user:
+            return {'error': 'email already exists'}, 400
+        
+        new_vendor_user = VendorUser(
+            email=data['email'],
+            password=data['password'],
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            phone=data.get('phone'),
+            vendor_id=data['vendor_id']
+        )
+
+        db.session.add(new_vendor_user)
+        db.session.commit()
+
+        return new_vendor_user.to_dict(), 201
+
+    except IntegrityError as e:
+        db.session.rollback()
+        return {'error': f'IntegrityError: {str(e)}'}, 400
+
+    except ValueError as e:
+        return {'error': f'ValueError: {str(e)}'}, 400
+
+    except Exception as e:
+        return {'error': f'Exception: {str(e)}'}, 500
+
 @app.route('/logout', methods=['DELETE'])
 def logout():
     session.pop('user_id', None)
