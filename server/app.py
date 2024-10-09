@@ -46,7 +46,7 @@ def login():
 @app.route('/vendor/login', methods=['POST'])
 def vendorLogin():
     data = request.get_json()
-    vendorUser = VendorUser.query.filter(Vendor.email == data['email']).first()
+    vendorUser = VendorUser.query.filter(VendorUser.email == data['email']).first()
     if not vendorUser:
         return {'error': 'login failed'}, 401
     
@@ -55,7 +55,7 @@ def vendorLogin():
     
     access_token = create_access_token(identity=vendorUser.id, expires_delta=timedelta(hours=12))
 
-    return jsonify(access_token-access_token, vendorUser_id=vendorUser.id), 200
+    return jsonify(access_token=access_token, vendorUser_id=vendorUser.id), 200
 
 @app.route('/signup', methods=['POST'])
 def signup():

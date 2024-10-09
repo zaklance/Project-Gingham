@@ -24,7 +24,7 @@ function VendorLogin () {
             if (response.ok) {
                 const data = await response.json();
                 globalThis.sessionStorage.setItem('jwt-token', data.access_token);
-                globalThis.sessionStorage.setItem(vendorUser_id, data.vendorUser_id);
+                globalThis.sessionStorage.setItem('vendorUser_id', data.vendorUser_id);
                 console.log('Login Successful:', data);
 
                 window.location.reload();

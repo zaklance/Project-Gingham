@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, Route, Routes, BrowserRouter as Router} from 'react-router-dom';
+import { useParams, NavLink, Link, Route, Routes, BrowserRouter as Router} from 'react-router-dom';
 import VendorDashboard from './VendorDashboard.jsx';
 import VendorSales from './VendorSales.jsx';
 
@@ -89,14 +89,17 @@ function VendorProfile () {
             <br />
             <div className='tabs'>
                 <Link to="#" onClick={() => setActiveTab('profile')} className={activeTab === 'profile' ? 'active' : ''}>
-                        Profile
+                    Profile
                 </Link>
                 <Link to="#" onClick={() => setActiveTab('dashboard')} className={activeTab === 'dashboard' ? 'active' : ''}>
-                        Dashboard
+                    Dashboard
                 </Link>
                 <Link to="#" onClick={() => setActiveTab('sales')} className={activeTab === 'sales' ? 'active' : ''}>
-                        Sales
+                    Sales
                 </Link>
+                <NavLink reloadDocument to="vendor/logout" style={{marginLeft: 'auto'}}>
+                    Logout
+                </NavLink>
             </div>
 
             <div className="tab-content">
