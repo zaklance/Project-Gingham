@@ -40,9 +40,10 @@ function VendorLogin () {
     return(
         <div className='login-bar'>
             <div className='vendor-wrapper'>
-                <h1 className='title'>Vendor Login</h1>
+                <h1 className='title'>Vendor Portal</h1>
                 <div>
                     <form onSubmit={handleLogin} className='form'>
+                        <h2>Login:</h2>
                         <div className='form-group'>
                             <label>Email:</label>
                             <input
