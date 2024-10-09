@@ -15,6 +15,12 @@ function Markets() {
             .catch(error => console.error('Error fetching markets', error));
     }, []);
 
+    useEffect(() => {
+        if (markets.length > 0) {
+            initMap();
+        }
+    }, [markets]);
+
     const unionSquare = { lat:40.736358642578125, lng: -73.99076080322266 }
 
     // console.log(import.meta.env.VITE_GOOGLE_MAP_ID)
@@ -68,8 +74,6 @@ function Markets() {
             `;
         return content;
     }
-
-    initMap();
 
     return (
         <>

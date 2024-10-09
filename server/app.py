@@ -372,6 +372,8 @@ def all_market_favorites():
 @app.route('/market_favorites/<int:id>', methods=['GET', 'DELETE'])
 def del_market_fav(id):
     marketFav = MarketFavorite.query.filter(MarketFavorite.id == id).first()
+    if not marketFav:
+        return {'error': 'market favorite not found'}, 404
     if request.method == 'GET':
         return marketFav.to_dict(), 200
     if request.method == 'DELETE':

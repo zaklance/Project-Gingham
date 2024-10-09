@@ -131,13 +131,7 @@ class Vendor(db.Model, SerializerMixin):
     vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor', lazy='dynamic')
     vendor_markets = db.relationship('VendorMarket', back_populates='vendor', lazy='dynamic')
 
-    serialize_rules = (
-        '-reviews.vendor', 
-        '-vendor_favorites.vendor', 
-        '-reviews.user.market_reviews',
-        '-vendor_vendor_users.vendor',
-        '-vendor_markets.vendor'
-    )
+    serialize_rules = ( '-reviews.vendor', '-vendor_favorites.vendor', '-vendor_vendor_users.vendor', '-vendor_markets.vendor' )
 
     # Validations
     @validates('name', 'product')
@@ -167,7 +161,7 @@ class MarketReview(db.Model, SerializerMixin):
     market = db.relationship('Market', back_populates='reviews')
     user = db.relationship('User', back_populates='market_reviews')
 
-    serialize_rules = ('-market.reviews','-market.id', '-market.market_favorites', '-user.market_reviews', 'user.first_name')
+    serialize_rules = ('-market.reviews', '-market.market_favorites', '-user.market_reviews', 'user.first_name')
 
     def __repr__(self) -> str:
         return f"<MarketReview {self.id}>"
@@ -190,7 +184,7 @@ class VendorReview(db.Model, SerializerMixin):
     vendor = db.relationship('Vendor', back_populates='reviews')
     user = db.relationship('User', back_populates='vendor_reviews')
 
-    serialize_rules = ('-vendor.reviews','-vendor.id', '-vendor.vendor_favorites', '-user.vendor_reviews', 'user.first_name')
+    serialize_rules = ('-vendor.reviews', '-vendor.vendor_favorites', '-user.vendor_reviews', 'user.first_name')
 
     def __repr__(self) -> str:
         return f"<VendorReview {self.id}>"
