@@ -74,6 +74,15 @@ body {
   border-radius: 20px;
 }
 
+.vendor-wrapper {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+}
+
 /* Header styling */
 header {
   background: #d8f4fe;
@@ -734,4 +743,25 @@ form textarea {
   left: 0;
   width: 80%;
   max-width: 1056px;
+} 
+
+.tabs {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.tabs a {
+  text-decoration: none;
+  padding: 10px 20px;
+  background-color: lightgray;
+  border-radius: 5px;
+}
+
+.tabs a:hover {
+  background-color: darkgray;
+}
+
+.tab-content {
+  margin-top: 20px;
 }
