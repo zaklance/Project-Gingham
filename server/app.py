@@ -1,5 +1,6 @@
 import os
 import json
+import smtplib
 from flask import Flask, request, jsonify, session
 from models import db, User, Market, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, bcrypt
 from dotenv import load_dotenv
@@ -8,6 +9,8 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 load_dotenv()
 
@@ -408,6 +411,47 @@ def get_vendor_markets():
     if request.method == "GET":
         vendor_markets = VendorMarket.query.all()
         return vendor_markets
+    
+@app.route('/contact', methods=['POST'])
+def contact(): 
+    data = request.get_json()
+    print("received data:", data)
+    name = data.get('name')
+    email = data.get('email')
+    subject = data.get('subject')
+    message = data.get('message')
+
+    print(f"Name: {name}, Email: {email}, Subject: {subject}, Message: {message}")
+
+    try: 
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+        recipient_email = "hello@mufo.nyc"
+
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = recipient_email
+        msg['Subject'] = f"Contact Form Submission: {subject}"
+
+        print("Sender email:", os.getenv('EMAIL_USER'))
+        print("Email password:", os.getenv('EMAIL_PASS'))
+
+        body = f"Name: {name}\nEmail: {email}\n\n Message: \n{message}"
+        msg.attach(MIMEText(body, 'plain'))
+
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        print("SMTP Server is unreachable")
+
+        server.sendmail(sender_email, recipient_email, msg.as_string())
+        server.quit()
+        
+        return jsonify({"message": "Email sent successfully!"}), 200
+
+    except Exception as e: 
+        print("Error occured:", str(e))
+        return jsonify({"error": str(e)}), 500
     
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

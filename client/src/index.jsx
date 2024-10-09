@@ -27,6 +27,9 @@ import VendorLogout from './components/vendor/VendorLogout.jsx';
 import VendorProfile from './components/vendor/VendorProfile.jsx';
 
 // admin routes
+import AdminLogin from './components/admin/AdminLogin.jsx';
+import AdminLogout from './components/admin/AdminLogout.jsx';
+import AdminProfile from './components/admin/AdminProfile.jsx';
 
 const router = createBrowserRouter([
     {
@@ -59,12 +62,14 @@ const router = createBrowserRouter([
                     { path: "logout", element: <VendorLogout /> }
                 ]
             },
-            // {
-            //     path: "admin",
-            //     children: [
-            //         {path: "login", element: <AdminLogin />}
-            //     ]
-            // }
+            {
+                path: "admin",
+                children: [
+                    { path: "login", element: <AdminLogin /> },
+                    { path: "profile/:id", element: <AdminProfile /> },
+                    { path: "logout", element: <AdminLogout /> }
+                ]
+            }
         ]      
     }
 ]);
