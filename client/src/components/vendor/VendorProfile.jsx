@@ -105,7 +105,7 @@ function VendorProfile () {
             <div className="tab-content">
                 {activeTab === 'profile' && (
                     <div>
-                        <h1>Profile Information</h1>
+                        <h2 className='title'>Profile Information</h2>
                         <div className='bounding-box'>
                             {editMode ? (
                                 <>
@@ -156,6 +156,11 @@ function VendorProfile () {
                                     <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                                 </>
                             )}
+                        </div>
+                        <br />
+                        <h2 className='title'>Vendor Information</h2>
+                        <div className='bounding-box'>
+                            <p>**vendor information goes here**</p>
                         </div>
                     </div>
                 )}
