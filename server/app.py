@@ -127,6 +127,12 @@ def logout():
     session.pop('user_id', None)
     return {}, 204
 
+# VENDOR PORTAL
+@app.route('/vendor/logout', methods=['DELETE'])
+def vendorLogout():
+    session.pop('vendorUser_id', None)
+    return {}, 204
+
 @app.route('/check_session', methods=['GET'])
 @jwt_required()
 def check_session():

@@ -97,7 +97,7 @@ function VendorProfile () {
                 <Link to="#" onClick={() => setActiveTab('sales')} className={activeTab === 'sales' ? 'active' : ''}>
                     Sales
                 </Link>
-                <NavLink reloadDocument to="vendor/logout" style={{marginLeft: 'auto'}}>
+                <NavLink reloadDocument to="/vendor/logout" style={{marginLeft: 'auto'}}>
                     Logout
                 </NavLink>
             </div>
