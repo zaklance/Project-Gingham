@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function VendorLogin () {
     const [loginEmail, setLoginEmail] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
+    const navigate = useNavigate();
 
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -27,9 +29,9 @@ function VendorLogin () {
                 globalThis.sessionStorage.setItem('vendorUser_id', data.vendorUser_id);
                 console.log('Login Successful:', data);
 
-                window.location.reload();
+                navigate(`/vendor/profile/${data.vendorUser_id}`);
             } else {
-                alert('Login failed');
+                alert('Login failed:', errorData.error);
             }
         } catch (error) {
             console.error('Error during login:', error);

@@ -4,9 +4,23 @@ import { useNavigate } from 'react-router-dom';
 function VendorLogout () {
     const navigate = useNavigate();
 
+    useEffect(() => {
+        fetch('http://127.0.0.1:5555/vendor/logout', {
+            method: 'DELETE',
+            credentials: 'include'
+        })
+        .then(() => {
+            globalThis.sessionStorage.removeItem('vendorUser_id');
+            navigate('/vendor/login')
+        })
+        .catch((error) => {
+            console.error('Logout failed:', error);
+        });
+    }, [navigate]);    
+
     return(
         <div>
-            <h1>Vendor Login</h1>
+            Logging out...
         </div>
     )
 }
