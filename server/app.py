@@ -1,7 +1,7 @@
 import os
 import json
 from flask import Flask, request, jsonify, session
-from models import db, User, Market, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, bcrypt
+from models import db, User, Market, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate
@@ -41,6 +41,21 @@ def login():
     access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=12))
     
     return jsonify(access_token=access_token, user_id=user.id), 200
+
+# VENDOR PORTAL
+@app.route('/vendorlogin', methods=['POST'])
+def vendorLogin():
+    data = request.get_json()
+    vendorUser = VendorUser.query.filter(Vendor.email == data['email']).first()
+    if not vendorUser:
+        return {'error': 'login failed'}, 401
+    
+    if not vendorUser.authenticate(data['password']):
+        return {'error': 'login failed'}, 401
+    
+    access_token = create_access_token(identity=vendorUser.id, expires_delta=timedelta(hours=12))
+
+    return jsonify(access_token-access_token, vendorUser_id=vendorUser.id), 200
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -194,6 +209,34 @@ def profile(id):
             return jsonify(user.to_dict()), 200
 
         except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
+# VENDOR PORTAL
+@app.route('/vendor/profile/<int:id>', methods=['GET', 'PATCH'])
+def vendorProfile(id):
+    vendorUser = VendorUser.query.filter(VendorUser.id == id).first()
+    if not vendorUser:
+        return {'error': 'user not found'}, 404
+    
+    if request.method == 'GET':
+        profile_data = vendorUser.to_dict()
+        return jsonify(profile_data), 200
+    
+    elif request.method == 'PATCH':
+        try: 
+            vendorUser = VendorUser.query.filter_by(id=id).first()
+            if not vendorUser: 
+                return {'error': 'Email not found'}, 404
+            
+            data = request.get_json()
+            for key, value in data.items():
+                setattr(vendorUser, key, value)
+
+            db.session.commit()
+            return jsonify(vendorUser.to_dict()), 200
+        
+        except Exception as e: 
             db.session.rollback()
             return {'error': str(e)}, 500
 

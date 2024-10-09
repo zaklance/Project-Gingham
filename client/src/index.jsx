@@ -15,6 +15,7 @@ import Profile from './components/user/Profile.jsx';
 import Vendors from './components/user/Vendors.jsx';
 import VendorDetail from './components/user/VendorDetail.jsx';
 import VendorLogin from './components/vendor/VendorLogin.jsx';
+import VendorProfile from './components/vendor/VendorProfile.jsx';
 import Logout from './components/user/Logout.jsx';
 
 const router = createBrowserRouter([
@@ -70,6 +71,10 @@ const router = createBrowserRouter([
             {
                 path: "vendorlogin",
                 element: <VendorLogin />
+            }, 
+            {
+                path: "vendor/profile/:id",
+                element: <VendorProfile />
             }
         ]
     }
