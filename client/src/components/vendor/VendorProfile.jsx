@@ -85,7 +85,7 @@ function VendorProfile () {
 
     return(
         <div>
-            <h1>Welcome to your Vendor Profile!</h1>
+            <h1>VENDOR PORTAL</h1>
             <br />
             <div className='tabs'>
                 <Link to="#" onClick={() => setActiveTab('profile')} className={activeTab === 'profile' ? 'active' : ''}>
@@ -150,9 +150,9 @@ function VendorProfile () {
                                 </>
                             ) : (
                                 <>
-                                    <p><strong>Name:</strong> {vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : 'Loading...'}</p>
-                                    <p><strong>Email:</strong> {vendorUserData ? vendorUserData.email : 'Loading...'}</p>
-                                    <p><strong>Phone:</strong> {vendorUserData ? vendorUserData.phone : 'Loading...'}</p>
+                                    <p><strong>Name: </strong> {vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : ' Loading...'}</p>
+                                    <p><strong>Email: </strong> {vendorUserData ? vendorUserData.email : ' Loading...'}</p>
+                                    <p><strong>Phone: </strong> {vendorUserData ? vendorUserData.phone : ' Loading...'}</p>
                                     <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                                 </>
                             )}
@@ -160,7 +160,9 @@ function VendorProfile () {
                         <br />
                         <h2 className='title'>Vendor Information</h2>
                         <div className='bounding-box'>
-                            <p>**vendor information goes here**</p>
+                            <p><strong>Name:</strong> {vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : 'Loading...'}</p>
+                            <p><strong>Email:</strong> {vendorUserData ? vendorUserData.email : 'Loading...'}</p>
+                            <p><strong>Phone:</strong> {vendorUserData ? vendorUserData.phone : 'Loading...'}</p>
                         </div>
                     </div>
                 )}

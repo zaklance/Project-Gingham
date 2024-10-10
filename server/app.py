@@ -26,7 +26,6 @@ CORS(app, supports_credentials=True)
 
 jwt = JWTManager(app)
 
-
 @app.route('/', methods=['GET'])
 def homepage():
     return {"message": "Welcome to the homepage!"}, 200
@@ -281,7 +280,7 @@ def all_market_reviews():
         if market_id:
             reviews = MarketReview.query.filter_by(market_id=market_id).options(db.joinedload(MarketReview.user)).all()
         else:
-            reviews = MarketReview.query.options(db.joinedload(MarketReview.user)).all()
+            reviews = MarketReview.query.all()
         return jsonify([review.to_dict() for review in reviews]), 200
     
     elif request.method == 'POST':

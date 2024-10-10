@@ -3,7 +3,10 @@ import React from 'react';
 function AdminDashboard () {
     return(
         <div>
-            <h1>Admin Dashboard</h1>
+            <h2 className='title'>Admin Dashboard</h2>
+            <div className='bounding-box'>
+                <p>**dashboard stuff goes here**</p>
+            </div>
         </div>
     )
 }
