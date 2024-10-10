@@ -97,7 +97,7 @@ class Market(db.Model, SerializerMixin):
     market_favorites = db.relationship('MarketFavorite', back_populates='market', lazy='dynamic')
     vendor_markets = db.relationship('VendorMarket', back_populates='market', lazy='dynamic')
 
-    serialize_rules = ('-reviews.market', '-market_favorites.market')
+    serialize_rules = ('-reviews.market', '-market_favorites.market', 'vendor_markets.market')
 
     # Validations
     @validates('name', 'location', 'hours')
