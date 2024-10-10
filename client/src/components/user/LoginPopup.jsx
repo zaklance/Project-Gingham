@@ -3,10 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import '../../assets/css/index.css';
 
 function Login({ handlePopup }) {
-    const [loginUsername, setLoginUsername] = useState('');
+    const [loginEmail, setLoginEmail] = useState('');  // Use email instead of username
     const [loginPassword, setLoginPassword] = useState('');
     const [signupEmail, setSignupEmail] = useState('');
-    const [signupUsername, setSignupUsername] = useState('');
     const [signupPassword, setSignupPassword] = useState('');
     const [signupFirstName, setSignupFirstName] = useState('');
     const [signupLastName, setSignupLastName] = useState('');
@@ -16,7 +15,6 @@ function Login({ handlePopup }) {
 
     const handleLogin = async (event) => {
         event.preventDefault();
-        const lowercaseUsername = loginUsername.toLowerCase();
     
         try {
             const response = await fetch('http://127.0.0.1:5555/login', {
@@ -25,7 +23,7 @@ function Login({ handlePopup }) {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    username: lowercaseUsername,
+                    email: loginEmail,
                     password: loginPassword
                 }),
                 credentials: 'include'
@@ -37,15 +35,12 @@ function Login({ handlePopup }) {
                 // Store token in sessionStorage
                 globalThis.sessionStorage.setItem('jwt-token', data.access_token);
     
-                // store user ID if necessary
+                // Store user ID if necessary
                 globalThis.sessionStorage.setItem('user_id', data.user_id);
     
                 console.log('Login successful:', data);
     
-                // Navigate to the user's profile
-                // navigate(`/profile/${data.user_id}`);
-    
-                // refresh the page
+                // Navigate to the user's profile or refresh the page
                 window.location.reload();
             } else {
                 alert('Login failed');
@@ -65,7 +60,6 @@ function Login({ handlePopup }) {
             },
             body: JSON.stringify({
                 email: signupEmail,
-                username: signupUsername,
                 password: signupPassword,
                 first_name: signupFirstName,
                 last_name: signupLastName,
@@ -81,12 +75,10 @@ function Login({ handlePopup }) {
             if (errorData.error) {
                 if (errorData.error.includes('email')) {
                     alert("This email is already in use. Please sign in or use a different email.");
-                } else if (errorData.error.includes('username')) {
-                    alert("This username is already taken. Please choose another username.");
                 } else {
                     alert("Signup failed: " + errorData.error);
                     console.log('Signup failed');
-                } 
+                }
             } else {
                 alert("Signup failed. Please check your details and try again.")
             }
@@ -97,17 +89,17 @@ function Login({ handlePopup }) {
         <div className='login-bar'>
             <button className="btn x-btn" onClick={handlePopup}>X</button>
             <div className='wrapper'>
-            <h1 className='title'>WELCOME TO GINGHAM!</h1>
+                <h1 className='title'>WELCOME TO GINGHAM!</h1>
                 <div>
                     <form onSubmit={handleLogin} className="form">
                         <h2>Login</h2>
                         <div className="form-group">
-                            <label>Username:</label>
+                            <label>Email:</label>
                             <input
-                                type="username"
-                                value={loginUsername}
-                                placeholder="enter your username"
-                                onChange={(event) => setLoginUsername(event.target.value)}
+                                type="email"
+                                value={loginEmail}
+                                placeholder="enter your email"
+                                onChange={(event) => setLoginEmail(event.target.value)}
                                 required
                             />
                         </div>
@@ -134,16 +126,6 @@ function Login({ handlePopup }) {
                                 value={signupEmail}
                                 placeholder="enter your email"
                                 onChange={(event) => setSignupEmail(event.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Username: </label>
-                            <input
-                                type="text"
-                                value={signupUsername}
-                                placeholder='enter a username'
-                                onChange={(event) => setSignupUsername(event.target.value)}
                                 required
                             />
                         </div>
