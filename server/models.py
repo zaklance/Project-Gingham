@@ -22,11 +22,11 @@ class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String, unique=True, nullable=False)
     _password = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     address = db.Column(db.String, nullable=True)
-    email = db.Column(db.String, unique=True, nullable=False)
 
     # Relationships
     market_reviews = db.relationship('MarketReview', back_populates='user')
@@ -96,7 +96,7 @@ class Market(db.Model, SerializerMixin):
     reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic')
     market_favorites = db.relationship('MarketFavorite', back_populates='market', lazy='dynamic')
 
-    serialize_rules = ('-reviews.market', '-market_favorites.market', '-vendor_markets.market', '-reviews.user.vendor_reviews')
+    serialize_rules = ('-reviews.market', '-market_favorites.market', '-vendor_markets.market', '-reviews.user.vendor_reviews', '-reviews.user.market_reviews')
 
     # Validations
     @validates('name', 'location', 'hours')
