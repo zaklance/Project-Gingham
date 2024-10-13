@@ -126,6 +126,15 @@ h2 {
   width: fit-content;
 }
 
+.separator {
+  border: 0;
+  height: 3px;
+  background-color: #ccc;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+
 .title {
   margin:16px;
 }
