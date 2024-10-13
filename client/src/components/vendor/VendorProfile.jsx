@@ -85,8 +85,8 @@ function VendorProfile () {
 
     return(
         <div>
-            <h1>VENDOR PORTAL</h1>
-            <br />
+            <h1 className='title' style={{textAlign:'center'}}>VENDOR PORTAL</h1>
+            <hr className='separator' />
             <div className='tabs'>
                 <Link to="#" onClick={() => setActiveTab('profile')} className={activeTab === 'profile' ? 'active' : ''}>
                     Profile
@@ -101,7 +101,7 @@ function VendorProfile () {
                     Logout
                 </NavLink>
             </div>
-
+            <hr className='separator' />
             <div className="tab-content">
                 {activeTab === 'profile' && (
                     <div>

@@ -42,8 +42,8 @@ function AdminProfile () {
 
     return(
         <div>
-            <h1>ADMIN PORTAL</h1>
-            <br />
+            <h1 className='title' style={{textAlign:'center'}}>ADMIN PORTAL</h1>
+            <hr className='separator' />
             <div className='tabs'>
                 <Link to="#" onClick={() => setActiveTab('profile')} className={activeTab === 'profile' ? 'active' : ''}>
                     Profile
@@ -61,7 +61,7 @@ function AdminProfile () {
                     Logout
                 </NavLink>
             </div>
-
+            <hr className='separator' />
             <div className="tab-content">
                 {activeTab === 'profile' && (
                     <div>
