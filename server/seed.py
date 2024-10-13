@@ -390,12 +390,11 @@ def run():
     
     # user for demo
     user_demo = User(
-        username="hamging",
+        email="hamging@gingham.nyc",
         password="lol",
         first_name="Ham-man",
         last_name="Gingy",
         address="11 Broadway New York, NY 10004",
-        email="ham-man69@proton.me",
     )
     db.session.add(user_demo)
     db.session.commit()
@@ -403,20 +402,18 @@ def run():
     # add fake users
     users = []
     for i in range(50):
-        username = fake.user_name()
+        email = fake.ascii_free_email()
         password = fake.password()
         first_name = fake.first_name()
         last_name = fake.last_name()
         address = fake.address()
-        email = fake.ascii_free_email()
 
         u = User(
-            username=username,
+            email=email,
             password=password,
             first_name=first_name,
             last_name=last_name,
             address=address,
-            email=email,
         )
         users.append(u)
 
@@ -498,8 +495,8 @@ def run():
         vendor_id = str(randint(1, 151))
         market_id = str(randint(1, 40))
         day = str(choice(days))
-        basket = str(randint(1, 5))
-        pick_up_time = str(fake.time())
+        basket = int(randint(1, 5))
+        pick_up_time = f"{fake.time()}"
 
         vm = VendorMarket(
             vendor_id=vendor_id,
@@ -522,6 +519,7 @@ def run():
         first_name="Ham-man",
         last_name="Gingy",
         phone="2095553880",
+        vendor_id="1"
     )
     db.session.add(vendor_user_demo)
     db.session.commit()

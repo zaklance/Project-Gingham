@@ -427,7 +427,7 @@ def contact():
     try: 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
-        recipient_email = "hello@mufo.nyc"
+        recipient_email = "hello@gingham.nyc"
 
         msg = MIMEMultipart()
         msg['From'] = sender_email
