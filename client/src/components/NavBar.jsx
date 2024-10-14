@@ -16,11 +16,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     return (
         <nav className="nav-bar">
             <ul>
-                {!isNotUser ? (
-                    <NavLink className="btn-home" reloadDocument to="/" ><img className='logo' src={ginghamLogo} alt="Gingham Logo" /></NavLink>
-                ) : (
-                    <NavLink className="btn-home" reloadDocument to="/vendor/login" ><img className='logo' src={ginghamLogo} alt="Gingham Logo" /></NavLink>
-                )}
+                <NavLink className="btn-home" reloadDocument to="/" ><img className='logo' src={ginghamLogo} alt="Gingham Logo" /></NavLink>
                 {!isNotUser && (
                     <>
                         <li>
