@@ -10,7 +10,7 @@ function VendorLogout () {
             credentials: 'include'
         })
         .then(() => {
-            globalThis.sessionStorage.removeItem('vendorUser_id');
+            globalThis.sessionStorage.removeItem('vendor_user_id');
             navigate('/vendor/login')
         })
         .catch((error) => {

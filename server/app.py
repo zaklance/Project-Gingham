@@ -2,7 +2,7 @@ import os
 import json
 import smtplib
 from flask import Flask, request, jsonify, session
-from models import db, User, Market, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, bcrypt
+from models import db, User, Market, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate
@@ -57,7 +57,7 @@ def vendorLogin():
     
     access_token = create_access_token(identity=vendorUser.id, expires_delta=timedelta(hours=12))
 
-    return jsonify(access_token=access_token, vendorUser_id=vendorUser.id), 200
+    return jsonify(access_token=access_token, vendor_user_id=vendorUser.id), 200
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -132,7 +132,7 @@ def logout():
 # VENDOR PORTAL
 @app.route('/vendor/logout', methods=['DELETE'])
 def vendorLogout():
-    session.pop('vendorUser_id', None)
+    session.pop('vendor_user_id', None)
     return {}, 204
 
 @app.route('/check_session', methods=['GET'])
@@ -412,6 +412,18 @@ def get_vendor_markets():
     if request.method == "GET":
         vendor_markets = VendorMarket.query.all()
         return vendor_markets
+
+@app.route("/vendor_users", methods=['GET',])
+def get_vendor_users():
+    if request.method == "GET":
+        vendor_users = VendorUser.query.all()
+        return vendor_users
+
+@app.route("/vendor_vendor_users", methods=['GET',])
+def get_vendor_vendor_users():
+    if request.method == "GET":
+        vendor_vendor_users = VendorVendorUser.query.all()
+        return vendor_vendor_users
     
 @app.route('/contact', methods=['POST'])
 def contact(): 

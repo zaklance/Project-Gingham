@@ -129,7 +129,7 @@ class Vendor(db.Model, SerializerMixin):
     vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic')
     vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor', lazy='dynamic')
 
-    serialize_rules = ( '-reviews.vendor', '-vendor_favorites.vendor', '-vendor_vendor_users.vendor', '-vendor_markets.vendor', '-reviews.user.market_reviews')
+    serialize_rules = ( '-reviews.vendor', '-vendor_favorites.vendor', '-vendor_vendor_users.vendor', '-vendor_markets.vendor', '-reviews.user.market_reviews', "-vendor_vendor_users.email")
 
     # Validations
     @validates('name', 'product')

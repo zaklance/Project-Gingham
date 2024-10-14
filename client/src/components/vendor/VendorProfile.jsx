@@ -22,7 +22,7 @@ function VendorProfile () {
                 });
 
                 const text = await response.text();
-                console.log('Raw response:', text);
+                // console.log('Raw response:', text);
 
                 if (response.ok) {
                     try {
@@ -85,23 +85,6 @@ function VendorProfile () {
 
     return(
         <div>
-            <h1 className='title' style={{textAlign:'center'}}>VENDOR PORTAL</h1>
-            <hr className='separator' />
-            <div className='tabs'>
-                <Link to="#" onClick={() => setActiveTab('profile')} className={activeTab === 'profile' ? 'active' : ''}>
-                    Profile
-                </Link>
-                <Link to="#" onClick={() => setActiveTab('dashboard')} className={activeTab === 'dashboard' ? 'active' : ''}>
-                    Dashboard
-                </Link>
-                <Link to="#" onClick={() => setActiveTab('sales')} className={activeTab === 'sales' ? 'active' : ''}>
-                    Sales
-                </Link>
-                <NavLink reloadDocument to="/vendor/logout" style={{marginLeft: 'auto'}}>
-                    Logout
-                </NavLink>
-            </div>
-            <hr className='separator' />
             <div className="tab-content">
                 {activeTab === 'profile' && (
                     <div>
