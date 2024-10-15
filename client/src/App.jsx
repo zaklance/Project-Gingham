@@ -11,6 +11,7 @@ import VendorLogin from './components/vendor/VendorLogin.jsx';
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [isPopup, setIsPopup] = useState(false);
+    const isNotUser = location.pathname.startsWith('/vendor') || location.pathname.startsWith('/admin');
     const [amountInCart, setAmountInCart] = useState(() => {
         return parseInt(globalThis.sessionStorage.getItem('amountInCart') || 0);
     });
@@ -42,6 +43,7 @@ function App() {
 
     return (
         <>
+            {isNotUser ? (<div className='banner-portal'><h1 className='flex-start-around'>Vendor Portal</h1></div>) : (<></>)}
             <div className="container">
                 <header>
                     <NavBar amountInCart={amountInCart} isPopup={isPopup} setIsPopup={setIsPopup} handlePopup={handlePopup} />
