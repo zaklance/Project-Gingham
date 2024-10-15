@@ -182,11 +182,12 @@ def market_by_id(id):
         db.session.commit()
         return {}, 204
     
-@app.route('/vendors', methods=['GET', 'POST'])
+@app.route('/vendors', methods=['GET', 'POST', 'PATCH'])
 def all_vendors():
     if request.method == 'GET':
         vendors = Vendor.query.all()
         return jsonify([vendor.to_dict() for vendor in vendors]), 200
+
     elif request.method == 'POST':
         data = request.get_json()
         new_vendor = Vendor(
@@ -198,6 +199,34 @@ def all_vendors():
         db.session.add(new_vendor)
         db.session.commit()
         return new_vendor.to_dict(), 201
+
+    elif request.method == 'PATCH':
+        data = request.get_json()
+        vendor_id = data.get('id')
+
+        if not vendor_id:
+            return {'error': 'Vendor ID is required for updating'}, 400
+
+        vendor = Vendor.query.filter_by(id=vendor_id).first()
+
+        if not vendor:
+            return {'error': 'Vendor not found'}, 404
+
+        if 'name' in data:
+            vendor.name = data['name']
+        if 'based_out_of' in data:
+            vendor.based_out_of = data['based_out_of']
+        if 'locations' in data:
+            vendor.locations = data['locations']
+        if 'product' in data:
+            vendor.product = data['product']
+
+        try:
+            db.session.commit()
+            return jsonify(vendor.to_dict()), 200
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Exception: {str(e)}'}, 500
 
 @app.route('/vendors/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def vendor_by_id(id):
@@ -246,30 +275,66 @@ def profile(id):
             return {'error': str(e)}, 500
 
 # VENDOR PORTAL
-@app.route('/vendor/profile/<int:id>', methods=['GET', 'PATCH'])
+@app.route('/vendor/profile/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
 def vendorProfile(id):
-    vendorUser = VendorUser.query.filter(VendorUser.id == id).first()
-    if not vendorUser:
-        return {'error': 'user not found'}, 404
-    
     if request.method == 'GET':
+        vendorUser = VendorUser.query.filter_by(id == id).first()
+        if not vendorUser:
+            return {'error': 'user not found'}, 404
         profile_data = vendorUser.to_dict()
         return jsonify(profile_data), 200
     
     elif request.method == 'PATCH':
-        try: 
-            vendorUser = VendorUser.query.filter_by(id=id).first()
-            if not vendorUser: 
-                return {'error': 'Email not found'}, 404
-            
+        vendorUser = VendorUser.query.filter_by(id == id).first()
+        if not vendorUser:
+            return {'error': 'user not found'}, 404
+        
+        try:
             data = request.get_json()
             for key, value in data.items():
                 setattr(vendorUser, key, value)
-
             db.session.commit()
             return jsonify(vendorUser.to_dict()), 200
         
-        except Exception as e: 
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
+    elif request.method == 'POST':
+        data = request.get_json()
+        
+        existing_user = VendorUser.query.filter_by(email=data['email']).first()
+        if existing_user:
+            return {'error': 'Email already in use'}, 400
+        
+        try:
+            new_vendor_user = VendorUser(
+                email=data['email'],
+                password=data['password'],
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                phone=data.get('phone'),
+                vendor_id=data['vendor_id']
+            )
+            db.session.add(new_vendor_user)
+            db.session.commit()
+            return jsonify(new_vendor_user.to_dict()), 201
+        
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+    
+    elif request.method == 'DELETE':
+        vendorUser = VendorUser.query.filter_by(id=id).first()
+        if not vendorUser:
+            return {'error': 'user not found'}, 404
+        
+        try:
+            db.session.delete(vendorUser)
+            db.session.commit()
+            return {}, 204
+        
+        except Exception as e:
             db.session.rollback()
             return {'error': str(e)}, 500
 
@@ -419,11 +484,97 @@ def get_vendor_users():
         vendor_users = VendorUser.query.all()
         return vendor_users
 
-@app.route("/vendor_vendor_users", methods=['GET',])
-def get_vendor_vendor_users():
+@app.route("/vendor_vendor_users", methods=['GET', 'POST', 'PATCH', 'DELETE'])
+def handle_vendor_vendor_users():
     if request.method == "GET":
-        vendor_vendor_users = VendorVendorUser.query.all()
-        return vendor_vendor_users
+        try:
+            vendor_vendor_users = VendorVendorUser.query.all()
+            return jsonify([vvu.to_dict() for vvu in vendor_vendor_users]), 200
+        except Exception as e:
+            return {'error': f'Exception: {str(e)}'}, 500
+
+    elif request.method == "POST":
+        data = request.get_json()
+        
+        try:
+            if not data.get('vendor_id') or not data.get('vendor_user_id'):
+                return {'error': 'vendor_id and vendor_user_id are required'}, 400
+
+            new_vendor_vendor_user = VendorVendorUser(
+                vendor_id=data['vendor_id'],
+                vendor_user_id=data['vendor_user_id'],
+                role=data.get('role')
+            )
+
+            db.session.add(new_vendor_vendor_user)
+            db.session.commit()
+
+            return new_vendor_vendor_user.to_dict(), 201
+
+        except IntegrityError as e:
+            db.session.rollback()
+            return {'error': f'IntegrityError: {str(e)}'}, 400
+        
+        except ValueError as e:
+            return {'error': f'ValueError: {str(e)}'}, 400
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Exception: {str(e)}'}, 500
+
+    elif request.method == "PATCH":
+        data = request.get_json()
+
+        try:
+            if not data.get('id'):
+                return {'error': 'vendor_vendor_user ID is required for patching'}, 400
+
+            vendor_vendor_user = VendorVendorUser.query.filter_by(id=data['id']).first()
+
+            if not vendor_vendor_user:
+                return {'error': 'VendorVendorUser not found'}, 404
+
+            if 'vendor_id' in data:
+                vendor_vendor_user.vendor_id = data['vendor_id']
+            if 'vendor_user_id' in data:
+                vendor_vendor_user.vendor_user_id = data['vendor_user_id']
+            if 'role' in data:
+                vendor_vendor_user.role = data['role']
+
+            db.session.commit()
+            return jsonify(vendor_vendor_user.to_dict()), 200
+
+        except IntegrityError as e:
+            db.session.rollback()
+            return {'error': f'IntegrityError: {str(e)}'}, 400
+        
+        except ValueError as e:
+            return {'error': f'ValueError: {str(e)}'}, 400
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Exception: {str(e)}'}, 500
+
+    elif request.method == "DELETE":
+        data = request.get_json()
+
+        try:
+            if not data.get('id'):
+                return {'error': 'vendor_vendor_user ID is required for deletion'}, 400
+
+            vendor_vendor_user = VendorVendorUser.query.filter_by(id=data['id']).first()
+
+            if not vendor_vendor_user:
+                return {'error': 'VendorVendorUser not found'}, 404
+
+            db.session.delete(vendor_vendor_user)
+            db.session.commit()
+
+            return {}, 204
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Exception: {str(e)}'}, 500
     
 @app.route('/contact', methods=['POST'])
 def contact(): 
