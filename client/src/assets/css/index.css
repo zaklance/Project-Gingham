@@ -736,6 +736,12 @@ form textarea {
   }
 }
 
+.banner-portal {
+  background-color: #8f96eb;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.28);
+  padding: 0 8px;
+}
+
 .footer {
   /* justify-self: flex-end; */
   position: absolute;

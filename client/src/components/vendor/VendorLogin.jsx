@@ -44,7 +44,6 @@ function VendorLogin () {
     return(
         <div className='login-bar'>
             <div className='vendor-wrapper'>
-                <h1 className='title flex-start-around'>VENDOR PORTAL</h1>
                 <div className='flex-start-around'>
                     {/* <div>
                         <img className='big-logo' src={ginghamLogo} alt="Gingham Logo"></img>

@@ -88,7 +88,6 @@ function VendorProfile () {
             <div className="tab-content">
                 {activeTab === 'profile' && (
                     <div>
-                        <p className='title'>VENDOR PORTAL</p>
                         <h2 className='title'>Profile Information</h2>
                         <div className='bounding-box'>
                             {editMode ? (

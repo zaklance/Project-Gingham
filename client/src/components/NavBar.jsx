@@ -77,7 +77,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         </li>
                     )
                 )}
-                {isVendorLoggedIn ?  (
+                {isVendorLoggedIn && isNotUser ?  (
                     <>
                         <li style={{ marginLeft: 'auto' }}>
                             <button className='nav-tab color-3 tab-right'>
