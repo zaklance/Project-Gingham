@@ -138,6 +138,10 @@ h2 {
   margin:16px;
 }
 
+.text-light {
+  color: white;
+}
+
 p, li, div {
   font-family: "Lexend Deca", sans-serif;
   font-optical-sizing: auto;
@@ -224,6 +228,10 @@ ul {
 
 .tab-right {
   border-radius: 0 20px 0 0;
+}
+
+.center {
+  margin: auto;
 }
 
 .float-left {
@@ -739,7 +747,7 @@ form textarea {
 .banner-portal {
   background-color: #8f96eb;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.28);
-  padding: 0 8px;
+  padding: 8px 0;
 }
 
 .footer {

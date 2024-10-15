@@ -43,7 +43,7 @@ function App() {
 
     return (
         <>
-            {isNotUser ? (<div className='banner-portal'><h1 className='flex-start-around'>Vendor Portal</h1></div>) : (<></>)}
+            {isNotUser ? (<div className='banner-portal'><h2 className='center text-light' style={{backgroundColor: "transparent"}}>Vendor Portal</h2></div>) : (<></>)}
             <div className="container">
                 <header>
                     <NavBar amountInCart={amountInCart} isPopup={isPopup} setIsPopup={setIsPopup} handlePopup={handlePopup} />
