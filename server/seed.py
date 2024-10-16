@@ -1,19 +1,22 @@
 from app import app
 from faker import Faker
 from random import random, choice, randint
-from models import db, User, Market, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, bcrypt
+from models import db, User, Market, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, bcrypt
 import json
 
 fake = Faker()
 
 def run():
+    User.query.delete()
     Market.query.delete()
     Vendor.query.delete()
-    User.query.delete()
     MarketReview.query.delete()
     VendorReview.query.delete()
     MarketFavorite.query.delete()
     VendorFavorite.query.delete()
+    VendorMarket.query.delete()
+    VendorUser.query.delete()
+
 
     db.session.commit()
 
@@ -547,6 +550,17 @@ def run():
 
     db.session.add_all(vendor_users)
     db.session.commit()
+
+    admin_user_demo = AdminUser(
+        email="admin@gingham.nyc",
+        password="lol",
+        first_name="Ham-man",
+        last_name="Gingy",
+        phone="2095553880",
+        vendor_id="1"
+    )
+    db.session.add(admin_user_demo)
+    db.session.commit()    
 
 
 # favorite_vendors = str([randint(1, 150) for _ in range(randint(3, 9))])
