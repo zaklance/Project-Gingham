@@ -649,14 +649,14 @@ def get_admin_users():
 @app.route('/admin_users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
 def adminProfile(id):
     if request.method == 'GET':
-        adminUser = AdminUser.query.filter_by(id = id).first()
+        adminUser = AdminUser.query.filter_by(id=id).first()
         if not adminUser:
             return {'error': 'user not found'}, 404
         profile_data = adminUser.to_dict()
         return jsonify(profile_data), 200
     
     elif request.method == 'PATCH':
-        adminUser = VendorUser.query.filter_by(id = id).first()
+        adminUser = VendorUser.query.filter_by(id=id).first()
         if not adminUser:
             return {'error': 'user not found'}, 404
         
