@@ -610,7 +610,7 @@ def adminSignup():
         if admin_user:
             return {'error': 'email already exists'}, 400
         
-        new_admin_user = VendorUser(
+        new_admin_user = AdminUser(
             email=data['email'],
             password=data['password'],
             first_name=data['first_name'],
@@ -652,11 +652,10 @@ def adminProfile(id):
         adminUser = AdminUser.query.filter_by(id=id).first()
         if not adminUser:
             return {'error': 'user not found'}, 404
-        profile_data = adminUser.to_dict()
-        return jsonify(profile_data), 200
+        return jsonify(adminUser.to_dict()), 200
     
     elif request.method == 'PATCH':
-        adminUser = VendorUser.query.filter_by(id=id).first()
+        adminUser = AdminUser.query.filter_by(id=id).first()
         if not adminUser:
             return {'error': 'user not found'}, 404
         
@@ -684,8 +683,7 @@ def adminProfile(id):
                 password=data['password'],
                 first_name=data['first_name'],
                 last_name=data['last_name'],
-                phone=data.get('phone'),
-                vendor_id=data['vendor_id']
+                phone=data.get('phone')
             )
             db.session.add(new_admin_user)
             db.session.commit()
