@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, NavLink, Link } from 'react-router-dom';
-import AdminDashboard from './AdminDashboard';
-import AdminVendors from './AdminVendors';
-import AdminMarkets from './AdminMarkets';
 
 function AdminProfile () {
     const { id } = useParams();
@@ -15,7 +12,7 @@ function AdminProfile () {
             try {
                 const token = sessionStorage.getItem('jwt-token');
                 // console.log('JWT Token:', token);
-                const response = await fetch(`http://127.0.0.1:5555/admin_users/${id}`, {
+                const response = await fetch(`http://127.0.0.1:5555/admin/users/${id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -56,7 +53,7 @@ function AdminProfile () {
 
     const handleSaveChanges = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/admin_users/${id}`, {
+            const response = await fetch(`http://127.0.0.1:5555/admin/users/${id}`, {
                 method: 'PATCH', 
                 headers: {
                     'Content-Type': 'application/json'
@@ -82,23 +79,6 @@ function AdminProfile () {
 
     return(
         <div>
-            <div className='tabs'>
-                <Link to="#" onClick={() => setActiveTab('profile')} className={activeTab === 'profile' ? 'active' : ''}>
-                    Profile
-                </Link>
-                <Link to="#" onClick={() => setActiveTab('dashboard')} className={activeTab === 'dashboard' ? 'active' : ''}>
-                    Dashboard
-                </Link>
-                <Link to="#" onClick={() => setActiveTab('vendors')} className={activeTab === 'vendors' ? 'active' : ''}>
-                    Vendors
-                </Link>
-                <Link to="#" onClick={() => setActiveTab('markets')} className={activeTab === 'markets' ? 'active' : ''}>
-                    Markets
-                </Link>
-                <NavLink reloadDocument to="/admin/logout" style={{marginLeft: 'auto'}}>
-                    Logout
-                </NavLink>
-            </div>
             <div className="tab-content">
                 <div>
                     <h2 className='title'>Profile Information</h2>
