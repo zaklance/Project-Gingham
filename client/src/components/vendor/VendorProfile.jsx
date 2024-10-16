@@ -87,73 +87,69 @@ function VendorProfile () {
     return(
         <div>
             <div className="tab-content">
-                {activeTab === 'profile' && (
-                    <div>
-                        <h2 className='title'>Profile Information</h2>
-                        <div className='bounding-box'>
-                            {editMode ? (
-                                <>
-                                    <div className='form-group'>
-                                        <label>First Name:</label>
-                                        <input
-                                            type="text"
-                                            name="first_name"
-                                            value={vendorUserData ? vendorUserData.first_name : ''}
-                                            onChange={handleInputChange}
-                                        />
-                                    </div>
-                                    <div className='form-group'>
-                                        <label>Last Name:</label>
-                                        <input
-                                            type="text"
-                                            name="last_name"
-                                            value={vendorUserData ? vendorUserData.last_name : ''}
-                                            onChange={handleInputChange}
-                                        />
-                                    </div>
-                                    <div className='form-group'>
-                                        <label>Email:</label>
-                                        <input
-                                            type="email"
-                                            name="email"
-                                            value={vendorUserData ? vendorUserData.email : ''}
-                                            onChange={handleInputChange}
-                                        />
-                                    </div>
-                                    <div className='form-group'>
-                                        <label>Phone Number:</label>
-                                        <input
-                                            type="text"
-                                            name="phone"
-                                            value={vendorUserData ? vendorUserData.phone : ''}
-                                            onChange={handleInputChange}
-                                        />
-                                    </div>
-                                    <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
-                                    <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
-                                </>
-                            ) : (
-                                <>
-                                    <p><strong>Name: </strong> {vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : ' Loading...'}</p>
-                                    <p><strong>Email: </strong> {vendorUserData ? vendorUserData.email : ' Loading...'}</p>
-                                    <p><strong>Phone: </strong> {vendorUserData ? vendorUserData.phone : ' Loading...'}</p>
-                                    <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
-                                </>
-                            )}
-                        </div>
-                        <br />
-                        <h2 className='title'>Vendor Information</h2>
-                        <div className='bounding-box'>
-                            {vendorUserData?.vendor?.vendor_id ? (
-                                <VendorDetail vendorId={vendorUserData.vendor.vendor_id} />
-                            ) : (
-                                <p>Loading vendor details...</p>
-                            )}
-                        </div>
+                <div>
+                    <h2 className='title'>Profile Information</h2>
+                    <div className='bounding-box'>
+                        {editMode ? (
+                            <>
+                                <div className='form-group'>
+                                    <label>First Name:</label>
+                                    <input
+                                        type="text"
+                                        name="first_name"
+                                        value={vendorUserData ? vendorUserData.first_name : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className='form-group'>
+                                    <label>Last Name:</label>
+                                    <input
+                                        type="text"
+                                        name="last_name"
+                                        value={vendorUserData ? vendorUserData.last_name : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className='form-group'>
+                                    <label>Email:</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={vendorUserData ? vendorUserData.email : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className='form-group'>
+                                    <label>Phone Number:</label>
+                                    <input
+                                        type="text"
+                                        name="phone"
+                                        value={vendorUserData ? vendorUserData.phone : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
+                                <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
+                            </>
+                        ) : (
+                            <>
+                                <p><strong>Name: </strong> {vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : ' Loading...'}</p>
+                                <p><strong>Email: </strong> {vendorUserData ? vendorUserData.email : ' Loading...'}</p>
+                                <p><strong>Phone: </strong> {vendorUserData ? vendorUserData.phone : ' Loading...'}</p>
+                                <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
+                            </>
+                        )}
                     </div>
-                )}
-                {activeTab === 'dashboard' && <VendorDashboard />}
-                {activeTab === 'sales' && <VendorSales />}
+                    <br />
+                    <h2 className='title'>Vendor Information</h2>
+                    <div className='bounding-box'>
+                        {vendorUserData?.vendor?.vendor_id ? (
+                            <VendorDetail vendorId={vendorUserData.vendor.vendor_id} />
+                        ) : (
+                            <p>Loading vendor details...</p>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     )
