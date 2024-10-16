@@ -472,17 +472,21 @@ def del_vendor_fav(id):
         db.session.commit()
         return {}, 204
     
-@app.route("/vendor_markets", methods=['GET',])
+@app.route("/vendor_markets", methods=['GET'])
 def get_vendor_markets():
-    if request.method == "GET":
+    try:
         vendor_markets = VendorMarket.query.all()
-        return vendor_markets
+        return jsonify([vendor_market.to_dict() for vendor_market in vendor_markets]), 200
+    except Exception as e:
+        return {'error': f'Exception: {str(e)}'}, 500
 
-@app.route("/vendor_users", methods=['GET',])
+@app.route("/vendor_users", methods=['GET'])
 def get_vendor_users():
-    if request.method == "GET":
+    try:
         vendor_users = VendorUser.query.all()
-        return vendor_users
+        return jsonify([vendor_user.to_dict() for vendor_user in vendor_users]), 200
+    except Exception as e:
+        return {'error': f'Exception: {str(e)}'}, 500
 
 @app.route("/vendor_vendor_users", methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def handle_vendor_vendor_users():
