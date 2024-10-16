@@ -10,7 +10,7 @@ function AdminLogout () {
             credentials: 'include'
         })
         .then(() => {
-            globalThis.sessionStorage.removeItem('adminUser_id');
+            globalThis.sessionStorage.removeItem('admin_user_id');
             navigate('/admin/login')
         })
         .catch((error) => {
