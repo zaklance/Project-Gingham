@@ -187,8 +187,12 @@ def vendor_by_id(id):
         data = request.get_json()
         for key, value in data.items():
             setattr(vendor, key, value)
-        db.session.commit()
-        return vendor.to_dict(), 200
+        try:
+            db.session.commit()
+            return vendor.to_dict(), 200
+        except Exception as e: 
+            db.session.rollback()
+            return {'error': str(e)},
     elif request.method == 'DELETE':
         db.session.delete(vendor)
         db.session.commit()
