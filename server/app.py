@@ -278,7 +278,7 @@ def profile(id):
 @app.route('/vendor/profile/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
 def vendorProfile(id):
     if request.method == 'GET':
-        vendorUser = VendorUser.query.filter_by(id == id).first()
+        vendorUser = VendorUser.query.filter_by(id = id).first()
         if not vendorUser:
             return {'error': 'user not found'}, 404
         profile_data = vendorUser.to_dict()
