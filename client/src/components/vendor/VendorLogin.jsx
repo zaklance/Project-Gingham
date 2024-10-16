@@ -31,7 +31,7 @@ function VendorLogin () {
                 globalThis.sessionStorage.setItem('vendor_user_id', data.vendor_user_id);
                 console.log('Login Successful:');
 
-                navigate(`/vendor/dashboard`);
+                navigate(`/vndr/dashboard`);
             } else {
                 alert('Login failed:', errorData.error);
             }

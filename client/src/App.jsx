@@ -11,7 +11,8 @@ import VendorLogin from './components/vendor/VendorLogin.jsx';
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [isPopup, setIsPopup] = useState(false);
-    const isNotUser = location.pathname.startsWith('/vendor') || location.pathname.startsWith('/admin');
+    const isVendorPage = location.pathname.startsWith('/vndr');
+    const isAdminPage = location.pathname.startsWith('/admn');
     const [amountInCart, setAmountInCart] = useState(() => {
         return parseInt(globalThis.sessionStorage.getItem('amountInCart') || 0);
     });
@@ -43,7 +44,8 @@ function App() {
 
     return (
         <>
-            {isNotUser ? (<div className='banner-portal'><h2 className='center text-light' style={{backgroundColor: "transparent"}}>Vendor Portal</h2></div>) : (<></>)}
+            {isVendorPage ? (<div className='banner-vendor-portal'><h2 className='center text-light' style={{backgroundColor: "transparent"}}>Vendor Portal</h2></div>) : (<></>)}
+            {isAdminPage ? (<div className='banner-admin-portal'><h2 className='center text-light' style={{backgroundColor: "transparent"}}>Admin Portal</h2></div>) : (<></>)}
             <div className="container">
                 <header>
                     <NavBar amountInCart={amountInCart} isPopup={isPopup} setIsPopup={setIsPopup} handlePopup={handlePopup} />
@@ -52,11 +54,7 @@ function App() {
                     <div className={`popup ${isPopup ? 'popup-on' : ''}`} style={{ top: window.scrollY }}>
                         <LoginPopup handlePopup={handlePopup} />
                     </div>
-                    {/* {isLoggedIn ? ( */}
-                        <Outlet context={{ amountInCart, setAmountInCart, cartItems, setCartItems, isPopup, setIsPopup, handlePopup }} />
-                    {/* ) : ( */}
-                        {/* <Home context={{ isPopup, setIsPopup, handlePopup }} /> */}
-                    {/* )} */}
+                    <Outlet context={{ amountInCart, setAmountInCart, cartItems, setCartItems, isPopup, setIsPopup, handlePopup }} />
                 </main>
             </div>
             <Footer />

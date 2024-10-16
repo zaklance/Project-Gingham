@@ -32,6 +32,17 @@ import VendorProfile from './components/vendor/VendorProfile.jsx';
 import AdminLogin from './components/admin/AdminLogin.jsx';
 import AdminLogout from './components/admin/AdminLogout.jsx';
 import AdminProfile from './components/admin/AdminProfile.jsx';
+import AdminDashboard from './components/admin/AdminDashboard.jsx';
+
+let host = window.location.host;
+let protocol = window.location.protocol;
+let parts = host.split(".");
+let subdomain = "";
+if (parts.length >= 5) {
+    subdomain = parts[0];
+    parts.splice(0, 1);
+    window.location = protocol + "//" + parts.join(".") + "/" + subdomain;
+}
 
 const router = createBrowserRouter([
     {
@@ -51,13 +62,13 @@ const router = createBrowserRouter([
                     { path: "markets/:id", element: <MarketDetail /> },
                     { path: "vendors", element: <Vendors /> },
                     { path: "vendors/:id", element: <VendorDetail /> },
-                    { path: "cart", element: <Cart /> },
+                    { path: "your-cart", element: <Cart /> },
                     { path: "checkout", element: <Checkout /> },
                     { path: "check_session", element: <CheckSession /> }
                 ]
             },
             {
-                path: "vendor",
+                path: "vndr",
                 children: [
                     { path: "login", element: <VendorLogin /> },
                     { path: "dashboard", element: <VendorDashboard /> },
@@ -67,10 +78,10 @@ const router = createBrowserRouter([
                 ]
             },
             {
-                path: "admin",
+                path: "admn",
                 children: [
                     { path: "login", element: <AdminLogin /> },
-                    { path: "profile", element: <AdminProfile />},
+                    { path: "dashboard", element: <AdminDashboard />},
                     { path: "profile/:id", element: <AdminProfile /> },
                     { path: "logout", element: <AdminLogout /> }
                 ]
