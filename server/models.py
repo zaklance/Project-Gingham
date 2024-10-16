@@ -334,7 +334,7 @@ class AdminUser(db.Model):
     def validate_email(self, key, value):
         if not value:
             raise ValueError("Email is required")
-        if "gingham.nyc" not in value or "mufo.nyc" not in value:
+        if "gingham.nyc" not in value and "mufo.nyc" not in value:
             raise ValueError("Invalid email address")
         return value
 
