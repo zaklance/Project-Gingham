@@ -39,40 +39,39 @@ function AdminLogin () {
         }
     };
 
-    console.log(globalThis.sessionStorage.getItem('admin_user_id'))
+    // console.log(globalThis.sessionStorage.getItem('admin_user_id'))
 
     return(
         <div className='login-bar'>
             <div className='vendor-wrapper'>
-                <h1 className='title'>ADMIN PORTAL</h1>
-                <div>
-                    <form 
-                    onSubmit={handleLogin} 
-                    className='form'>
-                        <h2>Login:</h2>
-                        <br />
-                        <div className='form-group'>
-                            <label>Email:</label>
-                            <input
-                                type="email"
-                                value={loginEmail}
-                                placeholder="enter your email"
-                                onChange={(event) => setLoginEmail(event.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className='form-group'>
-                            <label>Password:</label>
-                            <input
-                                type="password"
-                                value={loginPassword}
-                                placeholder="enter your password"
-                                onChange={(event) => setLoginPassword(event.target.value)}
-                                required
-                            />
-                        </div>
-                        <button className='btn-login' type="submit">Login</button>
-                    </form>
+                <div className='flex-start-around'>
+                    <div>
+                        <form onSubmit={handleLogin} className='form'>
+                            <h2>Login:</h2>
+                            <br />
+                            <div className='form-group'>
+                                <label>Email:</label>
+                                <input
+                                    type="email"
+                                    value={loginEmail}
+                                    placeholder="enter your email"
+                                    onChange={(event) => setLoginEmail(event.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className='form-group'>
+                                <label>Password:</label>
+                                <input
+                                    type="password"
+                                    value={loginPassword}
+                                    placeholder="enter your password"
+                                    onChange={(event) => setLoginPassword(event.target.value)}
+                                    required
+                                />
+                            </div>
+                            <button className='btn-login' type="submit">Login</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

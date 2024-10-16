@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, NavLink, Link, Route, Routes, BrowserRouter as Router} from 'react-router-dom';
-import VendorDashboard from './VendorDashboard.jsx';
-import VendorSales from './VendorSales.jsx';
 import VendorDetail from '../user/VendorDetail.jsx';
 
 function VendorProfile () {
     const { id } = useParams();
-    const [activeTab, setActiveTab] = useState('profile');
     const [editMode, setEditMode] = useState(false);
     const [vendorUserData, setVendorUserData] = useState(null);
 
