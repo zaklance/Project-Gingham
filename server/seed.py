@@ -16,6 +16,7 @@ def run():
     VendorFavorite.query.delete()
     VendorMarket.query.delete()
     VendorUser.query.delete()
+    AdminUser.query.delete()
 
 
     db.session.commit()

@@ -12,9 +12,9 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const isVendorLoggedIn = vendor_id;
     const isAdminLoggedIn = vendor_id;
     // const isLoggedIn = user_id && location.pathname !== '/' && location.pathname !== '/login';
-    const isNotUser = location.pathname.startsWith('/vndr') || location.pathname.startsWith('/admn');
-    const isVendorPage = location.pathname.startsWith('/vndr');
-    const isAdminPage = location.pathname.startsWith('/admn');
+    const isNotUser = location.pathname.startsWith('/vendor') || location.pathname.startsWith('/admin');
+    const isVendorPage = location.pathname.startsWith('/vendor');
+    const isAdminPage = location.pathname.startsWith('/admin');
 
     return (
         <nav className="nav-bar">
@@ -45,17 +45,17 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                     <>
                         <li>
                             <button className='nav-tab color-3'>
-                                <NavLink reloadDocument to="/vndr/dashboard">Dashboard</NavLink>
+                                <NavLink reloadDocument to="/vendor/dashboard">Dashboard</NavLink>
                             </button>
                         </li>
                         <li>
                             <button className='nav-tab color-4'>
-                                <NavLink reloadDocument to="/vndr/sales">Sales</NavLink>
+                                <NavLink reloadDocument to="/vendor/sales">Sales</NavLink>
                             </button>
                         </li>
                         <li>
                             <button className='nav-tab color-5'>
-                                <NavLink reloadDocument to={`/vndr/profile/${vendor_id}`}>Profile</NavLink>
+                                <NavLink reloadDocument to={`/vendor/profile/${vendor_id}`}>Profile</NavLink>
                             </button>
                         </li>
                     </>
@@ -65,12 +65,12 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                     <>
                         <li>
                             <button className='nav-tab color-3'>
-                                <NavLink reloadDocument to="/admn/dashboard">Dashboard</NavLink>
+                                <NavLink reloadDocument to="/admin/dashboard">Dashboard</NavLink>
                             </button>
                         </li>
                         <li>
                             <button className='nav-tab color-5'>
-                                <NavLink reloadDocument to={`/admn/profile/${admin_id}`}>Profile</NavLink>
+                                <NavLink reloadDocument to={`/admin/profile/${admin_id}`}>Profile</NavLink>
                             </button>
                         </li>
                     </>
@@ -103,7 +103,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                     <>
                         <li style={{ marginLeft: 'auto' }}>
                             <button className='nav-tab color-3 tab-right'>
-                                <NavLink reloadDocument to="/vndr/logout">Logout</NavLink>
+                                <NavLink reloadDocument to="/vendor/logout">Logout</NavLink>
                             </button>
                         </li>
                     </>
@@ -121,7 +121,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                     <>
                         <li style={{ marginLeft: 'auto' }}>
                             <button className='nav-tab color-3 tab-right'>
-                                <NavLink reloadDocument to="/admn/logout">Logout</NavLink>
+                                <NavLink reloadDocument to="/admin/logout">Logout</NavLink>
                             </button>
                         </li>
                     </>
