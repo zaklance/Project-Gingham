@@ -429,7 +429,7 @@ def get_vendor_users():
     except Exception as e:
         return {'error': f'Exception: {str(e)}'}, 500
     
-@app.route('/vendor/users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
+@app.route('/vendor_users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
 def vendorProfile(id):
     if request.method == 'GET':
         vendorUser = VendorUser.query.filter_by(id = id).first()
