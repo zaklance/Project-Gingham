@@ -244,7 +244,7 @@ def vendor_by_id(id):
             return vendor.to_dict(), 200
         except Exception as e: 
             db.session.rollback()
-            return {'error': str(e)}, 500
+            return {'error': str(e)},
     elif request.method == 'DELETE':
         db.session.delete(vendor)
         db.session.commit()
@@ -282,22 +282,14 @@ def profile(id):
 @app.route('/vendor/profile/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
 def vendorProfile(id):
     if request.method == 'GET':
-<<<<<<< HEAD
         vendorUser = VendorUser.query.filter_by(id=id).first()
-=======
-        vendorUser = VendorUser.query.filter_by(id = id).first()
->>>>>>> refs/remotes/origin/main
         if not vendorUser:
             return {'error': 'user not found'}, 404
         profile_data = vendorUser.to_dict()
         return jsonify(profile_data), 200
     
     elif request.method == 'PATCH':
-<<<<<<< HEAD
         vendorUser = VendorUser.query.filter_by(id=id).first()
-=======
-        vendorUser = VendorUser.query.filter_by(id = id).first()
->>>>>>> refs/remotes/origin/main
         if not vendorUser:
             return {'error': 'user not found'}, 404
         
