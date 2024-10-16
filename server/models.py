@@ -223,23 +223,6 @@ class VendorFavorite(db.Model, SerializerMixin):
     def __repr__(self) -> str:
         return f"<VendorFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.vendor_id}>"
     
-class VendorVendorUser(db.Model, SerializerMixin):
-    __tablename__ = 'vendor_vendor_users'
-
-    id = db.Column(db.Integer, primary_key=True)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
-    vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=False)
-    role = db.Column(db.String, nullable=True)
-
-    # Relationships
-    vendor = db.relationship('Vendor', back_populates='vendor_vendor_users')
-    vendor_user = db.relationship('VendorUser', back_populates='vendor_vendor_users')
-
-    serialize_rules = ('-vendor.vendor_vendor_users', '-vendor_user.vendor_vendor_users')
-
-    def __repr__(self) -> str:
-        return f"<VendorVendorUser Vendor ID: {self.vendor_id}, VendorUser ID: {self.vendor_user_id}>"
-
 class VendorUser(db.Model, SerializerMixin):
     __tablename__ = 'vendor_users'
 
@@ -292,6 +275,23 @@ class VendorUser(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<VendorUser {self.email}>"
+    
+class VendorVendorUser(db.Model, SerializerMixin):
+    __tablename__ = 'vendor_vendor_users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=False)
+    role = db.Column(db.String, nullable=True)
+
+    # Relationships
+    vendor = db.relationship('Vendor', back_populates='vendor_vendor_users')
+    vendor_user = db.relationship('VendorUser', back_populates='vendor_vendor_users')
+
+    serialize_rules = ('-vendor.vendor_vendor_users', '-vendor_user.vendor_vendor_users')
+
+    def __repr__(self) -> str:
+        return f"<VendorVendorUser Vendor ID: {self.vendor_id}, VendorUser ID: {self.vendor_user_id}>"
 
 class VendorMarket(db.Model, SerializerMixin):
     __tablename__ = 'vendor_markets'
@@ -319,3 +319,50 @@ class VendorMarket(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<VendorMarket Vendor ID: {self.vendor_id}, Market ID: {self.market_id}, Day: {self.day}, Basket: {self.basket}>"
+    
+class AdminUser(db.Model):
+    __tablename__ = 'admin_users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String, unique=True, nullable=False)
+    _password = db.Column(db.String, nullable=False)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    phone = db.Column(db.String, nullable=True)
+
+    @validates('email')
+    def validate_email(self, key, value):
+        if not value:
+            raise ValueError("Email is required")
+        if "@gingham.nyc" not in value or "@mufo.nyc" not in value:
+            raise ValueError("Invalid email address")
+        return value
+
+    @validates('first_name', 'last_name')
+    def validate_name(self, key, value):
+        if not value:
+            raise ValueError(f"{key.replace('_', ' ').capitalize()} is required")
+        if len(value) < 1 or len(value) > 50:
+            raise ValueError(f"{key.replace('_', ' ').capitalize()} must be between 1 and 50 characters")
+        return value
+
+    @validates('phone')
+    def validate_phone(self, key, value):
+        if value and len(value) > 15:
+            raise ValueError("Phone number cannot be longer than 15 characters")
+        return value
+
+    @hybrid_property
+    def password(self):
+        return self._password
+
+    @password.setter
+    def password(self, new_password):
+        hash = bcrypt.generate_password_hash(new_password.encode('utf-8'))
+        self._password = hash
+
+    def authenticate(self, password):
+        return bcrypt.check_password_hash(self._password, password.encode('utf-8'))
+
+    def __repr__(self) -> str:
+        return f"<AdminUser {self.email}>"
