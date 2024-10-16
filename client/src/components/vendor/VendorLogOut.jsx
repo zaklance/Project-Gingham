@@ -5,13 +5,13 @@ function VendorLogout () {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/vndr/logout', {
+        fetch('http://127.0.0.1:5555/vendor/logout', {
             method: 'DELETE',
             credentials: 'include'
         })
         .then(() => {
             globalThis.sessionStorage.removeItem('vendor_user_id');
-            navigate('/vndr/login')
+            navigate('/vendor/login')
         })
         .catch((error) => {
             console.error('Logout failed:', error);

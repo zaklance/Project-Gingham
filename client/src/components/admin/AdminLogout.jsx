@@ -11,7 +11,7 @@ function AdminLogout () {
         })
         .then(() => {
             globalThis.sessionStorage.removeItem('adminUser_id');
-            navigate('/admn/login')
+            navigate('/admin/login')
         })
         .catch((error) => {
             console.error('Logout failed:', error);

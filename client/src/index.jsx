@@ -34,16 +34,6 @@ import AdminLogout from './components/admin/AdminLogout.jsx';
 import AdminProfile from './components/admin/AdminProfile.jsx';
 import AdminDashboard from './components/admin/AdminDashboard.jsx';
 
-let host = window.location.host;
-let protocol = window.location.protocol;
-let parts = host.split(".");
-let subdomain = "";
-if (parts.length >= 5) {
-    subdomain = parts[0];
-    parts.splice(0, 1);
-    window.location = protocol + "//" + parts.join(".") + "/" + subdomain;
-}
-
 const router = createBrowserRouter([
     {
         path: "/",
@@ -68,7 +58,7 @@ const router = createBrowserRouter([
                 ]
             },
             {
-                path: "vndr",
+                path: "vendor",
                 children: [
                     { path: "login", element: <VendorLogin /> },
                     { path: "dashboard", element: <VendorDashboard /> },
@@ -78,7 +68,7 @@ const router = createBrowserRouter([
                 ]
             },
             {
-                path: "admn",
+                path: "admin",
                 children: [
                     { path: "login", element: <AdminLogin /> },
                     { path: "dashboard", element: <AdminDashboard />},

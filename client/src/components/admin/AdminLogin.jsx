@@ -15,7 +15,7 @@ function AdminLogin () {
 
         if (loginEmail === dummyEmail && loginPassword === dummyPassword) {
             console.log('Login Successful');
-            navigate('/admn/dashboard');
+            navigate('/admin/dashboard');
         } else {
             alert('Login Failed:', errorData.error);
         }
