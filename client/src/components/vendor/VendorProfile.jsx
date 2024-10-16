@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, NavLink, Link, Route, Routes, BrowserRouter as Router} from 'react-router-dom';
 import VendorDashboard from './VendorDashboard.jsx';
 import VendorSales from './VendorSales.jsx';
+import VendorDetail from '../user/VendorDetail.jsx';
 
 function VendorProfile () {
     const { id } = useParams();
@@ -143,9 +144,11 @@ function VendorProfile () {
                         <br />
                         <h2 className='title'>Vendor Information</h2>
                         <div className='bounding-box'>
-                            <p><strong>Name:</strong> {vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : 'Loading...'}</p>
-                            <p><strong>Email:</strong> {vendorUserData ? vendorUserData.email : 'Loading...'}</p>
-                            <p><strong>Phone:</strong> {vendorUserData ? vendorUserData.phone : 'Loading...'}</p>
+                            {vendorUserData?.vendor?.vendor_id ? (
+                                <VendorDetail vendorId={vendorUserData.vendor.vendor_id} />
+                            ) : (
+                                <p>Loading vendor details...</p>
+                            )}
                         </div>
                     </div>
                 )}
