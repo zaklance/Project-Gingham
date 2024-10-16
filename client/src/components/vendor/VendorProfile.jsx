@@ -72,7 +72,7 @@ function VendorProfile () {
                 const updatedData = await response.json();
                 setVendorUserData(updatedData);
                 setEditMode(false);
-                console.log('Profile data updated successfulle:', updatedData);
+                console.log('Profile data updated successfull:', updatedData);
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status;', response.status);
