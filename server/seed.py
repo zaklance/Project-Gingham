@@ -557,7 +557,6 @@ def run():
         first_name="Ham-man",
         last_name="Gingy",
         phone="2095553880",
-        vendor_id="1"
     )
     db.session.add(admin_user_demo)
     db.session.commit()    
