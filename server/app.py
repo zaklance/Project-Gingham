@@ -586,7 +586,7 @@ def handle_vendor_vendor_users():
 
 
 
-# Admin
+# ADMIN PORTAL
 @app.route('/admin/login', methods=['POST'])
 def adminLogin():
     data = request.get_json()

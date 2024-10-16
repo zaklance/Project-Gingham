@@ -330,13 +330,13 @@ class AdminUser(db.Model, SerializerMixin):
     last_name = db.Column(db.String, nullable=False)
     phone = db.Column(db.String, nullable=True)
 
-    serialize_rules = ('-_password')
+    serialize_rules = ('-_password',)
 
     @validates('email')
     def validate_email(self, key, value):
         if not value:
             raise ValueError("Email is required")
-        if "gingham.nyc" not in value and "mufo.nyc" not in value:
+        if "@gingham.nyc" not in value and "@mufo.nyc" not in value:
             raise ValueError("Invalid email address")
         return value
 
