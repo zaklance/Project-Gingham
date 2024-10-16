@@ -16,7 +16,7 @@ function Profile() {
                 const token = sessionStorage.getItem('jwt-token');
     
                 // Make a request to the protected route with the Authorization header
-                const response = await fetch(`http://127.0.0.1:5555/profile/${id}`, {
+                const response = await fetch(`http://127.0.0.1:5555/users/${id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,  // Send token 

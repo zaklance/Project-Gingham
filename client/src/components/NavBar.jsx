@@ -10,7 +10,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const admin_id = globalThis.sessionStorage.getItem('admin_user_id');
     const isUserLoggedIn = user_id;
     const isVendorLoggedIn = vendor_id;
-    const isAdminLoggedIn = vendor_id;
+    const isAdminLoggedIn = admin_id;
     // const isLoggedIn = user_id && location.pathname !== '/' && location.pathname !== '/login';
     const isNotUser = location.pathname.startsWith('/vendor') || location.pathname.startsWith('/admin');
     const isVendorPage = location.pathname.startsWith('/vendor');

@@ -10,16 +10,36 @@ function AdminLogin () {
         event.preventDefault();
         const lowercaseEmail = loginEmail.toLowerCase();
 
-        const dummyEmail = 'mufo@gingham.nyc';
-        const dummyPassword = '1234';
+        try {
+            const response = await fetch('http://127.0.0.1:5555/admin/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: lowercaseEmail,
+                    password: loginPassword
+                }),
+                credentials: 'include'
+            });
 
-        if (loginEmail === dummyEmail && loginPassword === dummyPassword) {
-            console.log('Login Successful');
-            navigate('/admin/dashboard');
-        } else {
-            alert('Login Failed:', errorData.error);
+            if (response.ok) {
+                const data = await response.json();
+                globalThis.sessionStorage.setItem('jwt-token', data.access_token);
+                globalThis.sessionStorage.setItem('admin_user_id', data.admin_user_id);
+                console.log('Login Successful:');
+
+                navigate(`/admin/dashboard`);
+            } else {
+                alert('Login failed:', errorData.error);
+            }
+        } catch (error) {
+            console.error('Error during login:', error);
+            alert('An error occured. Please try again.');
         }
     };
+
+    console.log(globalThis.sessionStorage.getItem('admin_user_id'))
 
     return(
         <div className='login-bar'>
