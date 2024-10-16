@@ -11,8 +11,8 @@ import VendorLogin from './components/vendor/VendorLogin.jsx';
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [isPopup, setIsPopup] = useState(false);
-    const isVendorPage = location.pathname.startsWith('/vndr');
-    const isAdminPage = location.pathname.startsWith('/admn');
+    const isVendorPage = location.pathname.startsWith('/vendor');
+    const isAdminPage = location.pathname.startsWith('/admin');
     const [amountInCart, setAmountInCart] = useState(() => {
         return parseInt(globalThis.sessionStorage.getItem('amountInCart') || 0);
     });

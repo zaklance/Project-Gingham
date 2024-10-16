@@ -11,17 +11,40 @@ function AdminProfile () {
     const [adminUserData, setAdminUserData] = useState(null);
 
     useEffect(() => {
-        if (id === 'admin') {
-            const dummyAdminData = {
-                first_name: "Titus",
-                last_name: "Andronicus",
-                email: "mufo@gingham.nyc",
-                phone: "123-456-7890"
-            };
-            setAdminUserData(dummyAdminData);
-        } else {
-            console.log('Fetching data for non-admin user.');
-        }
+        const fetchVendorUserData = async () => {
+            try {
+                const token = sessionStorage.getItem('jwt-token');
+                const response = await fetch(`http://127.0.0.1:5555/admin_users/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const text = await response.text();
+                // console.log('Raw response:', text);
+
+                if (response.ok) {
+                    try {
+                        const data = JSON.parse(text);
+                        setAdminUserData({
+                            ...data,
+                        });
+                    } catch (jsonError) {
+                        console.error('Error parsing JSON:', jsonError);
+                    }
+                } else {
+                    console.error('Error fetching profile:', response.status);
+                    if (response.status === 401) {
+                        console.error('Unauthorized: Token may be missing or invalid');
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching profile data:', error);
+            }
+        };
+        fetchVendorUserData();
     }, [id]);
 
     const handleInputChange = (event) => {
