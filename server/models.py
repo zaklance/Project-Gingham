@@ -320,7 +320,7 @@ class VendorMarket(db.Model, SerializerMixin):
     def __repr__(self) -> str:
         return f"<VendorMarket Vendor ID: {self.vendor_id}, Market ID: {self.market_id}, Day: {self.day}, Basket: {self.basket}>"
     
-class AdminUser(db.Model):
+class AdminUser(db.Model, SerializerMixin):
     __tablename__ = 'admin_users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -329,6 +329,8 @@ class AdminUser(db.Model):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     phone = db.Column(db.String, nullable=True)
+
+    serialize_rules = ('-_password')
 
     @validates('email')
     def validate_email(self, key, value):

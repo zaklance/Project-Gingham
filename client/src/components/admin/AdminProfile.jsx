@@ -11,9 +11,10 @@ function AdminProfile () {
     const [adminUserData, setAdminUserData] = useState(null);
 
     useEffect(() => {
-        const fetchVendorUserData = async () => {
+        const fetchAdminUserData = async () => {
             try {
                 const token = sessionStorage.getItem('jwt-token');
+                // console.log('JWT Token:', token);
                 const response = await fetch(`http://127.0.0.1:5555/admin_users/${id}`, {
                     method: 'GET',
                     headers: {
@@ -22,18 +23,13 @@ function AdminProfile () {
                     }
                 });
 
-                const text = await response.text();
+                // const text = await response.text();
                 // console.log('Raw response:', text);
-
+                
                 if (response.ok) {
-                    try {
-                        const data = JSON.parse(text);
-                        setAdminUserData({
-                            ...data,
-                        });
-                    } catch (jsonError) {
-                        console.error('Error parsing JSON:', jsonError);
-                    }
+                    const data = await response.json();
+                    console.log('Fetched admin user data:', data);
+                    setAdminUserData(data);
                 } else {
                     console.error('Error fetching profile:', response.status);
                     if (response.status === 401) {
@@ -44,7 +40,7 @@ function AdminProfile () {
                 console.error('Error fetching profile data:', error);
             }
         };
-        fetchVendorUserData();
+        fetchAdminUserData();
     }, [id]);
 
     const handleInputChange = (event) => {
@@ -59,14 +55,33 @@ function AdminProfile () {
     };
 
     const handleSaveChanges = async () => {
-        console.log('Save Changes Clicked and Successful', adminUserData);
-        setEditMode(false);
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/admin_users/${id}`, {
+                method: 'PATCH', 
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(adminUserData)
+            });
+            console.log('Request body:', JSON.stringify(adminUserData));
+
+            if (response.ok) {
+                const updatedData = await response.json();
+                setAdminUserData(updatedData);
+                setEditMode(false);
+                console.log('Profile data updated successfull:', updatedData);
+            } else {
+                console.log('Failed to save changes');
+                console.log('Response status;', response.status);
+                console.log('Response text:', await response.text());
+            }            
+        } catch (error) {
+            console.error('Error saving changes:', error);
+        }
     };
 
     return(
         <div>
-            <h1 className='title' style={{textAlign:'center'}}>ADMIN PORTAL</h1>
-            <hr className='separator' />
             <div className='tabs'>
                 <Link to="#" onClick={() => setActiveTab('profile')} className={activeTab === 'profile' ? 'active' : ''}>
                     Profile
@@ -84,30 +99,63 @@ function AdminProfile () {
                     Logout
                 </NavLink>
             </div>
-            <hr className='separator' />
             <div className="tab-content">
-                {activeTab === 'profile' && (
-                    <div>
-                        <h2 className='title'>Profile Information</h2>
-                        <div className='bounding-box'>
-                            {editMode ? (
-                                <>
-                                
-                                </>
-                            ) : (
-                                <>
-                                    <p><strong>Name: </strong> {adminUserData ? `${adminUserData.first_name} ${adminUserData.last_name}` : 'Loading...'} </p>
-                                    <p><strong>Email: </strong> {adminUserData ? adminUserData.email : ' Loading...'} </p>
-                                    <p><strong>Phone: </strong> {adminUserData ? adminUserData.phone : ' Loading...'} </p>
-                                    <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
-                                </>
-                            )}
-                        </div>
+                <div>
+                    <h2 className='title'>Profile Information</h2>
+                    <div className='bounding-box'>
+                        {editMode ? (
+                            <>
+                                <div className='form-group'>
+                                    <label>First Name:</label>
+                                    <input
+                                        type="text"
+                                        name="first_name"
+                                        value={adminUserData ? adminUserData.first_name : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className='form-group'>
+                                    <label>Last Name:</label>
+                                    <input
+                                        type="text"
+                                        name="last_name"
+                                        value={adminUserData ? adminUserData.last_name : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className='form-group'>
+                                    <label>Email:</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={adminUserData ? adminUserData.email : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className='form-group'>
+                                    <label>Phone Number:</label>
+                                    <input
+                                        type="text"
+                                        name="phone"
+                                        value={adminUserData ? adminUserData.phone : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
+                                <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
+                            </>
+                        ) : (
+                            <>
+                                <p><strong>Name: </strong> {adminUserData ? `${adminUserData.first_name} ${adminUserData.last_name}` : 'Loading...'} </p>
+                                <p><strong>Email: </strong> {adminUserData ? adminUserData.email : ' Loading...'} </p>
+                                <p><strong>Phone: </strong> {adminUserData ? adminUserData.phone : ' Loading...'} </p>
+                                <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
+                            </>
+                        )}
                     </div>
-                )}
-                {activeTab === 'dashboard' && <AdminDashboard />}
-                {activeTab === 'vendors' && <AdminVendors />}
-                {activeTab === 'markets' && <AdminMarkets />}
+                </div>
+                
+
             </div>
         </div>
     )
