@@ -285,7 +285,7 @@ def vendorProfile(id):
         return jsonify(profile_data), 200
     
     elif request.method == 'PATCH':
-        vendorUser = VendorUser.query.filter_by(id == id).first()
+        vendorUser = VendorUser.query.filter_by(id = id).first()
         if not vendorUser:
             return {'error': 'user not found'}, 404
         
