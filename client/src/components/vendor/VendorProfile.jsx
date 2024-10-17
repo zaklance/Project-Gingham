@@ -6,6 +6,9 @@ function VendorProfile () {
     const { id } = useParams();
     const [editMode, setEditMode] = useState(false);
     const [vendorUserData, setVendorUserData] = useState(null);
+    const [vendor, setVendor] = useState(null);
+    const [locations, setLocations] = useState([]);
+    const [marketDetails, setMarketDetails] = useState({});
 
     useEffect(() => {
         const fetchVendorUserData = async () => {
@@ -81,6 +84,58 @@ function VendorProfile () {
         }
     };
 
+    useEffect(() => {
+        fetch(`http://127.0.0.1:5555/vendors/${id}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                setVendor(data);
+                const parsedLocations = JSON.parse(data.locations);
+                setLocations(parsedLocations);
+            })
+            .catch(error => console.error('Error fetching vendor data:', error));
+    }, [id]);
+
+    useEffect(() => {
+        if (Array.isArray(locations) && locations.length > 0) {
+            const fetchMarketDetails = async () => {
+                const promises = locations.map(async marketId => {
+                    try {
+                        const response = await fetch(`http://127.0.0.1:5555/markets/${marketId}`);
+                        if (response.ok) {
+                            const marketData = await response.json();
+                            return { id: marketId, name: marketData.name };
+                        } else {
+                            console.log(`Failed to fetch market ${marketId}`);
+                            return { id: marketId, name: 'Unknown Market' };
+                        }
+                    } catch (error) {
+                        console.error(`Error fetching market ${marketId}:`, error);
+                        return { id: marketId, name: 'Unknown Market' };
+                    }
+                });
+
+                Promise.all(promises)
+                    .then(details => {
+                        const vendorDetailsMap = {};
+                        details.forEach(detail => {
+                            vendorDetailsMap[detail.id] = detail.name;
+                        });
+                        setMarketDetails(vendorDetailsMap);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching market details:', error);
+                    });
+            };
+
+            fetchMarketDetails();
+        }
+    }, [locations]);
+
     return(
         <div>
             <div className="tab-content">
@@ -140,8 +195,22 @@ function VendorProfile () {
                     <br />
                     <h2 className='title'>Vendor Information</h2>
                     <div className='bounding-box'>
-                        {vendorUserData?.vendor?.vendor_id ? (
-                            <VendorDetail vendorId={vendorUserData.vendor.vendor_id} />
+                        {vendor?.id ? (
+                            <>
+                                <p><strong>Name: </strong> {vendor ? vendor.name : ' Loading...'}</p>
+                                <p><strong>Product: </strong> {vendor ? vendor.product : ' Loading...'}</p>
+                                <p><strong>Based in: </strong> {vendor ? vendor.based_out_of : ' Loading...'}</p>
+                                <p><strong>Locations: </strong></p>
+                                {Array.isArray(locations) && locations.length > 0 ? (
+                                    locations.map((marketId, index) => (
+                                        <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
+                                            <Link to={`/user/markets/${marketId}`}> {marketDetails[marketId] || 'Loading...'} </Link>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>No market locations at this time</p>
+                                )}
+                            </>
                         ) : (
                             <p>Loading vendor details...</p>
                         )}
