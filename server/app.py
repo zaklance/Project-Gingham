@@ -200,31 +200,64 @@ def vendor_by_id(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route('/users/<int:id>', methods=['GET', 'PATCH'])
+@app.route('/users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
 def profile(id):
-    user = User.query.filter(User.id == id).first()
-    if not user:
-        return {'error': 'user not found'}, 404
-
     if request.method == 'GET':
+        user = User.query.filter_by(id=id).first()
+        if not user:
+            return {'error': 'user not found'}, 404
         profile_data = user.to_dict()
-    
         return jsonify(profile_data), 200
 
     elif request.method == 'PATCH':
+        user = User.query.filter_by(id=id).first()
+        if not user:
+            return {'error': 'user not found'}, 404
         try:
-            user = User.query.filter_by(id=id).first()
-            if not user:
-                return {'error': 'User not found'}, 404
-
             data = request.get_json()
             for key, value in data.items():
                 setattr(user, key, value)
-
             db.session.commit()
             return jsonify(user.to_dict()), 200
 
         except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+        
+    elif request.method == 'POST':
+        data = request.get_json()
+
+        existing_user = User.query.filter_by(email=data['email']).first()
+        if existing_user:
+            return {'error': 'Email already in use'}, 400
+        
+        try: 
+            new_user = User(
+                email=data['email'],
+                password=data['password'],
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                address=data.get('address')
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            return jsonify(new_user.to_dict()), 201
+        
+        except Exception as e: 
+            db.session.rollback()
+            return {'error': str(e)}, 500
+        
+    elif request.method == 'DELETE':
+        user = User.query.filter_by(id=id).first()
+        if not User: 
+            return {'error': 'user not found'}, 404
+        
+        try: 
+            db.session.delete(user)
+            db.session.commit()
+            return {}, 204
+        
+        except Exception as e: 
             db.session.rollback()
             return {'error': str(e)}, 500
 
@@ -444,7 +477,6 @@ def vendorProfile(id):
         vendorUser = VendorUser.query.filter_by(id = id).first()
         if not vendorUser:
             return {'error': 'user not found'}, 404
-        
         try:
             data = request.get_json()
             for key, value in data.items():
