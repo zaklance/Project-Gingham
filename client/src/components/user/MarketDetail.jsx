@@ -117,6 +117,12 @@ function MarketDetail ({ match }) {
         return <div>Loading...</div>;
     }
 
+    const { coordinates } = market;
+
+    const googleMapsLink = market?.coordinates
+        ? `https://www.google.com/maps?q=${market.coordinates.lat},${market.coordinates.lng}`
+        : '#';
+
     return (
         <div>
             <button onClick={handleBackButtonClick} className='back-button'>
@@ -127,6 +133,14 @@ function MarketDetail ({ match }) {
             <p>{market.description}</p>
             <div className='float-left'>
                 <h4>Location: {market.location}</h4>
+                {coordinates && (
+                    <h4> <strong>
+                        <a href={googleMapsLink} target="_blank" rel="noopener noreferrer">
+                            View on Google Maps
+                        </a>
+                        </strong>
+                    </h4>
+                )}
                 <h4>Hours: {market.hours}</h4>
             </div>
             <br />
