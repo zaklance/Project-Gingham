@@ -187,14 +187,12 @@ def vendor_by_id(id):
         return jsonify(vendor.to_dict()), 200
     
     elif request.method == 'PATCH':
+        vendor = Vendor.query.filter_by(id=id).first()
+
         try:          
             data = request.get_json()
             for key, value in data.items():
-                if hasattr(vendor, key):
-                    setattr(vendor, key, value)
-                else:
-                    return {'error': f'Invalid attribute: {key}'}, 400
-
+                setattr(vendor, key, value)
             db.session.commit()
             return jsonify(vendor.to_dict()), 200
         
