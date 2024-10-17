@@ -178,22 +178,28 @@ def all_vendors():
 
 @app.route('/vendors/<int:id>', methods=['GET', 'PATCH'])
 def vendor_by_id(id):
-    vendor = Vendor.query.filter(Vendor.id == id).first()
-
-    if not vendor:
-        return {'error': 'vendor not found'}, 404
-    
     if request.method == 'GET':
-        return jsonify(vendor.to_dict()), 200
+        vendor = Vendor.query.filter_by(id=id).first()
+        if not vendor:
+            return {'error': 'vendor not found'}, 404
+        vendor_data = vendor.to_dict()
+        return jsonify(vendor_data), 200
     
     elif request.method == 'PATCH':
+        vendor = Vendor.query.filter_by(id=id).first()
+        if not vendor:
+            return {'error': 'vendor not found'}, 404
         try:          
             data = request.get_json()
-            for key, value in data.items():
-                if hasattr(vendor, key):
-                    setattr(vendor, key, value)
-                else:
-                    return {'error': f'Invalid attribute: {key}'}, 400
+            # for key, value in data.items():
+            #     if hasattr(vendor, key):
+            #         setattr(vendor, key, value)
+            #     else:
+            #         return {'error': f'Invalid attribute: {key}'}, 400
+            vendor.name = data.get('name')
+            vendor.product = data.get('product')
+            vendor.based_out_of = data.get('based_out_of')
+            vendor.locations = data.get('locations')
 
             db.session.commit()
             return jsonify(vendor.to_dict()), 200
@@ -217,8 +223,13 @@ def profile(id):
             return {'error': 'user not found'}, 404
         try:
             data = request.get_json()
-            for key, value in data.items():
-                setattr(user, key, value)
+            # for key, value in data.items():
+            #     setattr(user, key, value)
+            user.first_name = data.get('first_name')
+            user.last_name = data.get('last_name')
+            user.email = data.get('email')
+            user.address = data.get('address')
+
             db.session.commit()
             return jsonify(user.to_dict()), 200
 
