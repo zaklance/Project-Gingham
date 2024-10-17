@@ -1,15 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, NavLink, Link, Route, Routes, BrowserRouter as Router} from 'react-router-dom';
-import VendorDetail from '../user/VendorDetail.jsx';
 
 function VendorProfile () {
     const { id } = useParams();
     const [editMode, setEditMode] = useState(false);
+    const [vendorEditMode, setVendorEditMode] = useState(false);
     const [vendorUserData, setVendorUserData] = useState(null);
-    const [vendor, setVendor] = useState(null);
     const [locations, setLocations] = useState([]);
     const [marketDetails, setMarketDetails] = useState({});
+    const [vendorData, setVendorData] = useState(null);
 
+    const products = [
+        'art', 'baked goods', 'cheese', 'cider', 'ceramics', 'coffee/tea', 'fish', 'flowers', 'fruit', 'gifts', 'honey', 
+        'international', 'juice', 'maple syrup', 'meats', 'mushrooms', 'nuts', 'pasta', 'pickles', 'spirits', 'vegetables'
+    ];
+
+    const states = [
+        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", 
+        "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", 
+        "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+      ];
+    
     useEffect(() => {
         const fetchVendorUserData = async () => {
             try {
@@ -73,10 +84,10 @@ function VendorProfile () {
                 const updatedData = await response.json();
                 setVendorUserData(updatedData);
                 setEditMode(false);
-                console.log('Profile data updated successfull:', updatedData);
+                console.log('Profile data updated successfully:', updatedData);
             } else {
                 console.log('Failed to save changes');
-                console.log('Response status;', response.status);
+                console.log('Response status:', response.status);
                 console.log('Response text:', await response.text());
             }            
         } catch (error) {
@@ -93,12 +104,49 @@ function VendorProfile () {
                 return response.json();
             })
             .then(data => {
-                setVendor(data);
+                setVendorData(data);
                 const parsedLocations = JSON.parse(data.locations);
                 setLocations(parsedLocations);
             })
             .catch(error => console.error('Error fetching vendor data:', error));
     }, [id]);
+
+    const handleVendorInputChange = (event) => {
+        setVendorData({
+            ...vendorData,
+            [event.target.name]: event.target.value,
+        });
+    };
+
+    const handleVendorEditToggle = () => {
+        setVendorEditMode(!vendorEditMode);
+    };
+
+    const handleSaveVendorChanges = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/vendors/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(vendorData)
+            });
+            console.log('Request body:', JSON.stringify(vendorData));
+
+            if (response.ok) {
+                const updatedData = await response.json();
+                setVendorData(updatedData);
+                setVendorEditMode(false);
+                console.log('Vendor data updated successfully:', updatedData);
+            } else {
+                console.log('Failed to save changes');
+                console.log('Response status:', response.status);
+                console.log('Response text:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error saving changes:', error);
+        }
+    };
 
     useEffect(() => {
         if (Array.isArray(locations) && locations.length > 0) {
@@ -131,7 +179,6 @@ function VendorProfile () {
                         console.error('Error fetching market details:', error);
                     });
             };
-
             fetchMarketDetails();
         }
     }, [locations]);
@@ -195,22 +242,64 @@ function VendorProfile () {
                     <br />
                     <h2 className='title'>Vendor Information</h2>
                     <div className='bounding-box'>
-                        {vendor?.id ? (
-                            <>
-                                <p><strong>Name: </strong> {vendor ? vendor.name : ' Loading...'}</p>
-                                <p><strong>Product: </strong> {vendor ? vendor.product : ' Loading...'}</p>
-                                <p><strong>Based in: </strong> {vendor ? vendor.based_out_of : ' Loading...'}</p>
-                                <p><strong>Locations: </strong></p>
-                                {Array.isArray(locations) && locations.length > 0 ? (
-                                    locations.map((marketId, index) => (
-                                        <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                                            <Link to={`/user/markets/${marketId}`}> {marketDetails[marketId] || 'Loading...'} </Link>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>No market locations at this time</p>
-                                )}
-                            </>
+                        {vendorData?.id ? (
+                            vendorEditMode ? (
+                                <>
+                                    <div className='form-group'>
+                                        <label>Vendor Name:</label>
+                                        <input 
+                                            type="text"
+                                            name="name"
+                                            value={vendorData ? vendorData.name : ''}
+                                            onChange={handleVendorInputChange}
+                                        />
+                                    </div>
+                                    <div className='form-group'>
+                                        <label>Product</label>
+                                        <select
+                                            name="product"
+                                            value={vendorData ? vendorData.product : ''}
+                                            onChange={handleVendorInputChange}
+                                        >
+                                            <option value="">Select Product</option>
+                                            {products.map((product, index) => (
+                                                <option key={index} value={product}>
+                                                    {product}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className='form-group'>
+                                        <label>Based out of:</label>
+                                        <input
+                                            type="text"
+                                            name="based_out_of"
+                                            value={vendorData ? vendorData.based_out_of: ''}
+                                            onChange={handleVendorInputChange}
+                                        />
+                                    </div>
+                                    <button className='btn-edit' onClick={handleSaveVendorChanges}>Save Changes</button>
+                                    <button className='btn-edit' onClick={handleVendorEditToggle}>Cancel</button>
+                                </>
+                            ) : (
+                                <>
+                                    <p><strong>Name: </strong> {vendorData ? vendorData.name : ' Loading...'}</p>
+                                    <p><strong>Product: </strong> {vendorData ? vendorData.product : ' Loading...'}</p>
+                                    <p><strong>Based in: </strong> {vendorData ? vendorData.based_out_of : ' Loading...'}</p>
+                                    <button className='btn-edit' onClick={handleVendorEditToggle}>Edit</button>
+                                    
+                                    <p><strong>Locations: </strong></p>
+                                    {Array.isArray(locations) && locations.length > 0 ? (
+                                        locations.map((marketId, index) => (
+                                            <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
+                                                <Link to={`/user/markets/${marketId}`}> {marketDetails[marketId] || 'Loading...'} </Link>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p>No market locations at this time</p>
+                                    )}
+                                </>
+                            )
                         ) : (
                             <p>Loading vendor details...</p>
                         )}

@@ -50,7 +50,7 @@ function VendorLogin () {
                     </div> */}
                     <div>
                         <form onSubmit={handleLogin} className='form'>
-                            <h2>Login:</h2>
+                            <h3>Vendor Portal Login:</h3>
                             <br />
                             <div className='form-group'>
                                 <label>Email:</label>
