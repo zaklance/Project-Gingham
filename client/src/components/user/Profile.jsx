@@ -67,7 +67,7 @@ function Profile() {
 
     const handleSaveChanges = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/profile/${id}`, {
+            const response = await fetch(`http://127.0.0.1:5555/users/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
@@ -129,7 +129,7 @@ function Profile() {
                             <input
                                 type="text"
                                 name="first_name"
-                                value={profileData.first_name}
+                                value={profileData ? profileData.first_name : ''}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -138,7 +138,7 @@ function Profile() {
                             <input
                                 type="text"
                                 name="last_name"
-                                value={profileData.last_name}
+                                value={profileData ? profileData.last_name : ''}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -147,7 +147,7 @@ function Profile() {
                             <input
                                 type="email"
                                 name="email"
-                                value={profileData.email}
+                                value={profileData ? profileData.email : ''}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -156,7 +156,7 @@ function Profile() {
                             <input
                                 type="text"
                                 name="address"
-                                value={profileData.address}
+                                value={profileData ? profileData.address : ''}
                                 onChange={handleInputChange}
                             />
                         </div>
