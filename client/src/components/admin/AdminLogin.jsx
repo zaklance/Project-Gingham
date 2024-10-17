@@ -47,7 +47,7 @@ function AdminLogin () {
                 <div className='flex-start-around'>
                     <div>
                         <form onSubmit={handleLogin} className='form'>
-                            <h2>Login:</h2>
+                            <h3>Admin Portal Login:</h3>
                             <br />
                             <div className='form-group'>
                                 <label>Email:</label>

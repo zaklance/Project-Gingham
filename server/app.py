@@ -176,27 +176,29 @@ def all_vendors():
             db.session.rollback()
             return {'error': f'Exception: {str(e)}'}, 500
 
-@app.route('/vendors/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@app.route('/vendors/<int:id>', methods=['GET', 'PATCH'])
 def vendor_by_id(id):
     vendor = Vendor.query.filter(Vendor.id == id).first()
+
     if not vendor:
         return {'error': 'vendor not found'}, 404
+    
     if request.method == 'GET':
-        return vendor.to_dict(), 200
+        return jsonify(vendor.to_dict()), 200
+    
     elif request.method == 'PATCH':
-        data = request.get_json()
-        for key, value in data.items():
-            setattr(vendor, key, value)
-        try:
+        vendor = Vendor.query.filter_by(id=id).first()
+
+        try:          
+            data = request.get_json()
+            for key, value in data.items():
+                setattr(vendor, key, value)
             db.session.commit()
-            return vendor.to_dict(), 200
+            return jsonify(vendor.to_dict()), 200
+        
         except Exception as e: 
             db.session.rollback()
-            return {'error': str(e)},
-    elif request.method == 'DELETE':
-        db.session.delete(vendor)
-        db.session.commit()
-        return {}, 204
+            return {'error': str(e)}, 500
 
 @app.route('/users/<int:id>', methods=['GET', 'PATCH'])
 def profile(id):
