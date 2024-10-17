@@ -11,7 +11,7 @@ function VendorDetail () {
     const [marketDetails, setMarketDetails] = useState({});
     const [locations, setLocations] = useState([]);
     const [vendorReviews, setVendorReviews] = useState([]);
-    const [selectedMarket, setSelectedMarket] = useState('');
+    const [selectedVendor, setSelectedVendor] = useState('');
     const [price, setPrice] = useState(4.99);
     const [vendorFavs, setVendorFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
@@ -35,7 +35,7 @@ function VendorDetail () {
                 const parsedLocations = JSON.parse(data.locations);
                 setLocations(parsedLocations);
                 if (parsedLocations.length > 0) {
-                    setSelectedMarket(parsedLocations[0]);
+                    setSelectedVendor(parsedLocations[0]);
                 }
             })
             .catch(error => console.error('Error fetching vendor data:', error));
@@ -62,11 +62,11 @@ function VendorDetail () {
 
                 Promise.all(promises)
                     .then(details => {
-                        const marketDetailsMap = {};
+                        const vendorDetailsMap = {};
                         details.forEach(detail => {
-                            marketDetailsMap[detail.id] = detail.name;
+                            vendorDetailsMap[detail.id] = detail.name;
                         });
-                        setMarketDetails(marketDetailsMap);
+                        setMarketDetails(vendorDetailsMap);
                     })
                     .catch(error => {
                         console.error('Error fetching market details:', error);
@@ -95,7 +95,7 @@ function VendorDetail () {
         if (availableBaskets > 0) {
             setAvailableBaskets(availableBaskets - 1);
             setAmountInCart(amountInCart + 1);
-            let marketLocation = marketDetails[selectedMarket]
+            let marketLocation = marketDetails[selectedVendor]
             setCartItems([...cartItems, { vendorName: vendor.name, location: marketLocation, id: cartItems.length + 1, price: price }]);
         } else {
             alert("Sorry, all baskets are sold out!");
@@ -112,7 +112,7 @@ function VendorDetail () {
     };
 
     const handleMarketChange = (event) => {
-        setSelectedMarket(event.target.value);
+        setSelectedVendor(event.target.value);
     };
 
     useEffect(() => {
@@ -192,7 +192,7 @@ function VendorDetail () {
                             <p>Choose a Market:</p>
                         </div>
                         <div className='select'>
-                            <select className='float-none' value={selectedMarket} onChange={handleMarketChange}>
+                            <select className='float-none' value={selectedVendor} onChange={handleMarketChange}>
                             {Array.isArray(locations) && locations.length > 0 ? (
                                 locations.map((marketId, index) => (
                                     <option key={index} value={marketId}>
@@ -226,7 +226,7 @@ function VendorDetail () {
                 {Array.isArray(locations) && locations.length > 0 ? (
                     locations.map((marketId, index) => (
                         <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                            <Link to={`/markets/${marketId}`}> {marketDetails[marketId] || 'Loading...'} </Link>
+                            <Link to={`/user/markets/${marketId}`}> {marketDetails[marketId] || 'Loading...'} </Link>
                         </div>
                     ))
                 ) : (
