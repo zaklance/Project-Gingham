@@ -44,7 +44,7 @@ function VendorLogin () {
     return(
         <div className='login-bar'>
             <div className='vendor-wrapper'>
-                <div className='flex-start-around'>
+                <div className='flex-space-around-center flex-center'>
                     {/* <div>
                         <img className='big-logo' src={ginghamLogo} alt="Gingham Logo"></img>
                     </div> */}
