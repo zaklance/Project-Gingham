@@ -44,7 +44,7 @@ function AdminLogin () {
     return(
         <div className='login-bar'>
             <div className='vendor-wrapper'>
-                <div className='flex-start-around'>
+                <div className='flex-space-around-center flex-center'>
                     <div>
                         <form onSubmit={handleLogin} className='form'>
                             <h3>Admin Portal Login:</h3>

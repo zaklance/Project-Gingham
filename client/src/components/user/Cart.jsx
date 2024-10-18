@@ -54,7 +54,7 @@ function Cart() {
                                 ))}
                             </ul>
                         </div>
-                        <div className="checkout-form">
+                        <div className="flex-space-between-form">
                             <h3>Checkout</h3>
                             <h3>Total: {totalPrice}</h3> 
                             <input

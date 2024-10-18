@@ -11,6 +11,14 @@ a {
   text-decoration: none;
 }
 
+div>a:hover {
+  background-color: #fffa9c;
+}
+
+.link-yellow:hover {
+  background-color: #fffa9c;
+}
+
 html {
   height: 100%;
 }
@@ -244,9 +252,13 @@ ul {
 
 .float-right {
   float: right;
-  margin-top: 25px;
+  /* margin-top: 25px;
   margin-bottom: -25px;
-  margin-right: 10px;
+  margin-right: 10px; */
+}
+
+.no-float {
+  clear:both;
 }
 
 .flex-start {
@@ -254,37 +266,50 @@ ul {
   justify-content: flex-start;
 }
 
-.flex-start-around {
+.flex-space-around-center {
   display: flex;
   justify-content: space-around;
   align-items: center;
+}
+
+.flex-space-around-end {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+}
+
+.flex-space-between {
+  display: flex;
+  justify-content: space-between;
 }
 
 .side-select {
   margin-left: auto;
   margin-right: 0;
 }
-.side-select2 {
-  float: right;
-}
-.no-float {
-  clear:both;
-}
+
 .box-big {
   float: none;
 }
+
 .box-big-blue {
   float: none;
   background-color: #d8f4fe;
   margin-top: 48px;
   padding: 24px;
-
 }
+
+.market-details {
+  width: fit-content;
+  max-width: calc(100% - 48px); 
+}
+
 .side-basket {
   margin-top: auto;
   margin-bottom: 8px;
   margin-right: 12px;
 }
+
 .basket-details {
   float: left;
 }
@@ -328,9 +353,6 @@ ul {
 .btn {
   border-radius: 8px;
   border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
   font-family: inherit;
   background-color: white;
   cursor: pointer;
@@ -339,6 +361,17 @@ ul {
   font-optical-sizing: auto;
   font-style: normal;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+}
+
+.btn-large {
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+}
+
+.btn-small {
+  font-size: .75em;
+  padding: .4em .8em;
 }
 
 .btn-login {
@@ -454,6 +487,26 @@ button:hover {
   margin-bottom: -6px;
 }
 
+.back-button {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  color: #333;
+  transition: background-color 0.5s ease;
+}
+
+.back-button:hover {
+  background-color: #e0e0e0;
+}
+
+.button-container {
+  display: flex;
+  align-items: center;
+}
+
 select {
   background: #fffa9c;
   /* -webkit-appearance: none; */
@@ -484,11 +537,6 @@ select:hover {
   width: 96px;
 }
 
-.checkout {
-  display: flex;
-  justify-content: space-between;
-}
-
 .cart {
   width: 60%;
 }
@@ -501,12 +549,8 @@ select:hover {
   padding: 8px;
 }
 
-.checkout-form {
+.flex-space-between-form {
   width: 30%;
-}
-
-div>a:hover {
-  background-color: #fffa9c;
 }
 
 #map {
@@ -514,6 +558,12 @@ div>a:hover {
   height: 40vh;
   min-height: 400px;
   margin: 0% 1%;
+}
+
+.map-market-detail {
+  max-width: 33%;
+  height: 100%;
+  padding-bottom: 4px;
 }
 
 /* Basic form styling */
@@ -666,6 +716,10 @@ form textarea {
   width: 192px;
 }
 
+.img-market {
+  width: 100%;
+}
+
 .bounding-box {
   margin-top: 20px;
   padding: 20px;
@@ -676,26 +730,6 @@ form textarea {
 .favorites-list li {
   padding: 8px 0px;
   border-top: 1px solid #ccc;
-}
-
-.back-button {
-  margin: 10px 0;
-  padding: 10px;
-  background-color: #f0f0f0;
-  border: none;
-  cursor: pointer;
-  font-family: Arial, sans-serif;
-  color: #333;
-  transition: background-color 0.5s ease;
-}
-
-.back-button:hover {
-  background-color: #e0e0e0;
-}
-
-.button-container {
-  display: flex;
-  align-items: center;
 }
 
 .favorites-alert {

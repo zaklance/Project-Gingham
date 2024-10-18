@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
+import { APIProvider, Map, Marker, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
 
 function MarketDetail ({ match }) {
     const { id } = useParams();
@@ -58,7 +59,7 @@ function MarketDetail ({ match }) {
     }, [id]);
 
     const handleBackButtonClick = () => {
-        navigate('/markets');
+        navigate('/user/markets');
     };
 
     useEffect(() => {
@@ -118,29 +119,36 @@ function MarketDetail ({ match }) {
     }
 
     const { coordinates } = market;
-
+    
     const googleMapsLink = market?.coordinates
-        ? `https://www.google.com/maps?q=${market.coordinates.lat},${market.coordinates.lng}`
-        : '#';
+    ? `https://www.google.com/maps?q=${market.coordinates.lat},${market.coordinates.lng}`
+    : '#';
+    
+    const marketLocation = { 'lat': parseFloat(market.coordinates.lat), 'lng': parseFloat(market.coordinates.lng) }
 
     return (
         <div>
-            <button onClick={handleBackButtonClick} className='back-button'>
-                Back to Markets
-            </button>
-            <h2>{market.name}</h2>
-            <img src={randomImage} alt="Market Image" style={{ width: '70%' }} />
+            <div className='flex-space-between'>
+                <h2>{market.name}</h2>
+                <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Markets</button>
+            </div>
+            <div className='flex-space-around-end'>
+                <div>
+                    <img className='img-market' src={randomImage} alt="Market Image" />
+                </div>
+                <div id='map' className='map-market-detail'>
+                    <APIProvider apiKey={import.meta.env.VITE_GOOGLE_KEY} onLoad={() => console.log('Maps API has loaded.')}>
+                        <Map defaultCenter={marketLocation} defaultZoom={16} mapId={import.meta.env.VITE_GOOGLE_MAP_ID}>
+                            <Marker position={marketLocation} />
+                        </Map>
+                    </APIProvider>
+                </div>
+            </div>
             <p>{market.description}</p>
-            <div className='float-left'>
-                <h4>Location: {market.location}</h4>
-                {coordinates && (
-                    <h4> <strong>
-                        <a href={googleMapsLink} target="_blank" rel="noopener noreferrer">
-                            View on Google Maps
-                        </a>
-                        </strong>
-                    </h4>
-                )}
+            <div className='float-left market-details'>
+                <h4><a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
+                    {market.location}
+                </a></h4>
                 <h4>Hours: {market.hours}</h4>
             </div>
             <br />
