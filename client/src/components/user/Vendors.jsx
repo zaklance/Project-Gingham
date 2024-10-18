@@ -25,7 +25,7 @@ function Vendors() {
             <br/>
             <div className='header'>
                 <h2 className='float-left'>FIND A MARKET VENDOR TODAY</h2>
-            <select className='side-select2' value={selectedProduct} onChange={handleProductChange}>
+            <select className='float-right' value={selectedProduct} onChange={handleProductChange}>
                 <option value="">All Products</option>
                 {products.map(product => (
                     <option key={product} value={product}>{product}</option>

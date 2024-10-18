@@ -108,7 +108,7 @@ function VendorDetail () {
     }, [amountInCart, cartItems]);
 
     const handleBackButtonClick = () => {
-        navigate('/vendors');
+        navigate('/user/vendors');
     };
 
     const handleMarketChange = (event) => {
@@ -174,12 +174,12 @@ function VendorDetail () {
 
     return (
         <div>
-            <button onClick={handleBackButtonClick} className='back-button'>
-                Back to Vendors
-            </button>
+            <div className='flex-space-between'>
+                <h2>{vendor.name}</h2>
+                <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Vendors</button>
+            </div>
             <div style={{display:'flex'}}>
                 <div style={{display: '60%'}}>
-                    <h2>{vendor.name}</h2>
                     <img src={vendor.image} alt="Vendor Image" style={{ width: '95%' }} />
                 </div>
                 <div className='side-basket'>
