@@ -87,7 +87,7 @@ function Login({ handlePopup }) {
 
     return (
         <div className='login-bar'>
-            <button className="btn x-btn" onClick={handlePopup}>X</button>
+            <button className="btn btn-large x-btn" onClick={handlePopup}>X</button>
             <div className='wrapper'>
                 <h1 className='title'>WELCOME TO GINGHAM!</h1>
                 <div>
