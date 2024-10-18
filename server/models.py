@@ -119,7 +119,8 @@ class Vendor(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    based_out_of = db.Column(db.String, nullable=True)
+    city = db.Column(db.String, nullable=True)
+    state = db.Column(db.String(2), nullable=True)
     locations = db.Column(db.JSON)
     product = db.Column(db.String, nullable=False)
     image = db.Column(db.String)
@@ -129,7 +130,10 @@ class Vendor(db.Model, SerializerMixin):
     vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic')
     vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor', lazy='dynamic')
 
-    serialize_rules = ( '-reviews.vendor', '-vendor_favorites.vendor', '-vendor_vendor_users.vendor', '-vendor_markets.vendor', '-reviews.user.market_reviews', "-vendor_vendor_users.email")
+    serialize_rules = (
+        '-reviews.vendor', '-vendor_favorites.vendor', '-vendor_vendor_users.vendor', 
+        '-vendor_markets.vendor', '-reviews.user.market_reviews', '-vendor_vendor_users.email'
+    )
 
     # Validations
     @validates('name', 'product')
@@ -138,7 +142,7 @@ class Vendor(db.Model, SerializerMixin):
             raise ValueError(f"{key} cannot be empty")
         return value
 
-    @validates('based_out_of', 'locations')
+    @validates('city', 'state', 'locations')
     def validate_optional_string(self, key, value):
         if value and len(value) == 0:
             raise ValueError(f"{key} cannot be empty")
