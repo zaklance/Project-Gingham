@@ -140,8 +140,9 @@ def all_vendors():
         data = request.get_json()
         new_vendor = Vendor(
             name=data['name'],
-            based_out_of=data['based_out_of'],
-            locations=data['locations'],
+            city=data.get('city'),
+            state=data.get('state'),
+            locations=data.get('locations'),
             product=data['product']
         )
         db.session.add(new_vendor)
@@ -162,8 +163,10 @@ def all_vendors():
 
         if 'name' in data:
             vendor.name = data['name']
-        if 'based_out_of' in data:
-            vendor.based_out_of = data['based_out_of']
+        if 'city' in data:
+            vendor.city = data['city']
+        if 'state' in data:
+            vendor.state = data['state']
         if 'locations' in data:
             vendor.locations = data['locations']
         if 'product' in data:
@@ -189,17 +192,21 @@ def vendor_by_id(id):
         vendor = Vendor.query.filter_by(id=id).first()
         if not vendor:
             return {'error': 'vendor not found'}, 404
+
         try:          
             data = request.get_json()
-            # for key, value in data.items():
-            #     if hasattr(vendor, key):
-            #         setattr(vendor, key, value)
-            #     else:
-            #         return {'error': f'Invalid attribute: {key}'}, 400
-            vendor.name = data.get('name')
-            vendor.product = data.get('product')
-            vendor.based_out_of = data.get('based_out_of')
-            vendor.locations = data.get('locations')
+
+           
+            if 'name' in data:
+                vendor.name = data['name']
+            if 'product' in data:
+                vendor.product = data['product']
+            if 'city' in data:
+                vendor.city = data['city']
+            if 'state' in data:
+                vendor.state = data['state']
+            if 'locations' in data:
+                vendor.locations = data['locations']
 
             db.session.commit()
             return jsonify(vendor.to_dict()), 200
