@@ -297,7 +297,7 @@ function VendorProfile () {
                                 <>
                                     <p><strong>Name: </strong> {vendorData ? vendorData.name : ' Loading...'}</p>
                                     <p><strong>Product: </strong> {vendorData ? vendorData.product : ' Loading...'}</p>
-                                    <p><strong>Based in: </strong> {vendorData ? vendorData.based_out_of : ' Loading...'}</p>
+                                    <p><strong>Based in: </strong> {vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}</p>
                                     <button className='btn-edit' onClick={handleVendorEditToggle}>Edit</button>
                                     
                                     <p><strong>Locations: </strong></p>
