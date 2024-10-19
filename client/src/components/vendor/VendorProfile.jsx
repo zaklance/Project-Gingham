@@ -273,10 +273,22 @@ function VendorProfile () {
                                         <label>Based out of:</label>
                                         <input
                                             type="text"
-                                            name="based_out_of"
-                                            value={vendorData ? vendorData.based_out_of: ''}
+                                            name="city"
+                                            value={vendorData ? vendorData.city : ''}
                                             onChange={handleVendorInputChange}
                                         />
+                                        <select
+                                            name="state"
+                                            value={vendorData ? vendorData.state : ''} 
+                                            onChange={handleVendorInputChange}
+                                        >
+                                            <option value="">Select State</option>
+                                            {states.map((state, index) => (
+                                                <option key={index} value={state}>
+                                                    {state}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <button className='btn-edit' onClick={handleSaveVendorChanges}>Save Changes</button>
                                     <button className='btn-edit' onClick={handleVendorEditToggle}>Cancel</button>
