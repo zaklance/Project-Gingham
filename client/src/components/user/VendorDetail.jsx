@@ -209,7 +209,7 @@ function VendorDetail () {
                 </div>
             </div>
             <div>
-                <h4 className='float-left'>Based out of: {vendor.based_out_of}</h4>
+                <h4 className='float-left'>Based out of: {vendor.city}, {vendor.state}</h4>
                 <div className='button-container'>
                     <button 
                         className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
