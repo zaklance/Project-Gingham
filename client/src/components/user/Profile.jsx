@@ -180,7 +180,7 @@ function Profile() {
                     {vendorFavs.length > 0 ? (
                     vendorFavs.map((data) => (
                         <li key={data.id}>
-                            <Link to={`/user/vendors/${data.id}`}><b>{data.vendor.name}</b> <i>of {data.vendor.based_out_of}</i> </Link>
+                            <Link to={`/user/vendors/${data.id}`}><b>{data.vendor.name}</b> <i>of {data.vendor.city}, {data.vendor.state}</i> </Link>
                         </li>
                     ))
                     ) : (
