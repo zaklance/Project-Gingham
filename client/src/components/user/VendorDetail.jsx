@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useOutletContext, useNavigate } from 'react-router-dom';
 import buyabag from '../../assets/images/GINGHAM_BUYABAG.png';
+import MarketCard from './MarketCard';
 
 function VendorDetail () {
     const { id } = useParams();
@@ -17,6 +18,7 @@ function VendorDetail () {
     const [isClicked, setIsClicked] = useState(false);
     const [alertMessage, setAlertMessage] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
+    const [hoveredMarket, setHoveredMarket] = useState(null);
 
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
     
@@ -49,7 +51,13 @@ function VendorDetail () {
                         const response = await fetch(`http://127.0.0.1:5555/markets/${marketId}`);
                         if (response.ok) {
                             const marketData = await response.json();
-                            return { id: marketId, name: marketData.name };
+                            return { 
+                                id: marketId, 
+                                name: marketData.name, 
+                                location: marketData.location,
+                                hours: marketData.hours,
+                                zipcode: marketData.zipcode 
+                            };
                         } else {
                             console.log(`Failed to fetch market ${marketId}`);
                             return { id: marketId, name: 'Unknown Market' };
@@ -178,6 +186,7 @@ function VendorDetail () {
                 <h2>{vendor.name}</h2>
                 <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Vendors</button>
             </div>
+            < br />
             <div style={{display:'flex'}}>
                 <div style={{display: '60%'}}>
                     <img src={vendor.image} alt="Vendor Image" style={{ width: '95%' }} />
@@ -185,13 +194,13 @@ function VendorDetail () {
                 <div className='side-basket'>
                     <h2>Buy a Market Basket!</h2>
                     <img src={buyabag} alt="Basket Image" style={{ width: '200px' }} /><br />
-                    <div className='basket-details'>
+                    {/* <div className='basket-details'>
                         <h4>$4.99</h4>
                         <div className='float-left'>
                             <p>Available Baskets: {availableBaskets}</p>
                             <p>Choose a Market:</p>
-                        </div>
-                        <div className='select'>
+                        </div> */}
+                        {/* <div className='select'>
                             <select className='float-none' value={selectedVendor} onChange={handleMarketChange}>
                             {Array.isArray(locations) && locations.length > 0 ? (
                                 locations.map((marketId, index) => (
@@ -203,9 +212,9 @@ function VendorDetail () {
                                 <option value="">No market locations</option>
                             )}
                             </select>
-                        </div>
-                    <button className='btn-edit' onClick={handleAddToCart}>Add to Cart</button>
-                    </div>
+                        </div> */}
+                    {/* <button className='btn-edit' onClick={handleAddToCart}>Add to Cart</button>
+                    </div> */}
                 </div>
             </div>
             <div>
@@ -224,14 +233,32 @@ function VendorDetail () {
                 <br />
                 <h2>Farmers Market Locations:</h2>
                 {Array.isArray(locations) && locations.length > 0 ? (
-                    locations.map((marketId, index) => (
-                        <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                            <Link to={`/user/markets/${marketId}`}> {marketDetails[marketId] || 'Loading...'} </Link>
+                        locations.map((marketId, index) => (
+                            <div 
+                                key={index} 
+                                className="market-item"
+                                onMouseEnter={() => setHoveredMarket(marketId)}
+                                onMouseLeave={() => setHoveredMarket(null)}
+                            >
+                                <Link to={`/user/markets/${marketId}`} className="market-name">
+                                    {marketDetails[marketId] || 'Loading...'}
+                                </Link>
+                                <span className="market-price">Price: ${price.toFixed(2)}</span>
+                                <span className="market-baskets">Available Baskets: {availableBaskets}</span>
+                                <button className="btn-edit" onClick={() => handleAddToCart(marketId)}>
+                                    Add to Cart
+                                </button>
+                                {hoveredMarket === marketId && (
+                                    <div className='market-card-popup'>
+                                        <MarketCard marketData={marketDetails[marketId]} />
+                                        {/* Why isnt the other info populating?!? */}
+                                    </div>
+                                )}
                         </div>
-                    ))
-                ) : (
-                    <p>No market locations at this time</p>
-                )}
+                        ))
+                    ) : (
+                        <p>No market locations at this time</p>
+                    )}
                 <br />
                 <h2>Reviews</h2>
                 <br />
