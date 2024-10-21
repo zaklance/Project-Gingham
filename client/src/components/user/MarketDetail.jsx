@@ -162,13 +162,13 @@ function MarketDetail ({ match }) {
                     </div>
                 )}
             </div>
-            <br />
-            <br />
+            <br/>
+            <br/>
             <h2>Vendors in this Market:</h2>
             <ul>
 
             </ul>
-            <br />
+            <br/>
             <div>
                 <h2>Reviews</h2>
                 {marketReviews.length > 0 ? (
