@@ -76,7 +76,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                     </>
                 )}
                 {/* User Login / Logout */}
-                {isUserLoggedIn ?  (
+                {isUserLoggedIn && !isVendorPage && !isAdminPage ?  (
                     <>
                         <li>
                             <button className='nav-tab color-2'>

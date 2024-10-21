@@ -11,14 +11,16 @@ function VendorProfile () {
     const [vendorData, setVendorData] = useState(null);
 
     const products = [
-        'art', 'baked goods', 'cheese', 'cider', 'ceramics', 'coffee/tea', 'fish', 'flowers', 'fruit', 'gifts', 'honey', 
-        'international', 'juice', 'maple syrup', 'meats', 'mushrooms', 'nuts', 'pasta', 'pickles', 'spirits', 'vegetables'
+        'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 
+        'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables'
     ];
 
     const states = [
-        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", 
-        "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", 
-        "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", 
+        "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", 
+        "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", 
+        "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", 
+        "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
       ];
     
     useEffect(() => {
@@ -191,7 +193,7 @@ function VendorProfile () {
                     <div className='bounding-box'>
                         {editMode ? (
                             <>
-                                <div className='form-group'>
+                                <div className='form-group flex-form'>
                                     <label>First Name:</label>
                                     <input
                                         type="text"
@@ -200,7 +202,7 @@ function VendorProfile () {
                                         onChange={handleInputChange}
                                     />
                                 </div>
-                                <div className='form-group'>
+                                <div className='form-group flex-form'>
                                     <label>Last Name:</label>
                                     <input
                                         type="text"
@@ -209,7 +211,7 @@ function VendorProfile () {
                                         onChange={handleInputChange}
                                     />
                                 </div>
-                                <div className='form-group'>
+                                <div className='form-group flex-form'>
                                     <label>Email:</label>
                                     <input
                                         type="email"
@@ -218,7 +220,7 @@ function VendorProfile () {
                                         onChange={handleInputChange}
                                     />
                                 </div>
-                                <div className='form-group'>
+                                <div className='form-group flex-form'>
                                     <label>Phone Number:</label>
                                     <input
                                         type="text"
@@ -232,9 +234,9 @@ function VendorProfile () {
                             </>
                         ) : (
                             <>
-                                <p><strong>Name: </strong> {vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : ' Loading...'}</p>
-                                <p><strong>Email: </strong> {vendorUserData ? vendorUserData.email : ' Loading...'}</p>
-                                <p><strong>Phone: </strong> {vendorUserData ? vendorUserData.phone : ' Loading...'}</p>
+                                <p><strong>Name:&emsp;</strong> {vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : ' Loading...'}</p>
+                                <p><strong>Email:&emsp;</strong> {vendorUserData ? vendorUserData.email : ' Loading...'}</p>
+                                <p><strong>Phone:&emsp;</strong> {vendorUserData ? vendorUserData.phone : ' Loading...'}</p>
                                 <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                             </>
                         )}
@@ -255,13 +257,13 @@ function VendorProfile () {
                                         />
                                     </div>
                                     <div className='form-group'>
-                                        <label>Product</label>
+                                        <label>Product:</label>
                                         <select
                                             name="product"
                                             value={vendorData ? vendorData.product : ''}
                                             onChange={handleVendorInputChange}
                                         >
-                                            <option value="">Select Product</option>
+                                            <option value="">Select</option>
                                             {products.map((product, index) => (
                                                 <option key={index} value={product}>
                                                     {product}
@@ -295,12 +297,12 @@ function VendorProfile () {
                                 </>
                             ) : (
                                 <>
-                                    <p><strong>Name: </strong> {vendorData ? vendorData.name : ' Loading...'}</p>
-                                    <p><strong>Product: </strong> {vendorData ? vendorData.product : ' Loading...'}</p>
-                                    <p><strong>Based in: </strong> {vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}</p>
+                                    <p><strong>Name:&emsp;</strong> {vendorData ? vendorData.name : ' Loading...'}</p>
+                                    <p><strong>Product:&emsp;</strong> {vendorData ? vendorData.product : ' Loading...'}</p>
+                                    <p><strong>Based in:&emsp;</strong> {vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}</p>
                                     <button className='btn-edit' onClick={handleVendorEditToggle}>Edit</button>
                                     
-                                    <p><strong>Locations: </strong></p>
+                                    <p><strong>Locations:&emsp;</strong></p>
                                     {Array.isArray(locations) && locations.length > 0 ? (
                                         locations.map((marketId, index) => (
                                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
