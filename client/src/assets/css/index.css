@@ -208,6 +208,10 @@ ul {
   /* font-style: normal; */
 }
 
+.nav-tab:hover {
+  box-shadow: 0 0px 0px rgba(0, 0, 0, 0);
+}
+
 .nav-tab:active {
   background-color: #fff669;
   transition: .2s;
@@ -370,7 +374,8 @@ ul {
   border-radius: 8px;
   border: 1px solid transparent;
   font-family: inherit;
-  background-color: white;
+  /* background-color: white; */
+  background-color: #eee;
   cursor: pointer;
   transition: border-color 0.25s;
   font-family: "Quicksand", sans-serif;
@@ -378,9 +383,9 @@ ul {
   font-style: normal;
 }
 
-.btn:hover {
+/* .btn:hover {
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
-}
+} */
 
 .btn-large {
   padding: 0.6em 1.2em;
@@ -403,9 +408,14 @@ ul {
   background-color: #dbdbdb;
 }
 
-btn-login:hover {
+/* .btn-login:hover {
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
-}
+} */
+
+/* .btn-login:active {
+  background-color: #fff669;
+  transition: .1s;
+} */
 
 .btn-edit {
   padding: 10px 12px;
@@ -415,14 +425,14 @@ btn-login:hover {
   margin: 12px 0px;
 }
 
-.btn-edit:hover {
+/* .btn-edit:hover {
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
-}
+} */
 
-.btn-edit:active {
+/* .btn-edit:active {
   background-color: #fff669;
   transition: .1s;
-}
+} */
 
 .btn-cart {
   padding: 10px 12px;
@@ -432,14 +442,14 @@ btn-login:hover {
   margin: 12px 12px;
 }
 
-.btn-cart:hover {
+/* .btn-cart:hover {
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
 }
 
 .btn-cart:active {
   background-color: #fff669;
   transition: .1s;
-}
+} */
 
 .btn-delete {
   padding: 6px 8px;
@@ -449,9 +459,9 @@ btn-login:hover {
   float: right;
 }
 
-.btn-delete:hover {
+/* .btn-delete:hover {
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
-}
+} */
 
 .btn-like {
   height: fit-content;
@@ -495,6 +505,7 @@ btn-login:hover {
   margin-top: 4px;
   margin-left: 4px;
   margin-bottom: -10px;
+  background-color: white;
 }
 
 button a {
@@ -512,6 +523,12 @@ button a.active {
 
 button:hover {
   background: #fffa9c;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+}
+
+button:active {
+  background-color: #fff669;
+  transition: .1s;
 }
 
 .add-cart {
@@ -522,14 +539,14 @@ button:hover {
   float: right;
 }
 
-.add-cart:hover {
+/* .add-cart:hover {
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
-}
+} */
 
-.add-cart:active {
+/* .add-cart:active {
   background-color: #fffa9c;
   transition: .1s;
-}
+} */
 
 .btn-home {
   margin-bottom: -6px;
