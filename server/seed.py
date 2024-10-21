@@ -348,7 +348,7 @@ def run():
 
 
     vendors = []
-    products = ['art', 'baked goods', 'cheese', 'cider', 'ceramics', 'coffee/tea', 'fish', 'flowers', 'fruit', 'gifts', 'honey', 'international', 'juice', 'maple syrup', 'meats', 'mushrooms' 'nuts', 'pasta', 'pickles', 'spirits', 'vegetables']
+    products = ['Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables']
     companies = ['Goods', 'Produce', 'Farms', 'Organics', 'and Son', 'and Daughter', 'Market', 'Apothecary', 'Orchard']
     states = ['CT', 'DE', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT']
     images = [
