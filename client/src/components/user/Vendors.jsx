@@ -6,7 +6,10 @@ function Vendors() {
     const [vendor, setVendor] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState('');
     
-    const products = ['art', 'baked goods', 'cheese', 'cider', 'ceramics', 'coffee/tea', 'fish', 'flowers', 'fruit', 'gifts', 'honey', 'international', 'juice', 'maple syrup', 'meats', 'nuts', 'pasta', 'pickles', 'spirits', 'vegetables'];
+    const products = [
+        'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey',
+        'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables'
+    ];
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/vendors")
