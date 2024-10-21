@@ -199,7 +199,6 @@ ul {
 .nav-tab {
   border: none;
   font-size: 18px;
-  /* Adjust font size as needed */
   cursor: pointer;
   padding: 23px 24px 26px 24px;
   margin: 0px 0 -20px 0;
@@ -553,7 +552,7 @@ button:active {
 }
 
 .btn-home:active {
-  scale: 110%;
+  scale: 120%;
   transition: .4s;
 }
 
