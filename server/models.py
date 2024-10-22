@@ -89,8 +89,12 @@ class Market(db.Model, SerializerMixin):
     location = db.Column(db.String, nullable=False)
     zipcode = db.Column(db.String, nullable=True)
     coordinates = db.Column(db.JSON, nullable=False)
-    hours = db.Column(db.String, nullable=True)
+    hour_start = db.Column(db.Time, nullable=True)
+    hour_end = db.Column(db.Time, nullable=True)
+    day_of_week = db.Column(db.String, nullable=True)
     year_round = db.Column(db.Boolean, nullable=True)
+    season_start = db.Column(db.Date, nullable=True)
+    season_end = db.Column(db.Date, nullable=True)
 
     # Relationships
     reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic')
