@@ -445,16 +445,15 @@ def vendorSignup():
     try:
         vendor_user = VendorUser.query.filter(VendorUser.email == data['email']).first()
         if vendor_user:
-            return {'error': 'email already exists'}, 400
+            return {'error': 'Email already exists'}, 400
         
         new_vendor_user = VendorUser(
             email=data['email'],
-            password=data['password'],
             first_name=data['first_name'],
             last_name=data['last_name'],
-            phone=data.get('phone'),
-            vendor_id=data['vendor_id']
+            phone=data.get('phone')
         )
+        new_vendor_user.password = data['password']
 
         db.session.add(new_vendor_user)
         db.session.commit()
