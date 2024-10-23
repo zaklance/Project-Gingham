@@ -146,6 +146,17 @@ h2 {
   margin:16px;
 }
 
+.title-big {
+  background-color: white;
+  font-size: 6em;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 16px 24px;
+  /* opacity: 75%; */
+  border-radius: 20px;
+}
+
 .text-light {
   color: white;
 }
@@ -382,10 +393,6 @@ ul {
   font-style: normal;
 }
 
-/* .btn:hover {
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
-} */
-
 .btn-large {
   padding: 0.6em 1.2em;
   font-size: 1em;
@@ -395,6 +402,10 @@ ul {
 .btn-small {
   font-size: .75em;
   padding: .4em .8em;
+}
+
+.btn-margin {
+  margin-right: 12px;
 }
 
 .btn-login {
@@ -407,15 +418,6 @@ ul {
   background-color: #dbdbdb;
 }
 
-/* .btn-login:hover {
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
-} */
-
-/* .btn-login:active {
-  background-color: #fff669;
-  transition: .1s;
-} */
-
 .btn-edit {
   padding: 10px 12px;
   border-radius: 8px;
@@ -423,15 +425,6 @@ ul {
   background-color: #dbdbdb;
   margin: 12px 0px;
 }
-
-/* .btn-edit:hover {
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
-} */
-
-/* .btn-edit:active {
-  background-color: #fff669;
-  transition: .1s;
-} */
 
 .btn-cart {
   padding: 10px 12px;
@@ -441,15 +434,6 @@ ul {
   margin: 12px 12px;
 }
 
-/* .btn-cart:hover {
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
-}
-
-.btn-cart:active {
-  background-color: #fff669;
-  transition: .1s;
-} */
-
 .btn-delete {
   padding: 6px 8px;
   border-radius: 8px;
@@ -457,10 +441,6 @@ ul {
   background-color: #dbdbdb;
   float: right;
 }
-
-/* .btn-delete:hover {
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
-} */
 
 .btn-like {
   height: fit-content;
@@ -507,6 +487,12 @@ ul {
   background-color: white;
 }
 
+.tabs {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
 button a {
   text-decoration: none;
   color: #3b4752;
@@ -538,15 +524,6 @@ button:active {
   float: right;
 }
 
-/* .add-cart:hover {
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
-} */
-
-/* .add-cart:active {
-  background-color: #fffa9c;
-  transition: .1s;
-} */
-
 .btn-home {
   margin-bottom: -6px;
 }
@@ -555,21 +532,6 @@ button:active {
   scale: 120%;
   transition: .4s;
 }
-
-/* .back-button {
-  margin: 10px 0;
-  padding: 10px;
-  background-color: #f0f0f0;
-  border: none;
-  cursor: pointer;
-  font-family: Arial, sans-serif;
-  color: #333;
-  transition: background-color 0.5s ease;
-}
-
-.back-button:hover {
-  background-color: #e0e0e0;
-} */
 
 .button-container {
   display: flex;
@@ -675,6 +637,14 @@ form textarea {
   padding: 8px;
   box-sizing: border-box;
   min-width: 240px;
+}
+
+.form-group label {
+  width: 120px;
+}
+
+.form-login input {
+  min-width: 312px;
 }
 
 .btn-right {
@@ -792,6 +762,11 @@ form textarea {
   width: 100%;
 }
 
+.img-portal {
+  width: 100%;
+  border-radius: 12px;
+}
+
 .bounding-box {
   margin-top: 20px;
   padding: 20px;
@@ -856,6 +831,20 @@ form textarea {
   padding: 8px 0;
 }
 
+.vendor-portal-background {
+  background-image: url('../images/LzYeux_120719_0036_1800px.png');
+  background-size:cover;
+  width: 100%;
+  height: 600px;
+}
+
+.admin-portal-background {
+  background-image: url('../images/LzYeux_120719_0033_1800px.png');
+  background-size:cover;
+  width: 100%;
+  height: 600px;
+}
+
 .banner-admin-portal {
   background-color: #69d2c2;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.28);
@@ -878,27 +867,6 @@ form textarea {
   width: 80%;
   max-width: 1056px;
 } 
-
-.tabs {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.tabs a {
-  text-decoration: none;
-  padding: 10px 20px;
-  background-color: lightgray;
-  border-radius: 5px;
-}
-
-.tabs a:hover {
-  background-color: darkgray;
-}
-
-.tab-content {
-  margin-top: 20px;
-}
 
 .market-item {
   display: flex;

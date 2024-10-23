@@ -9,13 +9,13 @@ function AdminDashboard () {
     return(
         <div>
             <h2 className='title'>Admin Dashboard</h2>
-            <div className='tabs'>                
-                <Link to="#" onClick={() => setActiveTab('vendors')} className={activeTab === 'vendors' ? 'active' : ''}>
+            <div>                
+                <button className='btn btn-large btn-margin'><Link to="#" onClick={() => setActiveTab('vendors')} className={activeTab === 'vendors' ? 'active' : ''}>
                     Vendors
-                </Link>
-                <Link to="#" onClick={() => setActiveTab('markets')} className={activeTab === 'markets' ? 'active' : ''}>
+                </Link></button>
+                <button className='btn btn-large btn-margin'><Link to="#" onClick={() => setActiveTab('markets')} className={activeTab === 'markets' ? 'active' : ''}>
                     Markets
-                </Link>
+                </Link></button>
             </div>
             {activeTab === 'vendors' && <AdminVendors />}
             {activeTab === 'markets' && <AdminMarkets />}

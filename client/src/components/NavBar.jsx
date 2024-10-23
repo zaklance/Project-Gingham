@@ -111,7 +111,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                     isVendorPage && (
                         <li style={{ marginLeft: 'auto' }}>
                             <button className='nav-tab color-3 tab-right' onClick={handlePopup} >
-                                Temporary
+                                Login/Signup
                             </button>
                         </li>
                     )
@@ -129,7 +129,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                     isAdminPage && (
                         <li style={{ marginLeft: 'auto' }}>
                             <button className='nav-tab color-3 tab-right' onClick={handlePopup} >
-                                Temporary
+                                Login/Signup
                             </button>
                         </li>
                     )

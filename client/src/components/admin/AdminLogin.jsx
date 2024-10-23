@@ -47,7 +47,7 @@ function AdminLogin () {
                 <div className='flex-space-around-center flex-center'>
                     <div>
                         <form onSubmit={handleLogin} className='form'>
-                            <h3>Admin Portal Login:</h3>
+                            <h2>Login:</h2>
                             <br />
                             <div className='form-group'>
                                 <label>Email:</label>

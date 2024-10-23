@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 // import '../../assets/css/index.css';
 
 function Login({ handlePopup }) {
-    const [loginEmail, setLoginEmail] = useState('');  // Use email instead of username
+    const [loginEmail, setLoginEmail] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [signupEmail, setSignupEmail] = useState('');
     const [signupPassword, setSignupPassword] = useState('');
@@ -15,15 +15,16 @@ function Login({ handlePopup }) {
 
     const handleLogin = async (event) => {
         event.preventDefault();
+        const lowercaseEmail = loginEmail.toLowerCase();
     
         try {
-            const response = await fetch('http://127.0.0.1:5555/login', {
+            const response = await fetch('http://127.0.0.1:5555/vendor/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    email: loginEmail,
+                    email: lowercaseEmail,
                     password: loginPassword
                 }),
                 credentials: 'include'
@@ -36,11 +37,12 @@ function Login({ handlePopup }) {
                 globalThis.sessionStorage.setItem('jwt-token', data.access_token);
     
                 // Store user ID if necessary
-                globalThis.sessionStorage.setItem('user_id', data.user_id);
+                globalThis.sessionStorage.setItem('vendor_user_id', data.vendor_user_id);
     
                 console.log('Login successful:', data);
     
-                // Navigate to the user's profile or refresh the page
+                // Navigate to the user's dashboard or refresh the page
+                navigate(`/vendor/dashboard`);
                 window.location.reload();
             } else {
                 alert('Login failed');
@@ -51,39 +53,39 @@ function Login({ handlePopup }) {
         }
     };
 
-    const handleSignup = async (event) => {
-        event.preventDefault();
-        const response = await fetch('http://127.0.0.1:5555/signup', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                email: signupEmail,
-                password: signupPassword,
-                first_name: signupFirstName,
-                last_name: signupLastName,
-                address: signupAddress
-            }),
-            credentials: 'include'
-        });
-        if (response.ok) {
-            const data = await response.json();
-            alert("Sign Up Successful. Please log in!");
-        } else {
-            const errorData = await response.json();
-            if (errorData.error) {
-                if (errorData.error.includes('email')) {
-                    alert("This email is already in use. Please sign in or use a different email.");
-                } else {
-                    alert("Signup failed: " + errorData.error);
-                    console.log('Signup failed');
-                }
-            } else {
-                alert("Signup failed. Please check your details and try again.")
-            }
-        }
-    };
+    // const handleSignup = async (event) => {
+    //     event.preventDefault();
+    //     const response = await fetch('http://127.0.0.1:5555/signup', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({
+    //             email: signupEmail,
+    //             password: signupPassword,
+    //             first_name: signupFirstName,
+    //             last_name: signupLastName,
+    //             address: signupAddress
+    //         }),
+    //         credentials: 'include'
+    //     });
+    //     if (response.ok) {
+    //         const data = await response.json();
+    //         alert("Sign Up Successful. Please log in!");
+    //     } else {
+    //         const errorData = await response.json();
+    //         if (errorData.error) {
+    //             if (errorData.error.includes('email')) {
+    //                 alert("This email is already in use. Please sign in or use a different email.");
+    //             } else {
+    //                 alert("Signup failed: " + errorData.error);
+    //                 console.log('Signup failed');
+    //             }
+    //         } else {
+    //             alert("Signup failed. Please check your details and try again.")
+    //         }
+    //     }
+    // };
 
     return (
         <div className='login-bar'>
@@ -116,7 +118,7 @@ function Login({ handlePopup }) {
                         <button className='btn-login' type="submit">Login</button>
                     </form>
                 </div>
-                <div>
+                {/* <div>
                     <form onSubmit={handleSignup} className="form">
                         <h2>Signup</h2>
                         <div className="form-group form-login">
@@ -171,7 +173,7 @@ function Login({ handlePopup }) {
                         </div>
                         <button className='btn-login' type="submit">Signup</button>
                     </form>
-                </div>
+                </div> */}
             </div>
         </div>
     );
