@@ -241,7 +241,7 @@ class VendorUser(db.Model, SerializerMixin):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     phone = db.Column(db.String, nullable=False)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'))
 
     # Relationships
     vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor_user', lazy='dynamic')
