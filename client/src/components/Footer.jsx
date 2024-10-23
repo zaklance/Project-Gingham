@@ -16,10 +16,10 @@ function Footer() {
                             <NavLink reloadDocument to="/"><strong>Gingham Home</strong></NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/vendor/login"><strong>Vendor Portal</strong></NavLink>
+                            <NavLink reloadDocument to="/vendor/home"><strong>Vendor Portal</strong></NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/admin/login"><strong>Admin Portal</strong></NavLink>
+                            <NavLink reloadDocument to="/admin/home"><strong>Admin Portal</strong></NavLink>
                         </li>
                     </ul>
                     <ul className='ul-footer'>

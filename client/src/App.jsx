@@ -1,16 +1,19 @@
 // App.jsx
 import React, { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import './assets/css/index.css';
 import NavBar from './components/NavBar.jsx';
 import Home from './components/Home.jsx'
 import LoginPopup from './components/user/LoginPopup.jsx';
 import Footer from './components/Footer.jsx';
-import VendorLogin from './components/vendor/VendorLogin.jsx';
+import VendorLoginPopup from './components/vendor/VendorLoginPopup.jsx';
+import AdminLoginPopup from './components/admin/AdminLoginPopup.jsx';
 
 function App() {
+    const location = useLocation();
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [isPopup, setIsPopup] = useState(false);
+    const isNotUser = location.pathname.startsWith('/vendor') || location.pathname.startsWith('/admin');
     const isVendorPage = location.pathname.startsWith('/vendor');
     const isAdminPage = location.pathname.startsWith('/admin');
     const [amountInCart, setAmountInCart] = useState(() => {
@@ -52,7 +55,9 @@ function App() {
                 </header>
                 <main>
                     <div className={`popup ${isPopup ? 'popup-on' : ''}`} style={{ top: window.scrollY }}>
-                        <LoginPopup handlePopup={handlePopup} />
+                        {!isNotUser && (<LoginPopup handlePopup={handlePopup} />)}
+                        {isVendorPage && (<VendorLoginPopup handlePopup={handlePopup} />)}
+                        {isAdminPage && (<AdminLoginPopup handlePopup={handlePopup} />)}
                     </div>
                     <Outlet context={{ amountInCart, setAmountInCart, cartItems, setCartItems, isPopup, setIsPopup, handlePopup }} />
                 </main>

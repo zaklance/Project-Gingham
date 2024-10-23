@@ -11,7 +11,7 @@ function VendorLogout () {
         })
         .then(() => {
             globalThis.sessionStorage.removeItem('vendor_user_id');
-            navigate('/vendor/login')
+            navigate('/vendor/home')
         })
         .catch((error) => {
             console.error('Logout failed:', error);

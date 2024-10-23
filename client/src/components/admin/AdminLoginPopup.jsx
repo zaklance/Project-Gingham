@@ -17,7 +17,7 @@ function Login({ handlePopup }) {
         event.preventDefault();
     
         try {
-            const response = await fetch('http://127.0.0.1:5555/login', {
+            const response = await fetch('http://127.0.0.1:5555/admin/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -36,11 +36,12 @@ function Login({ handlePopup }) {
                 globalThis.sessionStorage.setItem('jwt-token', data.access_token);
     
                 // Store user ID if necessary
-                globalThis.sessionStorage.setItem('user_id', data.user_id);
+                globalThis.sessionStorage.setItem('admin_user_id', data.admin_user_id);
     
                 console.log('Login successful:', data);
     
                 // Navigate to the user's profile or refresh the page
+                navigate(`/admin/dashboard`);
                 window.location.reload();
             } else {
                 alert('Login failed');
@@ -116,7 +117,7 @@ function Login({ handlePopup }) {
                         <button className='btn-login' type="submit">Login</button>
                     </form>
                 </div>
-                <div>
+                {/* <div>
                     <form onSubmit={handleSignup} className="form">
                         <h2>Signup</h2>
                         <div className="form-group form-login">
@@ -171,7 +172,7 @@ function Login({ handlePopup }) {
                         </div>
                         <button className='btn-login' type="submit">Signup</button>
                     </form>
-                </div>
+                </div> */}
             </div>
         </div>
     );
