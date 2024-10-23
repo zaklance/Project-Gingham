@@ -2,7 +2,7 @@ import os
 import json
 import smtplib
 from flask import Flask, request, jsonify, session
-from models import db, User, Market, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, bcrypt
+from models import db, User, Market, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate
@@ -636,6 +636,70 @@ def handle_vendor_vendor_users():
         except Exception as e:
             db.session.rollback()
             return {'error': f'Exception: {str(e)}'}, 500
+        
+@app.route("/baskets", methods=['GET', 'POST'])
+def handle_baskets():
+    if request.method == 'GET':
+        try:
+            baskets = Basket.query.all()
+            return jsonify([basket.to_dict() for basket in baskets]), 200
+        except Exception as e:
+            return {'error': f'Exception: {str(e)}'}, 500
+
+    elif request.method == 'POST':
+        data = request.get_json()
+        
+        try:
+            new_basket = Basket(
+                vendor_id=data['vendor_id'],
+                user_id=data['user_id'],
+                market_id=data['market_id'],
+                sale_date=data['sale_date'],
+                is_sold=data['is_sold']
+            )
+            db.session.add(new_basket)
+            db.session.commit()
+            return jsonify(new_basket.to_dict()), 201
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
+
+@app.route("/baskets/<int:id>", methods=['GET', 'PATCH', 'DELETE'])
+def handle_basket_by_id(id):
+    basket = Basket.query.filter_by(id=id).first()
+    
+    if not basket:
+        return {'error': 'Basket not found'}, 404
+
+    if request.method == 'GET':
+        try:
+            return jsonify(basket.to_dict()), 200
+        except Exception as e:
+            return {'error': f'Exception: {str(e)}'}, 500
+
+    elif request.method == 'PATCH':
+        try:
+            data = request.get_json()
+            for key, value in data.items():
+                setattr(basket, key, value)
+            db.session.commit()
+            return jsonify(basket.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
+    elif request.method == 'DELETE':
+        try:
+            db.session.delete(basket)
+            db.session.commit()
+            return {}, 204
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
 
 
 
@@ -691,45 +755,23 @@ def adminLogout():
     session.pop('admin_user_id', None)
     return {}, 204
 
-@app.route("/admin_users", methods=['GET'])
-def get_admin_users():
-    try:
-        admin_users = AdminUser.query.all()
-        return jsonify([admin_user.to_dict() for admin_user in admin_users]), 200
-    except Exception as e:
-        return {'error': f'Exception: {str(e)}'}, 500
-    
-@app.route('/admin_users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
-def adminProfile(id):
+@app.route("/admin_users", methods=['GET', 'POST'])
+def handle_admin_users():
     if request.method == 'GET':
-        adminUser = AdminUser.query.filter_by(id=id).first()
-        if not adminUser:
-            return {'error': 'user not found'}, 404
-        return jsonify(adminUser.to_dict()), 200
-    
-    elif request.method == 'PATCH':
-        adminUser = AdminUser.query.filter_by(id=id).first()
-        if not adminUser:
-            return {'error': 'user not found'}, 404
-        
         try:
-            data = request.get_json()
-            for key, value in data.items():
-                setattr(adminUser, key, value)
-            db.session.commit()
-            return jsonify(adminUser.to_dict()), 200
-        
+            admin_users = AdminUser.query.all()
+            return jsonify([admin_user.to_dict() for admin_user in admin_users]), 200
         except Exception as e:
-            db.session.rollback()
-            return {'error': str(e)}, 500
+            return {'error': f'Exception: {str(e)}'}, 500
 
     elif request.method == 'POST':
         data = request.get_json()
-        
+
+        # Check if the email already exists
         existing_user = AdminUser.query.filter_by(email=data['email']).first()
         if existing_user:
             return {'error': 'Email already in use'}, 400
-        
+
         try:
             new_admin_user = AdminUser(
                 email=data['email'],
@@ -741,24 +783,45 @@ def adminProfile(id):
             db.session.add(new_admin_user)
             db.session.commit()
             return jsonify(new_admin_user.to_dict()), 201
-        
+
         except Exception as e:
             db.session.rollback()
-            return {'error': str(e)}, 500
+            return {'error': f'Exception: {str(e)}'}, 500
     
-    elif request.method == 'DELETE':
-        adminUser = AdminUser.query.filter_by(id=id).first()
-        if not adminUser:
-            return {'error': 'user not found'}, 404
-        
+@app.route('/admin_users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def handle_admin_user_by_id(id):
+    admin_user = AdminUser.query.filter_by(id=id).first()
+
+    if not admin_user:
+        return {'error': 'User not found'}, 404
+
+    if request.method == 'GET':
         try:
-            db.session.delete(adminUser)
+            return jsonify(admin_user.to_dict()), 200
+        except Exception as e:
+            return {'error': f'Exception: {str(e)}'}, 500
+
+    elif request.method == 'PATCH':
+        try:
+            data = request.get_json()
+            for key, value in data.items():
+                setattr(admin_user, key, value)
+            db.session.commit()
+            return jsonify(admin_user.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Exception: {str(e)}'}, 500
+
+    elif request.method == 'DELETE':
+        try:
+            db.session.delete(admin_user)
             db.session.commit()
             return {}, 204
-        
+
         except Exception as e:
             db.session.rollback()
-            return {'error': str(e)}, 500
+            return {'error': f'Exception: {str(e)}'}, 500
 
 
 # Email Form
