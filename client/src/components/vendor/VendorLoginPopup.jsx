@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // import '../../assets/css/index.css';
 
-function Login({ handlePopup }) {
+function VendorLogin({ handlePopup }) {
     const [loginEmail, setLoginEmail] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [signupEmail, setSignupEmail] = useState('');
@@ -173,4 +173,4 @@ function Login({ handlePopup }) {
     );
 }
 
-export default Login;
+export default VendorLogin;

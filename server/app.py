@@ -451,7 +451,7 @@ def vendorSignup():
             email=data['email'],
             first_name=data['first_name'],
             last_name=data['last_name'],
-            phone=data.get('phone')
+            phone=data['phone']
         )
         new_vendor_user.password = data['password']
 
