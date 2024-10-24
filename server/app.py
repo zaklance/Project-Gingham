@@ -655,6 +655,7 @@ def handle_baskets():
                 user_id=data['user_id'],
                 market_id=data['market_id'],
                 sale_date=data['sale_date'],
+                pickup_time=data['pickup_time'],
                 is_sold=data['is_sold']
             )
             db.session.add(new_basket)

@@ -672,7 +672,7 @@ def run():
         'https://live.staticflickr.com/3369/3223915584_8caf5935aa_b.jpg',
         'https://upload.wikimedia.org/wikipedia/comMondays/d/d6/Ballard_Farmers%27_Market_-_flowers.jpg'
     ]
-    for i in range(151):
+    for i in range(150):
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
         city = str(fake.city())
         state = str(choice(states))
@@ -797,7 +797,7 @@ def run():
 
         days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
-        vendor_id = str(randint(1, 151))
+        vendor_id = str(randint(1, 150))
         market_id = str(randint(1, 57))
         day = str(choice(days))
         basket = int(randint(1, 5))
