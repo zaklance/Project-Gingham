@@ -383,7 +383,7 @@ class Basket(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
     sale_date = db.Column(db.Date, nullable=False, default=date.today)
     pickup_time = db.Column(db.Time, nullable=False)
