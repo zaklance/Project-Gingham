@@ -12,12 +12,13 @@ function Home() {
                 <br/>
                 <br/>
                 <br/>
-                <h1 className="title-big">Welcome</h1>
+                <h1 className="title-big box-portal-home">Welcome</h1>
                 <br/>
-                <h3 className="vendor-text">Sell Surplus Product instead of putting them to waste!</h3>
+                <br/>
+                <h2 className="box-portal-home">Sell Surplus Product instead of putting it to waste!</h2>
+                {/* <br/>
+                <h3 className="box-portal-home">Interested in becoming a vendor? Sign up here!</h3> */}
             </div>
-            <br/>
-            <h4 className="">Interested in becoming a vendor? Sign up here!</h4>
         </div>
     )
 }

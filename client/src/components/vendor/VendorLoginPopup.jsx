@@ -113,8 +113,8 @@ function VendorLogin({ handlePopup }) {
                 <br/>
                 <br/>
                 <div>
-                    <h3>Already a vendor and need to signup?</h3>
                     <form onSubmit={handleSignup} className="form">
+                        <h2>Signup</h2>
                         <div className="form-group form-login">
                             <label>Email: </label>
                             <input

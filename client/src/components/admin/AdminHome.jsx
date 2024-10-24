@@ -11,7 +11,7 @@ function Home() {
             <br />
             <br />
             <br />
-            <h1 className="title-big">Welcome</h1>
+            <h1 className="title-big box-portal-home">Welcome</h1>
         </div>
     )
 }
