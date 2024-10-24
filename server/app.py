@@ -1,7 +1,7 @@
 import os
 import json
 import smtplib
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, render_template
 from models import db, User, Market, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
@@ -803,6 +803,7 @@ def contact():
     except Exception as e: 
         print("Error occured:", str(e))
         return jsonify({"error": str(e)}), 500
+
     
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

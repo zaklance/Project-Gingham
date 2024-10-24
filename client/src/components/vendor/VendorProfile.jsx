@@ -279,7 +279,7 @@ function VendorProfile () {
                                             value={vendorData ? vendorData.city : ''}
                                             onChange={handleVendorInputChange}
                                         />
-                                        <select
+                                        <select className='select-state'
                                             name="state"
                                             value={vendorData ? vendorData.state : ''} 
                                             onChange={handleVendorInputChange}
