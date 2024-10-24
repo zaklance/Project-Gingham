@@ -161,7 +161,7 @@ h2 {
   color: white;
 }
 
-p, li, div {
+p, li, div, form, input, select, button {
   font-family: "Lexend Deca", sans-serif;
   font-optical-sizing: auto;
   font-weight: 300;
@@ -559,6 +559,10 @@ select:hover {
   background-color: #fffcbe;
 }
 
+.select-state {
+  width: 64px;
+}
+
 
 .big-logo {
   float: left;
@@ -631,6 +635,7 @@ form textarea {
   display: table-cell;
   margin-bottom: 5px;
   padding-right: 2em;
+  min-width: 146px;
 }
 
 .form-group input {
