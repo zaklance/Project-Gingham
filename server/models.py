@@ -4,6 +4,7 @@ from sqlalchemy.orm import validates, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_bcrypt import Bcrypt
 from sqlalchemy_serializer import SerializerMixin
+from datetime import date
 
 convention = {
     "ix": "ix_%(column_0_label)s",
@@ -239,8 +240,8 @@ class VendorUser(db.Model, SerializerMixin):
     _password = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
-    phone = db.Column(db.String, nullable=True)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    phone = db.Column(db.String, nullable=False)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'))
 
     # Relationships
     vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor_user', lazy='dynamic')
@@ -376,3 +377,34 @@ class AdminUser(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<AdminUser {self.email}>"
+    
+class Basket(db.Model, SerializerMixin):
+    __tablename__ = 'baskets'
+
+    id = db.Column(db.Integer, primary_key=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
+    sale_date = db.Column(db.Date, nullable=False, default=date.today)
+    is_sold = db.Column(db.Boolean, nullable=False)
+
+    serialize_rules = ('-user_id', '-vendor_id', '-market_id')
+
+    @validates('sale_date')
+    def validate_sale_date(self, key, value):
+        if value < date.today():
+            raise ValueError("Sale date cannot be in the past")
+        return value
+
+    @validates('is_sold')
+    def validate_is_sold(self, key, value):
+        if not isinstance(value, bool):
+            raise ValueError("is_sold must be a boolean value")
+        return value
+
+    def __repr__(self):
+        return (f"<Basket ID: {self.id}, Vendor ID: {self.vendor_id}, "
+                f"Market ID: {self.market_id}, Sold: {self.is_sold}>")
+    
+        
+        

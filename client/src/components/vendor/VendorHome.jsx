@@ -6,12 +6,18 @@ import React, { useState } from "react";
 function Home() {
 
     return (
-        <div className="vendor-portal-background">
-            {/* <img className='img-portal' src={strawberryImage} alt="Strawberries"></img> */}
+        <div>
+            <div className="vendor-portal-background">
+                {/* <img className='img-portal' src={strawberryImage} alt="Strawberries"></img> */}
+                <br/>
+                <br/>
+                <br/>
+                <h1 className="title-big">Welcome</h1>
+                <br/>
+                <h3 className="vendor-text">Sell Surplus Product instead of putting them to waste!</h3>
+            </div>
             <br/>
-            <br/>
-            <br/>
-            <h1 className="title-big">Welcome</h1>
+            <h4 className="">Interested in becoming a vendor? Sign up here!</h4>
         </div>
     )
 }

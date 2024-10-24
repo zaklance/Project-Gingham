@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // import '../../assets/css/index.css';
 
-function Login({ handlePopup }) {
+function VendorLogin({ handlePopup }) {
     const [loginEmail, setLoginEmail] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [signupEmail, setSignupEmail] = useState('');
     const [signupPassword, setSignupPassword] = useState('');
     const [signupFirstName, setSignupFirstName] = useState('');
     const [signupLastName, setSignupLastName] = useState('');
-    const [signupAddress, setSignupAddress] = useState('');
+    const [signupPhone, setSignupPhone] = useState('');
 
     const navigate = useNavigate();
 
@@ -33,19 +33,14 @@ function Login({ handlePopup }) {
             if (response.ok) {
                 const data = await response.json();
     
-                // Store token in sessionStorage
                 globalThis.sessionStorage.setItem('jwt-token', data.access_token);
-    
-                // Store user ID if necessary
                 globalThis.sessionStorage.setItem('vendor_user_id', data.vendor_user_id);
-    
                 console.log('Login successful:', data);
     
-                // Navigate to the user's dashboard or refresh the page
                 navigate(`/vendor/dashboard`);
                 window.location.reload();
             } else {
-                alert('Login failed');
+                alert('Login failed:', errorData.error);
             }
         } catch (error) {
             console.error('Error during login:', error);
@@ -53,45 +48,42 @@ function Login({ handlePopup }) {
         }
     };
 
-    // const handleSignup = async (event) => {
-    //     event.preventDefault();
-    //     const response = await fetch('http://127.0.0.1:5555/signup', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify({
-    //             email: signupEmail,
-    //             password: signupPassword,
-    //             first_name: signupFirstName,
-    //             last_name: signupLastName,
-    //             address: signupAddress
-    //         }),
-    //         credentials: 'include'
-    //     });
-    //     if (response.ok) {
-    //         const data = await response.json();
-    //         alert("Sign Up Successful. Please log in!");
-    //     } else {
-    //         const errorData = await response.json();
-    //         if (errorData.error) {
-    //             if (errorData.error.includes('email')) {
-    //                 alert("This email is already in use. Please sign in or use a different email.");
-    //             } else {
-    //                 alert("Signup failed: " + errorData.error);
-    //                 console.log('Signup failed');
-    //             }
-    //         } else {
-    //             alert("Signup failed. Please check your details and try again.")
-    //         }
-    //     }
-    // };
-
+    const handleSignup = async (event) => {
+        event.preventDefault();
+        try {
+            const response = await fetch('http://127.0.0.1:5555/vendor_signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: signupEmail,
+                    password: signupPassword,
+                    first_name: signupFirstName,
+                    last_name: signupLastName,
+                    phone: signupPhone
+                }),
+                credentials: 'include'
+            });
+    
+            if (response.ok) {
+                alert("Sign Up Successful. Please log in!");
+            } else {
+                const errorData = await response.json();
+                console.log('Full error response:', errorData);
+                alert("Signup failed: " + (errorData.error || "Unknown error"));
+            }
+        } catch (error) {
+            console.error('Error during signup:', error);
+            alert('An error occurred. Please try again.');
+        }
+    };
+    
     return (
         <div className='login-bar'>
             <button className="btn btn-large x-btn" onClick={handlePopup}>X</button>
             <div className='wrapper'>
-                <h1 className='title'>WELCOME TO GINGHAM!</h1>
+                <h1 className='title'>VENDOR PORTAL</h1>
                 <div>
                     <form onSubmit={handleLogin} className="form">
                         <h2>Login</h2>
@@ -118,9 +110,11 @@ function Login({ handlePopup }) {
                         <button className='btn-login' type="submit">Login</button>
                     </form>
                 </div>
-                {/* <div>
+                <br/>
+                <br/>
+                <div>
+                    <h3>Already a vendor and need to signup?</h3>
                     <form onSubmit={handleSignup} className="form">
-                        <h2>Signup</h2>
                         <div className="form-group form-login">
                             <label>Email: </label>
                             <input
@@ -162,21 +156,21 @@ function Login({ handlePopup }) {
                             />
                         </div>
                         <div className="form-group form-login">
-                            <label>Address:</label>
+                            <label>Phone:</label>
                             <input 
-                                type="text"
-                                value={signupAddress}
-                                placeholder='enter your address'
-                                onChange={(event => setSignupAddress(event.target.value))}
+                                type="tel"
+                                value={signupPhone}
+                                placeholder='enter your phone number'
+                                onChange={(event => setSignupPhone(event.target.value))}
                                 required
                             />
                         </div>
                         <button className='btn-login' type="submit">Signup</button>
                     </form>
-                </div> */}
+                </div>
             </div>
         </div>
     );
 }
 
-export default Login;
+export default VendorLogin;
