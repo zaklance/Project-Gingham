@@ -284,7 +284,7 @@ function VendorProfile () {
                                             value={vendorData ? vendorData.state : ''} 
                                             onChange={handleVendorInputChange}
                                         >
-                                            <option value="">Select State</option>
+                                            <option value="">Select</option>
                                             {states.map((state, index) => (
                                                 <option key={index} value={state}>
                                                     {state}
