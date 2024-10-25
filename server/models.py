@@ -4,7 +4,7 @@ from sqlalchemy.orm import validates, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_bcrypt import Bcrypt
 from sqlalchemy_serializer import SerializerMixin
-from datetime import date
+from datetime import date, time
 
 convention = {
     "ix": "ix_%(column_0_label)s",
@@ -242,6 +242,7 @@ class VendorUser(db.Model, SerializerMixin):
     last_name = db.Column(db.String, nullable=False)
     phone = db.Column(db.String, nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'))
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
 
     # Relationships
     vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor_user', lazy='dynamic')
@@ -266,9 +267,10 @@ class VendorUser(db.Model, SerializerMixin):
 
     @validates('phone')
     def validate_phone(self, key, value):
-        if value and len(value) > 15:
-            raise ValueError("Phone number cannot be longer than 15 characters")
-        return value
+        cleaned_phone = re.sub(r'\D', '', value)
+        if len(cleaned_phone) != 10:
+            raise ValueError("Phone number must contain exactly 10 digits")
+        return cleaned_phone
 
     @hybrid_property
     def password(self):
@@ -308,9 +310,6 @@ class VendorMarket(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
-    day = db.Column(db.String, nullable=False)
-    basket = db.Column(db.Integer, nullable=False)
-    pick_up_time = db.Column(db.String, nullable=False)
 
     serialize_rules = ('-vendor.vendor_markets', '-market.vendor_markets')
 
@@ -383,11 +382,12 @@ class Basket(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
     sale_date = db.Column(db.Date, nullable=False, default=date.today)
     pickup_time = db.Column(db.Time, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     is_sold = db.Column(db.Boolean, nullable=False)
+    is_grabbed = db.Column(db.Boolean, nullable=False)
 
     serialize_rules = ('-user_id', '-vendor_id', '-market_id')
 
