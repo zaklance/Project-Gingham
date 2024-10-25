@@ -297,6 +297,8 @@ function VendorProfile () {
                                 </>
                             ) : (
                                 <>
+                                    <p><strong>Role:&emsp;</strong>Admin</p>
+                                    <br/>
                                     <p><strong>Name:&emsp;</strong> {vendorData ? vendorData.name : ' Loading...'}</p>
                                     <p><strong>Product:&emsp;</strong> {vendorData ? vendorData.product : ' Loading...'}</p>
                                     <p><strong>Based in:&emsp;</strong> {vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}</p>
