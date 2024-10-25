@@ -127,7 +127,6 @@ class Vendor(db.Model, SerializerMixin):
     name = db.Column(db.String, nullable=False)
     city = db.Column(db.String, nullable=True)
     state = db.Column(db.String(2), nullable=True)
-    locations = db.Column(db.JSON)
     product = db.Column(db.String, nullable=False)
     image = db.Column(db.String)
 
@@ -148,7 +147,7 @@ class Vendor(db.Model, SerializerMixin):
             raise ValueError(f"{key} cannot be empty")
         return value
 
-    @validates('city', 'state', 'locations')
+    @validates('city', 'state')
     def validate_optional_string(self, key, value):
         if value and len(value) == 0:
             raise ValueError(f"{key} cannot be empty")
@@ -232,6 +231,30 @@ class VendorFavorite(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<VendorFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.vendor_id}>"
+    
+class VendorLocation(db.Model, SerializerMixin):
+    __tablename__ = 'vendor_locations'
+
+    id = db.Column(db.Integer, primary_key=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
+
+    serialize_rules = ('-vendor_id', '-market_id')
+
+    @validates('vendor_id')
+    def validate_vendor_id(self, key, value):
+        if not value or not isinstance(value, int):
+            raise ValueError("Vendor ID must be a valid integer.")
+        return value
+
+    @validates('market_id')
+    def validate_market_id(self, key, value):
+        if not value or not isinstance(value, int):
+            raise ValueError("Market ID must be a valid integer.")
+        return value
+
+    def __repr__(self):
+        return f"<VendorLocation ID: {self.id}, Vendor ID: {self.vendor_id}, Market ID: {self.market_id}>"
     
 class VendorUser(db.Model, SerializerMixin):
     __tablename__ = 'vendor_users'
