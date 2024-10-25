@@ -817,6 +817,7 @@ def run():
         last_name="Gingy",
         phone="2095553880",
         vendor_id="1"
+        is_admin=True
     )
     db.session.add(vendor_user_demo)
     db.session.commit()
@@ -830,6 +831,7 @@ def run():
         # phone = fake.phone_number()
         phone = str(randint(1000000000,9999999999))
         vendor_id = str(randint(1, 151))
+        is_admin = bool(fake.boolean())
 
 
         vu = VendorUser(
