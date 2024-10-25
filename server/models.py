@@ -5,6 +5,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from flask_bcrypt import Bcrypt
 from sqlalchemy_serializer import SerializerMixin
 from datetime import date, time
+import re
 
 convention = {
     "ix": "ix_%(column_0_label)s",
