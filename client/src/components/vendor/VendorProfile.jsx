@@ -9,6 +9,8 @@ function VendorProfile () {
     const [locations, setLocations] = useState([]);
     const [marketDetails, setMarketDetails] = useState({});
     const [vendorData, setVendorData] = useState(null);
+    const [image, setImage] = useState(null)
+    const [status, setStatus] = useState('initial')
 
     const products = [
         'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 
@@ -71,6 +73,18 @@ function VendorProfile () {
         setEditMode(!editMode);
     };
 
+    const handleFileChange = (event) => {
+        if (event.target.files) {
+            setStatus('initial');
+            setImage(event.target.files[0]);
+        }
+    }
+
+    const handleSubmit = (event) => {
+        event.preventDefault()
+        console.log('File to Upload: ', image)
+    }
+
     const handleSaveChanges = async () => {
         try {
             const response = await fetch(`http://127.0.0.1:5555/vendor_users/${id}`, {
@@ -125,6 +139,25 @@ function VendorProfile () {
     };
 
     const handleSaveVendorChanges = async () => {
+        if (image) {
+            console.log('Uploading file...');
+            setStatus('uploading');
+            const formData = new FormData();
+            formData.append('file', image);
+            
+            try {
+                const result = await fetch('https://127.0.0.1:5555/images', {
+                    method: 'POST',
+                    body: formData,
+                });
+                const data = await result.json();
+                console.log(data);
+                setStatus('success');
+            } catch (error) {
+                console.error(error);
+                setStatus('fail');
+            }
+        }
         try {
             const response = await fetch(`http://127.0.0.1:5555/vendors/${id}`, {
                 method: 'PATCH',
@@ -292,6 +325,16 @@ function VendorProfile () {
                                             ))}
                                         </select>
                                     </div>
+                                    <div className='form-group'>
+                                        <label>Vendor Image:</label>
+                                        <input
+                                            type="file"
+                                            name="file"
+                                            accept="image/*"
+                                        // value={vendorData ? vendorData.image : ''}
+                                            onChange={handleFileChange}
+                                        />
+                                    </div>
                                     <button className='btn-edit' onClick={handleSaveVendorChanges}>Save Changes</button>
                                     <button className='btn-edit' onClick={handleVendorEditToggle}>Cancel</button>
                                 </>
@@ -302,7 +345,20 @@ function VendorProfile () {
                                     <p><strong>Name:&emsp;</strong> {vendorData ? vendorData.name : ' Loading...'}</p>
                                     <p><strong>Product:&emsp;</strong> {vendorData ? vendorData.product : ' Loading...'}</p>
                                     <p><strong>Based in:&emsp;</strong> {vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}</p>
-                                    <button className='btn-edit' onClick={handleVendorEditToggle}>Edit</button>
+                                    <div className='flex-start'>
+                                        <button className='btn-edit' onClick={handleVendorEditToggle}>Edit</button>
+                                        <div>
+                                            <div className={status === 'success' ? 'favorites-alert' : 'favorites-alert-hidden'}>
+                                                Success Uploading Image
+                                            </div>
+                                            <div className={status === 'fail' ? 'favorites-alert alert-fail' : 'favorites-alert-hidden'}>
+                                                Uploading Image Failed
+                                            </div>
+                                            <div className={status === 'Uploading' ? 'favorites-alert' : 'favorites-alert-hidden'}>
+                                                Uploading Image
+                                            </div>
+                                        </div>
+                                    </div>
                                     
                                     <p><strong>Locations:&emsp;</strong></p>
                                     {Array.isArray(locations) && locations.length > 0 ? (
