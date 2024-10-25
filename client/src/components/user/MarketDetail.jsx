@@ -132,6 +132,7 @@ function MarketDetail ({ match }) {
                 <h2>{market.name}</h2>
                 <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Markets</button>
             </div>
+            <br/>
             <div className='flex-space-around-end'>
                 <div>
                     <img className='img-market' src={randomImage} alt="Market Image" />
@@ -146,10 +147,10 @@ function MarketDetail ({ match }) {
             </div>
             <p>{market.description}</p>
             <div className='float-left market-details'>
-                <h4><a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
+                <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}
                 </a></h4>
-                <h4>Hours: {market.hours}</h4>
+                <h4>Hours: {market.day_of_week}, {market.hour_start} - {market.hour_end}</h4>
             </div>
             <br />
             <div className='flex-start'>

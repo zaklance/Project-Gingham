@@ -256,7 +256,7 @@ function VendorProfile () {
                                 <div className='form-group flex-form'>
                                     <label>Phone Number:</label>
                                     <input
-                                        type="text"
+                                        type="tel"
                                         name="phone"
                                         value={vendorUserData ? vendorUserData.phone : ''}
                                         onChange={handleInputChange}
