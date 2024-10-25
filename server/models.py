@@ -308,9 +308,6 @@ class VendorMarket(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
-    day = db.Column(db.String, nullable=False)
-    basket = db.Column(db.Integer, nullable=False)
-    pick_up_time = db.Column(db.String, nullable=False)
 
     serialize_rules = ('-vendor.vendor_markets', '-market.vendor_markets')
 
@@ -383,11 +380,12 @@ class Basket(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
     sale_date = db.Column(db.Date, nullable=False, default=date.today)
     pickup_time = db.Column(db.Time, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     is_sold = db.Column(db.Boolean, nullable=False)
+    is_grabbed = db.Column(db.Boolean, nullable=False)
 
     serialize_rules = ('-user_id', '-vendor_id', '-market_id')
 
