@@ -840,7 +840,8 @@ def run():
             first_name=first_name,
             last_name=last_name,
             phone=phone,
-            vendor_id=vendor_id
+            vendor_id=vendor_id,
+            is_admin=is_admin
         )
         vendor_users.append(vu)
 
