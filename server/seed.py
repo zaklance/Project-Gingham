@@ -1,7 +1,7 @@
 from app import app
 from faker import Faker
 from random import random, choice, randint
-from models import db, User, Market, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, bcrypt
+from models import db, User, Market, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, bcrypt
 import json
 from datetime import date, time
 
@@ -18,7 +18,7 @@ def run():
     VendorMarket.query.delete()
     VendorUser.query.delete()
     AdminUser.query.delete()
-
+    Basket.query.delete()
 
     db.session.commit()
 
@@ -795,20 +795,12 @@ def run():
     vendor_markets = []
     for i in range(500):
 
-        days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-
         vendor_id = str(randint(1, 150))
         market_id = str(randint(1, 57))
-        day = str(choice(days))
-        basket = int(randint(1, 5))
-        pick_up_time = f"{fake.time()}"
 
         vm = VendorMarket(
             vendor_id=vendor_id,
-            market_id=market_id,
-            day=day,
-            basket=basket,
-            pick_up_time=pick_up_time
+            market_id=market_id
         )
         vendor_markets.append(vm)
 
@@ -824,7 +816,8 @@ def run():
         first_name="Ham-man",
         last_name="Gingy",
         phone="2095553880",
-        vendor_id="1"
+        vendor_id="1",
+        is_admin=True
     )
     db.session.add(vendor_user_demo)
     db.session.commit()
@@ -838,6 +831,7 @@ def run():
         # phone = fake.phone_number()
         phone = str(randint(1000000000,9999999999))
         vendor_id = str(randint(1, 151))
+        is_admin = bool(fake.boolean())
 
 
         vu = VendorUser(
@@ -861,10 +855,33 @@ def run():
         phone="2095553880",
     )
     db.session.add(admin_user_demo)
-    db.session.commit()    
+    db.session.commit()
 
+    baskets = []
+    for i in range(500):
+        rand_user = [None, randint(1, 50)]
 
-# favorite_vendors = str([randint(1, 150) for _ in range(randint(3, 9))])
+        vendor_id = str(randint(1, 151))
+        market_id = str(randint(1, 57))
+        sale_date = date.today()
+        pickup_time = fake.time_object()
+        user_id = choice(rand_user)
+        is_sold = bool(fake.boolean())
+        is_grabbed = bool(fake.boolean())
+
+        bsk = Basket(
+            vendor_id=vendor_id,
+            market_id=market_id,
+            sale_date=sale_date,
+            pickup_time=pickup_time,
+            user_id=user_id,
+            is_sold=is_sold,
+            is_grabbed=is_grabbed
+        )
+        baskets.append(bsk)
+
+    db.session.add(baskets)
+    db.session.commit()
 
     
 if __name__ == '__main__':
