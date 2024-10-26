@@ -343,14 +343,8 @@ class VendorMarket(db.Model, SerializerMixin):
             raise ValueError(f"{key.replace('_', ' ').capitalize()} cannot be empty")
         return value
 
-    @validates('basket')
-    def validate_basket(self, key, value):
-        if value < 0:
-            raise ValueError("Basket count cannot be negative")
-        return value
-
     def __repr__(self) -> str:
-        return f"<VendorMarket Vendor ID: {self.vendor_id}, Market ID: {self.market_id}, Day: {self.day}, Basket: {self.basket}>"
+        return f"<VendorMarket Vendor ID: {self.vendor_id}, Market ID: {self.market_id}>"
     
 class AdminUser(db.Model, SerializerMixin):
     __tablename__ = 'admin_users'
@@ -413,7 +407,7 @@ class Basket(db.Model, SerializerMixin):
     is_sold = db.Column(db.Boolean, nullable=False)
     is_grabbed = db.Column(db.Boolean, nullable=False)
 
-    serialize_rules = ('-user_id', '-vendor_id', '-market_id')
+    # serialize_rules = ('-user_id', '-vendor_id', '-market_id')
 
     @validates('sale_date')
     def validate_sale_date(self, key, value):
