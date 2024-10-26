@@ -858,11 +858,13 @@ def run():
 
     baskets = []
     for i in range(500):
+        rand_user = [None, randint(1, 50)]
+        
         vendor_id = str(randint(1, 151))
         market_id = str(randint(1, 57))
         sale_date = date.today()
         pickup_time = fake.time_object()
-        user_id = str(randint(1, 50))
+        user_id = choice(rand_user)
         is_sold = bool(fake.boolean())
         is_grabbed = bool(fake.boolean())
 
@@ -876,15 +878,6 @@ def run():
             is_grabbed=is_grabbed
         )
         baskets.append(bsk)
-        bsk_null_user = Basket(
-            vendor_id=vendor_id,
-            market_id=market_id,
-            sale_date=sale_date,
-            pickup_time=pickup_time,
-            is_sold=is_sold,
-            is_grabbed=is_grabbed
-        )
-        baskets.append(bsk_null_user)
 
     db.session.add_all(baskets)
     db.session.commit()
