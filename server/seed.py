@@ -676,7 +676,6 @@ def run():
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
         city = str(fake.city())
         state = str(choice(states))
-        locations = str([randint(1, 57) for _ in range(randint(2, 3))])
         product = str(choice(products))
         image = str(choice(images))
 
@@ -684,7 +683,6 @@ def run():
             name=name,
             city=city,
             state=state,
-            locations=locations,
             product=product,
             image=image
         )
@@ -840,7 +838,8 @@ def run():
             first_name=first_name,
             last_name=last_name,
             phone=phone,
-            vendor_id=vendor_id
+            vendor_id=vendor_id,
+            is_admin=is_admin
         )
         vendor_users.append(vu)
 
@@ -860,7 +859,7 @@ def run():
     baskets = []
     for i in range(500):
         rand_user = [None, randint(1, 50)]
-
+        
         vendor_id = str(randint(1, 151))
         market_id = str(randint(1, 57))
         sale_date = date.today()
@@ -880,7 +879,7 @@ def run():
         )
         baskets.append(bsk)
 
-    db.session.add(baskets)
+    db.session.add_all(baskets)
     db.session.commit()
 
     
