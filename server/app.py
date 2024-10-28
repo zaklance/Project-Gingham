@@ -1,7 +1,7 @@
 import os
 import json
 import smtplib
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, send_from_directory
 from models import db, User, Market, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
@@ -12,14 +12,19 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from datetime import timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from werkzeug.utils import secure_filename
 
 load_dotenv()
 
 app = Flask(__name__)
 
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'static/images')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URI']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.environ['SECRET_KEY']
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 db.init_app(app)
 Migrate(app, db)
@@ -27,6 +32,34 @@ CORS(app, supports_credentials=True)
 
 jwt = JWTManager(app)
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return {'error': 'No file part in the request'}, 400
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return {'error': 'No file selected'}, 400
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
+
+        return {'message': 'File successfully uploaded', 'filename': filename}, 201
+
+    return {'error': 'File type not allowed'}, 400
+
+@app.route('/images/<filename>', methods=['GET'])
+def serve_image(filename):
+    try:
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    except FileNotFoundError:
+        return {'error': 'Image not found'}, 404
 
 # User Portal
 @app.route('/', methods=['GET'])
