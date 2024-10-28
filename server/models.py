@@ -101,7 +101,8 @@ class Market(db.Model, SerializerMixin):
     # Relationships
     reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic')
     market_favorites = db.relationship('MarketFavorite', back_populates='market', lazy='dynamic')
-
+    vendor_markets = db.relationship('VendorMarket', back_populates='market')
+    
     serialize_rules = ('-reviews.market', '-market_favorites.market', '-vendor_markets.market', '-reviews.user.vendor_reviews', '-reviews.user.market_reviews')
 
     # Validations
@@ -134,10 +135,11 @@ class Vendor(db.Model, SerializerMixin):
     reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic')
     vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic')
     vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor', lazy='dynamic')
+    vendor_markets = db.relationship('VendorMarket', back_populates='vendor')
 
     serialize_rules = (
         '-reviews.vendor', '-vendor_favorites.vendor', '-vendor_vendor_users.vendor', 
-        '-vendor_markets.vendor', '-reviews.user.market_reviews', '-vendor_vendor_users.email'
+        '-vendor_markets.vendor', '-reviews.user.market_reviews', '-vendor_vendor_users.email',
     )
 
     # Validations
@@ -334,6 +336,9 @@ class VendorMarket(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
+
+    vendor = db.relationship('Vendor', back_populates='vendor_markets')
+    market = db.relationship('Market', back_populates='vendor_markets')
 
     serialize_rules = ('-vendor.vendor_markets', '-market.vendor_markets')
 

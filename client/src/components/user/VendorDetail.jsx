@@ -7,18 +7,23 @@ function VendorDetail () {
     const { id } = useParams();
     
     const [vendor, setVendor] = useState(null);
-    const [availableBaskets, setAvailableBaskets] = useState(5);
-    const [addToFav, setAddToFav] = useState([]);
     const [marketDetails, setMarketDetails] = useState({});
-    const [locations, setLocations] = useState([]);
+    const [markets, setMarkets] = useState([]);
     const [vendorReviews, setVendorReviews] = useState([]);
-    const [selectedVendor, setSelectedVendor] = useState('');
-    const [price, setPrice] = useState(4.99);
     const [vendorFavs, setVendorFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
     const [alertMessage, setAlertMessage] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
+    
     const [hoveredMarket, setHoveredMarket] = useState(null);
+    
+    //Can this be deleted?
+    const [addToFav, setAddToFav] = useState([]);
+    const [selectedVendor, setSelectedVendor] = useState('');
+    
+    // To be deleted after baskets state is moved to BasketCard
+    const [availableBaskets, setAvailableBaskets] = useState(5);
+    const [price, setPrice] = useState(4.99);
 
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
     
@@ -50,39 +55,39 @@ function VendorDetail () {
                 console.log('Fetched markets:', markets);
                 if (Array.isArray(markets)) {
                     const marketIds = markets.map(market => market.market_id);
-                    setLocations(marketIds);
+                    setMarkets(marketIds);
                 } else {
                     console.error('Unexpected response format:', markets);
-                    setLocations([]);
+                    setMarkets([]);
                 }
             })
             .catch(error => console.error('Error fetching market locations:', error));
     }, [id]);
 
-    // useEffect(() => {
-    //     const fetchMarketDetails = async () => {
-    //         if (locations.length === 0) return;
+    useEffect(() => {
+        const fetchMarketDetails = async () => {
+            if (markets.length === 0) return;
     
-    //         const details = await Promise.all(locations.map(async (marketId) => {
-    //             try {
-    //                 const response = await fetch(`http://127.0.0.1:5555/markets/${marketId}`);
-    //                 if (!response.ok) throw new Error(`Failed to fetch market ${marketId}`);
-    //                 return await response.json();
-    //             } catch (error) {
-    //                 console.error(error);
-    //                 return { id: marketId, name: 'Unknown Market' };
-    //             }
-    //         }));
+            const details = await Promise.all(markets.map(async (marketId) => {
+                try {
+                    const response = await fetch(`http://127.0.0.1:5555/markets/${marketId}`);
+                    if (!response.ok) throw new Error(`Failed to fetch market ${marketId}`);
+                    return await response.json();
+                } catch (error) {
+                    console.error(error);
+                    return { id: marketId, name: 'Unknown Market' };
+                }
+            }));
     
-    //         const vendorDetailsMap = {};
-    //         details.forEach(market => {
-    //             vendorDetailsMap[market.id] = market.name;
-    //         });
-    //         setMarketDetails(vendorDetailsMap);
-    //     };
+            const vendorDetailsMap = {};
+            details.forEach(market => {
+                vendorDetailsMap[market.id] = market.name;
+            });
+            setMarketDetails(vendorDetailsMap);
+        };
     
-    //     fetchMarketDetails();
-    // }, [locations]);
+        fetchMarketDetails();
+    }, [markets]);
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/vendor_reviews?vendor_id=${id}`)
@@ -102,8 +107,8 @@ function VendorDetail () {
         if (availableBaskets > 0) {
             setAvailableBaskets(availableBaskets - 1);
             setAmountInCart(amountInCart + 1);
-            let marketLocation = marketDetails[selectedVendor]
-            setCartItems([...cartItems, { vendorName: vendor.name, location: marketLocation, id: cartItems.length + 1, price: price }]);
+            // let marketLocation = marketDetails[selectedVendor]
+            setCartItems([...cartItems, { vendorName: vendor.name, location: market.id, id: cartItems.length + 1, price: price }]);
         } else {
             alert("Sorry, all baskets are sold out!");
         }
@@ -118,9 +123,9 @@ function VendorDetail () {
         navigate('/user/vendors');
     };
 
-    const handleMarketChange = (event) => {
-        setSelectedVendor(parseInt(event.target.value));
-    };
+    // const handleMarketChange = (event) => {
+    //     setSelectedVendor(parseInt(event.target.value));
+    // };
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/vendor_favorites")
@@ -209,25 +214,25 @@ function VendorDetail () {
                 <br />
                 <br />
                 <h2>Farmers Market Locations:</h2>
-                {Array.isArray(locations) && locations.length > 0 ? (
-                    locations.map((market, index) => (
+                {Array.isArray(markets) && markets.length > 0 ? (
+                    markets.map((marketId, index) => (
                         <div 
-                            // key={index} 
+                            key={index} 
                             className="market-item"
-                            // onMouseEnter={() => setHoveredMarket(market.id)}
-                            // onMouseLeave={() => setHoveredMarket(null)}
+                            onMouseEnter={() => setHoveredMarket(marketId)}
+                            onMouseLeave={() => setHoveredMarket(null)}
                         >
-                            <Link to={`/user/markets/${market.id}`} className="market-name">
-                                {marketDetails[market.id] || 'Loading...'}
+                            <Link to={`/user/markets/${marketId}`} className="market-name">
+                                {marketDetails[marketId] || 'Loading...'}
                             </Link>
                             <span className="market-price">Price: ${price.toFixed(2)}</span>
                             <span className="market-baskets">Available Baskets: {availableBaskets}</span>
-                            <button className="btn-edit" onClick={() => handleAddToCart(market.id)}>
+                            <button className="btn-edit" onClick={() => handleAddToCart(marketId)}>
                                 Add to Cart
                             </button>
-                            {hoveredMarket === market.id && (
+                            {hoveredMarket === marketId && (
                                 <div className='market-card-popup'>
-                                    <MarketCard marketData={market} />
+                                    <MarketCard marketData={marketId} />
                                     {/* Why isnt the other info populating?!? */}
                                 </div>
                             )}

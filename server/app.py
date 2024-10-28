@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify, session
 from models import db, User, Market, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import joinedload
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
@@ -415,11 +416,20 @@ def del_vendor_fav(id):
     
 @app.route("/vendor_markets", methods=['GET'])
 def get_vendor_markets():
-    try:
-        vendor_markets = VendorMarket.query.all()
-        return jsonify([vendor_market.to_dict() for vendor_market in vendor_markets]), 200
-    except Exception as e:
-        return {'error': f'Exception: {str(e)}'}, 500
+    vendor_id = request.args.get('vendor_id')
+    market_id = request.args.get('market_id')
+
+    query = VendorMarket.query
+
+    if vendor_id: 
+        query = query.filter_by(vendor_id=vendor_id).options(db.joinedload(VendorMarket.vendor))
+    elif market_id: 
+        query = query.filter_by(market_id=market_id).options(db.joinedload(VendorMarket.market))
+
+    vendor_markets = query.all()
+    
+    return jsonify([vendor_market.to_dict() for vendor_market in vendor_markets]), 200
+
 
 # @app.route("/vendors/<int:vendor_id>/markets", methods=['GET'])
 # def get_vendor_markets(vendor_id):
