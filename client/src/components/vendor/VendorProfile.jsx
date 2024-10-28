@@ -146,7 +146,7 @@ function VendorProfile () {
             formData.append('file', image);
             
             try {
-                const result = await fetch('https://127.0.0.1:5555/images', {
+                const result = await fetch('https://127.0.0.1:5555/upload', {
                     method: 'POST',
                     body: formData,
                 });
