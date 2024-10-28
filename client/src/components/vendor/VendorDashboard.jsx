@@ -105,7 +105,8 @@ function VendorDashboard() {
                         <br />
                         <p>Available Baskets: 5</p>
                         <br />
-                        <p>Pick Up Time: 04:30 PM (1 hour) </p>
+                        <p>Pick Up Time: </p>
+                        <p>04:30 PM (1 hour)</p>
                         <br />
                         <p><strong>Claimed Baskets: 3</strong></p>
                         <div className='bounding-box'>
@@ -141,6 +142,7 @@ function VendorDashboard() {
                     </div>
                 ))} */}
                 <h3>Future Markets:</h3>
+                <p>Edits can be made until 9AM the day of the market unless basket has already been claimed by customer</p>
                 <br/>
                 <div className='market-cards-container'>
                     <BasketCard />

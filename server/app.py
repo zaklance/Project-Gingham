@@ -430,16 +430,6 @@ def get_vendor_markets():
     
     return jsonify([vendor_market.to_dict() for vendor_market in vendor_markets]), 200
 
-
-# @app.route("/vendors/<int:vendor_id>/markets", methods=['GET'])
-# def get_vendor_markets(vendor_id):
-#     try:
-#         vendor_markets = VendorMarket.query.filter_by(vendor_id=vendor_id).all()
-#         markets = [market.to_dict() for market in [vm.market for vm in vendor_markets]]
-#         return jsonify(markets), 200
-#     except Exception as e:
-#         return {'error': f'Exception: {str(e)}'}, 500
-
 # VENDOR PORTAL
 @app.route('/vendor/login', methods=['POST'])
 def vendorLogin():
