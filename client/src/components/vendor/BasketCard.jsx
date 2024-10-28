@@ -28,6 +28,7 @@ function BasketCard() {
                 className="basket-input"
             />
             <br />
+            {/* What about pricing? */}
             <br />
             <p>Pick Up Time Start:</p>
             <div className="time-picker">

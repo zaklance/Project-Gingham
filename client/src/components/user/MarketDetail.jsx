@@ -7,8 +7,6 @@ function MarketDetail ({ match }) {
     const { id } = useParams();
 
     const [market, setMarket] = useState(null);
-    const [availableBaskets, setAvailableBaskets] = useState(5);
-    const [price, setPrice] = useState(4.99);
     const [vendors, setVendors] = useState({});
     const [vendorDetails, setVendorDetails] = useState({});
     const [randomImage, setRandomImage] = useState('');
@@ -17,6 +15,10 @@ function MarketDetail ({ match }) {
     const [isClicked, setIsClicked] = useState(false);
     const [alertMessage, setAlertMessage] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
+    
+    // To be deleted after baskets state is moved to BasketCard
+    const [availableBaskets, setAvailableBaskets] = useState(5);
+    const [price, setPrice] = useState(4.99);
 
     const { handlePopup, amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
 

@@ -102,7 +102,7 @@ class Market(db.Model, SerializerMixin):
     reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic')
     market_favorites = db.relationship('MarketFavorite', back_populates='market', lazy='dynamic')
     vendor_markets = db.relationship('VendorMarket', back_populates='market')
-    
+
     serialize_rules = ('-reviews.market', '-market_favorites.market', '-vendor_markets.market', '-reviews.user.vendor_reviews', '-reviews.user.market_reviews')
 
     # Validations
@@ -233,30 +233,6 @@ class VendorFavorite(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<VendorFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.vendor_id}>"
-    
-# class VendorLocation(db.Model, SerializerMixin):
-#     __tablename__ = 'vendor_locations'
-
-#     id = db.Column(db.Integer, primary_key=True)
-#     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
-#     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
-
-#     serialize_rules = ('-vendor_id', '-market_id')
-
-#     @validates('vendor_id')
-#     def validate_vendor_id(self, key, value):
-#         if not value or not isinstance(value, int):
-#             raise ValueError("Vendor ID must be a valid integer.")
-#         return value
-
-#     @validates('market_id')
-#     def validate_market_id(self, key, value):
-#         if not value or not isinstance(value, int):
-#             raise ValueError("Market ID must be a valid integer.")
-#         return value
-
-#     def __repr__(self):
-#         return f"<VendorLocation ID: {self.id}, Vendor ID: {self.vendor_id}, Market ID: {self.market_id}>"
     
 class VendorUser(db.Model, SerializerMixin):
     __tablename__ = 'vendor_users'
