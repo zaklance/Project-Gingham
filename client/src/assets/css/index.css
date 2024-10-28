@@ -921,3 +921,66 @@ form textarea {
 .market-card-popup img {
   width: 100%;
 }
+
+.basket-input {
+  width: 60px;
+  height: 60px; 
+  padding: 10px;
+  font-size: 24px; 
+  border: 1px solid #ccc; 
+  border-radius: 5px; 
+}
+
+.pickup-time-input {
+  width: 90px;
+  height: 50px; 
+  padding: 10px;
+  font-size: 16px; 
+  border: 1px solid #ccc; 
+  border-radius: 5px; 
+}
+
+.time-picker {
+  display: center;
+  align-items: center;
+}
+
+.basket-input {
+  margin-right: 10px;
+}
+
+.amPm-dropdown {
+  width: 60px;
+  height: 50px;
+  padding: 5px;
+}
+
+.basket-save-button {
+  background-color: #ff6699;
+  border: none;
+  width: 200px;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.basket-save-button.saved {
+  background-color: #28a745;
+}
+
+.edit-link {
+  color: #007BFF;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.edit-link:hover {
+  text-decoration: underline;
+}
