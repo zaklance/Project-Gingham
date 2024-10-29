@@ -789,21 +789,21 @@ def run():
     # db.session.add_all(vendor_favs)
     # db.session.commit()
 
-    # add fake vendor markets
-    vendor_markets = []
-    for i in range(500):
+    # # add fake vendor markets
+    # vendor_markets = []
+    # for i in range(500):
 
-        vendor_id = str(randint(1, 150))
-        market_id = str(randint(1, 57))
+    #     vendor_id = str(randint(1, 150))
+    #     market_id = str(randint(1, 57))
 
-        vm = VendorMarket(
-            vendor_id=vendor_id,
-            market_id=market_id
-        )
-        vendor_markets.append(vm)
+    #     vm = VendorMarket(
+    #         vendor_id=vendor_id,
+    #         market_id=market_id
+    #     )
+    #     vendor_markets.append(vm)
 
-    db.session.add_all(vendor_markets)
-    db.session.commit()
+    # db.session.add_all(vendor_markets)
+    # db.session.commit()
 
 
     # add fake users
@@ -857,6 +857,7 @@ def run():
     db.session.commit()
 
     baskets = []
+    vendor_markets = []
     for i in range(500):
         rand_user = [None, randint(1, 50)]
 
@@ -879,7 +880,14 @@ def run():
         )
         baskets.append(bsk)
 
+        vm = VendorMarket(
+            vendor_id=vendor_id,
+            market_id=market_id
+        )
+        vendor_markets.append(vm)
+
     db.session.add_all(baskets)
+    db.session.add_all(vendor_markets)
     db.session.commit()
 
     
