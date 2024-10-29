@@ -5,7 +5,7 @@ import './assets/css/index.css';
 
 // main routes
 import App from './App.jsx';
-import Contact from './components/Contact.jsx'
+import Contact from './components/Contact.jsx';
 import Home from './components/Home.jsx';
 import ErrorPage from './components/ErrorPage.jsx';
 

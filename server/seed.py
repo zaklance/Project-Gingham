@@ -859,14 +859,14 @@ def run():
     baskets = []
     for i in range(500):
         rand_user = [None, randint(1, 50)]
-        
+
         vendor_id = str(randint(1, 151))
         market_id = str(randint(1, 57))
         sale_date = date.today()
         pickup_time = fake.time_object()
         user_id = choice(rand_user)
-        is_sold = bool(fake.boolean())
-        is_grabbed = bool(fake.boolean())
+        is_sold = user_id is not None
+        is_grabbed = bool(fake.boolean()) if is_sold else False
 
         bsk = Basket(
             vendor_id=vendor_id,
