@@ -7,6 +7,17 @@ import { APIProvider, Map, Marker, AdvancedMarker, Pin } from '@vis.gl/react-goo
 
 function Markets() {
     const [markets, setMarkets] = useState([]);
+
+    function timeConverter(time24) {
+        const date = new Date('1970-01-01T' + time24);
+
+        const time12 = date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+        return time12
+    }
     
     useEffect(() => {
         fetch("http://127.0.0.1:5555/markets")
@@ -67,13 +78,14 @@ function Markets() {
         content.classList.add("market");
         content.innerHTML = `
             <div class="marker-details">
-                <div class="price">${property.name}</div>
-                <div class="address">${property.location}</div>
-                <div class="hours">${property.hours}</div>
+                <div class="name">${property.name}</div>
+                <div class="day">${property.day_of_week}</div>
+                <div class="hours">${timeConverter(property.hour_start)} - ${timeConverter(property.hour_end)}</div>
             </div>
             `;
         return content;
     }
+
 
     return (
         <>
