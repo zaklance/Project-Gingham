@@ -20,6 +20,16 @@ function MarketCard({ marketData }) {
         'https://upload.wikimedia.org/wikipedia/commons/d/da/10292023_Broadway_farmers%27_market_Columbia_NYC.jpg',
         'https://www.officialworldtradecenter.com/content/dam/wtc/site-resources/wtc-website-photography/events/WTC_Events_FarmersMarket.JPG.transform/wtc-960/image.jpeg'
     ]
+    function timeConverter(time24) {
+        const date = new Date('1970-01-01T' + time24);
+
+        const time12 = date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+        return time12
+    }
 
     useEffect(() => {
         const randomIndex = Math.floor(Math.random() * images.length);
@@ -35,7 +45,7 @@ function MarketCard({ marketData }) {
             <img src={randomImage} alt="Market Image" style={{ width: '260px' }} />
             <h3>{marketData.name}</h3>
             <p><strong>Location:</strong> {marketData.location}</p>
-            <p><strong>Hours:</strong> {marketData.day_of_week}, {marketData.hour_start} - {marketData.hour_end}</p>
+            <p><strong>Hours:</strong> {marketData.day_of_week}, {timeConverter(marketData.hour_start)} - {timeConverter(marketData.hour_end)}</p>
             <p><strong>Open Year Round:</strong> {marketData.year_round ? "Yes" : "No"}</p>
             <p><strong>Zipcode:</strong> {marketData.zipcode}</p>
             <button className="market-card-button" onClick={handleLearnMore}>Learn More!</button>
