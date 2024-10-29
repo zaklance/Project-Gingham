@@ -35,7 +35,7 @@ function MarketCard({ marketData }) {
             <img src={randomImage} alt="Market Image" style={{ width: '260px' }} />
             <h3>{marketData.name}</h3>
             <p><strong>Location:</strong> {marketData.location}</p>
-            <p><strong>Hours:</strong> {marketData.hours}</p>
+            <p><strong>Hours:</strong> {marketData.day_of_week}, {marketData.hour_start} - {marketData.hour_end}</p>
             <p><strong>Open Year Round:</strong> {marketData.year_round ? "Yes" : "No"}</p>
             <p><strong>Zipcode:</strong> {marketData.zipcode}</p>
             <button className="market-card-button" onClick={handleLearnMore}>Learn More!</button>

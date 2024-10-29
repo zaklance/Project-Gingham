@@ -1,20 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
+import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { APIProvider, Map, Marker, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
+import VendorDetail from './VendorDetail';
 
 function MarketDetail ({ match }) {
     const { id } = useParams();
 
     const [market, setMarket] = useState(null);
     const [vendors, setVendors] = useState({});
+    const [vendorDetails, setVendorDetails] = useState({});
     const [randomImage, setRandomImage] = useState('');
     const [marketReviews, setMarketReviews] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
     const [alertMessage, setAlertMessage] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
+    
+    // To be deleted after baskets state is moved to BasketCard
+    const [availableBaskets, setAvailableBaskets] = useState(5);
+    const [price, setPrice] = useState(4.99);
 
-    const { handlePopup, } = useOutletContext();
+    const { handlePopup, amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
 
     const navigate = useNavigate();
 
@@ -45,6 +51,52 @@ function MarketDetail ({ match }) {
     }, [id]);
 
     useEffect(() => {
+        fetch(`http://127.0.0.1:5555/vendor_markets?market_id=${id}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch vendors');
+                }
+                return response.json();
+            })
+            .then(vendors => {
+                console.log('Fetched vendors:', vendors);
+                if (Array.isArray(vendors)) {
+                    const vendorIds = vendors.map(vendor => vendor.vendor_id)
+                    setVendors(vendorIds);
+                } else {
+                    console.error('Unexpected response format:', vendors);
+                    setVendors([]);
+                }
+            })
+            .catch(error => console.error('Error fetching vendors:', error))
+    }, [id]);
+
+    useEffect(() => {
+        const fetchVendorDetails = async () => {
+            if (vendors.length === 0) return;
+
+            const details = await Promise.all(vendors.map(async(vendorId) => {
+                try {
+                    const response = await fetch(`http://127.0.0.1:5555/vendors/${vendorId}`);
+                    if (!response.ok) throw new Error(`Failed to fetch vendor ${vendorId}`);
+                    return await response.json();
+                } catch (error) {
+                    console.error(error);
+                    return { id: vendorId, name: 'Unknown Vendor'};
+                }
+            }));
+
+            const marketDetailsMap = {};
+            details.forEach(vendor => {
+                marketDetailsMap[vendor.id] = vendor.name;
+            });
+            setVendorDetails(marketDetailsMap);
+        };
+
+        fetchVendorDetails();
+    }, [vendors]); 
+
+    useEffect(() => {
         fetch(`http://127.0.0.1:5555/market_reviews?market_id=${id}`)
             .then(response => response.json())
             .then(data => {
@@ -57,6 +109,22 @@ function MarketDetail ({ match }) {
             })
             .catch(error => console.error('Error fetching reviews:', error));
     }, [id]);
+
+    const handleAddToCart = () => {
+        if (availableBaskets > 0) {
+            setAvailableBaskets(availableBaskets - 1);
+            setAmountInCart(amountInCart + 1);
+            // let marketLocation = marketDetails[selectedVendor]
+            setCartItems([...cartItems, { vendorName: vendor.name, location: market.id, id: cartItems.length + 1, price: price }]);
+        } else {
+            alert("Sorry, all baskets are sold out!");
+        }
+    };
+
+    useEffect(() => {
+        console.log("Amount in cart:", amountInCart);
+        console.log("Cart items:", cartItems);
+    }, [amountInCart, cartItems]);
 
     const handleBackButtonClick = () => {
         navigate('/user/markets');
@@ -132,6 +200,7 @@ function MarketDetail ({ match }) {
                 <h2>{market.name}</h2>
                 <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Markets</button>
             </div>
+            <br/>
             <div className='flex-space-around-end'>
                 <div>
                     <img className='img-market' src={randomImage} alt="Market Image" />
@@ -146,10 +215,10 @@ function MarketDetail ({ match }) {
             </div>
             <p>{market.description}</p>
             <div className='float-left market-details'>
-                <h4><a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
+                <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}
                 </a></h4>
-                <h4>Hours: {market.hours}</h4>
+                <h4>Hours: {market.day_of_week}, {market.hour_start} - {market.hour_end}</h4>
             </div>
             <br />
             <div className='flex-start'>
@@ -165,23 +234,35 @@ function MarketDetail ({ match }) {
             <br/>
             <br/>
             <h2>Vendors in this Market:</h2>
-            <ul>
-
-            </ul>
+            {Array.isArray(vendors) && vendors.length > 0 ? (
+                vendors.map((vendorId, index) => (
+                    <div key={index} className="market-item">
+                        <Link to={`/user/vendors/${vendorId}`} className="market-name">
+                            {vendorDetails[vendorId] || 'Loading'}
+                        </Link>
+                        <span className="market-price">Price: ${price.toFixed(2)}</span>
+                        <span className="market-baskets">Available Baskets: {availableBaskets}</span>
+                        <button className="btn-edit" onClick={() => handleAddToCart(marketId)}>
+                            Add to Cart
+                        </button>
+                    </div>
+                ))
+            ) : (
+                <p>No vendors at this market</p>
+            )}         
             <br/>
-            <div>
-                <h2>Reviews</h2>
-                {marketReviews.length > 0 ? (
-                    marketReviews.map((review, index) => (
-                        <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                            <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
-                            <p>{review.review_text}</p>
-                        </div>
-                    ))
-                ) : (
-                    <p>No reviews available.</p>
-                )}
-            </div>
+            <h2>Reviews</h2>
+            <br/>
+            {marketReviews.length > 0 ? (
+                marketReviews.map((review, index) => (
+                    <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
+                        <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
+                        <p>{review.review_text}</p>
+                    </div>
+                ))
+            ) : (
+                <p>No reviews available.</p>
+            )}
         </div>
     );
 };
