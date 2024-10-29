@@ -146,7 +146,7 @@ function VendorProfile () {
             formData.append('file', image);
             
             try {
-                const result = await fetch('https://127.0.0.1:5555/images', {
+                const result = await fetch('https://127.0.0.1:5555/upload', {
                     method: 'POST',
                     body: formData,
                 });
@@ -256,7 +256,7 @@ function VendorProfile () {
                                 <div className='form-group flex-form'>
                                     <label>Phone Number:</label>
                                     <input
-                                        type="text"
+                                        type="tel"
                                         name="phone"
                                         value={vendorUserData ? vendorUserData.phone : ''}
                                         onChange={handleInputChange}

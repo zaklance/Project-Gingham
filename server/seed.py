@@ -30,7 +30,7 @@ def run():
             coordinates={"lat": "40.84607450953993", "lng": "-73.93808039940272"},
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
-            day_of_week='Thursdayrsday',
+            day_of_week='Thursday',
             year_round=False,
             season_start=date(2024, 6, 27),
             season_end=date(2024, 11, 21)
