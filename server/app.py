@@ -885,7 +885,7 @@ def contact():
         msg = MIMEMultipart()
         msg['From'] = sender_email
         msg['To'] = recipient_email
-        msg['Subject'] = f"Contact Form Submission: {subject}"
+        msg['Subject'] = f"GINGHAM.NYC Contact Form Submission: {subject}"
 
         # print("Sender email:", os.getenv('EMAIL_USER'))
         # print("Email password:", os.getenv('EMAIL_PASS'))

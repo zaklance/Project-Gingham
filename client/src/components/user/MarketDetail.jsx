@@ -39,6 +39,17 @@ function MarketDetail ({ match }) {
         'https://www.officialworldtradecenter.com/content/dam/wtc/site-resources/wtc-website-photography/events/WTC_Events_FarmersMarket.JPG.transform/wtc-960/image.jpeg'
     ];
 
+    function timeConverter(time24) {
+        const date = new Date('1970-01-01T' + time24);
+
+        const time12 = date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+        return time12
+    }
+
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/markets/${id}`)
             .then(response => response.json())
@@ -218,7 +229,7 @@ function MarketDetail ({ match }) {
                 <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}
                 </a></h4>
-                <h4>Hours: {market.day_of_week}, {market.hour_start} - {market.hour_end}</h4>
+                <h4>Hours: {market.day_of_week}, {timeConverter(market.hour_start)} - {timeConverter(market.hour_end)}</h4>
             </div>
             <br />
             <div className='flex-start'>
