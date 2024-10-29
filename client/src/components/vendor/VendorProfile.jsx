@@ -139,35 +139,55 @@ function VendorProfile () {
     };
 
     const handleSaveVendorChanges = async () => {
+        let uploadedFilename = null;
+    
         if (image) {
             console.log('Uploading file...');
             setStatus('uploading');
             const formData = new FormData();
             formData.append('file', image);
-            
+    
             try {
-                const result = await fetch('https://127.0.0.1:5555/upload', {
+                const result = await fetch('http://127.0.0.1:5555/upload', {
                     method: 'POST',
                     body: formData,
                 });
-                const data = await result.json();
-                console.log(data);
-                setStatus('success');
+    
+                if (result.ok) {
+                    const data = await result.json();
+                    uploadedFilename = data.filename;
+                    console.log('Image uploaded:', uploadedFilename);
+                    setStatus('success');
+                } else {
+                    console.log('Image upload failed');
+                    console.log('Response:', await result.text());
+                    setStatus('fail');
+                    return;
+                }
             } catch (error) {
-                console.error(error);
+                console.error('Error uploading image:', error);
                 setStatus('fail');
+                return;
             }
         }
+    
+        // Include uploaded filename in vendorData if a new image was uploaded
+        const updatedVendorData = { ...vendorData };
+        if (uploadedFilename) {
+            updatedVendorData.image = uploadedFilename;
+        }
+    
         try {
             const response = await fetch(`http://127.0.0.1:5555/vendors/${id}`, {
                 method: 'PATCH',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(vendorData)
+                body: JSON.stringify(updatedVendorData),
             });
-            console.log('Request body:', JSON.stringify(vendorData));
-
+    
+            console.log('Request body:', JSON.stringify(updatedVendorData));
+    
             if (response.ok) {
                 const updatedData = await response.json();
                 setVendorData(updatedData);
