@@ -6,9 +6,43 @@ function BasketCard() {
     const [startTime, setStartTime] = useState('');
     const [amPm, setAmPm] = useState('PM');
     const [isSaved, setIsSaved] = useState(false);
+    const [numBaskets, setNumBaskets] = useState('');
+    const [selectedDuration, setSelectedDuration] = useState('0.5');
+    const [saleDate, setSaleDate] = useState('');
+    const [price, setPrice] = useState('');
 
     const handleSave = () => {
-        setIsSaved(true);
+        const parsedNumBaskets = parseInt(numBaskets, 10);
+        const parsedPrice = parseFloat(price);
+
+        if (parsedNumBaskets > 0 && vendorId && marketId && !isNaN(parsedPrice)) {
+            for (let i = 0; i < parsedNumBaskets; i++) {
+                fetch('http://127.0.0.1:5555/baskets', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        vendor_id: vendorId, 
+                        market_id: marketId,
+                        sale_date: saleDate,
+                        pickup_time: startTime + " " + amPm,
+                        is_sold: false, 
+                        is_grabbed: false, 
+                        price: parsedPrice,
+                        pick_up_duration: selectedDuration,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Basket created:', data);
+                    setIsSaved(true);
+                })
+                .catch(error => console.error('Error creating basket:', error));
+            }
+        } else {
+            console.error('Invalid data or missing vendor/market ID');
+        }
     };
 
     const handleEdit = () => {
@@ -26,9 +60,22 @@ function BasketCard() {
                 type="number"
                 name="basket_input"
                 className="basket-input"
+                onChange={(e) => setNumBaskets(e.target.value)}
+                value={numBaskets}
             />
             <br />
-            {/* What about pricing? */}
+            <br />
+            <p>Enter Price:</p>
+            <input 
+                type="number"
+                step="0.01"
+                name="price"
+                placeholder="$4.99"
+                className="pickup-time-input"
+                onChange={(e) => setPrice(e.target.value)}
+                value={price}
+            />
+            <br />
             <br />
             <p>Pick Up Time Start:</p>
             <div className="time-picker">
@@ -55,6 +102,8 @@ function BasketCard() {
             <p>Select Duration Window:</p>
             <select
                 name="duration"
+                value={selectedDuration}
+                onChange={(e) => setSelectedDuration(e.target.value)}
             >
                 <option value="0.5">30 mins</option>
                 <option value="1">1 hour</option>
