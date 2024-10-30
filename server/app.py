@@ -677,7 +677,7 @@ def handle_vendor_vendor_users():
             db.session.rollback()
             return {'error': f'Exception: {str(e)}'}, 500
         
-@app.route("/baskets", methods=['GET', 'POST'])
+@app.route("/baskets", methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def handle_baskets():
     if request.method == 'GET':
         try:
@@ -692,15 +692,76 @@ def handle_baskets():
         try:
             new_basket = Basket(
                 vendor_id=data['vendor_id'],
-                user_id=data['user_id'],
+                user_id=data.get('user_id'),
                 market_id=data['market_id'],
                 sale_date=data['sale_date'],
                 pickup_time=data['pickup_time'],
-                is_sold=data['is_sold']
+                is_sold=data['is_sold'],
+                is_grabbed=data['is_grabbed'],
+                price=data['price'],
+                pick_up_duration=data['pick_up_duration']
             )
             db.session.add(new_basket)
             db.session.commit()
             return jsonify(new_basket.to_dict()), 201
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
+    elif request.method == 'PATCH':
+        data = request.get_json()
+        basket_id = data.get('id')
+
+        if not basket_id:
+            return {'error': 'Basket ID is required for updating'}, 400
+
+        basket = Basket.query.filter_by(id=basket_id).first()
+        if not basket:
+            return {'error': 'Basket not found'}, 404
+
+        try:
+            if 'vendor_id' in data:
+                basket.vendor_id = data['vendor_id']
+            if 'user_id' in data:
+                basket.user_id = data['user_id']
+            if 'market_id' in data:
+                basket.market_id = data['market_id']
+            if 'sale_date' in data:
+                basket.sale_date = data['sale_date']
+            if 'pickup_time' in data:
+                basket.pickup_time = data['pickup_time']
+            if 'is_sold' in data:
+                basket.is_sold = data['is_sold']
+            if 'is_grabbed' in data:
+                basket.is_grabbed = data['is_grabbed']
+            if 'price' in data:
+                basket.price = data['price']
+            if 'pick_up_duration' in data:
+                basket.pick_up_duration = data['pick_up_duration']
+
+            db.session.commit()
+            return jsonify(basket.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
+    elif request.method == 'DELETE':
+        data = request.get_json()
+        basket_id = data.get('id')
+
+        if not basket_id:
+            return {'error': 'Basket ID is required for deletion'}, 400
+
+        basket = Basket.query.filter_by(id=basket_id).first()
+        if not basket:
+            return {'error': 'Basket not found'}, 404
+
+        try:
+            db.session.delete(basket)
+            db.session.commit()
+            return {}, 204
 
         except Exception as e:
             db.session.rollback()
