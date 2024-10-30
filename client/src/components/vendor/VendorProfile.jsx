@@ -368,13 +368,13 @@ function VendorProfile () {
                                     <div className='flex-start'>
                                         <button className='btn-edit' onClick={handleVendorEditToggle}>Edit</button>
                                         <div>
-                                            <div className={status === 'success' ? 'favorites-alert' : 'favorites-alert-hidden'}>
+                                            <div className={status === 'success' ? 'alert-favorites' : 'alert-favorites-hidden'}>
                                                 Success Uploading Image
                                             </div>
-                                            <div className={status === 'fail' ? 'favorites-alert alert-fail' : 'favorites-alert-hidden'}>
+                                            <div className={status === 'fail' ? 'alert-favorites alert-fail' : 'alert-favorites-hidden'}>
                                                 Uploading Image Failed
                                             </div>
-                                            <div className={status === 'Uploading' ? 'favorites-alert' : 'favorites-alert-hidden'}>
+                                            <div className={status === 'Uploading' ? 'alert-favorites' : 'alert-favorites-hidden'}>
                                                 Uploading Image
                                             </div>
                                         </div>
