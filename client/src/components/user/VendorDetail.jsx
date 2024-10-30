@@ -210,7 +210,8 @@ function VendorDetail () {
 
         if (existingReview) {
             setAlertMessage('You have already submitted a review for this vendor.');
-            setTimeout(() => setAlertMessage(null), 3000);
+            setShowDupeAlert(true);
+            setTimeout(() => setShowDupeAlert(null), 3000);
             return;
         }
 
