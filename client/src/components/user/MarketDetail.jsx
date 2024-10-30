@@ -237,7 +237,7 @@ function MarketDetail ({ match }) {
                     className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
                     onClick={handleClick}> ❤️ </button>
                 {showAlert && (
-                    <div className={`favorites-alert ${!showAlert ? 'favorites-alert-hidden' : ''}`}>
+                    <div className={`alert-favorites ${!showAlert ? 'alert-favorites-hidden' : ''}`}>
                         {alertMessage}
                     </div>
                 )}

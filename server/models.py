@@ -170,7 +170,7 @@ class MarketReview(db.Model, SerializerMixin):
     market = db.relationship('Market', back_populates='reviews')
     user = db.relationship('User', back_populates='market_reviews')
 
-    serialize_rules = ('-user', '-market.reviews', '-market.market_favorites', 'user.first_name')
+    serialize_rules = ('-user', '-market.reviews', '-market.market_favorites', '-market.vendor_markets', '-user.market_reviews', '-user.vendor_reviews', 'user.first_name')
 
     def __repr__(self) -> str:
         return f"<MarketReview {self.id}>"
@@ -193,7 +193,7 @@ class VendorReview(db.Model, SerializerMixin):
     vendor = db.relationship('Vendor', back_populates='reviews')
     user = db.relationship('User', back_populates='vendor_reviews')
 
-    serialize_rules = ('-vendor.reviews', '-vendor.vendor_favorites', '-user.vendor_reviews', 'user.first_name')
+    serialize_rules = ('-vendor.reviews', '-vendor.vendor_favorites', '-user.vendor_reviews', '-user.market_reviews', '-vendor.vendor_markets', 'user.first_name')
 
     def __repr__(self) -> str:
         return f"<VendorReview {self.id}>"
@@ -295,7 +295,6 @@ class VendorVendorUser(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=False)
-    role = db.Column(db.String, nullable=True)
 
     # Relationships
     vendor = db.relationship('Vendor', back_populates='vendor_vendor_users')
@@ -382,7 +381,7 @@ class Basket(db.Model, SerializerMixin):
     is_sold = db.Column(db.Boolean, nullable=False)
     is_grabbed = db.Column(db.Boolean, nullable=False)
     price = db.Column(db.Integer, nullable=False)
-    pick_up_duration = db.Column(db.Time, nullable=False)
+    pickup_duration = db.Column(db.Time, nullable=False)
 
     # serialize_rules = ('-user_id', '-vendor_id', '-market_id')
 
