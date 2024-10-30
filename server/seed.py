@@ -860,6 +860,7 @@ def run():
     vendor_markets = []
     for i in range(500):
         rand_user = [None, randint(1, 50)]
+        duration = [time(0, 15, 0), time(0, 20, 0), time(0, 30, 0), time(0, 45, 0), time(1, 0, 0), time(1, 15, 0), time(1, 30, 0)]
 
         vendor_id = str(randint(1, 151))
         market_id = str(randint(1, 57))
@@ -867,7 +868,9 @@ def run():
         pickup_time = fake.time_object()
         user_id = choice(rand_user)
         is_sold = user_id is not None
-        is_grabbed = bool(fake.boolean()) if is_sold else False
+        is_grabbed = bool(fake.boolean()) if is_sold else bool(False)
+        price = int(randint(4, 8))
+        pickup_duration = choice(duration)
 
         bsk = Basket(
             vendor_id=vendor_id,
@@ -876,7 +879,9 @@ def run():
             pickup_time=pickup_time,
             user_id=user_id,
             is_sold=is_sold,
-            is_grabbed=is_grabbed
+            is_grabbed=is_grabbed,
+            price=price,
+            pickup_duration=pickup_duration
         )
         baskets.append(bsk)
 

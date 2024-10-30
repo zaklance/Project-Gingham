@@ -152,7 +152,7 @@ h2 {
   color: white;
 }
 
-p, li, div, form, input, select, button {
+p, li, div, form, input, select, button, textarea {
   font-family: "Lexend Deca", sans-serif;
   font-optical-sizing: auto;
   font-weight: 300;
@@ -489,6 +489,13 @@ ul {
   background-color: white;
 }
 
+.btn-plus {
+  margin-top: 12px;
+  padding: 2px 9px 4px 9px;
+  font-size: 1.2em;
+  font-weight: 500;
+}
+
 .tabs {
   display: flex;
   gap: 20px;
@@ -658,6 +665,24 @@ form textarea {
   border-radius: 0 20px 0 0;
 }
 
+.textarea-review {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  width: 100%;
+  border: none;
+  background-color: #dbdbdb;
+  font-size: 0.92em;
+  resize: none;
+}
+
+.textarea-edit {
+  width: 100%;
+  border: none;
+  background-color: #dbdbdb;
+  font-size: 0.92em;
+  resize: none;
+}
+
 /* Utility classes */
 .text-center {
   text-align: center;
@@ -786,7 +811,7 @@ form textarea {
   border-top: 1px solid #ccc;
 }
 
-.favorites-alert {
+.alert-favorites {
   margin-left: 24px;
   margin-top: -5px;
   padding: 10px 20px;
@@ -803,11 +828,10 @@ form textarea {
   animation-fill-mode: forwards;
 }
 
-.favorites-alert-hidden {
+.alert-favorites-hidden {
   opacity: 0;
   transition: opacity 0.3s ease, transform 0.3s ease;
   margin-left: 24px;
-  
 }
 
 .alert-fail {
@@ -816,6 +840,29 @@ form textarea {
 
 .alert-uploading {
   background-color: #8f96eb;
+}
+
+.alert-reviews {
+  margin-left: 24px;
+  margin-top: -5px;
+  padding: 10px 20px;
+  max-width: max-content;
+  background-color: #00bda4;
+  color: white;
+  font-size: 12px;
+  border-radius: 5px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 1;
+  animation-name: favAnimation;
+  animation-duration: 6666ms;
+  animation-fill-mode: forwards;
+}
+
+.alert-reviews-hidden {
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  margin-left: 24px;
 }
 
 @keyframes favAnimation {

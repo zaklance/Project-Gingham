@@ -14,6 +14,11 @@ function VendorDetail () {
     const [isClicked, setIsClicked] = useState(false);
     const [alertMessage, setAlertMessage] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
+    const [showDupeAlert, setShowDupeAlert] = useState(false);
+    const [reviewMode, setReviewMode] = useState(false);
+    const [reviewData, setReviewData] = useState("");
+    const [editingReviewId, setEditingReviewId] = useState(null);
+    const [editedReviewData, setEditedReviewData] = useState("");
     
     const [hoveredMarket, setHoveredMarket] = useState(null);
     
@@ -27,6 +32,8 @@ function VendorDetail () {
 
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
     
+    const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -178,6 +185,83 @@ function VendorDetail () {
         }, 3000);
     };
 
+    const handleReviewToggle = () => {
+        setReviewMode(!reviewMode);
+    };
+
+    const handleInputChange = event => {
+        setReviewData({
+            ...reviewData
+        });
+    };
+
+    const handleReviewEditToggle = (reviewId, currentText) => {
+        setEditingReviewId(reviewId);
+        setEditedReviewData(currentText);
+    };
+
+    const handleEditInputChange = (event) => {
+        setEditedReviewData(event.target.value);
+    };
+
+
+    const hanldeReviewSubmit = async () => {
+        const existingReview = vendorReviews.some(review => review.user_id === userId);
+
+        if (existingReview) {
+            setAlertMessage('You have already submitted a review for this vendor.');
+            setTimeout(() => setAlertMessage(null), 3000);
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/vendor_reviews`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    vendor_id: vendor.id,
+                    review_text: reviewData
+                })
+            });
+
+            if (response.ok) {
+                const newReview = await response.json();
+                setVendorReviews([...vendorReviews, newReview]);
+                setReviewData("");
+                setReviewMode(false);
+                console.log('Review submitted successfully:', newReview);
+            } else {
+                console.log('Failed to submit review:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error);
+        }
+    };
+
+    const handleReviewUpdate = async (reviewId) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/vendor_reviews/${reviewId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ review_text: editedReviewData })
+            });
+
+            if (response.ok) {
+                const updatedReview = await response.json();
+                setVendorReviews((prevReviews) => prevReviews.map((review) =>
+                    review.id === reviewId ? updatedReview : review
+                ));
+                setEditingReviewId(null);
+            }
+        } catch (error) {
+            console.error('Error updating review:', error);
+        }
+    };
+    
+
 
     if (!vendor) {
         return <div>Loading...</div>;
@@ -206,7 +290,7 @@ function VendorDetail () {
                         className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
                         onClick={handleClick}> ❤️ </button>
                         {showAlert && (
-                            <div className='favorites-alert'>
+                            <div className='alert-favorites'>
                                 {alertMessage}
                             </div>
                         )}
@@ -252,12 +336,55 @@ function VendorDetail () {
                     vendorReviews.map((review, index) => (
                         <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                         <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
-                        <p>{review.review_text}</p>
+                        {review.user_id === userId && editingReviewId === review.id ? (
+                            <>
+                                <textarea className='textarea-edit'
+                                    value={editedReviewData}
+                                    onChange={handleEditInputChange}
+                                />
+                                <br></br>
+                                <button className='btn btn-small' onClick={() => handleReviewUpdate(review.id)}>Save</button>
+                                <button className='btn btn-small' onClick={() => setEditingReviewId(null)}>Cancel</button>
+                            </>
+                        ) : (
+                            <p>{review.review_text}</p>
+                        )}
+                        {review.user_id === userId && editingReviewId !== review.id && (
+                            <button className='btn btn-small' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
+                                Edit
+                            </button>
+                        )}
                     </div>
                 ))
-            ) : (
-                <p>No reviews available.</p>
-            )}
+                ) : (
+                    <p>No reviews available.</p>
+                )}
+                <div>
+                    {reviewMode ? (
+                        <>
+                            <div>
+                                <textarea
+                                    className='textarea-review'
+                                    name="review_text"
+                                    value={reviewData}
+                                    placeholder="Enter your review"
+                                    onChange={(event) => setReviewData(event.target.value)}
+                                    rows="6"
+                                    // cols="80"
+                                    required
+                                />
+                            </div>
+                            <button className='btn-login' onClick={hanldeReviewSubmit} type="submit">Post Review</button>
+                        </>
+                    ) : (
+                        <button className='btn btn-plus' onClick={handleReviewToggle} title='Leave a review'>+</button>
+                    )}
+                    {showDupeAlert && (
+                        <div className='alert-reviews float-right'>
+                            {alertMessage}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
