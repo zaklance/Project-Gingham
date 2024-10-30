@@ -381,6 +381,8 @@ class Basket(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     is_sold = db.Column(db.Boolean, nullable=False)
     is_grabbed = db.Column(db.Boolean, nullable=False)
+    price = db.Column(db.Integer, nullable=False)
+    pick_up_duration = db.Column(db.Time, nullable=False)
 
     # serialize_rules = ('-user_id', '-vendor_id', '-market_id')
 
@@ -390,10 +392,16 @@ class Basket(db.Model, SerializerMixin):
             raise ValueError("Sale date cannot be in the past")
         return value
 
-    @validates('is_sold')
-    def validate_is_sold(self, key, value):
+    @validates('is_sold', 'is_grabbed')
+    def validate_boolean(self, key, value):
         if not isinstance(value, bool):
-            raise ValueError("is_sold must be a boolean value")
+            raise ValueError(f"{key} must be a boolean value")
+        return value
+    
+    @validates('price')
+    def validate_price(self, key, value):
+        if not isinstance(value, int) or value < 0:
+            raise ValueError("Price must be a non-negative integer")
         return value
 
     def __repr__(self):
