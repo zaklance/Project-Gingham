@@ -26,11 +26,6 @@ function Markets() {
             .catch(error => console.error('Error fetching markets', error));
     }, []);
 
-    useEffect(() => {
-        if (markets.length > 0) {
-            initMap();
-        }
-    }, [markets]);
 
     const unionSquare = { lat:40.736358642578125, lng: -73.99076080322266 }
 
@@ -63,8 +58,9 @@ function Markets() {
     }
 
     function toggleHighlight(markerView, market) {
-        if (markerView.content.classList.contains("highlight")) {
-            markerView.content.classList.remove("highlight");
+        console.log(markerView)
+        if (markerView.classList.contains("highlight")) {
+            markerView.classList.remove("highlight");
             markerView.zIndex = null;
         } else {
             markerView.content.classList.add("highlight");
@@ -86,16 +82,21 @@ function Markets() {
         return content;
     }
 
+    useEffect(() => {
+        if (markets.length > 0) {
+            initMap();
+        }
+    }, [markets]);
 
     return (
         <>
         <div className="markets-container">
             <div id='map'>
                 <APIProvider apiKey={import.meta.env.VITE_GOOGLE_KEY} onLoad={() => console.log('Maps API has loaded.')}>
-                        <Map defaultCenter={unionSquare} defaultZoom={13} mapId={import.meta.env.VITE_GOOGLE_MAP_ID}>
-                            {/* {markets.map((marketData) => (
-                                <AdvancedMarkerCard key={marketData.id} marketData={marketData} />
-                            ))}  */}
+                    <Map defaultCenter={unionSquare} defaultZoom={13} mapId={import.meta.env.VITE_GOOGLE_MAP_ID}>
+                        {/* {markets.map((marketData) => (
+                            <AdvancedMarkerCard key={marketData.id} marketData={marketData} />
+                        ))}  */}
                     </Map>
                 </APIProvider>
                 {/* <gmp-map defaultCenter={unionSquare} zoom={13} map-id="DEMO_MAP_ID">
