@@ -30,7 +30,7 @@ def run():
             coordinates={"lat": "40.84607450953993", "lng": "-73.93808039940272"},
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
-            day_of_week='Thursday',
+            day_of_week=3,
             year_round=False,
             season_start=date(2024, 6, 27),
             season_end=date(2024, 11, 21)
@@ -42,7 +42,7 @@ def run():
             coordinates={"lat": "40.769140743893075", "lng": "-73.98836576430834"},
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
-            day_of_week='Saturday',
+            day_of_week=5,
             year_round=False,
             season_start=date(2024, 6, 1),
             season_end=date(2024, 11, 23)
@@ -54,7 +54,7 @@ def run():
             coordinates={"lat": "40.782040858828", "lng": "-73.9759752811397"},
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
-            day_of_week='Sunday',
+            day_of_week=6,
             year_round=True
         ),
         Market(
@@ -64,7 +64,7 @@ def run():
             coordinates={"lat": "40.77397099020891", "lng": "-73.95064361322936"},
             hour_start=time(9, 0, 0),
             hour_end=time(14, 30, 0),
-            day_of_week='Saturday',
+            day_of_week=5,
             year_round=True
         ),
         Market(
@@ -74,7 +74,7 @@ def run():
             coordinates={"lat": "40.78180268440337", "lng": "-73.94555998335593"},
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
-            day_of_week='Sunday',
+            day_of_week=6,
             year_round=False,
             season_start=date(2024, 6, 18),
             season_end=date(2024, 11, 19)
@@ -86,7 +86,7 @@ def run():
             coordinates={"lat": "40.79433392796688", "lng": "-73.96852339557134"},
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
-            day_of_week='Friday',
+            day_of_week=4,
             year_round=True
         ),
         Market(
@@ -96,7 +96,7 @@ def run():
             coordinates={"lat": "40.737268845844085", "lng": "-74.00531736212757"},
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
-            day_of_week='Saturday',
+            day_of_week=5,
             year_round=True
         ),
         Market(
@@ -106,7 +106,7 @@ def run():
             coordinates={"lat": "40.729830818573944", "lng": "-73.99109568735417"},
             hour_start=time(8, 0, 0),
             hour_end=time(17, 0, 0),
-            day_of_week='Tuesday',
+            day_of_week=1,
             year_round=False,
             season_start=date(2024, 6, 4),
             season_end=date(2024, 11, 26)
@@ -118,7 +118,7 @@ def run():
             coordinates={"lat": "40.704724320402526", "lng": "-74.01342009247573"},
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
-            day_of_week='Tuesday',
+            day_of_week=1,
             year_round=False,
             season_start=date(2024, 4, 16),
             season_end=date(2024, 11, 26)
@@ -130,7 +130,7 @@ def run():
             coordinates={"lat": "40.704724320402526", "lng": "-74.01342009247573"},
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
-            day_of_week='Thursday',
+            day_of_week=3,
             year_round=False,
             season_start=date(2024, 6, 13),
             season_end=date(2024, 11, 28)
@@ -142,7 +142,7 @@ def run():
             coordinates={"lat": "40.824268847996954", "lng": "-73.94880767347686"},
             hour_start=time(10, 30, 0),
             hour_end=time(18, 0, 0),
-            day_of_week='Wednesday',
+            day_of_week=2,
             year_round=False,
             season_start=date(2024, 7, 8),
             season_end=date(2024, 11, 25)
@@ -154,7 +154,7 @@ def run():
             coordinates={"lat": "40.74610601822501", "lng": "-74.00012495281699"},
             hour_start=time(9, 0, 0),
             hour_end=time(14, 0, 0),
-            day_of_week='Saturday',
+            day_of_week=5,
             year_round=False,
             season_start=date(2024, 4, 20),
             season_end=date(2024, 12, 21)
@@ -166,7 +166,7 @@ def run():
             coordinates={"lat": "40.80245205041825", "lng": "-73.94675905810875"},
             hour_start=time(14, 0, 0),
             hour_end=time(16, 30, 0),
-            day_of_week='Wednesday',
+            day_of_week=2,
             year_round=False,
             season_start=date(2024, 7, 10),
             season_end=date(2024, 11, 20)
@@ -178,7 +178,7 @@ def run():
             coordinates={"lat": "40.80711550674964", "lng": "-73.9643334908912"},
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
-            day_of_week='Thursday',
+            day_of_week=3,
             year_round=True
         ),
         Market(
@@ -188,7 +188,7 @@ def run():
             coordinates={"lat": "40.80711550674964", "lng": "-73.9643334908912"},
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
-            day_of_week='Sunday',
+            day_of_week=6,
             year_round=True
         ),
         Market(
@@ -198,7 +198,7 @@ def run():
             coordinates={"lat": "40.752106980482026", "lng": "-73.96813449641382"},
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
-            day_of_week='Wednesday',
+            day_of_week=2,
             year_round=True
         ),
         Market(
@@ -208,7 +208,7 @@ def run():
             coordinates={"lat": "40.842308310821956", "lng": "-73.94211665674466"},
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
-            day_of_week='Tuesday',
+            day_of_week=1,
             year_round=False,
             season_start=date(2024, 6, 4),
             season_end=date(2024, 11, 26)
@@ -220,7 +220,7 @@ def run():
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
-            day_of_week='Monday',
+            day_of_week=0,
             year_round=True
         ),
         Market(
@@ -230,7 +230,7 @@ def run():
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
-            day_of_week='Tuesday',
+            day_of_week=1,
             year_round=True
         ),
         Market(
@@ -240,7 +240,7 @@ def run():
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
-            day_of_week='Wednesday',
+            day_of_week=2,
             year_round=True
         ),
         Market(
@@ -250,7 +250,7 @@ def run():
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
-            day_of_week='Thursday',
+            day_of_week=3,
             year_round=True
         ),
         Market(
@@ -260,7 +260,7 @@ def run():
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
-            day_of_week='Friday',
+            day_of_week=4,
             year_round=True
         ),
         Market(
@@ -270,7 +270,7 @@ def run():
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
-            day_of_week='Saturday',
+            day_of_week=5,
             year_round=True
         ),
         Market(
@@ -280,7 +280,7 @@ def run():
             coordinates={"lat": "40.71266393582476", "lng": "-73.98847487671178"},
             hour_start=time(9, 0, 0),
             hour_end=time(14, 0, 0),
-            day_of_week='Thursday',
+            day_of_week=3,
             year_round=False,
             season_start=date(2024, 7, 5),
             season_end=date(2024, 11, 22)
@@ -292,7 +292,7 @@ def run():
             coordinates={"lat": "40.82373611412579", "lng": "-73.9435495760123"},
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
-            day_of_week='Tuesday',
+            day_of_week=1,
             year_round=False
         ),
         Market(
@@ -302,7 +302,7 @@ def run():
             coordinates={"lat": "40.82373611412579", "lng": "-73.9435495760123"},
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
-            day_of_week='Saturday',
+            day_of_week=5,
             year_round=False
         ),
         Market(
@@ -312,7 +312,7 @@ def run():
             coordinates={"lat": "40.71142490993184", "lng": "-74.01076962766949"},
             hour_start=time(8, 0, 0),
             hour_end=time(17, 0, 0),
-            day_of_week='Tuesday',
+            day_of_week=1,
             year_round=False,
             season_start=date(2024, 6, 18),
             season_end=date(2024, 10, 29)
@@ -324,7 +324,7 @@ def run():
             coordinates={"lat": "40.79815888129796", "lng": "-73.95254032492262"},
             hour_start=time(10, 00, 0),
             hour_end=time(14, 0, 0),
-            day_of_week='Saturday',
+            day_of_week=5,
             year_round=False,
             season_start=date(2024, 7, 20),
             season_end=date(2024, 11, 30)
@@ -336,7 +336,7 @@ def run():
             coordinates={"lat": "40.79001677902627", "lng": "-73.94559282721028"},
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
-            day_of_week='Thursday',
+            day_of_week=3,
             year_round=False,
             season_start=date(2024, 6, 13),
             season_end=date(2024, 11, 14)
@@ -348,7 +348,7 @@ def run():
             coordinates={"lat": "40.81542139191092", "lng": "-73.93994201397497"},
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
-            day_of_week='Friday',
+            day_of_week=4,
             year_round=False,
             season_start=date(2024, 6, 14),
             season_end=date(2024, 11, 15)
@@ -360,7 +360,7 @@ def run():
             coordinates={"lat": "40.80272354850676", "lng": "-73.94895981440956"},
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
-            day_of_week='Saturday',
+            day_of_week=5,
             year_round=False,
             season_start=date(2024, 6, 22),
             season_end=date(2024, 11, 16)
@@ -372,7 +372,7 @@ def run():
             coordinates={"lat": "40.784947665352576", "lng": "-73.94660106093569"},
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
-            day_of_week='Friday',
+            day_of_week=4,
             year_round=False,
             season_start=date(2024, 6, 14),
             season_end=date(2024, 11, 15)
@@ -384,7 +384,7 @@ def run():
             coordinates={"lat": "40.86911825882977", "lng": "-73.92025906885881"},
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
-            day_of_week='Saturday',
+            day_of_week=5,
             year_round=True
         ),
         Market(
@@ -394,7 +394,7 @@ def run():
             coordinates={"lat": "40.715117290409026", "lng": "-73.98348650666313"},
             hour_start=time(8, 30, 0),
             hour_end=time(15, 0, 0),
-            day_of_week='Thursday',
+            day_of_week=3,
             year_round=False,
             season_start=date(2024, 7, 5),
             season_end=date(2024, 11, 22)
@@ -406,7 +406,7 @@ def run():
             coordinates={"lat": "40.801382884379336", "lng": "-73.95970142371496"},
             hour_start=time(9, 0, 0),
             hour_end=time(14, 0, 0),
-            day_of_week='Saturday',
+            day_of_week=5,
             year_round=True
         ),
         Market(
@@ -416,7 +416,7 @@ def run():
             coordinates={"lat": "40.78944510836953", "lng": "-73.95271330705022"},
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
-            day_of_week='Wednesday',
+            day_of_week=2,
             year_round=False,
             season_start=date(2024, 6, 19),
             season_end=date(2024, 11, 27)
@@ -428,7 +428,7 @@ def run():
             coordinates={"lat": "40.839630140355446", "lng": "-73.93889062898364"},
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
-            day_of_week='Thursday',
+            day_of_week=3,
             year_round=False
         ),
         Market(
@@ -438,7 +438,7 @@ def run():
             coordinates={"lat": "40.86600006214813", "lng": "-73.9263264427691"},
             hour_start=time(9, 0, 0),
             hour_end=time(15, 0, 0),
-            day_of_week='Wednesday',
+            day_of_week=2,
             year_round=False
         ),
         Market(
@@ -448,7 +448,7 @@ def run():
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
-            day_of_week='Wednesday',
+            day_of_week=2,
             year_round=False
         ),
         Market(
@@ -458,7 +458,7 @@ def run():
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
-            day_of_week='Thursday',
+            day_of_week=3,
             year_round=False
         ),
         Market(
@@ -468,7 +468,7 @@ def run():
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
-            day_of_week='Friday',
+            day_of_week=4,
             year_round=False
         ),
         Market(
@@ -478,7 +478,7 @@ def run():
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
-            day_of_week='Saturday',
+            day_of_week=5,
             year_round=False
         ),
         Market(
@@ -488,7 +488,7 @@ def run():
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
-            day_of_week='Sunday',
+            day_of_week=6,
             year_round=False
         ),
         Market(
@@ -498,7 +498,7 @@ def run():
             coordinates={"lat": "40.74443551076143", "lng": "-74.00056543152783"},
             hour_start=time(8, 0, 0),
             hour_end=time(10, 00, 0),
-            day_of_week='Wednesday',
+            day_of_week=2,
             year_round=False,
             season_start=date(2024, 6, 11),
             season_end=date(2024, 11, 12)
@@ -510,7 +510,7 @@ def run():
             coordinates={"lat": "40.797300330819134", "lng": "-73.94074817230118"},
             hour_start=time(9, 30, 0),
             hour_end=time(15, 0, 0),
-            day_of_week='Wednesday',
+            day_of_week=2,
             year_round=True
         ),
         Market(
@@ -520,7 +520,7 @@ def run():
             coordinates={"lat": "40.73200566470982", "lng": "-73.97761240821589"},
             hour_start=time(9, 30, 0),
             hour_end=time(16, 0, 0),
-            day_of_week='Sunday',
+            day_of_week=6,
             year_round=False,
             season_start=date(2024, 5, 12),
             season_end=date(2024, 12, 15)
@@ -532,7 +532,7 @@ def run():
             coordinates={"lat": "40.72606737678102", "lng": "-73.98333751481684"},
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
-            day_of_week='Sunday',
+            day_of_week=6,
             year_round=True
         ),
         Market(
@@ -542,7 +542,7 @@ def run():
             coordinates={"lat": "40.71690089948348", "lng": "-74.01090464424209"},
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
-            day_of_week='Wednesday',
+            day_of_week=2,
             year_round=False,
             season_start=date(2024, 4, 17),
             season_end=date(2024, 11, 27)
@@ -554,7 +554,7 @@ def run():
             coordinates={"lat": "40.71690089948348", "lng": "-74.01090464424209"},
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
-            day_of_week='Saturday',
+            day_of_week=5,
             year_round=True
         ),
         Market(
@@ -564,7 +564,7 @@ def run():
             coordinates={"lat": "40.77367979894632", "lng": "-73.9819555713842"},
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
-            day_of_week='Thursday',
+            day_of_week=3,
             year_round=True
         ),
         Market(
@@ -574,7 +574,7 @@ def run():
             coordinates={"lat": "40.77367979894632", "lng": "-73.9819555713842"},
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
-            day_of_week='Saturday',
+            day_of_week=5,
             year_round=True
         ),
         Market(
@@ -584,7 +584,7 @@ def run():
             coordinates={"lat": "40.86600289682479", "lng": "-73.92633729986045"},
             hour_start=time(10, 30, 0),
             hour_end=time(15, 30, 0),
-            day_of_week='Sunday',
+            day_of_week=6,
             year_round=False,
             season_start=date(2024, 5, 26),
             season_end=date(2024, 12, 15)
@@ -596,7 +596,7 @@ def run():
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
-            day_of_week='Monday',
+            day_of_week=0,
             year_round=True
         ),
         Market(
@@ -606,7 +606,7 @@ def run():
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
-            day_of_week='Wednesday',
+            day_of_week=2,
             year_round=True
         ),
         Market(
@@ -616,7 +616,7 @@ def run():
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
-            day_of_week='Friday',
+            day_of_week=4,
             year_round=True
         ),
         Market(
@@ -626,7 +626,7 @@ def run():
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
-            day_of_week='Saturday',
+            day_of_week=5,
             year_round=True
         ),
         Market(
@@ -636,7 +636,7 @@ def run():
             coordinates={"lat": "40.811760800653175", "lng": "-73.95159181329969"},
             hour_start=time(16, 0, 0),
             hour_end=time(19, 0, 0),
-            day_of_week='Thursday',
+            day_of_week=3,
             year_round=False,
             season_start=date(2024, 6, 1),
             season_end=date(2024, 11, 23)
