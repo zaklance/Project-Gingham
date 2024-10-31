@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, NavLink, Link, Route, Routes, BrowserRouter as Router} from 'react-router-dom';
+import BasketCard from './BasketCard';
 
 function VendorProfile () {
     const { id } = useParams();
