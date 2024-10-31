@@ -17,6 +17,7 @@ flask-bcrypt = "*"
 faker = "*"
 jwt = "*"
 flask-jwt-extended = "*"
+pillow = "*"
 
 [dev-packages]
 
