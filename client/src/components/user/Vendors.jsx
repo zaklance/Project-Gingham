@@ -21,19 +21,21 @@ function Vendors() {
         setSelectedProduct(event.target.value);
     };
 
-    const filteredVendors = selectedProduct ? vendor.filter(vendor => vendor.product === selectedProduct) : vendor;
+    const filteredVendors = selectedProduct ? vendor.filter(vendor => vendor.product == selectedProduct) : vendor;
 
     return (
         <div className="markets-container">
             <br/>
             <div className='header'>
-                <h2 className='float-left'>FIND A MARKET VENDOR TODAY</h2>
-            <select className='float-right' value={selectedProduct} onChange={handleProductChange}>
-                <option value="">All Products</option>
-                {products.map(product => (
-                    <option key={product} value={product}>{product}</option>
-                ))}
-            </select>
+                <div className='flex-space-between'>
+                    <h2 className='float-left'>FIND A MARKET VENDOR TODAY</h2>
+                    <select className='float-right' value={selectedProduct} onChange={handleProductChange}>
+                    <option value="">All Products</option>
+                    {products.map(product => (
+                        <option key={product} value={product}>{product}</option>
+                    ))}
+                    </select>
+                </div>
             </div>
             <br className='no-float'/>
             <div className="market-cards-container">
