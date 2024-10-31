@@ -93,7 +93,7 @@ class Market(db.Model, SerializerMixin):
     coordinates = db.Column(db.JSON, nullable=False)
     hour_start = db.Column(db.Time, nullable=True)
     hour_end = db.Column(db.Time, nullable=True)
-    day_of_week = db.Column(db.String, nullable=True)
+    day_of_week = db.Column(db.Integer, nullable=True)
     year_round = db.Column(db.Boolean, nullable=True)
     season_start = db.Column(db.Date, nullable=True)
     season_end = db.Column(db.Date, nullable=True)
@@ -378,10 +378,10 @@ class Basket(db.Model, SerializerMixin):
     sale_date = db.Column(db.Date, nullable=False, default=date.today)
     pickup_time = db.Column(db.Time, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    is_sold = db.Column(db.Boolean, nullable=False)
-    is_grabbed = db.Column(db.Boolean, nullable=False)
-    price = db.Column(db.Integer, nullable=False)
-    pickup_duration = db.Column(db.Time, nullable=False)
+    is_sold = db.Column(db.Boolean, nullable=True)
+    is_grabbed = db.Column(db.Boolean, nullable=True)
+    price = db.Column(db.Float, nullable=False)
+    pickup_duration = db.Column(db.Float, nullable=False)
 
     # serialize_rules = ('-user_id', '-vendor_id', '-market_id')
 
@@ -399,13 +399,10 @@ class Basket(db.Model, SerializerMixin):
     
     @validates('price')
     def validate_price(self, key, value):
-        if not isinstance(value, int) or value < 0:
+        if not isinstance(value, (int, float)) or value < 0:
             raise ValueError("Price must be a non-negative integer")
         return value
 
     def __repr__(self):
         return (f"<Basket ID: {self.id}, Vendor ID: {self.vendor_id}, "
                 f"Market ID: {self.market_id}, Sold: {self.is_sold}>")
-    
-        
-        

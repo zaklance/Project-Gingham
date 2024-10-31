@@ -13,8 +13,7 @@ from datetime import timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
-from PIL import Image
-from io import BytesIO
+from datetime import datetime
 
 load_dotenv()
 
@@ -713,22 +712,36 @@ def handle_baskets():
             baskets = Basket.query.all()
             return jsonify([basket.to_dict() for basket in baskets]), 200
         except Exception as e:
+            app.logger.error(f'Error fetching baskets: {e}')  
             return {'error': f'Exception: {str(e)}'}, 500
 
     elif request.method == 'POST':
         data = request.get_json()
-        
+        app.logger.debug(f'Received data for new basket: {data}')
+
         try:
+            # Convert string dates to datetime.date objects
+            sale_date = datetime.strptime(data['sale_date'], '%Y-%m-%d').date()
+            pickup_time = datetime.strptime(data['pickup_time'], '%I:%M %p').time()
+
+            # Validate and convert price
+            price = float(data['price'])
+
+            if price < 0:
+                return {'error': 'Price must be a non-negative number'}, 400
+            
+            price = int(price * 100)
+           
             new_basket = Basket(
                 vendor_id=data['vendor_id'],
                 user_id=data.get('user_id'),
                 market_id=data['market_id'],
-                sale_date=data['sale_date'],
-                pickup_time=data['pickup_time'],
-                is_sold=data['is_sold'],
-                is_grabbed=data['is_grabbed'],
-                price=data['price'],
-                pick_up_duration=data['pick_up_duration']
+                sale_date=sale_date,
+                pickup_time=pickup_time,
+                is_sold=data.get('is_sold', False),
+                is_grabbed=data.get('is_grabbed', False),
+                price=price,
+                pickup_duration=data.get('pickup_time_duration', 0.0)
             )
             db.session.add(new_basket)
             db.session.commit()
@@ -736,10 +749,12 @@ def handle_baskets():
 
         except Exception as e:
             db.session.rollback()
+            app.logger.error(f'Error creating basket: {e}')
             return {'error': str(e)}, 500
 
     elif request.method == 'PATCH':
         data = request.get_json()
+        app.logger.debug(f'Received data for updating basket: {data}')
         basket_id = data.get('id')
 
         if not basket_id:
@@ -757,9 +772,9 @@ def handle_baskets():
             if 'market_id' in data:
                 basket.market_id = data['market_id']
             if 'sale_date' in data:
-                basket.sale_date = data['sale_date']
+                basket.sale_date = datetime.strptime(data['sale_date'], '%Y-%m-%d').date()
             if 'pickup_time' in data:
-                basket.pickup_time = data['pickup_time']
+                basket.pickup_time = datetime.strptime(data['pickup_time'], '%I:%M %p')
             if 'is_sold' in data:
                 basket.is_sold = data['is_sold']
             if 'is_grabbed' in data:
@@ -774,10 +789,12 @@ def handle_baskets():
 
         except Exception as e:
             db.session.rollback()
+            app.logger.error(f'Error updating basket: {e}')
             return {'error': str(e)}, 500
 
     elif request.method == 'DELETE':
         data = request.get_json()
+        app.logger.debug(f'Received data for deleting basket: {data}')
         basket_id = data.get('id')
 
         if not basket_id:
@@ -794,6 +811,7 @@ def handle_baskets():
 
         except Exception as e:
             db.session.rollback()
+            app.logger.error(f'Error deleting basket: {e}') 
             return {'error': str(e)}, 500
 
 
