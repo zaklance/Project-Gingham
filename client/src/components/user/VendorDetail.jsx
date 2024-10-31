@@ -311,7 +311,11 @@ function VendorDetail () {
                                 {marketDetails[marketId] || 'Loading...'}
                             </Link>
                             <span className="market-price">Price: ${price.toFixed(2)}</span>
-                            <span className="market-baskets">Available Baskets: {availableBaskets}</span>
+                            <span className="market-baskets">
+                                Available Baskets: {availableBaskets}
+                                <br/>
+                                Pick Up Time: 4:30 PM - 5:30 PM
+                            </span>
                             <button className="btn-edit" onClick={() => handleAddToCart(marketId)}>
                                 Add to Cart
                             </button>
