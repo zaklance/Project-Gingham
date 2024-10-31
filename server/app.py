@@ -14,6 +14,9 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from PIL import Image
+from io import BytesIO
+
 
 load_dotenv()
 
