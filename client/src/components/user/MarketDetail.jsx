@@ -15,15 +15,35 @@ function MarketDetail ({ match }) {
     const [isClicked, setIsClicked] = useState(false);
     const [alertMessage, setAlertMessage] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
+    const [showDupeAlert, setShowDupeAlert] = useState(false);
+    const [reviewMode, setReviewMode] = useState(false);
+    const [reviewData, setReviewData] = useState("");
+    const [editingReviewId, setEditingReviewId] = useState(null);
+    const [editedReviewData, setEditedReviewData] = useState("");
+    const [selectedProduct, setSelectedProduct] = useState('');
+
     
     // To be deleted after baskets state is moved to BasketCard
     const [availableBaskets, setAvailableBaskets] = useState(5);
     const [price, setPrice] = useState(4.99);
-
+    
     const { handlePopup, amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
-
+    
+    const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
+    const filteredVendors = selectedProduct ? vendors.filter(vendor => vendor.product === selectedProduct) : vendors;
+    
     const navigate = useNavigate();
+    
+    const products = [
+        'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey',
+        'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables'
+    ];
 
+    const handleProductChange = (event) => {
+        setSelectedProduct(event.target.value);
+    };
+
+    
     const images = [
         'https://neighbors.columbia.edu/sites/default/files/content/2023/farmers-market.jpg',
         'https://www.grownyc.org/files/gmkt/mkts/bronxborhall_shaylahunter_re_xy4a4543.jpg',
@@ -192,6 +212,83 @@ function MarketDetail ({ match }) {
         }, 1000);
     };
 
+    const handleReviewToggle = () => {
+        setReviewMode(!reviewMode);
+    };
+
+    // const handleInputChange = event => {
+    //     setReviewData({
+    //         ...reviewData
+    //     });
+    // };
+
+    const handleReviewEditToggle = (reviewId, currentText) => {
+        setEditingReviewId(reviewId);
+        setEditedReviewData(currentText);
+    };
+
+    const handleEditInputChange = (event) => {
+        setEditedReviewData(event.target.value);
+    };
+
+
+    const hanldeReviewSubmit = async () => {
+        const existingReview = marketReviews.some(review => review.user_id === userId);
+
+        if (existingReview) {
+            setAlertMessage('You have already submitted a review for this vendor.');
+            setShowDupeAlert(true);
+            setTimeout(() => setShowDupeAlert(null), 3000);
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/market_reviews`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    market_id: market.id,
+                    review_text: reviewData
+                })
+            });
+
+            if (response.ok) {
+                const newReview = await response.json();
+                setMarketReviews([...marketReviews, newReview]);
+                setReviewData("");
+                setReviewMode(false);
+                console.log('Review submitted successfully:', newReview);
+            } else {
+                console.log('Failed to submit review:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error);
+        }
+    };
+
+    const handleReviewUpdate = async (reviewId) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/market_reviews/${reviewId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ review_text: editedReviewData })
+            });
+
+            if (response.ok) {
+                const updatedReview = await response.json();
+                setMarketReviews((prevReviews) => prevReviews.map((review) =>
+                    review.id === reviewId ? updatedReview : review
+                ));
+                setEditingReviewId(null);
+            }
+        } catch (error) {
+            console.error('Error updating review:', error);
+        }
+    };
+
 
     if (!market) {
         return <div>Loading...</div>;
@@ -244,7 +341,15 @@ function MarketDetail ({ match }) {
             </div>
             <br/>
             <br/>
-            <h2>Vendors in this Market:</h2>
+            <div className='flex-space-between'>
+                <h2>Vendors in this Market:</h2>
+                <select value={selectedProduct} onChange={handleProductChange}>
+                    <option value="">All Products</option>
+                    {products.map(product => (
+                        <option key={product} value={product}>{product}</option>
+                    ))}
+                </select>
+            </div>
             {Array.isArray(vendors) && vendors.length > 0 ? (
                 vendors.map((vendorId, index) => (
                     <div key={index} className="market-item">
@@ -268,12 +373,55 @@ function MarketDetail ({ match }) {
                 marketReviews.map((review, index) => (
                     <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                         <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
-                        <p>{review.review_text}</p>
+                        {review.user_id === userId && editingReviewId === review.id ? (
+                            <>
+                                <textarea className='textarea-edit'
+                                    value={editedReviewData}
+                                    onChange={handleEditInputChange}
+                                />
+                                <br></br>
+                                <button className='btn btn-small' onClick={() => handleReviewUpdate(review.id)}>Save</button>
+                                <button className='btn btn-small' onClick={() => setEditingReviewId(null)}>Cancel</button>
+                            </>
+                        ) : (
+                            <p>{review.review_text}</p>
+                        )}
+                        {review.user_id === userId && editingReviewId !== review.id && (
+                            <button className='btn btn-small' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
+                                Edit
+                            </button>
+                        )}
                     </div>
                 ))
             ) : (
                 <p>No reviews available.</p>
             )}
+            <div>
+                {reviewMode ? (
+                    <>
+                        <div>
+                            <textarea
+                                className='textarea-review'
+                                name="review_text"
+                                value={reviewData}
+                                placeholder="Enter your review"
+                                onChange={(event) => setReviewData(event.target.value)}
+                                rows="6"
+                                // cols="80"
+                                required
+                            />
+                        </div>
+                        <button className='btn-login' onClick={hanldeReviewSubmit} type="submit">Post Review</button>
+                    </>
+                ) : (
+                    <button className='btn btn-plus' onClick={handleReviewToggle} title='Leave a review'>+</button>
+                )}
+                {showDupeAlert && (
+                    <div className='alert-reviews float-right'>
+                        {alertMessage}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

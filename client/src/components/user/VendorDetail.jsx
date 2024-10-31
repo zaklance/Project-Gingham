@@ -189,11 +189,11 @@ function VendorDetail () {
         setReviewMode(!reviewMode);
     };
 
-    const handleInputChange = event => {
-        setReviewData({
-            ...reviewData
-        });
-    };
+    // const handleInputChange = event => {
+    //     setReviewData({
+    //         ...reviewData
+    //     });
+    // };
 
     const handleReviewEditToggle = (reviewId, currentText) => {
         setEditingReviewId(reviewId);
