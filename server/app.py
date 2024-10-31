@@ -14,6 +14,9 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from PIL import Image
+from io import BytesIO
+
 
 load_dotenv()
 
@@ -21,6 +24,9 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'static/images')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+MAX_SIZE = 25 * 1024 * 1024
+MAX_RES = (1800, 1800)
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URI']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -36,20 +42,44 @@ jwt = JWTManager(app)
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.8):
+    
+    image.thumbnail(resolution, Image.LANCZOS)
+    
+    temp_output = BytesIO()
+    image.save(temp_output, format=image.format)
+    file_size = temp_output.tell()
+    
+    while file_size > max_size:
+        
+        new_width = int(image.width * step)
+        new_height = int(image.height * step)
+        image = image.resize((new_width, new_height), Image.LANCZOS)
+        
+        temp_output = BytesIO()
+        image.save(temp_output, format=image.format)
+        file_size = temp_output.tell()
+    
+    return image
+    
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
         return {'error': 'No file part in the request'}, 400
 
     file = request.files['file']
-
+    
     if file.filename == '':
         return {'error': 'No file selected'}, 400
 
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(file_path)
+
+        image = Image.open(file)
+        image = resize_image(image)
+
+        image.save(file_path)
 
         return {'message': 'File successfully uploaded', 'filename': filename}, 201
 

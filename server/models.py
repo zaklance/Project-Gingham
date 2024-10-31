@@ -93,7 +93,7 @@ class Market(db.Model, SerializerMixin):
     coordinates = db.Column(db.JSON, nullable=False)
     hour_start = db.Column(db.Time, nullable=True)
     hour_end = db.Column(db.Time, nullable=True)
-    day_of_week = db.Column(db.String, nullable=True)
+    day_of_week = db.Column(db.Integer, nullable=True)
     year_round = db.Column(db.Boolean, nullable=True)
     season_start = db.Column(db.Date, nullable=True)
     season_end = db.Column(db.Date, nullable=True)
