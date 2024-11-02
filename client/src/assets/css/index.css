@@ -604,21 +604,6 @@ select:hover {
   margin: 0% 1%;
 }
 
-.map-market-detail {
-  max-width: 33%;
-  /* width: 300px; */
-  height: 400px;
-  padding-bottom: 4px;
-}
-
-.map-visible {
-  display: block;
-}
-
-.map-invisible {
-  display: none;
-}
-
 .map-circle {
   shape-outside: circle();
   clip-path: circle();
@@ -650,12 +635,12 @@ select:hover {
 .marker-details {
   background-color: #fff;
   border-color: black;
-  border-width: 2em;
+  border-width: 2px;
   width: fit-content;
   max-width: 192px;
   padding: 4px;
   border-radius: 8px;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: all 0.3s ease-out;
 }
 
 .marker-name {
