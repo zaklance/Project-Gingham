@@ -7,7 +7,7 @@ function MarketDetail ({ match }) {
     const { id } = useParams();
 
     const [market, setMarket] = useState(null);
-    const [vendors, setVendors] = useState({});
+    const [vendors, setVendors] = useState([]);
     const [vendorDetails, setVendorDetails] = useState({});
     const [randomImage, setRandomImage] = useState('');
     const [marketReviews, setMarketReviews] = useState([]);
@@ -316,7 +316,7 @@ function MarketDetail ({ match }) {
                 <div id='map' className='map-market-detail'>
                     <APIProvider apiKey={import.meta.env.VITE_GOOGLE_KEY} onLoad={() => console.log('Maps API has loaded.')}>
                         <Map defaultCenter={marketLocation} defaultZoom={16} mapId={import.meta.env.VITE_GOOGLE_MAP_ID}>
-                            <Marker position={marketLocation} />
+                            <AdvancedMarker position={marketLocation} />
                         </Map>
                     </APIProvider>
                 </div>

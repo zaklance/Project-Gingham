@@ -28,16 +28,16 @@ function Vendors() {
             <br/>
             <div className='header'>
                 <div className='flex-space-between'>
-                    <h2 className='float-left'>FIND A MARKET VENDOR TODAY</h2>
-                    <select className='float-right' value={selectedProduct} onChange={handleProductChange}>
-                    <option value="">All Products</option>
-                    {products.map(product => (
-                        <option key={product} value={product}>{product}</option>
-                    ))}
+                    <h2>FIND A MARKET VENDOR TODAY</h2>
+                    <select value={selectedProduct} onChange={handleProductChange}>
+                        <option value="">All Products</option>
+                        {products.map(product => (
+                            <option key={product} value={product}>{product}</option>
+                        ))}
                     </select>
                 </div>
             </div>
-            <br className='no-float'/>
+            <br/>
             <div className="market-cards-container">
                 {filteredVendors.map((vendorData) => (
                     <VendorCard key={vendorData.id} vendorData={vendorData} />

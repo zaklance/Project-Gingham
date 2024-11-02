@@ -611,6 +611,61 @@ select:hover {
   padding-bottom: 4px;
 }
 
+.map-visible {
+  display: block;
+}
+
+.map-invisible {
+  display: none;
+}
+
+.map-circle {
+  shape-outside: circle();
+  clip-path: circle();
+  width: 36px;
+  height: 36px;
+  background: #6c7ae0;
+}
+
+.map-inside-circle {
+  shape-outside: circle();
+  clip-path: circle();
+  width: 14px;
+  height: 14px;
+  background: #8f96eb;
+  margin-top: -25px;
+  margin-left: 11px;
+}
+
+.map-triangle {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  margin-left: 2px;
+  border-left: 16px solid transparent;
+  border-right: 16px solid transparent;
+  border-top: 16px solid #6c7ae0;
+}
+
+.marker-details {
+  background-color: #fff;
+  border-color: black;
+  border-width: 2em;
+  width: fit-content;
+  max-width: 192px;
+  padding: 4px;
+  border-radius: 8px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.marker-name {
+  font-weight: 600;
+}
+
+.highlight {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
 /* Basic form styling */
 form {
   /* display: flex;
@@ -783,11 +838,6 @@ form textarea {
 .market-info {
   float: left;
   margin-bottom: 20px;
-}
-
-.marker-details {
-  background-color: white;
-  width: 192px;
 }
 
 .img-market {
