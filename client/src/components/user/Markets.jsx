@@ -8,6 +8,8 @@ import { APIProvider, Map, Marker, AdvancedMarker, Pin } from '@vis.gl/react-goo
 function Markets() {
     const [markets, setMarkets] = useState([]);
 
+    const weekday = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
     function timeConverter(time24) {
         const date = new Date('1970-01-01T' + time24);
 
@@ -43,42 +45,57 @@ function Markets() {
         });
 
         for (const market of markets) {
-            const AdvancedMarkerElement = new google.maps.marker.AdvancedMarkerElement({
+            const content = buildContent(market); // Generate the content
+            const marker = new AdvancedMarkerElement({
                 map,
-                content: buildContent(market),
-                position: { 'lat': parseFloat(market.coordinates.lat), 'lng': parseFloat(market.coordinates.lng) },
+                content,
+                position: { lat: parseFloat(market.coordinates.lat), lng: parseFloat(market.coordinates.lng) },
                 title: market.name,
             });
 
-            AdvancedMarkerElement.addListener("click", () => {
-                toggleHighlight(AdvancedMarker, market);
-                console.log("toggle")
+            marker.addListener("click", () => {
+                toggleHighlight(marker, market); // Pass the marker instance directly
+                console.log("toggle");
             });
         }
     }
 
     function toggleHighlight(markerView, market) {
-        console.log(markerView)
-        if (markerView.classList.contains("highlight")) {
-            markerView.classList.remove("highlight");
+        if (markerView.content.classList.contains("highlight")) {
+            markerView.content.classList.remove("highlight");
+            // markerView.content.classList.add("map-invisible");
             markerView.zIndex = null;
+            // <h1 class="map-marker">•</h1>
+            markerView.content.innerHTML = `
+                <div class="map-circle"></div>
+                <div class="map-inside-circle"></div>
+                <div class="map-triangle"></div>
+            `;
         } else {
             markerView.content.classList.add("highlight");
+            // markerView.content.classList.remove("map-invisible");
             markerView.zIndex = 1;
+            markerView.content.innerHTML = `
+                <div class="marker-details">
+                    <div class="marker-name">${market.name}</div>
+                    <div class="marker-day">${weekday[market.day_of_week]}</div>
+                    <div class="marker-hours">${timeConverter(market.hour_start)} - ${timeConverter(market.hour_end)}</div>
+                </div>
+            `;
         }
+        // console.log(markerView.content)
     }
 
     function buildContent(property) {
         const content = document.createElement("div");
 
+        // <h1 class="map-marker">•</h1>
         content.classList.add("market");
         content.innerHTML = `
-            <div class="marker-details">
-                <div class="name">${property.name}</div>
-                <div class="day">${property.day_of_week}</div>
-                <div class="hours">${timeConverter(property.hour_start)} - ${timeConverter(property.hour_end)}</div>
-            </div>
-            `;
+            <div class="map-circle"></div>
+            <div class="map-inside-circle"></div>
+            <div class="map-triangle"</div>
+        `;
         return content;
     }
 
