@@ -604,12 +604,19 @@ select:hover {
   margin: 0% 1%;
 }
 
+
 .map-circle {
   shape-outside: circle();
   clip-path: circle();
   width: 36px;
   height: 36px;
   background: #ff6699;
+  transition: background-color 0.4s ease, transform 0.4s ease;
+}
+
+.map-circle:hover {
+  background-color: #ff4499;
+  transition: background-color 0.4s ease, transform 0.4s ease;
 }
 
 .map-inside-circle {
@@ -620,6 +627,12 @@ select:hover {
   background: #ff9e5c;
   margin-top: -25px;
   margin-left: 11px;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.map-inside-circle:hover {
+  transform: scale(1.6);
+  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .map-triangle {
@@ -641,7 +654,6 @@ select:hover {
   max-width: 192px;
   padding: 4px;
   border-radius: 8px;
-  transition: all 0.3s ease-out;
 }
 
 .marker-name {
@@ -977,8 +989,7 @@ form textarea {
 
 .market-name {
   flex: 1;
-  text-decoration: none;
-  color: #000;
+  font-weight: 500;
 }
 
 .market-price, .market-baskets {
