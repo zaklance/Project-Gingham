@@ -8,8 +8,6 @@ import { APIProvider, Map, Marker, AdvancedMarker, Pin } from '@vis.gl/react-goo
 function Markets() {
     const [markets, setMarkets] = useState([]);
 
-    const weekday = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-
     function timeConverter(time24) {
         const date = new Date('1970-01-01T' + time24);
 
@@ -44,19 +42,25 @@ function Markets() {
             mapId: "4504f8b37365c3d0",
         });
 
-        for (const market of markets) {
-            const content = buildContent(market); // Generate the content
-            const marker = new AdvancedMarkerElement({
-                map,
-                content,
-                position: { lat: parseFloat(market.coordinates.lat), lng: parseFloat(market.coordinates.lng) },
-                title: market.name,
-            });
+        const uniqueNames = new Set();
 
-            marker.addListener("click", () => {
-                toggleHighlight(marker, market); // Pass the marker instance directly
-                console.log("toggle");
-            });
+        for (const market of markets) {
+            if (!uniqueNames.has(market.name)) {
+                uniqueNames.add(market.name);
+
+                const content = buildContent(market); // Generate the content
+                const marker = new AdvancedMarkerElement({
+                    map,
+                    content,
+                    position: { lat: parseFloat(market.coordinates.lat), lng: parseFloat(market.coordinates.lng) },
+                    title: market.name,
+                });
+
+                marker.addListener("click", () => {
+                    toggleHighlight(marker, market); // Pass the marker instance directly
+                    console.log("toggle");
+                });
+            }
         }
     }
 
@@ -78,8 +82,7 @@ function Markets() {
             markerView.content.innerHTML = `
                 <div class="marker-details">
                     <div class="marker-name">${market.name}</div>
-                    <div class="marker-day">${weekday[market.day_of_week]}</div>
-                    <div class="marker-hours">${timeConverter(market.hour_start)} - ${timeConverter(market.hour_end)}</div>
+                    <div class="marker-day">${market.schedule}</div>
                 </div>
             `;
         }
