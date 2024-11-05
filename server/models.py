@@ -91,6 +91,7 @@ class Market(db.Model, SerializerMixin):
     location = db.Column(db.String, nullable=False)
     zipcode = db.Column(db.String, nullable=True)
     coordinates = db.Column(db.JSON, nullable=False)
+    schedule = db.Column(db.String, nullable=True)
     hour_start = db.Column(db.Time, nullable=True)
     hour_end = db.Column(db.Time, nullable=True)
     day_of_week = db.Column(db.Integer, nullable=True)
@@ -381,7 +382,7 @@ class Basket(db.Model, SerializerMixin):
     is_sold = db.Column(db.Boolean, nullable=True)
     is_grabbed = db.Column(db.Boolean, nullable=True)
     price = db.Column(db.Float, nullable=False)
-    pickup_duration = db.Column(db.Float, nullable=False)
+    pickup_duration = db.Column(db.Time, nullable=False)
 
     # serialize_rules = ('-user_id', '-vendor_id', '-market_id')
 

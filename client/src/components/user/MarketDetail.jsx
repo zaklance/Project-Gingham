@@ -7,7 +7,7 @@ function MarketDetail ({ match }) {
     const { id } = useParams();
 
     const [market, setMarket] = useState(null);
-    const [vendors, setVendors] = useState({});
+    const [vendors, setVendors] = useState([]);
     const [vendorDetails, setVendorDetails] = useState({});
     const [randomImage, setRandomImage] = useState('');
     const [marketReviews, setMarketReviews] = useState([]);
@@ -33,7 +33,8 @@ function MarketDetail ({ match }) {
     const filteredVendors = selectedProduct ? vendors.filter(vendor => vendor.product === selectedProduct) : vendors;
     
     const navigate = useNavigate();
-    
+
+    const weekday = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     const products = [
         'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey',
         'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables'
@@ -316,7 +317,7 @@ function MarketDetail ({ match }) {
                 <div id='map' className='map-market-detail'>
                     <APIProvider apiKey={import.meta.env.VITE_GOOGLE_KEY} onLoad={() => console.log('Maps API has loaded.')}>
                         <Map defaultCenter={marketLocation} defaultZoom={16} mapId={import.meta.env.VITE_GOOGLE_MAP_ID}>
-                            <Marker position={marketLocation} />
+                            <AdvancedMarker position={marketLocation} />
                         </Map>
                     </APIProvider>
                 </div>
@@ -326,7 +327,7 @@ function MarketDetail ({ match }) {
                 <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}
                 </a></h4>
-                <h4>Hours: {market.day_of_week}, {timeConverter(market.hour_start)} - {timeConverter(market.hour_end)}</h4>
+                <h4>Hours: {weekday[market.day_of_week]}, {timeConverter(market.hour_start)} - {timeConverter(market.hour_end)}</h4>
             </div>
             <br />
             <div className='flex-start'>

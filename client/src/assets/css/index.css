@@ -604,11 +604,64 @@ select:hover {
   margin: 0% 1%;
 }
 
-.map-market-detail {
-  max-width: 33%;
-  /* width: 300px; */
-  height: 400px;
-  padding-bottom: 4px;
+
+.map-circle {
+  shape-outside: circle();
+  clip-path: circle();
+  width: 36px;
+  height: 36px;
+  background: #ff6699;
+  transition: background-color 0.4s ease, transform 0.4s ease;
+}
+
+.map-circle:hover {
+  background-color: #ff4499;
+  transition: background-color 0.4s ease, transform 0.4s ease;
+}
+
+.map-inside-circle {
+  shape-outside: circle();
+  clip-path: circle();
+  width: 14px;
+  height: 14px;
+  background: #ff9e5c;
+  margin-top: -25px;
+  margin-left: 11px;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.map-inside-circle:hover {
+  transform: scale(1.6);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.map-triangle {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  margin-left: 2px;
+  border-left: 16px solid transparent;
+  border-right: 16px solid transparent;
+  border-top: 16px solid #ff6699;
+}
+
+.marker-details {
+  background-color: #fff;
+  border-style: solid;
+  border-color: #b5b5b5;
+  border-width: 2px;
+  width: fit-content;
+  max-width: 192px;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.marker-name {
+  font-weight: 600;
+}
+
+.highlight {
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 /* Basic form styling */
@@ -785,11 +838,6 @@ form textarea {
   margin-bottom: 20px;
 }
 
-.marker-details {
-  background-color: white;
-  width: 192px;
-}
-
 .img-market {
   width: 100%;
 }
@@ -941,8 +989,7 @@ form textarea {
 
 .market-name {
   flex: 1;
-  text-decoration: none;
-  color: #000;
+  font-weight: 500;
 }
 
 .market-price, .market-baskets {
