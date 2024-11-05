@@ -142,6 +142,13 @@ function VendorProfile () {
         let uploadedFilename = null;
     
         if (image) {
+
+            const maxFileSize = 25 * 1024 * 1024
+            if (image.size > maxFileSize) {
+                alert ("File size exceeds 25 MB. Please upload a smaller file.");
+                return;
+            }
+
             console.log('Uploading file...');
             setStatus('uploading');
             const formData = new FormData();

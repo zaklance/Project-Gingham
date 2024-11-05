@@ -24,8 +24,8 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'static/images')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-MAX_SIZE = 25 * 1024 * 1024
-MAX_RES = (1800, 1800)
+MAX_SIZE = 1 * 1024 * 1024
+MAX_RES = (100, 100)
 
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URI']
@@ -40,28 +40,27 @@ CORS(app, supports_credentials=True)
 jwt = JWTManager(app)
 
 def allowed_file(filename):
+    
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.8):
-    
+def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
     image.thumbnail(resolution, Image.LANCZOS)
     
     temp_output = BytesIO()
-    image.save(temp_output, format=image.format)
+    image.save(temp_output, format='JPEG', quality=50)
     file_size = temp_output.tell()
     
     while file_size > max_size:
-        
-        new_width = int(image.width * step)
-        new_height = int(image.height * step)
-        image = image.resize((new_width, new_height), Image.LANCZOS)
-        
         temp_output = BytesIO()
-        image.save(temp_output, format=image.format)
+        quality = max(10, int(85 * step))
+        image.save(temp_output, format='JPEG', quality=quality)
+        
         file_size = temp_output.tell()
-    
-    return image
-    
+        step -= 0.05
+
+    temp_output.seek(0)
+    return Image.open(temp_output)
+
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
@@ -79,7 +78,7 @@ def upload_file():
         image = Image.open(file)
         image = resize_image(image)
 
-        image.save(file_path)
+        image.save(file_path, format='JPEG')
 
         return {'message': 'File successfully uploaded', 'filename': filename}, 201
 
