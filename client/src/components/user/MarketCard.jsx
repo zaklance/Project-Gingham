@@ -6,6 +6,8 @@ function MarketCard({ marketData }) {
     const navigate = useNavigate();
     const [ randomImage, setRandomImage ] = useState('');
 
+    const weekday = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat", "Sun"]
+
     const images = [
         'https://neighbors.columbia.edu/sites/default/files/content/2023/farmers-market.jpg',
         'https://www.grownyc.org/files/gmkt/mkts/bronxborhall_shaylahunter_re_xy4a4543.jpg',
@@ -45,7 +47,7 @@ function MarketCard({ marketData }) {
             <img src={randomImage} alt="Market Image" style={{ width: '260px' }} />
             <h3>{marketData.name}</h3>
             <p><strong>Location:</strong> {marketData.location}</p>
-            <p><strong>Hours:</strong> {marketData.day_of_week}, {timeConverter(marketData.hour_start)} - {timeConverter(marketData.hour_end)}</p>
+            <p><strong>Hours:</strong> {weekday[marketData.day_of_week]}, {timeConverter(marketData.hour_start)} - {timeConverter(marketData.hour_end)}</p>
             <p><strong>Open Year Round:</strong> {marketData.year_round ? "Yes" : "No"}</p>
             <p><strong>Zipcode:</strong> {marketData.zipcode}</p>
             <button className="market-card-button" onClick={handleLearnMore}>Learn More!</button>
