@@ -1,14 +1,14 @@
 import os
 import json
 import smtplib
-from flask import Flask, request, jsonify, session, send_from_directory, redirect
+from flask import Flask, request, jsonify, session, send_from_directory
 from models import db, User, Market, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from flask_migrate import Migrate
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
 from datetime import timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -16,7 +16,7 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from PIL import Image
 from io import BytesIO
-import stripe
+
 
 load_dotenv()
 
@@ -44,6 +44,10 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
+    
+    if image.mode != 'RGB':
+        image = image.convert('RGB')
+        
     image.thumbnail(resolution, Image.LANCZOS)
     
     temp_output = BytesIO()
@@ -61,13 +65,19 @@ def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
     temp_output.seek(0)
     return Image.open(temp_output)
 
+def check_role(expected_role):
+    claims = get_jwt()
+    if claims.get('role') != expected_role:
+        return False
+    return True
+
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
         return {'error': 'No file part in the request'}, 400
 
     file = request.files['file']
-    
+
     if file.filename == '':
         return {'error': 'No file selected'}, 400
 
@@ -75,12 +85,27 @@ def upload_file():
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
-        image = Image.open(file)
-        image = resize_image(image)
+        try:
+            image = Image.open(file)
+            image = resize_image(image)
+            image.save(file_path)
 
-        image.save(file_path, format='JPEG')
+            vendor_id = request.form.get('vendor_id')
+            if not vendor_id:
+                return {'error': 'Vendor ID is required'}, 400
 
-        return {'message': 'File successfully uploaded', 'filename': filename}, 201
+            vendor = Vendor.query.get(vendor_id)
+            if not vendor:
+                return {'error': 'Vendor not found'}, 404
+
+            vendor.image = filename
+            db.session.commit()
+
+            return {'message': 'File successfully uploaded', 'filename': filename}, 201
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Failed to upload image: {str(e)}'}, 500
 
     return {'error': 'File type not allowed'}, 400
 
@@ -106,7 +131,7 @@ def login():
     if not user.authenticate(data['password']):
         return {'error': 'login failed'}, 401
     
-    access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=12))
+    access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "user"})
     
     return jsonify(access_token=access_token, user_id=user.id), 200
 
@@ -147,16 +172,34 @@ def logout():
     session.pop('user_id', None)
     return {}, 204
 
-@app.route('/check_session', methods=['GET'])
+@app.route('/check_user_session', methods=['GET'])
 @jwt_required()
-def check_session():
-    user_id = get_jwt_identity()  # Get the user ID from the token
-    user = User.query.filter_by(id=user_id).first()
+def check_user_session():
+    if not check_role('user'):
+        return {'error': 'Access forbidden: User only'}, 403
 
+    user_id = get_jwt_identity()
+    user = User.query.filter_by(id=user_id).first()
+    
     if not user:
         return {'error': 'authorization failed'}, 401
 
     return user.to_dict(), 200
+
+
+@app.route('/check_vendor_session', methods=['GET'])
+@jwt_required()
+def check_vendor_session():
+    if not check_role('vendor'):
+        return {'error': 'Access forbidden: Vendor only'}, 403
+
+    vendor_user_id = get_jwt_identity()
+    vendor_user = VendorUser.query.filter_by(id=vendor_user_id).first()
+    
+    if not vendor_user:
+        return {'error': 'authorization failed'}, 401
+
+    return vendor_user.to_dict(), 200
 
 @app.route('/markets', methods=['GET', 'POST'])
 def all_markets():
@@ -278,6 +321,16 @@ def vendor_by_id(id):
         except Exception as e: 
             db.session.rollback()
             return {'error': str(e)}, 500
+
+@app.route('/vendors/<int:vendor_id>/image', methods=['GET'])
+def get_vendor_image(vendor_id):
+    vendor = Vendor.query.get(vendor_id)
+    if vendor and vendor.image:
+        try:
+            return send_from_directory(app.config['UPLOAD_FOLDER'], vendor.image)
+        except FileNotFoundError:
+            return {'error': 'Image not found'}, 404
+    return {'error': 'Vendor or image not found'}, 404
 
 @app.route('/users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
 def profile(id):
@@ -504,7 +557,7 @@ def vendorLogin():
     if not vendorUser.authenticate(data['password']):
         return {'error': 'login failed'}, 401
     
-    access_token = create_access_token(identity=vendorUser.id, expires_delta=timedelta(hours=12))
+    access_token = create_access_token(identity=vendorUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "vendor"})
 
     return jsonify(access_token=access_token, vendor_user_id=vendorUser.id), 200
 
@@ -1017,35 +1070,7 @@ def contact():
         print("Error occured:", str(e))
         return jsonify({"error": str(e)}), 500
     
-# Stripe
-
-stripe.api_key = os.getenv('STRIPE_PY_KEY')
-
-@app.route('/create-checkout-session', methods=['POST'])
-def create_checkout_session():
-    try:
-        session = stripe.checkout.Session.create(
-            ui_mode = 'embedded',
-            line_items=[
-                {
-                    # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-                    'price': 'price_1QIWBN00T87Ls5h92BGgUbTz',
-                    'quantity': 1,
-                },
-            ],
-            mode='payment',
-            return_url='http://127.0.0.1:5173' + '/return?session_id={CHECKOUT_SESSION_ID}',
-        )
-    except Exception as e:
-        return str(e)
-
-    return jsonify(clientSecret=session.client_secret)
-
-@app.route('/session-status', methods=['GET'])
-def session_status():
-  session = stripe.checkout.Session.retrieve(request.args.get('session_id'))
-
-  return jsonify(status=session.status, customer_email=session.customer_details.email)
+    
 
     
 if __name__ == '__main__':
