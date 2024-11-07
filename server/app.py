@@ -18,8 +18,6 @@ from PIL import Image
 from io import BytesIO
 import stripe
 
-
-
 load_dotenv()
 
 app = Flask(__name__)
