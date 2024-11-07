@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from flask_migrate import Migrate
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
 from datetime import timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -64,6 +64,12 @@ def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
 
     temp_output.seek(0)
     return Image.open(temp_output)
+
+def check_role(expected_role):
+    claims = get_jwt()
+    if claims.get('role') != expected_role:
+        return False
+    return True
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -125,7 +131,7 @@ def login():
     if not user.authenticate(data['password']):
         return {'error': 'login failed'}, 401
     
-    access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=12))
+    access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "user"})
     
     return jsonify(access_token=access_token, user_id=user.id), 200
 
@@ -166,16 +172,34 @@ def logout():
     session.pop('user_id', None)
     return {}, 204
 
-@app.route('/check_session', methods=['GET'])
+@app.route('/check_user_session', methods=['GET'])
 @jwt_required()
-def check_session():
-    user_id = get_jwt_identity()  # Get the user ID from the token
-    user = User.query.filter_by(id=user_id).first()
+def check_user_session():
+    if not check_role('user'):
+        return {'error': 'Access forbidden: User only'}, 403
 
+    user_id = get_jwt_identity()
+    user = User.query.filter_by(id=user_id).first()
+    
     if not user:
         return {'error': 'authorization failed'}, 401
 
     return user.to_dict(), 200
+
+
+@app.route('/check_vendor_session', methods=['GET'])
+@jwt_required()
+def check_vendor_session():
+    if not check_role('vendor'):
+        return {'error': 'Access forbidden: Vendor only'}, 403
+
+    vendor_user_id = get_jwt_identity()
+    vendor_user = VendorUser.query.filter_by(id=vendor_user_id).first()
+    
+    if not vendor_user:
+        return {'error': 'authorization failed'}, 401
+
+    return vendor_user.to_dict(), 200
 
 @app.route('/markets', methods=['GET', 'POST'])
 def all_markets():
@@ -533,7 +557,7 @@ def vendorLogin():
     if not vendorUser.authenticate(data['password']):
         return {'error': 'login failed'}, 401
     
-    access_token = create_access_token(identity=vendorUser.id, expires_delta=timedelta(hours=12))
+    access_token = create_access_token(identity=vendorUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "vendor"})
 
     return jsonify(access_token=access_token, vendor_user_id=vendorUser.id), 200
 
