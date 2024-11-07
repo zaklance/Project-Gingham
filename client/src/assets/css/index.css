@@ -11,13 +11,13 @@ a {
   text-decoration: none;
 }
 
-div>a:hover {
+div>a:hover, .link-yellow:hover {
   background-color: #fffa9c;
 }
 
-.link-yellow:hover {
+/* .link-yellow:hover {
   background-color: #fffa9c;
-}
+} */
 
 html {
   height: 100%;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './assets/css/index.css';
@@ -34,6 +34,76 @@ import AdminLogout from './components/admin/AdminLogout.jsx';
 import AdminProfile from './components/admin/AdminProfile.jsx';
 import AdminDashboard from './components/admin/AdminDashboard.jsx';
 
+import { loadStripe } from '@stripe/stripe-js';
+import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
+import { Navigate } from 'react-router-dom';
+
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_JS_KEY)
+
+const CheckoutForm = () => {
+    const fetchClientSecret = useCallback(() => {
+        // Create a Checkout Session
+        return fetch("http://127.0.0.1:5555/create-checkout-session", {
+            method: "POST",
+        })
+            .then((res) => res.json())
+            .then((data) => data.clientSecret);
+    }, []);
+
+    const options = { fetchClientSecret };
+
+    return (
+        <div id="checkout">
+            <EmbeddedCheckoutProvider
+                stripe={stripePromise}
+                options={options}
+            >
+                <EmbeddedCheckout />
+            </EmbeddedCheckoutProvider>
+        </div>
+    )
+}
+
+const Return = () => {
+    const [status, setStatus] = useState(null);
+    const [customerEmail, setCustomerEmail] = useState('');
+
+    useEffect(() => {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const sessionId = urlParams.get('session_id');
+
+        fetch(`/session-status?session_id=${sessionId}`)
+            .then((res) => res.json())
+            .then((data) => {
+                setStatus(data.status);
+                setCustomerEmail(data.customer_email);
+            });
+    }, []);
+
+    if (status === 'open') {
+        return (
+            <Navigate to="/checkout" />
+        )
+    }
+
+    if (status === 'complete') {
+        return (
+            <section id="success">
+                <p>
+                    We appreciate your business! A confirmation email will be sent to {customerEmail}.
+
+                    If you have any questions, please email <a href="mailto:orders@example.com">orders@example.com</a>.
+                </p>
+            </section>
+        )
+    }
+
+    return null;
+}
+
+
 const router = createBrowserRouter([
     {
         path: "/",
@@ -53,8 +123,9 @@ const router = createBrowserRouter([
                     { path: "vendors", element: <Vendors /> },
                     { path: "vendors/:id", element: <VendorDetail /> },
                     { path: "your-cart", element: <Cart /> },
-                    { path: "checkout", element: <Checkout /> },
-                    { path: "check_session", element: <CheckSession /> }
+                    { path: "checkout", element: <CheckoutForm /> },
+                    { path: "check-session", element: <CheckSession /> },
+                    { path: "return", element: <Return />}
                 ]
             },
             {
