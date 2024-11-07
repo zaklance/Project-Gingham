@@ -12,6 +12,7 @@ function VendorProfile () {
     const [vendorData, setVendorData] = useState(null);
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
+    const [vendorImageURL, setVendorImageURL] = useState(null);
 
     const products = [
         'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 
@@ -112,19 +113,24 @@ function VendorProfile () {
     };
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/vendors/${id}`)
-            .then(response => {
-                if (!response.ok) {
+        const fetchVendorData = async () => {
+            try {
+                const response = await fetch(`http://127.0.0.1:5555/vendors/${id}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setVendorData(data);
+                    if (data.image) {
+                        setVendorImageURL(`http://127.0.0.1:5555/vendors/${id}/image`);
+                    }
+                } else {
                     throw new Error('Network response was not ok');
                 }
-                return response.json();
-            })
-            .then(data => {
-                setVendorData(data);
-                const parsedLocations = JSON.parse(data.locations);
-                setLocations(parsedLocations);
-            })
-            .catch(error => console.error('Error fetching vendor data:', error));
+            } catch (error) {
+                console.error('Error fetching vendor data:', error);
+            }
+        };
+
+        fetchVendorData();
     }, [id]);
 
     const handleVendorInputChange = (event) => {
@@ -153,6 +159,7 @@ function VendorProfile () {
             setStatus('uploading');
             const formData = new FormData();
             formData.append('file', image);
+            formData.append('vendor_id', id);
     
             try {
                 const result = await fetch('http://127.0.0.1:5555/upload', {
@@ -165,6 +172,7 @@ function VendorProfile () {
                     uploadedFilename = data.filename;
                     console.log('Image uploaded:', uploadedFilename);
                     setStatus('success');
+                    setVendorImageURL(`http://127.0.0.1:5555/vendors/${id}/image`);
                 } else {
                     console.log('Image upload failed');
                     console.log('Response:', await result.text());
@@ -249,7 +257,14 @@ function VendorProfile () {
         <div>
             <div className="tab-content">
                 <div>
-                    <h2 className='title'>Profile Information</h2>
+                    <h2 className='title'>Profile Information
+                        {vendorImageURL && (
+                            <div className='vendor-image'>
+                                <img src={vendorImageURL} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} />
+                            </div>
+                        )}
+                    </h2>
+                    
                     <div className='bounding-box'>
                     {editMode && vendorUserData?.is_admin ? (
                         <>
