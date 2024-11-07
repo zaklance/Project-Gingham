@@ -257,7 +257,14 @@ function VendorProfile () {
         <div>
             <div className="tab-content">
                 <div>
-                    <h2 className='title'>Profile Information</h2>
+                    <h2 className='title'>Profile Information
+                        {vendorImageURL && (
+                            <div className='vendor-image'>
+                                <img src={vendorImageURL} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} />
+                            </div>
+                        )}
+                    </h2>
+                    
                     <div className='bounding-box'>
                     {editMode && vendorUserData?.is_admin ? (
                         <>
@@ -396,13 +403,6 @@ function VendorProfile () {
                                     </div>
 
                                     )}
-
-                                    {vendorImageURL && (
-                                        <div className='vendor-image'>
-                                            <img src={vendorImageURL} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} />
-                                        </div>
-                                    )}
-
                                     
                                     <p><strong>Locations:&emsp;</strong></p>
                                     {Array.isArray(locations) && locations.length > 0 ? (
