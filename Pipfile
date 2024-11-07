@@ -18,6 +18,7 @@ faker = "*"
 jwt = "*"
 flask-jwt-extended = "*"
 pillow = "*"
+stripe = "*"
 
 [dev-packages]
 

@@ -29,8 +29,6 @@ function Markets() {
 
     const unionSquare = { lat:40.736358642578125, lng: -73.99076080322266 }
 
-    // console.log(import.meta.env.VITE_GOOGLE_MAP_ID)
-
     async function initMap() {
 
         const { Map } = await google.maps.importLibrary("maps");
