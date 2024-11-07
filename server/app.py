@@ -1,7 +1,7 @@
 import os
 import json
 import smtplib
-from flask import Flask, request, jsonify, session, send_from_directory, redirect
+from flask import Flask, request, jsonify, session, send_from_directory
 from models import db, User, Market, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
@@ -16,7 +16,7 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from PIL import Image
 from io import BytesIO
-import stripe
+
 
 load_dotenv()
 
@@ -79,22 +79,27 @@ def upload_file():
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
-        image = Image.open(file)
-        image = resize_image(image)
-        image.save(file_path)
+        try:
+            image = Image.open(file)
+            image = resize_image(image)
+            image.save(file_path)
 
-        vendor_id = request.form.get('vendor_id')
-        if not vendor_id:
-            return {'error': 'Vendor ID is required'}, 400
+            vendor_id = request.form.get('vendor_id')
+            if not vendor_id:
+                return {'error': 'Vendor ID is required'}, 400
 
-        vendor = Vendor.query.get(vendor_id)
-        if not vendor:
-            return {'error': 'Vendor not found'}, 404
+            vendor = Vendor.query.get(vendor_id)
+            if not vendor:
+                return {'error': 'Vendor not found'}, 404
 
-        vendor.image = filename
-        db.session.commit()
+            vendor.image = filename
+            db.session.commit()
 
-        return {'message': 'File successfully uploaded', 'filename': filename}, 201
+            return {'message': 'File successfully uploaded', 'filename': filename}, 201
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Failed to upload image: {str(e)}'}, 500
 
     return {'error': 'File type not allowed'}, 400
 
@@ -1041,35 +1046,7 @@ def contact():
         print("Error occured:", str(e))
         return jsonify({"error": str(e)}), 500
     
-# Stripe
-
-stripe.api_key = os.getenv('STRIPE_PY_KEY')
-
-@app.route('/create-checkout-session', methods=['POST'])
-def create_checkout_session():
-    try:
-        session = stripe.checkout.Session.create(
-            ui_mode = 'embedded',
-            line_items=[
-                {
-                    # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-                    'price': 'price_1QIWBN00T87Ls5h92BGgUbTz',
-                    'quantity': 1,
-                },
-            ],
-            mode='payment',
-            return_url='http://127.0.0.1:5173' + '/return?session_id={CHECKOUT_SESSION_ID}',
-        )
-    except Exception as e:
-        return str(e)
-
-    return jsonify(clientSecret=session.client_secret)
-
-@app.route('/session-status', methods=['GET'])
-def session_status():
-  session = stripe.checkout.Session.retrieve(request.args.get('session_id'))
-
-  return jsonify(status=session.status, customer_email=session.customer_details.email)
+    
 
     
 if __name__ == '__main__':
