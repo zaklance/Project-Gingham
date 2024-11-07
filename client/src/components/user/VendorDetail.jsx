@@ -27,11 +27,10 @@ function VendorDetail () {
     const [selectedVendor, setSelectedVendor] = useState('');
     
     // To be deleted after baskets state is moved to BasketCard
-    const [availableBaskets, setAvailableBaskets] = useState(5);
+    const [marketBaskets, setMarketBaskets] = useState({});
     const [price, setPrice] = useState(4.99);
 
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
-    
     const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
 
     const navigate = useNavigate();
@@ -52,20 +51,15 @@ function VendorDetail () {
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/vendor_markets?vendor_id=${id}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to fetch market locations');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(markets => {
-                console.log('Fetched markets:', markets);
                 if (Array.isArray(markets)) {
                     const marketIds = markets.map(market => market.market_id);
                     setMarkets(marketIds);
-                } else {
-                    console.error('Unexpected response format:', markets);
-                    setMarkets([]);
+
+                    const initialBaskets = {};
+                    marketIds.forEach(marketId => initialBaskets[marketId] = 5);
+                    setMarketBaskets(initialBaskets);
                 }
             })
             .catch(error => console.error('Error fetching market locations:', error));
@@ -110,14 +104,16 @@ function VendorDetail () {
             .catch(error => console.error('Error fetching reviews:', error));
     }, [id]);
 
-    const handleAddToCart = () => {
-        if (availableBaskets > 0) {
-            setAvailableBaskets(availableBaskets - 1);
+    const handleAddToCart = (marketId) => {
+        if (marketBaskets[marketId] > 0) {
+            setMarketBaskets(prevBaskets => ({
+                ...prevBaskets,
+                [marketId]: prevBaskets[marketId] - 1
+            }));
             setAmountInCart(amountInCart + 1);
-            // let marketLocation = marketDetails[selectedVendor]
-            setCartItems([...cartItems, { vendorName: vendor.name, location: market.id, id: cartItems.length + 1, price: price }]);
+            setCartItems([...cartItems, { vendorName: vendor.name, location: marketId, id: cartItems.length + 1, price: price }]);
         } else {
-            alert("Sorry, all baskets are sold out!");
+            alert("Sorry, all baskets are sold out at this market!");
         }
     };
 
@@ -312,7 +308,7 @@ function VendorDetail () {
                             </Link>
                             <span className="market-price">Price: ${price.toFixed(2)}</span>
                             <span className="market-baskets">
-                                Available Baskets: {availableBaskets}
+                                Available Baskets: {marketBaskets[marketId] ?? 'Loading...'}
                                 <br/>
                                 Pick Up Time: 4:30 PM - 5:30 PM
                             </span>

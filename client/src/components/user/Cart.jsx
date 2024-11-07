@@ -13,7 +13,6 @@ function Cart() {
         const updatedCart = cartItems.filter(item => item.id !== itemToRemove.id);
         setCartItems(updatedCart);
         setAmountInCart(amountInCart - 1);
-
     }
 	
     function handleCheckout() {
