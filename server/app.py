@@ -44,6 +44,10 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
+    
+    if image.mode != 'RGB':
+        image = image.convert('RGB')
+        
     image.thumbnail(resolution, Image.LANCZOS)
     
     temp_output = BytesIO()
@@ -67,7 +71,7 @@ def upload_file():
         return {'error': 'No file part in the request'}, 400
 
     file = request.files['file']
-    
+
     if file.filename == '':
         return {'error': 'No file selected'}, 400
 
@@ -77,8 +81,18 @@ def upload_file():
 
         image = Image.open(file)
         image = resize_image(image)
+        image.save(file_path)
 
-        image.save(file_path, format='JPEG')
+        vendor_id = request.form.get('vendor_id')
+        if not vendor_id:
+            return {'error': 'Vendor ID is required'}, 400
+
+        vendor = Vendor.query.get(vendor_id)
+        if not vendor:
+            return {'error': 'Vendor not found'}, 404
+
+        vendor.image = filename
+        db.session.commit()
 
         return {'message': 'File successfully uploaded', 'filename': filename}, 201
 
@@ -278,6 +292,16 @@ def vendor_by_id(id):
         except Exception as e: 
             db.session.rollback()
             return {'error': str(e)}, 500
+
+@app.route('/vendors/<int:vendor_id>/image', methods=['GET'])
+def get_vendor_image(vendor_id):
+    vendor = Vendor.query.get(vendor_id)
+    if vendor and vendor.image:
+        try:
+            return send_from_directory(app.config['UPLOAD_FOLDER'], vendor.image)
+        except FileNotFoundError:
+            return {'error': 'Image not found'}, 404
+    return {'error': 'Vendor or image not found'}, 404
 
 @app.route('/users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
 def profile(id):
