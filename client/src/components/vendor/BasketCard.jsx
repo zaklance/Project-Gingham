@@ -14,6 +14,7 @@ function BasketCard({ vendorId = 2, initialMarketId }) {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const saleDate = tomorrow.toISOString().substring(0, 10);
+
     const [marketId, setMarketId] = useState(initialMarketId || 4);
 
     const handleSave = async () => {
@@ -30,7 +31,6 @@ function BasketCard({ vendorId = 2, initialMarketId }) {
         
         if (parsedNumBaskets > 0 && vendorId && marketId && !isNaN(parsedPrice) && parsedPrice > 0) {
             const promises = [];
-
 
             for (let i = 0; i < parsedNumBaskets; i++) {
                 promises.push(fetch('http://127.0.0.1:5555/baskets', {
@@ -61,14 +61,14 @@ function BasketCard({ vendorId = 2, initialMarketId }) {
                     console.log('Basket created:', data);
                 }
                 setIsSaved(true);
-                setErrorMessage(''); // Clear any previous error messages
+                setErrorMessage('');
             } catch (error) {
                 console.error('Error creating baskets:', error);
-                setErrorMessage('Failed to create baskets. Please try again.'); // Set user-friendly error message
+                setErrorMessage('Failed to create baskets. Please try again.'); 
             }
         } else {
             console.error('Invalid data or missing vendor/market ID');
-            setErrorMessage('Please enter valid data for all fields.'); // Set user-friendly error message
+            setErrorMessage('Please enter valid data for all fields.');
         }
     };
 
