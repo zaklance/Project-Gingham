@@ -44,7 +44,7 @@ body {
   position: relative;
   top: 0;
   width: 90%;
-  max-width: 1200px;
+  max-width: 1280px;
   min-height: 100%;
   /* background-color: #a7a7a7; */
   display: box;
@@ -780,9 +780,9 @@ form textarea {
 }
 
 .market-cards-container>* {
-  flex: 0 0 calc(33.33% - 20px);
+  flex: 0 0 calc(33.33% - 40px);
   /* Adjust to make three cards fit per row */
-  max-width: calc(33.33% - 20px);
+  max-width: calc(33.33% - 40px);
   /* Adjust max-width based on desired spacing */
   float: none;
   position: auto;
