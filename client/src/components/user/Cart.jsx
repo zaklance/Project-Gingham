@@ -47,7 +47,7 @@ function Cart() {
                             <ul>
                                 {cartItems.map((item, index) => (
                                     <li className='cart-item' key={index}>
-                                        <span><b>{item.vendorName}</b> at <i>{item.location}</i> {item.price}</span>
+                                        <span><b>{item.vendorName}</b> at <i>{item.location}</i> — ${item.price}</span>
                                         <button className='btn-cart' onClick={() => removeFromCart(item)}>Remove</button>
                                     </li>
                                 ))}
