@@ -20,17 +20,15 @@ function MarketDetail ({ match }) {
     const [reviewData, setReviewData] = useState("");
     const [editingReviewId, setEditingReviewId] = useState(null);
     const [editedReviewData, setEditedReviewData] = useState("");
-    const [selectedProduct, setSelectedProduct] = useState('');
-
+    const [selectedProduct, setSelectedProduct] = useState("");
     
     // To be deleted after baskets state is moved to BasketCard
-    const [availableBaskets, setAvailableBaskets] = useState(5);
-    const [price, setPrice] = useState(4.99);
+    const [marketBaskets, setMarketBaskets] = useState({});
+    const [price, setPrice] = useState(5);
     
     const { handlePopup, amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
     
     const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
-    const filteredVendors = selectedProduct ? vendors.filter(vendor => vendor.product === selectedProduct) : vendors;
     
     const navigate = useNavigate();
 
@@ -39,11 +37,6 @@ function MarketDetail ({ match }) {
         'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey',
         'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables'
     ];
-
-    const handleProductChange = (event) => {
-        setSelectedProduct(event.target.value);
-    };
-
     
     const images = [
         'https://neighbors.columbia.edu/sites/default/files/content/2023/farmers-market.jpg',
@@ -76,38 +69,36 @@ function MarketDetail ({ match }) {
             .then(response => response.json())
             .then(data => {
                 setMarket(data);
-                const randomIndex = Math.floor(Math.random() * images.length);
-                setRandomImage(images[randomIndex]);
+                setRandomImage(images[Math.floor(Math.random() * images.length)]);
             })
             .catch(error => console.error('Error fetching market data:', error));
     }, [id]);
 
+    const handleProductChange = (event) => {
+        setSelectedProduct(event.target.value);
+    };
+
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/vendor-markets?market_id=${id}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to fetch vendors');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(vendors => {
-                console.log('Fetched vendors:', vendors);
                 if (Array.isArray(vendors)) {
-                    const vendorIds = vendors.map(vendor => vendor.vendor_id)
+                    const vendorIds = vendors.map(vendor => vendor.vendor_id);
                     setVendors(vendorIds);
-                } else {
-                    console.error('Unexpected response format:', vendors);
-                    setVendors([]);
+
+                    const initialBaskets = {};
+                    vendorIds.forEach(vendorId => initialBaskets[vendorId] = 5);
+                    setMarketBaskets(initialBaskets);
                 }
             })
-            .catch(error => console.error('Error fetching vendors:', error))
+            .catch(error => console.error('Error fetching vendors:', error));
     }, [id]);
 
     useEffect(() => {
         const fetchVendorDetails = async () => {
             if (vendors.length === 0) return;
 
-            const details = await Promise.all(vendors.map(async(vendorId) => {
+            const details = await Promise.all(vendors.map(async (vendorId) => {
                 try {
                     const response = await fetch(`http://127.0.0.1:5555/vendors/${vendorId}`);
                     if (!response.ok) throw new Error(`Failed to fetch vendor ${vendorId}`);
@@ -117,16 +108,19 @@ function MarketDetail ({ match }) {
                     return { id: vendorId, name: 'Unknown Vendor'};
                 }
             }));
-
             const marketDetailsMap = {};
             details.forEach(vendor => {
-                marketDetailsMap[vendor.id] = vendor.name;
+                marketDetailsMap[vendor.id] = vendor;
             });
             setVendorDetails(marketDetailsMap);
         };
-
         fetchVendorDetails();
-    }, [vendors]); 
+    }, [vendors]);
+
+    const filteredVendorsList = vendors.filter((vendorId) => {
+        const vendorDetail = vendorDetails[vendorId];      
+        return !selectedProduct || vendorDetail.product === selectedProduct;
+    });
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/market-reviews?market_id=${id}`)
@@ -146,7 +140,6 @@ function MarketDetail ({ match }) {
         if (availableBaskets > 0) {
             setAvailableBaskets(availableBaskets - 1);
             setAmountInCart(amountInCart + 1);
-            // let marketLocation = marketDetails[selectedVendor]
             setCartItems([...cartItems, { vendorName: vendor.name, location: market.id, id: cartItems.length + 1, price: price }]);
         } else {
             alert("Sorry, all baskets are sold out!");
@@ -217,12 +210,6 @@ function MarketDetail ({ match }) {
         setReviewMode(!reviewMode);
     };
 
-    // const handleInputChange = event => {
-    //     setReviewData({
-    //         ...reviewData
-    //     });
-    // };
-
     const handleReviewEditToggle = (reviewId, currentText) => {
         setEditingReviewId(reviewId);
         setEditedReviewData(currentText);
@@ -233,7 +220,7 @@ function MarketDetail ({ match }) {
     };
 
 
-    const hanldeReviewSubmit = async () => {
+    const handleReviewSubmit = async () => {
         const existingReview = marketReviews.some(review => review.user_id === userId);
 
         if (existingReview) {
@@ -351,22 +338,31 @@ function MarketDetail ({ match }) {
                     ))}
                 </select>
             </div>
-            {Array.isArray(vendors) && vendors.length > 0 ? (
-                vendors.map((vendorId, index) => (
-                    <div key={index} className="market-item">
-                        <Link to={`/user/vendors/${vendorId}`} className="market-name">
-                            {vendorDetails[vendorId] || 'Loading'}
-                        </Link>
-                        <span className="market-price">Price: ${price.toFixed(2)}</span>
-                        <span className="market-baskets">Available Baskets: {availableBaskets}</span>
-                        <button className="btn-edit" onClick={() => handleAddToCart(marketId)}>
-                            Add to Cart
-                        </button>
-                    </div>
-                ))
+
+            {Array.isArray(filteredVendorsList) && filteredVendorsList.length > 0 ? (
+                filteredVendorsList.map((vendorId, index) => {
+                    const vendorDetail = vendorDetails[vendorId] || {};
+                    
+                    return (
+                        <div key={index} className="market-item">
+                            <Link to={`/user/vendors/${vendorId}`} className="market-name">
+                                {vendorDetail.name || 'Loading...'}
+                            </Link>
+                            <span className="market-name">{vendorDetail.product || 'No product listed'}</span>
+
+                            <span className="market-price">Price: ${price.toFixed(2)}</span>
+                            <span className="market-baskets">
+                                Available Baskets: {marketBaskets[vendorId] ?? 'Loading...'}
+                            </span>
+                            <button className="btn-edit" onClick={() => handleAddToCart(vendorId)}>
+                                Add to Cart
+                            </button>
+                        </div>
+                    );
+                })
             ) : (
                 <p>No vendors at this market</p>
-            )}         
+            )}
             <br/>
             <h2>Reviews</h2>
             <br/>
@@ -412,7 +408,7 @@ function MarketDetail ({ match }) {
                                 required
                             />
                         </div>
-                        <button className='btn-login' onClick={hanldeReviewSubmit} type="submit">Post Review</button>
+                        <button className='btn-login' onClick={handleReviewSubmit} type="submit">Post Review</button>
                     </>
                 ) : (
                     <button className='btn btn-plus' onClick={handleReviewToggle} title='Leave a review'>+</button>
