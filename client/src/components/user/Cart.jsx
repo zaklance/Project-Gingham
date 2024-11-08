@@ -1,6 +1,6 @@
 // Cart.jsx
 import React, { useState, useEffect } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 
 function Cart() {
     const { cartItems, setCartItems, amountInCart, setAmountInCart } = useOutletContext();
@@ -9,6 +9,8 @@ function Cart() {
 
     const { handlePopup, } = useOutletContext();
 
+    const navigate = useNavigate();
+
     function removeFromCart(itemToRemove) {
         const updatedCart = cartItems.filter(item => item.id !== itemToRemove.id);
         setCartItems(updatedCart);
@@ -16,11 +18,12 @@ function Cart() {
     }
 	
     function handleCheckout() {
-		alert(`Checkout successful for ${name}`);
+		// alert(`Checkout successful for ${name}`);
         setCartItems([]);
-        setName('');
-        setAddress('');
+        // setName('');
+        // setAddress('');
         setAmountInCart(0);
+        navigate('/user/checkout');
     }
 	
 	useEffect(() => {
