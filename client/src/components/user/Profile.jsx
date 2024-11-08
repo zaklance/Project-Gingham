@@ -1,13 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
-function Profile() {
+function Profile( {marketData }) {
     const { id } = useParams();
     const [user, setUser] = useState(null);
     const [profileData, setProfileData] = useState(null);
     const [editMode, setEditMode] = useState(false);
     const [vendorFavs, setVendorFavs] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
+
+    const weekday = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat", "Sun"]
+
+    function timeConverter(time24) {
+        const date = new Date('1970-01-01T' + time24);
+
+        const time12 = date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+        return time12
+    }
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -193,7 +206,7 @@ function Profile() {
                     {marketFavs.length > 0 ? (
                     marketFavs.map((data) => (
                         <li key={data.id}>
-                            <Link to={`/user/markets/${data.id}`}><b>{data.market.name}</b> <i>open {data.market.hours}</i> </Link>
+                            <Link to={`/user/markets/${data.id}`}><b>{data.market.name}</b> <i>open {data.market.schedule} </i> </Link>
                         </li>
                     ))
                     ) : (

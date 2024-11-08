@@ -28,7 +28,7 @@ function VendorDetail () {
     
     // To be deleted after baskets state is moved to BasketCard
     const [marketBaskets, setMarketBaskets] = useState({});
-    const [price, setPrice] = useState(4.99);
+    const [price, setPrice] = useState(5.00);
 
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
     const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
