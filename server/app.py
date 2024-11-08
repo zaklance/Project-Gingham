@@ -187,7 +187,7 @@ def check_user_session():
     return user.to_dict(), 200
 
 
-@app.route('/check_vendor_session', methods=['GET'])
+@app.route('/check-vendor-session', methods=['GET'])
 @jwt_required()
 def check_vendor_session():
     if not check_role('vendor'):
@@ -398,7 +398,7 @@ def profile(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route('/market_reviews', methods=['GET', 'POST'])
+@app.route('/market-reviews', methods=['GET', 'POST'])
 def all_market_reviews():
     if request.method == 'GET':
         market_id = request.args.get('market_id')
@@ -419,7 +419,7 @@ def all_market_reviews():
         db.session.commit()
         return new_review.to_dict(), 201
 
-@app.route('/market_reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@app.route('/market-reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def market_review_by_id(id):
     review = MarketReview.query.filter(MarketReview.id == id).first()
     if not review:
@@ -437,7 +437,7 @@ def market_review_by_id(id):
         db.session.commit()
         return {}, 204
 
-@app.route('/vendor_reviews', methods=['GET', 'POST'])
+@app.route('/vendor-reviews', methods=['GET', 'POST'])
 def all_vendor_reviews():
     if request.method == 'GET':
         vendor_id = request.args.get('vendor_id')
@@ -458,7 +458,7 @@ def all_vendor_reviews():
         db.session.commit()
         return new_review.to_dict(), 201
 
-@app.route('/vendor_reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@app.route('/vendor-reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def vendor_review_by_id(id):
     review = VendorReview.query.filter(VendorReview.id == id).first()
     if not review:
@@ -476,7 +476,7 @@ def vendor_review_by_id(id):
         db.session.commit()
         return {}, 204
 
-@app.route('/market_favorites', methods=['GET', 'POST'])
+@app.route('/market-favorites', methods=['GET', 'POST'])
 def all_market_favorites():
     if request.method == 'GET':
         marketFavorites = MarketFavorite.query.all()
@@ -492,7 +492,7 @@ def all_market_favorites():
         db.session.commit()
         return new_market_favorite.to_dict(), 201
     
-@app.route('/market_favorites/<int:id>', methods=['GET', 'DELETE'])
+@app.route('/market-favorites/<int:id>', methods=['GET', 'DELETE'])
 def del_market_fav(id):
     marketFav = MarketFavorite.query.filter(MarketFavorite.id == id).first()
     if not marketFav:
@@ -504,7 +504,7 @@ def del_market_fav(id):
         db.session.commit()
         return {}, 204
 
-@app.route('/vendor_favorites', methods=['GET', 'POST'])
+@app.route('/vendor-favorites', methods=['GET', 'POST'])
 def all_vendor_favorites():
     if request.method == 'GET':
         vendorFavorites = VendorFavorite.query.all()
@@ -520,7 +520,7 @@ def all_vendor_favorites():
         db.session.commit()
         return new_vendor_favorite.to_dict(), 201
     
-@app.route('/vendor_favorites/<int:id>', methods=['GET', 'DELETE'])
+@app.route('/vendor-favorites/<int:id>', methods=['GET', 'DELETE'])
 def del_vendor_fav(id):
     vendorFav = VendorFavorite.query.filter(VendorFavorite.id == id).first()
     if request.method == 'GET':
@@ -530,7 +530,7 @@ def del_vendor_fav(id):
         db.session.commit()
         return {}, 204
     
-@app.route("/vendor_markets", methods=['GET'])
+@app.route("/vendor-markets", methods=['GET'])
 def get_vendor_markets():
     vendor_id = request.args.get('vendor_id')
     market_id = request.args.get('market_id')
@@ -561,7 +561,7 @@ def vendorLogin():
 
     return jsonify(access_token=access_token, vendor_user_id=vendorUser.id), 200
 
-@app.route('/vendor_signup', methods=['POST'])
+@app.route('/vendor-signup', methods=['POST'])
 def vendorSignup():
     data = request.get_json()
 
@@ -598,7 +598,7 @@ def vendorLogout():
     session.pop('vendor_user_id', None)
     return {}, 204
 
-@app.route("/vendor_users", methods=['GET'])
+@app.route("/vendor-users", methods=['GET'])
 def get_vendor_users():
     try:
         vendor_users = VendorUser.query.all()
@@ -606,7 +606,7 @@ def get_vendor_users():
     except Exception as e:
         return {'error': f'Exception: {str(e)}'}, 500
     
-@app.route('/vendor_users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
+@app.route('/vendor-users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
 def vendorProfile(id):
     if request.method == 'GET':
         vendorUser = VendorUser.query.filter_by(id = id).first()
@@ -668,7 +668,7 @@ def vendorProfile(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route("/vendor_vendor_users", methods=['GET', 'POST', 'PATCH', 'DELETE'])
+@app.route("/vendor-vendor-users", methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def handle_vendor_vendor_users():
     if request.method == "GET":
         try:
@@ -922,7 +922,7 @@ def adminLogin():
 
     return jsonify(access_token=access_token, admin_user_id=adminUser.id), 200
 
-@app.route('/admin_signup', methods=['POST'])
+@app.route('/admin-signup', methods=['POST'])
 def adminSignup():
     data = request.get_json()
 
@@ -959,7 +959,7 @@ def adminLogout():
     session.pop('admin_user_id', None)
     return {}, 204
 
-@app.route("/admin_users", methods=['GET', 'POST'])
+@app.route("/admin-users", methods=['GET', 'POST'])
 def handle_admin_users():
     if request.method == 'GET':
         try:
@@ -992,7 +992,7 @@ def handle_admin_users():
             db.session.rollback()
             return {'error': f'Exception: {str(e)}'}, 500
     
-@app.route('/admin_users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@app.route('/admin-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def handle_admin_user_by_id(id):
     admin_user = AdminUser.query.filter_by(id=id).first()
 

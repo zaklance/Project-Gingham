@@ -83,7 +83,7 @@ function MarketDetail ({ match }) {
     }, [id]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/vendor_markets?market_id=${id}`)
+        fetch(`http://127.0.0.1:5555/vendor-markets?market_id=${id}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to fetch vendors');
@@ -129,7 +129,7 @@ function MarketDetail ({ match }) {
     }, [vendors]); 
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/market_reviews?market_id=${id}`)
+        fetch(`http://127.0.0.1:5555/market-reviews?market_id=${id}`)
             .then(response => response.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -163,7 +163,7 @@ function MarketDetail ({ match }) {
     };
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/market_favorites")
+        fetch("http://127.0.0.1:5555/market-favorites")
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
@@ -176,7 +176,7 @@ function MarketDetail ({ match }) {
         if (globalThis.sessionStorage.getItem('user_id') !== null) {
             setIsClicked((isClick) => !isClick);
             if (isClicked == false) {
-                const response = await fetch('http://127.0.0.1:5555/market_favorites', {
+                const response = await fetch('http://127.0.0.1:5555/market-favorites', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -195,7 +195,7 @@ function MarketDetail ({ match }) {
             } else {
                 const findMarketFavId = marketFavs.filter(item => item.market_id == market.id)
                 for (const item of findMarketFavId) {
-                    fetch(`http://127.0.0.1:5555/market_favorites/${item.id}`, {
+                    fetch(`http://127.0.0.1:5555/market-favorites/${item.id}`, {
                         method: "DELETE",
                     }).then(() => {
                         setMarketFavs((favs) => favs.filter((fav) => fav.market_id !== market.id));
@@ -244,7 +244,7 @@ function MarketDetail ({ match }) {
         }
 
         try {
-            const response = await fetch(`http://127.0.0.1:5555/market_reviews`, {
+            const response = await fetch(`http://127.0.0.1:5555/market-reviews`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -272,7 +272,7 @@ function MarketDetail ({ match }) {
 
     const handleReviewUpdate = async (reviewId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/market_reviews/${reviewId}`, {
+            const response = await fetch(`http://127.0.0.1:5555/market-reviews/${reviewId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ review_text: editedReviewData })
