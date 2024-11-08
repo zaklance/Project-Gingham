@@ -54,7 +54,7 @@ function Login({ handlePopup }) {
 
     const handleSignup = async (event) => {
         event.preventDefault();
-        const response = await fetch('http://127.0.0.1:5555/signup', {
+        const response = await fetch('http://127.0.0.1:5555/admin-signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -117,7 +117,7 @@ function Login({ handlePopup }) {
                         <button className='btn-login' type="submit">Login</button>
                     </form>
                 </div>
-                {/* <div>
+                <div>
                     <form onSubmit={handleSignup} className="form">
                         <h2>Signup</h2>
                         <div className="form-group form-login">
@@ -172,7 +172,7 @@ function Login({ handlePopup }) {
                         </div>
                         <button className='btn-login' type="submit">Signup</button>
                     </form>
-                </div> */}
+                </div>
             </div>
         </div>
     );

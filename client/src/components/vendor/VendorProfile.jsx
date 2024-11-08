@@ -31,7 +31,7 @@ function VendorProfile () {
         const fetchVendorUserData = async () => {
             try {
                 const token = sessionStorage.getItem('jwt-token');
-                const response = await fetch(`http://127.0.0.1:5555/vendor_users/${id}`, {
+                const response = await fetch(`http://127.0.0.1:5555/vendor-users/${id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -88,7 +88,7 @@ function VendorProfile () {
 
     const handleSaveChanges = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/vendor_users/${id}`, {
+            const response = await fetch(`http://127.0.0.1:5555/vendor-users/${id}`, {
                 method: 'PATCH', 
                 headers: {
                     'Content-Type': 'application/json'

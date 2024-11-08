@@ -50,7 +50,7 @@ function VendorDetail () {
     }, [id]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/vendor_markets?vendor_id=${id}`)
+        fetch(`http://127.0.0.1:5555/vendor-markets?vendor_id=${id}`)
             .then(response => response.json())
             .then(markets => {
                 if (Array.isArray(markets)) {
@@ -91,7 +91,7 @@ function VendorDetail () {
     }, [markets]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/vendor_reviews?vendor_id=${id}`)
+        fetch(`http://127.0.0.1:5555/vendor-reviews?vendor_id=${id}`)
             .then(response => response.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -131,7 +131,7 @@ function VendorDetail () {
     // };
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/vendor_favorites")
+        fetch("http://127.0.0.1:5555/vendor-favorites")
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
@@ -144,7 +144,7 @@ function VendorDetail () {
         if (globalThis.sessionStorage.getItem('user_id') !== null) {
             setIsClicked((isClick) => !isClick);
             if (isClicked == false) {
-                const response = await fetch('http://127.0.0.1:5555/vendor_favorites', {
+                const response = await fetch('http://127.0.0.1:5555/vendor-favorites', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -163,7 +163,7 @@ function VendorDetail () {
             } else {
                 const findVendorFavId = vendorFavs.filter(item => item.vendor_id == vendor.id)
                 for (const item of findVendorFavId) {
-                    fetch(`http://127.0.0.1:5555/vendor_favorites/${item.id}`, {
+                    fetch(`http://127.0.0.1:5555/vendor-favorites/${item.id}`, {
                         method: "DELETE",
                     }).then(() => {
                         setVendorFavs((favs) => favs.filter((fav) => fav.vendor_id !== vendor.id));
@@ -212,7 +212,7 @@ function VendorDetail () {
         }
 
         try {
-            const response = await fetch(`http://127.0.0.1:5555/vendor_reviews`, {
+            const response = await fetch(`http://127.0.0.1:5555/vendor-reviews`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -240,7 +240,7 @@ function VendorDetail () {
 
     const handleReviewUpdate = async (reviewId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/vendor_reviews/${reviewId}`, {
+            const response = await fetch(`http://127.0.0.1:5555/vendor-reviews/${reviewId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ review_text: editedReviewData })
