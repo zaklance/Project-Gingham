@@ -111,7 +111,8 @@ function VendorDetail () {
                 [marketId]: prevBaskets[marketId] - 1
             }));
             setAmountInCart(amountInCart + 1);
-            setCartItems([...cartItems, { vendorName: vendor.name, location: marketId, id: cartItems.length + 1, price: price }]);
+            let marketLocation = marketDetails[marketId]
+            setCartItems([...cartItems, { vendorName: vendor.name, location: marketLocation, id: cartItems.length + 1, price: price }]);
         } else {
             alert("Sorry, all baskets are sold out at this market!");
         }
