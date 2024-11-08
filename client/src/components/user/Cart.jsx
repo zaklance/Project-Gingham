@@ -34,7 +34,7 @@ function Cart() {
 	cartItems.forEach(item => {
 	  totalPrice += item.price;
 	})
-	
+
     return (
         <div>
             <h2>Shopping Cart</h2>
@@ -42,21 +42,21 @@ function Cart() {
                 <p>Your cart is empty.</p>
             ) : (
                 <>
-                    <div className='checkout'>
+                    <div className='flex-space-between'>
                         <div className="cart">
                             <ul>
                                 {cartItems.map((item, index) => (
                                     <li className='cart-item' key={index}>
-                                        <span><b>{item.vendorName}</b> at {item.location} {item.price}</span>
+                                        <span><b>{item.vendorName}</b> at <i>{item.location}</i> {item.price}</span>
                                         <button className='btn-cart' onClick={() => removeFromCart(item)}>Remove</button>
                                     </li>
                                 ))}
                             </ul>
                         </div>
-                        <div className="flex-space-between-form">
+                        <div className="cart-sidebar">
                             <h3>Checkout</h3>
                             <h3>Total: {totalPrice}</h3> 
-                            <input
+                            {/* <input
                                 type="text"
                                 placeholder="Name"
                                 value={name}
@@ -67,7 +67,7 @@ function Cart() {
                                 placeholder="Address"
                                 value={address}
                                 onChange={(e) => setAddress(e.target.value)}
-                                />
+                                /> */}
                             <button 
                                 className='btn-cart' 
                                 onClick={(globalThis.sessionStorage.getItem('user_id') == null) ? (
