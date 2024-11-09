@@ -42,7 +42,7 @@ function Cart() {
         <div>
             <h2>Shopping Cart</h2>
             {cartItems.length === 0 ? (
-                <p>Your cart is empty.</p>
+                <p className=''>Your cart is empty.</p>
             ) : (
                 <>
                     <div className='flex-space-between'>

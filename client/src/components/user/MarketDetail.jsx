@@ -167,10 +167,16 @@ function MarketDetail ({ match }) {
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
-                setMarketFavs(filteredData)
+                setMarketFavs(filteredData);
             })
             .catch(error => console.error('Error fetching favorites', error));
     }, []);
+
+    useEffect(() => {
+        if (market && marketFavs.some(fav => fav.market_id === market.id)) {
+            setIsClicked(true);
+        }
+    }, [market, marketFavs]);
 
     const handleClick = async (event) => {
         if (globalThis.sessionStorage.getItem('user_id') !== null) {
