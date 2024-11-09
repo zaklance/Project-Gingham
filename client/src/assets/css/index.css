@@ -48,7 +48,7 @@ body {
 .container {
   position: relative;
   top: 0;
-  width: 90%;
+  width: 90vw;
   max-width: 1200px;
   min-height: 100%;
   /* background-color: #a7a7a7; */
@@ -138,10 +138,6 @@ h2 {
 }
 
 .title-big {
-  font-size: 6em;
-}
-
-.title-med {
   font-size: 6em;
 }
 
@@ -954,6 +950,14 @@ form textarea {
   background-color: #8f96eb;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.28);
   padding: 8px 0;
+  width: 100vw;
+}
+
+.banner-admin-portal {
+  background-color: #69d2c2;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.28);
+  padding: 8px 0;
+  width: 100vw;
 }
 
 .vendor-portal-background {
@@ -970,12 +974,6 @@ form textarea {
   height: 600px;
 }
 
-.banner-admin-portal {
-  background-color: #69d2c2;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.28);
-  padding: 8px 0;
-}
-
 .footer {
   /* justify-self: flex-end; */
   position: absolute;
@@ -985,7 +983,7 @@ form textarea {
   margin-left: auto;
   margin-right: auto;
   border-radius: 20px 20px 0 0;
-  padding: 24px;
+  padding: 20px;
   bottom: 0;
   right: 0;
   left: 0;
