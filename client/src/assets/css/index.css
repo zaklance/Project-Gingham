@@ -6,6 +6,11 @@
   color: #3b4752;
 }
 
+@font-face {
+  font-family: nf-le-petit-cochon;
+  src: url(../fonts/nf-le-petit-cochon-regular.ttf);
+}
+
 a {
   color: #3b4752;
   text-decoration: none;
@@ -132,24 +137,34 @@ h2 {
   width: fit-content;
 }
 
-.separator {
-  border: 0;
-  height: 3px;
-  background-color: #ccc;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
+.title-big {
+  font-size: 6em;
+}
+
+.title-med {
+  font-size: 6em;
 }
 
 .title {
   margin:16px;
 }
 
-.title-big {
-  font-size: 6em;
+.font-gingham {
+  font-family: nf-le-petit-cochon;
+  margin-bottom: -24px;
 }
+
 
 .text-light {
   color: white;
+}
+
+.separator {
+  border: 0;
+  height: 3px;
+  background-color: #ccc;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 
 p, li, div, form, input, select, button, textarea {

@@ -28,7 +28,7 @@ function VendorDetail () {
     
     // To be deleted after baskets state is moved to BasketCard
     const [marketBaskets, setMarketBaskets] = useState({});
-    const [price, setPrice] = useState(4.99);
+    const [price, setPrice] = useState(5.00);
 
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
     const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
@@ -131,6 +131,22 @@ function VendorDetail () {
     //     setSelectedVendor(parseInt(event.target.value));
     // };
 
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/vendor-favorites")
+            .then(response => response.json())
+            .then(data => {
+                const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
+                setVendorFavs(filteredData);
+            })
+            .catch(error => console.error('Error fetching favorites', error));
+    }, []);
+
+    useEffect(() => {
+        if (vendor && vendorFavs.some(fav => fav.vendor_id === vendor.id)) {
+            setIsClicked(true);
+        }
+    }, [vendor, vendorFavs]);
+    
     useEffect(() => {
         fetch("http://127.0.0.1:5555/vendor-favorites")
             .then(response => response.json())

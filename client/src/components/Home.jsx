@@ -11,7 +11,7 @@ function Home({ isPopup, setIsPopup, handlePopup }) {
         <div>
             <img className='big-logo' src={ginghamLogo} alt="Gingham Logo"></img>
             <div className="sidebar">
-                <h1>Project Gingham</h1>
+                <h1 className="font-gingham title-med">Gingham</h1>
                 <br></br>
                 <h3> MAKE A POSITIVE IMPACT BY MINIMIZING FOOD WASTE </h3><br/>
                 <p>
