@@ -21,10 +21,6 @@ function VendorDetail () {
     
     const [hoveredMarket, setHoveredMarket] = useState(null);
     
-    //Can this be deleted?
-    const [addToFav, setAddToFav] = useState([]);
-    const [selectedVendor, setSelectedVendor] = useState('');
-    
     // To be deleted after baskets state is moved to BasketCard
     const [marketBaskets, setMarketBaskets] = useState({});
     const [price, setPrice] = useState(5.00);
@@ -116,13 +112,14 @@ function VendorDetail () {
 
     const handleAddToCart = (marketId) => {
         if (marketBaskets[marketId] > 0) {
-            setMarketBaskets(prevBaskets => ({
-                ...prevBaskets,
-                [marketId]: prevBaskets[marketId] - 1
+            setMarketBaskets((prev) => ({
+                ...prev,
+                [marketId]: prev[marketId] - 1
             }));
             setAmountInCart(amountInCart + 1);
-            let marketLocation = marketDetails[marketId]
-            setCartItems([...cartItems, { vendorName: vendor.name, location: marketLocation, id: cartItems.length + 1, price: price }]);
+
+            const market = marketDetails[marketId];
+            setCartItems([...cartItems, { vendorName: vendor.name, location: market.name, id: cartItems.length + 1, price: price }]);
         } else {
             alert("Sorry, all baskets are sold out at this market!");
         }

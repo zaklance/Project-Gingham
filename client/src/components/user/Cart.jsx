@@ -1,13 +1,10 @@
-// Cart.jsx
 import React, { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 
 function Cart() {
-    const { cartItems, setCartItems, amountInCart, setAmountInCart } = useOutletContext();
+    const { handlePopup, cartItems, setCartItems, amountInCart, setAmountInCart } = useOutletContext();
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
-
-    const { handlePopup, } = useOutletContext();
 
     const navigate = useNavigate();
 
@@ -58,7 +55,7 @@ function Cart() {
                         </div>
                         <div className="cart-sidebar">
                             <h3>Checkout</h3>
-                            <h3>Total: {totalPrice}</h3> 
+                            <h3>Total: ${totalPrice}</h3> 
                             {/* <input
                                 type="text"
                                 placeholder="Name"
