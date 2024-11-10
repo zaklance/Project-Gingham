@@ -34,6 +34,17 @@ function VendorDetail () {
 
     const navigate = useNavigate();
 
+    function timeConverter(time24) {
+        const date = new Date('1970-01-01T' + time24);
+
+        const time12 = date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+        return time12
+    }
+
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/vendors/${id}`)
             .then(response => {
@@ -81,7 +92,7 @@ function VendorDetail () {
     
             const vendorDetailsMap = {};
             details.forEach(market => {
-                vendorDetailsMap[market.id] = market.name;
+                vendorDetailsMap[market.id] = market;
             });
             setMarketDetails(vendorDetailsMap);
         };
@@ -312,33 +323,46 @@ function VendorDetail () {
                 <br />
                 <h2>Farmers Market Locations:</h2>
                 {Array.isArray(markets) && markets.length > 0 ? (
-                    markets.map((marketId, index) => (
-                        <div 
-                            key={index} 
-                            className="market-item"
-                            onMouseEnter={() => setHoveredMarket(marketId)}
-                            onMouseLeave={() => setHoveredMarket(null)}
-                        >
-                            <Link to={`/user/markets/${marketId}`} className="market-name">
-                                {marketDetails[marketId] || 'Loading...'}
-                            </Link>
-                            <span className="market-price">Price: ${price.toFixed(2)}</span>
-                            <span className="market-baskets">
-                                Available Baskets: {marketBaskets[marketId] ?? 'Loading...'}
-                                <br/>
-                                Pick Up Time: 4:30 PM - 5:30 PM
-                            </span>
-                            <button className="btn-edit" onClick={() => handleAddToCart(marketId)}>
-                                Add to Cart
-                            </button>
-                            {hoveredMarket === marketId && (
-                                <div className='market-card-popup'>
-                                    <MarketCard marketData={marketId} />
-                                    {/* Why isnt the other info populating?!? */}
-                                </div>
-                            )}
-                        </div>
-                        ))
+                    markets.map((marketId, index) => {
+                        const marketDetail = marketDetails[marketId] || {};
+                        return (
+                            <div 
+                                key={index} 
+                                className="market-item"
+                                // onMouseEnter={() => setHoveredMarket(marketId)}
+                                // onMouseLeave={() => setHoveredMarket(null)}
+                            >
+                                <span>
+                                    <Link to={`/user/markets/${marketId}`} className="market-name">
+                                        {marketDetail.name || 'Loading...'}
+                                    </Link>
+                                    <br/>
+                                    Hours: {marketDetail.schedule}
+                                </span>
+                                <span></span>
+                                {index === 0 && (
+                                    <>
+                                        <span className="market-price">Price: ${price.toFixed(2)}</span>
+                                        <span className="market-baskets">
+                                            Available Baskets: {marketBaskets[marketId] ?? 'Loading...'}
+                                            <br/>
+                                            Pick Up Time: 3:30 PM - 4:00 PM
+                                        </span>
+                                        <button className="btn-edit" onClick={() => handleAddToCart(marketId)}>
+                                            Add to Cart
+                                        </button>                                    
+                                    </>
+                                )}
+
+                                {hoveredMarket === marketId && (
+                                    <div className='market-card-popup'>
+                                        <MarketCard marketData={marketId} />
+                                        {/* Why isnt the other info populating?!? */}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })
                     ) : (
                         <p>No market locations at this time</p>
                     )}
