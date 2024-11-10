@@ -44,7 +44,7 @@ function MarketCard({ marketData }) {
 
     return (
         <div className="market-card">
-            <img src={randomImage} alt="Market Image" style={{ width: '260px' }} />
+            <img src={`/market-images/${marketData.image}`} alt="Market Image" style={{ width: '260px' }} />
             <h3>{marketData.name}</h3>
             <p><strong>Location:</strong> {marketData.location}</p>
             <p><strong>Hours:</strong> {weekday[marketData.day_of_week]}, {timeConverter(marketData.hour_start)} - {timeConverter(marketData.hour_end)}</p>

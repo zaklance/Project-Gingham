@@ -1,15 +1,12 @@
 import React, { useState } from "react";
 import Login from "./user/LoginPopup";
-import ginghamLogo from '../assets/images/gingham-logo-2.svg';
-import farmers from '../assets/images/22bitman.xlarge1.jpg';
-import howitworks from '../assets/images/GINGHAM_HOWITWORKS.png';
-import blanket from '../assets/images/GINGHAM_PICNICBLANKET.png';
+
 
 function Home({ isPopup, setIsPopup, handlePopup }) {
 
     return (
         <div>
-            <img className='big-logo' src={ginghamLogo} alt="Gingham Logo"></img>
+            <img className='big-logo' src="/site-images/gingham-logo-2.svg" alt="Gingham Logo"></img>
             <div className="sidebar">
                 <h1 className="font-gingham title-big">Gingham</h1>
                 <br></br>
@@ -25,7 +22,7 @@ function Home({ isPopup, setIsPopup, handlePopup }) {
                     When vendors at farmers markets approach the end of the day, they want to start git rid of all their product, and sometimes at a cheaper price. 
                     <strong> With Gingham you can browse through vendors and buy discount bundles!</strong>
                 </p>
-                <img src={howitworks} style={{ width: '100%' }} />
+                <img src="/site-images/GINGHAM_HOWITWORKS.png" style={{ width: '100%' }} />
             </div>
             {/* <div className="box-big">
                 <img src={farmers} style={{ width: '60%' }}/>

@@ -305,7 +305,7 @@ function MarketDetail ({ match }) {
             <br/>
             <div className='flex-space-around-end'>
                 <div>
-                    <img className='img-market' src={randomImage} alt="Market Image" />
+                    <img className='img-market' src={`/market-images/${market.image}`} alt="Market Image" />
                 </div>
                 <div id='map' className='map-market-detail'>
                     <APIProvider apiKey={import.meta.env.VITE_GOOGLE_KEY} onLoad={() => console.log('Maps API has loaded.')}>

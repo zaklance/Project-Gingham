@@ -11,7 +11,7 @@ function VendorCard({ vendorData }) {
 
     return (
         <div className="market-card">
-            <img src={vendorData.image} alt="Vendor Image" style={{width: '260px'}}/>
+            <img src={`/vendor-images/${vendorData.image}`} alt="Vendor Image" style={{width: '260px'}}/>
             <h2>{vendorData.name}</h2>
             <h4>{vendorData.city}, {vendorData.state}</h4>
             <h4>{vendorData.product}</h4>

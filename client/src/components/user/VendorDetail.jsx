@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useOutletContext, useNavigate } from 'react-router-dom';
-import buyabag from '../../assets/images/GINGHAM_BUYABAG.png';
 import MarketCard from './MarketCard';
 
 function VendorDetail () {
@@ -290,11 +289,11 @@ function VendorDetail () {
             < br />
             <div style={{display:'flex'}}>
                 <div style={{display: '60%'}}>
-                    <img src={vendor.image} alt="Vendor Image" style={{ width: '95%' }} />
+                    <img src={`/vendor-images/${vendor.image}`} alt="Vendor Image" style={{ width: '95%' }} />
                 </div>
                 <div className='side-basket'>
                     <h2>Buy a Market Basket!</h2>
-                    <img src={buyabag} alt="Basket Image" style={{ width: '200px' }} /><br />
+                    <img src="/site-images/GINGHAM_BUYABAG.png" alt="Basket Image" style={{ width: '200px' }} /><br />
                 </div>
             </div>
             <div>

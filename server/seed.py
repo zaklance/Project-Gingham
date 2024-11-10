@@ -22,9 +22,11 @@ def run():
 
     db.session.commit()
 
+
     markets = [
         Market(
             name='175th Street Greenmarket',
+            image='10292023_Broadway_farmers_market_Columbia_NYC.jpg',
             location='W. 175th St. bet. Wadsworth Ave. & Broadway',
             zipcode='10033',
             coordinates={"lat": "40.84607450953993", "lng": "-73.93808039940272"},
@@ -38,6 +40,7 @@ def run():
         ),
         Market(
             name='57th Street Greenmarket',
+            image='6329735393_3a905a118a_o.0.jpg',
             location='W. 57th St. & 10th Ave.',
             zipcode='10019',
             coordinates={"lat": "40.769140743893075", "lng": "-73.98836576430834"},
@@ -51,6 +54,7 @@ def run():
         ),
         Market(
             name='79th Street Greenmarket',
+            image='image.jpeg',
             location='79th St. & Columbus Ave.',
             zipcode='10024',
             coordinates={"lat": "40.782040858828", "lng": "-73.9759752811397"},
@@ -62,6 +66,7 @@ def run():
         ),
         Market(
             name='82nd Street Greenmarket',
+            image='bronxborhall_shaylahunter_re_xy4a4543.jpg',
             location=' 82nd St. bet. 1st & York Aves.',
             zipcode='10028',
             coordinates={"lat": "40.77397099020891", "lng": "-73.95064361322936"},
@@ -73,6 +78,7 @@ def run():
         ),
         Market(
             name='94th Street Greenmarket',
+            image='c.-Martin-Seck-GAP-1-768x531.jpg',
             location='E. 94th St. & 1st Ave.',
             zipcode='10128',
             coordinates={"lat": "40.78180268440337", "lng": "-73.94555998335593"},
@@ -86,6 +92,7 @@ def run():
         ),
         Market(
             name='97th Street Greenmarket',
+            image='farmers-market.jpg',
             location='W. 97th St. bet. Columbus & Amsterdam Aves.',
             zipcode='10025',
             coordinates={"lat": "40.79433392796688", "lng": "-73.96852339557134"},
@@ -97,6 +104,7 @@ def run():
         ),
         Market(
             name='Abingdon Square Greenmarket',
+            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='Hudson St. & W. 12th St.',
             zipcode='10014',
             coordinates={"lat": "40.737268845844085", "lng": "-74.00531736212757"},
@@ -108,6 +116,7 @@ def run():
         ),
         Market(
             name='Astor Place Greenmarket',
+            image='greenmarket-grownyc-768x512.jpeg',
             location='E. 8th St. & Lafayette St.',
             zipcode='10003',
             coordinates={"lat": "40.729830818573944", "lng": "-73.99109568735417"},
@@ -121,6 +130,7 @@ def run():
         ),
         Market(
             name='Bowling Green Greenmarket',
+            image='image.jpeg',
             location='Broadway & Battery Pl.',
             zipcode='10004',
             coordinates={"lat": "40.704724320402526", "lng": "-74.01342009247573"},
@@ -134,6 +144,7 @@ def run():
         ),
         Market(
             name='Bowling Green Greenmarket',
+            image='image.jpeg',
             location='Broadway & Battery Pl.',
             zipcode='10004',
             coordinates={"lat": "40.704724320402526", "lng": "-74.01342009247573"},
@@ -147,6 +158,7 @@ def run():
         ),
         Market(
             name='Bro Sis Green Youth Market',
+            image='Union_Square_Farmers_Market.jpg',
             location='Amsterdam Ave. bet. W. 143rd & 144th Sts. (Johnny Hartman Plaza)',
             zipcode='10031',
             coordinates={"lat": "40.824268847996954", "lng": "-73.94880767347686"},
@@ -160,6 +172,7 @@ def run():
         ),
         Market(
             name="Chelsea’s Down to Earth Farmers Market",
+            image='unnamed.jpg',
             location='W. 23rd St. bet. 8th & 9th Aves.',
             zipcode='10011',
             coordinates={"lat": "40.74610601822501", "lng": "-74.00012495281699"},
@@ -173,6 +186,7 @@ def run():
         ),
         Market(
             name="Children’s Aid Go!Healthy Food Box + Farmstand - Milbank Center",
+            image='6329735393_3a905a118a_o.0.jpg',
             location='14-32 W. 118th St.',
             zipcode='10026',
             coordinates={"lat": "40.80245205041825", "lng": "-73.94675905810875"},
@@ -186,6 +200,7 @@ def run():
         ),
         Market(
             name='Columbia Greenmarket',
+            image='Union_Square_Farmers_Market.jpg',
             location='Broadway & 114th St.',
             zipcode='10025',
             coordinates={"lat": "40.80711550674964", "lng": "-73.9643334908912"},
@@ -197,6 +212,7 @@ def run():
         ),
         Market(
             name='Columbia Greenmarket',
+            image='Union_Square_Farmers_Market.jpg',
             location='Broadway & 114th St.',
             zipcode='10025',
             coordinates={"lat": "40.80711550674964", "lng": "-73.9643334908912"},
@@ -208,6 +224,7 @@ def run():
         ),
         Market(
             name='Dag Hammarskjold Greenmarket',
+            image='c.-Martin-Seck-GAP-1-768x531.jpg',
             location='E. 47th St. & 2nd Ave.',
             zipcode='10017',
             coordinates={"lat": "40.752106980482026", "lng": "-73.96813449641382"},
@@ -219,6 +236,7 @@ def run():
         ),
         Market(
             name='Fort Washington Greenmarket',
+            image='farmers-market.jpg',
             location='W. 168th St. & Ft. Washington Ave.',
             zipcode='10032',
             coordinates={"lat": "40.842308310821956", "lng": "-73.94211665674466"},
@@ -232,6 +250,7 @@ def run():
         ),
         Market(
             name='Fulton Stall Market (Indoor Farmers Market)',
+            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='91 South St.',
             zipcode='10038',
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
@@ -243,6 +262,7 @@ def run():
         ),
         Market(
             name='Fulton Stall Market (Indoor Farmers Market)',
+            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='91 South St.',
             zipcode='10038',
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
@@ -254,6 +274,7 @@ def run():
         ),
         Market(
             name='Fulton Stall Market (Indoor Farmers Market)',
+            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='91 South St.',
             zipcode='10038',
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
@@ -265,6 +286,7 @@ def run():
         ),
         Market(
             name='Fulton Stall Market (Indoor Farmers Market)',
+            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='91 South St.',
             zipcode='10038',
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
@@ -276,6 +298,7 @@ def run():
         ),
         Market(
             name='Fulton Stall Market (Indoor Farmers Market)',
+            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='91 South St.',
             zipcode='10038',
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
@@ -287,6 +310,7 @@ def run():
         ),
         Market(
             name='Fulton Stall Market (Indoor Farmers Market)',
+            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='91 South St.',
             zipcode='10038',
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
@@ -298,6 +322,7 @@ def run():
         ),
         Market(
             name='Gouverneur Health Farmstand',
+            image='greenmarket-grownyc-768x512.jpeg',
             location='Madison St. bet. Clinton & Jefferson Sts.',
             zipcode='10002',
             coordinates={"lat": "40.71266393582476", "lng": "-73.98847487671178"},
@@ -311,6 +336,7 @@ def run():
         ),
         Market(
             name='Grass Roots Farmers Market',
+            image='image.jpeg',
             location='W. 145th St. bet. Edgecombe & Bradhurst Aves. (Jackie Robinson Park)',
             zipcode='10039',
             coordinates={"lat": "40.82373611412579", "lng": "-73.9435495760123"},
@@ -322,6 +348,7 @@ def run():
         ),
         Market(
             name='Grass Roots Farmers Market',
+            image='image.jpeg',
             location='W. 145th St. bet. Edgecombe & Bradhurst Aves. (Jackie Robinson Park)',
             zipcode='10039',
             coordinates={"lat": "40.82373611412579", "lng": "-73.9435495760123"},
@@ -333,6 +360,7 @@ def run():
         ),
         Market(
             name='Greenmarket at the Oculus',
+            image='Union_Square_Farmers_Market.jpg',
             location='Church & Fulton Sts. (Oculus Plaza)',
             zipcode='10006',
             coordinates={"lat": "40.71142490993184", "lng": "-74.01076962766949"},
@@ -346,6 +374,7 @@ def run():
         ),
         Market(
             name='Harlem Meer Farmstand',
+            image='unnamed.jpg',
             location='Central Park N. & Malcom X Blvd.',
             zipcode='10026',
             coordinates={"lat": "40.79815888129796", "lng": "-73.95254032492262"},
@@ -359,6 +388,7 @@ def run():
         ),
         Market(
             name='Harvest Home East Harlem Farmers Market',
+            image='10292023_Broadway_farmers_market_Columbia_NYC.jpg',
             location='E. 104th St. & 3rd Ave.',
             zipcode='10029',
             coordinates={"lat": "40.79001677902627", "lng": "-73.94559282721028"},
@@ -372,6 +402,7 @@ def run():
         ),
         Market(
             name='Harvest Home Harlem Hospital Farmers Market',
+            image='6329735393_3a905a118a_o.0.jpg',
             location='W. 137th St. & Lenox Ave.',
             zipcode='10030',
             coordinates={"lat": "40.81542139191092", "lng": "-73.93994201397497"},
@@ -385,6 +416,7 @@ def run():
         ),
         Market(
             name='Harvest Home Lenox Avenue Farm Stand',
+            image='unnamed.jpg',
             location='Lenox Ave. bet. W. 117th & 118th Sts.',
             zipcode='10026',
             coordinates={"lat": "40.80272354850676", "lng": "-73.94895981440956"},
@@ -398,6 +430,7 @@ def run():
         ),
         Market(
             name='Harvest Home Metropolitan Hospital Farmers Market',
+            image='bronxborhall_shaylahunter_re_xy4a4543.jpg',
             location='97th St. & 2nd Ave.',
             zipcode='10029',
             coordinates={"lat": "40.784947665352576", "lng": "-73.94660106093569"},
@@ -411,6 +444,7 @@ def run():
         ),
         Market(
             name='Inwood Park Greenmarket',
+            image='c.-Martin-Seck-GAP-1-768x531.jpg',
             location='Isham St. bet. Seaman Ave. & Cooper St.',
             zipcode='10034',
             coordinates={"lat": "40.86911825882977", "lng": "-73.92025906885881"},
@@ -422,6 +456,7 @@ def run():
         ),
         Market(
             name='Lower East Side Farmstand',
+            image='farmers-market.jpg',
             location='Grand St. bet. Pitt & Willett Sts. (outside of Abrons Arts Center)',
             zipcode='10002',
             coordinates={"lat": "40.715117290409026", "lng": "-73.98348650666313"},
@@ -435,6 +470,7 @@ def run():
         ),
         Market(
             name='Morningside Park’s Down to Earth Farmers Market',
+            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='W. 110th St. & Manhattan Ave.',
             zipcode='10026',
             coordinates={"lat": "40.801382884379336", "lng": "-73.95970142371496"},
@@ -446,6 +482,7 @@ def run():
         ),
         Market(
             name='Mount Sinai Greenmarket',
+            image='greenmarket-grownyc-768x512.jpeg',
             location='Madison Ave. & 99th St.',
             zipcode='10029',
             coordinates={"lat": "40.78944510836953", "lng": "-73.95271330705022"},
@@ -459,6 +496,7 @@ def run():
         ),
         Market(
             name='NYP Youth Market - Audoban',
+            image='image.jpeg',
             location='21 Audoban Ave.',
             zipcode='10032',
             coordinates={"lat": "40.839630140355446", "lng": "-73.93889062898364"},
@@ -470,6 +508,7 @@ def run():
         ),
         Market(
             name='NYP Youth Market - Broadway',
+            image='Union_Square_Farmers_Market.jpg',
             location='4781-4783 Broadway',
             zipcode='10034',
             coordinates={"lat": "40.86600006214813", "lng": "-73.9263264427691"},
@@ -481,6 +520,7 @@ def run():
         ),
         Market(
             name='Project EATS Farm Stand at Essex Crossing',
+            image='unnamed.jpg',
             location='115 Delancey St.',
             zipcode='10002',
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
@@ -492,6 +532,7 @@ def run():
         ),
         Market(
             name='Project EATS Farm Stand at Essex Crossing',
+            image='unnamed.jpg',
             location='115 Delancey St.',
             zipcode='10002',
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
@@ -503,6 +544,7 @@ def run():
         ),
         Market(
             name='Project EATS Farm Stand at Essex Crossing',
+            image='unnamed.jpg',
             location='115 Delancey St.',
             zipcode='10002',
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
@@ -514,6 +556,7 @@ def run():
         ),
         Market(
             name='Project EATS Farm Stand at Essex Crossing',
+            image='unnamed.jpg',
             location='115 Delancey St.',
             zipcode='10002',
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
@@ -525,6 +568,7 @@ def run():
         ),
         Market(
             name='Project EATS Farm Stand at Essex Crossing',
+            image='unnamed.jpg',
             location='115 Delancey St.',
             zipcode='10002',
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
@@ -536,6 +580,7 @@ def run():
         ),
         Market(
             name='P.S. 11 Farm Market',
+            image='10292023_Broadway_farmers_market_Columbia_NYC.jpg',
             location='320 W. 21st St.',
             zipcode='10011',
             coordinates={"lat": "40.74443551076143", "lng": "-74.00056543152783"},
@@ -549,6 +594,7 @@ def run():
         ),
         Market(
             name='P.S. 57 Farmstand',
+            image='6329735393_3a905a118a_o.0.jpg',
             location='115th St. & 3rd Ave. (SW corner)',
             zipcode='10029',
             coordinates={"lat": "40.797300330819134", "lng": "-73.94074817230118"},
@@ -560,6 +606,7 @@ def run():
         ),
         Market(
             name='Stuyvesant Town Greenmarket',
+            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='South end of Stuyvesant Town Oval',
             zipcode='10009',
             coordinates={"lat": "40.73200566470982", "lng": "-73.97761240821589"},
@@ -573,6 +620,7 @@ def run():
         ),
         Market(
             name='Tompkins Square Greenmarket',
+            image='bronxborhall_shaylahunter_re_xy4a4543.jpg',
             location='E. 7th St. & Avenue A',
             zipcode='10003',
             coordinates={"lat": "40.72606737678102", "lng": "-73.98333751481684"},
@@ -584,6 +632,7 @@ def run():
         ),
         Market(
             name='Tribeca Greenmarket',
+            image='c.-Martin-Seck-GAP-1-768x531.jpg',
             location='Greenwich & Chambers Sts.',
             zipcode='10013',
             coordinates={"lat": "40.71690089948348", "lng": "-74.01090464424209"},
@@ -597,6 +646,7 @@ def run():
         ),
         Market(
             name='Tribeca Greenmarket',
+            image='c.-Martin-Seck-GAP-1-768x531.jpg',
             location='Greenwich & Chambers Sts.',
             zipcode='10013',
             coordinates={"lat": "40.71690089948348", "lng": "-74.01090464424209"},
@@ -608,6 +658,7 @@ def run():
         ),
         Market(
             name='Tucker Square Greenmarket',
+            image='farmers-market.jpg',
             location='Columbus Ave. & 66th St.',
             zipcode='10023',
             coordinates={"lat": "40.77367979894632", "lng": "-73.9819555713842"},
@@ -619,6 +670,7 @@ def run():
         ),
         Market(
             name='Tucker Square Greenmarket',
+            image='farmers-market.jpg',
             location='Columbus Ave. & 66th St.',
             zipcode='10023',
             coordinates={"lat": "40.77367979894632", "lng": "-73.9819555713842"},
@@ -630,6 +682,7 @@ def run():
         ),
         Market(
             name='Two Bridges Youth Market',
+            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='50 Madison St.',
             zipcode='10010',
             coordinates={"lat": "40.86600289682479", "lng": "-73.92633729986045"},
@@ -643,6 +696,7 @@ def run():
         ),
         Market(
             name='Union Square Greenmarket',
+            image='Union_Square_Farmers_Market.jpg',
             location='E. 17th St. & Union Square W.',
             zipcode='10003',
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
@@ -654,6 +708,7 @@ def run():
         ),
         Market(
             name='Union Square Greenmarket',
+            image='Union_Square_Farmers_Market.jpg',
             location='E. 17th St. & Union Square W.',
             zipcode='10003',
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
@@ -665,6 +720,7 @@ def run():
         ),
         Market(
             name='Union Square Greenmarket',
+            image='Union_Square_Farmers_Market.jpg',
             location='E. 17th St. & Union Square W.',
             zipcode='10003',
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
@@ -676,6 +732,7 @@ def run():
         ),
         Market(
             name='Union Square Greenmarket',
+            image='Union_Square_Farmers_Market.jpg',
             location='E. 17th St. & Union Square W.',
             zipcode='10003',
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
@@ -687,6 +744,7 @@ def run():
         ),
         Market(
             name='Uptown Good Food Farm Stand',
+            image='greenmarket-grownyc-768x512.jpeg',
             location='330 St. Nicholas Ave. (St. Nicholas Miracle Garden)',
             zipcode='10027',
             coordinates={"lat": "40.811760800653175", "lng": "-73.95159181329969"},
@@ -708,26 +766,25 @@ def run():
     companies = ['Goods', 'Produce', 'Farms', 'Organics', 'and Son', 'and Daughter', 'Market', 'Apothecary', 'Orchard']
     states = ['CT', 'DE', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT']
     images = [
-        'https://www.opkansas.org/wp-content/uploads/2019/06/opfm-vendor-web2.jpg',
-        'https://static.wixstatic.com/media/05bd2f_2b30b89b49eb4b2e95810360a9357bd2~mv2_d_7360_4912_s_4_2.jpeg/v1/fill/w_640,h_434,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/05bd2f_2b30b89b49eb4b2e95810360a9357bd2~mv2_d_7360_4912_s_4_2.jpeg',
-        'https://www.merriam.org/files/sharedassets/public/v/1/1.-photos/parks/farmers-market-1.jpg?dimension=pageimage&w=480',
-        'https://c8.alamy.com/comp/2R82FT1/st-jacobs-farmers-market-fruit-and-vegetable-vendors-ontario-canada-2R82FT1.jpg',
-        'https://www.fairburn.com/sites/default/files/uploads/ParksAndRecreation/document_2.jpg',
-        'https://www.lanecountyfarmersmarket.org/wp-content/uploads/2022/02/Vendor-Slider-3-scaled.jpg',
-        'https://frontierefarmhouse.wordpress.com/wp-content/uploads/2019/09/66422240_2392773677468030_9162452177778638848_o.jpg?w=1024',
-        'https://cdn.vox-cdn.com/Thursdaymbor/K7pJk3lLSH60zEbktRL0AQ-jNfA=/0x0:4500x2994/1200x900/filters:focal(1890x1137:2610x1857)/cdn.vox-cdn.com/uploads/chorus_image/image/65219436/6329735393_3a905a118a_o.0.jpg',
-        'https://dims.apnews.com/dims4/default/92713da/2147483647/strip/true/crop/5919x3946+0+0/resize/599x399!/quality/90/?url=https%3A%2F%2Fassets.apnews.com%2Faf%2F66%2F8e201f3644029f81124542a80a6b%2F128f5a1ca1754f77b141d34c6a199894',
-        'https://i2.pickpik.com/photos/363/418/522/market-stand-vegetables-market-stall-preview.jpg',
-        'https://freerangestock.com/sample/161930/fresh-fruit-assortment-on-a-market-stall.jpg',
-        'https://live.staticflickr.com/1450/24575912061_08b77ec267_b.jpg',
-        'https://cdn12.picryl.com/photo/2016/12/31/market-market-stall-seller-food-drink-29aa05-1024.jpg',
-        'https://islandinthenet.com/wp-content/uploads/2020/06/Fujifilm_X-T2_20200607_DSCF3839_blog.jpg',
-        'https://images.squarespace-cdn.com/content/v1/51e5766be4b05a1c36b7f6d2/1629745183504-2SQ6R20JGVU0GUZPH5WV/Michael_Greenmarket-1.jpg',
-        'https://live.staticflickr.com/1039/1095728401_01526e79b1_b.jpg',
-        'https://live.staticflickr.com/8172/8045956113_b76fd52b44_b.jpg',
-        'https://upload.wikimedia.org/wikipedia/comMondays/f/f0/Mushroom_stand_at_the_Campbell_farmers%27_market.gk.jpg',
-        'https://live.staticflickr.com/3369/3223915584_8caf5935aa_b.jpg',
-        'https://upload.wikimedia.org/wikipedia/comMondays/d/d6/Ballard_Farmers%27_Market_-_flowers.jpg'
+        '05bd2f_2b30b89b49eb4b2e95810360a9357bd2~mv2_d_7360_4912_s_4_2.jpeg',
+        '90.jpeg',
+        '66422240_2392773677468030_9162452177778638848_o.jpg',
+        '1095728401_01526e79b1_b.jpg',
+        '3223915584_8caf5935aa_b.jpg',
+        '8045956113_b76fd52b44_b.jpg',
+        '24575912061_08b77ec267_b.jpg',
+        'Ballard_Farmers_Market_-_vegetables.jpg',
+        'document_2.jpg',
+        'farmers-market-1.jpg',
+        'fresh-fruit-assortment-on-a-market-stall.jpg',
+        'Fujifilm_X-T2_20200607_DSCF3839_blog.jpg',
+        'market-market-stall-seller-food-drink-29aa05-1024.jpg',
+        'market-stand-vegetables-market-stall-preview.jpg',
+        'Michael_Greenmarket-1.jpg',
+        'Mushroom_stand_at_the_Campbell_farmers_market.gk.jpg',
+        'opfm-vendor-web2.jpg',
+        'st-jacobs-farmers-market-fruit-and-vegetable-vendors-ontario-canada-2R82FT1.jpg',
+        'Vendor-Slider-3-scaled.jpg'
     ]
     for i in range(150):
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"

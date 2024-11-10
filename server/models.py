@@ -88,6 +88,7 @@ class Market(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
+    image = db.Column(db.String, nullable=True)
     location = db.Column(db.String, nullable=False)
     zipcode = db.Column(db.String, nullable=True)
     coordinates = db.Column(db.JSON, nullable=False)
