@@ -612,7 +612,8 @@ select:hover {
   width: 98%;
   height: 40vh;
   min-height: 400px;
-  margin: 0% 1%;
+  margin-left: 1%;
+  margin-bottom: 4px;
 }
 
 
@@ -851,6 +852,7 @@ form textarea {
 
 .img-market {
   width: 100%;
+  max-width: 1120px;
 }
 
 .img-portal {
