@@ -1,6 +1,5 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import ginghamLogo from '../assets/images/gingham-logo-3.svg';
 import '../assets/css/index.css';
 
 function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
@@ -19,7 +18,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     return (
         <nav className="nav-bar">
             <ul>
-                <NavLink className="btn-home" reloadDocument to="/" ><img className='logo' src={ginghamLogo} alt="Gingham Logo" /></NavLink>
+                <NavLink className="btn-home" reloadDocument to="/" ><img className='logo' src="/site-images/gingham-logo-3.svg" alt="Gingham Logo" /></NavLink>
                 {/* User Tabs */}
                 {!isNotUser && (
                     <>

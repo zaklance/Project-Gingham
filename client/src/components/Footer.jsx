@@ -1,7 +1,6 @@
 import React from 'react';
 import { useRouteError, NavLink } from "react-router-dom";
 import '../assets/css/index.css';
-import ginghamLogo from '../assets/images/gingham-logo-3.svg';
 // import NavBar from './NavBar';
 
 function Footer() {
@@ -33,7 +32,7 @@ function Footer() {
                             <a href='https://www.mufo.nyc/' target='_blank' rel="noreferrer noopener"><strong>Mû.F.O. Inc</strong></a>
                         </li>
                     </ul>
-                    <img className='small-logo' src={ginghamLogo} alt="Gingham Logo"></img>
+                    <img className='small-logo' src="/site-images/gingham-logo-3.svg" alt="Gingham Logo"></img>
                 </div>
             </div>
         </>
