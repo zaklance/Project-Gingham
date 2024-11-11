@@ -193,7 +193,7 @@ function Profile( {marketData }) {
                     {vendorFavs.length > 0 ? (
                     vendorFavs.map((data) => (
                         <li key={data.id}>
-                            <Link to={`/user/vendors/${data.id}`}><b>{data.vendor.name}</b> <i>of {data.vendor.city}, {data.vendor.state}</i> </Link>
+                            <Link to={`/user/vendors/${data.vendor_id}`}><b>{data.vendor.name}</b> <i>of {data.vendor.city}, {data.vendor.state}</i> </Link>
                         </li>
                     ))
                     ) : (
@@ -206,7 +206,7 @@ function Profile( {marketData }) {
                     {marketFavs.length > 0 ? (
                     marketFavs.map((data) => (
                         <li key={data.id}>
-                            <Link to={`/user/markets/${data.id}`}><b>{data.market.name}</b> <i>open {data.market.schedule} </i> </Link>
+                            <Link to={`/user/markets/${data.market_id}`}><b>{data.market.name}</b> <i>open {data.market.schedule} </i> </Link>
                         </li>
                     ))
                     ) : (
