@@ -23,7 +23,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = os.path.join(os.getcwd(), 'static/images')
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'client/public/vendor-images')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 MAX_SIZE = 1 * 1024 * 1024
 MAX_RES = (100, 100)
