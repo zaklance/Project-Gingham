@@ -1007,6 +1007,10 @@ form textarea {
   font-weight: 500;
 }
 
+.market-name:hover {
+  background: #fffa9c;
+}
+
 .market-price, .market-baskets {
   flex: 1;
   text-align: center;

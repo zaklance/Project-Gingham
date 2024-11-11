@@ -93,9 +93,6 @@ class Market(db.Model, SerializerMixin):
     zipcode = db.Column(db.String, nullable=True)
     coordinates = db.Column(db.JSON, nullable=False)
     schedule = db.Column(db.String, nullable=True)
-    hour_start = db.Column(db.Time, nullable=True)
-    hour_end = db.Column(db.Time, nullable=True)
-    day_of_week = db.Column(db.Integer, nullable=True)
     year_round = db.Column(db.Boolean, nullable=True)
     season_start = db.Column(db.Date, nullable=True)
     season_end = db.Column(db.Date, nullable=True)
@@ -104,8 +101,39 @@ class Market(db.Model, SerializerMixin):
     reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic')
     market_favorites = db.relationship('MarketFavorite', back_populates='market', lazy='dynamic')
     vendor_markets = db.relationship('VendorMarket', back_populates='market')
+    market_days = db.relationship('MarketDay', back_populates='markets')
 
     serialize_rules = ('-reviews.market', '-market_favorites.market', '-vendor_markets.market', '-reviews.user.vendor_reviews', '-reviews.user.market_reviews')
+
+    # Validations
+    @validates('name', 'location', 'hours')
+    def validates_not_empty(self, key, value):
+        if not value:
+            raise ValueError(f"{key} cannot be empty")
+        return value
+
+    @validates('zipcode')
+    def validate_zipcode(self, key, value):
+        if value and len(value) != 5:
+            raise ValueError("Zipcode must be 5 characters long")
+        return value
+
+    def __repr__(self) -> str:
+        return f"<Market {self.name}>"
+
+class MarketDay(db.Model, SerializerMixin):
+    __tablename__ = 'market_days'
+
+    id = db.Column(db.Integer, primary_key=True)
+    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
+    hour_start = db.Column(db.Time, nullable=True)
+    hour_end = db.Column(db.Time, nullable=True)
+    day_of_week = db.Column(db.Integer, nullable=True)
+
+    # Relationships
+    markets = db.relationship('Market', back_populates='market_days')
+
+    serialize_rules = ('-markets.market_days', '-markets.reviews')
 
     # Validations
     @validates('name', 'location', 'hours')
