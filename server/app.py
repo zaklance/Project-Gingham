@@ -2,7 +2,7 @@ import os
 import json
 import smtplib
 from flask import Flask, request, jsonify, session, send_from_directory, redirect
-from models import db, User, Market, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, bcrypt
+from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
@@ -235,6 +235,41 @@ def market_by_id(id):
         return market.to_dict(), 200
     elif request.method == 'DELETE':
         db.session.delete(market)
+        db.session.commit()
+        return {}, 204
+
+@app.route('/market_days', methods=['GET', 'POST'])
+def all_market_days():
+    if request.method == 'GET':
+        market_days = MarketDay.query.all()
+        return jsonify([market.to_dict() for market in market_days]), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_market_day = MarketDay(
+            market_id=data['market_id'],
+            hour_start=data['hour_start'],
+            hour_end=data['hour_end'],
+            day_of_week=data['day_of_week']
+        )
+        db.session.add(new_market_day)
+        db.session.commit()
+        return new_market_day.to_dict(), 201
+
+@app.route('/market_days/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def market_day_by_id(id):
+    market_day = MarketDay.query.filter(MarketDay.id == id).first()
+    if not market_day:
+        return {'error': 'market not found'}, 404
+    if request.method == 'GET':
+        return market_day.to_dict(), 200
+    elif request.method == 'PATCH':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(market_day, key, value)
+        db.session.commit()
+        return market_day.to_dict(), 200
+    elif request.method == 'DELETE':
+        db.session.delete(market_day)
         db.session.commit()
         return {}, 204
     

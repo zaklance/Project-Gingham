@@ -1,7 +1,7 @@
 from app import app
 from faker import Faker
 from random import random, choice, randint
-from models import db, User, Market, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, bcrypt
+from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, bcrypt
 import json
 from datetime import date, time
 
@@ -10,6 +10,7 @@ fake = Faker()
 def run():
     User.query.delete()
     Market.query.delete()
+    MarketDay.query.delete()
     Vendor.query.delete()
     MarketReview.query.delete()
     VendorReview.query.delete()
@@ -31,9 +32,6 @@ def run():
             zipcode='10033',
             coordinates={"lat": "40.84607450953993", "lng": "-73.93808039940272"},
             schedule='Thursday (8 a.m. - 4 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(16, 0, 0),
-            day_of_week=3,
             year_round=False,
             season_start=date(2024, 6, 27),
             season_end=date(2024, 11, 21)
@@ -45,9 +43,6 @@ def run():
             zipcode='10019',
             coordinates={"lat": "40.769140743893075", "lng": "-73.98836576430834"},
             schedule='Saturday (8 a.m. - 3 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(15, 0, 0),
-            day_of_week=5,
             year_round=False,
             season_start=date(2024, 6, 1),
             season_end=date(2024, 11, 23)
@@ -59,9 +54,6 @@ def run():
             zipcode='10024',
             coordinates={"lat": "40.782040858828", "lng": "-73.9759752811397"},
             schedule='Sunday (9 a.m. - 4 p.m.)',
-            hour_start=time(9, 0, 0),
-            hour_end=time(16, 0, 0),
-            day_of_week=6,
             year_round=True
         ),
         Market(
@@ -71,9 +63,6 @@ def run():
             zipcode='10028',
             coordinates={"lat": "40.77397099020891", "lng": "-73.95064361322936"},
             schedule='Saturday (9 a.m. - 2:30 p.m.)',
-            hour_start=time(9, 0, 0),
-            hour_end=time(14, 30, 0),
-            day_of_week=5,
             year_round=True
         ),
         Market(
@@ -83,9 +72,6 @@ def run():
             zipcode='10128',
             coordinates={"lat": "40.78180268440337", "lng": "-73.94555998335593"},
             schedule='Sunday (9 a.m. - 4 p.m.)',
-            hour_start=time(9, 0, 0),
-            hour_end=time(16, 0, 0),
-            day_of_week=6,
             year_round=False,
             season_start=date(2024, 6, 18),
             season_end=date(2024, 11, 19)
@@ -97,9 +83,6 @@ def run():
             zipcode='10025',
             coordinates={"lat": "40.79433392796688", "lng": "-73.96852339557134"},
             schedule='Friday (8 a.m. - 2 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(14, 0, 0),
-            day_of_week=4,
             year_round=True
         ),
         Market(
@@ -109,9 +92,6 @@ def run():
             zipcode='10014',
             coordinates={"lat": "40.737268845844085", "lng": "-74.00531736212757"},
             schedule='Saturday (8 a.m. - 2 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(14, 0, 0),
-            day_of_week=5,
             year_round=True
         ),
         Market(
@@ -121,9 +101,6 @@ def run():
             zipcode='10003',
             coordinates={"lat": "40.729830818573944", "lng": "-73.99109568735417"},
             schedule='Tuesday (8 a.m. - 5 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(17, 0, 0),
-            day_of_week=1,
             year_round=False,
             season_start=date(2024, 6, 4),
             season_end=date(2024, 11, 26)
@@ -135,26 +112,9 @@ def run():
             zipcode='10004',
             coordinates={"lat": "40.704724320402526", "lng": "-74.01342009247573"},
             schedule='Tuesday & Thursday (8 a.m. - 2 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(14, 0, 0),
-            day_of_week=1,
             year_round=False,
             season_start=date(2024, 4, 16),
             season_end=date(2024, 11, 26)
-        ),
-        Market(
-            name='Bowling Green Greenmarket',
-            image='image.jpeg',
-            location='Broadway & Battery Pl.',
-            zipcode='10004',
-            coordinates={"lat": "40.704724320402526", "lng": "-74.01342009247573"},
-            schedule='Tuesday & Thursday (8 a.m. - 2 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(14, 0, 0),
-            day_of_week=3,
-            year_round=False,
-            season_start=date(2024, 6, 13),
-            season_end=date(2024, 11, 28)
         ),
         Market(
             name='Bro Sis Green Youth Market',
@@ -163,9 +123,6 @@ def run():
             zipcode='10031',
             coordinates={"lat": "40.824268847996954", "lng": "-73.94880767347686"},
             schedule='Wednesday (10:30 a.m. - 6 p.m.)',
-            hour_start=time(10, 30, 0),
-            hour_end=time(18, 0, 0),
-            day_of_week=2,
             year_round=False,
             season_start=date(2024, 7, 8),
             season_end=date(2024, 11, 25)
@@ -177,9 +134,6 @@ def run():
             zipcode='10011',
             coordinates={"lat": "40.74610601822501", "lng": "-74.00012495281699"},
             schedule='Saturday (9 a.m. - 2 p.m.)',
-            hour_start=time(9, 0, 0),
-            hour_end=time(14, 0, 0),
-            day_of_week=5,
             year_round=False,
             season_start=date(2024, 4, 20),
             season_end=date(2024, 12, 21)
@@ -191,9 +145,6 @@ def run():
             zipcode='10026',
             coordinates={"lat": "40.80245205041825", "lng": "-73.94675905810875"},
             schedule='Wednesday (2 - 4:30 p.m.)',
-            hour_start=time(14, 0, 0),
-            hour_end=time(16, 30, 0),
-            day_of_week=2,
             year_round=False,
             season_start=date(2024, 7, 10),
             season_end=date(2024, 11, 20)
@@ -205,21 +156,6 @@ def run():
             zipcode='10025',
             coordinates={"lat": "40.80711550674964", "lng": "-73.9643334908912"},
             schedule='Thursday & Sunday (8 a.m. - 4 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(16, 0, 0),
-            day_of_week=3,
-            year_round=True
-        ),
-        Market(
-            name='Columbia Greenmarket',
-            image='Union_Square_Farmers_Market.jpg',
-            location='Broadway & 114th St.',
-            zipcode='10025',
-            coordinates={"lat": "40.80711550674964", "lng": "-73.9643334908912"},
-            schedule='Thursday & Sunday (8 a.m. - 4 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(16, 0, 0),
-            day_of_week=6,
             year_round=True
         ),
         Market(
@@ -229,9 +165,6 @@ def run():
             zipcode='10017',
             coordinates={"lat": "40.752106980482026", "lng": "-73.96813449641382"},
             schedule='Wednesday (8 a.m. - 3 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(15, 0, 0),
-            day_of_week=2,
             year_round=True
         ),
         Market(
@@ -241,9 +174,6 @@ def run():
             zipcode='10032',
             coordinates={"lat": "40.842308310821956", "lng": "-73.94211665674466"},
             schedule='Tuesday (8 a.m. - 4 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(16, 0, 0),
-            day_of_week=1,
             year_round=False,
             season_start=date(2024, 6, 4),
             season_end=date(2024, 11, 26)
@@ -255,69 +185,6 @@ def run():
             zipcode='10038',
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
             schedule='Monday - Saturday (11:30 a.m. - 5 p.m.)',
-            hour_start=time(11, 30, 0),
-            hour_end=time(17, 0, 0),
-            day_of_week=0,
-            year_round=True
-        ),
-        Market(
-            name='Fulton Stall Market (Indoor Farmers Market)',
-            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
-            location='91 South St.',
-            zipcode='10038',
-            coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
-            schedule='Monday - Saturday (11:30 a.m. - 5 p.m.)',
-            hour_start=time(11, 30, 0),
-            hour_end=time(17, 0, 0),
-            day_of_week=1,
-            year_round=True
-        ),
-        Market(
-            name='Fulton Stall Market (Indoor Farmers Market)',
-            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
-            location='91 South St.',
-            zipcode='10038',
-            coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
-            schedule='Monday - Saturday (11:30 a.m. - 5 p.m.)',
-            hour_start=time(11, 30, 0),
-            hour_end=time(17, 0, 0),
-            day_of_week=2,
-            year_round=True
-        ),
-        Market(
-            name='Fulton Stall Market (Indoor Farmers Market)',
-            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
-            location='91 South St.',
-            zipcode='10038',
-            coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
-            schedule='Monday - Saturday (11:30 a.m. - 5 p.m.)',
-            hour_start=time(11, 30, 0),
-            hour_end=time(17, 0, 0),
-            day_of_week=3,
-            year_round=True
-        ),
-        Market(
-            name='Fulton Stall Market (Indoor Farmers Market)',
-            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
-            location='91 South St.',
-            zipcode='10038',
-            coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
-            schedule='Monday - Saturday (11:30 a.m. - 5 p.m.)',
-            hour_start=time(11, 30, 0),
-            hour_end=time(17, 0, 0),
-            day_of_week=4,
-            year_round=True
-        ),
-        Market(
-            name='Fulton Stall Market (Indoor Farmers Market)',
-            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
-            location='91 South St.',
-            zipcode='10038',
-            coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
-            schedule='Monday - Saturday (11:30 a.m. - 5 p.m.)',
-            hour_start=time(11, 30, 0),
-            hour_end=time(17, 0, 0),
-            day_of_week=5,
             year_round=True
         ),
         Market(
@@ -327,9 +194,6 @@ def run():
             zipcode='10002',
             coordinates={"lat": "40.71266393582476", "lng": "-73.98847487671178"},
             schedule='Thursday (9 a.m. - 2 p.m.)',
-            hour_start=time(9, 0, 0),
-            hour_end=time(14, 0, 0),
-            day_of_week=3,
             year_round=False,
             season_start=date(2024, 7, 5),
             season_end=date(2024, 11, 22)
@@ -341,21 +205,6 @@ def run():
             zipcode='10039',
             coordinates={"lat": "40.82373611412579", "lng": "-73.9435495760123"},
             schedule='Tuesday & Saturday (9 a.m. - 4 p.m.)',
-            hour_start=time(9, 0, 0),
-            hour_end=time(16, 0, 0),
-            day_of_week=1,
-            year_round=False
-        ),
-        Market(
-            name='Grass Roots Farmers Market',
-            image='image.jpeg',
-            location='W. 145th St. bet. Edgecombe & Bradhurst Aves. (Jackie Robinson Park)',
-            zipcode='10039',
-            coordinates={"lat": "40.82373611412579", "lng": "-73.9435495760123"},
-            schedule='Tuesday & Saturday (9 a.m. - 4 p.m.)',
-            hour_start=time(9, 0, 0),
-            hour_end=time(16, 0, 0),
-            day_of_week=5,
             year_round=False
         ),
         Market(
@@ -365,9 +214,6 @@ def run():
             zipcode='10006',
             coordinates={"lat": "40.71142490993184", "lng": "-74.01076962766949"},
             schedule='Tuesday (8 a.m. - 5 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(17, 0, 0),
-            day_of_week=1,
             year_round=False,
             season_start=date(2024, 6, 18),
             season_end=date(2024, 10, 29)
@@ -379,9 +225,6 @@ def run():
             zipcode='10026',
             coordinates={"lat": "40.79815888129796", "lng": "-73.95254032492262"},
             schedule='Saturday (10 a.m. - 2 p.m.)',
-            hour_start=time(10, 00, 0),
-            hour_end=time(14, 0, 0),
-            day_of_week=5,
             year_round=False,
             season_start=date(2024, 7, 20),
             season_end=date(2024, 11, 30)
@@ -393,9 +236,6 @@ def run():
             zipcode='10029',
             coordinates={"lat": "40.79001677902627", "lng": "-73.94559282721028"},
             schedule='Thursday (8 a.m. - 3 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(15, 0, 0),
-            day_of_week=3,
             year_round=False,
             season_start=date(2024, 6, 13),
             season_end=date(2024, 11, 14)
@@ -407,9 +247,6 @@ def run():
             zipcode='10030',
             coordinates={"lat": "40.81542139191092", "lng": "-73.93994201397497"},
             schedule='Friday (8 a.m. - 3 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(15, 0, 0),
-            day_of_week=4,
             year_round=False,
             season_start=date(2024, 6, 14),
             season_end=date(2024, 11, 15)
@@ -421,9 +258,6 @@ def run():
             zipcode='10026',
             coordinates={"lat": "40.80272354850676", "lng": "-73.94895981440956"},
             schedule='Saturday (8 a.m. - 3 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(15, 0, 0),
-            day_of_week=5,
             year_round=False,
             season_start=date(2024, 6, 22),
             season_end=date(2024, 11, 16)
@@ -435,9 +269,6 @@ def run():
             zipcode='10029',
             coordinates={"lat": "40.784947665352576", "lng": "-73.94660106093569"},
             schedule='Friday (8 a.m. - 3 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(15, 0, 0),
-            day_of_week=4,
             year_round=False,
             season_start=date(2024, 6, 14),
             season_end=date(2024, 11, 15)
@@ -449,9 +280,6 @@ def run():
             zipcode='10034',
             coordinates={"lat": "40.86911825882977", "lng": "-73.92025906885881"},
             schedule='Saturday (8 a.m. - 3 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(15, 0, 0),
-            day_of_week=5,
             year_round=True
         ),
         Market(
@@ -461,9 +289,6 @@ def run():
             zipcode='10002',
             coordinates={"lat": "40.715117290409026", "lng": "-73.98348650666313"},
             schedule='Thursday (8:30 a.m. - 3 p.m.)',
-            hour_start=time(8, 30, 0),
-            hour_end=time(15, 0, 0),
-            day_of_week=3,
             year_round=False,
             season_start=date(2024, 7, 5),
             season_end=date(2024, 11, 22)
@@ -475,9 +300,6 @@ def run():
             zipcode='10026',
             coordinates={"lat": "40.801382884379336", "lng": "-73.95970142371496"},
             schedule='Saturday (9 a.m. - 2 p.m.)',
-            hour_start=time(9, 0, 0),
-            hour_end=time(14, 0, 0),
-            day_of_week=5,
             year_round=True
         ),
         Market(
@@ -487,9 +309,6 @@ def run():
             zipcode='10029',
             coordinates={"lat": "40.78944510836953", "lng": "-73.95271330705022"},
             schedule='Wednesday (8 a.m. - 3 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(15, 0, 0),
-            day_of_week=2,
             year_round=False,
             season_start=date(2024, 6, 19),
             season_end=date(2024, 11, 27)
@@ -501,9 +320,6 @@ def run():
             zipcode='10032',
             coordinates={"lat": "40.839630140355446", "lng": "-73.93889062898364"},
             schedule='Thursday (9 a.m. - 3 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(15, 0, 0),
-            day_of_week=3,
             year_round=False
         ),
         Market(
@@ -513,9 +329,6 @@ def run():
             zipcode='10034',
             coordinates={"lat": "40.86600006214813", "lng": "-73.9263264427691"},
             schedule='Wednesday (9 a.m. - 3 p.m.)',
-            hour_start=time(9, 0, 0),
-            hour_end=time(15, 0, 0),
-            day_of_week=2,
             year_round=False
         ),
         Market(
@@ -525,57 +338,6 @@ def run():
             zipcode='10002',
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
             schedule='Wednesday-Sunday (11 a.m. - 7 p.m.)',
-            hour_start=time(11, 0, 0),
-            hour_end=time(19, 0, 0),
-            day_of_week=2,
-            year_round=False
-        ),
-        Market(
-            name='Project EATS Farm Stand at Essex Crossing',
-            image='unnamed.jpg',
-            location='115 Delancey St.',
-            zipcode='10002',
-            coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
-            schedule='Wednesday-Sunday (11 a.m. - 7 p.m.)',
-            hour_start=time(11, 0, 0),
-            hour_end=time(19, 0, 0),
-            day_of_week=3,
-            year_round=False
-        ),
-        Market(
-            name='Project EATS Farm Stand at Essex Crossing',
-            image='unnamed.jpg',
-            location='115 Delancey St.',
-            zipcode='10002',
-            coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
-            schedule='Wednesday-Sunday (11 a.m. - 7 p.m.)',
-            hour_start=time(11, 0, 0),
-            hour_end=time(19, 0, 0),
-            day_of_week=4,
-            year_round=False
-        ),
-        Market(
-            name='Project EATS Farm Stand at Essex Crossing',
-            image='unnamed.jpg',
-            location='115 Delancey St.',
-            zipcode='10002',
-            coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
-            schedule='Wednesday-Sunday (11 a.m. - 7 p.m.)',
-            hour_start=time(11, 0, 0),
-            hour_end=time(19, 0, 0),
-            day_of_week=5,
-            year_round=False
-        ),
-        Market(
-            name='Project EATS Farm Stand at Essex Crossing',
-            image='unnamed.jpg',
-            location='115 Delancey St.',
-            zipcode='10002',
-            coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
-            schedule='Wednesday-Sunday (11 a.m. - 7 p.m.)',
-            hour_start=time(11, 0, 0),
-            hour_end=time(19, 0, 0),
-            day_of_week=6,
             year_round=False
         ),
         Market(
@@ -585,9 +347,6 @@ def run():
             zipcode='10011',
             coordinates={"lat": "40.74443551076143", "lng": "-74.00056543152783"},
             schedule='Wednesday (8 a.m. - 10 a.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(10, 00, 0),
-            day_of_week=2,
             year_round=False,
             season_start=date(2024, 6, 11),
             season_end=date(2024, 11, 12)
@@ -599,9 +358,6 @@ def run():
             zipcode='10029',
             coordinates={"lat": "40.797300330819134", "lng": "-73.94074817230118"},
             schedule='Wednesday (9:30 a.m. - 3 p.m.)',
-            hour_start=time(9, 30, 0),
-            hour_end=time(15, 0, 0),
-            day_of_week=2,
             year_round=True
         ),
         Market(
@@ -611,9 +367,6 @@ def run():
             zipcode='10009',
             coordinates={"lat": "40.73200566470982", "lng": "-73.97761240821589"},
             schedule='Sunday (9:30 a.m. - 4 p.m.)',
-            hour_start=time(9, 30, 0),
-            hour_end=time(16, 0, 0),
-            day_of_week=6,
             year_round=False,
             season_start=date(2024, 5, 12),
             season_end=date(2024, 12, 15)
@@ -625,9 +378,6 @@ def run():
             zipcode='10003',
             coordinates={"lat": "40.72606737678102", "lng": "-73.98333751481684"},
             schedule='Sunday (9 a.m. - 4 p.m.)',
-            hour_start=time(9, 0, 0),
-            hour_end=time(16, 0, 0),
-            day_of_week=6,
             year_round=True
         ),
         Market(
@@ -637,47 +387,17 @@ def run():
             zipcode='10013',
             coordinates={"lat": "40.71690089948348", "lng": "-74.01090464424209"},
             schedule='Wednesday & Saturday (8 a.m. - 2 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(14, 0, 0),
-            day_of_week=2,
             year_round=False,
             season_start=date(2024, 4, 17),
             season_end=date(2024, 11, 27)
         ),
         Market(
-            name='Tribeca Greenmarket',
-            image='c.-Martin-Seck-GAP-1-768x531.jpg',
-            location='Greenwich & Chambers Sts.',
-            zipcode='10013',
-            coordinates={"lat": "40.71690089948348", "lng": "-74.01090464424209"},
-            schedule='Wednesday & Saturday (8 a.m. - 2 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(14, 0, 0),
-            day_of_week=5,
-            year_round=True
-        ),
-        Market(
             name='Tucker Square Greenmarket',
             image='farmers-market.jpg',
             location='Columbus Ave. & 66th St.',
             zipcode='10023',
             coordinates={"lat": "40.77367979894632", "lng": "-73.9819555713842"},
             schedule='Thursday (8 a.m. - 3 p.m.); Saturday (8 a.m. - 4 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(15, 0, 0),
-            day_of_week=3,
-            year_round=True
-        ),
-        Market(
-            name='Tucker Square Greenmarket',
-            image='farmers-market.jpg',
-            location='Columbus Ave. & 66th St.',
-            zipcode='10023',
-            coordinates={"lat": "40.77367979894632", "lng": "-73.9819555713842"},
-            schedule='Thursday (8 a.m. - 3 p.m.); Saturday (8 a.m. - 4 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(16, 0, 0),
-            day_of_week=5,
             year_round=True
         ),
         Market(
@@ -687,9 +407,6 @@ def run():
             zipcode='10010',
             coordinates={"lat": "40.86600289682479", "lng": "-73.92633729986045"},
             schedule='Sunday (10:30 a.m. - 3:30 p.m.)',
-            hour_start=time(10, 30, 0),
-            hour_end=time(15, 30, 0),
-            day_of_week=6,
             year_round=False,
             season_start=date(2024, 5, 26),
             season_end=date(2024, 12, 15)
@@ -701,45 +418,6 @@ def run():
             zipcode='10003',
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
             schedule='Monday, Wednesday, Friday & Saturday (8 a.m. - 6 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(18, 0, 0),
-            day_of_week=0,
-            year_round=True
-        ),
-        Market(
-            name='Union Square Greenmarket',
-            image='Union_Square_Farmers_Market.jpg',
-            location='E. 17th St. & Union Square W.',
-            zipcode='10003',
-            coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
-            schedule='Monday, Wednesday, Friday & Saturday (8 a.m. - 6 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(18, 0, 0),
-            day_of_week=2,
-            year_round=True
-        ),
-        Market(
-            name='Union Square Greenmarket',
-            image='Union_Square_Farmers_Market.jpg',
-            location='E. 17th St. & Union Square W.',
-            zipcode='10003',
-            coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
-            schedule='Monday, Wednesday, Friday & Saturday (8 a.m. - 6 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(18, 0, 0),
-            day_of_week=4,
-            year_round=True
-        ),
-        Market(
-            name='Union Square Greenmarket',
-            image='Union_Square_Farmers_Market.jpg',
-            location='E. 17th St. & Union Square W.',
-            zipcode='10003',
-            coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
-            schedule='Monday, Wednesday, Friday & Saturday (8 a.m. - 6 p.m.)',
-            hour_start=time(8, 0, 0),
-            hour_end=time(18, 0, 0),
-            day_of_week=5,
             year_round=True
         ),
         Market(
@@ -749,9 +427,6 @@ def run():
             zipcode='10027',
             coordinates={"lat": "40.811760800653175", "lng": "-73.95159181329969"},
             schedule='Thursday (4 - 7 p.m.)',
-            hour_start=time(16, 0, 0),
-            hour_end=time(19, 0, 0),
-            day_of_week=3,
             year_round=False,
             season_start=date(2024, 6, 1),
             season_end=date(2024, 11, 23)
@@ -759,6 +434,354 @@ def run():
     ]
     db.session.add_all(markets)
     db.session.commit()
+
+    market_day_list = [
+        MarketDay(
+            market_id=1,
+            hour_start=time(8, 0, 0),
+            hour_end=time(16, 0, 0),
+            day_of_week=3,
+        ),
+        MarketDay(
+            market_id=2,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=5,
+        ),
+        MarketDay(
+            market_id=3,
+            hour_start=time(9, 0, 0),
+            hour_end=time(16, 0, 0),
+            day_of_week=6,
+        ),
+        MarketDay(
+            market_id=4,
+            hour_start=time(9, 0, 0),
+            hour_end=time(14, 30, 0),
+            day_of_week=5,
+        ),
+        MarketDay(
+            market_id=5,
+            hour_start=time(9, 0, 0),
+            hour_end=time(16, 0, 0),
+            day_of_week=6
+        ),
+        MarketDay(
+            market_id=6,
+            hour_start=time(8, 0, 0),
+            hour_end=time(14, 0, 0),
+            day_of_week=4,
+        ),
+        MarketDay(
+            market_id=7,
+            hour_start=time(8, 0, 0),
+            hour_end=time(14, 0, 0),
+            day_of_week=5,
+        ),
+        MarketDay(
+            market_id=8,
+            hour_start=time(8, 0, 0),
+            hour_end=time(17, 0, 0),
+            day_of_week=1,
+        ),
+        MarketDay(
+            market_id=9,
+            hour_start=time(8, 0, 0),
+            hour_end=time(14, 0, 0),
+            day_of_week=1,
+        ),
+        MarketDay(
+            market_id=9,
+            hour_start=time(8, 0, 0),
+            hour_end=time(14, 0, 0),
+            day_of_week=3,
+        ),
+        MarketDay(
+            market_id=10,
+            hour_start=time(10, 30, 0),
+            hour_end=time(18, 0, 0),
+            day_of_week=2,
+        ),
+        MarketDay(
+            market_id=11,
+            hour_start=time(9, 0, 0),
+            hour_end=time(14, 0, 0),
+            day_of_week=5,
+        ),
+        MarketDay(
+            market_id=12,
+            hour_start=time(14, 0, 0),
+            hour_end=time(16, 30, 0),
+            day_of_week=2,
+        ),
+        MarketDay(
+            market_id=13,
+            hour_start=time(8, 0, 0),
+            hour_end=time(16, 0, 0),
+            day_of_week=3,
+        ),
+        MarketDay(
+            market_id=13,
+            hour_start=time(8, 0, 0),
+            hour_end=time(16, 0, 0),
+            day_of_week=6,
+        ),
+        MarketDay(
+            market_id=14,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=2,
+        ),
+        MarketDay(
+            market_id=15,
+            hour_start=time(8, 0, 0),
+            hour_end=time(16, 0, 0),
+            day_of_week=1,
+        ),
+        MarketDay(
+            market_id=16,
+            hour_start=time(11, 30, 0),
+            hour_end=time(17, 0, 0),
+            day_of_week=0,
+        ),
+        MarketDay(
+            market_id=16,
+            hour_start=time(11, 30, 0),
+            hour_end=time(17, 0, 0),
+            day_of_week=1,
+        ),
+        MarketDay(
+            market_id=16,
+            hour_start=time(11, 30, 0),
+            hour_end=time(17, 0, 0),
+            day_of_week=2,
+        ),
+        MarketDay(
+            market_id=16,
+            hour_start=time(11, 30, 0),
+            hour_end=time(17, 0, 0),
+            day_of_week=3,
+        ),
+        MarketDay(
+            market_id=16,
+            hour_start=time(11, 30, 0),
+            hour_end=time(17, 0, 0),
+            day_of_week=4,
+        ),
+        MarketDay(
+            market_id=16,
+            hour_start=time(11, 30, 0),
+            hour_end=time(17, 0, 0),
+            day_of_week=5,
+        ),
+        MarketDay(
+            market_id=17,
+            hour_start=time(9, 0, 0),
+            hour_end=time(14, 0, 0),
+            day_of_week=3,
+        ),
+        MarketDay(
+            market_id=18,
+            hour_start=time(9, 0, 0),
+            hour_end=time(16, 0, 0),
+            day_of_week=1,
+        ),
+        MarketDay(
+            market_id=18,
+            hour_start=time(9, 0, 0),
+            hour_end=time(16, 0, 0),
+            day_of_week=5,
+        ),
+        MarketDay(
+            market_id=19,
+            hour_start=time(8, 0, 0),
+            hour_end=time(17, 0, 0),
+            day_of_week=1,
+        ),
+        MarketDay(
+            market_id=20,
+            hour_start=time(10, 00, 0),
+            hour_end=time(14, 0, 0),
+            day_of_week=5,
+        ),
+        MarketDay(
+            market_id=21,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=3,
+        ),
+        MarketDay(
+            market_id=22,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=4,
+        ),
+        MarketDay(
+            market_id=23,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=5,
+        ),
+        MarketDay(
+            market_id=24,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=4,
+        ),
+        MarketDay(
+            market_id=25,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=5,
+        ),
+        MarketDay(
+            market_id=26,
+            hour_start=time(8, 30, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=3,
+        ),
+        MarketDay(
+            market_id=27,
+            hour_start=time(9, 0, 0),
+            hour_end=time(14, 0, 0),
+            day_of_week=5,
+        ),
+        MarketDay(
+            market_id=28,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=2,
+        ),
+        MarketDay(
+            market_id=29,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=3,
+        ),
+        MarketDay(
+            market_id=30,
+            hour_start=time(9, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=2,
+        ),
+        MarketDay(
+            market_id=31,
+            hour_start=time(11, 0, 0),
+            hour_end=time(19, 0, 0),
+            day_of_week=2,
+        ),
+        MarketDay(
+            market_id=31,
+            hour_start=time(11, 0, 0),
+            hour_end=time(19, 0, 0),
+            day_of_week=3,
+        ),
+        MarketDay(
+            market_id=31,
+            hour_start=time(11, 0, 0),
+            hour_end=time(19, 0, 0),
+            day_of_week=4,
+        ),
+        MarketDay(
+            market_id=31,
+            hour_start=time(11, 0, 0),
+            hour_end=time(19, 0, 0),
+            day_of_week=5,
+        ),
+        MarketDay(
+            market_id=31,
+            hour_start=time(11, 0, 0),
+            hour_end=time(19, 0, 0),
+            day_of_week=6,
+        ),
+        MarketDay(
+            market_id=32,
+            hour_start=time(8, 0, 0),
+            hour_end=time(10, 00, 0),
+            day_of_week=2,
+        ),
+        MarketDay(
+            market_id=33,
+            hour_start=time(9, 30, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=2,
+        ),
+        MarketDay(
+            market_id=34,
+            hour_start=time(9, 30, 0),
+            hour_end=time(16, 0, 0),
+            day_of_week=6,
+        ),
+        MarketDay(
+            market_id=35,
+            hour_start=time(9, 0, 0),
+            hour_end=time(16, 0, 0),
+            day_of_week=6,
+        ),
+        MarketDay(
+            market_id=36,
+            hour_start=time(8, 0, 0),
+            hour_end=time(14, 0, 0),
+            day_of_week=2,
+        ),
+        MarketDay(
+            market_id=36,
+            hour_start=time(8, 0, 0),
+            hour_end=time(14, 0, 0),
+            day_of_week=5,
+        ),
+        MarketDay(
+            market_id=37,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=3,
+        ),
+        MarketDay(
+            market_id=37,
+            hour_start=time(8, 0, 0),
+            hour_end=time(16, 0, 0),
+            day_of_week=5,
+        ),
+        MarketDay(
+            market_id=38,
+            hour_start=time(10, 30, 0),
+            hour_end=time(15, 30, 0),
+            day_of_week=6,
+        ),
+        MarketDay(
+            market_id=39,
+            hour_start=time(8, 0, 0),
+            hour_end=time(18, 0, 0),
+            day_of_week=0,
+        ),
+        MarketDay(
+            market_id=39,
+            hour_start=time(8, 0, 0),
+            hour_end=time(18, 0, 0),
+            day_of_week=2,
+        ),
+        MarketDay(
+            market_id=39,
+            hour_start=time(8, 0, 0),
+            hour_end=time(18, 0, 0),
+            day_of_week=4,
+        ),
+        MarketDay(
+            market_id=39,
+            hour_start=time(8, 0, 0),
+            hour_end=time(18, 0, 0),
+            day_of_week=5,
+        ),
+        MarketDay(
+            market_id=40,
+            hour_start=time(16, 0, 0),
+            hour_end=time(19, 0, 0),
+            day_of_week=3,
+        )
+    ]
+    db.session.add_all(market_day_list)
+    db.session.commit()
+
 
 
     vendors = []
