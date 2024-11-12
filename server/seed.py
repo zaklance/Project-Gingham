@@ -1000,7 +1000,7 @@ def run():
         duration = [time(0, 15, 0), time(0, 20, 0), time(0, 30, 0), time(0, 45, 0), time(1, 0, 0), time(1, 15, 0), time(1, 30, 0)]
 
         vendor_id = str(randint(1, 151))
-        market_id = str(randint(1, 57))
+        market_id = str(randint(1, 40))
         sale_date = date.today()
         pickup_time = fake.time_object()
         user_id = choice(rand_user)
