@@ -265,6 +265,22 @@ function MarketDetail ({ match }) {
         }
     };
 
+    const handleReviewDelete = async (reviewId) => {
+        try {
+            const element = document.getElementById(reviewId); 
+        
+            fetch(`http://127.0.0.1:5555/market-reviews/${reviewId}`, {
+                method: "DELETE",
+            }).then(() => {
+                setAlertMessage('Review deleted');
+                setMarketReviews((prevReviews) => prevReviews.filter((review) => review.id !== reviewId))
+            })
+        } catch (error) {
+            console.error("Error deleting review", error)
+        }
+    }
+
+
 
     if (!market) {
         return <div>Loading...</div>;
@@ -366,15 +382,19 @@ function MarketDetail ({ match }) {
                                 />
                                 <br></br>
                                 <button className='btn btn-small' onClick={() => handleReviewUpdate(review.id)}>Save</button>
-                                <button className='btn btn-small' onClick={() => setEditingReviewId(null)}>Cancel</button>
+                                <button className='btn btn-small btn-gap' onClick={() => setEditingReviewId(null)}>Cancel</button>
                             </>
                         ) : (
                             <p>{review.review_text}</p>
                         )}
                         {review.user_id === userId && editingReviewId !== review.id && (
-                            <button className='btn btn-small' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
-                                Edit
-                            </button>
+                            <>
+                                <button className='btn btn-small' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
+                                    Edit
+                                </button>
+                                <button className='btn btn-small btn-x btn-gap' id={review.id} onClick={() => handleReviewDelete(review.id)}>x</button>
+
+                            </>
                         )}
                     </div>
                 ))
@@ -399,7 +419,9 @@ function MarketDetail ({ match }) {
                         <button className='btn-login' onClick={handleReviewSubmit} type="submit">Post Review</button>
                     </>
                 ) : (
-                    <button className='btn btn-plus' onClick={handleReviewToggle} title='Leave a review'>+</button>
+                    <>
+                        <button className='btn btn-plus' onClick={handleReviewToggle} title='Leave a review'>+</button>
+                    </>
                 )}
                 {showDupeAlert && (
                     <div className='alert-reviews float-right'>

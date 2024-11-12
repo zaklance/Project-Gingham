@@ -390,6 +390,9 @@ ul {
   margin: 0px 8px;
 }
 
+.btn-gap {
+  margin-left: 4px;
+}
 
 .btn {
   border-radius: 8px;
@@ -505,6 +508,16 @@ ul {
   padding: 2px 9px 4px 9px;
   font-size: 1.2em;
   font-weight: 500;
+}
+
+.btn-x:hover {
+  background-color: #ff7b8a;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+  transition: .2s;
+}
+
+.btn-x:active {
+  background-color: #ff4b5a;
 }
 
 .tabs {
@@ -803,16 +816,11 @@ form textarea {
 
 .market-card {
   border: 1px solid #ccc;
-  /* Example border styling */
   padding: 10px;
   width: 100%;
-  /* Adjust width as needed */
   max-width: 300px;
-  /* Example max-width */
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  /* Example shadow */
   background-color: #fff;
-  /* Example background color */
   text-align: center;
 }
 
@@ -820,19 +828,15 @@ form textarea {
   display: block;
   width: 100%;
   max-width: 200px;
-  /* Example max-width for the button */
   margin: 10px auto;
-  /* Center align the button */
   padding: 8px 16px;
   border: 1px solid #ff3399;
-  /* Border color for the button */
   background-color: #ff6699;
-  /* Button background color */
   color: #fff;
-  /* Button text color */
   text-align: center;
   text-decoration: none;
   cursor: pointer;
+  border-radius: 8px;
 }
 .market-card-button:hover {
   background-color: #ff8300;
