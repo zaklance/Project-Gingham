@@ -319,6 +319,7 @@ function VendorDetail () {
                 <br />
                 <br />
                 <h2>Farmers Market Locations:</h2>
+                <div className='box-scroll'>
                 {Array.isArray(markets) && markets.length > 0 ? (
                     markets.map((marketId, index) => {
                         const marketDetail = marketDetails[marketId] || {};
@@ -363,6 +364,7 @@ function VendorDetail () {
                     ) : (
                         <p>No market locations at this time</p>
                     )}
+                </div>
                 <br />
                 <h2>Reviews</h2>
                 <br />

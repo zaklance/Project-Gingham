@@ -358,6 +358,7 @@ function MarketDetail ({ match }) {
                 </select>
             </div>
 
+            <div className='box-scroll'>
             {Array.isArray(filteredVendorsList) && filteredVendorsList.length > 0 ? (
                 filteredVendorsList.map((vendorId, index) => {
                     const vendorDetail = vendorDetails[vendorId] || {};
@@ -382,6 +383,7 @@ function MarketDetail ({ match }) {
             ) : (
                 <p>No vendors at this market</p>
             )}
+            </div>
             <br/>
             <h2>Reviews</h2>
             <br/>
