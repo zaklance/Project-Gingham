@@ -862,18 +862,20 @@ def run():
 
     # add fake market reviews
     market_revs = []
+    reported = (False, False, False, False, False, False, False, False, False, True)
     for i in range(101):
         rev_len = randint(2, 5)
 
         review_text = str(fake.paragraph(nb_sentences=rev_len))
         market_id = str(randint(1, 40))
         user_id = str(randint(1, 50))
-        is_reported = False
+        is_reported = choice(reported)
 
         mr = MarketReview(
             review_text=review_text,
             market_id=market_id,
             user_id=user_id,
+            is_reported=is_reported
         )
         market_revs.append(mr)
 
@@ -888,12 +890,13 @@ def run():
         review_text = fake.paragraph(nb_sentences=rev_len)
         vendor_id = str(randint(1, 40))
         user_id = str(randint(1, 50))
-        is_reported = False
-
+        is_reported = choice(reported)
+        
         vr = VendorReview(
             review_text=review_text,
             vendor_id=vendor_id,
             user_id=user_id,
+            is_reported=is_reported
         )
         vendor_revs.append(vr)
 
