@@ -520,6 +520,11 @@ ul {
   background-color: #ff4b5a;
 }
 
+.btn-report{
+  padding: 0px 10px;
+  font-size: 1em;
+}
+
 .tabs {
   display: flex;
   gap: 20px;

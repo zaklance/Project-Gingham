@@ -266,8 +266,7 @@ function MarketDetail ({ match }) {
     };
 
     const handleReviewDelete = async (reviewId) => {
-        try {
-            const element = document.getElementById(reviewId); 
+        try { 
         
             fetch(`http://127.0.0.1:5555/market-reviews/${reviewId}`, {
                 method: "DELETE",
@@ -279,6 +278,22 @@ function MarketDetail ({ match }) {
             console.error("Error deleting review", error)
         }
     }
+
+    const handleReviewReport = async (reviewId) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/market-reviews/${reviewId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ is_reported: true })
+            });
+
+            if (response.ok) {
+                alert("Review reported")
+            }
+        } catch (error) {
+            console.error('Error updating review:', error);
+        }
+    };
 
 
 
@@ -373,7 +388,12 @@ function MarketDetail ({ match }) {
             {marketReviews.length > 0 ? (
                 marketReviews.map((review, index) => (
                     <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                        <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
+                        {review.user_id !== userId && editingReviewId !== review.id && (
+                            <div className='flex-start'>
+                                <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
+                                <button className='btn btn-small btn-x btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
+                            </div>
+                        )}
                         {review.user_id === userId && editingReviewId === review.id ? (
                             <>
                                 <textarea className='textarea-edit'
@@ -392,7 +412,7 @@ function MarketDetail ({ match }) {
                                 <button className='btn btn-small' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
                                     Edit
                                 </button>
-                                <button className='btn btn-small btn-x btn-gap' id={review.id} onClick={() => handleReviewDelete(review.id)}>x</button>
+                                <button className='btn btn-small btn-x btn-gap' onClick={() => handleReviewDelete(review.id)}>x</button>
 
                             </>
                         )}

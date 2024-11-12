@@ -868,6 +868,7 @@ def run():
         review_text = str(fake.paragraph(nb_sentences=rev_len))
         market_id = str(randint(1, 40))
         user_id = str(randint(1, 50))
+        is_reported = False
 
         mr = MarketReview(
             review_text=review_text,
@@ -887,6 +888,7 @@ def run():
         review_text = fake.paragraph(nb_sentences=rev_len)
         vendor_id = str(randint(1, 40))
         user_id = str(randint(1, 50))
+        is_reported = False
 
         vr = VendorReview(
             review_text=review_text,
