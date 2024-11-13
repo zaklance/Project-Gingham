@@ -931,16 +931,16 @@ def run():
     # db.session.add_all(vendor_favs)
     # db.session.commit()
 
-    # # add fake vendor markets
+    # add fake vendor markets
     # vendor_markets = []
     # for i in range(500):
 
     #     vendor_id = str(randint(1, 150))
-    #     market_id = str(randint(1, 57))
+    #     market_day_id = str(randint(1, 57))
 
     #     vm = VendorMarket(
     #         vendor_id=vendor_id,
-    #         market_id=market_id
+    #         market_day_id=market_day_id
     #     )
     #     vendor_markets.append(vm)
 
@@ -1005,7 +1005,7 @@ def run():
         duration = [time(0, 15, 0), time(0, 20, 0), time(0, 30, 0), time(0, 45, 0), time(1, 0, 0), time(1, 15, 0), time(1, 30, 0)]
 
         vendor_id = str(randint(1, 150))
-        market_id = str(randint(1, 40))
+        market_day_id = str(randint(1, 57))
         sale_date = date.today()
         pickup_time = fake.time_object()
         user_id = choice(rand_user)
@@ -1016,7 +1016,7 @@ def run():
 
         bsk = Basket(
             vendor_id=vendor_id,
-            market_id=market_id,
+            market_day_id=market_day_id,
             sale_date=sale_date,
             pickup_time=pickup_time,
             user_id=user_id,
@@ -1029,7 +1029,7 @@ def run():
 
         vm = VendorMarket(
             vendor_id=vendor_id,
-            market_id=market_id
+            market_day_id=market_day_id
         )
         vendor_markets.append(vm)
 
