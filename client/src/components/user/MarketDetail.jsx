@@ -364,7 +364,7 @@ function MarketDetail ({ match }) {
             </div>
             <div className='flex-start'>
                 <label><h4>Market Day:</h4></label>
-                <select id="marketDaysSelect" name="marketDays">
+                <select id="marketDaysSelect" name="marketDays" onChange={handleDayChange}>
                     {marketDays.map((day, index) => (
                         <option key={index} value={day.id}>
                             {weekday[day.day_of_week]}
