@@ -1,7 +1,7 @@
 import os
 import json
 import smtplib
-from flask import Flask, request, jsonify, session, send_from_directory, redirect
+from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
 from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
@@ -17,6 +17,7 @@ from datetime import datetime
 from PIL import Image
 from io import BytesIO
 import stripe
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 
 
 load_dotenv()
@@ -28,11 +29,13 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 MAX_SIZE = 1 * 1024 * 1024
 MAX_RES = (100, 100)
 
-
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URI']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.environ['SECRET_KEY']
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+#serializer to create tokens
+serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 
 db.init_app(app)
 Migrate(app, db)
@@ -150,7 +153,11 @@ def signup():
             password=data['password'],
             first_name=data['first_name'],
             last_name=data['last_name'],
-            address=data.get('address')
+            address_1=data['address1'],
+            address_2=data.get('address2', ''),
+            city=data['city'],
+            state=data['state'],
+            zip=data['zip']
         )
 
         db.session.add(new_user)
@@ -574,7 +581,7 @@ def del_vendor_fav(id):
 @app.route("/vendor-markets", methods=['GET'])
 def get_vendor_markets():
     vendor_id = request.args.get('vendor_id')
-    market_id = request.args.get('market_day_id')
+    market_id = request.args.get('market_id')
 
     query = VendorMarket.query
 
@@ -615,12 +622,10 @@ def vendorSignup():
             email=data['email'],
             first_name=data['first_name'],
             last_name=data['last_name'],
-            phone=data['phone'], 
+            phone=data['phone']
         )
         new_vendor_user.password = data['password']
 
-        new_vendor_user.vendor_id = None
-        
         db.session.add(new_vendor_user)
         db.session.commit()
 
@@ -1152,3 +1157,78 @@ def session_status():
     
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
+    
+#User Password Reset Request
+@app.route('/user/password-reset-request', methods=['POST'])
+def password_reset_request():
+    data = request.get_json()
+    email = data.get('email')
+    user = User.query.filter(email==email).first()
+
+    if not user:
+        return {'error': 'User not found'}, 404
+
+    # Generate token for the password reset
+    token = serializer.dumps(email, salt='password-reset-salt')
+
+    # Generate the reset link
+    reset_link = url_for('password_reset', token=token, _external=True)
+
+    try:
+        # Email configuration
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+        recipient_email = email
+
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = recipient_email
+        msg['Subject'] = 'Password Reset Request'
+
+        body = f"Please click the link to reset your password: {reset_link}"
+        msg.attach(MIMEText(body, 'plain'))
+
+        # Connect to the SMTP server and send the email
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, recipient_email, msg.as_string())
+        server.quit()
+
+        return {'message': 'Password reset link sent'}, 200
+
+    except Exception as e:
+        return {'error': f'Failed to send email: {str(e)}'}, 500
+
+# Password Reset Route
+@app.route('/user/password-reset/<token>', methods=['POST'])
+def password_reset(token):
+    try:
+        # Verify the token and get the email
+        email = serializer.loads(token, salt='password-reset-salt', max_age=7200)
+
+        # Extract the new password from the request
+        data = request.get_json()
+        new_password = data.get('new_password')
+
+        # Check if the new password is provided
+        if not new_password:
+            return {'error': 'New password is required'}, 400
+
+        # Retrieve the user from the database using the email
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return {'error': 'User not found'}, 404
+
+        # Hash the new password and update the user's password
+        hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+        user.password = hashed_password
+        db.session.commit()
+
+        return {'message': 'Password successfully reset'}, 200
+
+    except SignatureExpired:
+        return {'error': 'The token has expired'}, 400
+
+    except Exception as e:
+        return {'error': f'Failed to reset password: {str(e)}'}, 500
