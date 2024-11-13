@@ -574,7 +574,7 @@ def del_vendor_fav(id):
 @app.route("/vendor-markets", methods=['GET'])
 def get_vendor_markets():
     vendor_id = request.args.get('vendor_id')
-    market_id = request.args.get('market_id')
+    market_id = request.args.get('market_day_id')
 
     query = VendorMarket.query
 
