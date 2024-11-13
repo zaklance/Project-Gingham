@@ -302,7 +302,7 @@ function MarketDetail ({ match }) {
                 <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}
                 </a></h4>
-                <h4>Hours: {weekday[market.day_of_week]}, {timeConverter(market.hour_start)} - {timeConverter(market.hour_end)}</h4>
+                <h4>Hours: {market.schedule}</h4>
             </div>
             <br />
             <div className='flex-start'>

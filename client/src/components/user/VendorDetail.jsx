@@ -299,10 +299,10 @@ function VendorDetail () {
                 <div style={{display: '60%'}}>
                     <img src={`/vendor-images/${vendor.image}`} alt="Vendor Image" style={{ width: '95%' }} />
                 </div>
-                <div className='side-basket'>
+                {/* <div className='side-basket'>
                     <h2>Buy a Market Basket!</h2>
                     <img src="/site-images/GINGHAM_BUYABAG.png" alt="Basket Image" style={{ width: '200px' }} /><br />
-                </div>
+                </div> */}
             </div>
             <div>
                 <h4 className='float-left'>Based out of: {vendor.city}, {vendor.state}</h4>
