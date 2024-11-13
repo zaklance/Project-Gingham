@@ -27,6 +27,8 @@ function VendorDetail () {
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
     const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
 
+    const weekday = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
     const navigate = useNavigate();
 
     function timeConverter(time24) {
@@ -59,7 +61,7 @@ function VendorDetail () {
             .then(response => response.json())
             .then(markets => {
                 if (Array.isArray(markets)) {
-                    const marketIds = markets.map(market => market.market_id);
+                    const marketIds = markets.map(market => market.market_day_id);
                     setMarkets(marketIds);
 
                     const initialBaskets = {};
@@ -76,7 +78,7 @@ function VendorDetail () {
     
             const details = await Promise.all(markets.map(async (marketId) => {
                 try {
-                    const response = await fetch(`http://127.0.0.1:5555/markets/${marketId}`);
+                    const response = await fetch(`http://127.0.0.1:5555/market_days/${marketId}`);
                     if (!response.ok) throw new Error(`Failed to fetch market ${marketId}`);
                     return await response.json();
                 } catch (error) {
@@ -153,15 +155,15 @@ function VendorDetail () {
         }
     }, [vendor, vendorFavs]);
     
-    useEffect(() => {
-        fetch("http://127.0.0.1:5555/vendor-favorites")
-            .then(response => response.json())
-            .then(data => {
-                const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
-                setVendorFavs(filteredData)
-            })
-            .catch(error => console.error('Error fetching favorites', error));
-    }, []);
+    // useEffect(() => {
+    //     fetch("http://127.0.0.1:5555/vendor-favorites")
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
+    //             setVendorFavs(filteredData)
+    //         })
+    //         .catch(error => console.error('Error fetching favorites', error));
+    // }, []);
 
     const handleClick = async (event) => {
         if (globalThis.sessionStorage.getItem('user_id') !== null) {
@@ -333,10 +335,12 @@ function VendorDetail () {
                             >
                                 <span>
                                     <Link to={`/user/markets/${marketId}`} className="market-name">
-                                        {marketDetail.name || 'Loading...'}
+                                        {marketDetail?.markets?.name || 'Loading...'}
                                     </Link>
                                     <br/>
-                                    Hours: {marketDetail.schedule}
+                                    Hours: {marketDetail.day_of_week ? `${weekday[marketDetail.day_of_week]}, ` : 'Loading...'}
+                                    {`${marketDetail.hour_start && timeConverter(marketDetail.hour_start)} - 
+                                    ${marketDetail.hour_end && timeConverter(marketDetail.hour_end)}`}
                                 </span>
                                 <span></span>
                                 {index === 0 && (
