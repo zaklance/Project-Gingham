@@ -5,8 +5,28 @@ function Cart() {
     const { handlePopup, cartItems, setCartItems, amountInCart, setAmountInCart } = useOutletContext();
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
+    const [cartTimer, setCartTimer] = useState(null);
 
     const navigate = useNavigate();
+
+    function startCartTimer() {
+        if (cartTimer) {
+            clearTimeout(cartTimer);
+        }
+
+        const newCartTimer = setTimeout(() => {
+            setCartItems([]);
+            setAmountInCart(0);
+        }, (60 * 60 * 1000));
+
+        setCartTimer(newCartTimer);
+    }
+
+    useEffect(() => {
+        if (cartItems.length > 0) {
+            startCartTimer();
+        }
+    }, [cartItems]);
 
     function removeFromCart(itemToRemove) {
         const updatedCart = cartItems.filter(item => item.id !== itemToRemove.id);
