@@ -970,7 +970,7 @@ def run():
         last_name = fake.last_name()
         # phone = fake.phone_number()
         phone = str(randint(1000000000,9999999999))
-        vendor_id = str(randint(1, 151))
+        vendor_id = str(randint(1, 150))
         is_admin = bool(fake.boolean())
 
 
@@ -1004,7 +1004,7 @@ def run():
         rand_user = [None, randint(1, 50)]
         duration = [time(0, 15, 0), time(0, 20, 0), time(0, 30, 0), time(0, 45, 0), time(1, 0, 0), time(1, 15, 0), time(1, 30, 0)]
 
-        vendor_id = str(randint(1, 151))
+        vendor_id = str(randint(1, 150))
         market_id = str(randint(1, 40))
         sale_date = date.today()
         pickup_time = fake.time_object()

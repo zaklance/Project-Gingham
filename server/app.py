@@ -238,7 +238,7 @@ def market_by_id(id):
         db.session.commit()
         return {}, 204
 
-@app.route('/market_days', methods=['GET', 'POST'])
+@app.route('/market-days', methods=['GET', 'POST'])
 def all_market_days():
     if request.method == 'GET':
         market_days = MarketDay.query.all()
@@ -434,7 +434,7 @@ def profile(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route('/market-reviews', methods=['GET', 'POST'])
+@app.route('/market-reviews', methods=['GET', 'POST', 'DELETE'])
 def all_market_reviews():
     if request.method == 'GET':
         market_id = request.args.get('market_id')
@@ -443,7 +443,6 @@ def all_market_reviews():
         else:
             reviews = MarketReview.query.all()
         return jsonify([review.to_dict() for review in reviews]), 200
-    
     elif request.method == 'POST':
         data = request.get_json()
         new_review = MarketReview(
@@ -454,6 +453,7 @@ def all_market_reviews():
         db.session.add(new_review)
         db.session.commit()
         return new_review.to_dict(), 201
+    
 
 @app.route('/market-reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def market_review_by_id(id):
