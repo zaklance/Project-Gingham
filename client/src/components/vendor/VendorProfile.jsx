@@ -257,13 +257,7 @@ function VendorProfile () {
         <div>
             <div className="tab-content">
                 <div>
-                    <h2 className='title'>Profile Information
-                        {vendorImageURL && (
-                            <div className='vendor-image'>
-                                <img src={vendorImageURL} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} />
-                            </div>
-                        )}
-                    </h2>
+                    <h2 className='title'>Profile Information </h2>
                     
                     <div className='bounding-box'>
                     {editMode && vendorUserData?.is_admin ? (
@@ -381,11 +375,20 @@ function VendorProfile () {
                             </>
                         ) : (
                                 <>
-                                    <p><strong>Role:&emsp;</strong> {vendorUserData?.is_admin ? 'Admin' : 'Vendor'}</p>
-                                    <br/>
-                                    <p><strong>Name:&emsp;</strong> {vendorData ? vendorData.name : ' Loading...'}</p>
-                                    <p><strong>Product:&emsp;</strong> {vendorData ? vendorData.product : ' Loading...'}</p>
-                                    <p><strong>Based in:&emsp;</strong> {vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}</p>
+                                    <div className='flex-start flex-gap'>
+                                        <div>
+                                            <p><strong>Role:&emsp;</strong> {vendorUserData?.is_admin ? 'Admin' : 'Vendor'}</p>
+                                            <br/>
+                                            <p><strong>Name:&emsp;</strong> {vendorData ? vendorData.name : ' Loading...'}</p>
+                                            <p><strong>Product:&emsp;</strong> {vendorData ? vendorData.product : ' Loading...'}</p>
+                                            <p><strong>Based in:&emsp;</strong> {vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}</p>
+                                        </div>
+                                        {vendorImageURL && (
+                                            <div className='vendor-image'>
+                                                <img src={vendorImageURL} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} />
+                                            </div>
+                                        )}
+                                    </div>
                                     {vendorUserData?.is_admin && (    
                                         <div className='flex-start'>
                                             <button className='btn-edit' onClick={handleVendorEditToggle}>Edit</button>

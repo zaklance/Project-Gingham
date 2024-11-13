@@ -155,6 +155,10 @@ h2 {
   color: white;
 }
 
+.text-center {
+  text-align: center;
+}
+
 .separator {
   border: 0;
   height: 3px;
@@ -268,6 +272,38 @@ ul {
   margin: auto;
 }
 
+.flex-start {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.flex-space-around {
+  display: flex;
+  justify-content: space-around;
+}
+
+.flex-space-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+.flex-center {
+  align-items: center;
+}
+
+.flex-center-justify {
+  display: flex;
+  justify-content: center;
+}
+
+.flex-end {
+  align-items: flex-end;
+}
+
+.flex-gap {
+  gap: 48px;
+}
+
 .float-left {
   float: left;
 }
@@ -285,28 +321,6 @@ ul {
 
 .no-float {
   clear:both;
-}
-
-.flex-start {
-  display: flex;
-  justify-content: flex-start;
-}
-
-.flex-space-around-center {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.flex-space-around-end {
-  display: flex;
-  justify-content: space-around;
-  align-items: flex-end;
-}
-
-.flex-space-between {
-  display: flex;
-  justify-content: space-between;
 }
 
 /* .flex-form {
@@ -338,6 +352,11 @@ ul {
   margin-right: auto;
   padding: 16px 24px;
   border-radius: 24px;
+}
+
+.box-scroll {
+  overflow: scroll;
+  max-height: 488px;
 }
 
 .market-details {
@@ -390,6 +409,9 @@ ul {
   margin: 0px 8px;
 }
 
+.btn-gap {
+  margin-left: 4px;
+}
 
 .btn {
   border-radius: 8px;
@@ -459,7 +481,7 @@ ul {
   height: fit-content;
   margin-left: 20px;
   margin-top: -4px;
-  padding: 10px 12px;
+  padding: 10px 10px;
   border-radius: 8px;
   border: none;
   background-color: #ffd1d8;
@@ -505,6 +527,21 @@ ul {
   padding: 2px 9px 4px 9px;
   font-size: 1.2em;
   font-weight: 500;
+}
+
+.btn-x:hover {
+  background-color: #ff7b8a;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+  transition: .2s;
+}
+
+.btn-x:active {
+  background-color: #ff4b5a;
+}
+
+.btn-report{
+  padding: 0px 10px;
+  font-size: 1em;
 }
 
 .tabs {
@@ -553,10 +590,10 @@ button:active {
   transition: .4s;
 }
 
-.button-container {
+/* .button-container {
   display: flex;
   align-items: center;
-}
+} */
 
 select {
   background: #fffa9c;
@@ -568,6 +605,7 @@ select {
   background-position: right 0.7rem top 50%;
   background-size: 0.65rem auto;;
   padding: 8px 16px;
+  padding-right: 24px;
   border: none;
   border-radius: 0;
   font-family: inherit;
@@ -706,6 +744,7 @@ form textarea {
 
 .form-group label {
   display: table-cell;
+  vertical-align: top;
   margin-bottom: 5px;
   padding-right: 2em;
   min-width: 146px;
@@ -718,12 +757,22 @@ form textarea {
   min-width: 240px;
 }
 
+.form-group textarea {
+  padding: 8px;
+}
+
 .form-group label {
   width: 120px;
 }
 
 .form-login input {
   min-width: 312px;
+}
+
+.form-contact input, .form-contact textarea {
+  background: #eee;
+  resize: none;
+  border: none;
 }
 
 .btn-right {
@@ -748,10 +797,8 @@ form textarea {
   resize: none;
 }
 
+
 /* Utility classes */
-.text-center {
-  text-align: center;
-}
 
 /* .mt-20 {
   margin-top: 20px;
@@ -803,16 +850,11 @@ form textarea {
 
 .market-card {
   border: 1px solid #ccc;
-  /* Example border styling */
   padding: 10px;
   width: 100%;
-  /* Adjust width as needed */
   max-width: 300px;
-  /* Example max-width */
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  /* Example shadow */
   background-color: #fff;
-  /* Example background color */
   text-align: center;
 }
 
@@ -820,19 +862,15 @@ form textarea {
   display: block;
   width: 100%;
   max-width: 200px;
-  /* Example max-width for the button */
   margin: 10px auto;
-  /* Center align the button */
   padding: 8px 16px;
   border: 1px solid #ff3399;
-  /* Border color for the button */
   background-color: #ff6699;
-  /* Button background color */
   color: #fff;
-  /* Button text color */
   text-align: center;
   text-decoration: none;
   cursor: pointer;
+  border-radius: 8px;
 }
 .market-card-button:hover {
   background-color: #ff8300;
@@ -1005,10 +1043,6 @@ form textarea {
 .market-name {
   flex: 1;
   font-weight: 500;
-}
-
-.market-name:hover {
-  background: #fffa9c;
 }
 
 .market-price, .market-baskets {

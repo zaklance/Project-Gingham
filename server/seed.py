@@ -862,17 +862,20 @@ def run():
 
     # add fake market reviews
     market_revs = []
+    reported = (False, False, False, False, False, False, False, False, False, True)
     for i in range(101):
         rev_len = randint(2, 5)
 
         review_text = str(fake.paragraph(nb_sentences=rev_len))
         market_id = str(randint(1, 40))
         user_id = str(randint(1, 50))
+        is_reported = choice(reported)
 
         mr = MarketReview(
             review_text=review_text,
             market_id=market_id,
             user_id=user_id,
+            is_reported=is_reported
         )
         market_revs.append(mr)
 
@@ -887,11 +890,13 @@ def run():
         review_text = fake.paragraph(nb_sentences=rev_len)
         vendor_id = str(randint(1, 40))
         user_id = str(randint(1, 50))
-
+        is_reported = choice(reported)
+        
         vr = VendorReview(
             review_text=review_text,
             vendor_id=vendor_id,
             user_id=user_id,
+            is_reported=is_reported
         )
         vendor_revs.append(vr)
 
@@ -926,16 +931,16 @@ def run():
     # db.session.add_all(vendor_favs)
     # db.session.commit()
 
-    # # add fake vendor markets
+    # add fake vendor markets
     # vendor_markets = []
     # for i in range(500):
 
     #     vendor_id = str(randint(1, 150))
-    #     market_id = str(randint(1, 57))
+    #     market_day_id = str(randint(1, 57))
 
     #     vm = VendorMarket(
     #         vendor_id=vendor_id,
-    #         market_id=market_id
+    #         market_day_id=market_day_id
     #     )
     #     vendor_markets.append(vm)
 
@@ -965,7 +970,7 @@ def run():
         last_name = fake.last_name()
         # phone = fake.phone_number()
         phone = str(randint(1000000000,9999999999))
-        vendor_id = str(randint(1, 151))
+        vendor_id = str(randint(1, 150))
         is_admin = bool(fake.boolean())
 
 
@@ -999,8 +1004,8 @@ def run():
         rand_user = [None, randint(1, 50)]
         duration = [time(0, 15, 0), time(0, 20, 0), time(0, 30, 0), time(0, 45, 0), time(1, 0, 0), time(1, 15, 0), time(1, 30, 0)]
 
-        vendor_id = str(randint(1, 151))
-        market_id = str(randint(1, 57))
+        vendor_id = str(randint(1, 150))
+        market_day_id = str(randint(1, 57))
         sale_date = date.today()
         pickup_time = fake.time_object()
         user_id = choice(rand_user)
@@ -1011,7 +1016,7 @@ def run():
 
         bsk = Basket(
             vendor_id=vendor_id,
-            market_id=market_id,
+            market_day_id=market_day_id,
             sale_date=sale_date,
             pickup_time=pickup_time,
             user_id=user_id,
@@ -1024,7 +1029,7 @@ def run():
 
         vm = VendorMarket(
             vendor_id=vendor_id,
-            market_id=market_id
+            market_day_id=market_day_id
         )
         vendor_markets.append(vm)
 

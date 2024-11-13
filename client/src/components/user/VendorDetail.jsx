@@ -18,7 +18,6 @@ function VendorDetail () {
     const [reviewData, setReviewData] = useState("");
     const [editingReviewId, setEditingReviewId] = useState(null);
     const [editedReviewData, setEditedReviewData] = useState("");
-    
     const [hoveredMarket, setHoveredMarket] = useState(null);
     
     // To be deleted after baskets state is moved to BasketCard
@@ -305,20 +304,23 @@ function VendorDetail () {
                 </div> */}
             </div>
             <div>
-                <h4 className='float-left'>Based out of: {vendor.city}, {vendor.state}</h4>
-                <div className='button-container'>
-                    <button 
-                        className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
-                        onClick={handleClick}> ❤️ </button>
-                        {showAlert && (
-                            <div className='alert-favorites'>
-                                {alertMessage}
-                            </div>
-                        )}
+                <div className='flex-start'>
+                    <h4>Based out of: {vendor.city}, {vendor.state}</h4>
+                    <div className='button-container'>
+                        <button 
+                            className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
+                            onClick={handleClick}> ❤️ </button>
+                            {showAlert && (
+                                <div className='alert-favorites'>
+                                    {alertMessage}
+                                </div>
+                            )}
+                    </div>
                 </div>
                 <br />
                 <br />
                 <h2>Farmers Market Locations:</h2>
+                <div className='box-scroll'>
                 {Array.isArray(markets) && markets.length > 0 ? (
                     markets.map((marketId, index) => {
                         const marketDetail = marketDetails[marketId] || {};
@@ -363,6 +365,7 @@ function VendorDetail () {
                     ) : (
                         <p>No market locations at this time</p>
                     )}
+                </div>
                 <br />
                 <h2>Reviews</h2>
                 <br />

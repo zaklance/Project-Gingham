@@ -20,6 +20,8 @@ function MarketDetail ({ match }) {
     const [editingReviewId, setEditingReviewId] = useState(null);
     const [editedReviewData, setEditedReviewData] = useState("");
     const [selectedProduct, setSelectedProduct] = useState("");
+    const [marketDays, setMarketDays] = useState([])
+    const [selectedDay, setSelectedDay] = useState(null);
     
     // To be deleted after baskets state is moved to BasketCard
     const [marketBaskets, setMarketBaskets] = useState({});
@@ -56,6 +58,23 @@ function MarketDetail ({ match }) {
             })
             .catch(error => console.error('Error fetching market data:', error));
     }, [id]);
+
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/market-days")
+            .then(response => response.json())
+            .then(data => {
+                const filteredData = data.filter(item => item.market_id === market.id);
+                setMarketDays(filteredData)
+                setSelectedDay(filteredData[0]);
+            })
+            .catch(error => console.error('Error fetching favorites', error));
+    }, [market?.id]);
+
+    const handleDayChange = (event) => {
+        const dayId = parseInt(event.target.value);
+        const day = marketDays.find(day => day.id === dayId);
+        setSelectedDay(day);
+    };
 
     const handleProductChange = (event) => {
         setSelectedProduct(event.target.value);
@@ -265,6 +284,36 @@ function MarketDetail ({ match }) {
         }
     };
 
+    const handleReviewDelete = async (reviewId) => {
+        try { 
+        
+            fetch(`http://127.0.0.1:5555/market-reviews/${reviewId}`, {
+                method: "DELETE",
+            }).then(() => {
+                setAlertMessage('Review deleted');
+                setMarketReviews((prevReviews) => prevReviews.filter((review) => review.id !== reviewId))
+            })
+        } catch (error) {
+            console.error("Error deleting review", error)
+        }
+    }
+
+    const handleReviewReport = async (reviewId) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/market-reviews/${reviewId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ is_reported: true })
+            });
+
+            if (response.ok) {
+                alert("Review reported")
+            }
+        } catch (error) {
+            console.error('Error updating review:', error);
+        }
+    };
+
 
     if (!market) {
         return <div>Loading...</div>;
@@ -285,7 +334,7 @@ function MarketDetail ({ match }) {
                 <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Markets</button>
             </div>
             <br/>
-            <div className='flex-space-around-end'>
+            <div className='flex-space-around flex-end'>
                 <div>
                     <img className='img-market' src={`/market-images/${market.image}`} alt="Market Image" />
                 </div>
@@ -298,21 +347,36 @@ function MarketDetail ({ match }) {
                 </div>
             </div>
             <p>{market.description}</p>
-            <div className='float-left market-details'>
+            <div className='flex-start market-details'>
                 <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}
                 </a></h4>
+<<<<<<< HEAD
                 <h4>Hours: {market.schedule}</h4>
+=======
+                <div className='flex-start'>
+                    <button
+                        className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
+                        onClick={handleClick}> ❤️ </button>
+                    {showAlert && (
+                        <div className={`alert-favorites ${!showAlert ? 'alert-favorites-hidden' : ''}`}>
+                            {alertMessage}
+                        </div>
+                    )}
+                </div>
+>>>>>>> refs/remotes/origin/main
             </div>
-            <br />
             <div className='flex-start'>
-                <button
-                    className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
-                    onClick={handleClick}> ❤️ </button>
-                {showAlert && (
-                    <div className={`alert-favorites ${!showAlert ? 'alert-favorites-hidden' : ''}`}>
-                        {alertMessage}
-                    </div>
+                <label><h4>Market Day:</h4></label>
+                <select id="marketDaysSelect" name="marketDays">
+                    {marketDays.map((day, index) => (
+                        <option key={index} value={day.id}>
+                            {weekday[day.day_of_week]}
+                        </option>
+                    ))}
+                </select>
+                {selectedDay && (
+                    <h4 className='btn-gap'>Hours: {timeConverter(selectedDay.hour_start)} - {timeConverter(selectedDay.hour_end)}</h4>
                 )}
             </div>
             <br/>
@@ -327,6 +391,7 @@ function MarketDetail ({ match }) {
                 </select>
             </div>
 
+            <div className='box-scroll'>
             {Array.isArray(filteredVendorsList) && filteredVendorsList.length > 0 ? (
                 filteredVendorsList.map((vendorId, index) => {
                     const vendorDetail = vendorDetails[vendorId] || {};
@@ -351,13 +416,19 @@ function MarketDetail ({ match }) {
             ) : (
                 <p>No vendors at this market</p>
             )}
+            </div>
             <br/>
             <h2>Reviews</h2>
             <br/>
             {marketReviews.length > 0 ? (
                 marketReviews.map((review, index) => (
                     <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                        <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
+                        {review.user_id !== userId && editingReviewId !== review.id && (
+                            <div className='flex-start'>
+                                <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
+                                <button className='btn btn-small btn-x btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
+                            </div>
+                        )}
                         {review.user_id === userId && editingReviewId === review.id ? (
                             <>
                                 <textarea className='textarea-edit'
@@ -366,15 +437,19 @@ function MarketDetail ({ match }) {
                                 />
                                 <br></br>
                                 <button className='btn btn-small' onClick={() => handleReviewUpdate(review.id)}>Save</button>
-                                <button className='btn btn-small' onClick={() => setEditingReviewId(null)}>Cancel</button>
+                                <button className='btn btn-small btn-gap' onClick={() => setEditingReviewId(null)}>Cancel</button>
                             </>
                         ) : (
                             <p>{review.review_text}</p>
                         )}
                         {review.user_id === userId && editingReviewId !== review.id && (
-                            <button className='btn btn-small' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
-                                Edit
-                            </button>
+                            <>
+                                <button className='btn btn-small' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
+                                    Edit
+                                </button>
+                                <button className='btn btn-small btn-x btn-gap' onClick={() => handleReviewDelete(review.id)}>x</button>
+
+                            </>
                         )}
                     </div>
                 ))
@@ -399,7 +474,9 @@ function MarketDetail ({ match }) {
                         <button className='btn-login' onClick={handleReviewSubmit} type="submit">Post Review</button>
                     </>
                 ) : (
-                    <button className='btn btn-plus' onClick={handleReviewToggle} title='Leave a review'>+</button>
+                    <>
+                        <button className='btn btn-plus' onClick={handleReviewToggle} title='Leave a review'>+</button>
+                    </>
                 )}
                 {showDupeAlert && (
                     <div className='alert-reviews float-right'>
