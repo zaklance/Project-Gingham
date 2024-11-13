@@ -155,6 +155,10 @@ h2 {
   color: white;
 }
 
+.text-center {
+  text-align: center;
+}
+
 .separator {
   border: 0;
   height: 3px;
@@ -268,6 +272,38 @@ ul {
   margin: auto;
 }
 
+.flex-start {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.flex-space-around {
+  display: flex;
+  justify-content: space-around;
+}
+
+.flex-space-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+.flex-center {
+  align-items: center;
+}
+
+.flex-center-justify {
+  display: flex;
+  justify-content: center;
+}
+
+.flex-end {
+  align-items: flex-end;
+}
+
+.flex-gap {
+  gap: 48px;
+}
+
 .float-left {
   float: left;
 }
@@ -285,32 +321,6 @@ ul {
 
 .no-float {
   clear:both;
-}
-
-.flex-start {
-  display: flex;
-  justify-content: flex-start;
-}
-
-.flex-space-around-center {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.flex-space-around-end {
-  display: flex;
-  justify-content: space-around;
-  align-items: flex-end;
-}
-
-.flex-space-between {
-  display: flex;
-  justify-content: space-between;
-}
-
-.flex-gap {
-  gap: 48px;
 }
 
 /* .flex-form {
@@ -734,6 +744,7 @@ form textarea {
 
 .form-group label {
   display: table-cell;
+  vertical-align: top;
   margin-bottom: 5px;
   padding-right: 2em;
   min-width: 146px;
@@ -746,12 +757,22 @@ form textarea {
   min-width: 240px;
 }
 
+.form-group textarea {
+  padding: 8px;
+}
+
 .form-group label {
   width: 120px;
 }
 
 .form-login input {
   min-width: 312px;
+}
+
+.form-contact input, .form-contact textarea {
+  background: #eee;
+  resize: none;
+  border: none;
 }
 
 .btn-right {
@@ -776,10 +797,8 @@ form textarea {
   resize: none;
 }
 
+
 /* Utility classes */
-.text-center {
-  text-align: center;
-}
 
 /* .mt-20 {
   margin-top: 20px;
