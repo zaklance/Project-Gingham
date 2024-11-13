@@ -239,7 +239,7 @@ class VendorMarket(db.Model, SerializerMixin):
     market_day_id = db.Column(db.Integer, db.ForeignKey('market_days.id'))
 
     vendor = db.relationship('Vendor', back_populates='vendor_markets')
-    market_day = db.relationship( 'MarketDay', primaryjoin="VendorMarket.market_day_id == MarketDay.id", back_populates="vendor_markets")
+    market_day = db.relationship( 'MarketDay', back_populates="vendor_markets")
 
 
     serialize_rules = ('-vendor.vendor_markets', '-market_day.vendor_markets')
