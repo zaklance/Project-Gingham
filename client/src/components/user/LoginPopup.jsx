@@ -9,7 +9,11 @@ function Login({ handlePopup }) {
     const [signupPassword, setSignupPassword] = useState('');
     const [signupFirstName, setSignupFirstName] = useState('');
     const [signupLastName, setSignupLastName] = useState('');
-    const [signupAddress, setSignupAddress] = useState('');
+    const [signupAddress1, setSignupAddress1] = useState('');
+    const [signupAddress2, setSignupAddress2] = useState('');
+    const [signupCity, setSignupCity] = useState('');
+    const [signupState, setSignupState] = useState('');
+    const [signupZipCode, setSignupZipCode] = useState('');
 
     const navigate = useNavigate();
 
@@ -63,7 +67,11 @@ function Login({ handlePopup }) {
                 password: signupPassword,
                 first_name: signupFirstName,
                 last_name: signupLastName,
-                address: signupAddress
+                address1: signupAddress1,
+                address2: signupAddress2,
+                city: signupCity,
+                state: signupState,
+                zip: signupZipCode
             }),
             credentials: 'include'
         });
@@ -160,12 +168,52 @@ function Login({ handlePopup }) {
                             />
                         </div>
                         <div className="form-group form-login">
-                            <label>Address:</label>
+                            <label>Address 1:</label>
                             <input 
                                 type="text"
-                                value={signupAddress}
-                                placeholder='enter your address'
-                                onChange={(event => setSignupAddress(event.target.value))}
+                                value={signupAddress1}
+                                placeholder='enter your address 1'
+                                onChange={(event => setSignupAddress1(event.target.value))}
+                                required
+                            />
+                        </div>
+                        <div className="form-group form-login">
+                            <label>Address 2:</label>
+                            <input 
+                                type="text"
+                                value={signupAddress2}
+                                placeholder='enter your address 2'
+                                onChange={(event => setSignupAddress2(event.target.value))}
+                                required
+                            />
+                        </div>
+                        <div className="form-group form-login">
+                            <label>City:</label>
+                            <input 
+                                type="text"
+                                value={signupCity}
+                                placeholder='enter your city'
+                                onChange={(event => setSignupCity(event.target.value))}
+                                required
+                            />
+                        </div>
+                        <div className="form-group form-login">
+                            <label>State:</label>
+                            <input 
+                                type="text"
+                                value={signupState}
+                                placeholder='enter your state'
+                                onChange={(event => setSignupState(event.target.value))}
+                                required
+                            />
+                        </div>
+                        <div className="form-group form-login">
+                            <label>Zip Code:</label>
+                            <input 
+                                type="text"
+                                value={signupZipCode}
+                                placeholder='enter your Zip Code'
+                                onChange={(event => setSignupZipCode(event.target.value))}
                                 required
                             />
                         </div>
