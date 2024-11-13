@@ -285,12 +285,12 @@ def all_vendors():
             name=data['name'],
             city=data.get('city'),
             state=data.get('state'),
-            locations=data.get('locations'),
-            product=data['product']
+            product=data['product'], 
+            image=data.get('image')
         )
         db.session.add(new_vendor)
         db.session.commit()
-        return new_vendor.to_dict(), 201
+        return jsonify(new_vendor.to_dict()), 201
 
     elif request.method == 'PATCH':
         data = request.get_json()
@@ -663,16 +663,38 @@ def vendorProfile(id):
         return jsonify(profile_data), 200
     
     elif request.method == 'PATCH':
-        vendorUser = VendorUser.query.filter_by(id = id).first()
+        vendorUser = VendorUser.query.filter_by(id=id).first()
         if not vendorUser:
-            return {'error': 'user not found'}, 404
+            return {'error': 'User not found'}, 404
+        
         try:
             data = request.get_json()
             for key, value in data.items():
                 setattr(vendorUser, key, value)
+
+            if 'vendor_id' in data:
+                vendor = Vendor.query.get(data['vendor_id'])
+                if not vendor:
+                    return {'error': 'Invalid vendor_id'}, 400
+                
+                if vendorUser.vendor_id != data['vendor_id']:
+                    vendorUser.vendor_id = data['vendor_id']
+
+                    vendor_vendor_user_link = VendorVendorUser.query.filter_by(
+                        vendor_id=data['vendor_id'],
+                        vendor_user_id=id
+                    ).first()
+
+                    if not vendor_vendor_user_link:
+                        new_vendor_vendor_user = VendorVendorUser(
+                            vendor_id=data['vendor_id'],
+                            vendor_user_id=id
+                        )
+                        db.session.add(new_vendor_vendor_user)
+
             db.session.commit()
             return jsonify(vendorUser.to_dict()), 200
-        
+
         except Exception as e:
             db.session.rollback()
             return {'error': str(e)}, 500
@@ -683,6 +705,10 @@ def vendorProfile(id):
         existing_user = VendorUser.query.filter_by(email=data['email']).first()
         if existing_user:
             return {'error': 'Email already in use'}, 400
+        
+        vendor = Vendor.query.get(data['vendor_id'])
+        if not vendor: 
+            return {'error': 'Invalid vendor_id'}, 400
         
         try:
             new_vendor_user = VendorUser(
@@ -695,6 +721,20 @@ def vendorProfile(id):
             )
             db.session.add(new_vendor_user)
             db.session.commit()
+
+            vendor_vendor_user_link = VendorVendorUser.query.filter_by(
+                vendor_id=data['vendor_id'],
+                vendor_user_id=new_vendor_user.id
+            ).first()
+            
+            if not vendor_vendor_user_link:
+                new_vendor_vendor_user = VendorVendorUser(
+                    vendor_id=data['vendor_id'],
+                    vendor_user_id=new_vendor_user.id
+                )
+                db.session.add(new_vendor_vendor_user)
+                db.session.commit()
+            
             return jsonify(new_vendor_user.to_dict()), 201
         
         except Exception as e:
