@@ -282,7 +282,20 @@ function VendorDetail () {
             console.error('Error updating review:', error);
         }
     };
-    
+
+    const handleReviewDelete = async (reviewId) => {
+        try {
+
+            fetch(`http://127.0.0.1:5555/vendor-reviews/${reviewId}`, {
+                method: "DELETE",
+            }).then(() => {
+                setAlertMessage('Review deleted');
+                setVendorReviews((prevReviews) => prevReviews.filter((review) => review.id !== reviewId))
+            })
+        } catch (error) {
+            console.error("Error deleting review", error)
+        }
+    }
 
 
     if (!vendor) {
@@ -376,7 +389,12 @@ function VendorDetail () {
                 {vendorReviews.length > 0 ? (
                     vendorReviews.map((review, index) => (
                         <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                        <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
+                        {review.user_id !== userId && editingReviewId !== review.id && (
+                            <div className='flex-start'>
+                                <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
+                                <button className='btn btn-small btn-x btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
+                            </div>
+                        )}
                         {review.user_id === userId && editingReviewId === review.id ? (
                             <>
                                 <textarea className='textarea-edit'
@@ -391,9 +409,12 @@ function VendorDetail () {
                             <p>{review.review_text}</p>
                         )}
                         {review.user_id === userId && editingReviewId !== review.id && (
-                            <button className='btn btn-small' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
-                                Edit
-                            </button>
+                            <>
+                                <button className='btn btn-small' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
+                                    Edit
+                                </button>
+                                <button className='btn btn-small btn-x btn-gap' onClick={() => handleReviewDelete(review.id)}>x</button>
+                            </>
                         )}
                     </div>
                 ))
