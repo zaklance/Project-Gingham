@@ -199,7 +199,7 @@ class VendorMarket(db.Model, SerializerMixin):
     market_day = db.relationship( 'MarketDay', primaryjoin="VendorMarket.market_day_id == MarketDay.id", back_populates="vendor_markets")
 
 
-    serialize_rules = ('-vendor.vendor_markets', '-market.vendor_markets')
+    serialize_rules = ('-vendor.vendor_markets', '-market_day.vendor_markets')
 
     def __repr__(self) -> str:
         return f"<VendorMarket Vendor ID: {self.vendor_id}, Market ID: {self.market_id}>"
