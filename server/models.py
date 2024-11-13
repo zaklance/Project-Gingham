@@ -100,7 +100,6 @@ class Market(db.Model, SerializerMixin):
     # Relationships
     reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic')
     market_favorites = db.relationship('MarketFavorite', back_populates='market', lazy='dynamic')
-    vendor_markets = db.relationship('VendorMarket', back_populates='market')
     market_days = db.relationship('MarketDay', back_populates='markets')
 
     serialize_rules = ('-reviews.market', '-market_favorites.market', '-vendor_markets.market', '-reviews.user.vendor_reviews', '-reviews.user.market_reviews')
@@ -132,6 +131,7 @@ class MarketDay(db.Model, SerializerMixin):
 
     # Relationships
     markets = db.relationship('Market', back_populates='market_days')
+    vendor_markets = db.relationship( 'VendorMarket', back_populates="market_day" )
 
     serialize_rules = ('-markets.market_days', '-markets.reviews')
 
@@ -188,6 +188,22 @@ class Vendor(db.Model, SerializerMixin):
     def __repr__(self) -> str:
         return f"<Vendor {self.name}>"
 
+class VendorMarket(db.Model, SerializerMixin):
+    __tablename__ = 'vendor_markets'
+
+    id = db.Column(db.Integer, primary_key=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'))
+    market_day_id = db.Column(db.Integer, db.ForeignKey('market_days.id'))
+
+    vendor = db.relationship('Vendor', back_populates='vendor_markets')
+    market_day = db.relationship( 'MarketDay', primaryjoin="VendorMarket.market_day_id == MarketDay.id", back_populates="vendor_markets")
+
+
+    serialize_rules = ('-vendor.vendor_markets', '-market_day.vendor_markets')
+
+    def __repr__(self) -> str:
+        return f"<VendorMarket Vendor ID: {self.vendor_id}, Market ID: {self.market_id}>"
+
 class MarketReview(db.Model, SerializerMixin):
     __tablename__ = 'market_reviews'
 
@@ -195,6 +211,7 @@ class MarketReview(db.Model, SerializerMixin):
     review_text = db.Column(db.String, nullable=False)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    is_reported = db.Column(db.Boolean, default=False)
 
     # Relationships
     market = db.relationship('Market', back_populates='reviews')
@@ -218,6 +235,7 @@ class VendorReview(db.Model, SerializerMixin):
     review_text = db.Column(db.String, nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    is_reported = db.Column(db.Boolean, default=False)
 
     # Relationships
     vendor = db.relationship('Vendor', back_populates='reviews')
@@ -334,22 +352,7 @@ class VendorVendorUser(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<VendorVendorUser Vendor ID: {self.vendor_id}, VendorUser ID: {self.vendor_user_id}>"
-
-class VendorMarket(db.Model, SerializerMixin):
-    __tablename__ = 'vendor_markets'
-
-    id = db.Column(db.Integer, primary_key=True)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
-    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
-
-    vendor = db.relationship('Vendor', back_populates='vendor_markets')
-    market = db.relationship('Market', back_populates='vendor_markets')
-
-    serialize_rules = ('-vendor.vendor_markets', '-market.vendor_markets')
-
-    def __repr__(self) -> str:
-        return f"<VendorMarket Vendor ID: {self.vendor_id}, Market ID: {self.market_id}>"
-    
+   
 class AdminUser(db.Model, SerializerMixin):
     __tablename__ = 'admin_users'
 
@@ -404,7 +407,7 @@ class Basket(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
-    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
+    market_day_id = db.Column(db.Integer, db.ForeignKey('market_days.id'), nullable=True)
     sale_date = db.Column(db.Date, nullable=False, default=date.today)
     pickup_time = db.Column(db.Time, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
