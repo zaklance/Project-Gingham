@@ -28,7 +28,11 @@ class User(db.Model, SerializerMixin):
     _password = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
-    address = db.Column(db.String, nullable=True)
+    address_1 = db.Column(db.String, nullable=False)
+    address_2 = db.Column(db.String, nullable=True)
+    city = db.Column(db.String, nullable=False)
+    state = db.Column(db.String(2), nullable=False)
+    zip = db.Column(db.String(10), nullable=False)
 
     # Relationships
     market_reviews = db.relationship('MarketReview', back_populates='user')
@@ -36,7 +40,13 @@ class User(db.Model, SerializerMixin):
     market_favorites = db.relationship('MarketFavorite', back_populates='user')
     vendor_favorites = db.relationship('VendorFavorite', back_populates='user')
 
-    serialize_rules = ('-_password', '-market_reviews.user', '-vendor_reviews.user', '-market_favorites', '-vendor_favorites')
+    serialize_rules = (
+        '-_password', 
+        '-market_reviews.user',
+        '-vendor_reviews.user', 
+        '-market_favorites',
+        '-vendor_favorites'
+    )
 
     @validates('first_name')
     def validate_first_name(self, key, value):
@@ -54,18 +64,51 @@ class User(db.Model, SerializerMixin):
             raise ValueError("Last name must be between 1 and 16 characters")
         return value
 
-    @validates('address')
-    def validate_address(self, key, value):
-        if value and len(value) > 100:
-            raise ValueError("Address cannot be longer than 100 characters")
-        return value
-
     @validates('email')
     def validate_email(self, key, value):
         if not value:
             raise ValueError("Email is required")
         if "@" not in value or "." not in value:
             raise ValueError("Invalid email address")
+        return value
+
+    # New validations for address fields
+    @validates('address_1')
+    def validate_address_1(self, key, value):
+        if not value:
+            raise ValueError("Address 1 is required")
+        if len(value) > 100:
+            raise ValueError("Address 1 cannot be longer than 100 characters")
+        return value
+
+    @validates('address_2')
+    def validate_address_2(self, key, value):
+        if value and len(value) > 100:
+            raise ValueError("Address 2 cannot be longer than 100 characters")
+        return value
+
+    @validates('city')
+    def validate_city(self, key, value):
+        if not value:
+            raise ValueError("City is required")
+        if len(value) > 50:
+            raise ValueError("City cannot be longer than 50 characters")
+        return value
+
+    @validates('state')
+    def validate_state(self, key, value):
+        if not value:
+            raise ValueError("State is required")
+        if len(value) != 2:
+            raise ValueError("State must be a 2-letter code")
+        return value
+
+    @validates('zip')
+    def validate_zip(self, key, value):
+        if not value:
+            raise ValueError("ZIP code is required")
+        if len(value) > 10:
+            raise ValueError("ZIP code cannot be longer than 10 characters")
         return value
 
     @hybrid_property
@@ -196,7 +239,7 @@ class VendorMarket(db.Model, SerializerMixin):
     market_day_id = db.Column(db.Integer, db.ForeignKey('market_days.id'))
 
     vendor = db.relationship('Vendor', back_populates='vendor_markets')
-    market_day = db.relationship( 'MarketDay', primaryjoin="VendorMarket.market_day_id == MarketDay.id", back_populates="vendor_markets")
+    market_day = db.relationship( 'MarketDay', back_populates="vendor_markets")
 
     serialize_rules = ('-vendor.vendor_markets', '-market_day.vendor_markets')
 
