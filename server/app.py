@@ -610,10 +610,12 @@ def vendorSignup():
             email=data['email'],
             first_name=data['first_name'],
             last_name=data['last_name'],
-            phone=data['phone']
+            phone=data['phone'], 
         )
         new_vendor_user.password = data['password']
 
+        new_vendor_user.vendor_id = None
+        
         db.session.add(new_vendor_user)
         db.session.commit()
 

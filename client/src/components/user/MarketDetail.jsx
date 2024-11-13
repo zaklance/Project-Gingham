@@ -351,20 +351,7 @@ function MarketDetail ({ match }) {
                 <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}
                 </a></h4>
-<<<<<<< HEAD
                 <h4>Hours: {market.schedule}</h4>
-=======
-                <div className='flex-start'>
-                    <button
-                        className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
-                        onClick={handleClick}> ❤️ </button>
-                    {showAlert && (
-                        <div className={`alert-favorites ${!showAlert ? 'alert-favorites-hidden' : ''}`}>
-                            {alertMessage}
-                        </div>
-                    )}
-                </div>
->>>>>>> refs/remotes/origin/main
             </div>
             <div className='flex-start'>
                 <label><h4>Market Day:</h4></label>

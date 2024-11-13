@@ -198,7 +198,6 @@ class VendorMarket(db.Model, SerializerMixin):
     vendor = db.relationship('Vendor', back_populates='vendor_markets')
     market_day = db.relationship( 'MarketDay', primaryjoin="VendorMarket.market_day_id == MarketDay.id", back_populates="vendor_markets")
 
-
     serialize_rules = ('-vendor.vendor_markets', '-market_day.vendor_markets')
 
     def __repr__(self) -> str:
@@ -291,8 +290,8 @@ class VendorUser(db.Model, SerializerMixin):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     phone = db.Column(db.String, nullable=False)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'))
-    is_admin = db.Column(db.Boolean, default=False, nullable=False)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
+    is_admin = db.Column(db.Boolean, default=True, nullable=False)
 
     # Relationships
     vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor_user', lazy='dynamic')

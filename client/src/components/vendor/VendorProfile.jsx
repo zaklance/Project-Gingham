@@ -9,6 +9,7 @@ function VendorProfile () {
     const [vendorUserData, setVendorUserData] = useState(null);
     const [locations, setLocations] = useState([]);
     const [marketDetails, setMarketDetails] = useState({});
+    const [newVendor, setNewVendor] = useState(false);
     const [vendorData, setVendorData] = useState(null);
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
@@ -38,17 +39,15 @@ function VendorProfile () {
                         'Content-Type': 'application/json' 
                     }
                 });
-
+    
                 const text = await response.text();
-
+    
                 if (response.ok) {
-                    try {
-                        const data = JSON.parse(text);
-                        setVendorUserData({
-                            ...data,
-                        });
-                    } catch (jsonError) {
-                        console.error('Error parsing JSON:', jsonError);
+                    const data = JSON.parse(text);
+                    setVendorUserData(data);
+    
+                    if (data && data.isNew) {
+                        setNewVendor(true);
                     }
                 } else {
                     console.error('Error fetching profile:', response.status);
@@ -62,6 +61,18 @@ function VendorProfile () {
         };
         fetchVendorUserData();
     }, [id]);
+    
+    useEffect(() => {
+        if (newVendor && !vendorData) {
+            setVendorData({
+                name: '',
+                city: '', 
+                state: '', 
+                product: ''
+            });
+            setVendorEditMode(true); 
+        }
+    }, [newVendor, vendorData]);
 
     const handleInputChange = (event) => {
         setVendorUserData({
@@ -114,24 +125,26 @@ function VendorProfile () {
 
     useEffect(() => {
         const fetchVendorData = async () => {
+            if (!vendorUserData || !vendorUserData.vendor_id) return;
+    
             try {
-                const response = await fetch(`http://127.0.0.1:5555/vendors/${id}`);
+                const response = await fetch(`http://127.0.0.1:5555/vendors/${vendorUserData.vendor_id}`);
                 if (response.ok) {
                     const data = await response.json();
                     setVendorData(data);
                     if (data.image) {
-                        setVendorImageURL(`http://127.0.0.1:5555/vendors/${id}/image`);
+                        setVendorImageURL(`http://127.0.0.1:5555/vendors/${vendorUserData.vendor_id}/image`);
                     }
                 } else {
-                    throw new Error('Network response was not ok');
+                    console.error('Failed to fetch vendor data:', response.status);
                 }
             } catch (error) {
                 console.error('Error fetching vendor data:', error);
             }
         };
-
+    
         fetchVendorData();
-    }, [id]);
+    }, [vendorUserData]);
 
     const handleVendorInputChange = (event) => {
         setVendorData({
@@ -142,6 +155,27 @@ function VendorProfile () {
 
     const handleVendorEditToggle = () => {
         setVendorEditMode(!vendorEditMode);
+    };
+
+    const handleSaveNewVendor = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/vendors/${vendorData.vendor_id}`, {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(vendorData),
+            });
+
+            if (response.ok) {
+                alert('Vendor details updated successfully!');
+            } else {
+                alert('Failed to update vendor details.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occured while updating vendor details');
+        }
     };
 
     const handleSaveVendorChanges = async () => {
@@ -253,180 +287,285 @@ function VendorProfile () {
         }
     }, [locations]);
 
-    return(
+    return (
         <div>
             <div className="tab-content">
                 <div>
-                    <h2 className='title'>Profile Information </h2>
-                    
-                    <div className='bounding-box'>
-                    {editMode && vendorUserData?.is_admin ? (
-                        <>
-                            <div className='form-group flex-form'>
-                                <label>First Name:</label>
-                                <input
-                                    type="text"
-                                    name="first_name"
-                                    value={vendorUserData ? vendorUserData.first_name : ''}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <div className='form-group flex-form'>
-                                <label>Last Name:</label>
-                                <input
-                                    type="text"
-                                    name="last_name"
-                                    value={vendorUserData ? vendorUserData.last_name : ''}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <div className='form-group flex-form'>
-                                <label>Email:</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={vendorUserData ? vendorUserData.email : ''}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <div className='form-group flex-form'>
-                                <label>Phone Number:</label>
-                                <input
-                                    type="tel"
-                                    name="phone"
-                                    value={vendorUserData ? vendorUserData.phone : ''}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
-                            <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
-                        </>
-                    ) : (
-                        <>
-                            <p><strong>Name:&emsp;</strong> {vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : ' Loading...'}</p>
-                            <p><strong>Email:&emsp;</strong> {vendorUserData ? vendorUserData.email : ' Loading...'}</p>
-                            <p><strong>Phone:&emsp;</strong> {vendorUserData ? vendorUserData.phone : ' Loading...'}</p>
-                            {vendorUserData?.is_admin && <button className='btn-edit' onClick={handleEditToggle}>Edit</button>}
-                        </>
+                <h2 className="title">Profile Information</h2>
+        
+                <div className="bounding-box">
+                    {editMode ? (
+                    <>
+                        <div className="form-group flex-form">
+                        <label>First Name:</label>
+                        <input
+                            type="text"
+                            name="first_name"
+                            value={vendorUserData ? vendorUserData.first_name : ''}
+                            onChange={handleInputChange}
+                        />
+                        </div>
+                        <div className="form-group flex-form">
+                        <label>Last Name:</label>
+                        <input
+                            type="text"
+                            name="last_name"
+                            value={vendorUserData ? vendorUserData.last_name : ''}
+                            onChange={handleInputChange}
+                        />
+                        </div>
+                        <div className="form-group flex-form">
+                        <label>Email:</label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={vendorUserData ? vendorUserData.email : ''}
+                            onChange={handleInputChange}
+                        />
+                        </div>
+                        <div className="form-group flex-form">
+                        <label>Phone Number:</label>
+                        <input
+                            type="tel"
+                            name="phone"
+                            value={vendorUserData ? vendorUserData.phone : ''}
+                            onChange={handleInputChange}
+                        />
+                        </div>
+                        <button className="btn-edit" onClick={handleSaveChanges}> Save Changes
+                        </button>
+                        <button className="btn-edit" onClick={handleEditToggle}>
+                        Cancel
+                        </button>
+                    </>
+                ) : (
+                  <>
+                    <p>
+                      <strong>Name:&emsp;</strong> {vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : ' Loading...'}
+                    </p>
+                    <p>
+                      <strong>Email:&emsp;</strong> {vendorUserData ? vendorUserData.email : ' Loading...'}
+                    </p>
+                    <p>
+                      <strong>Phone:&emsp;</strong> {vendorUserData ? vendorUserData.phone : ' Loading...'}
+                    </p>
+                    <button className="btn-edit" onClick={handleEditToggle}>
+                      Edit
+                    </button>
+                  </>
+                )}
+              </div>
+              <br />
+              <h2 className="title">Vendor Information</h2>
+              <div className="bounding-box">
+                {newVendor ? (
+                  // For new vendor, ensure editMode is true by default
+                  <>
+                    <div className="form-group">
+                      <label>Vendor Name:</label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={vendorData ? vendorData.name : ''}
+                        onChange={handleVendorInputChange}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Product:</label>
+                      <select
+                        name="product"
+                        value={vendorData ? vendorData.product : ''}
+                        onChange={handleVendorInputChange}
+                      >
+                        <option value="">Select</option>
+                        {products.map((product, index) => (
+                          <option key={index} value={product}>
+                            {product}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>Based out of:</label>
+                      <input
+                        type="text"
+                        name="city"
+                        value={vendorData ? vendorData.city : ''}
+                        onChange={handleVendorInputChange}
+                      />
+                      <select
+                        className="select-state"
+                        name="state"
+                        value={vendorData ? vendorData.state : ''}
+                        onChange={handleVendorInputChange}
+                      >
+                        <option value="">Select</option>
+                        {states.map((state, index) => (
+                          <option key={index} value={state}>
+                            {state}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>Vendor Image:</label>
+                      <input
+                        type="file"
+                        name="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                      />
+                    </div>
+                    {vendorUserData?.is_admin && (
+                      <button className="btn-edit" onClick={handleSaveNewVendor}>
+                        Create Vendor
+                      </button>
                     )}
-                    </div>
-                    <br />
-                    <h2 className='title'>Vendor Information</h2>
-                    <div className='bounding-box'>
-                    {vendorData?.id ? (
-                        vendorEditMode && vendorUserData?.is_admin ? (
-                            <>
-                                <div className='form-group'>
-                                    <label>Vendor Name:</label>
-                                    <input 
-                                        type="text"
-                                        name="name"
-                                        value={vendorData ? vendorData.name : ''}
-                                        onChange={handleVendorInputChange}
-                                    />
-                                </div>
-                                <div className='form-group'>
-                                    <label>Product:</label>
-                                    <select
-                                        name="product"
-                                        value={vendorData ? vendorData.product : ''}
-                                        onChange={handleVendorInputChange}
-                                    >
-                                        <option value="">Select</option>
-                                        {products.map((product, index) => (
-                                            <option key={index} value={product}>
-                                                {product}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className='form-group'>
-                                    <label>Based out of:</label>
-                                    <input
-                                        type="text"
-                                        name="city"
-                                        value={vendorData ? vendorData.city : ''}
-                                        onChange={handleVendorInputChange}
-                                    />
-                                    <select className='select-state'
-                                        name="state"
-                                        value={vendorData ? vendorData.state : ''} 
-                                        onChange={handleVendorInputChange}
-                                    >
-                                        <option value="">Select</option>
-                                        {states.map((state, index) => (
-                                            <option key={index} value={state}>
-                                                {state}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className='form-group'>
-                                    <label>Vendor Image:</label>
-                                    <input
-                                        type="file"
-                                        name="file"
-                                        accept="image/*"
-                                        onChange={handleFileChange}
-                                    />
-                                </div>
-                                <button className='btn-edit' onClick={handleSaveVendorChanges}>Save Changes</button>
-                                <button className='btn-edit' onClick={handleVendorEditToggle}>Cancel</button>
-                            </>
-                        ) : (
-                                <>
-                                    <div className='flex-start flex-gap'>
-                                        <div>
-                                            <p><strong>Role:&emsp;</strong> {vendorUserData?.is_admin ? 'Admin' : 'Vendor'}</p>
-                                            <br/>
-                                            <p><strong>Name:&emsp;</strong> {vendorData ? vendorData.name : ' Loading...'}</p>
-                                            <p><strong>Product:&emsp;</strong> {vendorData ? vendorData.product : ' Loading...'}</p>
-                                            <p><strong>Based in:&emsp;</strong> {vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}</p>
-                                        </div>
-                                        {vendorImageURL && (
-                                            <div className='vendor-image'>
-                                                <img src={vendorImageURL} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} />
-                                            </div>
-                                        )}
-                                    </div>
-                                    {vendorUserData?.is_admin && (    
-                                        <div className='flex-start'>
-                                            <button className='btn-edit' onClick={handleVendorEditToggle}>Edit</button>
-                                        <div>
-                                            <div className={status === 'success' ? 'alert-favorites' : 'alert-favorites-hidden'}>
-                                                Success Uploading Image
-                                            </div>
-                                            <div className={status === 'fail' ? 'alert-favorites alert-fail' : 'alert-favorites-hidden'}>
-                                                Uploading Image Failed
-                                            </div>
-                                            <div className={status === 'Uploading' ? 'alert-favorites' : 'alert-favorites-hidden'}>
-                                                Uploading Image
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    )}
-                                    
-                                    <p><strong>Locations:&emsp;</strong></p>
-                                    {Array.isArray(locations) && locations.length > 0 ? (
-                                        locations.map((marketId, index) => (
-                                            <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                                                <Link to={`/user/markets/${marketId}`}> {marketDetails[marketId] || 'Loading...'} </Link>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p>No market locations at this time</p>
-                                    )}
-                                </>
-                            )
-                        ) : (
-                            <p>Loading vendor details...</p>
+                    {vendorUserData?.is_admin && (
+                      <button className="btn-edit" onClick={() => setNewVendor(false)}>
+                        Cancel
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  vendorData?.id ? (
+                    vendorEditMode ? (
+                      <>
+                        <div className="form-group">
+                          <label>Vendor Name:</label>
+                          <input
+                            type="text"
+                            name="name"
+                            value={vendorData ? vendorData.name : ''}
+                            onChange={handleVendorInputChange}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Product:</label>
+                          <select
+                            name="product"
+                            value={vendorData ? vendorData.product : ''}
+                            onChange={handleVendorInputChange}
+                          >
+                            <option value="">Select</option>
+                            {products.map((product, index) => (
+                              <option key={index} value={product}>
+                                {product}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="form-group">
+                          <label>Based out of:</label>
+                          <input
+                            type="text"
+                            name="city"
+                            value={vendorData ? vendorData.city : ''}
+                            onChange={handleVendorInputChange}
+                          />
+                          <select
+                            className="select-state"
+                            name="state"
+                            value={vendorData ? vendorData.state : ''}
+                            onChange={handleVendorInputChange}
+                          >
+                            <option value="">Select</option>
+                            {states.map((state, index) => (
+                              <option key={index} value={state}>
+                                {state}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="form-group">
+                          <label>Vendor Image:</label>
+                          <input
+                            type="file"
+                            name="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                          />
+                        </div>
+                        <button className="btn-edit" onClick={handleSaveVendorChanges}>
+                          Save Vendor Changes
+                        </button>
+                        <button className="btn-edit" onClick={handleVendorEditToggle}>
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex-start flex-gap">
+                          <div>
+                            <p>
+                              <strong>Role:&emsp;</strong>{' '}
+                              {vendorUserData?.is_admin ? 'Admin' : 'Vendor'}
+                            </p>
+                            <br />
+                            <p>
+                              <strong>Name:&emsp;</strong>{' '}
+                              {vendorData ? vendorData.name : ' Loading...'}
+                            </p>
+                            <p>
+                              <strong>Product:&emsp;</strong>{' '}
+                              {vendorData ? vendorData.product : ' Loading...'}
+                            </p>
+                            <p>
+                              <strong>Based in:&emsp;</strong>{' '}
+                              {vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}
+                            </p>
+                          </div>
+                          {vendorImageURL && (
+                            <div className="vendor-image">
+                              <img src={vendorImageURL} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} />
+                            </div>
+                          )}
+                        </div>
+                        {vendorUserData?.is_admin && (
+                          <div className="flex-start">
+                            {vendorUserData?.is_admin && (
+                              <button className="btn-edit" onClick={handleVendorEditToggle}>
+                                Edit
+                              </button>
+                            )}
+                            <div>
+                              <div className={status === 'success' ? 'alert-favorites' : 'alert-favorites-hidden'}>
+                                Success Uploading Image
+                              </div>
+                              <div className={status === 'fail' ? 'alert-favorites alert-fail' : 'alert-favorites-hidden'}>
+                                Uploading Image Failed
+                              </div>
+                              <div className={status === 'Uploading' ? 'alert-favorites' : 'alert-favorites-hidden'}>
+                                Uploading Image
+                              </div>
+                            </div>
+                          </div>
                         )}
-                    </div>
-                </div>
+      
+                        <p><strong>Locations:&emsp;</strong></p>
+                        {Array.isArray(locations) && locations.length > 0 ? (
+                          locations.map((marketId, index) => (
+                            <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
+                              <Link to={`/user/markets/${marketId}`}> {marketDetails[marketId] || 'Loading Market Details...'} </Link>
+                            </div>
+                          ))
+                        ) : (
+                          <p>No locations available.</p>
+                        )}
+                      </>
+                    )
+                  ) : (
+                    <>
+                      <p>No vendor information available.</p>
+                    </>
+                  )
+                )}
+              </div>
             </div>
+          </div>
         </div>
-    )
+      );
+    
 }
 
 export default VendorProfile;

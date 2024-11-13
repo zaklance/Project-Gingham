@@ -133,8 +133,11 @@ function BasketCard({ vendorId = 2, initialMarketId }) {
                 onChange={(e) => setSelectedDuration(e.target.value)}
             >
                 <option value="0.5">30 mins</option>
+                <option value="0.75">45 mins</option>
                 <option value="1">1 hour</option>
+                <option value="1.25">1.25 hours</option>
                 <option value="1.5">1.5 hours</option>
+                <option value="1.75">1.75 hours</option>
                 <option value="2">2 hours</option>
             </select>
             <br/>
