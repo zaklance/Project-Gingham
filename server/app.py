@@ -1203,7 +1203,7 @@ if __name__ == '__main__':
 def password_reset_request():
     data = request.get_json()
     email = data.get('email')
-    user = User.query.filter(email==email).first()
+    user = User.query.filter_by(email=email).first()
 
     if not user:
         return {'error': 'User not found'}, 404
