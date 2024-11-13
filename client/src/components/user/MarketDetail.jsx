@@ -6,7 +6,7 @@ import VendorDetail from './VendorDetail';
 function MarketDetail ({ match }) {
     const { id } = useParams();
 
-    const [market, setMarket] = useState(null);
+    const [market, setMarket] = useState();
     const [vendors, setVendors] = useState([]);
     const [vendorDetails, setVendorDetails] = useState({});
     const [marketReviews, setMarketReviews] = useState([]);
@@ -19,9 +19,11 @@ function MarketDetail ({ match }) {
     const [reviewData, setReviewData] = useState("");
     const [editingReviewId, setEditingReviewId] = useState(null);
     const [editedReviewData, setEditedReviewData] = useState("");
+    const [productList, setProductList] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState("");
     const [marketDays, setMarketDays] = useState([])
     const [selectedDay, setSelectedDay] = useState(null);
+    const [vendorMarkets, setVendorMarkets] = useState();
     
     // To be deleted after baskets state is moved to BasketCard
     const [marketBaskets, setMarketBaskets] = useState({});
@@ -82,12 +84,13 @@ function MarketDetail ({ match }) {
     };
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/vendor-markets?market_id=${id}`)
+        fetch(`http://127.0.0.1:5555/vendor-markets`)
             .then(response => response.json())
             .then(vendors => {
                 if (Array.isArray(vendors)) {
                     const vendorIds = vendors.map(vendor => vendor.vendor_id);
                     setVendors(vendorIds);
+                    setVendorMarkets(vendors)
 
                     const initialBaskets = {};
                     vendorIds.forEach(vendorId => initialBaskets[vendorId] = 5);
@@ -325,6 +328,20 @@ function MarketDetail ({ match }) {
         }
     };
 
+    useEffect(() => {
+        if (vendorMarkets && selectedDay) {
+            // Filter `vendorMarkets` based on selected day
+            const availableOnSelectedDay = vendorMarkets.filter(
+                vendorMarket => vendorMarket.market_day.market_id === market.id &&
+                    vendorMarket.market_day.day_of_week === selectedDay.day_of_week
+            );
+
+            // Create a unique list of products available on the selected day
+            const uniqueProducts = [...new Set(availableOnSelectedDay.map(vm => vm.vendor.product))];
+            setProductList(uniqueProducts);
+        }
+    }, [vendorMarkets, selectedDay]);
+
 
     if (!market) {
         return <div>Loading...</div>;
@@ -362,7 +379,16 @@ function MarketDetail ({ match }) {
                 <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}
                 </a></h4>
-                <h4>Hours: {market.schedule}</h4>
+                <div className='flex-start'>
+                    <button
+                        className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
+                        onClick={handleClick}> ❤️ </button>
+                    {showAlert && (
+                        <div className={`alert-favorites ${!showAlert ? 'alert-favorites-hidden' : ''}`}>
+                            {alertMessage}
+                        </div>
+                    )}
+                </div>
             </div>
             <div className='flex-start'>
                 <label><h4>Market Day:</h4></label>
@@ -383,37 +409,37 @@ function MarketDetail ({ match }) {
                 <h2>Vendors in this Market:</h2>
                 <select value={selectedProduct} onChange={handleProductChange}>
                     <option value="">All Products</option>
-                    {products.map(product => (
+                    {productList.map(product => (
                         <option key={product} value={product}>{product}</option>
                     ))}
                 </select>
             </div>
 
             <div className='box-scroll'>
-            {Array.isArray(filteredVendorsList) && filteredVendorsList.length > 0 ? (
-                filteredVendorsList.map((vendorId, index) => {
-                    const vendorDetail = vendorDetails[vendorId] || {};
-                    
-                    return (
-                        <div key={index} className="market-item">
-                            <Link to={`/user/vendors/${vendorId}`} className="market-name">
-                                {vendorDetail.name || 'Loading...'}
-                            </Link>
-                            <span className="market-name">{vendorDetail.product || 'No product listed'}</span>
+                {Array.isArray(uniqueFilteredVendorsList) && uniqueFilteredVendorsList.length > 0 ? (
+                    uniqueFilteredVendorsList.map((vendorId, index) => {
+                        const vendorDetail = vendorDetails[vendorId] || {};
 
-                            <span className="market-price">Price: ${price.toFixed(2)}</span>
-                            <span className="market-baskets">
-                                Available Baskets: {marketBaskets[vendorId] ?? 'Loading...'}
-                            </span>
-                            <button className="btn-edit" onClick={() => handleAddToCart(vendorId)}>
-                                Add to Cart
-                            </button>
-                        </div>
-                    );
-                })
-            ) : (
-                <p>No vendors at this market</p>
-            )}
+                        return (
+                            <div key={index} className="market-item">
+                                <Link to={`/user/vendors/${vendorId}`} className="market-name">
+                                    {vendorDetail.name || 'Loading...'}
+                                </Link>
+                                <span className="market-name">{vendorDetail.product || 'No product listed'}</span>
+
+                                <span className="market-price">Price: ${price.toFixed(2)}</span>
+                                <span className="market-baskets">
+                                    Available Baskets: {marketBaskets[vendorId] ?? 'Loading...'}
+                                </span>
+                                <button className="btn-edit" onClick={() => handleAddToCart(vendorId)}>
+                                    Add to Cart
+                                </button>
+                            </div>
+                        );
+                    })
+                ) : (
+                    <p>No vendors at this market</p>
+                )}
             </div>
             <br/>
             <h2>Reviews</h2>
