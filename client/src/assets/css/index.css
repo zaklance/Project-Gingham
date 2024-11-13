@@ -309,6 +309,10 @@ ul {
   justify-content: space-between;
 }
 
+.flex-gap {
+  gap: 48px;
+}
+
 /* .flex-form {
   display: flex;
   justify-content: flex-start;
@@ -467,7 +471,7 @@ ul {
   height: fit-content;
   margin-left: 20px;
   margin-top: -4px;
-  padding: 10px 12px;
+  padding: 10px 10px;
   border-radius: 8px;
   border: none;
   background-color: #ffd1d8;
@@ -576,10 +580,10 @@ button:active {
   transition: .4s;
 }
 
-.button-container {
+/* .button-container {
   display: flex;
   align-items: center;
-}
+} */
 
 select {
   background: #fffa9c;
@@ -591,6 +595,7 @@ select {
   background-position: right 0.7rem top 50%;
   background-size: 0.65rem auto;;
   padding: 8px 16px;
+  padding-right: 24px;
   border: none;
   border-radius: 0;
   font-family: inherit;
@@ -1019,10 +1024,6 @@ form textarea {
 .market-name {
   flex: 1;
   font-weight: 500;
-}
-
-.market-name:hover {
-  background: #fffa9c;
 }
 
 .market-price, .market-baskets {

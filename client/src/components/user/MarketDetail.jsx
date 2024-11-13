@@ -20,6 +20,8 @@ function MarketDetail ({ match }) {
     const [editingReviewId, setEditingReviewId] = useState(null);
     const [editedReviewData, setEditedReviewData] = useState("");
     const [selectedProduct, setSelectedProduct] = useState("");
+    const [marketDays, setMarketDays] = useState([])
+    const [selectedDay, setSelectedDay] = useState(null);
     
     // To be deleted after baskets state is moved to BasketCard
     const [marketBaskets, setMarketBaskets] = useState({});
@@ -56,6 +58,23 @@ function MarketDetail ({ match }) {
             })
             .catch(error => console.error('Error fetching market data:', error));
     }, [id]);
+
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/market-days")
+            .then(response => response.json())
+            .then(data => {
+                const filteredData = data.filter(item => item.market_id === market.id);
+                setMarketDays(filteredData)
+                setSelectedDay(filteredData[0]);
+            })
+            .catch(error => console.error('Error fetching favorites', error));
+    }, [market?.id]);
+
+    const handleDayChange = (event) => {
+        const dayId = parseInt(event.target.value);
+        const day = marketDays.find(day => day.id === dayId);
+        setSelectedDay(day);
+    };
 
     const handleProductChange = (event) => {
         setSelectedProduct(event.target.value);
@@ -296,7 +315,6 @@ function MarketDetail ({ match }) {
     };
 
 
-
     if (!market) {
         return <div>Loading...</div>;
     }
@@ -329,21 +347,32 @@ function MarketDetail ({ match }) {
                 </div>
             </div>
             <p>{market.description}</p>
-            <div className='float-left market-details'>
+            <div className='flex-start market-details'>
                 <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}
                 </a></h4>
-                <h4>Hours: {weekday[market.day_of_week]}, {timeConverter(market.hour_start)} - {timeConverter(market.hour_end)}</h4>
+                <div className='flex-start'>
+                    <button
+                        className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
+                        onClick={handleClick}> ❤️ </button>
+                    {showAlert && (
+                        <div className={`alert-favorites ${!showAlert ? 'alert-favorites-hidden' : ''}`}>
+                            {alertMessage}
+                        </div>
+                    )}
+                </div>
             </div>
-            <br />
             <div className='flex-start'>
-                <button
-                    className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
-                    onClick={handleClick}> ❤️ </button>
-                {showAlert && (
-                    <div className={`alert-favorites ${!showAlert ? 'alert-favorites-hidden' : ''}`}>
-                        {alertMessage}
-                    </div>
+                <label><h4>Market Day:</h4></label>
+                <select id="marketDaysSelect" name="marketDays">
+                    {marketDays.map((day, index) => (
+                        <option key={index} value={day.id}>
+                            {weekday[day.day_of_week]}
+                        </option>
+                    ))}
+                </select>
+                {selectedDay && (
+                    <h4 className='btn-gap'>Hours: {timeConverter(selectedDay.hour_start)} - {timeConverter(selectedDay.hour_end)}</h4>
                 )}
             </div>
             <br/>
