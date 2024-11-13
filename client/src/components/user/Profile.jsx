@@ -138,7 +138,7 @@ function Profile( {marketData }) {
                 {editMode ? (
                     <>
                         <div className="form-group">
-                            <label>First Name:</label>
+                            <label><strong>First Name:</strong></label>
                             <input
                                 type="text"
                                 name="first_name"
@@ -147,7 +147,7 @@ function Profile( {marketData }) {
                             />
                         </div>
                         <div className="form-group">
-                            <label>Last Name:</label>
+                            <label><strong>Last Name:</strong></label>
                             <input
                                 type="text"
                                 name="last_name"
@@ -156,7 +156,7 @@ function Profile( {marketData }) {
                             />
                         </div>
                         <div className="form-group">
-                            <label>Email:</label>
+                            <label><strong>Email:</strong></label>
                             <input
                                 type="email"
                                 name="email"
@@ -165,11 +165,35 @@ function Profile( {marketData }) {
                             />
                         </div>
                         <div className="form-group">
-                            <label>Address:</label>
+                            <label><strong>Address:</strong></label>
                             <input
                                 type="text"
-                                name="address"
-                                value={profileData ? profileData.address : ''}
+                                name="address_1"
+                                value={profileData ? profileData.address_1 : ''}
+                                onChange={handleInputChange}
+                            />
+                            <input
+                                type="text"
+                                name="address_2"
+                                value={profileData ? profileData.address_2 : ''}
+                                onChange={handleInputChange}
+                            />
+                            <input
+                                type="text"
+                                name="city"
+                                value={profileData ? profileData.city : ''}
+                                onChange={handleInputChange}
+                            />
+                            <input
+                                type="text"
+                                name="state"
+                                value={profileData ? profileData.state : ''}
+                                onChange={handleInputChange}
+                            />
+                            <input
+                                type="text"
+                                name="zip"
+                                value={profileData ? profileData.zip : ''}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -180,7 +204,8 @@ function Profile( {marketData }) {
                     <>
                         <p><strong>Name:</strong> {profileData.first_name} {profileData.last_name}</p>
                         <p><strong>Email:</strong> {profileData.email}</p>
-                        <p><strong>Address:</strong> {profileData.address}</p>
+                        <p><strong>Address:</strong> {profileData.address_1}, {profileData.address_2}</p>
+                        <p><strong>&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;</strong> {profileData.city}, {profileData.state} {profileData.zip}</p>
                         <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                     </>
                 )}
