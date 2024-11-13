@@ -74,6 +74,7 @@ function MarketDetail ({ match }) {
         const dayId = parseInt(event.target.value);
         const day = marketDays.find(day => day.id === dayId);
         setSelectedDay(day);
+        setSelectedProduct()
     };
 
     const handleProductChange = (event) => {
@@ -120,9 +121,19 @@ function MarketDetail ({ match }) {
     }, [vendors]);
 
     const filteredVendorsList = vendors.filter((vendorId) => {
-        const vendorDetail = vendorDetails[vendorId];      
-        return !selectedProduct || vendorDetail.product === selectedProduct;
+        const vendorDetail = vendorDetails[vendorId];
+        // Filter vendorMarkets to find the market_days that match the selected market_id and selected day
+        const availableOnSelectedDay = vendorMarkets.filter(vendorMarket => {
+            return vendorMarket.vendor_id === vendorId &&
+                vendorMarket.market_day.market_id === market.id &&
+                vendorMarket.market_day.day_of_week === selectedDay?.day_of_week;
+        });
+        // Only include vendors that are available on the selected day and match the selected product
+        return availableOnSelectedDay.length > 0 && (!selectedProduct || vendorDetail.product === selectedProduct);
     });
+
+    // Gets rid of duplicate vendors (from different market_days)
+    const uniqueFilteredVendorsList = [...new Set(filteredVendorsList)];
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/market-reviews?market_id=${id}`)

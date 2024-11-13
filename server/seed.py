@@ -834,26 +834,41 @@ def run():
         password="lol",
         first_name="Ham-man",
         last_name="Gingy",
-        address="11 Broadway New York, NY 10004",
+        address_1="11 Broadway",
+        address_2="Floor 2",
+        city="New York",
+        state="NY",
+        zip="10004"
     )
     db.session.add(user_demo)
     db.session.commit()
 
     # add fake users
     users = []
+    states = [ 'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA', 'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY' ];
+    apartment = ['Apt', 'Suite', 'Floor', 'Building']
+
     for i in range(50):
         email = fake.ascii_free_email()
         password = fake.password()
         first_name = fake.first_name()
         last_name = fake.last_name()
-        address = fake.address()
+        address_1 = fake.street_address()
+        address_2 = f'{choice(apartment)} {randint(1, 200)}'
+        city = fake.city()
+        state = choice(states)
+        zip = fake.postcode()
 
         u = User(
             email=email,
             password=password,
             first_name=first_name,
             last_name=last_name,
-            address=address,
+            address_1=address_1,
+            address_2=address_2,
+            city=city,
+            state=state,
+            zip=zip
         )
         users.append(u)
 
