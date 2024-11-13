@@ -19,6 +19,7 @@ function MarketDetail ({ match }) {
     const [reviewData, setReviewData] = useState("");
     const [editingReviewId, setEditingReviewId] = useState(null);
     const [editedReviewData, setEditedReviewData] = useState("");
+    const [productList, setProductList] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState("");
     const [marketDays, setMarketDays] = useState([])
     const [selectedDay, setSelectedDay] = useState(null);
@@ -328,6 +329,20 @@ function MarketDetail ({ match }) {
         }
     };
 
+    useEffect(() => {
+        if (vendorMarkets && selectedDay) {
+            // Filter `vendorMarkets` based on selected day
+            const availableOnSelectedDay = vendorMarkets.filter(
+                vendorMarket => vendorMarket.market_day.market_id === market.id &&
+                    vendorMarket.market_day.day_of_week === selectedDay.day_of_week
+            );
+
+            // Create a unique list of products available on the selected day
+            const uniqueProducts = [...new Set(availableOnSelectedDay.map(vm => vm.vendor.product))];
+            setProductList(uniqueProducts);
+        }
+    }, [vendorMarkets, selectedDay]);
+
 
     if (!market) {
         return <div>Loading...</div>;
@@ -395,7 +410,7 @@ function MarketDetail ({ match }) {
                 <h2>Vendors in this Market:</h2>
                 <select value={selectedProduct} onChange={handleProductChange}>
                     <option value="">All Products</option>
-                    {products.map(product => (
+                    {productList.map(product => (
                         <option key={product} value={product}>{product}</option>
                     ))}
                 </select>
