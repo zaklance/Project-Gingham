@@ -954,7 +954,7 @@ def adminLogin():
     if not adminUser.authenticate(data['password']):
         return {'error': 'login failed'}, 401
     
-    access_token = create_access_token(identity=adminUser.id, expires_delta=timedelta(hours=12))
+    access_token = create_access_token(identity=adminUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "admin"})
 
     return jsonify(access_token=access_token, admin_user_id=adminUser.id), 200
 
@@ -996,7 +996,12 @@ def adminLogout():
     return {}, 204
 
 @app.route("/admin-users", methods=['GET', 'POST'])
+@jwt_required()
 def handle_admin_users():
+    
+    if not check_role('admin'):
+        return {'error': "Access forbidden: Admin only"}, 403
+    
     if request.method == 'GET':
         try:
             admin_users = AdminUser.query.all()
