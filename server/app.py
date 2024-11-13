@@ -369,7 +369,12 @@ def get_vendor_image(vendor_id):
     return {'error': 'Vendor or image not found'}, 404
 
 @app.route('/users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
+@jwt_required()
 def profile(id):
+    
+    if not check_role('user'):
+        return {'error': "Access forbidden: User only"}, 403
+    
     if request.method == 'GET':
         user = User.query.filter_by(id=id).first()
         if not user:
@@ -643,7 +648,11 @@ def get_vendor_users():
         return {'error': f'Exception: {str(e)}'}, 500
     
 @app.route('/vendor-users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
+@jwt_required()
 def vendorProfile(id):
+    if not check_role('vendor'):
+        return {'error': "Access forbidden: Vendor only"}, 403
+    
     if request.method == 'GET':
         vendorUser = VendorUser.query.filter_by(id = id).first()
         if not vendorUser:
