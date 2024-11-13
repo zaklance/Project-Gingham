@@ -36,70 +36,69 @@ function Contact() {
     };
 
     return(
-        <div className='login-bar'>
+        <div className=''>
             <div className='vendor-wrapper'>
                 <h1 className='title'>Contact Us!</h1>
                 <p>Have a question for us? Feel Free to send us an inquiry using the form below:</p>
+                <br></br>
+                <div>
+                    <p>Prefer to email us directly? Click here: <strong>
+                        <a href={`mailto:hello@mufo.nyc`} target="_blank" rel="noopener noreferrer">
+                            Email Us
+                        </a>
+                    </strong></p>
+                    
+                </div>
+                <div className='title flex-center-justify'>
                     <form onSubmit={handleSubmit} className='form'>
-                    <div className='form-group'>
-                        <label>Name:</label>
-                        <input 
-                            type="text" 
-                            name="name" 
-                            value={formData.name} 
-                            placeholder="enter your name"
-                            onChange={handleChange} 
-                            required 
-                        />
-                    </div>
-                    <div className='form-group'>
-                        <label>Email:</label>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            value={formData.email} 
-                            placeholder="enter your email"
-                            onChange={handleChange} 
-                            required 
-                        />
-                    </div>
-                    <div className='form-group'>
-                        <label>Subject:</label>
-                        <input 
-                            type="text" 
-                            name="subject" 
-                            value={formData.subject} 
-                            placeholder="enter the subject"
-                            onChange={handleChange} 
-                            required 
-                        />
-                    </div>
-                    <div className='form-group'>
-                        <label>Message:</label>
-                        <textarea 
-                            name="message" 
-                            value={formData.message} 
-                            placeholder="enter your message"
-                            onChange={handleChange} 
-                            rows="20"
-                            cols="60"
-                            required 
-                        />
-                    </div>
-                    <button className='btn-login' type="submit">Send Message</button>
-                </form>
-            </div>
-            <div className='vendor-wrapper'>
-                <p>Prefer to email us directly? Click the link below:</p>
-                <strong>
-                    <a
-                        href={`mailto:hello@mufo.nyc`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Email Us 
-                    </a>
-                </strong>
+                        <div className='form-group form-contact'>
+                            <label><strong>Name:</strong></label>
+                            <input 
+                                type="text" 
+                                name="name" 
+                                value={formData.name} 
+                                placeholder="enter your name"
+                                onChange={handleChange} 
+                                required 
+                            />
+                        </div>
+                        <div className='form-group form-contact'>
+                            <label><strong>Email:</strong></label>
+                            <input 
+                                type="email" 
+                                name="email" 
+                                value={formData.email} 
+                                placeholder="enter your email"
+                                onChange={handleChange} 
+                                required 
+                            />
+                        </div>
+                        <div className='form-group form-contact'>
+                            <label><strong>Subject:</strong></label>
+                            <input 
+                                type="text" 
+                                name="subject" 
+                                value={formData.subject} 
+                                placeholder="enter the subject"
+                                onChange={handleChange} 
+                                required 
+                            />
+                        </div>
+                        <div className='form-group form-contact'>
+                            <label><strong>Message:</strong></label>
+                            <textarea 
+                                name="message" 
+                                value={formData.message} 
+                                placeholder="enter your message"
+                                onChange={handleChange} 
+                                rows="20"
+                                cols="60"
+                                required 
+                            />
+                        </div>
+                        <button className='btn-login' type="submit">Send Message</button>
+                    </form>
+                </div>
             </div>
         </div>
     );

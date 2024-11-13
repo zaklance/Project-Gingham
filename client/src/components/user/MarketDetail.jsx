@@ -334,7 +334,7 @@ function MarketDetail ({ match }) {
                 <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Markets</button>
             </div>
             <br/>
-            <div className='flex-space-around-end'>
+            <div className='flex-space-around flex-end'>
                 <div>
                     <img className='img-market' src={`/market-images/${market.image}`} alt="Market Image" />
                 </div>
