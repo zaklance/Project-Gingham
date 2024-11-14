@@ -21,6 +21,7 @@ import Vendors from './components/user/Vendors.jsx';
 import VendorDetail from './components/user/VendorDetail.jsx';
 import Logout from './components/user/Logout.jsx';
 import ResetRequest from './components/user/ResetRequest.jsx';
+import PasswordReset from './components/user/PasswordReset.jsx';
 
 // vendor routes
 import VendorHome from './components/vendor/VendorHome.jsx';
@@ -129,7 +130,9 @@ const router = createBrowserRouter([
                     { path: "checkout", element: <CheckoutForm /> },
                     { path: "check-session", element: <CheckSession /> },
                     { path: "return", element: <Return />},
-                    { path: "reset-request", element: <ResetRequest /> }
+                    { path: "reset-request", element: <ResetRequest /> },
+                    { path: "password-reset/:token", element: <PasswordReset /> },
+                    { path: "return", element: <Return /> }
                 ]
             },
             {
