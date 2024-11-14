@@ -125,9 +125,22 @@ function AdminProfile () {
                             </>
                         ) : (
                             <>
-                                <p><strong>Name: </strong> {adminUserData ? `${adminUserData.first_name} ${adminUserData.last_name}` : 'Loading...'} </p>
-                                <p><strong>Email: </strong> {adminUserData ? adminUserData.email : ' Loading...'} </p>
-                                <p><strong>Phone: </strong> {adminUserData ? adminUserData.phone : ' Loading...'} </p>
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td className='cell-title'>Name:</td>
+                                            <td className='cell-text'>{adminUserData ? `${adminUserData.first_name} ${adminUserData.last_name}` : 'Loading...'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='cell-title'>Email:</td>
+                                            <td className='cell-text'>{adminUserData ? adminUserData.email : ' Loading...'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='cell-title'>Phone:</td>
+                                            <td className='cell-text'>{adminUserData ? adminUserData.phone : ' Loading...'}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                                 <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                             </>
                         )}

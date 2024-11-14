@@ -65,7 +65,7 @@ function MarketDetail ({ match }) {
                 setMarketDays(filteredData)
                 setSelectedDay(filteredData[0]);
             })
-            .catch(error => console.error('Error fetching favorites', error));
+            .catch(error => console.error('Error fetching market days', error));
     }, [market?.id]);
 
     const handleDayChange = (event) => {
