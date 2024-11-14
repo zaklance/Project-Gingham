@@ -235,11 +235,31 @@ def market_by_id(id):
     if request.method == 'GET':
         return market.to_dict(), 200
     elif request.method == 'PATCH':
-        data = request.get_json()
-        for key, value in data.items():
-            setattr(market, key, value)
-        db.session.commit()
-        return market.to_dict(), 200
+        market = Market.query.filter_by(id=id).first()
+        if not market:
+            return {'error': 'user not found'}, 404
+        try:
+            data = request.get_json()
+            # for key, value in data.items():
+            #     setattr(user, key, value)
+            market.name = data.get('name')
+            market.image = data.get('image')
+            market.location = data.get('location')
+            market.zipcode = data.get('zipcode')
+            market.coordinates = {"lat": data.get('coordinates_lat'), "lng": data.get('coordinates_lng')}
+            market.schedule = data.get('schedule')
+            market.year_round = data.get('year_round')
+            if data.get('season_start'):
+                market.season_start = datetime.strptime(data.get('season_start'), '%Y-%m-%d').date()
+            if data.get('season_end'):
+                market.season_end = datetime.strptime(data.get('season_end'), '%Y-%m-%d').date()
+            
+            db.session.commit()
+            return market.to_dict(), 200
+        
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
     elif request.method == 'DELETE':
         db.session.delete(market)
         db.session.commit()

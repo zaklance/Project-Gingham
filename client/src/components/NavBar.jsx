@@ -64,12 +64,22 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                     <>
                         <li>
                             <button className='nav-tab color-3'>
-                                <NavLink reloadDocument to="/admin/dashboard">Dashboard</NavLink>
+                                <NavLink reloadDocument to={`/admin/profile/${admin_id}`}>Profile</NavLink>
                             </button>
                         </li>
                         <li>
                             <button className='nav-tab color-5'>
-                                <NavLink reloadDocument to={`/admin/profile/${admin_id}`}>Profile</NavLink>
+                                <NavLink reloadDocument to={`/admin/markets`}>Markets</NavLink>
+                            </button>
+                        </li>
+                        <li>
+                            <button className='nav-tab color-4'>
+                                <NavLink reloadDocument to={`/admin/vendors`}>Vendors</NavLink>
+                            </button>
+                        </li>
+                        <li>
+                            <button className='nav-tab color-1'>
+                                <NavLink reloadDocument to={`/admin/users`}>Users</NavLink>
                             </button>
                         </li>
                     </>
