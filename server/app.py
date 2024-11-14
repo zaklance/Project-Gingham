@@ -1188,7 +1188,6 @@ def contact():
         return jsonify({"error": str(e)}), 500
     
 # Stripe
-
 stripe.api_key = os.getenv('STRIPE_PY_KEY')
 
 @app.route('/create-checkout-session', methods=['POST'])
@@ -1209,15 +1208,12 @@ def create_checkout_session():
     except Exception as e:
         return str(e)
     return jsonify(clientSecret=session.client_secret)
+
 @app.route('/session-status', methods=['GET'])
 def session_status():
   session = stripe.checkout.Session.retrieve(request.args.get('session_id'))
   return jsonify(status=session.status, customer_email=session.customer_details.email)
 
-    
-if __name__ == '__main__':
-    app.run(port=5555, debug=True)
-    
 #User Password Reset Request
 @app.route('/user/password-reset-request', methods=['POST'])
 def password_reset_request():
@@ -1261,34 +1257,43 @@ def password_reset_request():
         return {'error': f'Failed to send email: {str(e)}'}, 500
 
 # Password Reset Route
-@app.route('/user/password-reset/<token>', methods=['POST'])
+@app.route('/user/password-reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
-    try:
-        # Verify the token and get the email
-        email = serializer.loads(token, salt='password-reset-salt', max_age=7200)
+    if request.method == 'GET':
+        # Return a simple response for the front-end routing to work
+        return redirect(f'http://localhost:5173/user/password-reset/{token}')
 
-        # Extract the new password from the request
-        data = request.get_json()
-        new_password = data.get('new_password')
+    # Existing POST logic remains unchanged
+    if request.method == 'POST':
+        try:
+            # Verify the token and get the email
+            email = serializer.loads(token, salt='password-reset-salt', max_age=7200)
 
-        # Check if the new password is provided
-        if not new_password:
-            return {'error': 'New password is required'}, 400
+            # Extract the new password from the request
+            data = request.get_json()
+            new_password = data.get('new_password')
 
-        # Retrieve the user from the database using the email
-        user = User.query.filter_by(email=email).first()
-        if not user:
-            return {'error': 'User not found'}, 404
+            # Check if the new password is provided
+            if not new_password:
+                return {'error': 'New password is required'}, 400
 
-        # Hash the new password and update the user's password
-        hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
-        user.password = hashed_password
-        db.session.commit()
+            # Retrieve the user from the database using the email
+            user = User.query.filter_by(email=email).first()
+            if not user:
+                return {'error': 'User not found'}, 404
 
-        return {'message': 'Password successfully reset'}, 200
+            # Hash the new password and update the user's password
+            hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+            user.password = hashed_password
+            db.session.commit()
 
-    except SignatureExpired:
-        return {'error': 'The token has expired'}, 400
+            return {'message': 'Password successfully reset'}, 200
 
-    except Exception as e:
-        return {'error': f'Failed to reset password: {str(e)}'}, 500
+        except SignatureExpired:
+            return {'error': 'The token has expired'}, 400
+
+        except Exception as e:
+            return {'error': f'Failed to reset password: {str(e)}'}, 500
+    
+if __name__ == '__main__':
+    app.run(port=5555, debug=True)
