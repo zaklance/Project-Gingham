@@ -21,6 +21,7 @@ import Vendors from './components/user/Vendors.jsx';
 import VendorDetail from './components/user/VendorDetail.jsx';
 import Logout from './components/user/Logout.jsx';
 import ResetRequest from './components/user/ResetRequest.jsx';
+import PasswordReset from './components/user/PasswordReset.jsx';
 
 // vendor routes
 import VendorHome from './components/vendor/VendorHome.jsx';
@@ -33,7 +34,6 @@ import VendorProfile from './components/vendor/VendorProfile.jsx';
 import AdminHome from './components/admin/AdminHome.jsx';
 import AdminLogout from './components/admin/AdminLogout.jsx';
 import AdminProfile from './components/admin/AdminProfile.jsx';
-import AdminDashboard from './components/admin/AdminDashboard.jsx';
 import AdminMarkets from './components/admin/AdminMarkets.jsx';
 import AdminVendors from './components/admin/AdminVendors.jsx';
 import AdminUsers from './components/admin/AdminUsers.jsx';
@@ -130,7 +130,9 @@ const router = createBrowserRouter([
                     { path: "checkout", element: <CheckoutForm /> },
                     { path: "check-session", element: <CheckSession /> },
                     { path: "return", element: <Return />},
-                    { path: "reset-request", element: <ResetRequest /> }
+                    { path: "reset-request", element: <ResetRequest /> },
+                    { path: "password-reset/:token", element: <PasswordReset /> },
+                    { path: "return", element: <Return /> }
                 ]
             },
             {
@@ -147,7 +149,6 @@ const router = createBrowserRouter([
                 path: "admin",
                 children: [
                     { path: "home", element: <AdminHome /> },
-                    { path: "dashboard", element: <AdminDashboard />},
                     { path: "markets", element: <AdminMarkets />},
                     { path: "vendors", element: <AdminVendors />},
                     { path: "users", element: <AdminUsers />},

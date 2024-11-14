@@ -136,9 +136,9 @@ function Profile( {marketData }) {
             <div className='bounding-box'>
                 <h2>Profile Information</h2>
                 {editMode ? (
-                    <>
+                    <div className='title'>
                         <div className="form-group">
-                            <label><strong>First Name:</strong></label>
+                            <label>First Name:</label>
                             <input
                                 type="text"
                                 name="first_name"
@@ -147,7 +147,7 @@ function Profile( {marketData }) {
                             />
                         </div>
                         <div className="form-group">
-                            <label><strong>Last Name:</strong></label>
+                            <label> Name:</label>
                             <input
                                 type="text"
                                 name="last_name"
@@ -156,7 +156,7 @@ function Profile( {marketData }) {
                             />
                         </div>
                         <div className="form-group">
-                            <label><strong>Email:</strong></label>
+                            <label>Email:</label>
                             <input
                                 type="email"
                                 name="email"
@@ -165,7 +165,7 @@ function Profile( {marketData }) {
                             />
                         </div>
                         <div className="form-group">
-                            <label><strong>Address:</strong></label>
+                            <label>Address:</label>
                             <input
                                 type="text"
                                 name="address_1"
@@ -199,7 +199,7 @@ function Profile( {marketData }) {
                         </div>
                         <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
                         <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
-                    </>
+                    </div>
                 ) : (
                     <>
                         <table className='title'>
