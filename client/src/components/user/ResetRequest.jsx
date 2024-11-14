@@ -29,12 +29,13 @@ function ResetRequest() {
     };
 
     return (
-        <div className="reset-request">
-            <h2>Request Password Reset</h2>
+        <div className="reset-request center-container">
+            <h2>Password Reset</h2>
             <form onSubmit={handlePasswordResetRequest} className="form">
-                <div className="form-group form-reset">
-                    <label>Email:</label>
+                <div className="form-group">
+                    <label className='form-reset'>Email:</label>
                     <input
+                        className='form-reset'
                         type="email"
                         value={email}
                         placeholder="Enter your email"
@@ -42,7 +43,7 @@ function ResetRequest() {
                         required
                     />
                 </div>
-                <button className="btn-reset" type="submit">Send Reset Link</button>
+                <button className="btn btn-reset" type="submit">Send Reset Link</button>
             </form>
             {status && <p className="status-message">{status}</p>}
         </div>
