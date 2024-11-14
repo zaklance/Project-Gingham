@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, NavLink, Link, Route, Routes, BrowserRouter as Router} from 'react-router-dom';
 import BasketCard from './BasketCard';
+import VendorCreate from './VendorCreate';
 
 function VendorProfile () {
     const { id } = useParams();
@@ -116,24 +117,26 @@ function VendorProfile () {
 
     useEffect(() => {
         const fetchVendorData = async () => {
+            if (!vendorUserData || !vendorUserData.vendor_id) return;
+    
             try {
-                const response = await fetch(`http://127.0.0.1:5555/vendors/${id}`);
+                const response = await fetch(`http://127.0.0.1:5555/vendors/${vendorUserData.vendor_id}`);
                 if (response.ok) {
                     const data = await response.json();
                     setVendorData(data);
                     if (data.image) {
-                        setVendorImageURL(`http://127.0.0.1:5555/vendors/${id}/image`);
+                        setVendorImageURL(`http://127.0.0.1:5555/vendors/${vendorUserData.vendor_id}/image`);
                     }
                 } else {
-                    throw new Error('Network response was not ok');
+                    console.error('Failed to fetch vendor data:', response.status);
                 }
             } catch (error) {
                 console.error('Error fetching vendor data:', error);
             }
         };
-
+    
         fetchVendorData();
-    }, [id]);
+    }, [vendorUserData]);
 
     const handleVendorInputChange = (event) => {
         setVendorData({
@@ -422,7 +425,7 @@ function VendorProfile () {
                                 </>
                             )
                         ) : (
-                            <p>Loading vendor details...</p>
+                            <VendorCreate />
                         )}
                     </div>
                 </div>

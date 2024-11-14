@@ -238,7 +238,6 @@ function MarketDetail ({ match }) {
         setEditedReviewData(event.target.value);
     };
 
-
     const handleReviewSubmit = async () => {
         const existingReview = marketReviews.some(review => review.user_id === userId);
 
