@@ -202,10 +202,26 @@ function Profile( {marketData }) {
                     </>
                 ) : (
                     <>
-                        <p><strong>Name:</strong> {profileData.first_name} {profileData.last_name}</p>
-                        <p><strong>Email:</strong> {profileData.email}</p>
-                        <p><strong>Address:</strong> {profileData.address_1}, {profileData.address_2}</p>
-                        <p><strong>&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;</strong> {profileData.city}, {profileData.state} {profileData.zip}</p>
+                        <table className='title'>
+                            <tbody>
+                                <tr>
+                                    <td className='cell-title'>Name:</td>
+                                        <td className='cell-text'>{profileData.first_name} {profileData.last_name}</td>
+                                </tr>
+                                <tr>
+                                    <td className='cell-title'>Email:</td>
+                                        <td className='cell-text'>{profileData.email}</td>
+                                </tr>
+                                <tr>
+                                    <td className='cell-title'>Address:</td>
+                                        <td className='cell-text'>{profileData.address_1}, {profileData.address_2}</td>
+                                </tr>
+                                <tr>
+                                    <td className='cell-title'></td>
+                                        <td className='cell-text'>{profileData.city}, {profileData.state} {profileData.zip}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                         <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                     </>
                 )}
