@@ -97,12 +97,12 @@ function Login({ handlePopup }) {
         <div className='login-bar'>
             <button className="btn btn-large x-btn" onClick={handlePopup}>X</button>
             <div className='wrapper'>
-                <h1 className='title'>WELCOME TO GINGHAM!</h1>
-                <div>
-                    <form onSubmit={handleLogin} className="form">
-                        <h2>Login</h2>
+                <h1>WELCOME TO GINGHAM!</h1>
+                <div className="form">
+                    <form onSubmit={handleLogin}>
+                        <h2 className='margin-b-24'>Login</h2>
                         <div className="form-group form-login">
-                            <label>Email:</label>
+                            <label className=''>Email:</label>
                             <input
                                 type="email"
                                 value={loginEmail}
@@ -121,18 +121,20 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <p className="forgot-password" onClick={() => {
-                            navigate('/user/reset-request');
-                            window.location.reload();
-                        }}>
-                            Forgot password?
-                        </p>
-                        <button className='btn-login' type="submit">Login</button>
+                        <div className='flex-center-align flex-space-around title'>
+                            <button className='btn btn-login' type="submit">Login</button>
+                            <p className="forgot-password" onClick={() => {
+                                navigate('/user/reset-request');
+                                window.location.reload();
+                            }}>
+                                Forgot password?
+                            </p>
+                        </div>
                     </form>
                 </div>
                 <div>
                     <form onSubmit={handleSignup} className="form">
-                        <h2>Signup</h2>
+                        <h2 className='margin-b-24'>Signup</h2>
                         <div className="form-group form-login">
                             <label>Email: </label>
                             <input
@@ -223,7 +225,9 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <button className='btn-login' type="submit">Signup</button>
+                        <div className='flex-center title'>
+                            <button className='btn-login' type="submit">Signup</button>
+                        </div>
                     </form>
                 </div>
             </div>

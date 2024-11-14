@@ -49,7 +49,7 @@ function Contact() {
                     </strong></p>
                     
                 </div>
-                <div className='title flex-center-justify'>
+                <div className='title flex-center'>
                     <form onSubmit={handleSubmit} className='form'>
                         <div className='form-group form-contact'>
                             <label><strong>Name:</strong></label>

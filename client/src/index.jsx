@@ -33,7 +33,6 @@ import VendorProfile from './components/vendor/VendorProfile.jsx';
 import AdminHome from './components/admin/AdminHome.jsx';
 import AdminLogout from './components/admin/AdminLogout.jsx';
 import AdminProfile from './components/admin/AdminProfile.jsx';
-import AdminDashboard from './components/admin/AdminDashboard.jsx';
 import AdminMarkets from './components/admin/AdminMarkets.jsx';
 import AdminVendors from './components/admin/AdminVendors.jsx';
 import AdminUsers from './components/admin/AdminUsers.jsx';
@@ -147,7 +146,6 @@ const router = createBrowserRouter([
                 path: "admin",
                 children: [
                     { path: "home", element: <AdminHome /> },
-                    { path: "dashboard", element: <AdminDashboard />},
                     { path: "markets", element: <AdminMarkets />},
                     { path: "vendors", element: <AdminVendors />},
                     { path: "users", element: <AdminUsers />},

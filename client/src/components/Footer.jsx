@@ -9,7 +9,7 @@ function Footer() {
     return (
         <>
             <div className='footer'>
-                <div className='flex-space-around flex-center blue'>
+                <div className='flex-space-around flex-center-align blue'>
                     <ul className='ul-footer'>
                         <li className='footer-li'>
                             <NavLink reloadDocument to="/"><strong>Gingham Home</strong></NavLink>
