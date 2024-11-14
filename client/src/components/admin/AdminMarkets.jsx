@@ -3,10 +3,13 @@ import React, { useState, useEffect } from 'react';
 
 function AdminMarkets () {
     const [markets, setMarkets] = useState([]);
+    const [marketDays, setMarketDays] = useState([])
+    const [selectedDay, setSelectedDay] = useState(null);
     const [query, setQuery] = useState("");
     const [editMode, setEditMode] = useState(false);
     const [adminMarketData, setAdminMarketData] = useState(null);
     
+    const weekday = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     
     useEffect(() => {
         fetch("http://127.0.0.1:5555/markets")
@@ -19,6 +22,24 @@ function AdminMarkets () {
     const filteredMarkets = markets.filter(market => market.name.toLowerCase().includes(query.toLowerCase()) && market.name !== query)
     const matchingMarket = markets.find(market => market.name.toLowerCase() === query.toLowerCase());
     const matchingMarketId = matchingMarket ? matchingMarket.id : null;
+
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/market-days")
+            .then(response => response.json())
+            .then(data => {
+                const filteredData = data.filter(item => item.market_id === matchingMarketId);
+                setMarketDays(filteredData)
+                setSelectedDay(filteredData[0]);
+            })
+            .catch(error => console.error('Error fetching favorites', error));
+    }, [matchingMarketId]);
+
+    const handleDayChange = (event) => {
+        const dayId = parseInt(event.target.value);
+        const day = marketDays.find(day => day.id === dayId);
+        setSelectedDay(day);
+        setSelectedProduct()
+    };
 
     useEffect(() => {
         const fetchAdminMarketData = async () => {
@@ -193,7 +214,7 @@ function AdminMarkets () {
                                 <tbody>
                                     <tr>
                                         <td className='cell-title'>Image:</td>
-                                            <td className='cell-text'>{adminMarketData ? <img className='img-market' src={`/market-images/${adminMarketData.image}`} alt="Market Image" /> : ' Select a Market...'}</td>
+                                        <td className='cell-text'>{adminMarketData ? <img className='img-market' src={`/market-images/${adminMarketData.image}`} alt="Market Image" /> : ' Select a Market...'}</td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title'>Name:</td>
@@ -236,6 +257,16 @@ function AdminMarkets () {
                             <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                         </>
                     )}
+                    <div className='flex-start'>
+                        <label><h4>Market Day: &emsp;</h4></label>
+                        <select id="marketDaysSelect" name="marketDays" onChange={handleDayChange}>
+                            {marketDays.map((day, index) => (
+                                <option key={index} value={day.id}>
+                                    {weekday[day.day_of_week]}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
                 <p>**market additions, revisions, etc goes here**</p>
             </div>
