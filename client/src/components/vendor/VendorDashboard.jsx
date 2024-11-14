@@ -1,15 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import BasketCard from './BasketCard';
+import VendorCreate from './VendorCreate';
 
 function VendorDashboard() {
-    const { vendorId } = useParams();
+    const { id, vendorId } = useParams();
+    const [vendorUserData, setVendorUserData] = useState(null);
     const [locations, setLocations] = useState([]);
     const [marketDetails, setMarketDetails] = useState({});
     const [availableBaskets, setAvailableBaskets] = useState({});
     const [price, setPrice] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchVendorUserData = async () => {
+            try {
+                const token = sessionStorage.getItem('jwt-token');
+                const response = await fetch(`http://127.0.0.1:5555/vendor-users/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json' 
+                    }
+                });
+    
+                const text = await response.text();
+    
+                if (response.ok) {
+                    const data = JSON.parse(text);
+                    setVendorUserData(data);
+    
+                    if (data && data.isNew) {
+                        setNewVendor(true);
+                    }
+                } else {
+                    console.error('Error fetching profile:', response.status);
+                    if (response.status === 401) {
+                        console.error('Unauthorized: Token may be missing or invalid');
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching profile data:', error);
+            }
+        };
+        fetchVendorUserData();
+    }, [id]);
+
 
     // useEffect(() => {
     //     const fetchVendorData = async () => {
@@ -96,6 +133,11 @@ function VendorDashboard() {
     return (
         <div>
             <h2 className='title'>Vendor Dashboard</h2>
+            
+            <div className='bounding-box'>
+                <VendorCreate />
+
+            </div>
             <div className='bounding-box'>
                 <h3>Todays Markets:</h3>
                 <div className='market-cards-container'>

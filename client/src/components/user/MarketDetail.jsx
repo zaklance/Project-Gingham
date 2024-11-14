@@ -63,9 +63,11 @@ function MarketDetail ({ match }) {
             .then(data => {
                 const filteredData = data.filter(item => item.market_id === market.id);
                 setMarketDays(filteredData)
-                setSelectedDay(filteredData[0]);
+                if (filteredData.length > 0) {
+                    setSelectedDay(filteredData[0]);
+                }            
             })
-            .catch(error => console.error('Error fetching favorites', error));
+            .catch(error => console.error('Error fetching market days', error));
     }, [market?.id]);
 
     const handleDayChange = (event) => {
