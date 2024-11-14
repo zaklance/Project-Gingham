@@ -41,7 +41,7 @@ function Login({ handlePopup }) {
                 console.log('Login successful:', data);
     
                 // Navigate to the user's profile or refresh the page
-                navigate(`/admin/dashboard`);
+                navigate(`/admin/profile`);
                 window.location.reload();
             } else {
                 alert('Login failed');
