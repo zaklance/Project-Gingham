@@ -20,7 +20,7 @@ import Profile from './components/user/Profile.jsx';
 import Vendors from './components/user/Vendors.jsx';
 import VendorDetail from './components/user/VendorDetail.jsx';
 import Logout from './components/user/Logout.jsx';
-import ResetRequest from './components/ResetRequest.jsx';
+import ResetRequest from './components/user/ResetRequest.jsx';
 
 // vendor routes
 import VendorHome from './components/vendor/VendorHome.jsx';
