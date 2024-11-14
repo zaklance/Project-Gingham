@@ -121,8 +121,11 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <p className="forgot-password" onClick={() => navigate('/user/reset-request')}>
-                            Forgot Password?
+                        <p className="forgot-password" onClick={() => {
+                            navigate('/user/reset-request');
+                            window.location.reload();
+                        }}>
+                            Forgot password?
                         </p>
                         <button className='btn-login' type="submit">Login</button>
                     </form>

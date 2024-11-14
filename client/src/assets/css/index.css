@@ -1165,3 +1165,15 @@ form textarea {
 .edit-link:hover {
   text-decoration: underline;
 }
+
+.forgot-password {
+  color: #007BFF;
+  cursor: pointer;         
+  text-decoration: none;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
