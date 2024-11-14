@@ -20,6 +20,7 @@ import Profile from './components/user/Profile.jsx';
 import Vendors from './components/user/Vendors.jsx';
 import VendorDetail from './components/user/VendorDetail.jsx';
 import Logout from './components/user/Logout.jsx';
+import ResetRequest from './components/ResetRequest.jsx';
 
 // vendor routes
 import VendorHome from './components/vendor/VendorHome.jsx';
@@ -125,7 +126,8 @@ const router = createBrowserRouter([
                     { path: "your-cart", element: <Cart /> },
                     { path: "checkout", element: <CheckoutForm /> },
                     { path: "check-session", element: <CheckSession /> },
-                    { path: "return", element: <Return />}
+                    { path: "return", element: <Return />},
+                    { path: "reset-request", element: <ResetRequest /> }
                 ]
             },
             {
