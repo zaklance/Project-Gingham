@@ -6,6 +6,7 @@ import VendorCreate from './VendorCreate';
 function VendorDashboard() {
     const { id, vendorId } = useParams();
     const [vendorUserData, setVendorUserData] = useState(null);
+    const [newVendor, setNewVendor] = useState(false);
     const [locations, setLocations] = useState([]);
     const [marketDetails, setMarketDetails] = useState({});
     const [availableBaskets, setAvailableBaskets] = useState({});
@@ -134,64 +135,66 @@ function VendorDashboard() {
         <div>
             <h2 className='title'>Vendor Dashboard</h2>
             
-            <div className='bounding-box'>
-                <VendorCreate />
-
-            </div>
-            <div className='bounding-box'>
-                <h3>Todays Markets:</h3>
-                <div className='market-cards-container'>
-                    <div className='market-card'>
-                        <h3><strong>Union Square Market</strong></h3>
-                        <h4>April 9, Wednesday</h4>
-                        <br />
-                        <p>Available Baskets: 5</p>
-                        <br />
-                        <p>Pick Up Time: </p>
-                        <p>04:30 PM (1 hour)</p>
-                        <br />
-                        <p><strong>Claimed Baskets: 3</strong></p>
-                        <div className='bounding-box'>
-                            <p>sandroledesma, 04:45 PM<strong> ✓ </strong></p>
-                            <p>zaklance, 05:15 PM</p>
-                            <p>vhle, 05:15 PM</p>
+            {!vendorUserData || !vendorUserData.vendor_id ? (
+                <div className='bounding-box'>
+                    <VendorCreate />
+                </div>
+            ) : (
+                <div className='bounding-box'>
+                    <h3>Todays Markets:</h3>
+                    <div className='market-cards-container'>
+                        <div className='market-card'>
+                            <h3><strong>Union Square Market</strong></h3>
+                            <h4>April 9, Wednesday</h4>
+                            <br />
+                            <p>Available Baskets: 5</p>
+                            <br />
+                            <p>Pick Up Time: </p>
+                            <p>04:30 PM (1 hour)</p>
+                            <br />
+                            <p><strong>Claimed Baskets: 3</strong></p>
+                            <div className='bounding-box'>
+                                <p>sandroledesma, 04:45 PM<strong> ✓ </strong></p>
+                                <p>zaklance, 05:15 PM</p>
+                                <p>vhle, 05:15 PM</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <br/>
-                {/* {locations.map((marketId) => (
-                    <div key={marketId} className='market-item'>
-                        <h3>{marketDetails[marketId]?.name || 'Loading...'}</h3>
-                        <div className='market-info'>
-                            <label>
-                                Price: 
-                                <input 
-                                    type='number' 
-                                    value={price[marketId] || 0} 
-                                    onChange={(e) => handleChange(marketId, 'price', parseFloat(e.target.value))}
-                                />
-                            </label>
-                            <label>
-                                Available Baskets: 
-                                <input 
-                                    type='number' 
-                                    value={availableBaskets[marketId] || 0}
-                                    onChange={(e) => handleChange(marketId, 'baskets', parseInt(e.target.value))}
-                                />
-                            </label>
-                            <button className='btn-edit' onClick={() => handleSaveChanges(marketId)}>Save Changes</button>
-                        </div>
+                    <br/>
+                        {/* {locations.map((marketId) => (
+                            <div key={marketId} className='market-item'>
+                                <h3>{marketDetails[marketId]?.name || 'Loading...'}</h3>
+                                <div className='market-info'>
+                                    <label>
+                                        Price: 
+                                        <input 
+                                            type='number' 
+                                            value={price[marketId] || 0} 
+                                            onChange={(e) => handleChange(marketId, 'price', parseFloat(e.target.value))}
+                                        />
+                                    </label>
+                                    <label>
+                                        Available Baskets: 
+                                        <input 
+                                            type='number' 
+                                            value={availableBaskets[marketId] || 0}
+                                            onChange={(e) => handleChange(marketId, 'baskets', parseInt(e.target.value))}
+                                        />
+                                    </label>
+                                    <button className='btn-edit' onClick={() => handleSaveChanges(marketId)}>Save Changes</button>
+                                </div>
+                            </div>
+                        ))} */}
+                    <h3>Future Markets:</h3>
+                    <p>Edits can be made until 9AM the day of the market unless basket has already been claimed by customer</p>
+                    <br/>
+                    <div className='market-cards-container'>
+                        <BasketCard vendorId={vendorId}/>
+                        <BasketCard />
+                        <BasketCard />
                     </div>
-                ))} */}
-                <h3>Future Markets:</h3>
-                <p>Edits can be made until 9AM the day of the market unless basket has already been claimed by customer</p>
-                <br/>
-                <div className='market-cards-container'>
-                    <BasketCard vendorId={vendorId}/>
-                    <BasketCard />
-                    <BasketCard />
                 </div>
-            </div>
+            )}
         </div>
     );
 }
