@@ -52,8 +52,8 @@ function Login({ handlePopup }) {
     
                 console.log('Login successful:', data);
     
-                // Navigate to the user's profile or refresh the page
-                window.location.reload();
+                // Navigate to home page
+                window.location.href = '/';
             } else {
                 alert('Login failed');
             }
