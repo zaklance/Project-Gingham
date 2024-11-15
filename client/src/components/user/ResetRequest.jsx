@@ -31,7 +31,7 @@ function ResetRequest() {
     return (
         <div className="reset-request center-container">
             <h2>Password Reset</h2>
-            <form onSubmit={handlePasswordResetRequest} className="form">
+            <div onSubmit={handlePasswordResetRequest} className="form">
                 <div className="form-group">
                     <label className='form-reset'>Email:</label>
                     <input
@@ -44,7 +44,7 @@ function ResetRequest() {
                     />
                 </div>
                 <button className="btn btn-reset" type="submit">Send Reset Link</button>
-            </form>
+            </div>
             {status && <p className="status-message">{status}</p>}
         </div>
     );

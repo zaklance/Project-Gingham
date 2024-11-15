@@ -78,7 +78,7 @@ function VendorDetail () {
     
             const details = await Promise.all(markets.map(async (marketId) => {
                 try {
-                    const response = await fetch(`http://127.0.0.1:5555/market_days/${marketId}`);
+                    const response = await fetch(`http://127.0.0.1:5555/market-days/${marketId}`);
                     if (!response.ok) throw new Error(`Failed to fetch market ${marketId}`);
                     return await response.json();
                 } catch (error) {
