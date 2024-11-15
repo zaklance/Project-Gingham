@@ -587,6 +587,10 @@ ul {
   margin-bottom: 20px;
 }
 
+.active-tab {
+  background-color: #f9f4a4;
+}
+
 button a {
   text-decoration: none;
   color: #3b4752;

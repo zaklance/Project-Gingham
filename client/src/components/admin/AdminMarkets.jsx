@@ -51,10 +51,10 @@ function AdminMarkets () {
             <div className='flex-start flex-center-align flex-gap'>
                 <h2 className=''>Markets Management:</h2>
                 <div className='tabs margin-t-20'>                
-                    <Link to="#" onClick={() => setActiveTab('edit')} className={activeTab === 'market-edit' ? 'active btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                    <Link to="#" onClick={() => setActiveTab('edit')} className={activeTab === 'edit' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                         Edit
                     </Link>
-                    <Link to="#" onClick={() => setActiveTab('add')} className={activeTab === 'market-add' ? 'active btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="#" onClick={() => setActiveTab('add')} className={activeTab === 'add' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                         Add
                     </Link>
                 </div>
