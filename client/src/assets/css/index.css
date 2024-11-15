@@ -798,7 +798,7 @@ form textarea {
 }
 
 .cell-title {
-  padding: 4px 6px;
+  padding: 8px;
   border-radius: 12px;
   font-weight: 600;
   min-width: 124px;
@@ -845,6 +845,12 @@ form textarea {
   font-size: 1em;
 }
 
+#market-search {
+  padding: 4px;
+  width: 100%;
+  font-size: 1em;
+}
+
 .dropdown-content {
   display: block;
   position: absolute;
@@ -853,6 +859,7 @@ form textarea {
 
 .search-results {
   background-color: #eee;
+  padding: 4px;
   width: 360px;
   opacity: .9;
 }

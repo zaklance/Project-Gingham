@@ -41,7 +41,7 @@ function Login({ handlePopup }) {
                 console.log('Login successful:', data);
     
                 // Navigate to the user's profile or refresh the page
-                navigate(`/admin/profile`);
+                navigate(`/admin/profile/${globalThis.sessionStorage.getItem('admin_user_id', data.admin_user_id) }`);
                 window.location.reload();
             } else {
                 alert('Login failed');

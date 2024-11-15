@@ -3,14 +3,44 @@ import React, { useState, useEffect } from 'react';
 
 function AdminMarkets () {
     const [markets, setMarkets] = useState([]);
+    const [marketDayDetails, setMarketDayDetails] = useState([])
     const [marketDays, setMarketDays] = useState([])
     const [selectedDay, setSelectedDay] = useState(null);
     const [query, setQuery] = useState("");
     const [editMode, setEditMode] = useState(false);
+    const [editDayMode, setEditDayMode] = useState(false);
     const [adminMarketData, setAdminMarketData] = useState(null);
     
     const weekday = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     
+    const weekdayReverse = {
+        "Monday": 0,
+        "monday": 0,
+        "Tuesday": 1,
+        "tuesday": 1,
+        "Wednesday": 2,
+        "wednesday": 2,
+        "Thursday": 3,
+        "thursday": 3,
+        "Friday": 4,
+        "friday": 4,
+        "Saturday": 5,
+        "saturday": 5,
+        "Sunday": 6,
+        "sunday": 6
+    }
+
+    function timeConverter(time24) {
+        const date = new Date('1970-01-01T' + time24);
+
+        const time12 = date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+        return time12
+    }
+
     useEffect(() => {
         fetch("http://127.0.0.1:5555/markets")
         .then(response => response.json())
@@ -38,7 +68,6 @@ function AdminMarkets () {
         const dayId = parseInt(event.target.value);
         const day = marketDays.find(day => day.id === dayId);
         setSelectedDay(day);
-        setSelectedProduct()
     };
 
     useEffect(() => {
@@ -77,9 +106,27 @@ function AdminMarkets () {
             [event.target.name]: event.target.value,
         });
     };
+    
+    const handleInputMarketDayChange = (event) => {
+        setSelectedDay({
+            ...selectedDay,
+            [event.target.name]: event.target.value,
+        });
+    };
+    
+    const handleWeekdayChange = (event) => {
+        setSelectedDay({
+            ...selectedDay,
+            [event.target.name]: weekdayReverse[event.target.value],
+        });
+    };
 
     const handleEditToggle = () => {
         setEditMode(!editMode);
+    };
+    
+    const handleEditDayToggle = () => {
+        setEditDayMode(!editDayMode);
     };
 
     const handleSaveChanges = async () => {
@@ -89,7 +136,12 @@ function AdminMarkets () {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(adminMarketData)
+                body: JSON.stringify({
+                    day_of_week: weekdayReverse[selectedDay.day_of_week],
+                    hour_start: selectedDay.hour_start,
+                    hour_end: selectedDay.hour_end
+                }),
+
             });
             console.log('Request body:', JSON.stringify(adminMarketData));
 
@@ -107,20 +159,56 @@ function AdminMarkets () {
             console.error('Error saving changes:', error);
         }
     };
+
+    const handleSaveDayChanges = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/market_days/${selectedDay.id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(selectedDay)
+            });
+            console.log('Request body:', JSON.stringify(selectedDay));
+
+            if (response.ok) {
+                const updatedData = await response.json();
+                setSelectedDay(updatedData);
+                setEditDayMode(false);
+                console.log('Market data updated successful:', updatedData);
+            } else {
+                console.log('Failed to save changes');
+                console.log('Response status;', response.status);
+                console.log('Response text:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error saving changes:', error);
+        }
+    };
     
     return(
         <div>
             <h2 className='title'>Markets Management</h2>
             <div className='bounding-box'>
-                <input className="search-bar" type="text" placeholder="Search markets..." value={query} onChange={onUpdateQuery} />
-                <div className="dropdown-content">
-                    {
-                        query &&
-                        filteredMarkets.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => setQuery(item.name)}>
-                            {item.name}
-                        </div>)
-                    }
-                </div>
+                <h2>Edit Markets</h2>
+                <table className='title'>
+                    <tbody>
+                        <tr>
+                            <td className='cell-title'>Search:</td>
+                            <td className='cell-text'>
+                                <input id='market-search' className="search-bar" type="text" placeholder="Search markets..." value={query} onChange={onUpdateQuery} />
+                                <div className="dropdown-content">
+                                    {
+                                        query &&
+                                        filteredMarkets.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => setQuery(item.name)}>
+                                            {item.name}
+                                        </div>)
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
                 <div className='title'>
                     {editMode ? (
                         <>
@@ -241,7 +329,7 @@ function AdminMarkets () {
                                         <td className='cell-text'>{adminMarketData ? adminMarketData.schedule : ' Select a Market...'}</td>
                                     </tr>
                                     <tr>
-                                        <td className='cell-title' title="true or false">Year Round? :</td>
+                                        <td className='cell-title' title="true or false">Year Round :</td>
                                         <td className='cell-text'>{adminMarketData ? `${adminMarketData.year_round}` : ' Select a Market...'}</td>
                                     </tr>
                                     <tr>
@@ -257,7 +345,7 @@ function AdminMarkets () {
                             <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                         </>
                     )}
-                    <div className='flex-start'>
+                    <div className='flex-start title'>
                         <label><h4>Market Day: &emsp;</h4></label>
                         <select id="marketDaysSelect" name="marketDays" onChange={handleDayChange}>
                             {marketDays.map((day, index) => (
@@ -268,6 +356,59 @@ function AdminMarkets () {
                         </select>
                     </div>
                 </div>
+                {editDayMode ? (
+                    <>
+                        <div className='form-group'>
+                            <label>Market Day:</label>
+                            <input
+                                type="text"
+                                name="day_of_week"
+                                value={selectedDay ? weekday[selectedDay.day_of_week] : ''}
+                                onChange={handleWeekdayChange}
+                            />
+                        </div>
+                        <div className='form-group'>
+                            <label>Start Time:</label>
+                            <input
+                                type="text"
+                                name="hour_start"
+                                value={selectedDay ? selectedDay.hour_start : ''}
+                                onChange={handleInputMarketDayChange}
+                            />
+                        </div>
+                        <div className='form-group'>
+                            <label>End Time:</label>
+                            <input
+                                type="text"
+                                name="hour_end"
+                                value={selectedDay ? selectedDay.hour_end : ''}
+                                onChange={handleInputMarketDayChange}
+                            />
+                        </div>
+                        <button className='btn-edit' onClick={handleSaveDayChanges}>Save Changes</button>
+                        <button className='btn-edit' onClick={handleEditDayToggle}>Cancel</button>
+                    </>
+                ) : (
+                    <>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td className='cell-title'>Day of Week:</td>
+                                    <td className='cell-text'>{selectedDay ? weekday[selectedDay.day_of_week] : 'Select a Market...'}</td>
+                                </tr>
+                                <tr>
+                                    <td className='cell-title'>Start Time:</td>
+                                    <td className='cell-text'>{selectedDay ? timeConverter(selectedDay.hour_start) : 'Select a Market...'}</td>
+                                </tr>
+                                <tr>
+                                    <td className='cell-title'>End Time:</td>
+                                    <td className='cell-text'>{selectedDay ? timeConverter(selectedDay.hour_end) : 'Select a Market...'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button className='btn-edit' onClick={handleEditDayToggle}>Edit</button>
+                    </>
+                )}
                 <p>**market additions, revisions, etc goes here**</p>
             </div>
         </div>
