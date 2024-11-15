@@ -16,22 +16,26 @@ function VendorDashboard() {
 
     useEffect(() => {
         const fetchVendorUserData = async () => {
+            const vendorUserId = sessionStorage.getItem('vendor_user_id'); 
+            if (!vendorUserId) {
+                console.error("No vendor user ID found");
+                return;
+            }
+
             try {
                 const token = sessionStorage.getItem('jwt-token');
-                const response = await fetch(`http://127.0.0.1:5555/vendor-users/${id}`, {
+                const response = await fetch(`http://127.0.0.1:5555/vendor-users/${vendorUserId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json' 
+                        'Content-Type': 'application/json'
                     }
                 });
-    
-                const text = await response.text();
-    
+
                 if (response.ok) {
-                    const data = JSON.parse(text);
+                    const data = await response.json();
                     setVendorUserData(data);
-    
+
                     if (data && data.isNew) {
                         setNewVendor(true);
                     }
@@ -43,10 +47,13 @@ function VendorDashboard() {
                 }
             } catch (error) {
                 console.error('Error fetching profile data:', error);
+            } finally {
+                setLoading(false);
             }
         };
+
         fetchVendorUserData();
-    }, [id]);
+    }, []); 
 
 
     // useEffect(() => {
