@@ -32,6 +32,7 @@ function MarketDetail ({ match }) {
     const { handlePopup, amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
     
     const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
+    const isUserLoggedIn = userId;
     
     const navigate = useNavigate();
 
@@ -492,11 +493,12 @@ function MarketDetail ({ match }) {
                                 required
                             />
                         </div>
-                        <button className='btn-login' onClick={handleReviewSubmit} type="submit">Post Review</button>
+                        <button className='btn-edit' onClick={handleReviewSubmit} type="submit">Post Review</button>
+                        <button className='btn-edit' onClick={handleReviewToggle}>Cancel</button>
                     </>
                 ) : (
                     <>
-                        <button className='btn btn-plus' onClick={handleReviewToggle} title='Leave a review'>+</button>
+                            <button className={isUserLoggedIn > 0 ? 'btn btn-plus' : 'hidden'} onClick={handleReviewToggle} title='Leave a review'>+</button>
                     </>
                 )}
                 {showDupeAlert && (
