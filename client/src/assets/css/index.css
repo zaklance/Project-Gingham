@@ -187,6 +187,10 @@ h2 {
   margin-bottom: 24px;
 }
 
+.hidden {
+  visibility: hidden;
+}
+
 p, li, div, form, input, select, button, textarea {
   font-family: "Lexend Deca", sans-serif;
   font-optical-sizing: auto;

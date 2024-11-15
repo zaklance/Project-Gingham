@@ -26,6 +26,10 @@ function VendorDetail () {
 
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
     const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
+    const isUserLoggedIn = userId;
+    console.log(userId)
+    console.log(isUserLoggedIn)
+    console.log(isUserLoggedIn > 0)
 
     const weekday = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
@@ -297,7 +301,6 @@ function VendorDetail () {
         }
     }
 
-
     if (!vendor) {
         return <div>Loading...</div>;
     }
@@ -436,10 +439,11 @@ function VendorDetail () {
                                     required
                                 />
                             </div>
-                            <button className='btn-login' onClick={hanldeReviewSubmit} type="submit">Post Review</button>
+                            <button className='btn-edit' onClick={hanldeReviewSubmit} type="submit">Post Review</button>
+                            <button className='btn-edit' onClick={handleReviewToggle}>Cancel</button>
                         </>
                     ) : (
-                        <button className='btn btn-plus' onClick={handleReviewToggle} title='Leave a review'>+</button>
+                            <button className={isUserLoggedIn > 0 ? 'btn btn-plus' : 'hidden'} onClick={handleReviewToggle} title='Leave a review'>+</button>
                     )}
                     {showDupeAlert && (
                         <div className='alert-reviews float-right'>
