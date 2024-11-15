@@ -277,7 +277,7 @@ def all_market_days():
             day_of_week=data['day_of_week']
         )
         db.session.commit()
-        return new_market_day.to_dict(), 201
+        return jsonify(new_market_day.to_dict()), 201
 
 @app.route('/market_days/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def market_day_by_id(id):
