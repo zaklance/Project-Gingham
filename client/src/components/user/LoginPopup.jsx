@@ -121,7 +121,7 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <div className='flex-center-align flex-space-around title'>
+                        <div className='flex-center-align flex-space-around margin-t-16'>
                             <button className='btn btn-login' type="submit">Login</button>
                             <p className="forgot-password" onClick={() => {
                                 navigate('/user/reset-request');
@@ -225,7 +225,7 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <div className='flex-center title'>
+                        <div className='flex-center margin-t-16'>
                             <button className='btn-login' type="submit">Signup</button>
                         </div>
                     </form>
