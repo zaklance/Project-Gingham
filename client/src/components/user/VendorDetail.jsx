@@ -27,9 +27,6 @@ function VendorDetail () {
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
     const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
     const isUserLoggedIn = userId;
-    console.log(userId)
-    console.log(isUserLoggedIn)
-    console.log(isUserLoggedIn > 0)
 
     const weekday = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
@@ -312,29 +309,30 @@ function VendorDetail () {
                 <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Vendors</button>
             </div>
             < br />
-            <div style={{display:'flex'}}>
-                <div style={{display: '60%'}}>
-                    <img src={`/vendor-images/${vendor.image}`} alt="Vendor Image" style={{ width: '95%' }} />
+            <div className='flex-space-between flex-wrap'>
+                <div>
+                    <img className='img-vendor' src={`/vendor-images/${vendor.image}`} alt="Vendor Image"/>
                 </div>
                 <div className='side-basket'>
-                    <h2>Buy a Market Basket!</h2>
-                    <img src="/site-images/GINGHAM_BUYABAG.png" alt="Basket Image" style={{ width: '200px' }} /><br />
-                </div>
-            </div>
-            <div>
-                <div className='flex-start'>
-                    <h4>Based out of: {vendor.city}, {vendor.state}</h4>
-                    <div className='button-container'>
-                        <button 
-                            className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
-                            onClick={handleClick}> ❤️ </button>
+                    <h2>Vendor Bio</h2>
+                    <p className='margin-t-16'>{vendor.bio}</p>
+                    <div className='flex-start margin-t-16'>
+                        <h4 className='nowrap'>Based out of: {vendor.city}, {vendor.state}</h4>
+                        <div className='button-container flex-start flex-center-align nowrap'>
+                            <button 
+                                className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
+                                onClick={handleClick}> ❤️
+                            </button>
                             {showAlert && (
-                                <div className='alert-favorites'>
+                                <div className='alert-favorites nowrap'>
                                     {alertMessage}
                                 </div>
                             )}
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div>
                 <br />
                 <br />
                 <h2>Farmers Market Locations:</h2>
@@ -439,16 +437,18 @@ function VendorDetail () {
                                     required
                                 />
                             </div>
-                            <button className='btn-edit' onClick={hanldeReviewSubmit} type="submit">Post Review</button>
-                            <button className='btn-edit' onClick={handleReviewToggle}>Cancel</button>
+                            <div className='flex-start flex-center-align'>
+                                <button className='btn-edit' onClick={hanldeReviewSubmit} type="submit">Post Review</button>
+                                <button className='btn-edit' onClick={handleReviewToggle}>Cancel</button>
+                                {showDupeAlert && (
+                                    <div className='alert-reviews'>
+                                        {alertMessage}
+                                    </div>
+                                )}
+                            </div>
                         </>
                     ) : (
                             <button className={isUserLoggedIn > 0 ? 'btn btn-plus' : 'hidden'} onClick={handleReviewToggle} title='Leave a review'>+</button>
-                    )}
-                    {showDupeAlert && (
-                        <div className='alert-reviews float-right'>
-                            {alertMessage}
-                        </div>
                     )}
                 </div>
             </div>

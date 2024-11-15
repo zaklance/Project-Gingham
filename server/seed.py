@@ -788,6 +788,7 @@ def run():
     products = ['Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables']
     companies = ['Goods', 'Produce', 'Farms', 'Organics', 'and Son', 'and Daughter', 'Market', 'Apothecary', 'Orchard']
     states = ['CT', 'DE', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT']
+    rev_len = randint(2, 7)
     images = [
         '05bd2f_2b30b89b49eb4b2e95810360a9357bd2~mv2_d_7360_4912_s_4_2.jpeg',
         '90.jpeg',
@@ -809,11 +810,14 @@ def run():
         'st-jacobs-farmers-market-fruit-and-vegetable-vendors-ontario-canada-2R82FT1.jpg',
         'Vendor-Slider-3-scaled.jpg'
     ]
+
+
     for i in range(150):
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
         city = str(fake.city())
         state = str(choice(states))
         product = str(choice(products))
+        bio = str(fake.paragraph(nb_sentences=rev_len))
         image = str(choice(images))
 
         v = Vendor(
@@ -821,6 +825,7 @@ def run():
             city=city,
             state=state,
             product=product,
+            bio=bio,
             image=image
         )
         vendors.append(v)

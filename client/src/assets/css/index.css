@@ -159,6 +159,10 @@ h2 {
   text-align: center;
 }
 
+.nowrap {
+  white-space: nowrap;
+}
+
 .separator {
   border: 0;
   height: 3px;
@@ -334,6 +338,10 @@ ul {
   flex-wrap: wrap;
 }
 
+.flex-nowrap {
+  flex-wrap: nowrap;
+}
+
 .float-left {
   float: left;
 }
@@ -395,6 +403,7 @@ ul {
 }
 
 .side-basket {
+  min-width: 360px;
   margin-top: auto;
   margin-bottom: 8px;
   margin-right: 12px;
@@ -1001,6 +1010,12 @@ form textarea {
   max-width: 1120px;
 }
 
+.img-vendor {
+  width: 100%;
+  max-width: 1120px;
+  padding-right: 24px;
+}
+
 .img-portal {
   width: 100%;
   border-radius: 12px;
@@ -1019,6 +1034,7 @@ form textarea {
 }
 
 .alert-favorites {
+  /* position:fixed; */
   margin-left: 24px;
   margin-top: -5px;
   padding: 10px 20px;
@@ -1042,10 +1058,12 @@ form textarea {
 }
 
 .alert-fail {
+  position: fixed;
   background-color: #ff4b5a;
 }
 
 .alert-uploading {
+  position: fixed;
   background-color: #8f96eb;
 }
 
