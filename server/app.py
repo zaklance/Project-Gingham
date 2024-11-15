@@ -24,7 +24,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = os.path.join(os.getcwd(), 'client/public/vendor-images')
+UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/vendor-images')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 MAX_SIZE = 1 * 1024 * 1024
 MAX_RES = (100, 100)
@@ -329,10 +329,10 @@ def all_vendors():
     elif request.method == 'POST':
         data = request.get_json()
         new_vendor = Vendor(
-            name=data['name'],
+            name=data.get('name'),
             city=data.get('city'),
             state=data.get('state'),
-            product=data['product'], 
+            product=data.get('product'), 
             image=data.get('image')
         )
         db.session.add(new_vendor)
