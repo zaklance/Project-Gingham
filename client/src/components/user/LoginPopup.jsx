@@ -17,6 +17,14 @@ function Login({ handlePopup }) {
 
     const navigate = useNavigate();
 
+    const states = [
+        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+        "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+        "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+        "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+        "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+    ];
+
     const handleLogin = async (event) => {
         event.preventDefault();
     
@@ -205,15 +213,21 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
+                        
                         <div className="form-group form-login">
                             <label>State:</label>
-                            <input 
-                                type="text"
+                            <select className='select-state'
+                                name="state"
                                 value={signupState}
-                                placeholder='enter your state'
                                 onChange={(event => setSignupState(event.target.value))}
-                                required
-                            />
+                            >
+                                <option value="">Select</option>
+                                {states.map((state, index) => (
+                                    <option key={index} value={state}>
+                                        {state}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                         <div className="form-group form-login">
                             <label>Zip Code:</label>
