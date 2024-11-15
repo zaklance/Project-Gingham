@@ -1,15 +1,53 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import BasketCard from './BasketCard';
+import VendorCreate from './VendorCreate';
 
 function VendorDashboard() {
-    const { vendorId } = useParams();
+    const { id, vendorId } = useParams();
+    const [vendorUserData, setVendorUserData] = useState(null);
+    const [newVendor, setNewVendor] = useState(false);
     const [locations, setLocations] = useState([]);
     const [marketDetails, setMarketDetails] = useState({});
     const [availableBaskets, setAvailableBaskets] = useState({});
     const [price, setPrice] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchVendorUserData = async () => {
+            try {
+                const token = sessionStorage.getItem('jwt-token');
+                const response = await fetch(`http://127.0.0.1:5555/vendor-users/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json' 
+                    }
+                });
+    
+                const text = await response.text();
+    
+                if (response.ok) {
+                    const data = JSON.parse(text);
+                    setVendorUserData(data);
+    
+                    if (data && data.isNew) {
+                        setNewVendor(true);
+                    }
+                } else {
+                    console.error('Error fetching profile:', response.status);
+                    if (response.status === 401) {
+                        console.error('Unauthorized: Token may be missing or invalid');
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching profile data:', error);
+            }
+        };
+        fetchVendorUserData();
+    }, [id]);
+
 
     // useEffect(() => {
     //     const fetchVendorData = async () => {
@@ -96,60 +134,67 @@ function VendorDashboard() {
     return (
         <div>
             <h2 className='title'>Vendor Dashboard</h2>
-            <div className='bounding-box'>
-                <h3>Todays Markets:</h3>
-                <div className='market-cards-container'>
-                    <div className='market-card'>
-                        <h3><strong>Union Square Market</strong></h3>
-                        <h4>April 9, Wednesday</h4>
-                        <br />
-                        <p>Available Baskets: 5</p>
-                        <br />
-                        <p>Pick Up Time: </p>
-                        <p>04:30 PM (1 hour)</p>
-                        <br />
-                        <p><strong>Claimed Baskets: 3</strong></p>
-                        <div className='bounding-box'>
-                            <p>sandroledesma, 04:45 PM<strong> ✓ </strong></p>
-                            <p>zaklance, 05:15 PM</p>
-                            <p>vhle, 05:15 PM</p>
+            
+            {!vendorUserData || !vendorUserData.vendor_id ? (
+                <div className='bounding-box'>
+                    <VendorCreate />
+                </div>
+            ) : (
+                <div className='bounding-box'>
+                    <h3>Todays Markets:</h3>
+                    <div className='market-cards-container'>
+                        <div className='market-card'>
+                            <h3><strong>Union Square Market</strong></h3>
+                            <h4>April 9, Wednesday</h4>
+                            <br />
+                            <p>Available Baskets: 5</p>
+                            <br />
+                            <p>Pick Up Time: </p>
+                            <p>04:30 PM (1 hour)</p>
+                            <br />
+                            <p><strong>Claimed Baskets: 3</strong></p>
+                            <div className='bounding-box'>
+                                <p>sandroledesma, 04:45 PM<strong> ✓ </strong></p>
+                                <p>zaklance, 05:15 PM</p>
+                                <p>vhle, 05:15 PM</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <br/>
-                {/* {locations.map((marketId) => (
-                    <div key={marketId} className='market-item'>
-                        <h3>{marketDetails[marketId]?.name || 'Loading...'}</h3>
-                        <div className='market-info'>
-                            <label>
-                                Price: 
-                                <input 
-                                    type='number' 
-                                    value={price[marketId] || 0} 
-                                    onChange={(e) => handleChange(marketId, 'price', parseFloat(e.target.value))}
-                                />
-                            </label>
-                            <label>
-                                Available Baskets: 
-                                <input 
-                                    type='number' 
-                                    value={availableBaskets[marketId] || 0}
-                                    onChange={(e) => handleChange(marketId, 'baskets', parseInt(e.target.value))}
-                                />
-                            </label>
-                            <button className='btn-edit' onClick={() => handleSaveChanges(marketId)}>Save Changes</button>
-                        </div>
+                    <br/>
+                        {/* {locations.map((marketId) => (
+                            <div key={marketId} className='market-item'>
+                                <h3>{marketDetails[marketId]?.name || 'Loading...'}</h3>
+                                <div className='market-info'>
+                                    <label>
+                                        Price: 
+                                        <input 
+                                            type='number' 
+                                            value={price[marketId] || 0} 
+                                            onChange={(e) => handleChange(marketId, 'price', parseFloat(e.target.value))}
+                                        />
+                                    </label>
+                                    <label>
+                                        Available Baskets: 
+                                        <input 
+                                            type='number' 
+                                            value={availableBaskets[marketId] || 0}
+                                            onChange={(e) => handleChange(marketId, 'baskets', parseInt(e.target.value))}
+                                        />
+                                    </label>
+                                    <button className='btn-edit' onClick={() => handleSaveChanges(marketId)}>Save Changes</button>
+                                </div>
+                            </div>
+                        ))} */}
+                    <h3>Future Markets:</h3>
+                    <p>Edits can be made until 9AM the day of the market unless basket has already been claimed by customer</p>
+                    <br/>
+                    <div className='market-cards-container'>
+                        <BasketCard vendorId={vendorId}/>
+                        <BasketCard />
+                        <BasketCard />
                     </div>
-                ))} */}
-                <h3>Future Markets:</h3>
-                <p>Edits can be made until 9AM the day of the market unless basket has already been claimed by customer</p>
-                <br/>
-                <div className='market-cards-container'>
-                    <BasketCard vendorId={vendorId}/>
-                    <BasketCard />
-                    <BasketCard />
                 </div>
-            </div>
+            )}
         </div>
     );
 }
