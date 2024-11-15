@@ -233,19 +233,19 @@ function Profile( {marketData }) {
                             <tbody>
                                 <tr>
                                     <td className='cell-title'>Name:</td>
-                                        <td className='cell-text'>{profileData.first_name} {profileData.last_name}</td>
+                                    <td className='cell-text'>{profileData.first_name} {profileData.last_name}</td>
                                 </tr>
                                 <tr>
                                     <td className='cell-title'>Email:</td>
-                                        <td className='cell-text'>{profileData.email}</td>
+                                    <td className='cell-text'>{profileData.email}</td>
                                 </tr>
                                 <tr>
                                     <td className='cell-title'>Address:</td>
-                                        <td className='cell-text'>{profileData.address_1}, {profileData.address_2}</td>
+                                    <td className='cell-text'>{profileData.address_1}, {profileData.address_2}</td>
                                 </tr>
                                 <tr>
                                     <td className='cell-title'></td>
-                                        <td className='cell-text'>{profileData.city}, {profileData.state} {profileData.zip}</td>
+                                    <td className='cell-text'>{profileData.city}, {profileData.state} {profileData.zip}</td>
                                 </tr>
                             </tbody>
                         </table>
