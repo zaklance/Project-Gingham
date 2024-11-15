@@ -5,6 +5,7 @@ function Profile( {marketData }) {
     const { id } = useParams();
     const [user, setUser] = useState(null);
     const [profileData, setProfileData] = useState(null);
+    const [tempProfileData, setTempProfileData] = useState(null);
     const [editMode, setEditMode] = useState(false);
     const [vendorFavs, setVendorFavs] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
@@ -75,22 +76,30 @@ function Profile( {marketData }) {
     }, [id]);
 
     const handleEditToggle = () => {
+        if (!editMode) {
+            setTempProfileData({ ...profileData });
+        } else {
+            setTempProfileData(null);
+        }
         setEditMode(!editMode);
     };
-
+    
     const handleInputChange = event => {
         const { name, value } = event.target;
-        setProfileData({
-            ...profileData,
+        setTempProfileData({
+            ...tempProfileData,
             [name]: value
         });
     };
 
     const handleSaveChanges = async () => {
         try {
+            const token = sessionStorage.getItem('jwt-token');
+
             const response = await fetch(`http://127.0.0.1:5555/users/${id}`, {
                 method: 'PATCH',
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(profileData)
@@ -150,7 +159,7 @@ function Profile( {marketData }) {
                             <input
                                 type="text"
                                 name="first_name"
-                                value={profileData ? profileData.first_name : ''}
+                                value={tempProfileData ? tempProfileData.first_name : ''}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -159,7 +168,7 @@ function Profile( {marketData }) {
                             <input
                                 type="text"
                                 name="last_name"
-                                value={profileData ? profileData.last_name : ''}
+                                value={tempProfileData ? tempProfileData.last_name : ''}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -168,7 +177,7 @@ function Profile( {marketData }) {
                             <input
                                 type="email"
                                 name="email"
-                                value={profileData ? profileData.email : ''}
+                                value={tempProfileData ? tempProfileData.email : ''}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -178,26 +187,26 @@ function Profile( {marketData }) {
                                 type="text"
                                 name="address_1"
                                 placeholder='Address 1'
-                                value={profileData ? profileData.address_1 : ''}
+                                value={tempProfileData ? tempProfileData.address_1 : ''}
                                 onChange={handleInputChange}
                             />
                             <input
                                 type="text"
                                 name="address_2"
                                 placeholder='Apt, Ffloor, Suite # etc'
-                                value={profileData ? profileData.address_2 : ''}
+                                value={tempProfileData ? tempProfileData.address_2 : ''}
                                 onChange={handleInputChange}
                             />
                             <input
                                 type="text"
                                 name="city"
                                 placeholder='City'
-                                value={profileData ? profileData.city : ''}
+                                value={tempProfileData ? tempProfileData.city : ''}
                                 onChange={handleInputChange}
                             />
                             <select className='select-state'
                                 name="state"
-                                value={profileData ? profileData.state : ''}
+                                value={tempProfileData ? tempProfileData.state : ''}
                                 onChange={handleInputChange}
                             >
                                 <option value="">Select</option>
@@ -211,7 +220,7 @@ function Profile( {marketData }) {
                                 type="text"
                                 name="zip"
                                 placeholder='Zipcode'
-                                value={profileData ? profileData.zip : ''}
+                                value={tempProfileData ? tempProfileData.zip : ''}
                                 onChange={handleInputChange}
                             />
                         </div>
