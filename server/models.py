@@ -202,6 +202,7 @@ class Vendor(db.Model, SerializerMixin):
     city = db.Column(db.String, nullable=True)
     state = db.Column(db.String(2), nullable=True)
     product = db.Column(db.String, nullable=False)
+    bio = db.Column(db.String, nullable=True)
     image = db.Column(db.String)
 
     # Relationships
