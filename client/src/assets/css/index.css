@@ -563,6 +563,11 @@ ul {
   font-size: 1em;
 }
 
+.btn-tab {
+  padding: 12px 16px;
+  margin-top: 36px;
+}
+
 .tabs {
   display: flex;
   gap: 20px;

@@ -216,12 +216,22 @@ def all_markets():
         return jsonify([market.to_dict() for market in markets]), 200
     elif request.method == 'POST':
         data = request.get_json()
+        season_start = None
+        if data.get('season_start'):
+            season_start = datetime.strptime(data.get('season_start'), '%Y-%m-%d').date()
+        season_end = None
+        if data.get('season_end'):
+            season_end = datetime.strptime(data.get('season_end'), '%Y-%m-%d').date()
+
         new_market = Market(
             name=data['name'],
             location=data['location'],
-            hours=data['hours'],
+            zipcode=data['zipcode'],
+            coordinates={"lat": data.get('coordinates_lat'), "lng": data.get('coordinates_lng')},
+            schedule=data['schedule'],
             year_round=data['year_round'],
-            zipcode=data['zipcode']
+            season_start=season_start,
+            season_end=season_end
         )
         db.session.add(new_market)
         db.session.commit()
@@ -246,7 +256,10 @@ def market_by_id(id):
             market.image = data.get('image')
             market.location = data.get('location')
             market.zipcode = data.get('zipcode')
-            market.coordinates = {"lat": data.get('coordinates_lat'), "lng": data.get('coordinates_lng')}
+            market.coordinates = {
+                "lat": data.get('coordinates', {}).get('lat'),
+                "lng": data.get('coordinates', {}).get('lng')
+            }
             market.schedule = data.get('schedule')
             market.year_round = data.get('year_round')
             if data.get('season_start'):
