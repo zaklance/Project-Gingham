@@ -8,7 +8,7 @@ function AdminDashboard () {
 
     return(
         <div>
-            <h2 className='title'>Admin Dashboard</h2>
+            <h2 className='margin-t-16'>Admin Dashboard</h2>
             <div>                
             </div>
         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function VendorCreate () {
     const [vendorEditMode, setVendorEditMode] = useState(false);
@@ -9,6 +9,8 @@ function VendorCreate () {
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
     const [vendorImageURL, setVendorImageURL] = useState(null);
+
+    const navigate = useNavigate();
     
     const products = [
         'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 
@@ -165,8 +167,11 @@ function VendorCreate () {
             if (userResponse.ok) {
                 const updatedUser = await userResponse.json();
                 alert('Vendor created and user updated with vendor_id');
+
                 setVendorEditMode(false);
                 setNewVendor(false);
+                navigate('/vendor/dashboard');
+                window.location.reload();
             } else {
                 console.log('Error updating user with vendor_id');
             }

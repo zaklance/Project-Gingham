@@ -136,7 +136,7 @@ function Profile( {marketData }) {
             <div className='bounding-box'>
                 <h2>Profile Information</h2>
                 {editMode ? (
-                    <div className='title'>
+                    <div className='margin-t-16'>
                         <div className="form-group">
                             <label>First Name:</label>
                             <input
@@ -202,7 +202,7 @@ function Profile( {marketData }) {
                     </div>
                 ) : (
                     <>
-                        <table className='title'>
+                        <table className='margin-t-16'>
                             <tbody>
                                 <tr>
                                     <td className='cell-title'>Name:</td>

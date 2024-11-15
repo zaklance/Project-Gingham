@@ -140,7 +140,7 @@ function VendorDashboard() {
 
     return (
         <div>
-            <h2 className='title'>Vendor Dashboard</h2>
+            <h2 className='margin-t-16'>Vendor Dashboard</h2>
             
             {!vendorUserData || !vendorUserData.vendor_id ? (
                 <div className='bounding-box'>
