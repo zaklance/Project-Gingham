@@ -3,7 +3,7 @@ from faker import Faker
 from random import random, choice, randint
 from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, bcrypt
 import json
-from datetime import date, time
+from datetime import date, time, timedelta
 
 fake = Faker()
 
@@ -1023,10 +1023,12 @@ def run():
     for i in range(500):
         rand_user = [None, randint(1, 50)]
         duration = [time(0, 15, 0), time(0, 20, 0), time(0, 30, 0), time(0, 45, 0), time(1, 0, 0), time(1, 15, 0), time(1, 30, 0)]
+        last_month = randint(0, 31)
+        dates = date.today() - timedelta(days=last_month)
 
         vendor_id = str(randint(1, 150))
         market_day_id = str(randint(1, 57))
-        sale_date = date.today()
+        sale_date = dates
         pickup_time = fake.time_object()
         user_id = choice(rand_user)
         is_sold = user_id is not None
