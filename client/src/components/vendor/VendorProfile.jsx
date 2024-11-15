@@ -191,7 +191,6 @@ function VendorProfile () {
             }
         }
     
-        // Include uploaded filename in vendorData if a new image was uploaded
         const updatedVendorData = { ...vendorData };
         if (uploadedFilename) {
             updatedVendorData.image = uploadedFilename;
@@ -391,6 +390,7 @@ function VendorProfile () {
                                         {vendorImageURL && (
                                             <div className='vendor-image'>
                                                 <img src={vendorImageURL} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} />
+                                                {vendorData ? vendorData.image : 'Loading'}
                                             </div>
                                         )}
                                     </div>
