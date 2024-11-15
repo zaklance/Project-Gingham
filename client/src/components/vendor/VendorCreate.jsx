@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 function VendorCreate () {
-    const { id } = useParams();
-
     const [vendorEditMode, setVendorEditMode] = useState(false);
     const [vendorUserData, setVendorUserData] = useState(null);
     const [newVendor, setNewVendor] = useState(false);
@@ -11,7 +9,7 @@ function VendorCreate () {
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
     const [vendorImageURL, setVendorImageURL] = useState(null);
-
+    
     const products = [
         'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 
         'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables'
@@ -23,24 +21,30 @@ function VendorCreate () {
         "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", 
         "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", 
         "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
-      ];
+    ];
 
     useEffect(() => {
         const fetchVendorUserData = async () => {
+            const id = sessionStorage.getItem('vendor_user_id');
+            if (!id) {
+                console.error("No vendor user ID found");
+                return;
+            }
+    
             try {
                 const token = sessionStorage.getItem('jwt-token');
                 const response = await fetch(`http://127.0.0.1:5555/vendor-users/${id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json' 
-                    }
+                        'Content-Type': 'application/json',
+                    },
                 });
     
                 const text = await response.text();
     
                 if (response.ok) {
-                    const data = JSON.parse(text);
+                    const data = text ? JSON.parse(text) : null;
                     setVendorUserData(data);
     
                     if (data && data.isNew) {
@@ -48,16 +52,15 @@ function VendorCreate () {
                     }
                 } else {
                     console.error('Error fetching profile:', response.status);
-                    if (response.status === 401) {
-                        console.error('Unauthorized: Token may be missing or invalid');
-                    }
                 }
             } catch (error) {
                 console.error('Error fetching profile data:', error);
             }
         };
+    
         fetchVendorUserData();
-    }, [id]);
+    }, []);
+    
 
     useEffect(() => {
         if (newVendor && !vendorData) {
@@ -65,11 +68,21 @@ function VendorCreate () {
                 name: '',
                 city: '', 
                 state: '', 
-                product: ''
+                product: '', 
+                image: ''
             });
             setVendorEditMode(true); 
+        } else if (vendorUserData) {
+            setVendorData({
+                name: vendorUserData.name,
+                city: vendorUserData.city,
+                state: vendorUserData.state,
+                product: vendorUserData.product,
+                image: vendorUserData.image
+            });
+            setVendorEditMode(true);
         }
-    }, [newVendor, vendorData]);
+    }, [newVendor, vendorUserData]);
 
     const handleVendorInputChange = (event) => {
         setVendorData({
@@ -87,18 +100,22 @@ function VendorCreate () {
             setStatus('initial');
             setImage(event.target.files[0]);
         }
-    }
-
+    };
 
     const handleSaveNewVendor = async () => {
+        if (!vendorUserData || !vendorUserData.id) {
+            console.log('No user data available or user ID is missing');
+            return;
+        }
+
         const newVendorData = {
             name: vendorData.name,
             city: vendorData.city,
             state: vendorData.state,
             product: vendorData.product,
-            image: vendorData.image,
+            image: vendorImageURL,
         };
-    
+
         try {
             const vendorResponse = await fetch('http://127.0.0.1:5555/vendors', {
                 method: 'POST',
@@ -115,27 +132,28 @@ function VendorCreate () {
             
             const createdVendor = await vendorResponse.json();
             const vendorId = createdVendor.id;
-            
-            const userData = vendorUserData || {};
-            
-            
-            if (!userData.id) {
-                console.log('No user data available');
+            if (!vendorId) {
+                console.error("Created vendor does not have an ID.");
+                return;
+            }
+    
+            if (!vendorUserData || !vendorUserData.id) {
+                console.log('No user data available or user ID is missing');
                 return;
             }
             
             const userDataWithVendor = {
-                ...userData,
+                ...vendorUserData,
                 vendor_id: vendorId,
             };
-            
+
             const token = sessionStorage.getItem('jwt-token');
             if (!token) {
                 alert('Authorization token is missing. Please log in.');
                 return;
             }
-
-            const userResponse = await fetch(`http://127.0.0.1:5555/vendor-users/${userData.id}`, {
+    
+            const userResponse = await fetch(`http://127.0.0.1:5555/vendor-users/${vendorUserData.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -143,11 +161,7 @@ function VendorCreate () {
                 },
                 body: JSON.stringify(userDataWithVendor),
             });
-            
-            const responseText = await userResponse.text();
-            console.log('Response Status:', userResponse.status);
-            console.log('Response Text:', responseText);
-            
+
             if (userResponse.ok) {
                 const updatedUser = await userResponse.json();
                 alert('Vendor created and user updated with vendor_id');

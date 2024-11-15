@@ -26,6 +26,7 @@ import PasswordReset from './components/user/PasswordReset.jsx';
 // vendor routes
 import VendorHome from './components/vendor/VendorHome.jsx';
 import VendorLogout from './components/vendor/VendorLogout.jsx';
+import VendorCreate from './components/vendor/VendorCreate.jsx';
 import VendorDashboard from './components/vendor/VendorDashboard.jsx';
 import VendorSales from './components/vendor/VendorSales.jsx';
 import VendorProfile from './components/vendor/VendorProfile.jsx';
@@ -142,6 +143,7 @@ const router = createBrowserRouter([
                     { path: "dashboard", element: <VendorDashboard /> },
                     { path: "sales", element: <VendorSales /> },
                     { path: "profile/:id", element: <VendorProfile /> },
+                    { path: "vendor-create/:id", element: <VendorCreate />},
                     { path: "logout", element: <VendorLogout /> }
                 ]
             },
