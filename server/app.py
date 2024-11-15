@@ -1280,39 +1280,48 @@ def password_reset_request():
 @app.route('/user/password-reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
     if request.method == 'GET':
-        # Return a simple response for the front-end routing to work
+        print(f"GET request: Received token: {token}")
+        
         return redirect(f'http://localhost:5173/user/password-reset/{token}')
 
-    # Existing POST logic remains unchanged
     if request.method == 'POST':
         try:
-            # Verify the token and get the email
+            # Verify token and get email
             email = serializer.loads(token, salt='password-reset-salt', max_age=7200)
+            print(f"POST request: Token verified, email extracted: {email}")
 
-            # Extract the new password from the request
+            # Get new password from the request
             data = request.get_json()
             new_password = data.get('new_password')
+            print(f"POST request: New password: {new_password}")
 
             # Check if the new password is provided
             if not new_password:
+                print("POST request: No new password provided")
                 return {'error': 'New password is required'}, 400
 
-            # Retrieve the user from the database using the email
+            # Find user from the database using the email
             user = User.query.filter_by(email=email).first()
             if not user:
+                print(f"POST request: User not found for email: {email}")
                 return {'error': 'User not found'}, 404
 
-            # Hash the new password and update the user's password
-            hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
-            user.password = hashed_password
+            # Log the user's first name
+            print(f"POST request: User First name: {user.first_name}")
+
+            # Send to password setter in the User model
+            user.password = new_password
             db.session.commit()
 
+            print("POST request: Password updated and committed to the database")
             return {'message': 'Password successfully reset'}, 200
 
         except SignatureExpired:
+            print("POST request: The token has expired")
             return {'error': 'The token has expired'}, 400
 
         except Exception as e:
+            print(f"POST request: An error occurred: {str(e)}")
             return {'error': f'Failed to reset password: {str(e)}'}, 500
     
 if __name__ == '__main__':
