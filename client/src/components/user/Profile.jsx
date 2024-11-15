@@ -11,6 +11,14 @@ function Profile( {marketData }) {
 
     const weekday = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat", "Sun"]
 
+    const states = [
+        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+        "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+        "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+        "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+        "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+    ];
+
     function timeConverter(time24) {
         const date = new Date('1970-01-01T' + time24);
 
@@ -169,30 +177,40 @@ function Profile( {marketData }) {
                             <input
                                 type="text"
                                 name="address_1"
+                                placeholder='Address 1'
                                 value={profileData ? profileData.address_1 : ''}
                                 onChange={handleInputChange}
                             />
                             <input
                                 type="text"
                                 name="address_2"
+                                placeholder='Apt, Ffloor, Suite # etc'
                                 value={profileData ? profileData.address_2 : ''}
                                 onChange={handleInputChange}
                             />
                             <input
                                 type="text"
                                 name="city"
+                                placeholder='City'
                                 value={profileData ? profileData.city : ''}
                                 onChange={handleInputChange}
                             />
-                            <input
-                                type="text"
+                            <select className='select-state'
                                 name="state"
                                 value={profileData ? profileData.state : ''}
                                 onChange={handleInputChange}
-                            />
+                            >
+                                <option value="">Select</option>
+                                {states.map((state, index) => (
+                                    <option key={index} value={state}>
+                                        {state}
+                                    </option>
+                                ))}
+                            </select>
                             <input
                                 type="text"
                                 name="zip"
+                                placeholder='Zipcode'
                                 value={profileData ? profileData.zip : ''}
                                 onChange={handleInputChange}
                             />

@@ -666,9 +666,12 @@ select:hover {
 }
 
 .select-state {
-  width: 64px;
+  width: fit-content;
 }
 
+.form-group .select-state {
+  margin-left: 8px;
+}
 
 .big-logo {
   float: left;
