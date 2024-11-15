@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function AdminMarketEdit({ timeConverter, weekday }) {
-    const [markets, setMarkets] = useState([]);
+function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
     const [marketDayDetails, setMarketDayDetails] = useState([])
     const [marketDays, setMarketDays] = useState([])
     const [selectedDay, setSelectedDay] = useState(null);
@@ -9,13 +8,9 @@ function AdminMarketEdit({ timeConverter, weekday }) {
     const [editMode, setEditMode] = useState(false);
     const [editDayMode, setEditDayMode] = useState(false);
     const [adminMarketData, setAdminMarketData] = useState(null);
+    const [image, setImage] = useState(null)
+    const [status, setStatus] = useState('initial')
     
-    useEffect(() => {
-        fetch("http://127.0.0.1:5555/markets")
-            .then(response => response.json())
-            .then(markets => setMarkets(markets))
-            .catch(error => console.error('Error fetching markets', error));
-    }, []);
 
     const onUpdateQuery = event => setQuery(event.target.value);
     const filteredMarkets = markets.filter(market => market.name.toLowerCase().includes(query.toLowerCase()) && market.name !== query)
@@ -138,7 +133,7 @@ function AdminMarketEdit({ timeConverter, weekday }) {
 
     const handleSaveDayChanges = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/market_days/${selectedDay.id}`, {
+            const response = await fetch(`http://127.0.0.1:5555/market-days/${selectedDay.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
@@ -162,13 +157,20 @@ function AdminMarketEdit({ timeConverter, weekday }) {
         }
     };
 
+    const handleFileChange = (event) => {
+        if (event.target.files) {
+            setStatus('initial');
+            setImage(event.target.files[0]);
+        }
+    }
+
     
     return(
         <>
 
             <div className='bounding-box'>
                 <h2>Edit Markets</h2>
-                <table className='title'>
+                <table className='margin-t-16'>
                     <tbody>
                         <tr>
                             <td className='cell-title'>Search:</td>
@@ -186,7 +188,7 @@ function AdminMarketEdit({ timeConverter, weekday }) {
                         </tr>
                     </tbody>
                 </table>
-                <div className='title'>
+                <div className='margin-t-16'>
                     {editMode ? (
                         <>
                             <div className='form-group'>
@@ -257,6 +259,7 @@ function AdminMarketEdit({ timeConverter, weekday }) {
                                 <input
                                     type="text"
                                     name="season_start"
+                                    placeholder='yyyy-mm-dd if Year Round is False'
                                     value={adminMarketData ? adminMarketData.season_start : ''}
                                     onChange={handleInputChange}
                                 />
@@ -266,8 +269,18 @@ function AdminMarketEdit({ timeConverter, weekday }) {
                                 <input
                                     type="text"
                                     name="season_end"
+                                    placeholder='yyyy-mm-dd if Year Round is False'
                                     value={adminMarketData ? adminMarketData.season_end : ''}
                                     onChange={handleInputChange}
+                                />
+                            </div>
+                            <div className='form-group'>
+                                <label>Vendor Image:</label>
+                                <input
+                                    type="file"
+                                    name="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
                                 />
                             </div>
                             <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
@@ -279,50 +292,50 @@ function AdminMarketEdit({ timeConverter, weekday }) {
                                 <tbody>
                                     <tr>
                                         <td className='cell-title'>Image:</td>
-                                        <td className='cell-text'>{adminMarketData ? <img className='img-market' src={`/market-images/${adminMarketData.image}`} alt="Market Image" /> : ' Select a Market...'}</td>
+                                        <td className='cell-text'>{adminMarketData ? <img className='img-market' src={`/market-images/${adminMarketData.image}`} alt="Market Image" /> : ''}</td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title'>Name:</td>
-                                        <td className='cell-text'>{adminMarketData ? `${adminMarketData.name}` : 'Select a Market...'}</td>
+                                        <td className='cell-text'>{adminMarketData ? `${adminMarketData.name}` : ''}</td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title'>Location:</td>
-                                        <td className='cell-text'>{adminMarketData ? adminMarketData.location : ' Select a Market...'}</td>
+                                        <td className='cell-text'>{adminMarketData ? adminMarketData.location : ''}</td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title'>Zipcode:</td>
-                                        <td className='cell-text'>{adminMarketData ? adminMarketData.zipcode : ' Select a Market...'}</td>
+                                        <td className='cell-text'>{adminMarketData ? adminMarketData.zipcode : ''}</td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title'>Latitude:</td>
-                                        <td className='cell-text'>{adminMarketData ? adminMarketData.coordinates.lat : ' Select a Market...'}</td>
+                                        <td className='cell-text'>{adminMarketData ? adminMarketData.coordinates.lat : ''}</td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title'>Longitude:</td>
-                                        <td className='cell-text'>{adminMarketData ? adminMarketData.coordinates.lng : ' Select a Market...'}</td>
+                                        <td className='cell-text'>{adminMarketData ? adminMarketData.coordinates.lng : ''}</td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title' title="Day ( # a.m. - # p.m.)">Schedule:</td>
-                                        <td className='cell-text'>{adminMarketData ? adminMarketData.schedule : ' Select a Market...'}</td>
+                                        <td className='cell-text'>{adminMarketData ? adminMarketData.schedule : ''}</td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title' title="true or false">Year Round:</td>
-                                        <td className='cell-text'>{adminMarketData ? `${adminMarketData.year_round}` : ' Select a Market...'}</td>
+                                        <td className='cell-text'>{adminMarketData ? `${adminMarketData.year_round}` : ''}</td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title' title="yyyy-mm-dd">Season Start:</td>
-                                        <td className='cell-text'>{adminMarketData ? adminMarketData.season_start : ' Select a Market...'}</td>
+                                        <td className='cell-text'>{adminMarketData ? adminMarketData.season_start : ''}</td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title' title="yyyy-mm-dd">Season End:</td>
-                                        <td className='cell-text'>{adminMarketData ? adminMarketData.season_end : ' Select a Market...'}</td>
+                                        <td className='cell-text'>{adminMarketData ? adminMarketData.season_end : ''}</td>
                                     </tr>
                                 </tbody>
                             </table>
                             <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                         </>
                     )}
-                    <div className='flex-start title'>
+                    <div className='flex-start margin-t-16'>
                         <label><h4>Market Day: &emsp;</h4></label>
                         <select id="marketDaysSelect" name="marketDays" onChange={handleDayChange}>
                             {marketDays.map((day, index) => (
@@ -371,15 +384,15 @@ function AdminMarketEdit({ timeConverter, weekday }) {
                             <tbody>
                                 <tr>
                                     <td className='cell-title'>Day of Week:</td>
-                                    <td className='cell-text'>{selectedDay ? weekday[selectedDay.day_of_week] : 'Select a Market...'}</td>
+                                    <td className='cell-text'>{selectedDay ? weekday[selectedDay.day_of_week] : ''}</td>
                                 </tr>
                                 <tr>
                                     <td className='cell-title'>Start Time:</td>
-                                    <td className='cell-text'>{selectedDay ? timeConverter(selectedDay.hour_start) : 'Select a Market...'}</td>
+                                    <td className='cell-text'>{selectedDay ? timeConverter(selectedDay.hour_start) : ''}</td>
                                 </tr>
                                 <tr>
                                     <td className='cell-title'>End Time:</td>
-                                    <td className='cell-text'>{selectedDay ? timeConverter(selectedDay.hour_end) : 'Select a Market...'}</td>
+                                    <td className='cell-text'>{selectedDay ? timeConverter(selectedDay.hour_end) : ''}</td>
                                 </tr>
                             </tbody>
                         </table>

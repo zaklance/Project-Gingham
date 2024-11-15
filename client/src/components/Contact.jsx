@@ -38,7 +38,7 @@ function Contact() {
     return(
         <div className=''>
             <div className='vendor-wrapper'>
-                <h1 className='title'>Contact Us!</h1>
+                <h1 className='margin-t-16'>Contact Us!</h1>
                 <p>Have a question for us? Feel Free to send us an inquiry using the form below:</p>
                 <br></br>
                 <div>
@@ -49,7 +49,7 @@ function Contact() {
                     </strong></p>
                     
                 </div>
-                <div className='title flex-center'>
+                <div className='margin-t-16 flex-center'>
                     <form onSubmit={handleSubmit} className='form'>
                         <div className='form-group form-contact'>
                             <label><strong>Name:</strong></label>

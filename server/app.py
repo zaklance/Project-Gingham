@@ -283,16 +283,22 @@ def all_market_days():
         return jsonify([market.to_dict() for market in market_days]), 200
     elif request.method == 'POST':
         data = request.get_json()
+        try:
+            hour_start = datetime.strptime(data['hour_start'], '%I:%M %p').time()
+            hour_end = datetime.strptime(data['hour_end'], '%I:%M %p').time()
+        except ValueError as e:
+            return jsonify({"error": f"Invalid time format: {str(e)}"}), 400
         new_market_day = MarketDay(
             market_id=data['market_id'],
-            hour_start=data['hour_start'],
-            hour_end=data['hour_end'],
-            day_of_week=data['day_of_week']
+            day_of_week=data['day_of_week'],
+            hour_start=hour_start,
+            hour_end=hour_end
         )
+        db.session.add(new_market_day)
         db.session.commit()
         return jsonify(new_market_day.to_dict()), 201
 
-@app.route('/market_days/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@app.route('/market-days/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def market_day_by_id(id):
     market_day = MarketDay.query.filter(MarketDay.id == id).first()
     if not market_day:

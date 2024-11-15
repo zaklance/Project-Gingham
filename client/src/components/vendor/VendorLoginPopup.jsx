@@ -83,7 +83,7 @@ function VendorLogin({ handlePopup }) {
         <div className='login-bar'>
             <button className="btn btn-large x-btn" onClick={handlePopup}>X</button>
             <div className='wrapper'>
-                <h1 className='title'>VENDOR PORTAL</h1>
+                <h1 className='margin-t-16'>VENDOR PORTAL</h1>
                 <div>
                     <form onSubmit={handleLogin} className="form">
                         <h2>Login</h2>
