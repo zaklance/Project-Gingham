@@ -216,12 +216,22 @@ def all_markets():
         return jsonify([market.to_dict() for market in markets]), 200
     elif request.method == 'POST':
         data = request.get_json()
+        season_start = None
+        if data.get('season_start'):
+            season_start = datetime.strptime(data.get('season_start'), '%Y-%m-%d').date()
+        season_end = None
+        if data.get('season_end'):
+            season_end = datetime.strptime(data.get('season_end'), '%Y-%m-%d').date()
+
         new_market = Market(
             name=data['name'],
             location=data['location'],
-            hours=data['hours'],
+            zipcode=data['zipcode'],
+            coordinates={"lat": data.get('coordinates_lat'), "lng": data.get('coordinates_lng')},
+            schedule=data['schedule'],
             year_round=data['year_round'],
-            zipcode=data['zipcode']
+            season_start=season_start,
+            season_end=season_end
         )
         db.session.add(new_market)
         db.session.commit()
@@ -246,17 +256,18 @@ def market_by_id(id):
             market.image = data.get('image')
             market.location = data.get('location')
             market.zipcode = data.get('zipcode')
-            market.coordinates = {"lat": data.get('coordinates_lat'), "lng": data.get('coordinates_lng')}
+            market.coordinates = {
+                "lat": data.get('coordinates', {}).get('lat'),
+                "lng": data.get('coordinates', {}).get('lng')
+            }
             market.schedule = data.get('schedule')
             market.year_round = data.get('year_round')
             if data.get('season_start'):
                 market.season_start = datetime.strptime(data.get('season_start'), '%Y-%m-%d').date()
             if data.get('season_end'):
-                market.season_end = datetime.strptime(data.get('season_end'), '%Y-%m-%d').date()
-            
+                market.season_end = datetime.strptime(data.get('season_end'), '%Y-%m-%d').date()            
             db.session.commit()
             return market.to_dict(), 200
-        
         except Exception as e:
             db.session.rollback()
             return {'error': str(e)}, 500
@@ -278,7 +289,6 @@ def all_market_days():
             hour_end=data['hour_end'],
             day_of_week=data['day_of_week']
         )
-        db.session.add(new_market_day)
         db.session.commit()
         return jsonify(new_market_day.to_dict()), 201
 
@@ -290,11 +300,21 @@ def market_day_by_id(id):
     if request.method == 'GET':
         return market_day.to_dict(), 200
     elif request.method == 'PATCH':
-        data = request.get_json()
-        for key, value in data.items():
-            setattr(market_day, key, value)
-        db.session.commit()
-        return market_day.to_dict(), 200
+        if not market_day:
+            return {'error': 'user not found'}, 404
+        try:
+            data = request.get_json()
+            market_day.day_of_week=data['day_of_week']
+            if 'hour_start' in data:
+                market_day.hour_start = datetime.strptime(data['hour_start'], '%H:%M').time()
+            if 'hour_end' in data:
+                market_day.hour_end = datetime.strptime(data['hour_end'], '%H:%M').time()
+            db.session.add(market_day)
+            db.session.commit()
+            return market_day.to_dict(), 200
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
     elif request.method == 'DELETE':
         db.session.delete(market_day)
         db.session.commit()
