@@ -461,11 +461,11 @@ class Basket(db.Model, SerializerMixin):
 
     # serialize_rules = ('-user_id', '-vendor_id', '-market_id')
 
-    @validates('sale_date')
-    def validate_sale_date(self, key, value):
-        if value < date.today():
-            raise ValueError("Sale date cannot be in the past")
-        return value
+    # @validates('sale_date')
+    # def validate_sale_date(self, key, value):
+    #     if value < date.today():
+    #         raise ValueError("Sale date cannot be in the past")
+    #     return value
 
     @validates('is_sold', 'is_grabbed')
     def validate_boolean(self, key, value):
