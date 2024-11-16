@@ -261,12 +261,8 @@ function VendorProfile () {
         <div>
             <div className="tab-content">
                 <div>
-<<<<<<< HEAD
                     <h2 className='title'>Profile Information </h2>
                     
-=======
-                    <h2 className='margin-t-16'>Profile Information </h2>
->>>>>>> refs/remotes/origin/main
                     <div className='bounding-box'>
                     {editMode && vendorUserData?.is_admin ? (
                         <>

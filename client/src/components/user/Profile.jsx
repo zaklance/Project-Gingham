@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import BasketSales from './BasketSales';
 
 function Profile( {marketData }) {
     const { id } = useParams();
@@ -252,6 +253,10 @@ function Profile( {marketData }) {
                         <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                     </>
                 )}
+            </div>
+
+            <div className='bounding-box'>
+                <BasketSales />
             </div>
             <div className='bounding-box'>
                 <h2>Favorites</h2>
