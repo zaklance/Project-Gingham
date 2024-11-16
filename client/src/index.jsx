@@ -20,8 +20,8 @@ import Profile from './components/user/Profile.jsx';
 import Vendors from './components/user/Vendors.jsx';
 import VendorDetail from './components/user/VendorDetail.jsx';
 import Logout from './components/user/Logout.jsx';
-import ResetRequest from './components/user/ResetRequest.jsx';
-import PasswordReset from './components/user/PasswordReset.jsx';
+import UserResetRequest from './components/user/UserResetRequest.jsx';
+import UserPasswordReset from './components/user/UserPasswordReset.jsx';
 
 // vendor routes
 import VendorHome from './components/vendor/VendorHome.jsx';
@@ -30,6 +30,8 @@ import VendorCreate from './components/vendor/VendorCreate.jsx';
 import VendorDashboard from './components/vendor/VendorDashboard.jsx';
 import VendorSales from './components/vendor/VendorSales.jsx';
 import VendorProfile from './components/vendor/VendorProfile.jsx';
+import VendorResetRequest from './components/vendor/VendorResetRequest.jsx';
+import VendorPasswordReset from './components/vendor/VendorPasswordReset.jsx';
 
 // admin routes
 import AdminHome from './components/admin/AdminHome.jsx';
@@ -38,6 +40,8 @@ import AdminProfile from './components/admin/AdminProfile.jsx';
 import AdminMarkets from './components/admin/AdminMarkets.jsx';
 import AdminVendors from './components/admin/AdminVendors.jsx';
 import AdminUsers from './components/admin/AdminUsers.jsx';
+import AdminResetRequest from './components/admin/AdminResetRequest.jsx';
+import AdminPasswordReset from './components/admin/AdminPasswordReset.jsx';
 
 import { loadStripe } from '@stripe/stripe-js';
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
@@ -131,8 +135,8 @@ const router = createBrowserRouter([
                     { path: "checkout", element: <CheckoutForm /> },
                     { path: "check-session", element: <CheckSession /> },
                     { path: "return", element: <Return />},
-                    { path: "reset-request", element: <ResetRequest /> },
-                    { path: "password-reset/:token", element: <PasswordReset /> },
+                    { path: "reset-request", element: <UserResetRequest /> },
+                    { path: "password-reset/:token", element: <UserPasswordReset /> },
                     { path: "return", element: <Return /> }
                 ]
             },
@@ -144,7 +148,9 @@ const router = createBrowserRouter([
                     { path: "sales", element: <VendorSales /> },
                     { path: "profile/:id", element: <VendorProfile /> },
                     { path: "vendor-create/:id", element: <VendorCreate />},
-                    { path: "logout", element: <VendorLogout /> }
+                    { path: "logout", element: <VendorLogout /> },
+                    { path: "password-reset", element: <VendorPasswordReset />},
+                    { path: "reset-request", element: <VendorResetRequest />}
                 ]
             },
             {
@@ -155,7 +161,9 @@ const router = createBrowserRouter([
                     { path: "vendors", element: <AdminVendors />},
                     { path: "users", element: <AdminUsers />},
                     { path: "profile/:id", element: <AdminProfile /> },
-                    { path: "logout", element: <AdminLogout /> }
+                    { path: "logout", element: <AdminLogout /> },
+                    { path: "password-reset", element: <AdminPasswordReset />},
+                    { path: "reset-request", element: <AdminResetRequest />}
                 ]
             }
         ]      

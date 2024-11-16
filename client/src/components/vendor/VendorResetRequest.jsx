@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function ResetRequest() {
+function VendorResetRequest() {
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState('');
 
@@ -8,7 +8,7 @@ function ResetRequest() {
         event.preventDefault();
 
         try {
-            const response = await fetch('http://127.0.0.1:5555/user/password-reset-request', {
+            const response = await fetch('http://127.0.0.1:5555/vendor/password-reset-request', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -50,4 +50,4 @@ function ResetRequest() {
     );
 }
 
-export default ResetRequest;
+export default VendorResetRequest;

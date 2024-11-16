@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-function PasswordReset() {
+function VendorPasswordReset() {
     const { token } = useParams(); // Get the token from the URL
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -16,7 +16,7 @@ function PasswordReset() {
         }
 
         try {
-            const response = await fetch(`http://127.0.0.1:5555/user/password-reset/${token}`, {
+            const response = await fetch(`http://127.0.0.1:5555/vendor/password-reset/${token}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ function PasswordReset() {
                 setStatus('Password successfully reset');
             } else {
                 const errorData = await response.json();
-                setStatus(errorData.error || 'Failed to reset password. Please try again.');
+                setStatus(errorData.error || 'Failed to res et password. Please try again.');
             }
         } catch (error) {
             setStatus('An error occurred. Please try again.');
@@ -67,4 +67,4 @@ function PasswordReset() {
     );
 }
 
-export default PasswordReset;
+export default VendorPasswordReset;
