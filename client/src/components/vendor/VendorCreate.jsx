@@ -221,12 +221,41 @@ function VendorCreate () {
 
             </div>
 
+<<<<<<< HEAD
+                    <label>Based out of:</label>
+                    <input type="text" name="city" value={vendorData ? vendorData.city : ''} onChange={handleVendorInputChange} />
+                    <select className="select-state" name="state" value={vendorData ? vendorData.state : ''} onChange={handleVendorInputChange}>
+                        <option value="">Select</option>
+                        {states.map((state, index) => (
+                            <option key={index} value={state}>
+                                {state}
+                            </option>
+                        ))}
+                    </select>
+
+                </div>
+                <div className="form-group">
+
+                    <label>Vendor Image:</label>
+                    <input type="file" name="file" accept="image/*" onChange={handleFileChange} />
+
+                </div>
+
+                {/* {vendorUserData?.is_admin && ( */}
+                    <>
+                        <button className="btn-edit" onClick={handleSaveNewVendor}>Create Vendor</button>
+                        <button className="btn-edit" onClick={() => setNewVendor(false)}>Cancel</button>
+                    </>
+                {/* )} */}
+                
+=======
             {/* {vendorUserData?.is_admin && ( */}
                 <>
                     <button className="btn-edit" onClick={handleSaveNewVendor}>Create Vendor</button>
                     <button className="btn-edit" onClick={() => setNewVendor(false)}>Cancel</button>
                 </>
             {/* )} */}
+>>>>>>> refs/remotes/origin/main
         </div>
         )
 }
