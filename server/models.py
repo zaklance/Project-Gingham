@@ -459,6 +459,9 @@ class Basket(db.Model, SerializerMixin):
     price = db.Column(db.Float, nullable=False)
     pickup_duration = db.Column(db.Time, nullable=False)
 
+    vendor = db.relationship('Vendor', lazy='joined')
+    market_day = db.relationship('MarketDay', lazy='joined')
+
     # serialize_rules = ('-user_id', '-vendor_id', '-market_id')
 
     # @validates('sale_date')
@@ -480,5 +483,5 @@ class Basket(db.Model, SerializerMixin):
         return value
 
     def __repr__(self):
-        return (f"<Basket ID: {self.id}, Vendor ID: {self.vendor_id}, "
-                f"Market ID: {self.market_id}, Sold: {self.is_sold}>")
+        return (f"<Basket ID: {self.id}, Vendor: {self.vendor.name}, "
+                f"Market ID: {self.market_day_id}, Sold: {self.is_sold}>")

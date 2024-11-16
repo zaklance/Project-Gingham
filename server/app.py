@@ -1043,7 +1043,35 @@ def handle_basket_by_id(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
+@app.route('/baskets/user-sales-history', methods=['GET'])
+@jwt_required()
+def get_user_sales_history():
+    current_user_id = get_jwt_identity()
 
+    if not current_user_id:
+        return {'error': 'User not logged in'}, 401
+    
+    try: 
+        baskets = Basket.query.filter_by(user_id=current_user_id, is_sold=True).all()
+        app.logger.info(f"Fetched baskets: {baskets}")
+
+        user_sales_history = [
+            {
+                "vendor_name": basket.vendor.name,
+                "vendor_id": basket.vendor.id,
+                "sale_date": basket.sale_date.strftime('%Y-%m-%d'),
+                "market_name": basket.market_day.markets.name,
+                "market_id": basket.market_day.markets.id,
+                "price": basket.price,
+                "baskets_count": 1
+            }
+            for basket in baskets or []
+        ]
+        return jsonify(user_sales_history), 200
+    
+    except Exception as e: 
+        app.logger.error(f"Error fetching sales history: {e}")
+        return {'error': f"Exception: {str(e)}"}, 500
 
 # ADMIN PORTAL
 @app.route('/admin/login', methods=['POST'])
