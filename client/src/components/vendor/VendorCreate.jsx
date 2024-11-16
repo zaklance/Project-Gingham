@@ -231,6 +231,7 @@ function VendorCreate () {
                         <button className="btn-edit" onClick={() => setNewVendor(false)}>Cancel</button>
                     </>
                 {/* )} */}
+                
         </div>
         )
 }
