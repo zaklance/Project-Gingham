@@ -1268,7 +1268,7 @@ def session_status():
   session = stripe.checkout.Session.retrieve(request.args.get('session_id'))
   return jsonify(status=session.status, customer_email=session.customer_details.email)
 
-#User Password Reset Request
+# Password reset for User
 @app.route('/user/password-reset-request', methods=['POST'])
 def password_reset_request():
     data = request.get_json()
@@ -1310,7 +1310,6 @@ def password_reset_request():
     except Exception as e:
         return {'error': f'Failed to send email: {str(e)}'}, 500
 
-# Password Reset Route
 @app.route('/user/password-reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
     if request.method == 'GET':
@@ -1356,6 +1355,139 @@ def password_reset(token):
 
         except Exception as e:
             print(f"POST request: An error occurred: {str(e)}")
+            return {'error': f'Failed to reset password: {str(e)}'}, 500
+
+# Password reset for VendorUser
+@app.route('/vendor/password-reset-request', methods=['POST'])
+def vendor_password_reset_request():
+    data = request.get_json()
+    email = data.get('email')
+    vendor_user = VendorUser.query.filter_by(email=email).first()
+
+    if not vendor_user:
+        return {'error': 'Vendor user not found'}, 404
+
+    token = serializer.dumps(email, salt='vendor-password-reset-salt')
+    reset_link = url_for('vendor_password_reset', token=token, _external=True)
+
+    try:
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+        recipient_email = email
+
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = recipient_email
+        msg['Subject'] = 'Vendor Password Reset Request'
+
+        body = f"Please click the link to reset your password: {reset_link}"
+        msg.attach(MIMEText(body, 'plain'))
+
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, recipient_email, msg.as_string())
+        server.quit()
+
+        return {'message': 'Password reset link sent'}, 200
+
+    except Exception as e:
+        return {'error': f'Failed to send email: {str(e)}'}, 500
+
+@app.route('/vendor/password-reset/<token>', methods=['GET', 'POST'])
+def vendor_password_reset(token):
+    if request.method == 'GET':
+        return redirect(f'http://localhost:5173/vendor/password-reset/{token}')
+
+    if request.method == 'POST':
+        try:
+            email = serializer.loads(token, salt='vendor-password-reset-salt', max_age=7200)
+            data = request.get_json()
+            new_password = data.get('new_password')
+
+            if not new_password:
+                return {'error': 'New password is required'}, 400
+
+            vendor_user = VendorUser.query.filter_by(email=email).first()
+            if not vendor_user:
+                return {'error': 'Vendor user not found'}, 404
+
+            vendor_user.password = new_password
+            db.session.commit()
+
+            return {'message': 'Password successfully reset'}, 200
+
+        except SignatureExpired:
+            return {'error': 'The token has expired'}, 400
+
+        except Exception as e:
+            return {'error': f'Failed to reset password: {str(e)}'}, 500
+
+# Password reset for AdminUser
+@app.route('/admin/password-reset-request', methods=['POST'])
+def admin_password_reset_request():
+    data = request.get_json()
+    email = data.get('email')
+    admin_user = AdminUser.query.filter_by(email=email).first()
+
+    if not admin_user:
+        return {'error': 'Admin user not found'}, 404
+
+    token = serializer.dumps(email, salt='admin-password-reset-salt')
+    reset_link = url_for('admin_password_reset', token=token, _external=True)
+
+    try:
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+        recipient_email = email
+
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = recipient_email
+        msg['Subject'] = 'Admin Password Reset Request'
+
+        body = f"Please click the link to reset your password: {reset_link}"
+        msg.attach(MIMEText(body, 'plain'))
+
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, recipient_email, msg.as_string())
+        server.quit()
+
+        return {'message': 'Password reset link sent'}, 200
+
+    except Exception as e:
+        return {'error': f'Failed to send email: {str(e)}'}, 500
+
+
+@app.route('/admin/password-reset/<token>', methods=['GET', 'POST'])
+def admin_password_reset(token):
+    if request.method == 'GET':
+        return redirect(f'http://localhost:5173/admin/password-reset/{token}')
+
+    if request.method == 'POST':
+        try:
+            email = serializer.loads(token, salt='admin-password-reset-salt', max_age=7200)
+            data = request.get_json()
+            new_password = data.get('new_password')
+
+            if not new_password:
+                return {'error': 'New password is required'}, 400
+
+            admin_user = AdminUser.query.filter_by(email=email).first()
+            if not admin_user:
+                return {'error': 'Admin user not found'}, 404
+
+            admin_user.password = new_password
+            db.session.commit()
+
+            return {'message': 'Password successfully reset'}, 200
+
+        except SignatureExpired:
+            return {'error': 'The token has expired'}, 400
+
+        except Exception as e:
             return {'error': f'Failed to reset password: {str(e)}'}, 500
     
 if __name__ == '__main__':
