@@ -9,6 +9,8 @@ function MarketDetail ({ match }) {
     const [market, setMarket] = useState();
     const [vendors, setVendors] = useState([]);
     const [vendorDetails, setVendorDetails] = useState({});
+    const [allVendorDetails, setAllVendorDetails] = useState([]);
+    const [vendorDetailsMap, setVendorDetailsMap] = useState({});
     const [marketReviews, setMarketReviews] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
@@ -21,7 +23,8 @@ function MarketDetail ({ match }) {
     const [editedReviewData, setEditedReviewData] = useState("");
     const [productList, setProductList] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState("");
-    const [marketDays, setMarketDays] = useState([])
+    const [marketDays, setMarketDays] = useState([]);
+    const [allMarketDays, setAllMarketDays] = useState([]);
     const [selectedDay, setSelectedDay] = useState(null);
     const [vendorMarkets, setVendorMarkets] = useState();
     
@@ -61,14 +64,20 @@ function MarketDetail ({ match }) {
         fetch("http://127.0.0.1:5555/market-days")
             .then(response => response.json())
             .then(data => {
-                const filteredData = data.filter(item => item.market_id === market.id);
-                setMarketDays(filteredData)
-                if (filteredData.length > 0) {
-                    setSelectedDay(filteredData[0]);
-                }            
+                setAllMarketDays(data)       
             })
             .catch(error => console.error('Error fetching market days', error));
-    }, [market?.id]);
+    }, []);
+
+    useEffect(() => {
+        if (allMarketDays.length > 0 && market?.id) {
+            const filteredData = allMarketDays.filter((item) => item.market_id === market.id);
+            setMarketDays(filteredData);
+            if (filteredData.length > 0) {
+                setSelectedDay(filteredData[0]);
+            }
+        }
+    }, [allMarketDays, market?.id]);
 
     const handleDayChange = (event) => {
         const dayId = parseInt(event.target.value);
@@ -98,31 +107,39 @@ function MarketDetail ({ match }) {
             .catch(error => console.error('Error fetching vendors:', error));
     }, [id]);
 
+    // Fetch all vendors
     useEffect(() => {
-        const fetchVendorDetails = async () => {
-            if (vendors.length === 0) return;
-
-            const details = await Promise.all(vendors.map(async (vendorId) => {
-                try {
-                    const response = await fetch(`http://127.0.0.1:5555/vendors/${vendorId}`);
-                    if (!response.ok) throw new Error(`Failed to fetch vendor ${vendorId}`);
-                    return await response.json();
-                } catch (error) {
-                    console.error(error);
-                    return { id: vendorId, name: 'Unknown Vendor'};
-                }
-            }));
-            const marketDetailsMap = {};
-            details.forEach(vendor => {
-                marketDetailsMap[vendor.id] = vendor;
-            });
-            setVendorDetails(marketDetailsMap);
+        const fetchAllVendors = async () => {
+            try {
+                const response = await fetch("http://127.0.0.1:5555/vendors");
+                if (!response.ok) throw new Error("Failed to fetch vendors");
+                const data = await response.json();
+                setAllVendorDetails(data); // Store all fetched vendors
+            } catch (error) {
+                console.error("Error fetching vendors:", error);
+            }
         };
-        fetchVendorDetails();
-    }, [vendors]);
+
+        fetchAllVendors();
+    }, []);
+
+    // filter all fetched vendors
+    useEffect(() => {
+        if (allVendorDetails.length > 0 && vendors.length > 0) {
+            const filteredDetails = allVendorDetails.filter(vendor =>
+                vendors.includes(vendor.id)
+            );
+
+            const marketDetailsMap = filteredDetails.reduce((acc, vendor) => {
+                acc[vendor.id] = vendor;
+                return acc;
+            }, {});
+            setVendorDetailsMap(marketDetailsMap);
+        }
+    }, [allVendorDetails, vendors]);
 
     const filteredVendorsList = vendors.filter((vendorId) => {
-        const vendorDetail = vendorDetails[vendorId];
+        const vendorDetail = vendorDetailsMap[vendorId];
         // Filter vendorMarkets to find the market_days that match the selected market_id and selected day
         const availableOnSelectedDay = vendorMarkets.filter(vendorMarket => {
             return vendorMarket.vendor_id === vendorId &&
@@ -158,7 +175,7 @@ function MarketDetail ({ match }) {
             }));            
             setAmountInCart(amountInCart + 1);
 
-            const vendor = vendorDetails[vendorId];
+            const vendor = vendorDetailsMap[vendorId];
             setCartItems([...cartItems, { vendorName: vendor.name, location: market.name, id: cartItems.length + 1, price: price }]);
         } else {
             alert("Sorry, all baskets are sold out!");
@@ -415,7 +432,7 @@ function MarketDetail ({ match }) {
             <div className='box-scroll'>
                 {Array.isArray(uniqueFilteredVendorsList) && uniqueFilteredVendorsList.length > 0 ? (
                     uniqueFilteredVendorsList.map((vendorId, index) => {
-                        const vendorDetail = vendorDetails[vendorId] || {};
+                        const vendorDetail = vendorDetailsMap[vendorId] || {};
 
                         return (
                             <div key={index} className="market-item">

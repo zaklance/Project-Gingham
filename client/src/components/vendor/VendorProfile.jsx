@@ -261,8 +261,12 @@ function VendorProfile () {
         <div>
             <div className="tab-content">
                 <div>
+<<<<<<< HEAD
                     <h2 className='title'>Profile Information </h2>
                     
+=======
+                    <h2 className='margin-t-16'>Profile Information </h2>
+>>>>>>> refs/remotes/origin/main
                     <div className='bounding-box'>
                     {editMode && vendorUserData?.is_admin ? (
                         <>
@@ -307,9 +311,22 @@ function VendorProfile () {
                         </>
                     ) : (
                         <>
-                            <p><strong>Name:&emsp;</strong> {vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : ' Loading...'}</p>
-                            <p><strong>Email:&emsp;</strong> {vendorUserData ? vendorUserData.email : ' Loading...'}</p>
-                            <p><strong>Phone:&emsp;</strong> {vendorUserData ? vendorUserData.phone : ' Loading...'}</p>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td className='cell-title'>Name:</td>
+                                        <td className='cell-text'>{vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : ' Loading...'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='cell-title'>Email:</td>
+                                        <td className='cell-text'>{vendorUserData ? vendorUserData.email : ' Loading...'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='cell-title'>Phone:</td>
+                                        <td className='cell-text'>{vendorUserData ? vendorUserData.phone : ' Loading...'}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                             <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                         </>
                     )}
@@ -380,19 +397,30 @@ function VendorProfile () {
                         ) : (
                                 <>
                                     <div className='flex-start flex-gap'>
-                                        <div>
-                                            <p><strong>Role:&emsp;</strong> {vendorUserData?.is_admin ? 'Admin' : 'Vendor'}</p>
-                                            <br/>
-                                            <p><strong>Name:&emsp;</strong> {vendorData ? vendorData.name : ' Loading...'}</p>
-                                            <p><strong>Product:&emsp;</strong> {vendorData ? vendorData.product : ' Loading...'}</p>
-                                            <p><strong>Based in:&emsp;</strong> {vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}</p>
-                                        </div>
-                                        {vendorImageURL && (
-                                            <div className='vendor-image'>
-                                                <img src={vendorImageURL} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} />
-                                                {vendorData ? vendorData.image : 'Loading'}
-                                            </div>
-                                        )}
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td className='cell-title'>Role:</td>
+                                                    <td className='cell-text'>{vendorUserData?.is_admin ? 'Admin' : 'Vendor'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Name:</td>
+                                                    <td className='cell-text'>{vendorData ? vendorData.name : ' Loading...'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Product:</td>
+                                                    <td className='cell-text'>{vendorData ? vendorData.product : ' Loading...'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Based in:</td>
+                                                        <td className='cell-text'>{vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Image:</td>
+                                                        <td className='cell-text'>{vendorData ? <img src={vendorImageURL} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                     {vendorUserData?.is_admin && (    
                                         <div className='flex-start'>
@@ -409,7 +437,6 @@ function VendorProfile () {
                                             </div>
                                         </div>
                                     </div>
-
                                     )}
                                     
                                     <p><strong>Locations:&emsp;</strong></p>

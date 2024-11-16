@@ -23,19 +23,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {!isNotUser && (
                     <>
                         <li>
-                            <button className='nav-tab color-3'>
-                                <NavLink reloadDocument to="/user/markets">Markets</NavLink>
-                            </button>
+                            <NavLink className='nav-tab color-3 btn-nav' reloadDocument to="/user/markets">Markets</NavLink>
                         </li>
                         <li>
-                            <button className='nav-tab color-4'>
-                            <NavLink reloadDocument to="/user/vendors">Vendors</NavLink>
-                            </button>
+                            <NavLink className='nav-tab color-4 btn-nav' reloadDocument to="/user/vendors">Vendors</NavLink>
                         </li>
                         <li>
-                            <button className='nav-tab color-5'>
-                            <NavLink reloadDocument to="/user/your-cart">Cart ({amountInCart})</NavLink>
-                            </button>
+                            <NavLink className='nav-tab color-5 btn-nav' reloadDocument to="/user/your-cart">Cart ({amountInCart})</NavLink>
                         </li>
                     </>
                 )}
@@ -43,19 +37,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isVendorLoggedIn && isVendorPage && (
                     <>
                         <li>
-                            <button className='nav-tab color-3'>
-                                <NavLink reloadDocument to="/vendor/dashboard">Dashboard</NavLink>
-                            </button>
+                                <NavLink className='nav-tab color-3 btn-nav' reloadDocument to="/vendor/dashboard">Dashboard</NavLink>
                         </li>
                         <li>
-                            <button className='nav-tab color-4'>
-                                <NavLink reloadDocument to="/vendor/sales">Sales</NavLink>
-                            </button>
+                            <NavLink className='nav-tab color-4 btn-nav' reloadDocument to="/vendor/sales">Sales</NavLink>
                         </li>
                         <li>
-                            <button className='nav-tab color-5'>
-                                <NavLink reloadDocument to={`/vendor/profile/${vendor_id}`}>Profile</NavLink>
-                            </button>
+                            <NavLink className='nav-tab color-5 btn-nav' reloadDocument to={`/vendor/profile/${vendor_id}`}>Profile</NavLink>
                         </li>
                     </>
                 )}
@@ -63,24 +51,16 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isAdminLoggedIn && isAdminPage && (
                     <>
                         <li>
-                            <button className='nav-tab color-3'>
-                                <NavLink reloadDocument to={`/admin/profile/${admin_id}`}>Profile</NavLink>
-                            </button>
+                            <NavLink className='nav-tab color-3 btn-nav' reloadDocument to={`/admin/profile/${admin_id}`}>Profile</NavLink>
                         </li>
                         <li>
-                            <button className='nav-tab color-5'>
-                                <NavLink reloadDocument to={`/admin/markets`}>Markets</NavLink>
-                            </button>
+                            <NavLink className='nav-tab color-5 btn-nav' reloadDocument to={`/admin/markets`}>Markets</NavLink>
                         </li>
                         <li>
-                            <button className='nav-tab color-4'>
-                                <NavLink reloadDocument to={`/admin/vendors`}>Vendors</NavLink>
-                            </button>
+                            <NavLink className='nav-tab color-4 btn-nav' reloadDocument to={`/admin/vendors`}>Vendors</NavLink>
                         </li>
                         <li>
-                            <button className='nav-tab color-1'>
-                                <NavLink reloadDocument to={`/admin/users`}>Users</NavLink>
-                            </button>
+                            <NavLink className='nav-tab color-1 btn-nav' reloadDocument to={`/admin/users`}>Users</NavLink>
                         </li>
                     </>
                 )}
@@ -88,20 +68,16 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isUserLoggedIn && !isVendorPage && !isAdminPage ?  (
                     <>
                         <li>
-                            <button className='nav-tab color-2'>
-                                <NavLink reloadDocument to={`/user/profile/${user_id}`}>Profile</NavLink>
-                            </button>
+                            <NavLink className='nav-tab color-2 btn-nav' reloadDocument to={`/user/profile/${user_id}`}>Profile</NavLink>
                         </li>
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-3 tab-right'>
-                                <NavLink reloadDocument to="/user/logout">Logout</NavLink>
-                            </button>
+                            <NavLink className='nav-tab color-3 tab-right btn-nav' reloadDocument to="/user/logout">Logout</NavLink>
                         </li>
                     </>
                 ) : (
                     !isNotUser && (
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-3 tab-right' onClick={handlePopup} >
+                            <button className='nav-tab color-3 tab-right btn-nav btn-nav-login' onClick={handlePopup} >
                                 Login/Signup
                             </button>
                         </li>
@@ -111,15 +87,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isVendorLoggedIn && isVendorPage ?  (
                     <>
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-3 tab-right'>
-                                <NavLink reloadDocument to="/vendor/logout">Logout</NavLink>
-                            </button>
+                            <NavLink className='nav-tab color-3 tab-right btn-nav' reloadDocument to="/vendor/logout">Logout</NavLink>
                         </li>
                     </>
                 ) : (
                     isVendorPage && (
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-3 tab-right' onClick={handlePopup} >
+                            <button className='nav-tab color-3 tab-right btn-nav btn-nav-login' onClick={handlePopup} >
                                 Login/Signup
                             </button>
                         </li>
@@ -129,15 +103,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isAdminLoggedIn && isAdminPage ?  (
                     <>
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-3 tab-right'>
-                                <NavLink reloadDocument to="/admin/logout">Logout</NavLink>
-                            </button>
+                            <NavLink className='nav-tab color-3 tab-right btn-nav' reloadDocument to="/admin/logout">Logout</NavLink>
                         </li>
                     </>
                 ) : (
                     isAdminPage && (
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-3 tab-right' onClick={handlePopup} >
+                            <button className='nav-tab color-3 tab-right btn-nav btn-nav-login' onClick={handlePopup} >
                                 Login/Signup
                             </button>
                         </li>
