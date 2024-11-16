@@ -238,6 +238,7 @@ function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
                             </div>
                             <div className='form-group'>
                                 <label title="Day ( # a.m. - # p.m.)">Schedule:</label>
+                                <p>True</p>
                                 <input
                                     type="text"
                                     name="schedule"

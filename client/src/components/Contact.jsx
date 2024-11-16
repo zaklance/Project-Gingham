@@ -42,7 +42,7 @@ function Contact() {
                 <p>Have a question for us? Feel Free to send us an inquiry using the form below:</p>
                 <br></br>
                 <div>
-                    <p>Prefer to email us directly? Click here: <strong>
+                    <p>Prefer to email us directly? Click here: &ensp;<strong>
                         <a href={`mailto:hello@mufo.nyc`} target="_blank" rel="noopener noreferrer">
                             Email Us
                         </a>
@@ -52,7 +52,7 @@ function Contact() {
                 <div className='margin-t-16 flex-center'>
                     <form onSubmit={handleSubmit} className='form'>
                         <div className='form-group form-contact'>
-                            <label><strong>Name:</strong></label>
+                            <label>Name:</label>
                             <input 
                                 type="text" 
                                 name="name" 
@@ -63,7 +63,7 @@ function Contact() {
                             />
                         </div>
                         <div className='form-group form-contact'>
-                            <label><strong>Email:</strong></label>
+                            <label>Email:</label>
                             <input 
                                 type="email" 
                                 name="email" 
@@ -74,7 +74,7 @@ function Contact() {
                             />
                         </div>
                         <div className='form-group form-contact'>
-                            <label><strong>Subject:</strong></label>
+                            <label>Subject:</label>
                             <input 
                                 type="text" 
                                 name="subject" 
@@ -85,7 +85,7 @@ function Contact() {
                             />
                         </div>
                         <div className='form-group form-contact'>
-                            <label><strong>Message:</strong></label>
+                            <label>Message:</label>
                             <textarea 
                                 name="message" 
                                 value={formData.message} 
