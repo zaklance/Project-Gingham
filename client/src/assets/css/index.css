@@ -618,14 +618,12 @@ ul {
 button a {
   text-decoration: none;
   color: #3b4752;
-  /* Adjust link color as needed */
 }
 
 button a.active {
   /* font-weight: bold; */
   /* background: #fff537; */
   padding: 10px 20px 10px 20px;
-  /* Styling for active link */
 }
 
 button:hover {
@@ -639,7 +637,12 @@ button:active {
 }
 
 .btn-nav:hover {
-    background: #fffa9c;
+  background: #fffa9c;
+}
+
+.btn-nav:active {
+  background-color: #fff669;
+  transition: .1s;
 }
 
 link {
@@ -842,6 +845,10 @@ form textarea {
 
 .form-login input {
   min-width: 312px;
+}
+
+.form-contact label{
+  background-color: white;
 }
 
 .form-contact input, .form-contact textarea {
