@@ -24,7 +24,8 @@ load_dotenv()
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/vendor-images')
+VENDOR_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/vendor-images')
+MARKET_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/market-images')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 MAX_SIZE = 1 * 1024 * 1024
 MAX_RES = (100, 100)
@@ -32,9 +33,8 @@ MAX_RES = (100, 100)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URI']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.environ['SECRET_KEY']
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-#serializer to create tokens
+# Serializer to create tokens
 serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 
 db.init_app(app)
@@ -44,11 +44,9 @@ CORS(app, supports_credentials=True)
 jwt = JWTManager(app)
 
 def allowed_file(filename):
-    
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
-    
     if image.mode != 'RGB':
         image = image.convert('RGB')
         
@@ -69,12 +67,6 @@ def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
     temp_output.seek(0)
     return Image.open(temp_output)
 
-def check_role(expected_role):
-    claims = get_jwt()
-    if claims.get('role') != expected_role:
-        return False
-    return True
-
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
@@ -87,23 +79,44 @@ def upload_file():
 
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+        # Check whether the upload is for a vendor or market
+        upload_type = request.form.get('type')
+        if upload_type == 'vendor':
+            file_path = os.path.join(VENDOR_UPLOAD_FOLDER, filename)
+        elif upload_type == 'market':
+            file_path = os.path.join(MARKET_UPLOAD_FOLDER, filename)
+        else:
+            return {'error': 'Invalid type specified. Must be "vendor" or "market"'}, 400
 
         try:
             image = Image.open(file)
             image = resize_image(image)
             image.save(file_path)
 
-            vendor_id = request.form.get('vendor_id')
-            if not vendor_id:
-                return {'error': 'Vendor ID is required'}, 400
+            if upload_type == 'vendor':
+                vendor_id = request.form.get('vendor_id')
+                if not vendor_id:
+                    return {'error': 'Vendor ID is required'}, 400
 
-            vendor = Vendor.query.get(vendor_id)
-            if not vendor:
-                return {'error': 'Vendor not found'}, 404
+                vendor = Vendor.query.get(vendor_id)
+                if not vendor:
+                    return {'error': 'Vendor not found'}, 404
 
-            vendor.image = filename
-            db.session.commit()
+                vendor.image = filename
+                db.session.commit()
+
+            elif upload_type == 'market':
+                market_id = request.form.get('market_id')
+                if not market_id:
+                    return {'error': 'Market ID is required'}, 400
+
+                market = Market.query.get(market_id)
+                if not market:
+                    return {'error': 'Market not found'}, 404
+
+                market.image = filename
+                db.session.commit()
 
             return {'message': 'File successfully uploaded', 'filename': filename}, 201
 
@@ -116,9 +129,21 @@ def upload_file():
 @app.route('/images/<filename>', methods=['GET'])
 def serve_image(filename):
     try:
-        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+        if os.path.exists(os.path.join(VENDOR_UPLOAD_FOLDER, filename)):
+            return send_from_directory(VENDOR_UPLOAD_FOLDER, filename)
+        elif os.path.exists(os.path.join(MARKET_UPLOAD_FOLDER, filename)):
+            return send_from_directory(MARKET_UPLOAD_FOLDER, filename)
+        else:
+            raise FileNotFoundError
+
     except FileNotFoundError:
         return {'error': 'Image not found'}, 404
+
+def check_role(expected_role):
+    claims = get_jwt()
+    if claims.get('role') != expected_role:
+        return False
+    return True
 
 # User Portal
 @app.route('/', methods=['GET'])

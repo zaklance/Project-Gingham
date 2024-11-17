@@ -49,26 +49,52 @@ function AdminMarketAdd({ markets, weekdayReverse }) {
                 newMarket.year_round = false;
             }
 
+            // Save market details first
             const response = await fetch(`http://127.0.0.1:5555/markets`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(newMarket),
-
             });
-            console.log('Request body:', JSON.stringify(newMarket));
 
             if (response.ok) {
                 const updatedData = await response.json();
-                console.log('Market data updated successfull:', updatedData);
+                console.log('Market data updated successfully:', updatedData);
+
+                if (image) {
+                    await handleImageUpload(updatedData.id);
+                }
             } else {
-                console.log('Failed to save changes');
-                console.log('Response status;', response.status);
+                console.log('Failed to save market details');
+                console.log('Response status:', response.status);
                 console.log('Response text:', await response.text());
             }
         } catch (error) {
-            console.error('Error saving changes:', error);
+            console.error('Error saving market details:', error);
+        }
+    };
+
+    const handleImageUpload = async (marketId) => {
+        const formData = new FormData();
+        formData.append('file', image);
+        formData.append('type', 'market');
+        formData.append('market_id', marketId);
+
+        try {
+            const response = await fetch('http://127.0.0.1:5555/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Image uploaded successfully:', data);
+            } else {
+                console.error('Failed to upload image');
+            }
+        } catch (error) {
+            console.error('Error uploading image:', error);
         }
     };
 
