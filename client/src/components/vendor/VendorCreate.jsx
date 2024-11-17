@@ -4,14 +4,17 @@ import { useNavigate } from 'react-router-dom';
 function VendorCreate () {
     const [vendorEditMode, setVendorEditMode] = useState(false);
     const [vendorUserData, setVendorUserData] = useState(null);
+    const [vendors, setVendors] = useState([]);
     const [newVendor, setNewVendor] = useState(false);
     const [vendorData, setVendorData] = useState(null);
+    const [query, setQuery] = useState("");
+    const [selectedVendor, setSelectedVendor] = useState(null);
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
     const [vendorImageURL, setVendorImageURL] = useState(null);
 
     const navigate = useNavigate();
-    
+  
     const products = [
         'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 
         'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables'
@@ -25,6 +28,26 @@ function VendorCreate () {
         "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
     ];
 
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/vendors")
+          .then((response) => response.json())
+          .then((data) => setVendors(data))
+          .catch((error) => console.error("Error fetching vendors:", error));
+      }, []);
+    
+      const onUpdateQuery = (event) => setQuery(event.target.value);
+    
+      const filteredVendors = vendors.filter(
+        (vendor) =>
+          vendor.name.toLowerCase().includes(query.toLowerCase()) &&
+          vendor.name !== query
+      );
+    
+      const handleSelectVendor = (vendor) => {
+        setQuery(vendor.name);
+        setSelectedVendor(vendor);
+      };
+    
     useEffect(() => {
         const fetchVendorUserData = async () => {
             const id = sessionStorage.getItem('vendor_user_id');
@@ -247,7 +270,38 @@ function VendorCreate () {
                     <button className="btn-edit" onClick={() => setNewVendor(false)}>Cancel</button>
                 </>
             {/* )} */}
-                
+
+            <br />
+
+            <div>
+                <div className="tab-content margin-b-24">
+                    <h2>Already a Vendor?</h2>
+                </div>
+
+                <div>
+                    <h3>Request to be added here:</h3>
+                    <td className="cell-title">Search:</td>
+                    <td className="cell-text">
+                        <input id="vendor-search" className="search-bar" type="text" placeholder="Search vendors..." value={query} onChange={onUpdateQuery} />
+                            <div className="dropdown-content">
+                                {query &&
+                                filteredVendors.slice(0, 10).map((item) => (
+                                    <div className="search-results" key={item.id} onClick={() => handleSelectVendor(item)} >
+                                        {item.name}
+                                    </div>
+                                ))}
+                            </div>
+                    </td>
+                    {selectedVendor && (
+                        <div className="selected-vendor">
+                            <p>You have selected: {selectedVendor.name}</p>
+                        </div>
+                    )}
+                    <button className="btn-edit" onClick={() => alert( `Your request to join ${selectedVendor?.name || "a vendor"} has been noted!` ) } disabled={!selectedVendor} >
+                        Request
+                    </button>
+                </div>
+            </div>
         </div>
     )
 }
