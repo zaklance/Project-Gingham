@@ -50,12 +50,12 @@ function BasketSales() {
                         salesHistory.map((history, index) => (
                             <tr key={index}>
                                 <td>
-                                    <a href={`/users/markets/${history.market_id}`} target="_blank" rel="noopener noreferrer">
+                                    <a href={`/user/markets/${history.market_id}`} target="_blank" rel="noopener noreferrer">
                                         {history.market_name || 'No Market Name'}
                                     </a>
                                 </td>                                
                                 <td>
-                                    <a href={`/users/vendors/${history.vendor_id}`} target="_blank" rel="noopener noreferrer">
+                                    <a href={`/user/vendors/${history.vendor_id}`} target="_blank" rel="noopener noreferrer">
                                         {history.vendor_name || 'No Vendor Name'}
                                     </a>
                                 </td>                                
