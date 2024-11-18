@@ -15,7 +15,7 @@ function AdminVendors () {
     return(
         <div>
             <h2 className='margin-t-16'>Vendor Management</h2>
-            <div className='bounding-box margin-r-24'>
+            <div className='bounding-box'>
                 <p>**vendor onboard, emails, etc goes here**</p>
             </div>
         </div>

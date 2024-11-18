@@ -128,37 +128,38 @@ function VendorNotification({ vendorId }) {
     };
 
     return (
-        <div>
-            <div className='tab-content margin-b-24'>
-                <h3>Notifications</h3>
-                <br />
-                {notifications.length === 0 ? (
-                    <div>No Notifications</div>
-                ) : (
-                    <ul>
-                        {notifications.map((notification) => {
-                            console.log(notification);
-                            return (
-                                <li key={notification.id}>
-                                    <p><strong>{notification.message}</strong></p>
-                                    <button className='btn-edit' onClick={() => {
-                                        console.log(notification.id);
-                                        handleApprove(notification.id, true);
-                                    }}>
-                                        Approve as Admin
-                                    </button>
-                                    <button className='btn-edit' onClick={() => handleApprove(notification.id, false)}>
-                                        Approve as Employee
-                                    </button>
-                                    <button className='btn-edit' onClick={() => handleReject(notification.id)}>Reject</button>
-                                    <br />
-                                </li>
-                            );
-                        })}
-                    </ul>
-                )}
-            </div>
-        </div>
+        <>
+            {notifications.length === 0 ? (
+                <>
+                </>
+            ) : (
+                <div className='bounding-box tab-content margin-b-24'>
+                    <h3>Notifications</h3>
+                    <br />
+                        <ul>
+                            {notifications.map((notification) => {
+                                console.log(notification);
+                                return (
+                                    <li key={notification.id}>
+                                        <p><strong>{notification.message}</strong></p>
+                                        <button className='btn-edit' onClick={() => {
+                                            console.log(notification.id);
+                                            handleApprove(notification.id, true);
+                                        }}>
+                                            Approve as Admin
+                                        </button>
+                                        <button className='btn-edit' onClick={() => handleApprove(notification.id, false)}>
+                                            Approve as Employee
+                                        </button>
+                                        <button className='btn-edit' onClick={() => handleReject(notification.id)}>Reject</button>
+                                        <br />
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                </div>
+            )}
+        </>
     );
 };
 
