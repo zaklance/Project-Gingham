@@ -71,6 +71,11 @@ function Login({ handlePopup }) {
         if (response.ok) {
             const data = await response.json();
             alert("Sign Up Successful. Please log in!");
+            setSignupEmail('');
+            setSignupPassword('');
+            setSignupFirstName('');
+            setSignupLastName('');
+            setSignupAddress('');
         } else {
             const errorData = await response.json();
             if (errorData.error) {

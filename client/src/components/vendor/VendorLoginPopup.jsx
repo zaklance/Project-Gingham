@@ -68,6 +68,11 @@ function VendorLogin({ handlePopup }) {
     
             if (response.ok) {
                 alert("Sign Up Successful. Please log in!");
+                setSignupEmail('');
+                setSignupPassword('');
+                setSignupFirstName('');
+                setSignupLastName('');
+                setSignupPhone('');
             } else {
                 const errorData = await response.json();
                 console.log('Full error response:', errorData);
