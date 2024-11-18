@@ -4,9 +4,9 @@ import BasketCard from './BasketCard';
 import VendorCreate from './VendorCreate';
 import VendorNotification from './VendorNotification';
 
-function VendorDashboard() {
-    const { vendorId } = useParams();
+function VendorDashboard( {vendorId}) {
     const [vendorUserData, setVendorUserData] = useState(null);
+    const [notifications, setNotifications] = useState([]);
     const [newVendor, setNewVendor] = useState(false);
     const [locations, setLocations] = useState([]);
     const [marketDetails, setMarketDetails] = useState({});
@@ -54,10 +54,46 @@ function VendorDashboard() {
                 setLoading(false);
             }
         };
-
         fetchVendorUserData();
     }, []); 
 
+    useEffect(() => {
+        if (!vendorId) return;
+
+        const fetchNotifications = async () => {
+            const token = sessionStorage.getItem('jwt-token');
+            if (!token) {
+                console.error("Token missing");
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://127.0.0.1:5555/vendor-notifications/${vendorId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Notifications fetched:', data);
+                    setNotifications(data.notifications || []); 
+                } else {
+                    console.error('Failed to fetch notifications');
+                    setNotifications([]);
+                }
+            } catch (error) {
+                console.error('Error fetching notifications:', error);
+                setNotifications([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchNotifications();
+    }, [vendorId]); 
 
     // useEffect(() => {
     //     const fetchVendorData = async () => {
@@ -144,9 +180,11 @@ function VendorDashboard() {
     return (
         <div>
             <h2 className='margin-t-16'>Vendor Dashboard</h2>
+            {/* {notifications.length > 0 && */}
                 <div className='bounding-box'>
-                    <VendorNotification vendorUserId={vendorUserId} />
+                    <VendorNotification notifications={notifications} />
                 </div>
+            {/* } */}
 
             {!vendorUserData || !vendorUserData.vendor_id ? (
                 <div className='bounding-box'>
