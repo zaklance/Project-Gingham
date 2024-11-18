@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import InputMask from 'react-input-mask';
+// import InputMask from 'react-input-mask';
 import '../../assets/css/index.css';
 
 function BasketCard({ vendorId = 2, initialMarketId }) {
@@ -106,14 +106,14 @@ function BasketCard({ vendorId = 2, initialMarketId }) {
             <br />
             <p>Pick Up Time Start:</p>
             <div className="time-picker">
-                <InputMask
-                    mask="99:99"
+                <input
+                    // mask="99:99"
                     placeholder="HH:MM"
                     name="pickup_start"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
                     className="pickup-time-input"
-                    maskChar={null}
+                    // maskChar={null}
                 />
                 <select
                     name="amPm"

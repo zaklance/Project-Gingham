@@ -104,11 +104,11 @@ function VendorCreate () {
             setVendorEditMode(true); 
         } else if (vendorUserData) {
             setVendorData({
-                name: vendorUserData.name,
-                city: vendorUserData.city,
-                state: vendorUserData.state,
-                product: vendorUserData.product,
-                image: vendorUserData.image
+                name: vendorUserData.name || '',
+                city: vendorUserData.city || '',
+                state: vendorUserData.state || '',
+                product: vendorUserData.product || '',
+                image: vendorUserData.image || ''
             });
             setVendorEditMode(true);
         }
@@ -261,12 +261,12 @@ function VendorCreate () {
             <div className="form-group">
 
                 <label>Vendor Name:</label>
-                <input type="text" name="name" value={vendorData ? vendorData.name : ''} onChange={handleVendorInputChange} />
+                <input type="text" name="name" value={vendorData?.name || ''} onChange={handleVendorInputChange} />
             
             </div>
             <div className="form-group">
                 <label>Product:</label>
-                <select name="product" value={vendorData ? vendorData.product : ''} onChange={handleVendorInputChange}>
+                <select name="product" value={vendorData?.product || ''} onChange={handleVendorInputChange}>
                     <option value="">Select</option>
                     {products.map((product, index) => (
                         <option key={index} value={product}> {product} </option>
@@ -276,8 +276,8 @@ function VendorCreate () {
             <div className="form-group">
 
                 <label>Based out of:</label>
-                <input type="text" name="city" value={vendorData ? vendorData.city : ''} onChange={handleVendorInputChange} />
-                <select className="select-state" name="state" value={vendorData ? vendorData.state : ''} onChange={handleVendorInputChange}>
+                <input type="text" name="city" value={vendorData?.city || ''} onChange={handleVendorInputChange} />
+                <select className="select-state" name="state" value={vendorData?.state || ''} onChange={handleVendorInputChange}>
                     <option value="">Select</option>
                     {states.map((state, index) => (
                         <option key={index} value={state}>

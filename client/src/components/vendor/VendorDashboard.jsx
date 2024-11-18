@@ -4,7 +4,7 @@ import BasketCard from './BasketCard';
 import VendorCreate from './VendorCreate';
 import VendorNotification from './VendorNotification';
 
-function VendorDashboard( {vendorId}) {
+function VendorDashboard( {vendorId, marketId}) {
     const [vendorUserData, setVendorUserData] = useState(null);
     const [notifications, setNotifications] = useState([]);
     const [newVendor, setNewVendor] = useState(false);
@@ -16,6 +16,8 @@ function VendorDashboard( {vendorId}) {
     const [error, setError] = useState(null);
 
     const vendorUserId = sessionStorage.getItem('vendor_user_id');
+    const marketPrice = price[marketId] !== undefined ? price[marketId] : 0;
+    const marketBaskets = availableBaskets[marketId] !== undefined ? availableBaskets[marketId] : 0;
 
     useEffect(() => {
         const fetchVendorUserData = async () => {
@@ -220,7 +222,7 @@ function VendorDashboard( {vendorId}) {
                                         Price: 
                                         <input 
                                             type='number' 
-                                            value={price[marketId] || 0} 
+                                            value={marketPrice}
                                             onChange={(e) => handleChange(marketId, 'price', parseFloat(e.target.value))}
                                         />
                                     </label>
@@ -228,7 +230,7 @@ function VendorDashboard( {vendorId}) {
                                         Available Baskets: 
                                         <input 
                                             type='number' 
-                                            value={availableBaskets[marketId] || 0}
+                                            value={marketBaskets}
                                             onChange={(e) => handleChange(marketId, 'baskets', parseInt(e.target.value))}
                                         />
                                     </label>
