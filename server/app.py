@@ -363,7 +363,8 @@ def all_vendors():
             name=data.get('name'),
             city=data.get('city'),
             state=data.get('state'),
-            product=data.get('product'), 
+            product=data.get('product'),
+            bio=data.get('bio'),
             image=data.get('image')
         )
         db.session.add(new_vendor)
