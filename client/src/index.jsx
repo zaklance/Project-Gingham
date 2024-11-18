@@ -146,6 +146,7 @@ const router = createBrowserRouter([
                 children: [
                     { path: "home", element: <VendorHome /> },
                     { path: "dashboard", element: <VendorDashboard /> },
+                    { path: "/vendor-dashboard/:vendorId", element: <VendorDashboard />},
                     { path: "sales", element: <VendorSales /> },
                     { path: "profile/:id", element: <VendorProfile /> },
                     { path: "vendor-create/:id", element: <VendorCreate />},
