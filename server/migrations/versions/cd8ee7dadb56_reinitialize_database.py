@@ -1,8 +1,8 @@
-"""reinitialize
+"""reinitialize database
 
-Revision ID: adcca79f5a3a
+Revision ID: cd8ee7dadb56
 Revises: 
-Create Date: 2024-11-13 14:51:07.525896
+Create Date: 2024-11-17 19:13:33.996726
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'adcca79f5a3a'
+revision = 'cd8ee7dadb56'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -61,6 +61,7 @@ def upgrade():
     sa.Column('city', sa.String(), nullable=True),
     sa.Column('state', sa.String(length=2), nullable=True),
     sa.Column('product', sa.String(), nullable=False),
+    sa.Column('bio', sa.String(), nullable=True),
     sa.Column('image', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_vendors'))
     )
@@ -98,6 +99,15 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_vendor_favorites_user_id_users')),
     sa.ForeignKeyConstraint(['vendor_id'], ['vendors.id'], name=op.f('fk_vendor_favorites_vendor_id_vendors')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_vendor_favorites'))
+    )
+    op.create_table('vendor_notifications',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('message', sa.String(), nullable=False),
+    sa.Column('vendor_id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('is_read', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['vendor_id'], ['vendors.id'], name=op.f('fk_vendor_notifications_vendor_id_vendors')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_vendor_notifications'))
     )
     op.create_table('vendor_reviews',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -164,6 +174,7 @@ def downgrade():
     op.drop_table('baskets')
     op.drop_table('vendor_users')
     op.drop_table('vendor_reviews')
+    op.drop_table('vendor_notifications')
     op.drop_table('vendor_favorites')
     op.drop_table('market_reviews')
     op.drop_table('market_favorites')

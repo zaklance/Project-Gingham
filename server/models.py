@@ -6,6 +6,7 @@ from flask_bcrypt import Bcrypt
 from sqlalchemy_serializer import SerializerMixin
 from datetime import date, time
 import re
+from datetime import datetime
 
 convention = {
     "ix": "ix_%(column_0_label)s",
@@ -210,11 +211,23 @@ class Vendor(db.Model, SerializerMixin):
     vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic')
     vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor', lazy='dynamic')
     vendor_markets = db.relationship('VendorMarket', back_populates='vendor')
+    notifications = db.relationship('VendorNotifications', back_populates='vendor', lazy='dynamic')
 
     serialize_rules = (
         '-reviews.vendor', '-vendor_favorites.vendor', '-vendor_vendor_users.vendor', 
         '-vendor_markets.vendor', '-reviews.user.market_reviews', '-vendor_vendor_users.email',
     )
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'city': self.city,
+            'state': self.state,
+            'product': self.product,
+            'bio': self.bio,
+            'image': self.image,
+        }
 
     # Validations
     @validates('name', 'product')
@@ -339,6 +352,7 @@ class VendorUser(db.Model, SerializerMixin):
 
     # Relationships
     vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor_user', lazy='dynamic')
+    notifications = db.relationship('VendorNotifications', back_populates='vendor_user')
 
     serialize_rules = ('-_password', '-vendor_vendor_users.vendor_user')
 
@@ -485,3 +499,21 @@ class Basket(db.Model, SerializerMixin):
     def __repr__(self):
         return (f"<Basket ID: {self.id}, Vendor: {self.vendor.name}, "
                 f"Market ID: {self.market_day_id}, Sold: {self.is_sold}>")
+    
+class VendorNotifications(db.Model, SerializerMixin):
+    __tablename__ = 'vendor_notifications'
+
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String, nullable=False)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_read = db.Column(db.Boolean, default=False, nullable=False)
+
+    vendor = db.relationship('Vendor', back_populates='notifications')
+    vendor_user = db.relationship('VendorUser', back_populates='notifications')
+
+    serialize_rules = ('vendor_user.first_name', 'vendor_user.last_name')
+
+    def __repr__(self):
+        return (f"<Vendor Notification ID: {self.id}, created on {self.created_at}")
