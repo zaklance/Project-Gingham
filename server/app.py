@@ -67,6 +67,8 @@ def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
     temp_output.seek(0)
     return Image.open(temp_output)
 
+
+#  Upload Images
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
@@ -145,95 +147,14 @@ def check_role(expected_role):
         return False
     return True
 
+
 # User Portal
 @app.route('/', methods=['GET'])
 def homepage():
     return {"message": "Welcome to the homepage!"}, 200
 
-@app.route('/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    user = User.query.filter(User.email == data['email']).first()
-    if not user:
-        return {'error': 'login failed'}, 401
-    
-    if not user.authenticate(data['password']):
-        return {'error': 'login failed'}, 401
-    
-    access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "user"})
-    
-    return jsonify(access_token=access_token, user_id=user.id), 200
 
-@app.route('/signup', methods=['POST'])
-def signup():
-    data = request.get_json()
-
-    try:
-        user = User.query.filter(User.email == data['email']).first()
-        if user:
-            return {'error': 'email already exists'}, 400
-        
-        new_user = User(
-            email=data['email'],
-            password=data['password'],
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            address_1=data['address1'],
-            address_2=data.get('address2', ''),
-            city=data['city'],
-            state=data['state'],
-            zip=data['zip']
-        )
-
-        db.session.add(new_user)
-        db.session.commit()
-
-        return new_user.to_dict(), 201
-
-    except IntegrityError as e:
-        db.session.rollback()
-        return {'error': f'IntegrityError: {str(e)}'}, 400 
-
-    except ValueError as e:
-        return {'error': f'ValueError: {str(e)}'}, 400
-
-    except Exception as e:
-        return {'error': f'Exception: {str(e)}'}, 500
-
-@app.route('/logout', methods=['DELETE'])
-def logout():
-    session.pop('user_id', None)
-    return {}, 204
-
-@app.route('/check_user_session', methods=['GET'])
-@jwt_required()
-def check_user_session():
-    if not check_role('user'):
-        return {'error': 'Access forbidden: User only'}, 403
-
-    user_id = get_jwt_identity()
-    user = User.query.filter_by(id=user_id).first()
-    
-    if not user:
-        return {'error': 'authorization failed'}, 401
-
-    return user.to_dict(), 200
-
-
-@app.route('/check-vendor-session', methods=['GET'])
-@jwt_required()
-def check_vendor_session():
-    if not check_role('vendor'):
-        return {'error': 'Access forbidden: Vendor only'}, 403
-
-    vendor_user_id = get_jwt_identity()
-    vendor_user = VendorUser.query.filter_by(id=vendor_user_id).first()
-    
-    if not vendor_user:
-        return {'error': 'authorization failed'}, 401
-
-    return vendor_user.to_dict(), 200
-
+# Markets
 @app.route('/markets', methods=['GET', 'POST'])
 def all_markets():
     if request.method == 'GET':
@@ -350,7 +271,9 @@ def market_day_by_id(id):
         db.session.delete(market_day)
         db.session.commit()
         return {}, 204
-    
+
+
+# Vendors  
 @app.route('/vendors', methods=['GET', 'POST', 'PATCH'])
 def all_vendors():
     if request.method == 'GET':
@@ -517,205 +440,6 @@ def profile(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route('/market-reviews', methods=['GET', 'POST', 'DELETE'])
-def all_market_reviews():
-    if request.method == 'GET':
-        market_id = request.args.get('market_id')
-        if market_id:
-            reviews = MarketReview.query.filter_by(market_id=market_id).options(db.joinedload(MarketReview.user)).all()
-        else:
-            reviews = MarketReview.query.all()
-        return jsonify([review.to_dict() for review in reviews]), 200
-    elif request.method == 'POST':
-        data = request.get_json()
-        new_review = MarketReview(
-            review_text=data['review_text'],
-            market_id=data['market_id'],
-            user_id=data['user_id']
-        )
-        db.session.add(new_review)
-        db.session.commit()
-        return new_review.to_dict(), 201
-    
-
-@app.route('/market-reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
-def market_review_by_id(id):
-    review = MarketReview.query.filter(MarketReview.id == id).first()
-    if not review:
-        return {'error': 'review not found'}, 404
-    if request.method == 'GET':
-        return review.to_dict(), 200
-    elif request.method == 'PATCH':
-        data = request.get_json()
-        for key, value in data.items():
-            setattr(review, key, value)
-        db.session.commit()
-        return review.to_dict(), 200
-    elif request.method == 'DELETE':
-        db.session.delete(review)
-        db.session.commit()
-        return {}, 204
-
-@app.route('/vendor-reviews', methods=['GET', 'POST'])
-def all_vendor_reviews():
-    if request.method == 'GET':
-        vendor_id = request.args.get('vendor_id')
-        if vendor_id:
-            reviews = VendorReview.query.filter_by(vendor_id=vendor_id).options(db.joinedload(VendorReview.user)).all()
-        else:
-            reviews = VendorReview.query.options(db.joinedload(VendorReview.user)).all()
-        return jsonify([review.to_dict() for review in reviews]), 200
-    
-    elif request.method == 'POST':
-        data = request.get_json()
-        new_review = VendorReview(
-            review_text=data['review_text'],
-            vendor_id=data['vendor_id'],
-            user_id=data['user_id']
-        )
-        db.session.add(new_review)
-        db.session.commit()
-        return new_review.to_dict(), 201
-
-@app.route('/vendor-reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
-def vendor_review_by_id(id):
-    review = VendorReview.query.filter(VendorReview.id == id).first()
-    if not review:
-        return {'error': 'review not found'}, 404
-    if request.method == 'GET':
-        return review.to_dict(), 200
-    elif request.method == 'PATCH':
-        data = request.get_json()
-        for key, value in data.items():
-            setattr(review, key, value)
-        db.session.commit()
-        return review.to_dict(), 200
-    elif request.method == 'DELETE':
-        db.session.delete(review)
-        db.session.commit()
-        return {}, 204
-
-@app.route('/market-favorites', methods=['GET', 'POST'])
-def all_market_favorites():
-    if request.method == 'GET':
-        marketFavorites = MarketFavorite.query.all()
-        return jsonify([marketFavorite.to_dict() for marketFavorite in marketFavorites]), 200
-    
-    elif request.method == 'POST':
-        data = request.get_json()
-        new_market_favorite = MarketFavorite(
-            user_id=data['user_id'],
-            market_id=data['market_id']
-        )
-        db.session.add(new_market_favorite)
-        db.session.commit()
-        return new_market_favorite.to_dict(), 201
-    
-@app.route('/market-favorites/<int:id>', methods=['GET', 'DELETE'])
-def del_market_fav(id):
-    marketFav = MarketFavorite.query.filter(MarketFavorite.id == id).first()
-    if not marketFav:
-        return {'error': 'market favorite not found'}, 404
-    if request.method == 'GET':
-        return marketFav.to_dict(), 200
-    if request.method == 'DELETE':
-        db.session.delete(marketFav)
-        db.session.commit()
-        return {}, 204
-
-@app.route('/vendor-favorites', methods=['GET', 'POST'])
-def all_vendor_favorites():
-    if request.method == 'GET':
-        vendorFavorites = VendorFavorite.query.all()
-        return jsonify([vendorFavorite.to_dict() for vendorFavorite in vendorFavorites]), 200
-    
-    elif request.method == 'POST':
-        data = request.get_json()
-        new_vendor_favorite = VendorFavorite(
-            user_id=data['user_id'],
-            vendor_id=data['vendor_id']
-        )
-        db.session.add(new_vendor_favorite)
-        db.session.commit()
-        return new_vendor_favorite.to_dict(), 201
-    
-@app.route('/vendor-favorites/<int:id>', methods=['GET', 'DELETE'])
-def del_vendor_fav(id):
-    vendorFav = VendorFavorite.query.filter(VendorFavorite.id == id).first()
-    if request.method == 'GET':
-        return vendorFav.to_dict(), 200
-    if request.method == 'DELETE':
-        db.session.delete(vendorFav)
-        db.session.commit()
-        return {}, 204
-    
-@app.route("/vendor-markets", methods=['GET'])
-def get_vendor_markets():
-    vendor_id = request.args.get('vendor_id')
-    market_id = request.args.get('market_id')
-
-    query = VendorMarket.query
-
-    if vendor_id: 
-        query = query.filter_by(vendor_id=vendor_id).options(db.joinedload(VendorMarket.vendor))
-    elif market_id: 
-        query = query.filter_by(market_id=market_id).options(db.joinedload(VendorMarket.market))
-
-    vendor_markets = query.all()
-    
-    return jsonify([vendor_market.to_dict() for vendor_market in vendor_markets]), 200
-
-# VENDOR PORTAL
-@app.route('/vendor/login', methods=['POST'])
-def vendorLogin():
-    data = request.get_json()
-    vendorUser = VendorUser.query.filter(VendorUser.email == data['email']).first()
-    if not vendorUser:
-        return {'error': 'login failed'}, 401
-    
-    if not vendorUser.authenticate(data['password']):
-        return {'error': 'login failed'}, 401
-    
-    access_token = create_access_token(identity=vendorUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "vendor"})
-
-    return jsonify(access_token=access_token, vendor_user_id=vendorUser.id), 200
-
-@app.route('/vendor-signup', methods=['POST'])
-def vendorSignup():
-    data = request.get_json()
-
-    try:
-        vendor_user = VendorUser.query.filter(VendorUser.email == data['email']).first()
-        if vendor_user:
-            return {'error': 'Email already exists'}, 400
-        
-        new_vendor_user = VendorUser(
-            email=data['email'],
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            phone=data['phone']
-        )
-        new_vendor_user.password = data['password']
-
-        db.session.add(new_vendor_user)
-        db.session.commit()
-
-        return new_vendor_user.to_dict(), 201
-
-    except IntegrityError as e:
-        db.session.rollback()
-        return {'error': f'IntegrityError: {str(e)}'}, 400
-
-    except ValueError as e:
-        return {'error': f'ValueError: {str(e)}'}, 400
-
-    except Exception as e:
-        return {'error': f'Exception: {str(e)}'}, 500
-    
-@app.route('/vendor/logout', methods=['DELETE'])
-def vendorLogout():
-    session.pop('vendor_user_id', None)
-    return {}, 204
 
 @app.route("/vendor-users", methods=['GET'])
 def get_vendor_users():
@@ -922,6 +646,191 @@ def handle_vendor_vendor_users():
         except Exception as e:
             db.session.rollback()
             return {'error': f'Exception: {str(e)}'}, 500
+
+
+@app.route('/admin-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def handle_admin_user_by_id(id):
+    admin_user = AdminUser.query.filter_by(id=id).first()
+
+    if not admin_user:
+        return {'error': 'User not found'}, 404
+
+    if request.method == 'GET':
+        try:
+            return jsonify(admin_user.to_dict()), 200
+        except Exception as e:
+            return {'error': f'Exception: {str(e)}'}, 500
+
+    elif request.method == 'PATCH':
+        try:
+            data = request.get_json()
+            for key, value in data.items():
+                setattr(admin_user, key, value)
+            db.session.commit()
+            return jsonify(admin_user.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Exception: {str(e)}'}, 500
+
+    elif request.method == 'DELETE':
+        try:
+            db.session.delete(admin_user)
+            db.session.commit()
+            return {}, 204
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Exception: {str(e)}'}, 500
+
+
+@app.route('/market-reviews', methods=['GET', 'POST', 'DELETE'])
+def all_market_reviews():
+    if request.method == 'GET':
+        market_id = request.args.get('market_id')
+        if market_id:
+            reviews = MarketReview.query.filter_by(market_id=market_id).options(db.joinedload(MarketReview.user)).all()
+        else:
+            reviews = MarketReview.query.all()
+        return jsonify([review.to_dict() for review in reviews]), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_review = MarketReview(
+            review_text=data['review_text'],
+            market_id=data['market_id'],
+            user_id=data['user_id']
+        )
+        db.session.add(new_review)
+        db.session.commit()
+        return new_review.to_dict(), 201
+    
+
+@app.route('/market-reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def market_review_by_id(id):
+    review = MarketReview.query.filter(MarketReview.id == id).first()
+    if not review:
+        return {'error': 'review not found'}, 404
+    if request.method == 'GET':
+        return review.to_dict(), 200
+    elif request.method == 'PATCH':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(review, key, value)
+        db.session.commit()
+        return review.to_dict(), 200
+    elif request.method == 'DELETE':
+        db.session.delete(review)
+        db.session.commit()
+        return {}, 204
+
+@app.route('/vendor-reviews', methods=['GET', 'POST'])
+def all_vendor_reviews():
+    if request.method == 'GET':
+        vendor_id = request.args.get('vendor_id')
+        if vendor_id:
+            reviews = VendorReview.query.filter_by(vendor_id=vendor_id).options(db.joinedload(VendorReview.user)).all()
+        else:
+            reviews = VendorReview.query.options(db.joinedload(VendorReview.user)).all()
+        return jsonify([review.to_dict() for review in reviews]), 200
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_review = VendorReview(
+            review_text=data['review_text'],
+            vendor_id=data['vendor_id'],
+            user_id=data['user_id']
+        )
+        db.session.add(new_review)
+        db.session.commit()
+        return new_review.to_dict(), 201
+
+@app.route('/vendor-reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def vendor_review_by_id(id):
+    review = VendorReview.query.filter(VendorReview.id == id).first()
+    if not review:
+        return {'error': 'review not found'}, 404
+    if request.method == 'GET':
+        return review.to_dict(), 200
+    elif request.method == 'PATCH':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(review, key, value)
+        db.session.commit()
+        return review.to_dict(), 200
+    elif request.method == 'DELETE':
+        db.session.delete(review)
+        db.session.commit()
+        return {}, 204
+
+@app.route('/market-favorites', methods=['GET', 'POST'])
+def all_market_favorites():
+    if request.method == 'GET':
+        marketFavorites = MarketFavorite.query.all()
+        return jsonify([marketFavorite.to_dict() for marketFavorite in marketFavorites]), 200
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_market_favorite = MarketFavorite(
+            user_id=data['user_id'],
+            market_id=data['market_id']
+        )
+        db.session.add(new_market_favorite)
+        db.session.commit()
+        return new_market_favorite.to_dict(), 201
+    
+@app.route('/market-favorites/<int:id>', methods=['GET', 'DELETE'])
+def del_market_fav(id):
+    marketFav = MarketFavorite.query.filter(MarketFavorite.id == id).first()
+    if not marketFav:
+        return {'error': 'market favorite not found'}, 404
+    if request.method == 'GET':
+        return marketFav.to_dict(), 200
+    if request.method == 'DELETE':
+        db.session.delete(marketFav)
+        db.session.commit()
+        return {}, 204
+
+@app.route('/vendor-favorites', methods=['GET', 'POST'])
+def all_vendor_favorites():
+    if request.method == 'GET':
+        vendorFavorites = VendorFavorite.query.all()
+        return jsonify([vendorFavorite.to_dict() for vendorFavorite in vendorFavorites]), 200
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_vendor_favorite = VendorFavorite(
+            user_id=data['user_id'],
+            vendor_id=data['vendor_id']
+        )
+        db.session.add(new_vendor_favorite)
+        db.session.commit()
+        return new_vendor_favorite.to_dict(), 201
+    
+@app.route('/vendor-favorites/<int:id>', methods=['GET', 'DELETE'])
+def del_vendor_fav(id):
+    vendorFav = VendorFavorite.query.filter(VendorFavorite.id == id).first()
+    if request.method == 'GET':
+        return vendorFav.to_dict(), 200
+    if request.method == 'DELETE':
+        db.session.delete(vendorFav)
+        db.session.commit()
+        return {}, 204
+    
+@app.route("/vendor-markets", methods=['GET'])
+def get_vendor_markets():
+    vendor_id = request.args.get('vendor_id')
+    market_id = request.args.get('market_id')
+
+    query = VendorMarket.query
+
+    if vendor_id: 
+        query = query.filter_by(vendor_id=vendor_id).options(db.joinedload(VendorMarket.vendor))
+    elif market_id: 
+        query = query.filter_by(market_id=market_id).options(db.joinedload(VendorMarket.market))
+
+    vendor_markets = query.all()
+    
+    return jsonify([vendor_market.to_dict() for vendor_market in vendor_markets]), 200
         
 @app.route("/baskets", methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def handle_baskets():
@@ -1097,6 +1006,199 @@ def get_user_sales_history():
     except Exception as e: 
         app.logger.error(f"Error fetching sales history: {e}")
         return {'error': f"Exception: {str(e)}"}, 500
+    
+
+#  Notifications
+@app.route('/create-notification', methods=['POST'])
+def create_notification():
+    data = request.get_json()
+
+    if not data or 'message' not in data or 'vendor_id' not in data or 'vendor_user_id' not in data:
+        return jsonify({'message': 'Invalid request data.'}), 400
+
+    try:
+        new_notification = VendorNotifications(
+            message=data['message'],
+            vendor_id=data['vendor_id'],
+            vendor_user_id=data['vendor_user_id'],
+            created_at=datetime.utcnow(),
+            is_read=False
+        )
+        db.session.add(new_notification)
+        db.session.commit()
+        return jsonify({'message': 'Notification created successfully'}), 201
+    
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error creating notification: {str(e)}")
+        return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
+
+    
+@app.route('/vendor-notifications/<int:vendor_id>', methods=['GET'])
+def get_vendor_notifications(vendor_id):
+    notifications = VendorNotifications.query.filter_by(vendor_id=vendor_id).all()
+
+    if not notifications:
+        return jsonify({'message': 'No notifications found'}), 404
+
+    notifications_data = [{'id': n.id, 'message': n.message} for n in notifications]
+
+    return jsonify({'notifications': notifications_data})
+
+@app.route('/vendor-notifications/<int:notification_id>/approve', methods=['POST'])
+def approve_notification(notification_id):
+    data = request.get_json()
+    is_admin = data.get('is_admin')
+
+    notification = VendorNotifications.query.get(notification_id)
+    if not notification:
+        return jsonify({'message': 'Notification not found'}), 404
+
+    if not notification.vendor_user_id:
+        return jsonify({'message': 'No vendor user associated with this notification'}), 400
+
+    user = VendorUser.query.get(notification.vendor_user_id)
+    if not user:
+        return jsonify({'message': 'Vendor user not found'}), 404
+
+    user.vendor_id = notification.vendor_id
+    user.is_admin = is_admin
+
+    db.session.commit()
+
+    notification.is_read = True
+    db.session.commit()
+
+    db.session.delete(notification)
+    db.session.commit()
+
+    return jsonify({'message': 'Notification approved and user updated successfully'}), 200
+
+@app.route('/vendor-notifications/<int:notification_id>/reject', methods=['DELETE'])
+def reject_notification(notification_id):
+    notification = VendorNotifications.query.get(notification_id)
+    if not notification:
+        return jsonify({'message': 'Notification not found'}), 404
+
+    # Delete the notification
+    db.session.delete(notification)
+    db.session.commit()
+
+    return jsonify({'message': 'Notification rejected successfully'}), 200
+
+if __name__ == '__main__':
+    app.run(port=5555, debug=True)
+
+
+# Login / Signup
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    user = User.query.filter(User.email == data['email']).first()
+    if not user:
+        return {'error': 'login failed'}, 401
+    
+    if not user.authenticate(data['password']):
+        return {'error': 'login failed'}, 401
+    
+    access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "user"})
+    
+    return jsonify(access_token=access_token, user_id=user.id), 200
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+
+    try:
+        user = User.query.filter(User.email == data['email']).first()
+        if user:
+            return {'error': 'email already exists'}, 400
+        
+        new_user = User(
+            email=data['email'],
+            password=data['password'],
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            address_1=data['address1'],
+            address_2=data.get('address2', ''),
+            city=data['city'],
+            state=data['state'],
+            zip=data['zip']
+        )
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        return new_user.to_dict(), 201
+
+    except IntegrityError as e:
+        db.session.rollback()
+        return {'error': f'IntegrityError: {str(e)}'}, 400 
+
+    except ValueError as e:
+        return {'error': f'ValueError: {str(e)}'}, 400
+
+    except Exception as e:
+        return {'error': f'Exception: {str(e)}'}, 500
+
+@app.route('/logout', methods=['DELETE'])
+def logout():
+    session.pop('user_id', None)
+    return {}, 204
+
+
+# VENDOR PORTAL
+@app.route('/vendor/login', methods=['POST'])
+def vendorLogin():
+    data = request.get_json()
+    vendorUser = VendorUser.query.filter(VendorUser.email == data['email']).first()
+    if not vendorUser:
+        return {'error': 'login failed'}, 401
+    
+    if not vendorUser.authenticate(data['password']):
+        return {'error': 'login failed'}, 401
+    
+    access_token = create_access_token(identity=vendorUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "vendor"})
+
+    return jsonify(access_token=access_token, vendor_user_id=vendorUser.id), 200
+
+@app.route('/vendor-signup', methods=['POST'])
+def vendorSignup():
+    data = request.get_json()
+
+    try:
+        vendor_user = VendorUser.query.filter(VendorUser.email == data['email']).first()
+        if vendor_user:
+            return {'error': 'Email already exists'}, 400
+        
+        new_vendor_user = VendorUser(
+            email=data['email'],
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            phone=data['phone']
+        )
+        new_vendor_user.password = data['password']
+
+        db.session.add(new_vendor_user)
+        db.session.commit()
+
+        return new_vendor_user.to_dict(), 201
+
+    except IntegrityError as e:
+        db.session.rollback()
+        return {'error': f'IntegrityError: {str(e)}'}, 400
+
+    except ValueError as e:
+        return {'error': f'ValueError: {str(e)}'}, 400
+
+    except Exception as e:
+        return {'error': f'Exception: {str(e)}'}, 500
+    
+@app.route('/vendor/logout', methods=['DELETE'])
+def vendorLogout():
+    session.pop('vendor_user_id', None)
+    return {}, 204
+
 
 # ADMIN PORTAL
 @app.route('/admin/login', methods=['POST'])
@@ -1187,41 +1289,36 @@ def handle_admin_users():
         except Exception as e:
             db.session.rollback()
             return {'error': f'Exception: {str(e)}'}, 500
+        
+
+@app.route('/check-user-session', methods=['GET'])
+@jwt_required()
+def check_user_session():
+    if not check_role('user'):
+        return {'error': 'Access forbidden: User only'}, 403
+
+    user_id = get_jwt_identity()
+    user = User.query.filter_by(id=user_id).first()
     
-@app.route('/admin-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
-def handle_admin_user_by_id(id):
-    admin_user = AdminUser.query.filter_by(id=id).first()
+    if not user:
+        return {'error': 'authorization failed'}, 401
 
-    if not admin_user:
-        return {'error': 'User not found'}, 404
+    return user.to_dict(), 200
 
-    if request.method == 'GET':
-        try:
-            return jsonify(admin_user.to_dict()), 200
-        except Exception as e:
-            return {'error': f'Exception: {str(e)}'}, 500
 
-    elif request.method == 'PATCH':
-        try:
-            data = request.get_json()
-            for key, value in data.items():
-                setattr(admin_user, key, value)
-            db.session.commit()
-            return jsonify(admin_user.to_dict()), 200
+@app.route('/check-vendor-session', methods=['GET'])
+@jwt_required()
+def check_vendor_session():
+    if not check_role('vendor'):
+        return {'error': 'Access forbidden: Vendor only'}, 403
 
-        except Exception as e:
-            db.session.rollback()
-            return {'error': f'Exception: {str(e)}'}, 500
+    vendor_user_id = get_jwt_identity()
+    vendor_user = VendorUser.query.filter_by(id=vendor_user_id).first()
+    
+    if not vendor_user:
+        return {'error': 'authorization failed'}, 401
 
-    elif request.method == 'DELETE':
-        try:
-            db.session.delete(admin_user)
-            db.session.commit()
-            return {}, 204
-
-        except Exception as e:
-            db.session.rollback()
-            return {'error': f'Exception: {str(e)}'}, 500
+    return vendor_user.to_dict(), 200
 
 
 # Email Form
@@ -1514,11 +1611,8 @@ def admin_password_reset(token):
 
         except Exception as e:
             return {'error': f'Failed to reset password: {str(e)}'}, 500
-    
-@app.route('/create-notification', methods=['POST'])
-def create_notification():
-    data = request.get_json()
 
+<<<<<<< HEAD
     if not data or 'message' not in data or 'vendor_id' not in data or 'vendor_user_id' not in data:
         return jsonify({'message': 'Invalid request data.'}), 400
 
@@ -1593,3 +1687,5 @@ def reject_notification(notification_id):
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
+=======
+>>>>>>> refs/remotes/origin/main

@@ -116,7 +116,7 @@ function VendorNotification({ vendorId, onDataFetch }) {
         }
     };
 
-    return notifications.length > 0 ? (
+    return (
         <div>
             <div className='tab-content margin-b-24'>
                 <h3>Notifications</h3>
@@ -138,7 +138,7 @@ function VendorNotification({ vendorId, onDataFetch }) {
                 </ul>
             </div>
         </div>
-    ) : null;
+    )
 };
 
 export default VendorNotification;
