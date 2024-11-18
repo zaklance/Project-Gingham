@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-function VendorNotification({ vendorId }) {
+function VendorNotification({ vendorId, onDataFetch }) {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -11,17 +11,19 @@ function VendorNotification({ vendorId }) {
                 const vendorUserId = sessionStorage.getItem('vendor_user_id');
                 if (!vendorUserId) {
                     console.error("No vendor user ID found in session storage");
+                    setError("Vendor user ID is missing");
+                    setLoading(false);
                     return;
                 }
 
                 const token = sessionStorage.getItem('jwt-token');
                 if (!token) {
                     console.error("No JWT token found in session storage");
+                    setError("JWT token is missing");
+                    setLoading(false);
                     return;
                 }
 
-                console.log('Fetching vendor user data with vendor_user_id:', vendorUserId);
-                
                 const vendorUserResponse = await fetch(`http://127.0.0.1:5555/vendor-users/${vendorUserId}`, {
                     method: 'GET',
                     headers: {
@@ -36,12 +38,9 @@ function VendorNotification({ vendorId }) {
 
                 const vendorUserData = await vendorUserResponse.json();
                 const vendorIdFromApi = vendorUserData.vendor_id;
-
                 if (!vendorIdFromApi) {
-                    throw new Error("Vendor ID not found for the current vendor user");
+                    throw new Error("Vendor ID not found in the response");
                 }
-
-                console.log('vendorId:', vendorIdFromApi);
 
                 const notificationsResponse = await fetch(`http://127.0.0.1:5555/vendor-notifications/${vendorIdFromApi}`, {
                     method: 'GET',
@@ -56,17 +55,9 @@ function VendorNotification({ vendorId }) {
                 }
 
                 const notificationsData = await notificationsResponse.json();
-
-                console.log('Notifications data:', notificationsData);
-
-                // Correct the structure to access notifications
-                if (notificationsData.notifications && Array.isArray(notificationsData.notifications)) {
-                    setNotifications(notificationsData.notifications);
-                } else {
-                    console.error('Notifications data is not in the expected array format');
-                }
+                setNotifications(notificationsData.notifications || []);
             } catch (error) {
-                console.error("Error:", error.message);
+                console.error('Error fetching vendor notifications:', error);
                 setError(error.message);
             } finally {
                 setLoading(false);
@@ -75,9 +66,7 @@ function VendorNotification({ vendorId }) {
 
         fetchVendorNotifications();
     }, []);
-
-    if (loading) return <div>Loading notifications...</div>;
-    if (error) return <div>Error: {error}</div>;
+    
 
     const handleApprove = async (notificationId, isAdmin) => {
         console.log(`Approval notification with ID: ${notificationId}`);
@@ -127,39 +116,29 @@ function VendorNotification({ vendorId }) {
         }
     };
 
-    return (
+    return notifications.length > 0 ? (
         <div>
             <div className='tab-content margin-b-24'>
                 <h3>Notifications</h3>
-                <br />
-                {notifications.length === 0 ? (
-                    <div>No Notifications</div>
-                ) : (
-                    <ul>
-                        {notifications.map((notification) => {
-                            console.log(notification);
-                            return (
-                                <li key={notification.id}>
-                                    <p><strong>{notification.message}</strong></p>
-                                    <button className='btn-edit' onClick={() => {
-                                        console.log(notification.id);
-                                        handleApprove(notification.id, true);
-                                    }}>
-                                        Approve as Admin
-                                    </button>
-                                    <button className='btn-edit' onClick={() => handleApprove(notification.id, false)}>
-                                        Approve as Employee
-                                    </button>
-                                    <button className='btn-edit' onClick={() => handleReject(notification.id)}>Reject</button>
-                                    <br />
-                                </li>
-                            );
-                        })}
-                    </ul>
-                )}
+                <ul>
+                    {notifications.map((notification) => (
+                        <li key={notification.id}>
+                            <p><strong>{notification.message}</strong></p>
+                            <button className='btn-edit' onClick={() => handleApprove(notification.id, true)}>
+                                Approve as Admin
+                            </button>
+                            <button className='btn-edit' onClick={() => handleApprove(notification.id, false)}>
+                                Approve as Employee
+                            </button>
+                            <button className='btn-edit' onClick={() => handleReject(notification.id)}>
+                                Reject
+                            </button>
+                        </li>
+                    ))}
+                </ul>
             </div>
         </div>
-    );
+    ) : null;
 };
 
 export default VendorNotification;

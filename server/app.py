@@ -1586,7 +1586,6 @@ def reject_notification(notification_id):
     if not notification:
         return jsonify({'message': 'Notification not found'}), 404
 
-    # Delete the notification
     db.session.delete(notification)
     db.session.commit()
 
