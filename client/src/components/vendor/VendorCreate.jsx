@@ -30,10 +30,15 @@ function VendorCreate () {
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/vendors")
-          .then((response) => response.json())
-          .then((data) => setVendors(data))
-          .catch((error) => console.error("Error fetching vendors:", error));
-      }, []);
+            .then((response) => {
+                if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => setVendors(data))
+            .catch((error) => console.error("Error fetching vendors:", error));
+        }, []);
     
       const onUpdateQuery = (event) => setQuery(event.target.value);
     
@@ -203,6 +208,51 @@ function VendorCreate () {
         }
     };
 
+    const handleRequestJoin = async () => {
+        if (!selectedVendor) {
+            alert('No vendor selected.');
+            return;
+        }
+    
+        if (!vendorUserData || !vendorUserData.id) {
+            alert('User data is missing.');
+            return;
+        }
+    
+        const token = sessionStorage.getItem('jwt-token');
+        if (!token) {
+            alert('Authorization token is missing. Please log in.');
+            return;
+        }
+    
+        try {
+            const response = await fetch('http://127.0.0.1:5555/create-notification', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    vendor_id: selectedVendor.id,
+                    vendor_user_id: vendorUserData.id,
+                    message: `${vendorUserData.first_name} ${vendorUserData.last_name} has requested to join your vendor team.`,
+                }),
+            });
+    
+            if (response.ok) {
+                alert('Your request has been sent to the vendor admins!');
+            } else {
+                const errorData = await response.json();
+                console.error('Error sending request:', errorData);
+                alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while sending the request. Please try again later.');
+        }
+    };
+    
+
     return (
         <div>
             <div className='tab-content margin-b-24'>
@@ -243,26 +293,6 @@ function VendorCreate () {
                 <input type="file" name="file" accept="image/*" onChange={handleFileChange} />
 
             </div>
-            
-            <div>
-                <label>Based out of:</label>
-                <input type="text" name="city" value={vendorData ? vendorData.city : ''} onChange={handleVendorInputChange} />
-                <select className="select-state" name="state" value={vendorData ? vendorData.state : ''} onChange={handleVendorInputChange}>
-                    <option value="">Select</option>
-                    {states.map((state, index) => (
-                        <option key={index} value={state}>
-                            {state}
-                        </option>
-                    ))}
-                </select>
-
-            </div>
-            <div className="form-group">
-
-                <label>Vendor Image:</label>
-                <input type="file" name="file" accept="image/*" onChange={handleFileChange} />
-
-            </div>
 
             {/* {vendorUserData?.is_admin && ( */}
                 <>
@@ -272,6 +302,7 @@ function VendorCreate () {
             {/* )} */}
 
             <br />
+            <br />
 
             <div>
                 <div className="tab-content margin-b-24">
@@ -280,24 +311,30 @@ function VendorCreate () {
 
                 <div>
                     <h3>Request to be added here:</h3>
-                    <td className="cell-title">Search:</td>
-                    <td className="cell-text">
-                        <input id="vendor-search" className="search-bar" type="text" placeholder="Search vendors..." value={query} onChange={onUpdateQuery} />
-                            <div className="dropdown-content">
-                                {query &&
-                                filteredVendors.slice(0, 10).map((item) => (
-                                    <div className="search-results" key={item.id} onClick={() => handleSelectVendor(item)} >
-                                        {item.name}
-                                    </div>
-                                ))}
-                            </div>
-                    </td>
+                    <table className='margin-t-16'>
+                        <tbody>
+                            <tr>
+                                <td className="cell-title">Search:</td>
+                                <td className="cell-text">
+                                    <input id="vendor-search" className="search-bar" type="text" placeholder="Search vendors..." value={query} onChange={onUpdateQuery} />
+                                        <div className="dropdown-content">
+                                            {query &&
+                                            filteredVendors.slice(0, 10).map((item) => (
+                                                <div className="search-results" key={item.id} onClick={() => handleSelectVendor(item)} >
+                                                    {item.name}
+                                                </div>
+                                            ))}
+                                        </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                     {selectedVendor && (
                         <div className="selected-vendor">
                             <p>You have selected: {selectedVendor.name}</p>
                         </div>
                     )}
-                    <button className="btn-edit" onClick={() => alert( `Your request to join ${selectedVendor?.name || "a vendor"} has been noted!` ) } disabled={!selectedVendor} >
+                    <button className="btn-edit" onClick={handleRequestJoin} disabled={!selectedVendor}>
                         Request
                     </button>
                 </div>

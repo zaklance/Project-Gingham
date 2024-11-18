@@ -2,7 +2,7 @@ import os
 import json
 import smtplib
 from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
-from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, bcrypt
+from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, bcrypt, VendorNotifications
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
@@ -1490,5 +1490,82 @@ def admin_password_reset(token):
         except Exception as e:
             return {'error': f'Failed to reset password: {str(e)}'}, 500
     
+@app.route('/create-notification', methods=['POST'])
+def create_notification():
+    data = request.get_json()
+
+    if not data or 'message' not in data or 'vendor_id' not in data or 'vendor_user_id' not in data:
+        return jsonify({'message': 'Invalid request data.'}), 400
+
+    try:
+        new_notification = VendorNotifications(
+            message=data['message'],
+            vendor_id=data['vendor_id'],
+            vendor_user_id=data['vendor_user_id'],
+            created_at=datetime.utcnow(),
+            is_read=False
+        )
+        db.session.add(new_notification)
+        db.session.commit()
+        return jsonify({'message': 'Notification created successfully'}), 201
+    
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error creating notification: {str(e)}")
+        return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
+
+    
+@app.route('/vendor-notifications/<int:vendor_id>', methods=['GET'])
+def get_vendor_notifications(vendor_id):
+    notifications = VendorNotifications.query.filter_by(vendor_id=vendor_id).all()
+
+    if not notifications:
+        return jsonify({'message': 'No notifications found'}), 404
+
+    notifications_data = [{'id': n.id, 'message': n.message} for n in notifications]
+
+    return jsonify({'notifications': notifications_data})
+
+@app.route('/vendor-notifications/<int:notification_id>/approve', methods=['POST'])
+def approve_notification(notification_id):
+    data = request.get_json()
+    is_admin = data.get('is_admin')
+
+    notification = VendorNotifications.query.get(notification_id)
+    if not notification:
+        return jsonify({'message': 'Notification not found'}), 404
+
+    if not notification.vendor_user_id:
+        return jsonify({'message': 'No vendor user associated with this notification'}), 400
+
+    user = VendorUser.query.get(notification.vendor_user_id)
+    if not user:
+        return jsonify({'message': 'Vendor user not found'}), 404
+
+    user.vendor_id = notification.vendor_id
+    user.is_admin = is_admin
+
+    db.session.commit()
+
+    notification.is_read = True
+    db.session.commit()
+
+    db.session.delete(notification)
+    db.session.commit()
+
+    return jsonify({'message': 'Notification approved and user updated successfully'}), 200
+
+@app.route('/vendor-notifications/<int:notification_id>/reject', methods=['DELETE'])
+def reject_notification(notification_id):
+    notification = VendorNotifications.query.get(notification_id)
+    if not notification:
+        return jsonify({'message': 'Notification not found'}), 404
+
+    # Delete the notification
+    db.session.delete(notification)
+    db.session.commit()
+
+    return jsonify({'message': 'Notification rejected successfully'}), 200
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

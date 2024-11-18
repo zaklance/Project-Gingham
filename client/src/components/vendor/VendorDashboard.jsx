@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import BasketCard from './BasketCard';
 import VendorCreate from './VendorCreate';
+import VendorNotification from './VendorNotification';
 
 function VendorDashboard() {
-    const { id, vendorId } = useParams();
+    const { vendorId } = useParams();
     const [vendorUserData, setVendorUserData] = useState(null);
     const [newVendor, setNewVendor] = useState(false);
     const [locations, setLocations] = useState([]);
@@ -13,6 +14,8 @@ function VendorDashboard() {
     const [price, setPrice] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const vendorUserId = sessionStorage.getItem('vendor_user_id');
 
     useEffect(() => {
         const fetchVendorUserData = async () => {
@@ -40,7 +43,7 @@ function VendorDashboard() {
                         setNewVendor(true);
                     }
                 } else {
-                    console.error('Error fetching profile:', response.status);
+                    console.error('Error profile:', response.status);
                     if (response.status === 401) {
                         console.error('Unauthorized: Token may be missing or invalid');
                     }
@@ -141,7 +144,10 @@ function VendorDashboard() {
     return (
         <div>
             <h2 className='margin-t-16'>Vendor Dashboard</h2>
-            
+                <div className='bounding-box'>
+                    <VendorNotification vendorUserId={vendorUserId} />
+                </div>
+
             {!vendorUserData || !vendorUserData.vendor_id ? (
                 <div className='bounding-box'>
                     <VendorCreate />

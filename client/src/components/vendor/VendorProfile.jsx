@@ -8,6 +8,7 @@ function VendorProfile () {
     const [editMode, setEditMode] = useState(false);
     const [vendorEditMode, setVendorEditMode] = useState(false);
     const [vendorUserData, setVendorUserData] = useState(null);
+    const [tempVendorUserData, setTempVendorUserData] = useState(null);
     const [locations, setLocations] = useState([]);
     const [marketDetails, setMarketDetails] = useState({});
     const [vendorData, setVendorData] = useState(null);
@@ -64,15 +65,24 @@ function VendorProfile () {
         fetchVendorUserData();
     }, [id]);
 
-    const handleInputChange = (event) => {
-        setVendorUserData({
-            ...vendorUserData,
-            [event.target.name]: event.target.value,
+    const handleInputChange = event => {
+        const { name, value } = event.target;
+        setTempVendorUserData({
+            ...tempVendorUserData,
+            [name]: value,
         });
     };
 
     const handleEditToggle = () => {
         setEditMode(!editMode);
+        if (!editMode) {
+            setTempVendorUserData({
+                first_name: vendorUserData.first_name,
+                last_name: vendorUserData.last_name,
+                email: vendorUserData.email,
+                phone: vendorUserData.phone,
+            });
+        }
     };
 
     const handleFileChange = (event) => {
@@ -91,25 +101,21 @@ function VendorProfile () {
         try {
             const token = sessionStorage.getItem('jwt-token');
             const response = await fetch(`http://127.0.0.1:5555/vendor-users/${id}`, {
-                method: 'PATCH', 
+                method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(vendorUserData)
+                body: JSON.stringify(tempVendorUserData),
             });
-            console.log('Request body:', JSON.stringify(vendorUserData));
-
+    
             if (response.ok) {
                 const updatedData = await response.json();
                 setVendorUserData(updatedData);
                 setEditMode(false);
-                console.log('Profile data updated successfully:', updatedData);
             } else {
                 console.log('Failed to save changes');
-                console.log('Response status:', response.status);
-                console.log('Response text:', await response.text());
-            }            
+            }
         } catch (error) {
             console.error('Error saving changes:', error);
         }
@@ -271,7 +277,7 @@ function VendorProfile () {
                                 <input
                                     type="text"
                                     name="first_name"
-                                    value={vendorUserData ? vendorUserData.first_name : ''}
+                                    value={tempVendorUserData ? tempVendorUserData.first_name : ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -280,7 +286,7 @@ function VendorProfile () {
                                 <input
                                     type="text"
                                     name="last_name"
-                                    value={vendorUserData ? vendorUserData.last_name : ''}
+                                    value={tempVendorUserData ? tempVendorUserData.last_name : ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -289,7 +295,7 @@ function VendorProfile () {
                                 <input
                                     type="email"
                                     name="email"
-                                    value={vendorUserData ? vendorUserData.email : ''}
+                                    value={tempVendorUserData ? tempVendorUserData.email : ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -298,7 +304,7 @@ function VendorProfile () {
                                 <input
                                     type="tel"
                                     name="phone"
-                                    value={vendorUserData ? vendorUserData.phone : ''}
+                                    value={tempVendorUserData ? tempVendorUserData.phone : ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
