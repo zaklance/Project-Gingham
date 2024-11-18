@@ -19,7 +19,6 @@ from io import BytesIO
 import stripe
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 
-
 load_dotenv()
 
 app = Flask(__name__)
@@ -721,8 +720,24 @@ def vendorLogout():
 @app.route("/vendor-users", methods=['GET'])
 def get_vendor_users():
     try:
-        vendor_users = VendorUser.query.all()
-        return jsonify([vendor_user.to_dict() for vendor_user in vendor_users]), 200
+        vendor_id = request.args.get('vendor_id', type=int)
+        if not vendor_id:
+            return {'error': 'Vendor ID is required'}, 400
+        
+        vendor_users = VendorUser.query.filter_by(vendor_id=vendor_id).all()
+        
+        if not vendor_users:
+            return {'message': 'No team members found for this vendor'}, 404
+
+        return jsonify([{
+            'id': vendor_user.id,
+            'first_name': vendor_user.first_name,
+            'last_name': vendor_user.last_name,
+            'email': vendor_user.email,
+            'phone': vendor_user.phone,
+            'role': 'Admin' if vendor_user.is_admin else 'Employee'
+        } for vendor_user in vendor_users]), 200
+
     except Exception as e:
         return {'error': f'Exception: {str(e)}'}, 500
     
