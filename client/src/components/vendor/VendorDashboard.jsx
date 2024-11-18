@@ -144,9 +144,7 @@ function VendorDashboard() {
     return (
         <div>
             <h2 className='margin-t-16'>Vendor Dashboard</h2>
-                <div className='bounding-box'>
-                    <VendorNotification vendorUserId={vendorUserId} />
-                </div>
+            <VendorNotification vendorUserId={vendorUserId} />
 
             {!vendorUserData || !vendorUserData.vendor_id ? (
                 <div className='bounding-box'>
