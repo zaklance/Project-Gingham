@@ -319,6 +319,7 @@ function VendorProfile () {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
+                    'type': "vendor"
                 },
                 body: JSON.stringify(updatedVendorData),
             });
