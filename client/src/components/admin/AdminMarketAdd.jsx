@@ -61,10 +61,12 @@ function AdminMarketAdd({ markets, weekdayReverse }) {
             if (response.ok) {
                 const updatedData = await response.json();
                 console.log('Market data updated successfully:', updatedData);
+                alert('Market successfully created')
 
                 if (image) {
                     await handleImageUpload(updatedData.id);
                 }
+                window.location.reload();
             } else {
                 console.log('Failed to save market details');
                 console.log('Response status:', response.status);
@@ -112,6 +114,7 @@ function AdminMarketAdd({ markets, weekdayReverse }) {
 
             if (response.ok) {
                 const updatedData = await response.json();
+                alert('Market Day successfully created')
                 console.log('Market Day data created successfully:', updatedData);
             } else {
                 console.log('Failed to save changes');

@@ -29,7 +29,7 @@ class User(db.Model, SerializerMixin):
     _password = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
-    phone = db.Column(db.String, nullable=False)
+    phone = db.Column(db.String, nullable=False)  # New phone column added
     address_1 = db.Column(db.String, nullable=False)
     address_2 = db.Column(db.String, nullable=True)
     city = db.Column(db.String, nullable=False)
@@ -42,7 +42,13 @@ class User(db.Model, SerializerMixin):
     market_favorites = db.relationship('MarketFavorite', back_populates='user')
     vendor_favorites = db.relationship('VendorFavorite', back_populates='user')
 
-    serialize_rules = ( '-_password', '-market_reviews.user', '-vendor_reviews.user', '-market_favorites', '-vendor_favorites' )
+    serialize_rules = (
+        '-_password',
+        '-market_reviews.user',
+        '-vendor_reviews.user',
+        '-market_favorites',
+        '-vendor_favorites'
+    )
 
     @validates('first_name')
     def validate_first_name(self, key, value):
@@ -67,16 +73,14 @@ class User(db.Model, SerializerMixin):
         if "@" not in value or "." not in value:
             raise ValueError("Invalid email address")
         return value
-    
+
     @validates('phone')
     def validate_phone(self, key, value):
-        cleaned_phone = re.sub(r'\D', '', value)
+        cleaned_phone = re.sub(r'\D', '', value)  # Remove non-digit characters
         if len(cleaned_phone) != 10:
             raise ValueError("Phone number must contain exactly 10 digits")
         return cleaned_phone
 
-
-    # New validations for address fields
     @validates('address_1')
     def validate_address_1(self, key, value):
         if not value:

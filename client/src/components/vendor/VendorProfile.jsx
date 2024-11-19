@@ -32,6 +32,15 @@ function VendorProfile () {
         "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
       ];
     
+    const formatPhoneNumber = (phone) => {
+        const cleaned = ('' + phone).replace(/\D/g, '');
+        const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+        if (match) {
+            return `(${match[1]}) ${match[2]}-${match[3]}`;
+        }
+        return phone;
+    };
+    
     useEffect(() => {
         const fetchVendorUserData = async () => {
             try {
@@ -380,10 +389,8 @@ function VendorProfile () {
                                         <td className='cell-title'>Email:</td>
                                         <td className='cell-text'>{vendorUserData ? vendorUserData.email : ' Loading...'}</td>
                                     </tr>
-                                    <tr>
                                         <td className='cell-title'>Phone:</td>
-                                        <td className='cell-text'>{vendorUserData ? vendorUserData.phone : ' Loading...'}</td>
-                                    </tr>
+                                        <td className='cell-text'>{vendorUserData ? formatPhoneNumber(vendorUserData.phone) : 'Loading...'}</td>
                                 </tbody>
                             </table>
                             <button className='btn-edit' onClick={handleEditToggle}>Edit</button>

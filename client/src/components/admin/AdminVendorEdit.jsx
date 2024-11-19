@@ -85,6 +85,7 @@ function AdminVendorEdit({ vendors }) {
                 setVendorData(updatedData);
                 setEditMode(false);
                 console.log('Market data updated successful:', updatedData);
+                window.location.reload();
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status;', response.status);
