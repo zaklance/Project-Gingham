@@ -29,7 +29,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             <NavLink className='nav-tab color-4 btn-nav' reloadDocument to="/user/vendors">Vendors</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-5 btn-nav' reloadDocument to="/user/your-cart">Cart ({amountInCart})</NavLink>
+                            <NavLink className='nav-tab color-5 btn-nav nowrap' reloadDocument to="/user/your-cart">Cart ({amountInCart})</NavLink>
                         </li>
                     </>
                 )}
@@ -37,7 +37,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isVendorLoggedIn && isVendorPage && (
                     <>
                         <li>
-                                <NavLink className='nav-tab color-3 btn-nav' reloadDocument to="/vendor/dashboard">Dashboard</NavLink>
+                            <NavLink className='nav-tab color-3 btn-nav' reloadDocument to="/vendor/dashboard">Dashboard</NavLink>
                         </li>
                         <li>
                             <NavLink className='nav-tab color-4 btn-nav' reloadDocument to="/vendor/sales">Sales</NavLink>
