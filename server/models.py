@@ -29,6 +29,7 @@ class User(db.Model, SerializerMixin):
     _password = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
+    phone = db.Column(db.String, nullable=False)
     address_1 = db.Column(db.String, nullable=False)
     address_2 = db.Column(db.String, nullable=True)
     city = db.Column(db.String, nullable=False)
@@ -41,13 +42,7 @@ class User(db.Model, SerializerMixin):
     market_favorites = db.relationship('MarketFavorite', back_populates='user')
     vendor_favorites = db.relationship('VendorFavorite', back_populates='user')
 
-    serialize_rules = (
-        '-_password', 
-        '-market_reviews.user',
-        '-vendor_reviews.user', 
-        '-market_favorites',
-        '-vendor_favorites'
-    )
+    serialize_rules = ( '-_password', '-market_reviews.user', '-vendor_reviews.user', '-market_favorites', '-vendor_favorites' )
 
     @validates('first_name')
     def validate_first_name(self, key, value):
@@ -72,6 +67,14 @@ class User(db.Model, SerializerMixin):
         if "@" not in value or "." not in value:
             raise ValueError("Invalid email address")
         return value
+    
+    @validates('phone')
+    def validate_phone(self, key, value):
+        cleaned_phone = re.sub(r'\D', '', value)
+        if len(cleaned_phone) != 10:
+            raise ValueError("Phone number must contain exactly 10 digits")
+        return cleaned_phone
+
 
     # New validations for address fields
     @validates('address_1')
@@ -499,21 +502,45 @@ class Basket(db.Model, SerializerMixin):
     def __repr__(self):
         return (f"<Basket ID: {self.id}, Vendor: {self.vendor.name}, "
                 f"Market ID: {self.market_day_id}, Sold: {self.is_sold}>")
-    
-class VendorNotifications(db.Model, SerializerMixin):
-    __tablename__ = 'vendor_notifications'
 
+class UserNotifications(db.Model):
+    __tablename__ = 'user_notifications'
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_read = db.Column(db.Boolean, default=False, nullable=False)
+    
+    def __repr__(self):
+        return (f"<User Notification ID: {self.id}, created on {self.created_at}")
+
+class VendorNotifications(db.Model):
+    __tablename__ = 'vendor_notifications'
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String, nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
-
+    
     vendor = db.relationship('Vendor', back_populates='notifications')
     vendor_user = db.relationship('VendorUser', back_populates='notifications')
 
     serialize_rules = ('vendor_user.first_name', 'vendor_user.last_name')
 
+    def __repr__(self):
+        return (f"<Vendor Notification ID: {self.id}, created on {self.created_at}")
+
+class AdminNotifications(db.Model):
+    __tablename__ = 'admin_notifications'
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String, nullable=False)
+    market_reviews_id = db.Column(db.Integer, db.ForeignKey('market_reviews.id'), nullable=True)
+    vendor_reviews_id = db.Column(db.Integer, db.ForeignKey('vendor_reviews.id'), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_read = db.Column(db.Boolean, default=False, nullable=False)
+    
     def __repr__(self):
         return (f"<Vendor Notification ID: {self.id}, created on {self.created_at}")
