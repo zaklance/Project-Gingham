@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import AdminVendorEdit from './AdminVendorEdit';
 import AdminVendorAdd from './AdminVendorAdd';
+import AdminVendorDelete from './AdminVendorDelete';
 
 function AdminVendors () {
     const [vendors, setVendors] = useState([]);
@@ -18,17 +19,23 @@ function AdminVendors () {
 
     return(
         <>
-            <h2 className='margin-t-16'>Vendor Management</h2>
-            <div className='tabs margin-t-20'>
-                <Link to="#" onClick={() => setActiveTab('edit')} className={activeTab === 'edit' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
-                    Edit
-                </Link>
-                <Link to="#" onClick={() => setActiveTab('add')} className={activeTab === 'add' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
-                    Add
-                </Link>
+            <div className='flex-start flex-center-align flex-gap'>
+                <h2 className='margin-t-16'>Vendor Management</h2>
+                <div className='tabs margin-t-20'>
+                    <Link to="#" onClick={() => setActiveTab('edit')} className={activeTab === 'edit' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                        Edit
+                    </Link>
+                    <Link to="#" onClick={() => setActiveTab('add')} className={activeTab === 'add' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                        Add
+                    </Link>
+                    <Link to="#" onClick={() => setActiveTab('delete')} className={activeTab === 'delete' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                        Delete
+                    </Link>
+                </div>
             </div>
             {activeTab === 'edit' && <AdminVendorEdit vendors={vendors} />}
             {activeTab === 'add' && <AdminVendorAdd vendors={vendors} />}
+            {activeTab === 'delete' && <AdminVendorDelete vendors={vendors} />}
         </>
     )
 }
