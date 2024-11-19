@@ -9,24 +9,31 @@ function CheckSession() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/check_session', {
+        fetch('http://127.0.0.1:5555/check_user_session', {
             method: 'GET',
             credentials: 'include'
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Session expired or unauthorized');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.error) {
                 setError(data.error);
-                navigate('http://127.0.0.1:5173');
+                navigate('/');
             } else {
                 setSessionData(data);
             }
-            setLoading(false);
         })
         .catch(error => {
-            setError('Failed to check session');
+            console.error('Session check failed:', error);
+            setError('Session expired or unauthorized');
+            navigate('/');
+        })
+        .finally(() => {
             setLoading(false);
-            navigate('http://127.0.0.1:5173');
         });
     }, [navigate]);
 
