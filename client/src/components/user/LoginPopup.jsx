@@ -9,6 +9,7 @@ function Login({ handlePopup }) {
     const [signupPassword, setSignupPassword] = useState('');
     const [signupFirstName, setSignupFirstName] = useState('');
     const [signupLastName, setSignupLastName] = useState('');
+    const [signupPhone, setSignupPhone] = useState('');
     const [signupAddress1, setSignupAddress1] = useState('');
     const [signupAddress2, setSignupAddress2] = useState('');
     const [signupCity, setSignupCity] = useState('');
@@ -75,6 +76,7 @@ function Login({ handlePopup }) {
                 password: signupPassword,
                 first_name: signupFirstName,
                 last_name: signupLastName,
+                phone: signupPhone,
                 address1: signupAddress1,
                 address2: signupAddress2,
                 city: signupCity,
@@ -90,6 +92,7 @@ function Login({ handlePopup }) {
             setSignupPassword('');
             setSignupFirstName('');
             setSignupLastName('');
+            setSignupPhone('');
             setSignupAddress1('');
             setSignupAddress2('');
             setSignupCity('');
@@ -189,6 +192,16 @@ function Login({ handlePopup }) {
                                 value={signupLastName}
                                 placeholder='enter your last name'
                                 onChange={(event) => setSignupLastName(event.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className='form-group form-login'>
+                            <label>Phone: </label>
+                            <input 
+                                type="tel"
+                                value={signupPhone}
+                                placeholder='enter your phone number'
+                                onChange={(event) => setSignupPhone(event.target.value)}
                                 required
                             />
                         </div>
