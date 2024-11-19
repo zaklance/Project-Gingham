@@ -6,6 +6,17 @@ function AdminProfile () {
     const [editMode, setEditMode] = useState(false);
     const [adminUserData, setAdminUserData] = useState(null);
 
+    // Function to format phone numbers
+    const formatPhoneNumber = (phone) => {
+        const cleaned = ('' + phone).replace(/\D/g, '');
+        const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+        if (match) {
+            return `(${match[1]}) ${match[2]}-${match[3]}`;
+        }
+        return phone;
+    };
+
+
     useEffect(() => {
         const fetchAdminUserData = async () => {
             try {
@@ -137,7 +148,7 @@ function AdminProfile () {
                                         </tr>
                                         <tr>
                                             <td className='cell-title'>Phone:</td>
-                                            <td className='cell-text'>{adminUserData ? adminUserData.phone : ' Loading...'}</td>
+                                            <td className='cell-text'>{adminUserData ? formatPhoneNumber(adminUserData.phone) : ' Loading...'}</td>
                                         </tr>
                                     </tbody>
                                 </table>
