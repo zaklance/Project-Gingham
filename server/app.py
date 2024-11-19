@@ -26,8 +26,8 @@ app = Flask(__name__)
 VENDOR_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/vendor-images')
 MARKET_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/market-images')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-MAX_SIZE = 1 * 1024 * 1024
-MAX_RES = (100, 100)
+MAX_SIZE = 1.5 * 1024 * 1024
+MAX_RES = (1800, 1800)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URI']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
