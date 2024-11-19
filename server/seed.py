@@ -839,6 +839,7 @@ def run():
         password="lol",
         first_name="Ham-man",
         last_name="Gingy",
+        phone="2095553880",
         address_1="11 Broadway",
         address_2="Floor 2",
         city="New York",
@@ -859,6 +860,7 @@ def run():
         password = "lol"
         first_name = fake.first_name()
         last_name = fake.last_name()
+        phone = str(randint(1000000000,9999999999))
         address_1 = fake.street_address()
         address_2 = f'{choice(apartment)} {randint(1, 200)}'
         city = fake.city()
@@ -870,6 +872,7 @@ def run():
             password=password,
             first_name=first_name,
             last_name=last_name,
+            phone=phone,
             address_1=address_1,
             address_2=address_2,
             city=city,
