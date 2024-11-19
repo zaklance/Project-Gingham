@@ -120,6 +120,7 @@ function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
                 const updatedData = await response.json();
                 setAdminMarketData(updatedData);
                 setEditMode(false);
+                alert('Market successfully updated')
                 console.log('Market data updated successful:', updatedData);
             } else {
                 console.log('Failed to save changes');
