@@ -131,6 +131,52 @@ function VendorProfile () {
         }
     };
 
+    const handleDeleteTeamMember = async (memberId) => {
+        try {
+            const token = sessionStorage.getItem('jwt-token');
+            const response = await fetch(`http://127.0.0.1:5555/vendor-users/${memberId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            if (response.ok) {
+                setTeamMembers(teamMembers.filter(member => member.id !== memberId));
+            } else {
+                console.error('Error deleting team member');
+            }
+        } catch (error) {
+            console.error('Error deleting team member:', error);
+        }
+    };
+    
+    const handleToggleRole = async (memberId, currentRole) => {
+        const newRole = currentRole === 'Admin' ? 'Employee' : 'Admin';
+        try {
+            const token = sessionStorage.getItem('jwt-token');
+            const response = await fetch(`http://127.0.0.1:5555/vendor-users/${memberId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ role: newRole })
+            });
+    
+            if (response.ok) {
+                setTeamMembers(teamMembers.map(member => 
+                    member.id === memberId ? { ...member, role: newRole } : member
+                ));
+            } else {
+                console.error('Error updating role');
+            }
+        } catch (error) {
+            console.error('Error updating role:', error);
+        }
+    };
+
     const handleInputChange = event => {
         const { name, value } = event.target;
         setTempVendorUserData({
@@ -544,8 +590,15 @@ function VendorProfile () {
                                                 <h3>Current Team Members:</h3>
                                                 <ul>
                                                     {teamMembers.map(member => (
-                                                        <li key={member.id}>
+                                                        <li key={member.id} style={{ marginBottom: '1rem'}}>
                                                             {member.first_name} {member.last_name} - {member.role}
+
+                                                            {member.id !== vendorUserData.id && (
+                                                                <>
+                                                                    <button className="btn-delete" onClick={() => handleToggleRole(member.id, member.role)} > Switch to {member.role === 'Admin' ? 'Employee' : 'Admin'} </button>
+                                                                    <button className="btn-delete" onClick={() => handleDeleteTeamMember(member.id)} > Remove from Vendor Team</button>
+                                                                </>
+                                                            )}
                                                         </li>
                                                     ))}
                                                 </ul>
