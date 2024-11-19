@@ -1094,7 +1094,7 @@ def get_user_sales_history():
     
     try: 
         baskets = Basket.query.filter_by(user_id=current_user_id, is_sold=True).all()
-        app.logger.info(f"Fetched baskets: {baskets}")
+        # app.logger.info(f"Fetched baskets: {baskets}")
 
         user_sales_history = [
             {
