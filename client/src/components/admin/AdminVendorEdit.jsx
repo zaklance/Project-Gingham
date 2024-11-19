@@ -6,8 +6,10 @@ function AdminVendorEdit({ vendors }) {
     const [vendorData, setVendorData] = useState(null);
 
     const products = [
-        'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey',
-        'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables'
+        'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 
+        'Coffee/Tea','Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey',
+        'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 
+        'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables'
     ];
 
     const states = [
@@ -48,7 +50,7 @@ function AdminVendorEdit({ vendors }) {
                     }
                 }
             } catch (error) {
-                console.error('Error fetching market data:', error);
+                console.error('Error fetching vendor data:', error);
             }
         };
         fetchVendorData();

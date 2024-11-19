@@ -95,10 +95,10 @@ function Login({ handlePopup }) {
         <div className='login-bar'>
             <button className="btn btn-large x-btn" onClick={handlePopup}>X</button>
             <div className='wrapper'>
-                <h1 className='margin-t-16'>WELCOME TO GINGHAM!</h1>
+                <h1>WELCOME TO GINGHAM!</h1>
                 <div>
                     <form onSubmit={handleLogin} className="form">
-                        <h2>Login</h2>
+                        <h2 className='margin-b-24'>Login</h2>
                         <div className="form-group form-login">
                             <label>Email:</label>
                             <input
@@ -119,18 +119,20 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <button className='btn-login' type="submit">Login</button>
-                        <p className="forgot-password" onClick={() => {
+                        <div className='flex-center-align flex-space-around margin-t-16'>
+                            <button className='btn btn-login' type="submit">Login</button>
+                            <p className="forgot-password" onClick={() => {
                                 navigate('/admin/reset-request');
                                 window.location.reload();
                             }}>
                                 Forgot password?
-                        </p>
+                            </p>
+                        </div>
                     </form>
                 </div>
                 <div>
                     <form onSubmit={handleSignup} className="form">
-                        <h2>Signup</h2>
+                        <h2 className='margin-b-24'>Signup</h2>
                         <div className="form-group form-login">
                             <label>Email: </label>
                             <input
@@ -181,7 +183,9 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <button className='btn-login' type="submit">Signup</button>
+                        <div className='flex-center margin-t-16'>
+                            <button className='btn-login' type="submit">Signup</button>
+                        </div>
                     </form>
                 </div>
             </div>
