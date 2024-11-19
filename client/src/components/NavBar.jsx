@@ -70,6 +70,9 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li>
                             <NavLink className='nav-tab color-2 btn-nav' reloadDocument to={`/user/profile/${user_id}`}>Profile</NavLink>
                         </li>
+                        {/* <li>
+                            <NavLink className='nav-tab color-1 btn-nav' reloadDocument to="/notifications"><img className='img-notifications' src="/site-images/notifications-1.svg" alt="Notification" /></NavLink>
+                        </li> */}
                         <li style={{ marginLeft: 'auto' }}>
                             <NavLink className='nav-tab color-3 tab-right btn-nav' reloadDocument to="/user/logout">Logout</NavLink>
                         </li>
