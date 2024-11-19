@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import BasketSales from './BasketSales';
 
-function Profile( {marketData }) {
+function Profile({ marketData }) {
     const { id } = useParams();
     const [user, setUser] = useState(null);
     const [profileData, setProfileData] = useState(null);
@@ -11,7 +11,7 @@ function Profile( {marketData }) {
     const [vendorFavs, setVendorFavs] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
 
-    const weekday = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat", "Sun"]
+    const weekday = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat", "Sun"];
 
     const states = [
         "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
@@ -23,56 +23,56 @@ function Profile( {marketData }) {
 
     function timeConverter(time24) {
         const date = new Date('1970-01-01T' + time24);
-
         const time12 = date.toLocaleTimeString('en-US', {
             hour: 'numeric',
             minute: 'numeric',
             hour12: true
         });
-        return time12
+        return time12;
     }
+
+    const formatPhoneNumber = (phone) => {
+        const cleaned = ('' + phone).replace(/\D/g, '');
+        const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+        if (match) {
+            return `(${match[1]}) ${match[2]}-${match[3]}`;
+        }
+        return phone;
+    };
 
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                // Retrieve the JWT token from sessionStorage
                 const token = sessionStorage.getItem('jwt-token');
-    
-                // Make a request to the protected route with the Authorization header
                 const response = await fetch(`http://127.0.0.1:5555/users/${id}`, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`,  // Send token 
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });
-    
-                const text = await response.text();  // raw response as text
+
+                const text = await response.text();
                 console.log('Raw response:', text);
-    
+
                 if (response.ok) {
-                    // If response is successful, parse and set the profile data
                     try {
-                        const data = JSON.parse(text);  // Parse the JSON response
-                        setProfileData({
-                            ...data,
-                        });
+                        const data = JSON.parse(text);
+                        setProfileData({ ...data });
                     } catch (jsonError) {
                         console.error('Error parsing JSON:', jsonError);
                     }
                 } else {
                     console.error('Error fetching profile:', response.status);
-                    // Handle possible errors (e.g., unauthorized, invalid token)
                     if (response.status === 401) {
                         console.error('Unauthorized: Token may be missing or invalid');
-                        // You might want to redirect to login or show an error message
                     }
                 }
             } catch (error) {
                 console.error('Error fetching profile data:', error);
             }
         };
-    
+
         fetchProfileData();
     }, [id]);
 
@@ -84,7 +84,7 @@ function Profile( {marketData }) {
         }
         setEditMode(!editMode);
     };
-    
+
     const handleInputChange = event => {
         const { name, value } = event.target;
         setTempProfileData({
@@ -96,17 +96,16 @@ function Profile( {marketData }) {
     const handleSaveChanges = async () => {
         try {
             const token = sessionStorage.getItem('jwt-token');
-
             const response = await fetch(`http://127.0.0.1:5555/users/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(profileData)
+                body: JSON.stringify(tempProfileData)
             });
 
-            console.log('Request body:', JSON.stringify(profileData));
+            console.log('Request body:', JSON.stringify(tempProfileData));
 
             if (response.ok) {
                 const updatedData = await response.json();
@@ -128,7 +127,7 @@ function Profile( {marketData }) {
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
-                setVendorFavs(filteredData)
+                setVendorFavs(filteredData);
             })
             .catch(error => console.error('Error fetching favorites', error));
     }, []);
@@ -138,11 +137,10 @@ function Profile( {marketData }) {
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
-                setMarketFavs(filteredData)
+                setMarketFavs(filteredData);
             })
             .catch(error => console.error('Error fetching favorites', error));
     }, []);
-
 
     if (!profileData) {
         return <div>Loading...</div>;
@@ -165,7 +163,7 @@ function Profile( {marketData }) {
                             />
                         </div>
                         <div className="form-group">
-                            <label> Name:</label>
+                            <label>Last Name:</label>
                             <input
                                 type="text"
                                 name="last_name"
@@ -187,7 +185,7 @@ function Profile( {marketData }) {
                             <input
                                 type="tel"
                                 name="phone"
-                                value={tempProfileData ? tempProfileData.phone: ''}
+                                value={tempProfileData ? formatPhoneNumber(tempProfileData.phone) : ''}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -258,7 +256,7 @@ function Profile( {marketData }) {
                                 </tr>
                                 <tr>
                                     <td className='cell-title'>Phone:</td>
-                                    <td className='cell-text'>{profileData.phone}</td>
+                                    <td className='cell-text'>{formatPhoneNumber(profileData.phone)}</td>
                                 </tr>
                                 <tr>
                                     <td className='cell-title'>Address:</td>
@@ -284,11 +282,11 @@ function Profile( {marketData }) {
                 <h3>Vendors</h3>
                 <ul className='favorites-list'>
                     {vendorFavs.length > 0 ? (
-                    vendorFavs.map((data) => (
-                        <li key={data.id}>
-                            <Link to={`/user/vendors/${data.vendor_id}`}><b>{data.vendor.name}</b> <i>of {data.vendor.city}, {data.vendor.state}</i> </Link>
-                        </li>
-                    ))
+                        vendorFavs.map((data) => (
+                            <li key={data.id}>
+                                <Link to={`/user/vendors/${data.vendor_id}`}><b>{data.vendor.name}</b> <i>of {data.vendor.city}, {data.vendor.state}</i></Link>
+                            </li>
+                        ))
                     ) : (
                         <p>No favorite vendors</p>
                     )}
@@ -297,11 +295,11 @@ function Profile( {marketData }) {
                 <h3>Markets</h3>
                 <ul className='favorites-list'>
                     {marketFavs.length > 0 ? (
-                    marketFavs.map((data) => (
-                        <li key={data.id}>
-                            <Link to={`/user/markets/${data.market_id}`}><b>{data.market.name}</b> <i>open {data.market.schedule} </i> </Link>
-                        </li>
-                    ))
+                        marketFavs.map((data) => (
+                            <li key={data.id}>
+                                <Link to={`/user/markets/${data.market_id}`}><b>{data.market.name}</b> <i>open {data.market.schedule}</i></Link>
+                            </li>
+                        ))
                     ) : (
                         <p>No favorite markets</p>
                     )}
