@@ -871,6 +871,33 @@ input[type='number'] {
   border-width: 1px; */
 }
 
+.table-overflow {
+  overflow-y: auto;
+  max-height: 228px;
+}
+
+/* .table-overflow table {
+  border-collapse: collapse;
+} */
+
+.table-basket th {
+  background-color: #007BFF;
+  color: white;
+  padding: 4px;
+}
+
+.table-basket tr:nth-child(even) {
+  background-color: #eee;
+}
+
+.table-basket td {
+  padding: 4px;
+}
+
+.table-center {
+  text-align: center;
+}
+
 select {
   background: #fffa9c;
   /* -webkit-appearance: none; */

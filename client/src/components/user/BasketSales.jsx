@@ -35,42 +35,44 @@ function BasketSales() {
         <div>
             <h2>Basket History</h2>
             <br />
-            <table>
-                <thead>
-                    <tr>
-                        <th>Market</th>
-                        <th>Vendor</th>
-                        <th>Sale Date</th>
-                        <th>Price</th>
-                        <th>Baskets Count</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {salesHistory.length > 0 ? (
-                        salesHistory.map((history, index) => (
-                            <tr key={index}>
-                                <td>
-                                    <a href={`/user/markets/${history.market_id}`} target="_blank" rel="noopener noreferrer">
-                                        {history.market_name || 'No Market Name'}
-                                    </a>
-                                </td>                                
-                                <td>
-                                    <a href={`/user/vendors/${history.vendor_id}`} target="_blank" rel="noopener noreferrer">
-                                        {history.vendor_name || 'No Vendor Name'}
-                                    </a>
-                                </td>                                
-                                <td>{history.sale_date || 'N/A'}</td>
-                                <td>${history.price ? history.price.toFixed(2) : 'N/A'}</td>
-                                <td>{history.baskets_count || '0'}</td>
-                            </tr>
-                        ))
-                    ) : (
+            <div className='table-overflow'>
+                <table className='table-basket'>
+                    <thead>
                         <tr>
-                            <td colSpan="4">No sales history available</td>
+                            <th>Market</th>
+                            <th>Vendor</th>
+                            <th>Sale Date</th>
+                            <th>Price</th>
+                            <th>Baskets Count</th>
                         </tr>
-                    )}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {salesHistory.length > 0 ? (
+                            salesHistory.map((history, index) => (
+                                <tr key={index}>
+                                    <td>
+                                        <a className='btn-nav' href={`/user/markets/${history.market_id}`} target="_blank" rel="noopener noreferrer">
+                                            {history.market_name || 'No Market Name'}
+                                        </a>
+                                    </td>                                
+                                    <td>
+                                        <a className='btn-nav' href={`/user/vendors/${history.vendor_id}`} target="_blank" rel="noopener noreferrer">
+                                            {history.vendor_name || 'No Vendor Name'}
+                                        </a>
+                                    </td>                                
+                                    <td>{history.sale_date || 'N/A'}</td>
+                                    <td>${history.price ? history.price.toFixed(2) : 'N/A'}</td>
+                                    <td className='table-center'>{history.baskets_count || '0'}</td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="4">No sales history available</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }
