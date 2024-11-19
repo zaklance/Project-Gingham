@@ -13,6 +13,7 @@ function Logout() {
             globalThis.sessionStorage.removeItem('amountInCart');
             globalThis.sessionStorage.removeItem('cartItems');
             globalThis.sessionStorage.removeItem('user_id');
+            globalThis.sessionStorage.removeItem('jwt-token');
 
             navigate('/');
         })

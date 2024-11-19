@@ -144,6 +144,30 @@ def check_role(expected_role):
         return False
     return True
 
+# Handle expired token for all account types
+@jwt.expired_token_loader
+def expired_token_callback(jwt_header, jwt_payload):
+    return jsonify({
+        'error': 'Token has expired',
+        'message': 'Your session has expired. Please log in again.'
+    }), 401
+
+# Handle invalid or malformed token for all account types
+@jwt.invalid_token_loader
+def invalid_token_callback(error):
+    return jsonify({
+        'error': 'Invalid token',
+        'message': 'The token provided is invalid. Please log in again.'
+    }), 401
+
+# Handle unauthorized access for all account types
+@jwt.unauthorized_loader
+def missing_token_callback(error):
+    return jsonify({
+        'error': 'Authorization required',
+        'message': 'No token provided. Please log in to continue.'
+    }), 401
+
 # User Portal
 @app.route('/', methods=['GET'])
 def homepage():
@@ -219,7 +243,6 @@ def check_user_session():
 
     return user.to_dict(), 200
 
-
 @app.route('/check-vendor-session', methods=['GET'])
 @jwt_required()
 def check_vendor_session():
@@ -233,6 +256,20 @@ def check_vendor_session():
         return {'error': 'authorization failed'}, 401
 
     return vendor_user.to_dict(), 200
+
+@app.route('/check_admin_session', methods=['GET'])
+@jwt_required()
+def check_admin_session():
+    if not check_role('admin'):
+        return {'error': 'Access forbidden: Admin only'}, 403
+
+    admin_user_id = get_jwt_identity()
+    admin_user = AdminUser.query.filter_by(id=admin_user_id).first()
+
+    if not admin_user:
+        return {'error': 'Authorization failed'}, 401
+
+    return admin_user.to_dict(), 200
 
 @app.route('/markets', methods=['GET', 'POST'])
 def all_markets():
