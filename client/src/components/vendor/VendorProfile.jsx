@@ -533,16 +533,16 @@ function VendorProfile () {
                                                     </select>
                                                 </div>
                                                 <button className="btn-edit" onClick={handleAddTeamMember}>Add Team Member</button>
+                                                <br />
+                                                <h3>Current Team Members:</h3>
+                                                <ul>
+                                                    {teamMembers.map(member => (
+                                                        <li key={member.id}>
+                                                            {member.first_name} {member.last_name} - {member.role}
+                                                        </li>
+                                                    ))}
+                                                </ul>
                                             </div>
-                                            <br />
-                                            <h3>Current Team Members:</h3>
-                                            <ul>
-                                                {teamMembers.map(member => (
-                                                    <li key={member.id}>
-                                                        {member.first_name} {member.last_name} - {member.role}
-                                                    </li>
-                                                ))}
-                                            </ul>
                                         </>
                                     )}
                                 </>
