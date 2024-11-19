@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 function BasketSales() {
     const [salesHistory, setSalesHistory] = useState([]);
@@ -51,14 +52,14 @@ function BasketSales() {
                             salesHistory.map((history, index) => (
                                 <tr key={index}>
                                     <td>
-                                        <a className='btn-nav' href={`/user/markets/${history.market_id}`} target="_blank" rel="noopener noreferrer">
+                                        <Link className='btn-nav' to={`/user/markets/${history.market_id}`}>
                                             {history.market_name || 'No Market Name'}
-                                        </a>
+                                        </Link>
                                     </td>                                
                                     <td>
-                                        <a className='btn-nav' href={`/user/vendors/${history.vendor_id}`} target="_blank" rel="noopener noreferrer">
+                                        <Link className='btn-nav' to={`/user/vendors/${history.vendor_id}`}>
                                             {history.vendor_name || 'No Vendor Name'}
-                                        </a>
+                                        </Link>
                                     </td>                                
                                     <td className='table-center'>{history.sale_date || 'N/A'}</td>
                                     <td className='table-center'>${history.price ? history.price.toFixed(2) : 'N/A'}</td>
