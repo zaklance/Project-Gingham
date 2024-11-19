@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import AdminMarketEdit from './AdminMarketEdit'
 import AdminMarketAdd from './AdminMarketAdd'
+import AdminMarketDelete from './AdminMarketDelete'
 
 
 function AdminMarkets () {
@@ -49,18 +50,22 @@ function AdminMarkets () {
     return(
         <div>
             <div className='flex-start flex-center-align flex-gap'>
-                <h2 className=''>Markets Management:</h2>
+                <h2>Markets Management:</h2>
                 <div className='tabs margin-t-20'>                
                     <Link to="#" onClick={() => setActiveTab('edit')} className={activeTab === 'edit' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                         Edit
                     </Link>
-                    <Link to="#" onClick={() => setActiveTab('add')} className={activeTab === 'add' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="#" onClick={() => setActiveTab('add')} className={activeTab === 'add' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                         Add
+                    </Link>
+                    <Link to="#" onClick={() => setActiveTab('delete')} className={activeTab === 'add' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                        Delete
                     </Link>
                 </div>
             </div>
             {activeTab === 'edit' && <AdminMarketEdit markets={markets} timeConverter={timeConverter} weekday={weekday} weekdayReverse={weekdayReverse} /> }
             {activeTab === 'add' && <AdminMarketAdd markets={markets} weekdayReverse={weekdayReverse} />}
+            {activeTab === 'delete' && <AdminMarketDelete markets={markets} weekdayReverse={weekdayReverse} />}
         </div>
     )
 }
