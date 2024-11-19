@@ -120,11 +120,14 @@ function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
                 const updatedData = await response.json();
                 setAdminMarketData(updatedData);
                 setEditMode(false);
+                alert('Market successfully updated')
                 console.log('Market data updated successful:', updatedData);
+                // window.location.reload();
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status;', response.status);
                 console.log('Response text:', await response.text());
+                window.location.reload();
             }
         } catch (error) {
             console.error('Error saving changes:', error);
@@ -147,6 +150,7 @@ function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
                 setSelectedDay(updatedData);
                 setEditDayMode(false);
                 console.log('Market data updated successful:', updatedData);
+                window.location.reload();
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status;', response.status);
