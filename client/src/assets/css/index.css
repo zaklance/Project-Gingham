@@ -788,12 +788,12 @@ form textarea {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.form-group {
+.form-group, .form-address {
   display: table-row;
   margin-bottom: 15px;
 }
 
-.form-group label {
+.form-group label, .form-address label {
   display: table-cell;
   vertical-align: top;
   margin-bottom: 5px;
@@ -808,13 +808,20 @@ form textarea {
   display: table-cell;
   padding: 8px;
   box-sizing: border-box;
-  min-width: 240px;
+  min-width: 250px;
 }
 
 .form-group textarea {
   padding: 8px;
   resize: none;
   border: none;
+}
+
+.form-address input {
+  display: table-cell;
+  padding: 8px;
+  box-sizing: border-box;
+  
 }
 
 .form-login input {
@@ -833,6 +840,10 @@ form textarea {
 
 .form-reset {
   border-radius: 12px;
+}
+
+input[type='number'] {
+  max-width: 40px !important;
 }
 
 .cell-title {

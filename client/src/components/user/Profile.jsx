@@ -182,11 +182,12 @@ function Profile( {marketData }) {
                                 onChange={handleInputChange}
                             />
                         </div>
-                        <div className="form-group">
+                        <div className="form-address">
                             <label>Address:</label>
                             <input
                                 type="text"
                                 name="address_1"
+                                size="36"
                                 placeholder='Address 1'
                                 value={tempProfileData ? tempProfileData.address_1 : ''}
                                 onChange={handleInputChange}
@@ -194,13 +195,18 @@ function Profile( {marketData }) {
                             <input
                                 type="text"
                                 name="address_2"
+                                size="8"
                                 placeholder='Apt, Ffloor, Suite # etc'
                                 value={tempProfileData ? tempProfileData.address_2 : ''}
                                 onChange={handleInputChange}
                             />
+                        </div>
+                        <div className='form-address'>
+                            <label></label>
                             <input
                                 type="text"
                                 name="city"
+                                size="36"
                                 placeholder='City'
                                 value={tempProfileData ? tempProfileData.city : ''}
                                 onChange={handleInputChange}
@@ -220,6 +226,7 @@ function Profile( {marketData }) {
                             <input
                                 type="text"
                                 name="zip"
+                                size="5"
                                 placeholder='Zipcode'
                                 value={tempProfileData ? tempProfileData.zip : ''}
                                 onChange={handleInputChange}
