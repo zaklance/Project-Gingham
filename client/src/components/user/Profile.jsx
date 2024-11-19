@@ -182,6 +182,15 @@ function Profile( {marketData }) {
                                 onChange={handleInputChange}
                             />
                         </div>
+                        <div className="form-group">
+                            <label>Phone:</label>
+                            <input
+                                type="tel"
+                                name="phone"
+                                value={tempProfileData ? tempProfileData.phone: ''}
+                                onChange={handleInputChange}
+                            />
+                        </div>
                         <div className="form-address">
                             <label>Address:</label>
                             <input
@@ -196,7 +205,7 @@ function Profile( {marketData }) {
                                 type="text"
                                 name="address_2"
                                 size="8"
-                                placeholder='Apt, Ffloor, Suite # etc'
+                                placeholder='Apt, Floor, Suite # etc'
                                 value={tempProfileData ? tempProfileData.address_2 : ''}
                                 onChange={handleInputChange}
                             />
@@ -246,6 +255,10 @@ function Profile( {marketData }) {
                                 <tr>
                                     <td className='cell-title'>Email:</td>
                                     <td className='cell-text'>{profileData.email}</td>
+                                </tr>
+                                <tr>
+                                    <td className='cell-title'>Phone:</td>
+                                    <td className='cell-text'>{profileData.phone}</td>
                                 </tr>
                                 <tr>
                                     <td className='cell-title'>Address:</td>
