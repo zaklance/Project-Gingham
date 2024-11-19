@@ -43,7 +43,7 @@ function BasketSales() {
                             <th>Vendor</th>
                             <th>Sale Date</th>
                             <th>Price</th>
-                            <th>Baskets Count</th>
+                            {/* <th>Baskets Count</th> */}
                         </tr>
                     </thead>
                     <tbody>
@@ -60,9 +60,9 @@ function BasketSales() {
                                             {history.vendor_name || 'No Vendor Name'}
                                         </a>
                                     </td>                                
-                                    <td>{history.sale_date || 'N/A'}</td>
-                                    <td>${history.price ? history.price.toFixed(2) : 'N/A'}</td>
-                                    <td className='table-center'>{history.baskets_count || '0'}</td>
+                                    <td className='table-center'>{history.sale_date || 'N/A'}</td>
+                                    <td className='table-center'>${history.price ? history.price.toFixed(2) : 'N/A'}</td>
+                                    {/* <td className='table-center'>{history.baskets_count || '0'}</td> */}
                                 </tr>
                             ))
                         ) : (
