@@ -855,7 +855,8 @@ def run():
 
     for i in range(50):
         email = fake.ascii_free_email()
-        password = fake.password()
+        # password = fake.password()
+        password = "lol"
         first_name = fake.first_name()
         last_name = fake.last_name()
         address_1 = fake.street_address()
