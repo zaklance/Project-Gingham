@@ -34,10 +34,11 @@ function AdminVendorEdit({ vendors }) {
                 const updatedData = await response.json();
                 alert("Vendor Created")
                 console.log('Vendor data posted successfully:', updatedData);
-
+                
                 if (image) {
                     await handleImageUpload(updatedData.id);
                 }
+                window.location.reload();
             } else {
                 console.log('Failed to save vendor details');
                 console.log('Response status:', response.status);

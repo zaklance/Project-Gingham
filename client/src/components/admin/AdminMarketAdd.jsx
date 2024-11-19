@@ -66,6 +66,7 @@ function AdminMarketAdd({ markets, weekdayReverse }) {
                 if (image) {
                     await handleImageUpload(updatedData.id);
                 }
+                window.location.reload();
             } else {
                 console.log('Failed to save market details');
                 console.log('Response status:', response.status);
