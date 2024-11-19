@@ -177,6 +177,7 @@ def signup():
             password=data['password'],
             first_name=data['first_name'],
             last_name=data['last_name'],
+            phone=data['phone'],
             address_1=data['address1'],
             address_2=data.get('address2', ''),
             city=data['city'],
