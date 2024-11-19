@@ -50,6 +50,7 @@ function BasketSales() {
                         salesHistory.map((history, index) => (
                             <tr key={index}>
                                 <td>
+                                    {/* Update with <Link> instead of a href */}
                                     <a href={`/user/markets/${history.market_id}`} target="_blank" rel="noopener noreferrer">
                                         {history.market_name || 'No Market Name'}
                                     </a>
