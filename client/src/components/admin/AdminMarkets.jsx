@@ -3,6 +3,7 @@ import { NavLink, Link } from 'react-router-dom';
 import AdminMarketEdit from './AdminMarketEdit'
 import AdminMarketAdd from './AdminMarketAdd'
 import AdminMarketDelete from './AdminMarketDelete'
+import AdminMarketEvents from './AdminMarketEvents'
 
 
 function AdminMarkets () {
@@ -58,14 +59,18 @@ function AdminMarkets () {
                     <Link to="#" onClick={() => setActiveTab('add')} className={activeTab === 'add' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                         Add
                     </Link>
-                    <Link to="#" onClick={() => setActiveTab('delete')} className={activeTab === 'add' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="#" onClick={() => setActiveTab('delete')} className={activeTab === 'delete' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                         Delete
+                    </Link>
+                    <Link to="#" onClick={() => setActiveTab('event')} className={activeTab === 'event' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                        Events
                     </Link>
                 </div>
             </div>
             {activeTab === 'edit' && <AdminMarketEdit markets={markets} timeConverter={timeConverter} weekday={weekday} weekdayReverse={weekdayReverse} /> }
             {activeTab === 'add' && <AdminMarketAdd markets={markets} weekdayReverse={weekdayReverse} />}
             {activeTab === 'delete' && <AdminMarketDelete markets={markets} weekdayReverse={weekdayReverse} />}
+            {activeTab === 'event' && <AdminMarketEvents markets={markets} />}
         </div>
     )
 }

@@ -6,7 +6,7 @@ function VendorNotification({ vendorId, onDataFetch }) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchVendorNotifications = async () => {
+        const fetchvendorNotification = async () => {
             try {
                 const vendorUserId = sessionStorage.getItem('vendor_user_id');
                 if (!vendorUserId) {
@@ -64,7 +64,7 @@ function VendorNotification({ vendorId, onDataFetch }) {
             }
         };
 
-        fetchVendorNotifications();
+        fetchvendorNotification();
     }, []);
     
 

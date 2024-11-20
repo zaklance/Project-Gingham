@@ -2,7 +2,7 @@ import os
 import json
 import smtplib
 from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
-from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Events, bcrypt, VendorNotifications
+from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, VendorNotification, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
@@ -977,11 +977,64 @@ def handle_vendor_vendor_users():
             db.session.rollback()
             return {'error': f'Exception: {str(e)}'}, 500
 
-@app.route('/events', methods=['GET'])
+@app.route('/events', methods=['GET', 'POST'])
 def all_events():
     if request.method == 'GET':
-        events = Events.query.all()
+        events = Event.query.all()
         return jsonify([event.to_dict() for event in events]), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        print("Received data:", data)
+        try:
+            start_date = datetime.strptime(data.get('start_date'), '%Y-%m-%d').date()
+            end_date = datetime.strptime(data.get('end_date'), '%Y-%m-%d').date()
+        except ValueError as e:
+            return jsonify({"error": f"Invalid time format: {str(e)}"}), 400
+        
+        new_event = Event(
+            title=data['title'],
+            message=data['message'],
+            start_date=start_date,
+            end_date=end_date
+        )
+        if 'vendor_id' in data:
+            new_event.vendor_id = data['vendor_id']
+        if 'market_id' in data:
+            new_event.market_id = data['market_id']
+        
+        db.session.add(new_event)
+        db.session.commit()
+        return new_event.to_dict(), 201
+
+@app.route('/events/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def event_by_id(id):
+    event = Event.query.filter(Event.id == id).first()
+    if not event:
+        return {'error': 'event not found'}, 404
+    if request.method == 'GET':
+        return event.to_dict(), 200
+    elif request.method == 'PATCH':
+        if not event:
+            return {'error': 'user not found'}, 404
+        try:
+            data = request.get_json()
+            event.title=data['title']
+            event.message=data['message']
+            if data.get('start_date'):
+                event.season_start = datetime.strptime(data.get('start_date'), '%Y-%m-%d').date()
+            if data.get('end_date'):
+                event.season_end = datetime.strptime(data.get('end_date'), '%Y-%m-%d').date()            
+            db.session.add(event)
+            db.session.commit()
+            return event.to_dict(), 200
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+    elif request.method == 'DELETE':
+        db.session.delete(event)
+        db.session.commit()
+        return {}, 204
+
         
 @app.route("/baskets", methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def handle_baskets():
@@ -1583,7 +1636,7 @@ def create_notification():
         return jsonify({'message': 'Invalid request data.'}), 400
 
     try:
-        new_notification = VendorNotifications(
+        new_notification = VendorNotification(
             message=data['message'],
             vendor_id=data['vendor_id'],
             vendor_user_id=data['vendor_user_id'],
@@ -1601,7 +1654,7 @@ def create_notification():
 
 @app.route('/vendor-notifications/<int:vendor_id>', methods=['GET'])
 def get_vendor_notifications(vendor_id):
-    notifications = VendorNotifications.query.filter_by(vendor_id=vendor_id).all()
+    notifications = VendorNotification.query.filter_by(vendor_id=vendor_id).all()
 
     if not notifications:
         return jsonify({'message': 'No notifications found'}), 404
@@ -1615,7 +1668,7 @@ def approve_notification(notification_id):
     data = request.get_json()
     is_admin = data.get('is_admin')
 
-    notification = VendorNotifications.query.get(notification_id)
+    notification = VendorNotification.query.get(notification_id)
     if not notification:
         return jsonify({'message': 'Notification not found'}), 404
 
@@ -1641,7 +1694,7 @@ def approve_notification(notification_id):
 
 @app.route('/vendor-notifications/<int:notification_id>/reject', methods=['DELETE'])
 def reject_notification(notification_id):
-    notification = VendorNotifications.query.get(notification_id)
+    notification = VendorNotification.query.get(notification_id)
     if not notification:
         return jsonify({'message': 'Notification not found'}), 404
 

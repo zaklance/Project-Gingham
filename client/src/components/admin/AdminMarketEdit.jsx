@@ -25,7 +25,7 @@ function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
                 setMarketDays(filteredData)
                 setSelectedDay(filteredData[0]);
             })
-            .catch(error => console.error('Error fetching favorites', error));
+            .catch(error => console.error('Error fetching market days', error));
     }, [matchingMarketId]);
 
     const handleDayChange = (event) => {
@@ -35,33 +35,34 @@ function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
     };
 
     useEffect(() => {
-        const fetchAdminMarketData = async () => {
-            try {
-                const token = sessionStorage.getItem('jwt-token');
-                // console.log('JWT Token:', token);
-                const response = await fetch(`http://127.0.0.1:5555/markets/${matchingMarketId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+        if (matchingMarketId) {
+            const fetchAdminMarketData = async () => {
+                try {
+                    const token = sessionStorage.getItem('jwt-token');
+                    const response = await fetch(`http://127.0.0.1:5555/markets/${matchingMarketId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('Fetched admin market data:', data);
-                    setAdminMarketData(data);
-                } else {
-                    console.error('Error fetching profile:', response.status);
-                    if (response.status === 401) {
-                        console.error('Unauthorized: Token may be missing or invalid');
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('Fetched admin market data:', data);
+                        setAdminMarketData(data);
+                    } else {
+                        console.error('Error fetching profile:', response.status);
+                        if (response.status === 401) {
+                            console.error('Unauthorized: Token may be missing or invalid');
+                        }
                     }
+                } catch (error) {
+                    console.error('Error fetching market data:', error);
                 }
-            } catch (error) {
-                console.error('Error fetching market data:', error);
-            }
-        };
-        fetchAdminMarketData();
+            };
+            fetchAdminMarketData();
+        }
     }, [matchingMarketId]);
 
     const handleInputChange = (event) => {
@@ -172,7 +173,7 @@ function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
     return(
         <>
 
-            <div className='bounding-box'>
+            <div className='box-bounding'>
                 <h2>Edit Markets</h2>
                 <table className='margin-t-16'>
                     <tbody>

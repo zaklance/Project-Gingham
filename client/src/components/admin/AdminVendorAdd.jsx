@@ -67,7 +67,7 @@ function AdminVendorEdit({ vendors }) {
 
     return (
         <>
-            <div className='bounding-box'>
+            <div className='box-bounding'>
                 <h2>Add Vendors</h2>
                 <div className='margin-t-16'>
                     <div className='form-group'>

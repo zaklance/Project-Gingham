@@ -149,7 +149,7 @@ function VendorDetail () {
                 const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
                 setVendorFavs(filteredData);
             })
-            .catch(error => console.error('Error fetching favorites', error));
+            .catch(error => console.error('Error fetching vendor favorites', error));
     }, []);
 
     useEffect(() => {
@@ -165,7 +165,7 @@ function VendorDetail () {
     //             const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
     //             setVendorFavs(filteredData)
     //         })
-    //         .catch(error => console.error('Error fetching favorites', error));
+    //         .catch(error => console.error('Error fetching vendor favorites', error));
     // }, []);
 
     const handleClick = async (event) => {
@@ -322,7 +322,7 @@ function VendorDetail () {
                 <h2>{vendor.name}</h2>
                 <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Vendors</button>
             </div>
-            <div className={events.length < 1 ? 'flex-start flex-align-start flex-gap-24' : 'flex-start flex-align-center flex-gap-24'}>
+            <div className={events.length < 1 ? 'flex-start flex-align-start flex-gap-16' : 'flex-start flex-align-center flex-gap-16'}>
                 {events.length > 0 ? (
                     <h2 className='margin-t-16'>Events:</h2>
                 ) : (

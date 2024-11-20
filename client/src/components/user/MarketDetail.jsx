@@ -199,7 +199,7 @@ function MarketDetail ({ match }) {
                 const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
                 setMarketFavs(filteredData)
             })
-            .catch(error => console.error('Error fetching favorites', error));
+            .catch(error => console.error('Error fetching market favorites', error));
     }, []);
 
     const handleClick = async (event) => {
@@ -361,14 +361,22 @@ function MarketDetail ({ match }) {
         fetch("http://127.0.0.1:5555/events")
             .then(response => response.json())
             .then(data => {
-                const filteredData = data.filter(item => item.market_id === Number(id));
-                setEvents(filteredData)
+                const today = new Date();
+                const sevenDaysFromNow = new Date();
+                sevenDaysFromNow.setDate(today.getDate() + 7);
+
+                const filteredData = data.filter(item => {
+                    const startDate = new Date(item.start_date);
+                    const endDate = new Date(item.end_date);
+                    return item.market_id === Number(id) &&
+                        // Check if today is within range or start_date is within 7 days from now
+                        (today >= startDate && today <= endDate || startDate <= sevenDaysFromNow);
+                });
+                setEvents(filteredData);
             })
             .catch(error => console.error('Error fetching events', error));
-    }, []);
-
-    console.log(events)
-
+    }, [id]);
+    
 
     if (!market) {
         return <div>Loading...</div>;
@@ -388,7 +396,7 @@ function MarketDetail ({ match }) {
                 <h2>{market.name}</h2>
                 <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Markets</button>
             </div>
-            <div className={events.length < 1 ? 'flex-start flex-align-start flex-gap-24' : 'flex-start flex-align-center flex-gap-24'}>
+            <div className={events.length < 1 ? 'flex-start flex-align-start flex-gap-16' : 'flex-start flex-align-center flex-gap-16'}>
                 {events.length > 0 ? (
                     <h2 className='margin-t-16'>Events:</h2>
                 ) : (
@@ -399,18 +407,16 @@ function MarketDetail ({ match }) {
                     {events.length > 0 ? (
                         events.map((event, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                                {event.user_id !== userId && editingReviewId !== event.id && (
-                                    <div className='flex-start flex-center-align flex-gap-16'>
-                                        <p className='text-italic nowrap'>
-                                            {event.start_date}
-                                            {event.end_date !== event.start_date && ` - `}
-                                            <br></br>
-                                            {event.end_date !== event.start_date && `${event.end_date}`}
-                                        </p>
-                                        <h3 className='nowrap'>{event.title ? event.title : 'Loading...'}:</h3>
-                                        <p>{event.message}</p>
-                                    </div>
-                                )}
+                                <div className='flex-start flex-center-align flex-gap-16'>
+                                    <p className='text-italic nowrap'>
+                                        {event.start_date}
+                                        {event.end_date !== event.start_date && ` - `}
+                                        <br></br>
+                                        {event.end_date !== event.start_date && `${event.end_date}`}
+                                    </p>
+                                    <h3 className='nowrap'>{event.title ? event.title : 'Loading...'}:</h3>
+                                    <p>{event.message}</p>
+                                </div>
                             </div>
                         ))
                     ) : (

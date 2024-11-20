@@ -22,7 +22,7 @@ function AdminMarketAdd({ markets, weekdayReverse }) {
                 const filteredData = data.filter(item => item.market_id === matchingMarketId);
                 setMarketDays(filteredData)
             })
-            .catch(error => console.error('Error fetching favorites', error));
+            .catch(error => console.error('Error fetching market days', error));
     }, [matchingMarketId]);
 
     const handleInputMarketChange = (event) => {
@@ -142,7 +142,7 @@ function AdminMarketAdd({ markets, weekdayReverse }) {
 
     return (
         <>
-            <div className='bounding-box flex-start flex-gap-48 flex-wrap'>
+            <div className='box-bounding flex-start flex-gap-48 flex-wrap'>
                 <div>
                     <h2>Add Market</h2>
                     <div className='margin-t-24'>

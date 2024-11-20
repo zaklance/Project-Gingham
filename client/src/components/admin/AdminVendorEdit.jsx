@@ -106,7 +106,7 @@ function AdminVendorEdit({ vendors }) {
 
     return (
         <>
-            <div className='bounding-box'>
+            <div className='box-bounding'>
                 <h2>Edit Vendors</h2>
                 <table className='margin-t-16'>
                     <tbody>

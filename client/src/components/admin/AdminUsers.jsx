@@ -14,7 +14,7 @@ function AdminUsers() {
                 const filteredData = data.filter(item => item.is_reported === true);
                 setMarketReported(filteredData)
             })
-            .catch(error => console.error('Error fetching favorites', error));
+            .catch(error => console.error('Error fetching market reviews', error));
     }, []);
 
     const handleMarketReviewDelete = async (reviewId) => {
@@ -54,7 +54,7 @@ function AdminUsers() {
                 const filteredData = data.filter(item => item.is_reported === true);
                 setVendorReported(filteredData)
             })
-            .catch(error => console.error('Error fetching favorites', error));
+            .catch(error => console.error('Error fetching vendor reviews', error));
     }, []);
 
     const handleVendorReviewDelete = async (reviewId) => {
@@ -91,7 +91,7 @@ function AdminUsers() {
     return (
         <div>
             <h2 className='margin-t-16'>User Management</h2>
-            <div className='bounding-box'>
+            <div className='box-bounding'>
                 <h2 className='margin-b-24'>Reported Market Reviews</h2>
                 <div className='box-scroll'>
                     {marketReported.length > 0 ? (
@@ -111,7 +111,7 @@ function AdminUsers() {
                     )}
                 </div>
             </div>
-            <div className='bounding-box'>
+            <div className='box-bounding'>
                 <h2 className='margin-b-24'>Reported Vendor Reviews</h2>
                 <div className='box-scroll'>
                     {vendorReported.length > 0 ? (
