@@ -211,7 +211,7 @@ class Vendor(db.Model, SerializerMixin):
     vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic')
     vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor', lazy='dynamic')
     vendor_markets = db.relationship('VendorMarket', back_populates='vendor')
-    notifications = db.relationship('VendorNotifications', back_populates='vendor', lazy='dynamic')
+    notifications = db.relationship('VendorNotification', back_populates='vendor', lazy='dynamic')
 
     serialize_rules = (
         '-reviews.vendor', '-vendor_favorites.vendor', '-vendor_vendor_users.vendor', 
@@ -352,7 +352,7 @@ class VendorUser(db.Model, SerializerMixin):
 
     # Relationships
     vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor_user', lazy='dynamic')
-    notifications = db.relationship('VendorNotifications', back_populates='vendor_user')
+    notifications = db.relationship('VendorNotification', back_populates='vendor_user')
 
     serialize_rules = ('-_password', '-vendor_vendor_users.vendor_user')
 
@@ -500,7 +500,7 @@ class Basket(db.Model, SerializerMixin):
         return (f"<Basket ID: {self.id}, Vendor: {self.vendor.name}, "
                 f"Market ID: {self.market_day_id}, Sold: {self.is_sold}>")
 
-class UserNotifications(db.Model):
+class UserNotification(db.Model):
     __tablename__ = 'user_notifications'
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String, nullable=False)
@@ -513,7 +513,7 @@ class UserNotifications(db.Model):
     def __repr__(self):
         return (f"<User Notification ID: {self.id}, created on {self.created_at}")
 
-class VendorNotifications(db.Model):
+class VendorNotification(db.Model):
     __tablename__ = 'vendor_notifications'
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String, nullable=False)
@@ -530,7 +530,7 @@ class VendorNotifications(db.Model):
     def __repr__(self):
         return (f"<Vendor Notification ID: {self.id}, created on {self.created_at}")
 
-class AdminNotifications(db.Model):
+class AdminNotification(db.Model):
     __tablename__ = 'admin_notifications'
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String, nullable=False)
@@ -542,7 +542,7 @@ class AdminNotifications(db.Model):
     def __repr__(self):
         return (f"<Vendor Notification ID: {self.id}, created on {self.created_at}")
     
-class Events(db.Model):
+class Event(db.Model):
     __tablename__ = 'events'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)

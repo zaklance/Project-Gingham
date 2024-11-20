@@ -92,7 +92,7 @@ function AdminProfile () {
             <div className="tab-content">
                 <div>
                     <h2 className='margin-t-16'>Profile Information</h2>
-                    <div className='bounding-box'>
+                    <div className='box-bounding'>
                         {editMode ? (
                             <>
                                 <div className='form-group'>

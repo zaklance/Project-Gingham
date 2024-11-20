@@ -51,7 +51,7 @@ function AdminMarketDelete({ markets, weekday, weekdayReverse }) {
                 const filteredData = data.filter(item => item.market_id === matchingMarketId);
                 setMarketDays(filteredData)
             })
-            .catch(error => console.error('Error fetching favorites', error));
+            .catch(error => console.error('Error fetching market days', error));
     }, [matchingMarketId]);
 
     const handleDelete = async () => {
@@ -90,7 +90,7 @@ function AdminMarketDelete({ markets, weekday, weekdayReverse }) {
 
     return(
         <>
-            <div className='bounding-box'>
+            <div className='box-bounding'>
                 <h2>Delete Markets</h2>
                 <table className='margin-t-16'>
                     <tbody>

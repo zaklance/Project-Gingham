@@ -183,17 +183,17 @@ function VendorDashboard( {vendorId, marketId}) {
         <div>
             <h2 className='margin-t-16'>Vendor Dashboard</h2>
             {/* {notifications.length > 0 && */}
-                <div className='bounding-box'>
+                <div className='box-bounding'>
                     <VendorNotification notifications={notifications} />
                 </div>
             {/* } */}
 
             {!vendorUserData || !vendorUserData.vendor_id ? (
-                <div className='bounding-box'>
+                <div className='box-bounding'>
                     <VendorCreate />
                 </div>
             ) : (
-                <div className='bounding-box'>
+                <div className='box-bounding'>
                     <h3>Todays Markets:</h3>
                     <div className='market-cards-container'>
                         <div className='market-card'>
@@ -206,7 +206,7 @@ function VendorDashboard( {vendorId, marketId}) {
                             <p>04:30 PM (1 hour)</p>
                             <br />
                             <p><strong>Claimed Baskets: 3</strong></p>
-                            <div className='bounding-box'>
+                            <div className='box-bounding'>
                                 <p>sandroledesma, 04:45 PM<strong> ✓ </strong></p>
                                 <p>zaklance, 05:15 PM</p>
                                 <p>vhle, 05:15 PM</p>

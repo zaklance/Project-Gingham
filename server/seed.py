@@ -1,7 +1,7 @@
 from app import app
 from faker import Faker
 from random import random, choice, randint
-from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, Events, bcrypt
+from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, Event, bcrypt
 import json
 from datetime import date, time, timedelta
 
@@ -20,7 +20,7 @@ def run():
     VendorUser.query.delete()
     AdminUser.query.delete()
     Basket.query.delete()
-    Events.query.delete()
+    Event.query.delete()
 
     db.session.commit()
 
@@ -928,33 +928,33 @@ def run():
     db.session.add_all(vendor_revs)
     db.session.commit()
 
-    # market_favs = []
-    # for i in range(200):
-    #     market_id = randint(1, 40)
-    #     user_id = randint(1, 50)
+    market_favs = []
+    for i in range(200):
+        market_id = randint(1, 40)
+        user_id = randint(1, 50)
 
-    #     mf = MarketFavorite(
-    #         market_id=market_id,
-    #         user_id=user_id,
-    #     )
-    #     market_favs.append(mf)
+        mf = MarketFavorite(
+            market_id=market_id,
+            user_id=user_id,
+        )
+        market_favs.append(mf)
 
-    # db.session.add_all(market_favs)
-    # db.session.commit()
+    db.session.add_all(market_favs)
+    db.session.commit()
 
-    # vendor_favs = []
-    # for i in range(900):
-    #     vendor_id = randint(1, 151)
-    #     user_id = randint(1, 50)
+    vendor_favs = []
+    for i in range(400):
+        vendor_id = randint(1, 151)
+        user_id = randint(1, 50)
 
-    #     vf = VendorFavorite(
-    #         vendor_id=vendor_id,
-    #         user_id=user_id,
-    #     )
-    #     vendor_favs.append(vf)
+        vf = VendorFavorite(
+            vendor_id=vendor_id,
+            user_id=user_id,
+        )
+        vendor_favs.append(vf)
 
-    # db.session.add_all(vendor_favs)
-    # db.session.commit()
+    db.session.add_all(vendor_favs)
+    db.session.commit()
 
     # add fake vendor markets
     # vendor_markets = []
@@ -1074,7 +1074,7 @@ def run():
     date_start = date.today() - timedelta(days=last_month)
     date_end = date_start + timedelta(days=few_days)
 
-    holiday = Events(
+    holiday = Event(
         title="Holiday Market",
         message=fake.paragraph(nb_sentences=5),
         market_id=1,
@@ -1083,7 +1083,7 @@ def run():
     )
     events.append(holiday)
     
-    special = Events(
+    special = Event(
         title="Weekly Special",
         message=fake.paragraph(nb_sentences=4),
         vendor_id=1,
@@ -1116,7 +1116,7 @@ def run():
         end_date = date_end
 
         
-        ev = Events(
+        ev = Event(
             title=title,
             message=message,
             market_id=market_id,

@@ -382,7 +382,7 @@ function VendorProfile () {
                 <div>
                     <h2 className='title'>Profile Information </h2>
                     
-                    <div className='bounding-box'>
+                    <div className='box-bounding'>
                     {editMode && vendorUserData?.is_admin ? (
                         <>
                             <div className='form-group flex-form'>
@@ -446,7 +446,7 @@ function VendorProfile () {
                     </div>
                     <br />
                     <h2 className='title'>Vendor Information</h2>
-                    <div className='bounding-box'>
+                    <div className='box-bounding'>
                     {vendorData?.id ? (
                         vendorEditMode && vendorUserData?.is_admin ? (
                             <>
@@ -566,7 +566,7 @@ function VendorProfile () {
                                     {vendorUserData?.is_admin && (
                                         <>
                                             <h2 className="title">Team Members</h2>
-                                            <div className="bounding-box">
+                                            <div className="box-bounding">
                                                 <div className='form-group'>
                                                     <label>Email:</label>
                                                     <input

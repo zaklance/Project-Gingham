@@ -70,7 +70,7 @@ function AdminVendorDelete({ vendors }) {
 
     return (
         <>
-            <div className='bounding-box'>
+            <div className='box-bounding'>
                 <h2>Delete Markets</h2>
                 <table className='margin-t-16'>
                     <tbody>

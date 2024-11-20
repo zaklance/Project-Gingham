@@ -129,7 +129,7 @@ function Profile({ marketData }) {
                 const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
                 setVendorFavs(filteredData);
             })
-            .catch(error => console.error('Error fetching favorites', error));
+            .catch(error => console.error('Error fetching vendor favorites', error));
     }, []);
 
     useEffect(() => {
@@ -139,7 +139,7 @@ function Profile({ marketData }) {
                 const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
                 setMarketFavs(filteredData);
             })
-            .catch(error => console.error('Error fetching favorites', error));
+            .catch(error => console.error('Error fetching market favorites', error));
     }, []);
 
     if (!profileData) {
@@ -149,7 +149,7 @@ function Profile({ marketData }) {
     return (
         <div>
             <h1>Welcome to Your Profile</h1>
-            <div className='bounding-box'>
+            <div className='box-bounding'>
                 <h2>Profile Information</h2>
                 {editMode ? (
                     <div className='margin-t-16'>
@@ -273,10 +273,10 @@ function Profile({ marketData }) {
                 )}
             </div>
 
-            <div className='bounding-box'>
+            <div className='box-bounding'>
                 <BasketSales />
             </div>
-            <div className='bounding-box'>
+            <div className='box-bounding'>
                 <h2>Favorites</h2>
                 <br/>
                 <h3>Vendors</h3>
