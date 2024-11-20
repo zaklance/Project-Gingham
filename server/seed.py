@@ -1065,25 +1065,48 @@ def run():
     db.session.add_all(vendor_markets)
     db.session.commit()
 
+
+    #  Events
     events = []
+    
+    last_month = randint(0, 4)
+    few_days = 14
+    date_start = date.today() - timedelta(days=last_month)
+    date_end = date_start + timedelta(days=few_days)
+
+    hm = Events(
+        title="Holiday Market",
+        message=fake.paragraph(nb_sentences=3),
+        market_id=1,
+        start_date=date_start,
+        end_date=date_end
+    )
+    events.append(hm)
+
     for i in range(100):
+        heading = randint(3, 6)
         rev_len = randint(2, 5)
-        rand_market = [None, randint(1, 40)]
-        rand_vendor = [None, randint(1, 150)]
+        rand_market = choice([None, randint(1, 40)])
+        if rand_market is None:
+            rand_vendor = randint(1, 150)
+        else:
+            rand_vendor = None
         last_month = randint(0, 31)
         few_days = randint(0, 14)
         date_start = date.today() - timedelta(days=last_month)
         date_end = date_start + timedelta(days=few_days)
 
 
+        title = fake.sentence(nb_words=heading)
         message = fake.paragraph(nb_sentences=rev_len)
-        market_id = choice(rand_market)
-        vendor_id = choice(rand_vendor)
+        market_id = rand_market
+        vendor_id = rand_vendor
         start_date = date_start
         end_date = date_end
 
         
         ev = Events(
+            title=title,
             message=message,
             market_id=market_id,
             vendor_id=vendor_id,
