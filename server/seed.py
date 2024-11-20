@@ -1,7 +1,7 @@
 from app import app
 from faker import Faker
 from random import random, choice, randint
-from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, bcrypt
+from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, Events, bcrypt
 import json
 from datetime import date, time, timedelta
 
@@ -20,6 +20,7 @@ def run():
     VendorUser.query.delete()
     AdminUser.query.delete()
     Basket.query.delete()
+    Events.query.delete()
 
     db.session.commit()
 
@@ -844,7 +845,7 @@ def run():
         address_2="Floor 2",
         city="New York",
         state="NY",
-        zip="10004"
+        zipcode="10004"
     )
     db.session.add(user_demo)
     db.session.commit()
@@ -865,7 +866,7 @@ def run():
         address_2 = f'{choice(apartment)} {randint(1, 200)}'
         city = fake.city()
         state = choice(states)
-        zip = fake.postcode()
+        zipcode = fake.postcode()
 
         u = User(
             email=email,
@@ -877,7 +878,7 @@ def run():
             address_2=address_2,
             city=city,
             state=state,
-            zip=zip
+            zipcode=zipcode
         )
         users.append(u)
 
@@ -887,7 +888,7 @@ def run():
     # add fake market reviews
     market_revs = []
     reported = (False, False, False, False, False, False, False, False, False, True)
-    for i in range(101):
+    for i in range(100):
         rev_len = randint(2, 5)
 
         review_text = str(fake.paragraph(nb_sentences=rev_len))
@@ -908,11 +909,11 @@ def run():
 
     # add fake vendor reviews
     vendor_revs = []
-    for i in range(101):
+    for i in range(100):
         rev_len = randint(2, 5)
 
         review_text = fake.paragraph(nb_sentences=rev_len)
-        vendor_id = str(randint(1, 40))
+        vendor_id = str(randint(1, 150))
         user_id = str(randint(1, 50))
         is_reported = choice(reported)
         
@@ -989,7 +990,8 @@ def run():
     vendor_users = []
     for i in range(50):
         email = fake.ascii_free_email()
-        password = fake.password()
+        # password = fake.password()
+        password = "lol"
         first_name = fake.first_name()
         last_name = fake.last_name()
         # phone = fake.phone_number()
@@ -1061,6 +1063,36 @@ def run():
 
     db.session.add_all(baskets)
     db.session.add_all(vendor_markets)
+    db.session.commit()
+
+    events = []
+    for i in range(100):
+        rev_len = randint(2, 5)
+        rand_market = [None, randint(1, 40)]
+        rand_vendor = [None, randint(1, 150)]
+        last_month = randint(0, 31)
+        few_days = randint(0, 14)
+        date_start = date.today() - timedelta(days=last_month)
+        date_end = date_start + timedelta(days=few_days)
+
+
+        message = fake.paragraph(nb_sentences=rev_len)
+        market_id = choice(rand_market)
+        vendor_id = choice(rand_vendor)
+        start_date = date_start
+        end_date = date_end
+
+        
+        ev = Events(
+            message=message,
+            market_id=market_id,
+            vendor_id=vendor_id,
+            start_date=start_date,
+            end_date=end_date
+        )
+        events.append(ev)
+
+    db.session.add_all(events)
     db.session.commit()
 
     

@@ -4,9 +4,8 @@ from sqlalchemy.orm import validates, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_bcrypt import Bcrypt
 from sqlalchemy_serializer import SerializerMixin
-from datetime import date, time
+from datetime import date, time, datetime
 import re
-from datetime import datetime
 
 convention = {
     "ix": "ix_%(column_0_label)s",
@@ -34,7 +33,7 @@ class User(db.Model, SerializerMixin):
     address_2 = db.Column(db.String, nullable=True)
     city = db.Column(db.String, nullable=False)
     state = db.Column(db.String(2), nullable=False)
-    zip = db.Column(db.String(10), nullable=False)
+    zipcode = db.Column(db.String(10), nullable=False)
 
     # Relationships
     market_reviews = db.relationship('MarketReview', back_populates='user')
@@ -111,12 +110,12 @@ class User(db.Model, SerializerMixin):
             raise ValueError("State must be a 2-letter code")
         return value
 
-    @validates('zip')
-    def validate_zip(self, key, value):
+    @validates('zipcode')
+    def validate_zipcode(self, key, value):
         if not value:
-            raise ValueError("ZIP code is required")
+            raise ValueError("Zipcode code is required")
         if len(value) > 10:
-            raise ValueError("ZIP code cannot be longer than 10 characters")
+            raise ValueError("Zipcode code cannot be longer than 10 characters")
         return value
 
     @hybrid_property
@@ -191,12 +190,6 @@ class MarketDay(db.Model, SerializerMixin):
     def validates_not_empty(self, key, value):
         if not value:
             raise ValueError(f"{key} cannot be empty")
-        return value
-
-    @validates('zipcode')
-    def validate_zipcode(self, key, value):
-        if value and len(value) != 5:
-            raise ValueError("Zipcode must be 5 characters long")
         return value
 
     def __repr__(self) -> str:
@@ -548,3 +541,15 @@ class AdminNotifications(db.Model):
     
     def __repr__(self):
         return (f"<Vendor Notification ID: {self.id}, created on {self.created_at}")
+    
+class Events(db.Model):
+    __tablename__ = 'events'
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String, nullable=False)
+    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
+    start_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)
+    
+    def __repr__(self):
+        return (f"<User Notification ID: {self.id}, created on {self.created_at}")
