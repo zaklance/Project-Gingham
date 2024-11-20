@@ -142,7 +142,7 @@ function AdminMarketAdd({ markets, weekdayReverse }) {
 
     return (
         <>
-            <div className='bounding-box flex-start flex-gap flex-wrap'>
+            <div className='bounding-box flex-start flex-gap-48 flex-wrap'>
                 <div>
                     <h2>Add Market</h2>
                     <div className='margin-t-24'>

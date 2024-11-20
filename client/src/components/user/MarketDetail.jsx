@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
-import { APIProvider, Map, Marker, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
-import VendorDetail from './VendorDetail';
+import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
+// import VendorDetail from './VendorDetail';
 
 function MarketDetail ({ match }) {
     const { id } = useParams();
@@ -27,6 +27,7 @@ function MarketDetail ({ match }) {
     const [allMarketDays, setAllMarketDays] = useState([]);
     const [selectedDay, setSelectedDay] = useState(null);
     const [vendorMarkets, setVendorMarkets] = useState();
+    const [events, setEvents] = useState([]);
     
     // To be deleted after baskets state is moved to BasketCard
     const [marketBaskets, setMarketBaskets] = useState({});
@@ -356,6 +357,18 @@ function MarketDetail ({ match }) {
         }
     }, [vendorMarkets, selectedDay]);
 
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/events")
+            .then(response => response.json())
+            .then(data => {
+                const filteredData = data.filter(item => item.market_id === Number(id));
+                setEvents(filteredData)
+            })
+            .catch(error => console.error('Error fetching events', error));
+    }, []);
+
+    console.log(events)
+
 
     if (!market) {
         return <div>Loading...</div>;
@@ -375,8 +388,38 @@ function MarketDetail ({ match }) {
                 <h2>{market.name}</h2>
                 <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Markets</button>
             </div>
-            <br/>
-            <div className='flex-space-around flex-end'>
+            <div className={events.length < 1 ? 'flex-start flex-align-start flex-gap-24' : 'flex-start flex-align-center flex-gap-24'}>
+                {events.length > 0 ? (
+                    <h2 className='margin-t-16'>Events:</h2>
+                ) : (
+                    <>
+                    </>
+                )}
+                <div className='flex-wrap'>
+                    {events.length > 0 ? (
+                        events.map((event, index) => (
+                            <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
+                                {event.user_id !== userId && editingReviewId !== event.id && (
+                                    <div className='flex-start flex-center-align flex-gap-24'>
+                                        <p className='text-italic nowrap'>
+                                            {event.start_date}
+                                            {event.end_date !== event.start_date && ` - `}
+                                            <br></br>
+                                            {event.end_date !== event.start_date && `${event.end_date}`}
+                                        </p>
+                                        <h3 className='nowrap'>{event.title ? event.title : 'Loading...'}:</h3>
+                                        <p>{event.message}</p>
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        <>
+                        </>
+                    )}
+                </div>
+            </div>
+            <div className='flex-space-around flex-end margin-t-24'>
                 <div>
                     <img className='img-market' src={`/market-images/${market.image}`} alt="Market Image" />
                 </div>
@@ -455,9 +498,7 @@ function MarketDetail ({ match }) {
                     <p>No vendors at this market</p>
                 )}
             </div>
-            <br/>
-            <h2>Reviews</h2>
-            <br/>
+            <h2 className='margin-b-16 margin-t-24'>Reviews</h2>
             {marketReviews.length > 0 ? (
                 marketReviews.map((review, index) => (
                     <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>

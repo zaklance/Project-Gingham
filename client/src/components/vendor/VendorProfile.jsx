@@ -509,7 +509,7 @@ function VendorProfile () {
                             </>
                         ) : (
                                 <>
-                                    <div className='flex-start flex-gap'>
+                                    <div className='flex-start flex-gap-48'>
                                         <table>
                                             <tbody>
                                                 <tr>

@@ -2,7 +2,7 @@ import os
 import json
 import smtplib
 from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
-from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, bcrypt, VendorNotifications
+from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Events, bcrypt, VendorNotifications
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
@@ -976,6 +976,12 @@ def handle_vendor_vendor_users():
         except Exception as e:
             db.session.rollback()
             return {'error': f'Exception: {str(e)}'}, 500
+
+@app.route('/events', methods=['GET'])
+def all_events():
+    if request.method == 'GET':
+        events = Events.query.all()
+        return jsonify([event.to_dict() for event in events]), 200
         
 @app.route("/baskets", methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def handle_baskets():
