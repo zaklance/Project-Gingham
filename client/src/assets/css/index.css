@@ -155,6 +155,10 @@ h2 {
   color: white;
 }
 
+.text-italic {
+  font-style: italic;
+}
+
 .text-center {
   text-align: center;
 }
@@ -171,8 +175,16 @@ h2 {
   margin-bottom: 2rem;
 }
 
+.margin-r-16 {
+  margin-right: 16px;
+}
+
 .margin-r-24 {
   margin-right: 24px;
+}
+
+.margin-l-16 {
+  margin-left: 16px;
 }
 
 .margin-l-24 {
@@ -189,6 +201,10 @@ h2 {
 
 .margin-t-24 {
   margin-top: 24px;
+}
+
+.margin-b-16 {
+  margin-bottom: 16px;
 }
 
 .margin-b-24 {
@@ -331,6 +347,12 @@ ul {
   justify-content: space-between;
 }
 
+.flex-align-start {
+  align-items: flex-start;
+  align-self: flex-start;
+  align-content: flex-start;
+}
+
 .flex-center-align {
   align-items: center;
   align-self: center;
@@ -346,7 +368,11 @@ ul {
   align-items: flex-end;
 }
 
-.flex-gap {
+.flex-gap-24 {
+  gap: 24px;
+}
+
+.flex-gap-48 {
   gap: 48px;
 }
 
@@ -1093,13 +1119,16 @@ select:hover {
 
 .img-market {
   width: 100%;
+  height: 400px;
+  object-fit: cover;
   max-width: 1120px;
 }
 
 .img-vendor {
   width: 100%;
-  max-width: 1120px;
-  padding-right: 24px;
+  /* max-width: 1120px; */
+  object-fit: cover;
+  /* padding-right: 24px; */
 }
 
 .img-portal {

@@ -1074,14 +1074,25 @@ def run():
     date_start = date.today() - timedelta(days=last_month)
     date_end = date_start + timedelta(days=few_days)
 
-    hm = Events(
+    holiday = Events(
         title="Holiday Market",
-        message=fake.paragraph(nb_sentences=3),
+        message=fake.paragraph(nb_sentences=5),
         market_id=1,
         start_date=date_start,
         end_date=date_end
     )
-    events.append(hm)
+    events.append(holiday)
+    
+    special = Events(
+        title="Weekly Special",
+        message=fake.paragraph(nb_sentences=4),
+        vendor_id=1,
+        start_date=date_start,
+        end_date=date_end
+    )
+    events.append(special)
+
+
 
     for i in range(100):
         heading = randint(3, 6)

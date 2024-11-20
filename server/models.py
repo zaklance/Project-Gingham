@@ -551,6 +551,17 @@ class Events(db.Model):
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "message": self.message,
+            "market_id": self.market_id,
+            "vendor_id": self.vendor_id,
+            "start_date": self.start_date.isoformat() if self.start_date else None,
+            "end_date": self.end_date.isoformat() if self.end_date else None,
+        }
     
     def __repr__(self):
         return (f"<User Notification ID: {self.id}, created on {self.created_at}")
