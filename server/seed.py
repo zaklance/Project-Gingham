@@ -1095,7 +1095,7 @@ def run():
 
 
     for i in range(100):
-        heading = randint(3, 6)
+        heading = randint(3, 5)
         rev_len = randint(2, 5)
         rand_market = choice([None, randint(1, 40)])
         if rand_market is None:

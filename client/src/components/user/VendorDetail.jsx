@@ -334,7 +334,7 @@ function VendorDetail () {
                         events.map((event, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                 {event.user_id !== userId && editingReviewId !== event.id && (
-                                    <div className='flex-start flex-center-align flex-gap-24 margin-t-16'>
+                                    <div className='flex-start flex-center-align flex-gap-16 margin-t-16'>
                                         <p className='text-italic nowrap'>
                                             {event.start_date}
                                             {event.end_date !== event.start_date && ` - `}
