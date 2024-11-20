@@ -502,33 +502,38 @@ function MarketDetail ({ match }) {
             {marketReviews.length > 0 ? (
                 marketReviews.map((review, index) => (
                     <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                        {review.user_id !== userId && editingReviewId !== review.id && (
+                        {review.user_id !== userId && editingReviewId !== review.id ? (
                             <div className='flex-start'>
                                 <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
                                 <button className='btn btn-small btn-x btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
                             </div>
+                        ) : (
+                            <h4>You</h4>
                         )}
                         {review.user_id === userId && editingReviewId === review.id ? (
                             <>
                                 <textarea className='textarea-edit'
                                     value={editedReviewData}
                                     onChange={handleEditInputChange}
-                                />
+                                    />
                                 <br></br>
                                 <button className='btn btn-small' onClick={() => handleReviewUpdate(review.id)}>Save</button>
                                 <button className='btn btn-small btn-gap' onClick={() => setEditingReviewId(null)}>Cancel</button>
                             </>
                         ) : (
-                            <p>{review.review_text}</p>
+                            <>
+
+                                <p>{review.review_text}</p>
+                            </>
                         )}
                         {review.user_id === userId && editingReviewId !== review.id && (
-                            <>
+                            <div className='margin-t-8'>
                                 <button className='btn btn-small' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
                                     Edit
                                 </button>
                                 <button className='btn btn-small btn-x btn-gap' onClick={() => handleReviewDelete(review.id)}>x</button>
 
-                            </>
+                            </div>
                         )}
                     </div>
                 ))
