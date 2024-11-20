@@ -372,6 +372,10 @@ ul {
   align-items: flex-end;
 }
 
+.flex-gap-16 {
+  gap: 16px;
+}
+
 .flex-gap-24 {
   gap: 24px;
 }
