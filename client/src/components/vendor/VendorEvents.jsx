@@ -9,17 +9,21 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
     console.log()
 
     useEffect(() => {
-        setNewEvent((prevEvent) => ({
-            ...prevEvent,
-            vendor_id: vendorUserData.id,
-        }));
-    }, [vendorUserData.id]);
+        if (vendorUserData && vendorUserData.id) {
+            setNewEvent((prevEvent) => ({
+                ...prevEvent,
+                vendor_id: vendorUserData.id,
+            }));
+        }
+    }, [vendorUserData]);
 
     const handleInputEventChange = (event) => {
-        setNewEvent({
-            ...newEvent,
-            [event.target.name]: event.target.value,
-        });
+        const { name, value } = event.target;
+        setNewEvent((prevEvent) => ({
+            ...prevEvent,
+            [name]: value,
+            vendor_id: prevEvent.vendor_id, // Ensure vendor_id is not overwritten
+        }));
     };
 
     const handleEditInputChange = (event) => {
