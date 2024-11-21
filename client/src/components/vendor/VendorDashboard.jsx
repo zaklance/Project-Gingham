@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import BasketCard from './BasketCard';
+import VendorBasketCard from './VendorBasketCard';
 import VendorCreate from './VendorCreate';
 import VendorNotification from './VendorNotification';
 
@@ -242,9 +242,9 @@ function VendorDashboard( {vendorId, marketId}) {
                     <p>Edits can be made until 9AM the day of the market unless basket has already been claimed by customer</p>
                     <br/>
                     <div className='market-cards-container'>
-                        <BasketCard vendorId={vendorId}/>
-                        <BasketCard />
-                        <BasketCard />
+                        <VendorBasketCard vendorId={vendorId}/>
+                        <VendorBasketCard />
+                        <VendorBasketCard />
                     </div>
                 </div>
             )}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 // import InputMask from 'react-input-mask';
 import '../../assets/css/index.css';
 
-function BasketCard({ vendorId = 2, initialMarketId }) {
+function VendorBasketCard({ vendorId = 2, initialMarketId }) {
     const [startTime, setStartTime] = useState('');
     const [amPm, setAmPm] = useState('PM');
     const [isSaved, setIsSaved] = useState(false);
@@ -157,4 +157,4 @@ function BasketCard({ vendorId = 2, initialMarketId }) {
     );
 }
 
-export default BasketCard;
+export default VendorBasketCard;
