@@ -5,7 +5,7 @@ function AdminLogout () {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/admin/logout', {
+        fetch('http://127.0.0.1:5555/api/admin/logout', {
             method: 'DELETE',
             credentials: 'include'
         })

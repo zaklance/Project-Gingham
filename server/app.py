@@ -66,7 +66,7 @@ def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
     temp_output.seek(0)
     return Image.open(temp_output)
 
-@app.route('/upload', methods=['POST'])
+@app.route('/api/api/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
         return {'error': 'No file part in the request'}, 400
@@ -125,7 +125,7 @@ def upload_file():
 
     return {'error': 'File type not allowed'}, 400
 
-@app.route('/images/<filename>', methods=['GET'])
+@app.route('/api/images/<filename>', methods=['GET'])
 def serve_image(filename):
     try:
         if os.path.exists(os.path.join(VENDOR_UPLOAD_FOLDER, filename)):
@@ -169,11 +169,11 @@ def missing_token_callback(error):
     }), 401
 
 # User Portal
-@app.route('/', methods=['GET'])
+@app.route('/api/', methods=['GET'])
 def homepage():
     return {"message": "Welcome to the homepage!"}, 200
 
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
     user = User.query.filter(User.email == data['email']).first()
@@ -187,7 +187,7 @@ def login():
     
     return jsonify(access_token=access_token, user_id=user.id), 200
 
-@app.route('/signup', methods=['POST'])
+@app.route('/api/signup', methods=['POST'])
 def signup():
     data = request.get_json()
 
@@ -224,12 +224,12 @@ def signup():
     except Exception as e:
         return {'error': f'Exception: {str(e)}'}, 500
 
-@app.route('/logout', methods=['DELETE'])
+@app.route('/api/logout', methods=['DELETE'])
 def logout():
     session.pop('user_id', None)
     return {}, 204
 
-@app.route('/check_user_session', methods=['GET'])
+@app.route('/api/check_user_session', methods=['GET'])
 @jwt_required()
 def check_user_session():
     if not check_role('user'):
@@ -243,7 +243,7 @@ def check_user_session():
 
     return user.to_dict(), 200
 
-@app.route('/check-vendor-session', methods=['GET'])
+@app.route('/api/check-vendor-session', methods=['GET'])
 @jwt_required()
 def check_vendor_session():
     if not check_role('vendor'):
@@ -257,7 +257,7 @@ def check_vendor_session():
 
     return vendor_user.to_dict(), 200
 
-@app.route('/check_admin_session', methods=['GET'])
+@app.route('/api/check_admin_session', methods=['GET'])
 @jwt_required()
 def check_admin_session():
     if not check_role('admin'):
@@ -271,7 +271,7 @@ def check_admin_session():
 
     return admin_user.to_dict(), 200
 
-@app.route('/markets', methods=['GET', 'POST'])
+@app.route('/api/markets', methods=['GET', 'POST'])
 def all_markets():
     if request.method == 'GET':
         markets = Market.query.all()
@@ -299,7 +299,7 @@ def all_markets():
         db.session.commit()
         return new_market.to_dict(), 201
 
-@app.route('/markets/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@app.route('/api/markets/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def market_by_id(id):
     market = Market.query.filter(Market.id == id).first()
     if not market:
@@ -338,7 +338,7 @@ def market_by_id(id):
         db.session.commit()
         return {}, 204
 
-@app.route('/market-days', methods=['GET', 'POST'])
+@app.route('/api/market-days', methods=['GET', 'POST'])
 def all_market_days():
     if request.method == 'GET':
         market_days = MarketDay.query.all()
@@ -360,7 +360,7 @@ def all_market_days():
         db.session.commit()
         return jsonify(new_market_day.to_dict()), 201
 
-@app.route('/market-days/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@app.route('/api/market-days/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def market_day_by_id(id):
     market_day = MarketDay.query.filter(MarketDay.id == id).first()
     if not market_day:
@@ -388,7 +388,7 @@ def market_day_by_id(id):
         db.session.commit()
         return {}, 204
     
-@app.route('/vendors', methods=['GET', 'POST', 'PATCH'])
+@app.route('/api/vendors', methods=['GET', 'POST', 'PATCH'])
 def all_vendors():
     if request.method == 'GET':
         vendors = Vendor.query.all()
@@ -438,7 +438,7 @@ def all_vendors():
             db.session.rollback()
             return {'error': f'Exception: {str(e)}'}, 500
 
-@app.route('/vendors/<int:id>', methods=['GET', 'PATCH'])
+@app.route('/api/vendors/<int:id>', methods=['GET', 'PATCH'])
 def vendor_by_id(id):
     if request.method == 'GET':
         vendor = Vendor.query.filter_by(id=id).first()
@@ -474,7 +474,7 @@ def vendor_by_id(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route('/vendors/<int:vendor_id>/image', methods=['GET'])
+@app.route('/api/vendors/<int:vendor_id>/image', methods=['GET'])
 def get_vendor_image(vendor_id):
     vendor = Vendor.query.get(vendor_id)
     if vendor and vendor.image:
@@ -484,7 +484,7 @@ def get_vendor_image(vendor_id):
             return {'error': 'Image not found'}, 404
     return {'error': 'Vendor or image not found'}, 404
 
-@app.route('/users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
+@app.route('/api/users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
 @jwt_required()
 def profile(id):
     
@@ -555,7 +555,7 @@ def profile(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route('/market-reviews', methods=['GET', 'POST', 'DELETE'])
+@app.route('/api/market-reviews', methods=['GET', 'POST', 'DELETE'])
 def all_market_reviews():
     if request.method == 'GET':
         market_id = request.args.get('market_id')
@@ -576,7 +576,7 @@ def all_market_reviews():
         return new_review.to_dict(), 201
     
 
-@app.route('/market-reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@app.route('/api/market-reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def market_review_by_id(id):
     review = MarketReview.query.filter(MarketReview.id == id).first()
     if not review:
@@ -594,7 +594,7 @@ def market_review_by_id(id):
         db.session.commit()
         return {}, 204
 
-@app.route('/vendor-reviews', methods=['GET', 'POST'])
+@app.route('/api/vendor-reviews', methods=['GET', 'POST'])
 def all_vendor_reviews():
     if request.method == 'GET':
         vendor_id = request.args.get('vendor_id')
@@ -615,7 +615,7 @@ def all_vendor_reviews():
         db.session.commit()
         return new_review.to_dict(), 201
 
-@app.route('/vendor-reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@app.route('/api/vendor-reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def vendor_review_by_id(id):
     review = VendorReview.query.filter(VendorReview.id == id).first()
     if not review:
@@ -633,7 +633,7 @@ def vendor_review_by_id(id):
         db.session.commit()
         return {}, 204
 
-@app.route('/market-favorites', methods=['GET', 'POST'])
+@app.route('/api/market-favorites', methods=['GET', 'POST'])
 def all_market_favorites():
     if request.method == 'GET':
         marketFavorites = MarketFavorite.query.all()
@@ -649,7 +649,7 @@ def all_market_favorites():
         db.session.commit()
         return new_market_favorite.to_dict(), 201
     
-@app.route('/market-favorites/<int:id>', methods=['GET', 'DELETE'])
+@app.route('/api/market-favorites/<int:id>', methods=['GET', 'DELETE'])
 def del_market_fav(id):
     marketFav = MarketFavorite.query.filter(MarketFavorite.id == id).first()
     if not marketFav:
@@ -661,7 +661,7 @@ def del_market_fav(id):
         db.session.commit()
         return {}, 204
 
-@app.route('/vendor-favorites', methods=['GET', 'POST'])
+@app.route('/api/vendor-favorites', methods=['GET', 'POST'])
 def all_vendor_favorites():
     if request.method == 'GET':
         vendorFavorites = VendorFavorite.query.all()
@@ -677,7 +677,7 @@ def all_vendor_favorites():
         db.session.commit()
         return new_vendor_favorite.to_dict(), 201
     
-@app.route('/vendor-favorites/<int:id>', methods=['GET', 'DELETE'])
+@app.route('/api/vendor-favorites/<int:id>', methods=['GET', 'DELETE'])
 def del_vendor_fav(id):
     vendorFav = VendorFavorite.query.filter(VendorFavorite.id == id).first()
     if request.method == 'GET':
@@ -704,7 +704,7 @@ def get_vendor_markets():
     return jsonify([vendor_market.to_dict() for vendor_market in vendor_markets]), 200
 
 # VENDOR PORTAL
-@app.route('/vendor/login', methods=['POST'])
+@app.route('/api/vendor/login', methods=['POST'])
 def vendorLogin():
     data = request.get_json()
     vendorUser = VendorUser.query.filter(VendorUser.email == data['email']).first()
@@ -718,7 +718,7 @@ def vendorLogin():
 
     return jsonify(access_token=access_token, vendor_user_id=vendorUser.id), 200
 
-@app.route('/vendor-signup', methods=['POST'])
+@app.route('/api/vendor-signup', methods=['POST'])
 def vendorSignup():
     data = request.get_json()
 
@@ -750,7 +750,7 @@ def vendorSignup():
     except Exception as e:
         return {'error': f'Exception: {str(e)}'}, 500
     
-@app.route('/vendor/logout', methods=['DELETE'])
+@app.route('/api/vendor/logout', methods=['DELETE'])
 def vendorLogout():
     session.pop('vendor_user_id', None)
     return {}, 204
@@ -779,7 +779,7 @@ def get_vendor_users():
     except Exception as e:
         return {'error': f'Exception: {str(e)}'}, 500
     
-@app.route('/vendor-users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
+@app.route('/api/vendor-users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
 @jwt_required()
 def vendorProfile(id):
     if not check_role('vendor'):
@@ -977,7 +977,7 @@ def handle_vendor_vendor_users():
             db.session.rollback()
             return {'error': f'Exception: {str(e)}'}, 500
 
-@app.route('/events', methods=['GET', 'POST'])
+@app.route('/api/events', methods=['GET', 'POST'])
 def all_events():
     if request.method == 'GET':
         events = Event.query.all()
@@ -1006,7 +1006,7 @@ def all_events():
         db.session.commit()
         return new_event.to_dict(), 201
 
-@app.route('/events/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@app.route('/api/events/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def event_by_id(id):
     event = Event.query.filter(Event.id == id).first()
     if not event:
@@ -1181,7 +1181,7 @@ def handle_basket_by_id(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route('/baskets/user-sales-history', methods=['GET'])
+@app.route('/api/baskets/user-sales-history', methods=['GET'])
 @jwt_required()
 def get_user_sales_history():
     current_user_id = get_jwt_identity()
@@ -1212,7 +1212,7 @@ def get_user_sales_history():
         return {'error': f"Exception: {str(e)}"}, 500
 
 # ADMIN PORTAL
-@app.route('/admin/login', methods=['POST'])
+@app.route('/api/admin/login', methods=['POST'])
 def adminLogin():
     data = request.get_json()
     adminUser = AdminUser.query.filter(AdminUser.email == data['email']).first()
@@ -1226,7 +1226,7 @@ def adminLogin():
 
     return jsonify(access_token=access_token, admin_user_id=adminUser.id), 200
 
-@app.route('/admin-signup', methods=['POST'])
+@app.route('/api/admin-signup', methods=['POST'])
 def adminSignup():
     data = request.get_json()
 
@@ -1258,7 +1258,7 @@ def adminSignup():
     except Exception as e:
         return {'error': f'Exception: {str(e)}'}, 500
     
-@app.route('/admin/logout', methods=['DELETE'])
+@app.route('/api/admin/logout', methods=['DELETE'])
 def adminLogout():
     session.pop('admin_user_id', None)
     return {}, 204
@@ -1301,7 +1301,7 @@ def handle_admin_users():
             db.session.rollback()
             return {'error': f'Exception: {str(e)}'}, 500
     
-@app.route('/admin-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@app.route('/api/admin-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def handle_admin_user_by_id(id):
     admin_user = AdminUser.query.filter_by(id=id).first()
 
@@ -1338,7 +1338,7 @@ def handle_admin_user_by_id(id):
 
 
 # Email Form
-@app.route('/contact', methods=['POST'])
+@app.route('/api/contact', methods=['POST'])
 def contact(): 
     data = request.get_json()
     print("received data:", data)
@@ -1382,7 +1382,7 @@ def contact():
 # Stripe
 stripe.api_key = os.getenv('STRIPE_PY_KEY')
 
-@app.route('/create-checkout-session', methods=['POST'])
+@app.route('/api/create-checkout-session', methods=['POST'])
 def create_checkout_session():
     try:
         session = stripe.checkout.Session.create(
@@ -1401,13 +1401,13 @@ def create_checkout_session():
         return str(e)
     return jsonify(clientSecret=session.client_secret)
 
-@app.route('/session-status', methods=['GET'])
+@app.route('/api/session-status', methods=['GET'])
 def session_status():
   session = stripe.checkout.Session.retrieve(request.args.get('session_id'))
   return jsonify(status=session.status, customer_email=session.customer_details.email)
 
 # Password reset for User
-@app.route('/user/password-reset-request', methods=['POST'])
+@app.route('/api/user/password-reset-request', methods=['POST'])
 def password_reset_request():
     data = request.get_json()
     email = data.get('email')
@@ -1448,7 +1448,7 @@ def password_reset_request():
     except Exception as e:
         return {'error': f'Failed to send email: {str(e)}'}, 500
 
-@app.route('/user/password-reset/<token>', methods=['GET', 'POST'])
+@app.route('/api/user/password-reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
     if request.method == 'GET':
         print(f"GET request: Received token: {token}")
@@ -1496,7 +1496,7 @@ def password_reset(token):
             return {'error': f'Failed to reset password: {str(e)}'}, 500
 
 # Password reset for VendorUser
-@app.route('/vendor/password-reset-request', methods=['POST'])
+@app.route('/api/vendor/password-reset-request', methods=['POST'])
 def vendor_password_reset_request():
     data = request.get_json()
     email = data.get('email')
@@ -1532,7 +1532,7 @@ def vendor_password_reset_request():
     except Exception as e:
         return {'error': f'Failed to send email: {str(e)}'}, 500
 
-@app.route('/vendor/password-reset/<token>', methods=['GET', 'POST'])
+@app.route('/api/vendor/password-reset/<token>', methods=['GET', 'POST'])
 def vendor_password_reset(token):
     if request.method == 'GET':
         return redirect(f'http://localhost:5173/vendor/password-reset/{token}')
@@ -1562,7 +1562,7 @@ def vendor_password_reset(token):
             return {'error': f'Failed to reset password: {str(e)}'}, 500
 
 # Password reset for AdminUser
-@app.route('/admin/password-reset-request', methods=['POST'])
+@app.route('/api/admin/password-reset-request', methods=['POST'])
 def admin_password_reset_request():
     data = request.get_json()
     email = data.get('email')
@@ -1599,7 +1599,7 @@ def admin_password_reset_request():
         return {'error': f'Failed to send email: {str(e)}'}, 500
 
 
-@app.route('/admin/password-reset/<token>', methods=['GET', 'POST'])
+@app.route('/api/admin/password-reset/<token>', methods=['GET', 'POST'])
 def admin_password_reset(token):
     if request.method == 'GET':
         return redirect(f'http://localhost:5173/admin/password-reset/{token}')
@@ -1628,7 +1628,7 @@ def admin_password_reset(token):
         except Exception as e:
             return {'error': f'Failed to reset password: {str(e)}'}, 500
     
-@app.route('/create-notification', methods=['POST'])
+@app.route('/api/create-notification', methods=['POST'])
 def create_notification():
     data = request.get_json()
 
@@ -1652,7 +1652,7 @@ def create_notification():
         print(f"Error creating notification: {str(e)}")
         return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
 
-@app.route('/vendor-notifications/<int:vendor_id>', methods=['GET'])
+@app.route('/api/vendor-notifications/<int:vendor_id>', methods=['GET'])
 def get_vendor_notifications(vendor_id):
     notifications = VendorNotification.query.filter_by(vendor_id=vendor_id).all()
 
@@ -1663,7 +1663,7 @@ def get_vendor_notifications(vendor_id):
 
     return jsonify({'notifications': notifications_data})
 
-@app.route('/vendor-notifications/<int:notification_id>/approve', methods=['POST'])
+@app.route('/api/vendor-notifications/<int:notification_id>/approve', methods=['POST'])
 def approve_notification(notification_id):
     data = request.get_json()
     is_admin = data.get('is_admin')
@@ -1692,7 +1692,7 @@ def approve_notification(notification_id):
 
     return jsonify({'message': 'Notification approved and user updated successfully'}), 200
 
-@app.route('/vendor-notifications/<int:notification_id>/reject', methods=['DELETE'])
+@app.route('/api/vendor-notifications/<int:notification_id>/reject', methods=['DELETE'])
 def reject_notification(notification_id):
     notification = VendorNotification.query.get(notification_id)
     if not notification:

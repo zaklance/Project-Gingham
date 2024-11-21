@@ -53,7 +53,7 @@ function MarketDetail ({ match }) {
     }
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/markets/${id}`)
+        fetch(`http://127.0.0.1:5555/api/markets/${id}`)
             .then(response => response.json())
             .then(data => {
                 setMarket(data);
@@ -62,7 +62,7 @@ function MarketDetail ({ match }) {
     }, [id]);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/market-days")
+        fetch("http://127.0.0.1:5555/api/market-days")
             .then(response => response.json())
             .then(data => {
                 setAllMarketDays(data)       
@@ -92,7 +92,7 @@ function MarketDetail ({ match }) {
     };
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/vendor-markets`)
+        fetch(`http://127.0.0.1:5555/api/vendor-markets`)
             .then(response => response.json())
             .then(vendors => {
                 if (Array.isArray(vendors)) {
@@ -112,7 +112,7 @@ function MarketDetail ({ match }) {
     useEffect(() => {
         const fetchAllVendors = async () => {
             try {
-                const response = await fetch("http://127.0.0.1:5555/vendors");
+                const response = await fetch("http://127.0.0.1:5555/api/vendors");
                 if (!response.ok) throw new Error("Failed to fetch vendors");
                 const data = await response.json();
                 setAllVendorDetails(data); // Store all fetched vendors
@@ -155,7 +155,7 @@ function MarketDetail ({ match }) {
     const uniqueFilteredVendorsList = [...new Set(filteredVendorsList)];
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/market-reviews?market_id=${id}`)
+        fetch(`http://127.0.0.1:5555/api/market-reviews?market_id=${id}`)
             .then(response => response.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -193,7 +193,7 @@ function MarketDetail ({ match }) {
     };
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/market-favorites")
+        fetch("http://127.0.0.1:5555/api/market-favorites")
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
@@ -206,7 +206,7 @@ function MarketDetail ({ match }) {
         if (globalThis.sessionStorage.getItem('user_id') !== null) {
             setIsClicked((isClick) => !isClick);
             if (isClicked == false) {
-                const response = await fetch('http://127.0.0.1:5555/market-favorites', {
+                const response = await fetch('http://127.0.0.1:5555/api/market-favorites', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -225,7 +225,7 @@ function MarketDetail ({ match }) {
             } else {
                 const findMarketFavId = marketFavs.filter(item => item.market_id == market.id)
                 for (const item of findMarketFavId) {
-                    fetch(`http://127.0.0.1:5555/market-favorites/${item.id}`, {
+                    fetch(`http://127.0.0.1:5555/api/market-favorites/${item.id}`, {
                         method: "DELETE",
                     }).then(() => {
                         setMarketFavs((favs) => favs.filter((fav) => fav.market_id !== market.id));
@@ -267,7 +267,7 @@ function MarketDetail ({ match }) {
         }
 
         try {
-            const response = await fetch(`http://127.0.0.1:5555/market-reviews`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/market-reviews`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -295,7 +295,7 @@ function MarketDetail ({ match }) {
 
     const handleReviewUpdate = async (reviewId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/market-reviews/${reviewId}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/market-reviews/${reviewId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ review_text: editedReviewData })
@@ -316,7 +316,7 @@ function MarketDetail ({ match }) {
     const handleReviewDelete = async (reviewId) => {
         try { 
         
-            fetch(`http://127.0.0.1:5555/market-reviews/${reviewId}`, {
+            fetch(`http://127.0.0.1:5555/api/market-reviews/${reviewId}`, {
                 method: "DELETE",
             }).then(() => {
                 setAlertMessage('Review deleted');
@@ -329,7 +329,7 @@ function MarketDetail ({ match }) {
 
     const handleReviewReport = async (reviewId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/market-reviews/${reviewId}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/market-reviews/${reviewId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ is_reported: true })
@@ -358,7 +358,7 @@ function MarketDetail ({ match }) {
     }, [vendorMarkets, selectedDay]);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/events")
+        fetch("http://127.0.0.1:5555/api/events")
             .then(response => response.json())
             .then(data => {
                 const today = new Date();
@@ -407,16 +407,16 @@ function MarketDetail ({ match }) {
                     {events.length > 0 ? (
                         events.map((event, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                                <div className='flex-start flex-center-align flex-gap-16'>
-                                    <p className='text-italic nowrap'>
-                                        {event.start_date}
-                                        {event.end_date !== event.start_date && ` - `}
-                                        <br></br>
-                                        {event.end_date !== event.start_date && `${event.end_date}`}
-                                    </p>
-                                    <h3 className='nowrap'>{event.title ? event.title : 'Loading...'}:</h3>
-                                    <p>{event.message}</p>
-                                </div>
+                                    <div className='flex-start flex-center-align flex-gap-16'>
+                                        <p className='text-italic nowrap'>
+                                            {event.start_date}
+                                            {event.end_date !== event.start_date && ` - `}
+                                            <br></br>
+                                            {event.end_date !== event.start_date && `${event.end_date}`}
+                                        </p>
+                                        <h3 className='nowrap'>{event.title ? event.title : 'Loading...'}:</h3>
+                                        <p>{event.message}</p>
+                                    </div>
                             </div>
                         ))
                     ) : (

@@ -12,7 +12,7 @@ function BasketSales() {
             return;
         }
 
-        fetch('http://127.0.0.1:5555/baskets/user-sales-history', {
+        fetch('http://127.0.0.1:5555/api/baskets/user-sales-history', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,

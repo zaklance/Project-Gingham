@@ -29,7 +29,7 @@ function VendorCreate () {
     ];
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/vendors")
+        fetch("http://127.0.0.1:5555/api/vendors")
             .then((response) => {
                 if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -63,7 +63,7 @@ function VendorCreate () {
     
             try {
                 const token = sessionStorage.getItem('jwt-token');
-                const response = await fetch(`http://127.0.0.1:5555/vendor-users/${id}`, {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -147,7 +147,7 @@ function VendorCreate () {
         };
 
         try {
-            const vendorResponse = await fetch('http://127.0.0.1:5555/vendors', {
+            const vendorResponse = await fetch('http://127.0.0.1:5555/api/vendors', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -183,7 +183,7 @@ function VendorCreate () {
                 return;
             }
     
-            const userResponse = await fetch(`http://127.0.0.1:5555/vendor-users/${vendorUserData.id}`, {
+            const userResponse = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserData.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -226,7 +226,7 @@ function VendorCreate () {
         }
     
         try {
-            const response = await fetch('http://127.0.0.1:5555/create-notification', {
+            const response = await fetch('http://127.0.0.1:5555/api/create-notification', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,

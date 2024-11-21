@@ -41,7 +41,7 @@ function AdminMarkets () {
     }
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/markets")
+        fetch("http://127.0.0.1:5555/api/markets")
             .then(response => response.json())
             .then(markets => setMarkets(markets))
             .catch(error => console.error('Error fetching markets', error));

@@ -44,7 +44,7 @@ function Profile({ marketData }) {
         const fetchProfileData = async () => {
             try {
                 const token = sessionStorage.getItem('jwt-token');
-                const response = await fetch(`http://127.0.0.1:5555/users/${id}`, {
+                const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -96,7 +96,7 @@ function Profile({ marketData }) {
     const handleSaveChanges = async () => {
         try {
             const token = sessionStorage.getItem('jwt-token');
-            const response = await fetch(`http://127.0.0.1:5555/users/${id}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -123,7 +123,7 @@ function Profile({ marketData }) {
     };
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/vendor-favorites")
+        fetch("http://127.0.0.1:5555/api/vendor-favorites")
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
@@ -133,7 +133,7 @@ function Profile({ marketData }) {
     }, []);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/market-favorites")
+        fetch("http://127.0.0.1:5555/api/market-favorites")
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));

@@ -46,7 +46,7 @@ function VendorDetail () {
     }
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/vendors/${id}`)
+        fetch(`http://127.0.0.1:5555/api/vendors/${id}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -60,7 +60,7 @@ function VendorDetail () {
     }, [id]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/vendor-markets?vendor_id=${id}`)
+        fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${id}`)
             .then(response => response.json())
             .then(markets => {
                 if (Array.isArray(markets)) {
@@ -81,7 +81,7 @@ function VendorDetail () {
     
             const details = await Promise.all(markets.map(async (marketId) => {
                 try {
-                    const response = await fetch(`http://127.0.0.1:5555/market-days/${marketId}`);
+                    const response = await fetch(`http://127.0.0.1:5555/api/market-days/${marketId}`);
                     if (!response.ok) throw new Error(`Failed to fetch market ${marketId}`);
                     return await response.json();
                 } catch (error) {
@@ -101,7 +101,7 @@ function VendorDetail () {
     }, [markets]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/vendor-reviews?vendor_id=${id}`)
+        fetch(`http://127.0.0.1:5555/api/vendor-reviews?vendor_id=${id}`)
             .then(response => response.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -143,7 +143,7 @@ function VendorDetail () {
     // };
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/vendor-favorites")
+        fetch("http://127.0.0.1:5555/api/vendor-favorites")
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
@@ -159,7 +159,7 @@ function VendorDetail () {
     }, [vendor, vendorFavs]);
     
     // useEffect(() => {
-    //     fetch("http://127.0.0.1:5555/vendor-favorites")
+    //     fetch("http://127.0.0.1:5555/api/vendor-favorites")
     //         .then(response => response.json())
     //         .then(data => {
     //             const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
@@ -172,7 +172,7 @@ function VendorDetail () {
         if (globalThis.sessionStorage.getItem('user_id') !== null) {
             setIsClicked((isClick) => !isClick);
             if (isClicked == false) {
-                const response = await fetch('http://127.0.0.1:5555/vendor-favorites', {
+                const response = await fetch('http://127.0.0.1:5555/api/vendor-favorites', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -191,7 +191,7 @@ function VendorDetail () {
             } else {
                 const findVendorFavId = vendorFavs.filter(item => item.vendor_id == vendor.id)
                 for (const item of findVendorFavId) {
-                    fetch(`http://127.0.0.1:5555/vendor-favorites/${item.id}`, {
+                    fetch(`http://127.0.0.1:5555/api/vendor-favorites/${item.id}`, {
                         method: "DELETE",
                     }).then(() => {
                         setVendorFavs((favs) => favs.filter((fav) => fav.vendor_id !== vendor.id));
@@ -240,7 +240,7 @@ function VendorDetail () {
         }
 
         try {
-            const response = await fetch(`http://127.0.0.1:5555/vendor-reviews`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -268,7 +268,7 @@ function VendorDetail () {
 
     const handleReviewUpdate = async (reviewId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/vendor-reviews/${reviewId}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ review_text: editedReviewData })
@@ -289,7 +289,7 @@ function VendorDetail () {
     const handleReviewDelete = async (reviewId) => {
         try {
 
-            fetch(`http://127.0.0.1:5555/vendor-reviews/${reviewId}`, {
+            fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
                 method: "DELETE",
             }).then(() => {
                 setAlertMessage('Review deleted');
@@ -301,7 +301,7 @@ function VendorDetail () {
     }
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/events")
+        fetch("http://127.0.0.1:5555/api/events")
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item => item.vendor_id === Number(id));

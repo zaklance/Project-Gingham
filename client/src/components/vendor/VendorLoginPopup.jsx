@@ -18,7 +18,7 @@ function VendorLogin({ handlePopup }) {
         const lowercaseEmail = loginEmail.toLowerCase();
     
         try {
-            const response = await fetch('http://127.0.0.1:5555/vendor/login', {
+            const response = await fetch('http://127.0.0.1:5555/api/vendor/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -51,7 +51,7 @@ function VendorLogin({ handlePopup }) {
     const handleSignup = async (event) => {
         event.preventDefault();
         try {
-            const response = await fetch('http://127.0.0.1:5555/vendor-signup', {
+            const response = await fetch('http://127.0.0.1:5555/api/vendor-signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

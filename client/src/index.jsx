@@ -54,7 +54,7 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_JS_KEY)
 const CheckoutForm = () => {
     const fetchClientSecret = useCallback(() => {
         // Create a Checkout Session
-        return fetch("http://127.0.0.1:5555/create-checkout-session", {
+        return fetch("http://127.0.0.1:5555/api/create-checkout-session", {
             method: "POST",
         })
             .then((res) => res.json())

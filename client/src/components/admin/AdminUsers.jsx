@@ -8,7 +8,7 @@ function AdminUsers() {
 
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/market-reviews")
+        fetch("http://127.0.0.1:5555/api/market-reviews")
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item => item.is_reported === true);
@@ -20,7 +20,7 @@ function AdminUsers() {
     const handleMarketReviewDelete = async (reviewId) => {
         try {
 
-            fetch(`http://127.0.0.1:5555/market-reviews/${reviewId}`, {
+            fetch(`http://127.0.0.1:5555/api/market-reviews/${reviewId}`, {
                 method: "DELETE",
             }).then(() => {
                 setMarketReported((prevReviews) => prevReviews.filter((review) => review.id !== reviewId))
@@ -32,7 +32,7 @@ function AdminUsers() {
 
     const handleMarketReviewReport = async (reviewId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/market-reviews/${reviewId}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/market-reviews/${reviewId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ is_reported: false })
@@ -48,7 +48,7 @@ function AdminUsers() {
     };
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/vendor-reviews")
+        fetch("http://127.0.0.1:5555/api/vendor-reviews")
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item => item.is_reported === true);
@@ -60,7 +60,7 @@ function AdminUsers() {
     const handleVendorReviewDelete = async (reviewId) => {
         try {
 
-            fetch(`http://127.0.0.1:5555/vendor-reviews/${reviewId}`, {
+            fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
                 method: "DELETE",
             }).then(() => {
                 setVendorReported((prevReviews) => prevReviews.filter((review) => review.id !== reviewId))
@@ -72,7 +72,7 @@ function AdminUsers() {
 
     const handleVendorReviewReport = async (reviewId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/vendor-reviews/${reviewId}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ is_reported: false })

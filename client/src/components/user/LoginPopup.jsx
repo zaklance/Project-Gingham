@@ -30,7 +30,7 @@ function Login({ handlePopup }) {
         event.preventDefault();
     
         try {
-            const response = await fetch('http://127.0.0.1:5555/login', {
+            const response = await fetch('http://127.0.0.1:5555/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -66,7 +66,7 @@ function Login({ handlePopup }) {
 
     const handleSignup = async (event) => {
         event.preventDefault();
-        const response = await fetch('http://127.0.0.1:5555/signup', {
+        const response = await fetch('http://127.0.0.1:5555/api/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

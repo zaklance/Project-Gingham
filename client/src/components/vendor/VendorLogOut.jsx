@@ -5,7 +5,7 @@ function VendorLogout () {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/vendor/logout', {
+        fetch('http://127.0.0.1:5555/api/vendor/logout', {
             method: 'DELETE',
             credentials: 'include'
         })

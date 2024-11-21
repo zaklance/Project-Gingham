@@ -12,7 +12,7 @@ function Vendors() {
     ];
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/vendors")
+        fetch("http://127.0.0.1:5555/api/vendors")
         .then(response => response.json())
         .then(data => setVendor(data))
     }, []);
