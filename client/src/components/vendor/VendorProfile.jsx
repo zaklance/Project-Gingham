@@ -530,7 +530,7 @@ function VendorProfile () {
                                                 </tr>
                                                 <tr>
                                                     <td className='cell-title'>Image:</td>
-                                                        <td className='cell-text'>{vendorData ? <img src={vendorImageURL} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
+                                                        <td className='cell-text'>{vendorData ? <img src={`/vendor-images/${vendorData.image}`} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

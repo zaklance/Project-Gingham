@@ -52,7 +52,7 @@ function VendorDashboard({ vendorId, marketId }) {
             } catch (error) {
                 console.error('Error fetching profile data:', error);
             } finally {
-                setLoading(false);
+                // setLoading(false);
             }
         };
         fetchVendorUserData();
@@ -90,7 +90,7 @@ function VendorDashboard({ vendorId, marketId }) {
                 console.error('Error fetching notifications:', error);
                 setNotifications([]);
             } finally {
-                setLoading(false);
+                // setLoading(false);
             }
         };
 
