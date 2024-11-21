@@ -687,7 +687,7 @@ def del_vendor_fav(id):
         db.session.commit()
         return {}, 204
     
-@app.route("/vendor-markets", methods=['GET'])
+@app.route('/api/vendor-markets', methods=['GET'])
 def get_vendor_markets():
     vendor_id = request.args.get('vendor_id')
     market_id = request.args.get('market_id')
@@ -755,7 +755,7 @@ def vendorLogout():
     session.pop('vendor_user_id', None)
     return {}, 204
 
-@app.route("/vendor-users", methods=['GET'])
+@app.route('/api/vendor-users', methods=['GET'])
 def get_vendor_users():
     try:
         vendor_id = request.args.get('vendor_id', type=int)
@@ -885,7 +885,7 @@ def vendorProfile(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route("/vendor-vendor-users", methods=['GET', 'POST', 'PATCH', 'DELETE'])
+@app.route('/api/vendor-vendor-users', methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def handle_vendor_vendor_users():
     if request.method == "GET":
         try:
@@ -1036,7 +1036,7 @@ def event_by_id(id):
         return {}, 204
 
         
-@app.route("/baskets", methods=['GET', 'POST', 'PATCH', 'DELETE'])
+@app.route('/api/baskets', methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def handle_baskets():
     if request.method == 'GET':
         try:
@@ -1146,7 +1146,7 @@ def handle_baskets():
             return {'error': str(e)}, 500
 
 
-@app.route("/baskets/<int:id>", methods=['GET', 'PATCH', 'DELETE'])
+@app.route('/api/baskets/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def handle_basket_by_id(id):
     basket = Basket.query.filter_by(id=id).first()
     
@@ -1263,7 +1263,7 @@ def adminLogout():
     session.pop('admin_user_id', None)
     return {}, 204
 
-@app.route("/admin-users", methods=['GET', 'POST'])
+@app.route('/api/admin-users', methods=['GET', 'POST'])
 @jwt_required()
 def handle_admin_users():
     
