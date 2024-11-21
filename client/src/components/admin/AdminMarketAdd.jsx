@@ -16,7 +16,7 @@ function AdminMarketAdd({ markets, weekdayReverse }) {
     const matchingMarketId = matchingMarket ? matchingMarket.id : null;
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/market-days")
+        fetch("http://127.0.0.1:5555/market-days")
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item => item.market_id === matchingMarketId);
@@ -50,7 +50,7 @@ function AdminMarketAdd({ markets, weekdayReverse }) {
             }
 
             // Save market details first
-            const response = await fetch(`http://127.0.0.1:5555/api/markets`, {
+            const response = await fetch(`http://127.0.0.1:5555/markets`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -84,7 +84,7 @@ function AdminMarketAdd({ markets, weekdayReverse }) {
         formData.append('market_id', marketId);
 
         try {
-            const response = await fetch('http://127.0.0.1:5555/api/upload', {
+            const response = await fetch('http://127.0.0.1:5555/upload', {
                 method: 'POST',
                 body: formData,
             });
@@ -102,7 +102,7 @@ function AdminMarketAdd({ markets, weekdayReverse }) {
 
     const handleSaveMarketDay = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/market-days`, {
+            const response = await fetch(`http://127.0.0.1:5555/market-days`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -250,7 +250,7 @@ function AdminMarketAdd({ markets, weekdayReverse }) {
                 </div>
                 <div>
                     <h2>Add Market Day</h2>
-                    <table className='margin-t-24'>
+                    <table className='margin-t-24 margin-b-16'>
                         <tbody>
                             <tr>
                                 <td className='cell-title'>Search:</td>

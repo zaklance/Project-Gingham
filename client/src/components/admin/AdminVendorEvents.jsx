@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function AdminMarketEvents({ markets }) {
+function AdminVendorEvents({ vendors }) {
     const [newEvent, setNewEvent] = useState({});
     const [query, setQuery] = useState("");
     const [events, setEvents] = useState([]);
@@ -9,17 +9,17 @@ function AdminMarketEvents({ markets }) {
 
 
     const onUpdateQuery = event => setQuery(event.target.value);
-    const filteredMarkets = markets.filter(market => market.name.toLowerCase().includes(query.toLowerCase()) && market.name !== query)
-    const matchingMarket = markets.find(market => market.name.toLowerCase() === query.toLowerCase());
-    const matchingMarketId = matchingMarket ? matchingMarket.id : null;
+    const filteredVendors = vendors.filter(market => market.name.toLowerCase().includes(query.toLowerCase()) && market.name !== query)
+    const matchinVendor = vendors.find(market => market.name.toLowerCase() === query.toLowerCase());
+    const matchinVendorId = matchinVendor ? matchinVendor.id : null;
 
 
     useEffect(() => {
         setNewEvent((prevEvent) => ({
             ...prevEvent,
-            market_id: matchingMarketId,
+            vendor_id: matchinVendorId,
         }));
-    }, [matchingMarketId]);
+    }, [matchinVendorId]);
 
     const handleInputEventChange = (event) => {
         setNewEvent({
@@ -27,7 +27,7 @@ function AdminMarketEvents({ markets }) {
             [event.target.name]: event.target.value,
         });
     };
-    
+
     const handleEditInputChange = (event) => {
         const { name, value } = event.target;
         setEditedEventData((prev) => ({
@@ -35,11 +35,11 @@ function AdminMarketEvents({ markets }) {
             [name]: value,
         }));
     };
-    
-        const handleEventEditToggle = (eventId, title, message, start_date, end_date) => {
-            setEditingEventId(eventId);
-            setEditedEventData({ title, message, start_date, end_date });
-        };
+
+    const handleEventEditToggle = (eventId, title, message, start_date, end_date) => {
+        setEditingEventId(eventId);
+        setEditedEventData({ title, message, start_date, end_date });
+    };
 
     const handleSaveNewEvent = async () => {
         try {
@@ -80,14 +80,14 @@ function AdminMarketEvents({ markets }) {
                 const filteredData = data.filter(item => {
                     const startDate = new Date(item.start_date);
                     const endDate = new Date(item.end_date);
-                    return item.market_id === Number(matchingMarketId) &&
+                    return item.vendor_id === Number(matchinVendorId) &&
                         // Check if today is within range or start_date is within 7 days from now
                         (today >= startDate && today <= endDate || startDate <= sevenDaysFromNow);
                 });
                 setEvents(filteredData);
             })
             .catch(error => console.error('Error fetching events', error));
-    }, [matchingMarketId]);
+    }, [matchinVendorId]);
 
     const handleEventUpdate = async (eventId) => {
         try {
@@ -113,7 +113,7 @@ function AdminMarketEvents({ markets }) {
             console.error('Error updating event:', error);
         }
     };
-    
+
     const handleEventDelete = async (eventId) => {
         try {
 
@@ -127,20 +127,20 @@ function AdminMarketEvents({ markets }) {
         }
     }
 
-    return(
+    return (
         <>
             <div className='box-bounding'>
-                <h2>Search Markets</h2>
+                <h2>Search Vendors</h2>
                 <table className='margin-t-16'>
                     <tbody>
                         <tr>
                             <td className='cell-title'>Search:</td>
                             <td className='cell-text'>
-                                <input id='search' className="search-bar" type="text" placeholder="Search markets..." value={query} onChange={onUpdateQuery} />
+                                <input id='search' className="search-bar" type="text" placeholder="Search vendors..." value={query} onChange={onUpdateQuery} />
                                 <div className="dropdown-content">
                                     {
                                         query &&
-                                        filteredMarkets.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => setQuery(item.name)}>
+                                        filteredVendors.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => setQuery(item.name)}>
                                             {item.name}
                                         </div>)
                                     }
@@ -151,7 +151,7 @@ function AdminMarketEvents({ markets }) {
                 </table>
             </div>
             <div className='box-bounding'>
-            <h2>Add Events</h2>
+                <h2>Add Events</h2>
                 <div className='margin-t-24'>
                     <div className='form-group'>
                         <label>Title:</label>
@@ -178,9 +178,9 @@ function AdminMarketEvents({ markets }) {
                         <label>Market ID:</label>
                         <input
                             type="text"
-                            name="market_id"
-                            placeholder='Search markets above'
-                            value={matchingMarketId || ''}
+                            name="vendor_id"
+                            placeholder='Search vendors above'
+                            value={matchinVendorId || ''}
                             readOnly
                         />
                     </div>
@@ -293,4 +293,4 @@ function AdminMarketEvents({ markets }) {
         </>
     )
 }
-export default AdminMarketEvents;
+export default AdminVendorEvents;
