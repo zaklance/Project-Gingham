@@ -310,8 +310,6 @@ function VendorDetail () {
             .catch(error => console.error('Error fetching events', error));
     }, []);
 
-    console.log(events)
-
     if (!vendor) {
         return <div>Loading...</div>;
     }
