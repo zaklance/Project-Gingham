@@ -131,7 +131,7 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
                         <input
                             type="text"
                             name="title"
-                            placeholder='Holiday Market'
+                            placeholder='Weekly Special'
                             value={newEvent.title || ''}
                             onChange={handleInputEventChange}
                         />
