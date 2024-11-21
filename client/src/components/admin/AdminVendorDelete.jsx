@@ -18,7 +18,7 @@ function AdminVendorDelete({ vendors }) {
             try {
                 const token = sessionStorage.getItem('jwt-token');
                 // console.log('JWT Token:', token);
-                const response = await fetch(`http://127.0.0.1:5555/vendors/${matchingVendorId}`, {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendors/${matchingVendorId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -48,7 +48,7 @@ function AdminVendorDelete({ vendors }) {
             const token = sessionStorage.getItem('jwt-token');
 
             try {
-                await fetch(`http://127.0.0.1:5555/vendors/${matchingVendorId}`, {
+                await fetch(`http://127.0.0.1:5555/api/vendors/${matchingVendorId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,

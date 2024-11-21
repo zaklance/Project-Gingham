@@ -8,7 +8,7 @@ function AdminResetRequest() {
         event.preventDefault();
 
         try {
-            const response = await fetch('http://127.0.0.1:5555/admin/password-reset-request', {
+            const response = await fetch('http://127.0.0.1:5555/api/admin/password-reset-request', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -24,7 +24,7 @@ function VendorNotification({ vendorId, onDataFetch }) {
                     return;
                 }
 
-                const vendorUserResponse = await fetch(`http://127.0.0.1:5555/vendor-users/${vendorUserId}`, {
+                const vendorUserResponse = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -42,7 +42,7 @@ function VendorNotification({ vendorId, onDataFetch }) {
                     throw new Error("Vendor ID not found in the response");
                 }
 
-                const notificationsResponse = await fetch(`http://127.0.0.1:5555/vendor-notifications/${vendorIdFromApi}`, {
+                const notificationsResponse = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${vendorIdFromApi}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -73,7 +73,7 @@ function VendorNotification({ vendorId, onDataFetch }) {
         const token = localStorage.getItem('authToken');
     
         try {
-            const response = await fetch(`http://127.0.0.1:5555/vendor-notifications/${notificationId}/approve`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${notificationId}/approve`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ function VendorNotification({ vendorId, onDataFetch }) {
     const handleReject = async (notificationId) => {
         const token = localStorage.getItem('authToken');
         try {
-            const response = await fetch(`http://127.0.0.1:5555/vendor-notifications/${notificationId}/reject`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${notificationId}/reject`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,

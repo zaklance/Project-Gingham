@@ -22,7 +22,7 @@ function AdminVendorEdit({ vendors }) {
         try {
             // Save market details first
             console.log('Vendor Data', vendorData)
-            const response = await fetch(`http://127.0.0.1:5555/vendors`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendors`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

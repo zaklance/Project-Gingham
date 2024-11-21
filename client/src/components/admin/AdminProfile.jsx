@@ -22,7 +22,7 @@ function AdminProfile () {
             try {
                 const token = sessionStorage.getItem('jwt-token');
                 // console.log('JWT Token:', token);
-                const response = await fetch(`http://127.0.0.1:5555/admin-users/${id}`, {
+                const response = await fetch(`http://127.0.0.1:5555/api/admin-users/${id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -63,7 +63,7 @@ function AdminProfile () {
 
     const handleSaveChanges = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/admin-users/${id}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/admin-users/${id}`, {
                 method: 'PATCH', 
                 headers: {
                     'Content-Type': 'application/json'

@@ -29,7 +29,7 @@ function VendorDashboard( {vendorId, marketId}) {
 
             try {
                 const token = sessionStorage.getItem('jwt-token');
-                const response = await fetch(`http://127.0.0.1:5555/vendor-users/${vendorUserId}`, {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -70,7 +70,7 @@ function VendorDashboard( {vendorId, marketId}) {
             }
 
             try {
-                const response = await fetch(`http://127.0.0.1:5555/vendor-notifications/${vendorId}`, {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${vendorId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -100,7 +100,7 @@ function VendorDashboard( {vendorId, marketId}) {
     // useEffect(() => {
     //     const fetchVendorData = async () => {
     //         try {
-    //             const response = await fetch(`http://127.0.0.1:5555/vendors/${id}`);
+    //             const response = await fetch(`http://127.0.0.1:5555/api/vendors/${id}`);
     //             if (!response.ok) {
     //                 throw new Error('Network response was not ok');
     //             }
@@ -124,7 +124,7 @@ function VendorDashboard( {vendorId, marketId}) {
     //         const fetchMarketDetails = async () => {
     //             const promises = locations.map(async (marketId) => {
     //                 try {
-    //                     const response = await fetch(`http://127.0.0.1:5555/markets/${marketId}`);
+    //                     const response = await fetch(`http://127.0.0.1:5555/api/markets/${marketId}`);
     //                     if (response.ok) {
     //                         const marketData = await response.json();
     //                         return { 

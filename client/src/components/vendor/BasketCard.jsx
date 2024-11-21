@@ -33,7 +33,7 @@ function BasketCard({ vendorId = 2, initialMarketId }) {
             const promises = [];
 
             for (let i = 0; i < parsedNumBaskets; i++) {
-                promises.push(fetch('http://127.0.0.1:5555/baskets', {
+                promises.push(fetch('http://127.0.0.1:5555/api/baskets', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

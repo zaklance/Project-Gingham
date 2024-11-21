@@ -18,7 +18,7 @@ function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
     const matchingMarketId = matchingMarket ? matchingMarket.id : null;
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/market-days")
+        fetch("http://127.0.0.1:5555/api/market-days")
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item => item.market_id === matchingMarketId);
@@ -39,7 +39,7 @@ function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
             const fetchAdminMarketData = async () => {
                 try {
                     const token = sessionStorage.getItem('jwt-token');
-                    const response = await fetch(`http://127.0.0.1:5555/markets/${matchingMarketId}`, {
+                    const response = await fetch(`http://127.0.0.1:5555/api/markets/${matchingMarketId}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -107,7 +107,7 @@ function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
 
     const handleSaveChanges = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/markets/${matchingMarketId}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/markets/${matchingMarketId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
@@ -137,7 +137,7 @@ function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
 
     const handleSaveDayChanges = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/market-days/${selectedDay.id}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/market-days/${selectedDay.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'

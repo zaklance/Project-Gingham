@@ -10,7 +10,7 @@ function AdminVendors () {
 
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/vendors")
+        fetch("http://127.0.0.1:5555/api/vendors")
             .then(response => response.json())
             .then(vendors => setVendors(vendors))
             .catch(error => console.error('Error fetching vendors', error));

@@ -45,7 +45,7 @@ function VendorProfile () {
         const fetchVendorUserData = async () => {
             try {
                 const token = sessionStorage.getItem('jwt-token');
-                const response = await fetch(`http://127.0.0.1:5555/vendor-users/${id}`, {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -82,7 +82,7 @@ function VendorProfile () {
             if (vendorUserData && vendorUserData.vendor_id) {
                 try {
                     const token = sessionStorage.getItem('jwt-token');
-                    const response = await fetch(`http://127.0.0.1:5555/vendor-users?vendor_id=${vendorUserData.vendor_id}`, {
+                    const response = await fetch(`http://127.0.0.1:5555/api/vendor-users?vendor_id=${vendorUserData.vendor_id}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -105,7 +105,7 @@ function VendorProfile () {
     const handleAddTeamMember = async () => {
         try {
             const token = sessionStorage.getItem('jwt-token');
-            const response = await fetch('http://127.0.0.1:5555/vendor-users', {
+            const response = await fetch('http://127.0.0.1:5555/api/vendor-users', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -134,7 +134,7 @@ function VendorProfile () {
     const handleDeleteTeamMember = async (memberId) => {
         try {
             const token = sessionStorage.getItem('jwt-token');
-            const response = await fetch(`http://127.0.0.1:5555/vendor-users/${memberId}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${memberId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -156,7 +156,7 @@ function VendorProfile () {
         const newRole = currentRole === 'Admin' ? 'Employee' : 'Admin';
         try {
             const token = sessionStorage.getItem('jwt-token');
-            const response = await fetch(`http://127.0.0.1:5555/vendor-users/${memberId}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${memberId}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -212,7 +212,7 @@ function VendorProfile () {
     const handleSaveChanges = async () => {
         try {
             const token = sessionStorage.getItem('jwt-token');
-            const response = await fetch(`http://127.0.0.1:5555/vendor-users/${id}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -238,12 +238,12 @@ function VendorProfile () {
             if (!vendorUserData || !vendorUserData.vendor_id) return;
     
             try {
-                const response = await fetch(`http://127.0.0.1:5555/vendors/${vendorUserData.vendor_id}`);
+                const response = await fetch(`http://127.0.0.1:5555/api/vendors/${vendorUserData.vendor_id}`);
                 if (response.ok) {
                     const data = await response.json();
                     setVendorData(data);
                     if (data.image) {
-                        setVendorImageURL(`http://127.0.0.1:5555/vendors/${vendorUserData.vendor_id}/image`);
+                        setVendorImageURL(`http://127.0.0.1:5555/api/vendors/${vendorUserData.vendor_id}/image`);
                     }
                 } else {
                     console.error('Failed to fetch vendor data:', response.status);
@@ -285,7 +285,7 @@ function VendorProfile () {
             formData.append('vendor_id', id);
     
             try {
-                const result = await fetch('http://127.0.0.1:5555/upload', {
+                const result = await fetch('http://127.0.0.1:5555/api/upload', {
                     method: 'POST',
                     body: formData,
                 });
@@ -295,7 +295,7 @@ function VendorProfile () {
                     uploadedFilename = data.filename;
                     console.log('Image uploaded:', uploadedFilename);
                     setStatus('success');
-                    setVendorImageURL(`http://127.0.0.1:5555/vendors/${id}/image`);
+                    setVendorImageURL(`http://127.0.0.1:5555/api/vendors/${id}/image`);
                 } else {
                     console.log('Image upload failed');
                     console.log('Response:', await result.text());
@@ -315,7 +315,7 @@ function VendorProfile () {
         }
     
         try {
-            const response = await fetch(`http://127.0.0.1:5555/vendors/${id}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendors/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -346,7 +346,7 @@ function VendorProfile () {
             const fetchMarketDetails = async () => {
                 const promises = locations.map(async marketId => {
                     try {
-                        const response = await fetch(`http://127.0.0.1:5555/markets/${marketId}`);
+                        const response = await fetch(`http://127.0.0.1:5555/api/markets/${marketId}`);
                         if (response.ok) {
                             const marketData = await response.json();
                             return { id: marketId, name: marketData.name };
