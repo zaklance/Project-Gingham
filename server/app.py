@@ -1024,6 +1024,10 @@ def event_by_id(id):
                 event.season_start = datetime.strptime(data.get('start_date'), '%Y-%m-%d').date()
             if data.get('end_date'):
                 event.season_end = datetime.strptime(data.get('end_date'), '%Y-%m-%d').date()            
+            if 'vendor_id' in data:
+                event.vendor_id = data['vendor_id']
+            if 'market_id' in data:
+                event.market_id = data['market_id']
             db.session.add(event)
             db.session.commit()
             return event.to_dict(), 200
