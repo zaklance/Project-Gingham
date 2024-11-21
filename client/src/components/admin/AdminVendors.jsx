@@ -3,6 +3,7 @@ import { NavLink, Link } from 'react-router-dom';
 import AdminVendorEdit from './AdminVendorEdit';
 import AdminVendorAdd from './AdminVendorAdd';
 import AdminVendorDelete from './AdminVendorDelete';
+import AdminVendorEvents from './AdminVendorEvents';
 
 function AdminVendors () {
     const [vendors, setVendors] = useState([]);
@@ -28,14 +29,18 @@ function AdminVendors () {
                     <Link to="#" onClick={() => setActiveTab('add')} className={activeTab === 'add' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                         Add
                     </Link>
-                    <Link to="#" onClick={() => setActiveTab('delete')} className={activeTab === 'delete' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="#" onClick={() => setActiveTab('delete')} className={activeTab === 'delete' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                         Delete
+                    </Link>
+                    <Link to="#" onClick={() => setActiveTab('event')} className={activeTab === 'event' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                        Events
                     </Link>
                 </div>
             </div>
             {activeTab === 'edit' && <AdminVendorEdit vendors={vendors} />}
             {activeTab === 'add' && <AdminVendorAdd vendors={vendors} />}
             {activeTab === 'delete' && <AdminVendorDelete vendors={vendors} />}
+            {activeTab === 'event' && <AdminVendorEvents vendors={vendors} />}
         </>
     )
 }
