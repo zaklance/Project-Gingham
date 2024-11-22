@@ -9,6 +9,7 @@ function VendorDashboard({ marketId }) {
     const [vendorId, setVendorId] = useState(null);
     const [activeTab, setActiveTab] = useState('baskets');
     const [notifications, setNotifications] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [vendorUserData, setVendorUserData] = useState(null);
     const [newVendor, setNewVendor] = useState(false);
 
@@ -99,8 +100,10 @@ function VendorDashboard({ marketId }) {
 
         const fetchNotifications = async () => {
             const token = sessionStorage.getItem('jwt-token');
+            setIsLoading(true);
             if (!token) {
                 console.error("Token missing");
+                setIsLoading(false);
                 return;
             }
 
@@ -125,10 +128,10 @@ function VendorDashboard({ marketId }) {
                 console.error('Error fetching notifications:', error);
                 setNotifications([]);
             } finally {
-                // setLoading(false);
+                setIsLoading(false);
             }
         };
-
+        
         fetchNotifications();
     }, [vendorId]); 
 
