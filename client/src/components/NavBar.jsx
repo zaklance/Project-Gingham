@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import '../assets/css/index.css';
 
 function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
+    const [notifications, setNotifications] = useState([]);
+    const [isNotifPopup, setIsNotifPopup] = useState(false);
+
     const location = useLocation();
     const user_id = globalThis.sessionStorage.getItem('user_id');
     const vendor_id = globalThis.sessionStorage.getItem('vendor_user_id');
@@ -14,6 +17,54 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const isNotUser = location.pathname.startsWith('/vendor') || location.pathname.startsWith('/admin');
     const isVendorPage = location.pathname.startsWith('/vendor');
     const isAdminPage = location.pathname.startsWith('/admin');
+
+    useEffect(() => {
+        const fetchvendorNotification = async () => {
+            try {
+                const userId = sessionStorage.getItem('user_id');
+                if (!userId) {
+                    console.error("No user ID found in session storage");
+                    setError("User ID is missing");
+                    setLoading(false);
+                    return;
+                }
+
+                const token = sessionStorage.getItem('jwt-token');
+                if (!token) {
+                    console.error("No JWT token found in session storage");
+                    setError("JWT token is missing");
+                    setLoading(false);
+                    return;
+                }
+
+                const notificationsResponse = await fetch(`http://127.0.0.1:5555/api/user-notifications/${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!notificationsResponse.ok) {
+                    throw new Error(`Error fetching notifications: ${notificationsResponse.status}`);
+                }
+
+                const notificationsData = await notificationsResponse.json();
+                setNotifications(notificationsData.notifications || []);
+            } catch (error) {
+                console.error('Error fetching user notifications:', error);
+                // setError(error.message);
+            } finally {
+                // setLoading(false);
+            }
+        };
+
+        fetchvendorNotification();
+    }, []);
+
+    const handleNotifPopup = () => {
+        setIsNotifPopup(!isNotifPopup);
+    }
 
     return (
         <nav className="nav-bar">
@@ -70,9 +121,23 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li>
                             <NavLink className='nav-tab color-2 btn-nav' reloadDocument to={`/user/profile/${user_id}`}>Profile</NavLink>
                         </li>
-                        {/* <li>
-                            <NavLink className='nav-tab color-1 btn-nav' reloadDocument to="/notifications"><img className='img-notifications' src="/site-images/notifications-1.svg" alt="Notification" /></NavLink>
-                        </li> */}
+                        <li className='notification' onClick={handleNotifPopup}>
+                            <a className='nav-tab color-1 btn-nav nav-tab-wide' reloadDocument to="/notifications"><img className='img-notifications' src="/site-images/notifications-1.svg" alt="Notification" /></a>
+                            <p className='badge'>{notifications.length}</p>
+                            <div className={`popup-notif ${isNotifPopup ? 'popup-notif-on' : ''}`} style={{ top: window.scrollY }}>
+                                {notifications.length > 0 &&
+                                    <div className=''>
+                                        <ul className='flex-start flex-wrap ul-notif'>
+                                            {notifications.map((notification) => (
+                                                <li key={notification.id} className='li-notif'>
+                                                    <p>{notification.message}</p>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                }
+                            </div>
+                        </li>
                         <li style={{ marginLeft: 'auto' }}>
                             <NavLink className='nav-tab color-3 tab-right btn-nav' reloadDocument to="/user/logout">Logout</NavLink>
                         </li>
