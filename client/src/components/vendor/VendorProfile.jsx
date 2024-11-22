@@ -376,6 +376,8 @@ function VendorProfile () {
         }
     }, [locations]);
 
+    console.log(locations)
+
     return(
         <div>
             <div className="tab-content">
@@ -436,8 +438,10 @@ function VendorProfile () {
                                         <td className='cell-title'>Email:</td>
                                         <td className='cell-text'>{vendorUserData ? vendorUserData.email : ' Loading...'}</td>
                                     </tr>
+                                    <tr>
                                         <td className='cell-title'>Phone:</td>
                                         <td className='cell-text'>{vendorUserData ? formatPhoneNumber(vendorUserData.phone) : 'Loading...'}</td>
+                                    </tr>
                                 </tbody>
                             </table>
                             <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
@@ -526,11 +530,11 @@ function VendorProfile () {
                                                 </tr>
                                                 <tr>
                                                     <td className='cell-title'>Based in:</td>
-                                                        <td className='cell-text'>{vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}</td>
+                                                    <td className='cell-text'>{vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className='cell-title'>Image:</td>
-                                                        <td className='cell-text'>{vendorData ? <img src={`/vendor-images/${vendorData.image}`} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
+                                                    <td className='cell-text'>{vendorData ? <img src={`/vendor-images/${vendorData.image}`} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

@@ -388,6 +388,18 @@ ul {
   margin: auto;
 }
 
+.flex-0 {
+  flex: 0;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.flex-2 {
+  flex: 2;
+}
+
 .flex-start {
   display: flex;
   justify-content: flex-start;
@@ -561,11 +573,13 @@ ul {
   /* left: 48px; */
   /* width: 90%; */
   width: 360px;
+  max-height: 400px;
+  overflow-y: auto;
   max-width: 400px;
   /* height: fit-content; */
   background-color: #eee;
-  margin-top: 36px;
-  margin-left: 48px;
+  margin-top: 40px;
+  margin-left: 0px;
   /* padding: 16px; */
   border-color: #ccc;
   border-width: 1px;
@@ -756,6 +770,15 @@ ul {
 .btn-tab {
   padding: 12px 16px;
   margin-top: 36px;
+}
+
+.btn-notif {
+  padding: 0px 4px;
+  margin-right: 8px;
+  font-weight: 400;
+  /* border: #3b4752;
+  border-width: .5px;
+  border-style: solid; */
 }
 
 .tabs {
