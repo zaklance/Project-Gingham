@@ -1680,12 +1680,8 @@ def get_all_vendor_notifications():
 def get_vendor_notifications(vendor_id):
     notifications = VendorNotification.query.filter_by(vendor_id=vendor_id).all()
 
-    if not notifications:
-        return jsonify({'message': 'No notifications found'}), 404
-
     notifications_data = [{'id': n.id, 'message': n.message} for n in notifications]
-
-    return jsonify({'notifications': notifications_data})
+    return jsonify({'notifications': notifications_data}), 200
 
 @app.route('/api/vendor-notifications/<int:notification_id>/approve', methods=['POST'])
 def approve_notification(notification_id):
