@@ -95,6 +95,14 @@ body {
   border-radius: 20px;
 }
 
+.strawberry-wrapper {
+  background-image: url('../images/gingham_seamless-strawberry-02.svg');
+  background-size: auto;
+  moz-box-sizing: border-box;
+  box-sizing: border-box;
+  position: relative;
+}
+
 /* Header styling */
 header {
   background: #d8f4fe;
@@ -207,6 +215,14 @@ h2 {
   margin-top: 24px;
 }
 
+.margin-t-48 {
+  margin-top: 48px;
+}
+
+.margin-t--48 {
+  margin-top: -48px;
+}
+
 .margin-b-16 {
   margin-bottom: 16px;
 }
@@ -288,6 +304,38 @@ ul {
   transition: .2s;
 }
 
+/* .nav-tab-wide {
+  padding-left: 32px;
+  padding-right: 32px;
+} */
+
+.notification {
+  position: relative;
+  display: inline-block;
+}
+
+.badge {
+  position: absolute;
+  font-size: .5em;
+  top: -8px;
+  right: -6px;
+  padding: 5px 9px;
+  border-radius: 50%;
+  background: red;
+  color: white;
+}
+
+.ul-notif .li-notif:nth-child(even) {
+  background-color: #dbdbdb;
+}
+
+.li-notif {
+  width: 100%;
+  font-size: .7em;
+  padding: 8px 16px;
+  text-align: left;
+}
+
 .icon-notification {
   background-image: url('../images/notifications-1.svg');
   background-size: cover;
@@ -322,6 +370,10 @@ ul {
 }
 
 .blue {
+  background-color: #d8f4fe !important;
+}
+
+.box-blue {
   background-color: #d8f4fe;
   padding-bottom: 4px;
   border-radius: 12px 12px 0 0;
@@ -433,6 +485,14 @@ ul {
   padding: 24px;
 }
 
+.box-inside {
+  float: none;
+  background-color: white;
+  margin: 48px;
+  padding: 24px;
+  border-radius: 24px;
+}
+
 .box-portal-home {
   background-color: white;
   width: fit-content;
@@ -488,6 +548,31 @@ ul {
 
 .popup-on {
   display: block;
+}
+
+.popup-notif {
+  display: none;
+}
+
+.popup-notif-on {
+  display: block;
+  position: absolute;
+  /* top: auto; */
+  /* left: 48px; */
+  /* width: 90%; */
+  width: 360px;
+  max-width: 400px;
+  /* height: fit-content; */
+  background-color: #eee;
+  margin-top: 36px;
+  margin-left: 48px;
+  /* padding: 16px; */
+  border-color: #ccc;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 0px 24px 24px 24px;
+  box-shadow: 0 30px 50px rgba(0, 0, 0, 0.36);
+  z-index: 1002;
 }
 
 .login-bar {
@@ -699,6 +784,15 @@ button:hover {
 }
 
 button:active {
+  background-color: #fff669;
+  transition: .1s;
+}
+
+a:hover {
+  background: #fffa9c;
+}
+
+a:active {
   background-color: #fff669;
   transition: .1s;
 }
@@ -1271,8 +1365,9 @@ select:hover {
 .vendor-portal-background {
   background-image: url('../images/LzYeux_120719_0036_1800px.png');
   background-size:cover;
+  object-fit: cover;
   width: 100%;
-  height: 600px;
+  height: 100%;
 }
 
 .admin-portal-background {
