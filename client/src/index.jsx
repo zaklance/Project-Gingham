@@ -29,6 +29,7 @@ import VendorLogout from './components/vendor/VendorLogout.jsx';
 import VendorCreate from './components/vendor/VendorCreate.jsx';
 import VendorDashboard from './components/vendor/VendorDashboard.jsx';
 import VendorNotification from './components/vendor/VendorNotification.jsx';
+import VendorLoginPopup from './components/vendor/VendorLoginPopup.jsx';
 import VendorSales from './components/vendor/VendorSales.jsx';
 import VendorProfile from './components/vendor/VendorProfile.jsx';
 import VendorResetRequest from './components/vendor/VendorResetRequest.jsx';
@@ -148,6 +149,7 @@ const router = createBrowserRouter([
                     { path: "dashboard", element: <VendorDashboard /> },
                     { path: "/vendor-dashboard/:vendorId", element: <VendorDashboard />},
                     { path: "sales", element: <VendorSales /> },
+                    { path: "signup", element: <VendorLoginPopup />},
                     { path: "profile/:id", element: <VendorProfile /> },
                     { path: "vendor-create/:id", element: <VendorCreate />},
                     { path: "logout", element: <VendorLogout /> },
