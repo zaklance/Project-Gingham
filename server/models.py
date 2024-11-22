@@ -552,12 +552,18 @@ class AdminNotification(db.Model):
 class Event(db.Model):
     __tablename__ = 'events'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False)
+    title = db.Column(db.String(24), nullable=False)
     message = db.Column(db.String, nullable=False)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
+    
+    @validates('title')
+    def validate_title(self, key, value):
+        if len(value) > 24:
+            raise ValueError("Title must be 24 characters or fewer")
+        return value
 
     def to_dict(self):
         return {
