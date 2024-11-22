@@ -472,6 +472,7 @@ class Basket(db.Model, SerializerMixin):
     is_grabbed = db.Column(db.Boolean, nullable=True)
     price = db.Column(db.Float, nullable=False)
     pickup_duration = db.Column(db.Time, nullable=False)
+    basket_value = db.Column(db.Float, nullable=False, default=0.0)
 
     vendor = db.relationship('Vendor', lazy='joined')
     market_day = db.relationship('MarketDay', lazy='joined')
@@ -496,9 +497,15 @@ class Basket(db.Model, SerializerMixin):
             raise ValueError("Price must be a non-negative integer")
         return value
 
+    @validates('basket_value')
+    def validate_value(self, key, value):
+        if not isinstance(value, (int, float)) or value < 0:
+            raise ValueError("Basket Value must be a non-negative number")
+        return value
+
     def __repr__(self):
         return (f"<Basket ID: {self.id}, Vendor: {self.vendor.name}, "
-                f"Market ID: {self.market_day_id}, Sold: {self.is_sold}>")
+                f"Market ID: {self.market_day_id}, Sold: {self.is_sold}, Value: {self.value}>")
 
 class UserNotification(db.Model):
     __tablename__ = 'user_notifications'
