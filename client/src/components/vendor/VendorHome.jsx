@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { createContext, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 
 
 function Home() {
+    const { handlePopup } = useOutletContext();
 
     return (
         <div>
@@ -48,7 +50,7 @@ function Home() {
                         By selling with Gingham, you're not only reducing food waste but also supporting local 
                         communities and economies. <strong>Join us in making a positive impact!</strong>
                     </p>
-                    <h3 className="box-portal-home margin-t-24 blue">Interested in becoming a vendor? <a href='/vendor/signup'> Sign up here!</a></h3>
+                    <h3 className="box-portal-home margin-t-24 blue">Interested in becoming a vendor? <a onClick={handlePopup}> Sign up here!</a></h3>
                 </div>
             </div>
         </div>
