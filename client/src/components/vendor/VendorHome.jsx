@@ -18,7 +18,6 @@ function Home() {
                     <br/>
                     <h2 className="box-portal-home">Sell Surplus Product instead of putting it to waste!</h2>
                 </div>
-
                 <div className="box-inside">
                     <h3 className="margin-b-16">Why Partner with Gingham?</h3>
                     <p>

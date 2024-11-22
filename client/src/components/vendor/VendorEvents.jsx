@@ -6,6 +6,11 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
     const [editingEventId, setEditingEventId] = useState(null);
     const [editedEventData, setEditedEventData] = useState({});
     const [markets, setMarkets] = useState([]);
+    const [allVendorMarkets, setAllVendorMarkets] = useState([]);
+    const [allMarketDays, setAllMarketDays] = useState([]);
+    const [allMarkets, setAllMarkets] = useState([]);
+    const [selectedMarket, setSelectedMarket] = useState(null);
+
 
 
     console.log()
@@ -128,17 +133,63 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
     }
 
     // For the future market drop down in add
-    // useEffect(() => {
-    //     fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${id}`)
-    //         .then(response => response.json())
-    //         .then(markets => {
-    //             if (Array.isArray(markets)) {
-    //                 const marketIds = markets.map(market => market.market_day_id);
-    //                 setMarkets(marketIds);
-    //             }
-    //         })
-    //         .catch(error => console.error('Error fetching market locations:', error));
-    // }, [id]);
+    useEffect(() => {
+        fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${vendorId}`)
+            .then(response => response.json())
+            .then(data => {
+                setAllVendorMarkets(data)
+                // if (Array.isArray(markets)) {
+                //     const marketIds = markets.map(market => market.market_day_id);
+                //     setMarkets(marketIds);
+                // }
+            })
+            .catch(error => console.error('Error fetching market locations:', error));
+    }, [vendorId]);
+
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/api/market-days")
+            .then(response => response.json())
+            .then(data => {
+                const filteredData = data.filter(item =>
+                    allVendorMarkets.some(vendorMarket => vendorMarket.market_day_id === item.id)
+                );
+                setAllMarketDays(filteredData)
+            })
+            .catch(error => console.error('Error fetching market days', error));
+    }, [allVendorMarkets]);
+
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/api/markets")
+            .then(response => response.json())
+            .then(data => {
+                const filteredData = data.filter(item =>
+                    allMarketDays.some(vendorMarket => vendorMarket.market_id === item.id)
+                );
+                setAllMarkets(filteredData)
+            })
+            .catch(error => console.error('Error fetching market days', error));
+    }, [allMarketDays]);
+
+    useEffect(() => {
+        if (allVendorMarkets.length > 0 && markets?.id) {
+            // const filteredData = allVendorMarkets.filter((item) => item.vendor_id === market.id);
+            // setMarket(filteredData);
+            // if (filteredData.length > 0) {
+            // }
+            setSelectedMarket(allVendorMarkets[0]);
+        }
+    }, [allMarketDays]);
+
+    const handleMarketChange = (event) => {
+        const marketId = parseInt(event.target.value);
+        setSelectedMarket(marketId);
+        setNewEvent((prevEvent) => ({
+            ...prevEvent,
+            market_id: marketId,
+        }));
+    };
+
+    console.log(selectedMarket)
 
     return (
         <>
@@ -167,14 +218,18 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
                         />
                     </div>
                     <div className='form-group'>
-                        <label>Market ID:</label>
-                        <input
-                            type="text"
-                            name="vendor_id"
-                            placeholder='Search vendors above'
-                            value={vendorUserData.id || ''}
-                            readOnly
-                        />
+                        <label>Market:</label>
+                        {allMarkets.length > 0 ? (
+                            <select id="marketSelect" name="market" onChange={handleMarketChange}>
+                                {allMarkets.map((market, index) => (
+                                    <option key={index} value={market.id}>
+                                        {market.name}
+                                    </option>
+                                ))}
+                            </select>
+                        ) : (
+                            <p>Loading markets...</p> // Optional: Placeholder or spinner while loading
+                        )}
                     </div>
                     <div className='form-group'>
                         <label title="yyyy-mm-dd">Event Start:</label>
