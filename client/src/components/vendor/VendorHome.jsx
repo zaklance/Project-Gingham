@@ -11,7 +11,11 @@ function Home() {
                     <br />
                     <br />
                     <br />
-                    <h1 className="title-big box-portal-home">Welcome</h1>
+                    <div className='box-portal-home'>
+                        <h1 className="font-gingham title-big text-center">Gingham</h1>
+                        <br/>
+                        <p>WELCOME CURRENT AND FUTURE VENDORS!</p>
+                    </div>
                     <br/>
                     <br/>
                     <h2 className="box-portal-home">Sell Surplus Product instead of putting it to waste!</h2>
@@ -42,6 +46,9 @@ function Home() {
                     <p><strong>Increase and Boost Sales:</strong> Sell surplus products you may otherwise throw away.</p>
                     <p><strong>Help the Environment:</strong> Play a crucial role in reducing food waste.</p>
                     <p><strong>Reach New Customers:</strong> Connect with a growing community focused on sustainability and local food sources.</p>
+                    <div className='flex-center'>
+                        <img src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" style={{ width: '60%' }} />
+                    </div>
 
                     <h3 className="margin-b-16 margin-t-24">Support Local Communities</h3>
                     <p>
@@ -50,6 +57,7 @@ function Home() {
                     </p>
                     <h3 className="box-portal-home margin-t-24 blue">Interested in becoming a vendor? <a href='/vendor/signup'> Sign up here!</a></h3>
                 </div>
+                <br/>
             </div>
         </div>
     )

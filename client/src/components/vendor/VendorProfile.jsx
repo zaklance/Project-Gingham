@@ -135,20 +135,24 @@ function VendorProfile () {
         try {
             const token = sessionStorage.getItem('jwt-token');
             const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${memberId}`, {
-                method: 'DELETE',
+                method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({
+                    vendor_id: null
+                })
             });
     
             if (response.ok) {
                 setTeamMembers(teamMembers.filter(member => member.id !== memberId));
             } else {
-                console.error('Error deleting team member');
+                const errorData = await response.json();
+                console.error('Error updating team member:', errorData);
             }
         } catch (error) {
-            console.error('Error deleting team member:', error);
+            console.error('Error updating team member:', error);
         }
     };
     
@@ -595,7 +599,7 @@ function VendorProfile () {
                                 <br />
                                 <h3>Current Team Members:</h3>
                                 <ul>
-                                    {teamMembers.map(member => (
+                                {teamMembers.map(member => (
                                         <li key={member.id} style={{ marginBottom: '1rem' }}>
                                             {member.first_name} {member.last_name} - {member.role}
 
