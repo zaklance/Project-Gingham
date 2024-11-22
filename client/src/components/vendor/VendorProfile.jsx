@@ -562,56 +562,55 @@ function VendorProfile () {
                                     ) : (
                                         <p>No market locations at this time</p>
                                     )}
-                                    <br />
-                                    {vendorUserData?.is_admin && (
-                                        <>
-                                            <h2 className="title">Team Members</h2>
-                                            <div className="box-bounding">
-                                                <div className='form-group'>
-                                                    <label>Email:</label>
-                                                    <input
-                                                        type="email"
-                                                        value={newMemberEmail}
-                                                        onChange={e => setNewMemberEmail(e.target.value)}
-                                                        placeholder="Enter team member's email"
-                                                    />
-                                                </div>
-                                                <div className='form-group'>
-                                                    <label>Role:</label>
-                                                    <select
-                                                        value={newMemberRole}
-                                                        onChange={e => setNewMemberRole(e.target.value)}
-                                                    >
-                                                        <option value="Admin">Admin</option>
-                                                        <option value="Employee">Employee</option>
-                                                    </select>
-                                                </div>
-                                                <button className="btn-edit" onClick={handleAddTeamMember}>Add Team Member</button>
-                                                <br />
-                                                <h3>Current Team Members:</h3>
-                                                <ul>
-                                                    {teamMembers.map(member => (
-                                                        <li key={member.id} style={{ marginBottom: '1rem'}}>
-                                                            {member.first_name} {member.last_name} - {member.role}
-
-                                                            {member.id !== vendorUserData.id && (
-                                                                <>
-                                                                    <button className="btn-delete" onClick={() => handleToggleRole(member.id, member.role)} > Switch to {member.role === 'Admin' ? 'Employee' : 'Admin'} </button>
-                                                                    <button className="btn-delete" onClick={() => handleDeleteTeamMember(member.id)} > Remove from Vendor Team</button>
-                                                                </>
-                                                            )}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        </>
-                                    )}
                                 </>
                             )
                         ) : (
                             <VendorCreate />
                         )}
                     </div>
+                    {vendorUserData?.is_admin && (
+                        <>
+                            <h2 className="title">Team Members</h2>
+                            <div className="box-bounding">
+                                <div className='form-group'>
+                                    <label>Email:</label>
+                                    <input
+                                        type="email"
+                                        value={newMemberEmail}
+                                        onChange={e => setNewMemberEmail(e.target.value)}
+                                        placeholder="Enter team member's email"
+                                    />
+                                </div>
+                                <div className='form-group'>
+                                    <label>Role:</label>
+                                    <select
+                                        value={newMemberRole}
+                                        onChange={e => setNewMemberRole(e.target.value)}
+                                    >
+                                        <option value="Admin">Admin</option>
+                                        <option value="Employee">Employee</option>
+                                    </select>
+                                </div>
+                                <button className="btn-edit" onClick={handleAddTeamMember}>Add Team Member</button>
+                                <br />
+                                <h3>Current Team Members:</h3>
+                                <ul>
+                                    {teamMembers.map(member => (
+                                        <li key={member.id} style={{ marginBottom: '1rem' }}>
+                                            {member.first_name} {member.last_name} - {member.role}
+
+                                            {member.id !== vendorUserData.id && (
+                                                <>
+                                                    <button className="btn-delete" onClick={() => handleToggleRole(member.id, member.role)} > Switch to {member.role === 'Admin' ? 'Employee' : 'Admin'} </button>
+                                                    <button className="btn-delete" onClick={() => handleDeleteTeamMember(member.id)} > Remove from Vendor Team</button>
+                                                </>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         </div>
