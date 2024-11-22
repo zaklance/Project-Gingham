@@ -8,6 +8,7 @@ function VendorDashboard({ vendorId, marketId }) {
     const [vendors, setVendors] = useState([]);
     const [activeTab, setActiveTab] = useState('baskets');
     const [notifications, setNotifications] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [vendorUserData, setVendorUserData] = useState(null);
     const [newVendor, setNewVendor] = useState(false);
 
@@ -64,8 +65,10 @@ function VendorDashboard({ vendorId, marketId }) {
 
         const fetchNotifications = async () => {
             const token = sessionStorage.getItem('jwt-token');
+            setIsLoading(true);
             if (!token) {
                 console.error("Token missing");
+                setIsLoading(false);
                 return;
             }
 
@@ -90,21 +93,28 @@ function VendorDashboard({ vendorId, marketId }) {
                 console.error('Error fetching notifications:', error);
                 setNotifications([]);
             } finally {
-                // setLoading(false);
+                setIsLoading(false);
             }
         };
-
+        
         fetchNotifications();
     }, [vendorId]); 
 
     return (
         <div>
             <h2 className='margin-t-16'>Vendor Dashboard</h2>
-            {notifications.length > 0 &&
-                <div className='box-bounding'>
-                    <VendorNotification notifications={notifications} />
-                </div>
-            }
+            {isLoading ? (
+                <>
+                </>
+            ) : (
+                <>
+                    {notifications.length > 0 &&
+                        <div className='box-bounding'>
+                            <VendorNotification notifications={notifications} />
+                        </div>
+                    }
+                </>
+            )}
             <div className='tabs margin-t-20'>
                 <Link to="#" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                     Baskets
