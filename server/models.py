@@ -352,7 +352,7 @@ class VendorUser(db.Model, SerializerMixin):
 
     # Relationships
     # vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor_user', lazy='dynamic')
-    notifications = db.relationship('VendorNotification', back_populates='vendor_user')
+    # notifications = db.relationship('VendorNotification', back_populates='vendor_user')
 
     serialize_rules = ('-_password', '-vendor_vendor_users.vendor_user')
 
@@ -523,7 +523,7 @@ class VendorNotification(db.Model, SerializerMixin):
     is_read = db.Column(db.Boolean, default=False, nullable=False)
     
     # vendor = db.relationship('Vendor', back_populates='notifications')
-    vendor_user = db.relationship('VendorUser', back_populates='notifications')
+    # vendor_user = db.relationship('VendorUser', back_populates='notifications')
 
     serialize_rules = ('vendor_user.first_name', 'vendor_user.last_name')
 

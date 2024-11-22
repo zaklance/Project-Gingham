@@ -1,7 +1,7 @@
 from app import app
 from faker import Faker
 from random import random, choice, randint
-from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, Event, bcrypt
+from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, Event, UserNotification, bcrypt
 import json
 from datetime import date, time, timedelta
 
@@ -21,6 +21,7 @@ def run():
     AdminUser.query.delete()
     Basket.query.delete()
     Event.query.delete()
+    UserNotification.query.delete()
 
     db.session.commit()
 
@@ -1092,11 +1093,9 @@ def run():
     )
     events.append(special)
 
-
-
     for i in range(100):
         heading = randint(3, 5)
-        rev_len = randint(2, 5)
+        msg_len = randint(2, 5)
         rand_market = choice([None, randint(1, 40)])
         if rand_market is None:
             rand_vendor = randint(1, 150)
@@ -1109,7 +1108,7 @@ def run():
 
 
         title = fake.sentence(nb_words=heading)
-        message = fake.paragraph(nb_sentences=rev_len)
+        message = fake.paragraph(nb_sentences=msg_len)
         market_id = rand_market
         vendor_id = rand_vendor
         start_date = date_start
@@ -1127,6 +1126,55 @@ def run():
         events.append(ev)
 
     db.session.add_all(events)
+    db.session.commit()
+
+
+    user_notifs = []
+
+    unm = UserNotification(
+            message=fake.paragraph(nb_sentences=1),
+            user_id=1,
+            market_id=1,
+            is_read=False
+        )
+    unv = UserNotification(
+            message=fake.paragraph(nb_sentences=2),
+            user_id=1,
+            vendor_id=1,
+            is_read=False
+        )
+    
+    user_notifs.append(unm)
+    user_notifs.append(unv)
+
+    for i in range(400):
+        msg_len = randint(1, 2)
+        rand_market = choice([None, randint(1, 40)])
+        if rand_market is None:
+            rand_vendor = randint(1, 150)
+        else:
+            rand_vendor = None
+        few_days = randint(0, 14)
+
+        message = fake.paragraph(nb_sentences=msg_len)
+        user_id = randint(1, 51)
+        market_id = rand_market
+        vendor_id = rand_vendor
+        created_at = date.today() - timedelta(days=few_days)
+        is_read = bool(False)
+
+        
+        un = UserNotification(
+            message=message,
+            user_id=user_id,
+            market_id=market_id,
+            vendor_id=vendor_id,
+            created_at=created_at,
+            is_read=is_read
+        )
+        user_notifs.append(un)
+
+    db.session.add_all(user_notifs)
     db.session.commit()
 
     
