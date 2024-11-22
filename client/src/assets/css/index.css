@@ -95,6 +95,14 @@ body {
   border-radius: 20px;
 }
 
+.strawberry-wrapper {
+  background-image: url('../images/gingham_seamless-strawberry-02.svg');
+  background-size: auto;
+  moz-box-sizing: border-box;
+  box-sizing: border-box;
+  position: relative;
+}
+
 /* Header styling */
 header {
   background: #d8f4fe;
@@ -205,6 +213,14 @@ h2 {
 
 .margin-t-24 {
   margin-top: 24px;
+}
+
+.margin-t-48 {
+  margin-top: 48px;
+}
+
+.margin-t--48 {
+  margin-top: -48px;
 }
 
 .margin-b-16 {
@@ -354,6 +370,10 @@ ul {
 }
 
 .blue {
+  background-color: #d8f4fe !important;
+}
+
+.box-blue {
   background-color: #d8f4fe;
   padding-bottom: 4px;
   border-radius: 12px 12px 0 0;
@@ -463,6 +483,14 @@ ul {
   background-color: #d8f4fe;
   margin-top: 48px;
   padding: 24px;
+}
+
+.box-inside {
+  float: none;
+  background-color: white;
+  margin: 48px;
+  padding: 24px;
+  border-radius: 24px;
 }
 
 .box-portal-home {
@@ -756,6 +784,15 @@ button:hover {
 }
 
 button:active {
+  background-color: #fff669;
+  transition: .1s;
+}
+
+a:hover {
+  background: #fffa9c;
+}
+
+a:active {
   background-color: #fff669;
   transition: .1s;
 }
@@ -1328,8 +1365,9 @@ select:hover {
 .vendor-portal-background {
   background-image: url('../images/LzYeux_120719_0036_1800px.png');
   background-size:cover;
+  object-fit: cover;
   width: 100%;
-  height: 600px;
+  height: 100%;
 }
 
 .admin-portal-background {
