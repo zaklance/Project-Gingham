@@ -28,7 +28,7 @@ function Home() {
                         you can easily list discount bundles of your unsold items in the morning.
                     </p>
                     <br/>
-                    {/* Build Graphics and diagrams a la "Gingham How it Works"*/}
+                    <img src="/site-images/GINGHAM_VENDOR_HOWITWORKS.png" style={{ width: '100%' }} />
                     <p><strong>Sign up:</strong> Get started quickly with an easy registration and signup process.</p>
                     <p><strong>List your Baskets:</strong> Set up bundles of items you want to sell at a discount.</p>
                     <p><strong>Consumers Buy and Pick Up:</strong> Shoppers browse and purchase bundles and pickup at a designated time before market close.</p>
