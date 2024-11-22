@@ -762,18 +762,16 @@ def vendorLogout():
 
 @app.route('/api/vendor-users', methods=['GET'])
 def get_vendor_users():
-    if request.method == 'GET':
-        vendor_users = VendorUser.query.all()
-        return jsonify([vendor.to_dict() for vendor in vendor_users]), 200
     try:
         vendor_id = request.args.get('vendor_id', type=int)
+
         if not vendor_id:
-            return {'error': 'Vendor ID is required'}, 400
-        
+            return jsonify({'error': 'Vendor ID is required'}), 400
+
         vendor_users = VendorUser.query.filter_by(vendor_id=vendor_id).all()
-        
+
         if not vendor_users:
-            return {'message': 'No team members found for this vendor'}, 404
+            return jsonify({'message': 'No team members found for this vendor'}), 404
 
         return jsonify([{
             'id': vendor_user.id,
@@ -785,113 +783,64 @@ def get_vendor_users():
         } for vendor_user in vendor_users]), 200
 
     except Exception as e:
-        return {'error': f'Exception: {str(e)}'}, 500
+        return jsonify({'error': str(e)}), 500
     
-@app.route('/api/vendor-users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
+@app.route('/api/vendor-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 @jwt_required()
 def vendorProfile(id):
     if not check_role('vendor'):
         return {'error': "Access forbidden: Vendor only"}, 403
     
     if request.method == 'GET':
-        vendorUser = VendorUser.query.filter_by(id = id).first()
-        if not vendorUser:
-            return {'error': 'user not found'}, 404
-        profile_data = vendorUser.to_dict()
+        vendor_user = VendorUser.query.get(id)
+        if not vendor_user:
+            return jsonify({'error': 'User not found'}), 404
+        profile_data = vendor_user.to_dict()
         return jsonify(profile_data), 200
     
     elif request.method == 'PATCH':
-        vendorUser = VendorUser.query.filter_by(id=id).first()
-        if not vendorUser:
-            return {'error': 'User not found'}, 404
+        vendor_user = VendorUser.query.get(id)
+        if not vendor_user:
+            return jsonify({'error': 'User not found'}), 404
         
         try:
             data = request.get_json()
-            for key, value in data.items():
-                setattr(vendorUser, key, value)
+
+            if 'is_admin' in data:
+                if not isinstance(data['is_admin'], bool):
+                    return jsonify({'error': 'Invalid value for is_admin, must be true or false'}), 400
+                vendor_user.is_admin = data['is_admin']
 
             if 'vendor_id' in data:
-                vendor = Vendor.query.get(data['vendor_id'])
+                new_vendor_id = data['vendor_id']
+                vendor = Vendor.query.get(new_vendor_id)
                 if not vendor:
-                    return {'error': 'Invalid vendor_id'}, 400
-                
-                if vendorUser.vendor_id != data['vendor_id']:
-                    vendorUser.vendor_id = data['vendor_id']
-
-                    vendor_vendor_user_link = VendorVendorUser.query.filter_by(
-                        vendor_id=data['vendor_id'],
-                        vendor_user_id=id
-                    ).first()
-
-                    if not vendor_vendor_user_link:
-                        new_vendor_vendor_user = VendorVendorUser(
-                            vendor_id=data['vendor_id'],
-                            vendor_user_id=id
-                        )
-                        db.session.add(new_vendor_vendor_user)
+                    return jsonify({'error': 'Invalid vendor_id'}), 400
+                vendor_user.vendor_id = new_vendor_id
 
             db.session.commit()
-            return jsonify(vendorUser.to_dict()), 200
+            return jsonify(vendor_user.to_dict()), 200
 
         except Exception as e:
             db.session.rollback()
-            return {'error': str(e)}, 500
+            app.logger.error(f"Error updating VendorUser: {str(e)}")
+            return jsonify({'error': str(e)}), 500
 
-    elif request.method == 'POST':
-        data = request.get_json()
-        
-        existing_user = VendorUser.query.filter_by(email=data['email']).first()
-        if existing_user:
-            return {'error': 'Email already in use'}, 400
-        
-        vendor = Vendor.query.get(data['vendor_id'])
-        if not vendor: 
-            return {'error': 'Invalid vendor_id'}, 400
-        
-        try:
-            new_vendor_user = VendorUser(
-                email=data['email'],
-                password=data['password'],
-                first_name=data['first_name'],
-                last_name=data['last_name'],
-                phone=data.get('phone'),
-                vendor_id=data['vendor_id']
-            )
-            db.session.add(new_vendor_user)
-            db.session.commit()
-
-            vendor_vendor_user_link = VendorVendorUser.query.filter_by(
-                vendor_id=data['vendor_id'],
-                vendor_user_id=new_vendor_user.id
-            ).first()
-            
-            if not vendor_vendor_user_link:
-                new_vendor_vendor_user = VendorVendorUser(
-                    vendor_id=data['vendor_id'],
-                    vendor_user_id=new_vendor_user.id
-                )
-                db.session.add(new_vendor_vendor_user)
-                db.session.commit()
-            
-            return jsonify(new_vendor_user.to_dict()), 201
-        
-        except Exception as e:
-            db.session.rollback()
-            return {'error': str(e)}, 500
-    
     elif request.method == 'DELETE':
-        vendorUser = VendorUser.query.filter_by(id=id).first()
-        if not vendorUser:
-            return {'error': 'user not found'}, 404
+        vendor_user = VendorUser.query.get(id)
+        if not vendor_user:
+            return jsonify({'error': 'User not found'}), 404
         
         try:
-            db.session.delete(vendorUser)
+            db.session.delete(vendor_user)
             db.session.commit()
             return {}, 204
         
         except Exception as e:
             db.session.rollback()
-            return {'error': str(e)}, 500
+            app.logger.error(f"Error deleting VendorUser: {str(e)}")
+            return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api/vendor-vendor-users', methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def handle_vendor_vendor_users():
