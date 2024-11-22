@@ -25,7 +25,7 @@ app = Flask(__name__)
 
 VENDOR_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/vendor-images')
 MARKET_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/market-images')
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'svg'}
 MAX_SIZE = 1.5 * 1024 * 1024
 MAX_RES = (1800, 1800)
 
@@ -89,9 +89,14 @@ def upload_file():
             return {'error': 'Invalid type specified. Must be "vendor" or "market"'}, 400
 
         try:
-            image = Image.open(file)
-            image = resize_image(image)
-            image.save(file_path)
+            if filename.rsplit('.', 1)[1].lower() == 'svg':
+                # Save the SVG file directly without resizing or compressing
+                file.save(file_path)
+            else:
+                # Process and resize image for non-SVG files
+                image = Image.open(file)
+                image = resize_image(image)
+                image.save(file_path)
 
             if upload_type == 'vendor':
                 vendor_id = request.form.get('vendor_id')
