@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-function VendorNotification({ vendorId, onDataFetch }) {
+function VendorNotification() {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -85,6 +85,7 @@ function VendorNotification({ vendorId, onDataFetch }) {
             if (response.ok) {
                 setNotifications(notifications.filter((notif) => notif.id !== notificationId));
                 alert('Notification approved and user updated successfully');
+                window.location.reload();
             } else {
                 console.error('Failed to approve request');
                 const responseData = await response.json();
@@ -108,6 +109,7 @@ function VendorNotification({ vendorId, onDataFetch }) {
 
             if (response.ok) {
                 setNotifications(notifications.filter((notif) => notif.id !== notificationId));
+                window.location.reload();
             } else {
                 console.error('Failed to reject request');
             }

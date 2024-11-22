@@ -4,8 +4,9 @@ import VendorNotification from './VendorNotification';
 import VendorBaskets from './VendorBaskets';
 import VendorEvents from './VendorEvents';
 
-function VendorDashboard({ vendorId, marketId }) {
+function VendorDashboard({ marketId }) {
     const [vendors, setVendors] = useState([]);
+    const [vendorId, setVendorId] = useState(null);
     const [activeTab, setActiveTab] = useState('baskets');
     const [notifications, setNotifications] = useState([]);
     const [vendorUserData, setVendorUserData] = useState(null);
@@ -58,6 +59,40 @@ function VendorDashboard({ vendorId, marketId }) {
         fetchVendorUserData();
     }, []);
 
+    console.log('vendorId:', vendorId);
+
+    useEffect(() => {
+        const fetchVendorId = async () => {
+            const vendorUserId = sessionStorage.getItem('vendor_user_id');
+            if (!vendorUserId) {
+                console.error("No vendor user ID found in session storage");
+                return;
+            }
+            try {
+                const token = sessionStorage.getItem('jwt-token');
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Fetched vendor data:', data);
+                    setVendorUserData(data);
+                    if (data.vendor_id) {
+                        setVendorId(data.vendor_id);
+                    }
+                } else {
+                    console.error('Failed to fetch vendor user data');
+                }
+            } catch (error) {
+                console.error('Error fetching vendor user data:', error);
+            }
+        };
+        fetchVendorId();
+    }, []);
 
     useEffect(() => {
         if (!vendorId) return;
@@ -97,12 +132,14 @@ function VendorDashboard({ vendorId, marketId }) {
         fetchNotifications();
     }, [vendorId]); 
 
+    console.log('Notifications:', notifications);
+
     return (
         <div>
             <h2 className='margin-t-16'>Vendor Dashboard</h2>
-            {notifications.length > 0 &&
+            {notifications && notifications.length > 0 &&
                 <div className='box-bounding'>
-                    <VendorNotification notifications={notifications} />
+                    <VendorNotification notifications={notifications} vendorId={vendorId}/>
                 </div>
             }
             <div className='tabs margin-t-20'>
