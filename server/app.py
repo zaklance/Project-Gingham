@@ -1656,6 +1656,12 @@ def create_notification():
         print(f"Error creating notification: {str(e)}")
         return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
 
+@app.route('/api/vendor-notifications', methods=['GET'])
+def get_all_vendor_notifications():
+    if request.method == 'GET':
+        vendorNotifications = VendorNotification.query.all()
+        return jsonify([vendorNotifications.to_dict() for vendorNotifications in vendorNotifications]), 200
+
 @app.route('/api/vendor-notifications/<int:vendor_id>', methods=['GET'])
 def get_vendor_notifications(vendor_id):
     notifications = VendorNotification.query.filter_by(vendor_id=vendor_id).all()

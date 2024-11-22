@@ -209,7 +209,7 @@ class Vendor(db.Model, SerializerMixin):
     # Relationships
     reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic')
     vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic')
-    vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor', lazy='dynamic')
+    # vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor', lazy='dynamic')
     vendor_markets = db.relationship('VendorMarket', back_populates='vendor')
     # notifications = db.relationship('VendorNotification', back_populates='vendor', lazy='dynamic')
 
@@ -351,8 +351,8 @@ class VendorUser(db.Model, SerializerMixin):
     is_admin = db.Column(db.Boolean, default=True, nullable=False)
 
     # Relationships
-    vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor_user', lazy='dynamic')
-    # notifications = db.relationship('VendorNotification', back_populates='vendor_user')
+    # vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor_user', lazy='dynamic')
+    notifications = db.relationship('VendorNotification', back_populates='vendor_user')
 
     serialize_rules = ('-_password', '-vendor_vendor_users.vendor_user')
 
@@ -402,8 +402,8 @@ class VendorVendorUser(db.Model, SerializerMixin):
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=False)
 
     # Relationships
-    vendor = db.relationship('Vendor', back_populates='vendor_vendor_users')
-    vendor_user = db.relationship('VendorUser', back_populates='vendor_vendor_users')
+    # vendor = db.relationship('Vendor', back_populates='vendor_vendor_users')
+    # vendor_user = db.relationship('VendorUser', back_populates='vendor_vendor_users')
 
     serialize_rules = ('-vendor.vendor_vendor_users', '-vendor_user.vendor_vendor_users')
 
@@ -523,7 +523,7 @@ class VendorNotification(db.Model, SerializerMixin):
     is_read = db.Column(db.Boolean, default=False, nullable=False)
     
     # vendor = db.relationship('Vendor', back_populates='notifications')
-    # vendor_user = db.relationship('VendorUser', back_populates='notifications')
+    vendor_user = db.relationship('VendorUser', back_populates='notifications')
 
     serialize_rules = ('vendor_user.first_name', 'vendor_user.last_name')
 
