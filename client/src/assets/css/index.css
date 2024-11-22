@@ -544,7 +544,7 @@ ul {
   margin-right: auto; */
   border: none;
   border-radius: 8px;
-  background-color: #dbdbdb;
+  background-color: #eee;
 }
 
 .btn-edit {
@@ -552,7 +552,7 @@ ul {
   border-radius: 8px;
   height: fit-content;
   border: none;
-  background-color: #dbdbdb;
+  background-color: #eee;
   margin: 12px 0px;
   margin-right: 12px;
 }
@@ -561,7 +561,7 @@ ul {
   padding: 10px 12px;
   border-radius: 8px;
   border: none;
-  background-color: #dbdbdb;
+  background-color: #eee;
   margin: 12px 12px;
 }
 
@@ -569,7 +569,7 @@ ul {
   padding: 6px 8px;
   border-radius: 8px;
   border: none;
-  background-color: #dbdbdb;
+  background-color: #eee;
   float: right;
 }
 
@@ -636,8 +636,11 @@ ul {
 }
 
 .btn-report {
-  padding: 0px 10px;
+  width: 24px;
+  height: 24px;
+  padding: 0px 0px;
   font-size: 1em;
+  margin-top: 4px;
 }
 
 .btn-unreport {

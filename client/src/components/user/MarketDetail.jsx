@@ -398,7 +398,7 @@ function MarketDetail ({ match }) {
             </div>
             <div className={events.length < 1 ? 'flex-start flex-align-start flex-gap-16' : 'flex-start flex-align-center flex-gap-16'}>
                 {events.length > 0 ? (
-                    <h2 className='margin-t-16'>Events:</h2>
+                    <h2 className='color-4 margin-t-16'>Events:</h2>
                 ) : (
                     <>
                     </>
@@ -511,7 +511,7 @@ function MarketDetail ({ match }) {
                         {review.user_id !== userId && editingReviewId !== review.id ? (
                             <div className='flex-start'>
                                 <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
-                                <button className='btn btn-small btn-x btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
+                                <button className='btn btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
                             </div>
                         ) : (
                             <h4>You</h4>
