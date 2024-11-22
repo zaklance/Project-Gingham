@@ -5,6 +5,8 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
     const [events, setEvents] = useState([]);
     const [editingEventId, setEditingEventId] = useState(null);
     const [editedEventData, setEditedEventData] = useState({});
+    const [markets, setMarkets] = useState([]);
+
 
     console.log()
 
@@ -124,6 +126,19 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
             console.error("Error deleting review", error)
         }
     }
+
+    // For the future market drop down in add
+    // useEffect(() => {
+    //     fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${id}`)
+    //         .then(response => response.json())
+    //         .then(markets => {
+    //             if (Array.isArray(markets)) {
+    //                 const marketIds = markets.map(market => market.market_day_id);
+    //                 setMarkets(marketIds);
+    //             }
+    //         })
+    //         .catch(error => console.error('Error fetching market locations:', error));
+    // }, [id]);
 
     return (
         <>

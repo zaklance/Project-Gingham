@@ -2,7 +2,7 @@ import os
 import json
 import smtplib
 from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
-from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, VendorNotification, bcrypt
+from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
@@ -757,6 +757,9 @@ def vendorLogout():
 
 @app.route('/api/vendor-users', methods=['GET'])
 def get_vendor_users():
+    if request.method == 'GET':
+        vendor_users = VendorUser.query.all()
+        return jsonify([vendor.to_dict() for vendor in vendor_users]), 200
     try:
         vendor_id = request.args.get('vendor_id', type=int)
         if not vendor_id:
@@ -1631,8 +1634,19 @@ def admin_password_reset(token):
 
         except Exception as e:
             return {'error': f'Failed to reset password: {str(e)}'}, 500
-    
-@app.route('/api/create-notification', methods=['POST'])
+
+@app.route('/api/user-notifications/<int:user_id>', methods=['GET'])
+def get_user_notifications(user_id):
+    notifications = UserNotification.query.filter_by(user_id=user_id).all()
+
+    if not notifications:
+        return jsonify({'message': 'No notifications found'}), 404
+
+    notifications_data = [{'id': n.id, 'message': n.message} for n in notifications]
+
+    return jsonify({'notifications': notifications_data})    
+
+@app.route('/api/create-vendor-notification', methods=['POST'])
 def create_notification():
     data = request.get_json()
 
