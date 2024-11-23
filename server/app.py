@@ -1589,16 +1589,25 @@ def admin_password_reset(token):
         except Exception as e:
             return {'error': f'Failed to reset password: {str(e)}'}, 500
 
-@app.route('/api/user-notifications/<int:user_id>', methods=['GET'])
-def get_user_notifications(user_id):
-    notifications = UserNotification.query.filter_by(user_id=user_id).all()
+@app.route('/api/user-notifications', methods=['GET'])
+def get_user_notifications():
+    if request.method == 'GET':
+        notifications = UserNotification.query.all()
+        return jsonify([notif.to_dict() for notif in notifications]), 200
+    
+@app.route('/api/user-notifications/<int:id>', methods=['DELETE'])
+def delete_user_notifications(id):
+    if request.method == 'DELETE':
+        notification = UserNotification.query.filter_by(id=id).first()
 
-    if not notifications:
-        return jsonify({'message': 'No notifications found'}), 404
+        if not notification:
+            return jsonify({'message': 'No notifications found'}), 404
 
-    notifications_data = [{'id': n.id, 'message': n.message} for n in notifications]
-
-    return jsonify({'notifications': notifications_data})    
+        notification_data = {'id': notification.id, 'message': notification.message}
+        
+        db.session.delete(notification)
+        db.session.commit()
+        return jsonify({'notifications': notification_data}) 
 
 @app.route('/api/create-vendor-notification', methods=['POST'])
 def create_notification():

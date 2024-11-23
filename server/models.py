@@ -471,8 +471,8 @@ class Basket(db.Model, SerializerMixin):
     is_sold = db.Column(db.Boolean, nullable=True)
     is_grabbed = db.Column(db.Boolean, nullable=True)
     price = db.Column(db.Float, nullable=False)
+    basket_value = db.Column(db.Float, nullable=True)
     pickup_duration = db.Column(db.Time, nullable=False)
-    basket_value = db.Column(db.Float, nullable=False, default=0.0)
 
     vendor = db.relationship('Vendor', lazy='joined')
     market_day = db.relationship('MarketDay', lazy='joined')
@@ -516,6 +516,14 @@ class UserNotification(db.Model):
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'message': self.message,
+            'created_at': self.created_at.isoformat()  # Convert to ISO 8601 format
+        }
     
     def __repr__(self):
         return (f"<User Notification ID: {self.id}, created on {self.created_at}")
