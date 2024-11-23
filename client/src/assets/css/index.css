@@ -183,6 +183,10 @@ h2 {
   margin-bottom: 2rem;
 }
 
+.margin-r-8 {
+  margin-right: 8px;
+}
+
 .margin-r-16 {
   margin-right: 16px;
 }
@@ -221,6 +225,10 @@ h2 {
 
 .margin-t--48 {
   margin-top: -48px;
+}
+
+.margin-b-8 {
+  margin-bottom: 8px;
 }
 
 .margin-b-16 {
@@ -334,6 +342,16 @@ ul {
   font-size: .7em;
   padding: 8px 16px;
   text-align: left;
+}
+
+.ul-team .li-team:nth-child(even){
+  background-color: #eee;
+  padding: 4px;
+}
+
+.ul-team .li-team:nth-child(odd){
+  background-color: #dbdbdb;
+  padding: 4px;
 }
 
 .icon-notification {
@@ -526,6 +544,11 @@ ul {
   max-height: 488px;
 }
 
+.box-scroll-small {
+  overflow: scroll;
+  max-height: 248px;
+}
+
 .market-details {
   width: fit-content;
   max-width: calc(100% - 48px); 
@@ -606,6 +629,26 @@ ul {
 
 .btn-gap {
   margin-left: 4px;
+}
+
+.btn-border {
+  border-style: solid !important;
+  border-width: .5px !important;
+  border-color: #b5b5b5 !important;
+}
+
+.btn-white {
+  background-color: white !important;
+}
+
+.btn-white:hover {
+  background-color: #fffa9c !important;
+  transition: .2s;
+}
+
+.btn-white:active {
+  background-color: #fff669 !important;
+  transition: .1s;
 }
 
 .btn {
@@ -772,6 +815,16 @@ ul {
   margin-top: 36px;
 }
 
+.btn-tab:hover {
+  background-color: #fffa9c;
+  transition: .2s;
+}
+
+.btn-tab:active {
+  background-color: #fff669;
+  transition: .1s;
+}
+
 .btn-notif {
   padding: 0px 4px;
   margin-right: 8px;
@@ -811,11 +864,11 @@ button:active {
   transition: .1s;
 }
 
-a:hover {
+.link-yellow:hover {
   background: #fffa9c;
 }
 
-a:active {
+.link-yellow:active {
   background-color: #fff669;
   transition: .1s;
 }
