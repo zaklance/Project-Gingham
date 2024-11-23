@@ -175,14 +175,14 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
         }
     }, [allMarketDays]);
 
-    // const handleMarketChange = (event) => {
-    //     const marketId = parseInt(event.target.value);
-    //     setSelectedMarket(marketId);
-    //     setNewEvent((prevEvent) => ({
-    //         ...prevEvent,
-    //         market_id: marketId,
-    //     }));
-    // };
+    const handleMarketChange = (event) => {
+        const marketId = parseInt(event.target.value);
+        setSelectedMarket(marketId);
+        setNewEvent((prevEvent) => ({
+            ...prevEvent,
+            market_id: marketId,
+        }));
+    };
 
 
     return (
@@ -211,7 +211,7 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
                             onChange={handleInputEventChange}
                         />
                     </div>
-                    {/* <div className='form-group'>
+                    <div className='form-group'>
                         <label>Market:</label>
                         {allMarkets.length > 0 ? (
                             <select id="marketSelect" name="market" onChange={handleMarketChange}>
@@ -224,7 +224,7 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
                         ) : (
                             <p>Loading markets...</p> // Optional: Placeholder or spinner while loading
                         )}
-                    </div> */}
+                    </div>
                     <div className='form-group'>
                         <label title="yyyy-mm-dd">Event Start:</label>
                         <input

@@ -343,7 +343,7 @@ def market_by_id(id):
         db.session.commit()
         return {}, 204
 
-@app.route('/api/market-days', methods=['GET', 'POST'])
+@app.route('/api/market-days', methods=['GET', 'POST', 'DELETE'])
 def all_market_days():
     if request.method == 'GET':
         market_days = MarketDay.query.all()
@@ -692,21 +692,43 @@ def del_vendor_fav(id):
         db.session.commit()
         return {}, 204
     
-@app.route('/api/vendor-markets', methods=['GET'])
+@app.route('/api/vendor-markets', methods=['GET', 'POST'])
 def get_vendor_markets():
-    vendor_id = request.args.get('vendor_id')
-    market_id = request.args.get('market_id')
+    if request.method == 'GET':
+        vendor_id = request.args.get('vendor_id')
+        market_id = request.args.get('market_id')
 
-    query = VendorMarket.query
+        query = VendorMarket.query
 
-    if vendor_id: 
-        query = query.filter_by(vendor_id=vendor_id).options(db.joinedload(VendorMarket.vendor))
-    elif market_id: 
-        query = query.filter_by(market_id=market_id).options(db.joinedload(VendorMarket.market))
+        if vendor_id: 
+            query = query.filter_by(vendor_id=vendor_id).options(db.joinedload(VendorMarket.vendor))
+        elif market_id: 
+            query = query.filter_by(market_id=market_id).options(db.joinedload(VendorMarket.market))
 
-    vendor_markets = query.all()
-    
-    return jsonify([vendor_market.to_dict() for vendor_market in vendor_markets]), 200
+        vendor_markets = query.all()
+        
+        return jsonify([vendor_market.to_dict() for vendor_market in vendor_markets]), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        print("Received data:", data)
+        new_vendor_market = VendorMarket(
+            vendor_id=data['vendor_id'],
+            market_day_id=data['market_day_id']
+        )
+        db.session.add(new_vendor_market)
+        db.session.commit()
+        return new_vendor_market.to_dict(), 201
+
+
+@app.route('/api/vendor-markets/<int:id>', methods=['GET', 'DELETE'])
+def delete_vendor_market(id):
+    vendorMarket = VendorMarket.query.filter(VendorMarket.id == id).first()
+    if request.method == 'GET':
+        return vendorMarket.to_dict(), 200
+    if request.method == 'DELETE':
+        db.session.delete(vendorMarket)
+        db.session.commit()
+        return {}, 204
 
 # VENDOR PORTAL
 @app.route('/api/vendor/login', methods=['POST'])

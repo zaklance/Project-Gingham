@@ -58,8 +58,6 @@ function VendorDashboard({ marketId }) {
         fetchVendorUserData();
     }, []);
 
-    console.log('vendorId:', vendorId);
-
     useEffect(() => {
         const fetchVendorId = async () => {
             const vendorUserId = sessionStorage.getItem('vendor_user_id');
@@ -78,7 +76,7 @@ function VendorDashboard({ marketId }) {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Fetched vendor data:', data);
+                    // console.log('Fetched vendor data:', data);
                     setVendorUserData(data);
                     if (data.vendor_id) {
                         setVendorId(data.vendor_id);

@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, NavLink, Link, Route, Routes, BrowserRouter as Router} from 'react-router-dom';
 import VendorBasketCard from './VendorBasketCard';
 import VendorCreate from './VendorCreate';
+import VendorLocations from './VendorLocations';
 
 function VendorProfile () {
     const { id } = useParams();
     const [editMode, setEditMode] = useState(false);
     const [vendorEditMode, setVendorEditMode] = useState(false);
     const [vendorUserData, setVendorUserData] = useState(null);
+    const [vendorId, setVendorId] = useState(null);
     const [tempVendorUserData, setTempVendorUserData] = useState(null);
     const [locations, setLocations] = useState([]);
     const [marketDetails, setMarketDetails] = useState({});
@@ -37,6 +39,7 @@ function VendorProfile () {
         }
         return phone;
     };
+
     
     useEffect(() => {
         const fetchVendorUserData = async () => {
@@ -58,6 +61,8 @@ function VendorProfile () {
                         setVendorUserData({
                             ...data,
                         });
+                        setVendorId(data.vendor_id)
+
                     } catch (jsonError) {
                         console.error('Error parsing JSON:', jsonError);
                     }
@@ -453,7 +458,7 @@ function VendorProfile () {
                                     </div>
                                     )}
                                     
-                                    <p><strong>Locations:&emsp;</strong></p>
+                                    {/* <p><strong>Locations:&emsp;</strong></p>
                                     {Array.isArray(locations) && locations.length > 0 ? (
                                         locations.map((marketId, index) => (
                                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
@@ -462,12 +467,13 @@ function VendorProfile () {
                                         ))
                                     ) : (
                                         <p>No market locations at this time</p>
-                                    )}
+                                    )} */}
                                 </>
                             )
                         ) : (
                             <VendorCreate />
                         )}
+                        <VendorLocations vendorId={vendorId} />
                     </div>
                 </div>
             </div>
