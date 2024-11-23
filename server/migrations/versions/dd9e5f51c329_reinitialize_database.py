@@ -1,8 +1,8 @@
-"""add Events
+"""reinitialize database
 
-Revision ID: 6896747d03d1
+Revision ID: dd9e5f51c329
 Revises: 
-Create Date: 2024-11-20 09:06:19.869728
+Create Date: 2024-11-23 12:12:24.878363
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '6896747d03d1'
+revision = 'dd9e5f51c329'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -68,6 +68,7 @@ def upgrade():
     )
     op.create_table('events',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(length=24), nullable=False),
     sa.Column('message', sa.String(), nullable=False),
     sa.Column('market_id', sa.Integer(), nullable=True),
     sa.Column('vendor_id', sa.Integer(), nullable=True),
@@ -169,6 +170,7 @@ def upgrade():
     sa.Column('is_sold', sa.Boolean(), nullable=True),
     sa.Column('is_grabbed', sa.Boolean(), nullable=True),
     sa.Column('price', sa.Float(), nullable=False),
+    sa.Column('basket_value', sa.Float(), nullable=True),
     sa.Column('pickup_duration', sa.Time(), nullable=False),
     sa.ForeignKeyConstraint(['market_day_id'], ['market_days.id'], name=op.f('fk_baskets_market_day_id_market_days')),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_baskets_user_id_users')),

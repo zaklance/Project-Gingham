@@ -180,13 +180,17 @@ def homepage():
 
 @app.route('/api/login', methods=['POST'])
 def login():
+    # Clear other account type sessions before logging in a user
+    session.pop('vendor_user_id', None)
+    session.pop('admin_user_id', None)
+    
     data = request.get_json()
     user = User.query.filter(User.email == data['email']).first()
     if not user:
-        return {'error': 'login failed'}, 401
+        return {'error': 'Login failed'}, 401
     
     if not user.authenticate(data['password']):
-        return {'error': 'login failed'}, 401
+        return {'error': 'Login failed'}, 401
     
     access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "user"})
     
@@ -733,13 +737,17 @@ def delete_vendor_market(id):
 # VENDOR PORTAL
 @app.route('/api/vendor/login', methods=['POST'])
 def vendorLogin():
+    # Clear other account type sessions before logging in a vendor
+    session.pop('user_id', None)
+    session.pop('admin_user_id', None)
+
     data = request.get_json()
     vendorUser = VendorUser.query.filter(VendorUser.email == data['email']).first()
     if not vendorUser:
-        return {'error': 'login failed'}, 401
+        return {'error': 'Login failed'}, 401
     
     if not vendorUser.authenticate(data['password']):
-        return {'error': 'login failed'}, 401
+        return {'error': 'Login failed'}, 401
     
     access_token = create_access_token(identity=vendorUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "vendor"})
 
@@ -1200,13 +1208,17 @@ def get_user_sales_history():
 # ADMIN PORTAL
 @app.route('/api/admin/login', methods=['POST'])
 def adminLogin():
+    # Clear other account type sessions before logging in an admin
+    session.pop('user_id', None)
+    session.pop('vendor_user_id', None)
+
     data = request.get_json()
     adminUser = AdminUser.query.filter(AdminUser.email == data['email']).first()
     if not adminUser:
-        return {'error': 'login failed'}, 401
+        return {'error': 'Login failed'}, 401
     
     if not adminUser.authenticate(data['password']):
-        return {'error': 'login failed'}, 401
+        return {'error': 'Login failed'}, 401
     
     access_token = create_access_token(identity=adminUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "admin"})
 
@@ -1651,24 +1663,70 @@ def create_notification():
         )
         db.session.add(new_notification)
         db.session.commit()
-        return jsonify({'message': 'Notification created successfully'}), 201
-    
+
+        return jsonify({
+            'message': 'Notification created successfully',
+            'notification_id': new_notification.id
+        }), 201
+
     except Exception as e:
         db.session.rollback()
         print(f"Error creating notification: {str(e)}")
         return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
+    
+@app.route('/api/delete-vendor-notification', methods=['DELETE'])
+def delete_notification():
+    data = request.get_json()
+
+    if not data or 'notification_id' not in data:
+        return jsonify({'message': 'Invalid request data.'}), 400
+
+    try:
+        notification = VendorNotification.query.get(data['notification_id'])
+
+        if not notification:
+            return jsonify({'message': 'Notification not found.'}), 404
+
+        db.session.delete(notification)
+        db.session.commit()
+
+        return jsonify({'message': 'Notification deleted successfully.'}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error deleting notification: {str(e)}")
+        return jsonify({'message': f'Error deleting notification: {str(e)}'}), 500
 
 @app.route('/api/vendor-notifications', methods=['GET'])
 def get_all_vendor_notifications():
     if request.method == 'GET':
-        vendorNotifications = VendorNotification.query.all()
-        return jsonify([vendorNotifications.to_dict() for vendorNotifications in vendorNotifications]), 200
+        vendor_id = request.args.get('vendor_id')
+        vendor_user_id = request.args.get('vendor_user_id')
 
+        if vendor_id and vendor_user_id:
+            vendor_notifications = VendorNotification.query.filter_by(vendor_id=vendor_id, vendor_user_id=vendor_user_id).all()
+        else:
+            vendor_notifications = VendorNotification.query.all()
+
+        return jsonify([vendorNotification.to_dict() for vendorNotification in vendor_notifications]), 200
+    
 @app.route('/api/vendor-notifications/<int:vendor_id>', methods=['GET'])
 def get_vendor_notifications(vendor_id):
-    notifications = VendorNotification.query.filter_by(vendor_id=vendor_id).all()
+    notifications = VendorNotification.query.filter_by(vendor_id=vendor_id, is_read=False).all()
 
     notifications_data = [{'id': n.id, 'message': n.message} for n in notifications]
+    return jsonify({'notifications': notifications_data}), 200
+
+@app.route('/api/vendor-notifications/<int:vendor_user_id>', methods=['GET'])
+def get_vendor_user_notifications(vendor_user_id):
+    pending_request = VendorNotification.query.filter_by(vendor_user_id=vendor_user_id, status='pending').first()
+
+    if pending_request:
+        return jsonify({'message': 'You have a pending request.'}), 200
+    
+    notifications = VendorNotification.query.filter_by(vendor_user_id=vendor_user_id, is_read=False).all()
+
+    notifications_data = [{'id': n.id, 'message': n.message, 'status': n.is_read, 'vendor_id': n.vendor_id} for n in notifications]
     return jsonify({'notifications': notifications_data}), 200
 
 @app.route('/api/vendor-notifications/<int:notification_id>/approve', methods=['POST'])
