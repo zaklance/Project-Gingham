@@ -119,6 +119,14 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
     }
 
     const handleAddVendorMarket = async () => {
+        const existingVendorMarket = allVendorMarkets.find(
+            vendorMarket => vendorMarket.vendor_id === newMarketDay.vendor_id && vendorMarket.market_day_id === newMarketDay.market_day_id
+        );
+        if (existingVendorMarket) {
+            alert('This vendor is already assigned to this market day.');
+            return;
+        }
+        
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/vendor-markets`, {
                 method: 'POST',
