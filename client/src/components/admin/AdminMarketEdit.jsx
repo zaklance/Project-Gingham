@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
+function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const [marketDayDetails, setMarketDayDetails] = useState([])
     const [marketDays, setMarketDays] = useState([])
     const [selectedDay, setSelectedDay] = useState(null);
@@ -90,10 +90,10 @@ function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
         });
     };
 
-    const handleWeekdayChange = (event) => {
+    const handleWeekDayChange = (event) => {
         setSelectedDay({
             ...selectedDay,
-            [event.target.name]: weekdayReverse[event.target.value],
+            [event.target.name]: weekDayReverse[event.target.value],
         });
     };
 
@@ -346,7 +346,7 @@ function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
                         <select id="marketDaysSelect" name="marketDays" onChange={handleDayChange}>
                             {marketDays.map((day, index) => (
                                 <option key={index} value={day.id}>
-                                    {weekday[day.day_of_week]}
+                                    {weekDay[day.day_of_week]}
                                 </option>
                             ))}
                         </select>
@@ -359,8 +359,8 @@ function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
                             <input
                                 type="text"
                                 name="day_of_week"
-                                value={selectedDay ? weekday[selectedDay.day_of_week] : ''}
-                                onChange={handleWeekdayChange}
+                                value={selectedDay ? weekDay[selectedDay.day_of_week] : ''}
+                                onChange={handleWeekDayChange}
                             />
                         </div>
                         <div className='form-group'>
@@ -390,7 +390,7 @@ function AdminMarketEdit({ markets, timeConverter, weekday, weekdayReverse }) {
                             <tbody>
                                 <tr>
                                     <td className='cell-title'>Day of Week:</td>
-                                    <td className='cell-text'>{selectedDay ? weekday[selectedDay.day_of_week] : ''}</td>
+                                    <td className='cell-text'>{selectedDay ? weekDay[selectedDay.day_of_week] : ''}</td>
                                 </tr>
                                 <tr>
                                     <td className='cell-title'>Start Time:</td>

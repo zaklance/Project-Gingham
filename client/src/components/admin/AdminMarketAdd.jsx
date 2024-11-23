@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function AdminMarketAdd({ markets, weekdayReverse }) {
+function AdminMarketAdd({ markets, weekDayReverse }) {
     const [newMarket, setNewMarket] = useState(null);
     const [newMarketDay, setNewMarketDay] = useState(null);
     const [marketDays, setMarketDays] = useState([])
@@ -126,10 +126,10 @@ function AdminMarketAdd({ markets, weekdayReverse }) {
         }
     };
 
-    const handleWeekdayChange = (event) => {
+    const handleWeekDayChange = (event) => {
         setNewMarketDay({
             ...newMarketDay,
-            [event.target.name]: weekdayReverse[event.target.value],
+            [event.target.name]: weekDayReverse[event.target.value],
         });
     };
 
@@ -286,7 +286,7 @@ function AdminMarketAdd({ markets, weekdayReverse }) {
                                 name="day_of_week"
                                 placeholder='Day will change to number'
                                 value={newMarketDay ? newMarketDay.day_of_week : ''}
-                                onChange={handleWeekdayChange}
+                                onChange={handleWeekDayChange}
                             />
                         </div>
                         <div className='form-group'>

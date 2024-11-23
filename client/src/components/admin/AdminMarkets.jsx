@@ -10,23 +10,23 @@ function AdminMarkets () {
     const [markets, setMarkets] = useState([]);
     const [activeTab, setActiveTab] = useState('edit');
     
-    const weekday = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     
-    const weekdayReverse = {
-        "Monday": 0,
-        "monday": 0,
-        "Tuesday": 1,
-        "tuesday": 1,
-        "Wednesday": 2,
-        "wednesday": 2,
-        "Thursday": 3,
-        "thursday": 3,
-        "Friday": 4,
-        "friday": 4,
-        "Saturday": 5,
-        "saturday": 5,
-        "Sunday": 6,
-        "sunday": 6
+    const weekDayReverse = {
+        "Sunday": 0,
+        "sunday": 0,
+        "Monday": 1,
+        "monday": 1,
+        "Tuesday": 2,
+        "tuesday": 2,
+        "Wednesday": 3,
+        "wednesday": 3,
+        "Thursday": 4,
+        "thursday": 4,
+        "Friday": 5,
+        "friday": 5,
+        "Saturday": 6,
+        "saturday": 6
     }
 
     function timeConverter(time24) {
@@ -67,9 +67,9 @@ function AdminMarkets () {
                     </Link>
                 </div>
             </div>
-            {activeTab === 'edit' && <AdminMarketEdit markets={markets} timeConverter={timeConverter} weekday={weekday} weekdayReverse={weekdayReverse} /> }
-            {activeTab === 'add' && <AdminMarketAdd markets={markets} weekdayReverse={weekdayReverse} />}
-            {activeTab === 'delete' && <AdminMarketDelete markets={markets} weekdayReverse={weekdayReverse} />}
+            {activeTab === 'edit' && <AdminMarketEdit markets={markets} timeConverter={timeConverter} weekDay={weekDay} weekDayReverse={weekDayReverse} /> }
+            {activeTab === 'add' && <AdminMarketAdd markets={markets} weekDayReverse={weekDayReverse} />}
+            {activeTab === 'delete' && <AdminMarketDelete markets={markets} weekDayReverse={weekDayReverse} />}
             {activeTab === 'event' && <AdminMarketEvents markets={markets} />}
         </div>
     )

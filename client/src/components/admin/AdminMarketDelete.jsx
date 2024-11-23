@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 
-function AdminMarketDelete({ markets, weekday, weekdayReverse }) {
+function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
     const [query, setQuery] = useState("");
     const [adminMarketData, setAdminMarketData] = useState(null);
     const [marketDays, setMarketDays] = useState([])

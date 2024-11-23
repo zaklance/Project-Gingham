@@ -13,24 +13,8 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
     const [queryMarkets, setQueryMarkets] = useState("");
     const [queryMarketDays, setQueryMarketDays] = useState("");
 
-    const weekday = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
-    const weekdayReverse = {
-        "Monday": 0,
-        "monday": 0,
-        "Tuesday": 1,
-        "tuesday": 1,
-        "Wednesday": 2,
-        "wednesday": 2,
-        "Thursday": 3,
-        "thursday": 3,
-        "Friday": 4,
-        "friday": 4,
-        "Saturday": 5,
-        "saturday": 5,
-        "Sunday": 6,
-        "sunday": 6
-    }
 
     const onUpdateQueryMarkets = event => setQueryMarkets(event.target.value);
     const filteredQueryMarkets = allMarkets.filter(market => market.name.toLowerCase().includes(queryMarkets.toLowerCase()) && market.name !== queryMarkets)
@@ -40,8 +24,8 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
     
     const onUpdateQueryMarketDays = event => setQueryMarketDays(event.target.value);
     const filteredQueryMarketDaysByMarket = allMarketDays.filter(marketDay => marketDay.market_id === matchingMarketId)
-    const filteredQueryMarketDays = filteredQueryMarketDaysByMarket.filter(marketDay => weekday[marketDay.day_of_week].includes(queryMarketDays) && weekday[marketDay.day_of_week] !== queryMarketDays)
-    const matchingMarketDay = filteredQueryMarketDays.find(marketDay => weekday[marketDay.day_of_week] === queryMarketDays);
+    const filteredQueryMarketDays = filteredQueryMarketDaysByMarket.filter(marketDay => weekDay[marketDay.day_of_week].includes(queryMarketDays) && weekDay[marketDay.day_of_week] !== queryMarketDays)
+    const matchingMarketDay = filteredQueryMarketDays.find(marketDay => weekDay[marketDay.day_of_week] === queryMarketDays);
     const matchingMarketDayId = matchingMarketDay ? matchingMarketDay.id : null;
 
 
@@ -126,7 +110,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
             alert('This vendor is already assigned to this market day.');
             return;
         }
-        
+
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/vendor-markets`, {
                 method: 'POST',
@@ -190,7 +174,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
                             <select id="marketSelect" name="market" onChange={(e) => handleMarketDayChange(e)}>
                                 {filteredQueryMarketDaysByMarket.map((market, index) => (
                                     <option key={index} value={market.id}>
-                                        {weekday[market.day_of_week]}
+                                        {weekDay[market.day_of_week]}
                                     </option>
                                 ))}
                             </select>
@@ -209,7 +193,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
                             <select id="marketSelect" name="market" onChange={(e) => handleMarketDaySelect(e)}>
                                 {filteredMarketDays.map((market, index) => (
                                     <option key={index} value={market.id}>
-                                        {market.markets.name} on {weekday[market.day_of_week]}s
+                                        {market.markets.name} on {weekDay[market.day_of_week]}s
                                     </option>
                                 ))}
                             </select>
