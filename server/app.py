@@ -802,7 +802,7 @@ def vendorProfile(id):
         vendor_user = VendorUser.query.get(id)
         if not vendor_user:
             return jsonify({'error': 'User not found'}), 404
-        
+
         try:
             data = request.get_json()
 
@@ -813,10 +813,13 @@ def vendorProfile(id):
 
             if 'vendor_id' in data:
                 new_vendor_id = data['vendor_id']
-                vendor = Vendor.query.get(new_vendor_id)
-                if not vendor:
-                    return jsonify({'error': 'Invalid vendor_id'}), 400
-                vendor_user.vendor_id = new_vendor_id
+                if new_vendor_id is None:
+                    vendor_user.vendor_id = None
+                else:
+                    vendor = Vendor.query.get(new_vendor_id)
+                    if not vendor:
+                        return jsonify({'error': 'Invalid vendor_id'}), 400
+                    vendor_user.vendor_id = new_vendor_id
 
             db.session.commit()
             return jsonify(vendor_user.to_dict()), 200
