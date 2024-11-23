@@ -466,7 +466,7 @@ function VendorProfile () {
                                 </>
                             )
                         ) : (
-                            <VendorCreate vendorUserId={vendorUserData.id} />
+                            <VendorCreate />
                         )}
                     </div>
                 </div>

@@ -265,37 +265,6 @@ function VendorCreate () {
         }
     
         try {
-<<<<<<< HEAD
-            console.log(`Checking notifications for vendor user ID: ${vendorUserId}`);
-    
-            const checkNotificationResponse = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${vendorUserId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-    
-            if (checkNotificationResponse.ok) {
-                const { notifications } = await checkNotificationResponse.json();
-                console.log('Notifications received:', notifications);
-    
-                const isPending = notifications.some(notification => 
-                    notification.status === false && notification.vendor_id === selectedVendor.id
-                );
-    
-                if (isPending) {
-                    alert('Your request is already pending for this vendor.');
-                    return;
-                }
-            } else {
-                const errorData = await checkNotificationResponse.json();
-                console.error('Error checking notifications:', errorData);
-                alert(`Error checking notifications: ${errorData.message || 'Unknown error'}`);
-                return;
-            }
-    
-=======
->>>>>>> refs/remotes/origin/main
             const response = await fetch('http://127.0.0.1:5555/api/create-vendor-notification', {
                 method: 'POST',
                 headers: {
