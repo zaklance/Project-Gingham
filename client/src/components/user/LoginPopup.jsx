@@ -118,8 +118,8 @@ function Login({ handlePopup }) {
             <button className="btn btn-large x-btn" onClick={handlePopup}>X</button>
             <div className='wrapper'>
                 <h1>WELCOME TO GINGHAM!</h1>
-                <div className="form">
-                    <form onSubmit={handleLogin}>
+                <div>
+                    <form onSubmit={handleLogin} className="form">
                         <h2 className='margin-b-24'>Login</h2>
                         <div className="form-group form-login">
                             <label className=''>Email:</label>

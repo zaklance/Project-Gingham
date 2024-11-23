@@ -1003,14 +1003,14 @@ link {
 }
 
 /* Basic form styling */
-form {
+/* form { */
   /* display: flex;
   flex-direction: column; */
   /* display: table; */
-}
+/* } */
 
-form input,
-form textarea {
+.form input,
+.form textarea {
   margin-bottom: 10px;
   padding: 10px;
   border: 1px solid #ccc;
@@ -1038,6 +1038,7 @@ form textarea {
   /* padding-right: 2em; */
   min-width: 120px;
   font-weight: 600;
+  font-size: 10pt;
   background-color: #eee;
 }
 
@@ -1149,7 +1150,6 @@ select {
   background-repeat: no-repeat;
   background-position: right 0.7rem top 50%;
   background-size: 0.65rem auto;
-  ;
   padding: 8px 16px;
   padding-right: 24px;
   border: none;
