@@ -74,6 +74,110 @@ function VendorProfile () {
         fetchVendorUserData();
     }, [id]);
 
+    useEffect(() => {
+        const fetchTeamMembers = async () => {
+            if (vendorUserData && vendorUserData.vendor_id) {
+                try {
+                    const token = sessionStorage.getItem('jwt-token');
+                    const response = await fetch(`http://127.0.0.1:5555/api/vendor-users?vendor_id=${vendorUserData.vendor_id}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        setTeamMembers(data);
+                    }
+                } catch (error) {
+                    console.error('Error fetching team members:', error);
+                }
+            }
+        };
+        fetchTeamMembers();
+    }, [vendorUserData]);
+
+    const handleAddTeamMember = async () => {
+        try {
+            const token = sessionStorage.getItem('jwt-token');
+            const response = await fetch('http://127.0.0.1:5555/api/vendor-users', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: newMemberEmail,
+                    role: newMemberRole,
+                    vendor_id: vendorUserData.vendor_id
+                })
+            });
+    
+            if (response.ok) {
+                const addedMember = await response.json();
+                setTeamMembers([...teamMembers, addedMember]);
+                setNewMemberEmail('');
+                setNewMemberRole('Employee');
+            } else {
+                console.error('Error adding team member');
+            }
+        } catch (error) {
+            console.error('Error adding team member:', error);
+        }
+    };
+
+    const handleDeleteTeamMember = async (memberId) => {
+        try {
+            const token = sessionStorage.getItem('jwt-token');
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${memberId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    vendor_id: null
+                })
+            });
+    
+            if (response.ok) {
+                setTeamMembers(teamMembers.filter(member => member.id !== memberId));
+            } else {
+                const errorData = await response.json();
+                console.error('Error updating team member:', errorData);
+            }
+        } catch (error) {
+            console.error('Error updating team member:', error);
+        }
+    };
+    
+    const handleToggleRole = async (memberId, currentRole) => {
+        const isAdmin = currentRole === 'Admin' ? false : true;
+        try {
+            const token = sessionStorage.getItem('jwt-token');
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${memberId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ is_admin: isAdmin })
+            });
+    
+            if (response.ok) {
+                setTeamMembers(teamMembers.map(member => 
+                    member.id === memberId ? { ...member, role: isAdmin ? 'Admin' : 'Employee' } : member
+                ));
+            } else {
+                console.error('Error updating role');
+            }
+        } catch (error) {
+            console.error('Error updating role:', error);
+        }
+    };
+
     const handleInputChange = event => {
         const { name, value } = event.target;
         setTempVendorUserData({
