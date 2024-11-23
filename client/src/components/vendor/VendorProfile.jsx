@@ -157,7 +157,7 @@ function VendorProfile () {
     };
     
     const handleToggleRole = async (memberId, currentRole) => {
-        const newRole = currentRole === 'Admin' ? 'Employee' : 'Admin';
+        const isAdmin = currentRole === 'Admin' ? false : true;
         try {
             const token = sessionStorage.getItem('jwt-token');
             const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${memberId}`, {
@@ -166,12 +166,12 @@ function VendorProfile () {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ role: newRole })
+                body: JSON.stringify({ is_admin: isAdmin })
             });
     
             if (response.ok) {
                 setTeamMembers(teamMembers.map(member => 
-                    member.id === memberId ? { ...member, role: newRole } : member
+                    member.id === memberId ? { ...member, role: isAdmin ? 'Admin' : 'Employee' } : member
                 ));
             } else {
                 console.error('Error updating role');
