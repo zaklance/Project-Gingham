@@ -4,17 +4,147 @@ import VendorBasketCard from './VendorBasketCard';
 import VendorCreate from './VendorCreate';
 import VendorNotification from './VendorNotification';
 
-function VendorBaskets({ vendorId, marketId, vendorUserData, newVendor, setNewVendor }) {
+function VendorBaskets({ marketId, vendorUserData, newVendor, setNewVendor }) {
     const [locations, setLocations] = useState([]);
+    const [vendorId, setVendorId] = useState(null);
+    const [allVendorMarkets, setAllVendorMarkets] = useState([]);
+    const [filteredMarketDays, setFilteredMarketDays] = useState([]);
+    const [filteredMarkets, setFilteredMarkets] = useState([]);
+    const [nextMarketDay, setNextMarketDay] = useState(null);
+    const [nextMarketDayDate, setNextMarketDayDate] = useState(null);
     const [marketDetails, setMarketDetails] = useState({});
     const [availableBaskets, setAvailableBaskets] = useState({});
     const [price, setPrice] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+
     const vendorUserId = sessionStorage.getItem('vendor_user_id');
     const marketPrice = price[marketId] !== undefined ? price[marketId] : 0;
     const marketBaskets = availableBaskets[marketId] !== undefined ? availableBaskets[marketId] : 0;
+    const today = new Date();
+    const dayOfWeek = today.getDay()
+    const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    const dayName = weekDay[dayOfWeek]
+
+    console.log(dayOfWeek)
+
+
+    useEffect(() => {
+        const fetchVendorId = async () => {
+            const vendorUserId = sessionStorage.getItem('vendor_user_id');
+            if (!vendorUserId) {
+                console.error("No vendor user ID found in session storage");
+                return;
+            }
+            try {
+                const token = sessionStorage.getItem('jwt-token');
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.vendor_id) {
+                        setVendorId(data.vendor_id);
+                    }
+                } else {
+                    console.error('Failed to fetch vendor user data');
+                }
+            } catch (error) {
+                console.error('Error fetching vendor user data:', error);
+            }
+        };
+        fetchVendorId();
+    }, []);
+
+    useEffect(() => {
+        fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${vendorId}`)
+            .then(response => response.json())
+            .then(data => {
+                setAllVendorMarkets(data)
+                // if (Array.isArray(markets)) {
+                //     const marketIds = markets.map(market => market.market_day_id);
+                //     setMarkets(marketIds);
+                // }
+            })
+            .catch(error => console.error('Error fetching market locations:', error));
+    }, [vendorId]);
+
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/api/market-days")
+            .then(response => response.json())
+            .then(data => {
+                const filteredData = data.filter(item =>
+                    allVendorMarkets.some(vendorMarket => vendorMarket.market_day_id === item.id)
+                );
+                setFilteredMarketDays(filteredData)
+            })
+            .catch(error => console.error('Error fetching market days', error));
+    }, [allVendorMarkets]);
+
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/api/markets")
+            .then(response => response.json())
+            .then(data => {
+                const filteredData = data.filter(item =>
+                    filteredMarketDays.some(vendorMarket => vendorMarket.market_id === item.id)
+                );
+                setFilteredMarkets(filteredData)
+            })
+            .catch(error => console.error('Error fetching market days', error));
+    }, [filteredMarketDays]);
+
+    // console.log(allVendorMarkets)
+    // console.log(filteredMarketDays)
+    // console.log(filteredMarkets)
+
+    const todaysMarketDay = filteredMarketDays.filter(item => item.day_of_week === dayOfWeek);
+
+
+    useEffect(() => {
+        let closestMarketDay = null;
+        let closestDayDiff = Infinity; // Start with a large difference to find the minimum
+        // Check if any market day matches today's day_of_week
+        filteredMarketDays.forEach((item) => {
+            const diff = (item.day_of_week - dayOfWeek + 7) % 7; // Calculate the difference in days
+            if (diff === 0) {
+                // If the market day is today, set it as the nextMarketDay
+                closestMarketDay = item;
+                closestDayDiff = 0;  // We found today's market day
+            } else if (diff > 0 && diff < closestDayDiff) {
+                // If no match for today, look for the closest future day
+                closestDayDiff = diff;
+                closestMarketDay = item;
+            }
+        });
+        setNextMarketDay(closestMarketDay)
+        // If we found a closest market day (either today or future), set it
+        if (closestMarketDay) {
+            const today = new Date();
+            const nextMarketDayDate = new Date(today);
+            // If the closest market day is a future day, calculate the date
+            if (closestDayDiff !== 0) {
+                nextMarketDayDate.setDate(today.getDate() + closestDayDiff);
+            }
+            setNextMarketDayDate(nextMarketDayDate);
+            console.log("Selected Market Day Date:", nextMarketDayDate);
+        } else {
+            console.log("No matching or closest day found");
+        }
+    }, [filteredMarketDays, dayOfWeek]);
+
+
+    // console.log(nextMarketDay)
+    // console.log(nextMarketDayDate)
+    
+
+
+
 
 
     // useEffect(() => {
@@ -110,8 +240,8 @@ function VendorBaskets({ vendorId, marketId, vendorUserData, newVendor, setNewVe
                     <h3>Todays Markets:</h3>
                     <div className='market-cards-container'>
                         <div className='market-card'>
-                            <h3><strong>Union Square Market</strong></h3>
-                            <h4>April 9, Wednesday</h4>
+                            <h3>{nextMarketDay.markets.name}</h3>
+                            <h4>{months[nextMarketDayDate.getMonth()]} {nextMarketDayDate.getDate()}, {weekDay[nextMarketDayDate.getDay()]}</h4>
                             <br />
                             <p>Available Baskets: 5</p>
                             <br />

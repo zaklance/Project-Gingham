@@ -11,7 +11,7 @@ function Profile({ marketData }) {
     const [vendorFavs, setVendorFavs] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
 
-    const weekday = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat", "Sun"];
+    const weekDay = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat", "Sun"];
 
     const states = [
         "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",

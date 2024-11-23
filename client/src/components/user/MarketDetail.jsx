@@ -39,7 +39,7 @@ function MarketDetail ({ match }) {
     
     const navigate = useNavigate();
 
-    const weekday = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
     function timeConverter(time24) {
         const date = new Date('1970-01-01T' + time24);
@@ -458,7 +458,7 @@ function MarketDetail ({ match }) {
                 <select id="marketDaysSelect" name="marketDays" onChange={handleDayChange}>
                     {marketDays.map((day, index) => (
                         <option key={index} value={day.id}>
-                            {weekday[day.day_of_week]}
+                            {weekDay[day.day_of_week]}
                         </option>
                     ))}
                 </select>
