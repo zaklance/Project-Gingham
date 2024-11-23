@@ -265,6 +265,7 @@ function VendorCreate () {
         }
     
         try {
+<<<<<<< HEAD
             console.log(`Checking notifications for vendor user ID: ${vendorUserId}`);
     
             const checkNotificationResponse = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${vendorUserId}`, {
@@ -293,6 +294,8 @@ function VendorCreate () {
                 return;
             }
     
+=======
+>>>>>>> refs/remotes/origin/main
             const response = await fetch('http://127.0.0.1:5555/api/create-vendor-notification', {
                 method: 'POST',
                 headers: {
