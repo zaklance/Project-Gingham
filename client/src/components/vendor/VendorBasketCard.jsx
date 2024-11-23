@@ -9,6 +9,7 @@ function VendorBasketCard({ vendorId = 2, initialMarketId }) {
     const [numBaskets, setNumBaskets] = useState('');
     const [selectedDuration, setSelectedDuration] = useState('0.5');
     const [price, setPrice] = useState('');
+    const [basketValue, setBasketValue] = useState('')
     const [errorMessage, setErrorMessage] = useState('');
 
     const tomorrow = new Date();
@@ -26,6 +27,7 @@ function VendorBasketCard({ vendorId = 2, initialMarketId }) {
         console.log('Market ID:', marketId);
         console.log('Sale Date:', saleDate);
         console.log('Pickup Time:', `${startTime} ${amPm}`);
+        console.log('Basket Value:', basketValue);
         console.log('Price:', parsedPrice);
         console.log('Number of Baskets:', parsedNumBaskets);
         
@@ -46,6 +48,7 @@ function VendorBasketCard({ vendorId = 2, initialMarketId }) {
                         is_sold: false,
                         is_grabbed: false,
                         price: parsedPrice,
+                        basket_value: basketValue,
                         pick_up_duration: selectedDuration,
                     }),
                 }));
@@ -92,12 +95,22 @@ function VendorBasketCard({ vendorId = 2, initialMarketId }) {
             />
             <br />
             <br />
+            <p>Enter Value:</p>
+            <input 
+                type="number"
+                step="0.01"
+                name="price"
+                placeholder="$15.00"
+                className="pickup-time-input"
+                onChange={(e) => setBasketValue(e.target.value)}
+                value={basketValue}
+            />
             <p>Enter Price:</p>
             <input 
                 type="number"
                 step="0.01"
                 name="price"
-                placeholder="$4.99"
+                placeholder="$5.00"
                 className="pickup-time-input"
                 onChange={(e) => setPrice(e.target.value)}
                 value={price}

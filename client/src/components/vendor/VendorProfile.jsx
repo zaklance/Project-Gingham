@@ -573,7 +573,7 @@ function VendorProfile () {
                                 </>
                             )
                         ) : (
-                            <VendorCreate />
+                            <VendorCreate vendorUserId={vendorUserData.id} />
                         )}
                     </div>
                     {vendorUserData?.is_admin && (
