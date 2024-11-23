@@ -121,7 +121,6 @@ function VendorNotification() {
     return (
         <div>
             <div className='tab-content margin-b-24'>
-                <h3>Notifications</h3>
                 <ul>
                     {notifications.map((notification) => (
                         <li key={notification.id}>
