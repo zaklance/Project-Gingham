@@ -226,7 +226,7 @@ function VendorCreate () {
         }
     
         try {
-            const response = await fetch('http://127.0.0.1:5555/api/create-notification', {
+            const response = await fetch('http://127.0.0.1:5555/api/create-vendor-notification', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
