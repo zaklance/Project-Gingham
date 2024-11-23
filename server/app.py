@@ -180,13 +180,17 @@ def homepage():
 
 @app.route('/api/login', methods=['POST'])
 def login():
+    # Clear other account type sessions before logging in a user
+    session.pop('vendor_user_id', None)
+    session.pop('admin_user_id', None)
+    
     data = request.get_json()
     user = User.query.filter(User.email == data['email']).first()
     if not user:
-        return {'error': 'login failed'}, 401
+        return {'error': 'Login failed'}, 401
     
     if not user.authenticate(data['password']):
-        return {'error': 'login failed'}, 401
+        return {'error': 'Login failed'}, 401
     
     access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "user"})
     
@@ -711,13 +715,17 @@ def get_vendor_markets():
 # VENDOR PORTAL
 @app.route('/api/vendor/login', methods=['POST'])
 def vendorLogin():
+    # Clear other account type sessions before logging in a vendor
+    session.pop('user_id', None)
+    session.pop('admin_user_id', None)
+
     data = request.get_json()
     vendorUser = VendorUser.query.filter(VendorUser.email == data['email']).first()
     if not vendorUser:
-        return {'error': 'login failed'}, 401
+        return {'error': 'Login failed'}, 401
     
     if not vendorUser.authenticate(data['password']):
-        return {'error': 'login failed'}, 401
+        return {'error': 'Login failed'}, 401
     
     access_token = create_access_token(identity=vendorUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "vendor"})
 
@@ -1178,13 +1186,17 @@ def get_user_sales_history():
 # ADMIN PORTAL
 @app.route('/api/admin/login', methods=['POST'])
 def adminLogin():
+    # Clear other account type sessions before logging in an admin
+    session.pop('user_id', None)
+    session.pop('vendor_user_id', None)
+
     data = request.get_json()
     adminUser = AdminUser.query.filter(AdminUser.email == data['email']).first()
     if not adminUser:
-        return {'error': 'login failed'}, 401
+        return {'error': 'Login failed'}, 401
     
     if not adminUser.authenticate(data['password']):
-        return {'error': 'login failed'}, 401
+        return {'error': 'Login failed'}, 401
     
     access_token = create_access_token(identity=adminUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "admin"})
 
