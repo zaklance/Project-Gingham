@@ -132,7 +132,6 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
         }
     }
 
-    // For the future market drop down in add
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${vendorId}`)
             .then(response => response.json())
@@ -172,10 +171,6 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
 
     useEffect(() => {
         if (allVendorMarkets.length > 0 && markets?.id) {
-            // const filteredData = allVendorMarkets.filter((item) => item.vendor_id === market.id);
-            // setMarket(filteredData);
-            // if (filteredData.length > 0) {
-            // }
             setSelectedMarket(allVendorMarkets[0]);
         }
     }, [allMarketDays]);
