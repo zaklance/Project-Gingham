@@ -897,11 +897,14 @@ def run():
         market_id = str(randint(1, 40))
         user_id = str(randint(1, 50))
         is_reported = choice(reported)
+        last_year = randint(0, 365)
+        post_date = date.today() - timedelta(days=last_year)
 
         mr = MarketReview(
             review_text=review_text,
             market_id=market_id,
             user_id=user_id,
+            post_date=post_date,
             is_reported=is_reported
         )
         market_revs.append(mr)
@@ -918,11 +921,14 @@ def run():
         vendor_id = str(randint(1, 150))
         user_id = str(randint(1, 50))
         is_reported = choice(reported)
+        last_year = randint(0, 365)
+        post_date = date.today() - timedelta(days=last_year)
         
         vr = VendorReview(
             review_text=review_text,
             vendor_id=vendor_id,
             user_id=user_id,
+            post_date=post_date,
             is_reported=is_reported
         )
         vendor_revs.append(vr)

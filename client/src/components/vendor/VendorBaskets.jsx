@@ -245,7 +245,6 @@ function VendorBaskets({ marketId, vendorUserData }) {
                             </div>
                         </div>
                     </div>
-                    <br />
                     {/* {locations.map((marketId) => (
                             <div key={marketId} className='market-item'>
                                 <h3>{marketDetails[marketId]?.name || 'Loading...'}</h3>
@@ -270,7 +269,7 @@ function VendorBaskets({ marketId, vendorUserData }) {
                                 </div>
                             </div>
                         ))} */}
-                    <h3>Future Markets:</h3>
+                    <h2 className='margin-t-48 margin-b-16'>Future Markets:</h2>
                     <p>Edits can be made until 9AM the day of the market unless basket has already been claimed by customer</p>
                     <br />
                     <div className='market-cards-container'>
