@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // import InputMask from 'react-input-mask';
 import '../../assets/css/index.css';
 
-function VendorBasketCard({ vendorId = 2, initialMarketId }) {
+function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
+    const [marketId, setMarketId] = useState(4);
     const [startTime, setStartTime] = useState('');
     const [amPm, setAmPm] = useState('PM');
     const [isSaved, setIsSaved] = useState(false);
@@ -16,7 +17,6 @@ function VendorBasketCard({ vendorId = 2, initialMarketId }) {
     tomorrow.setDate(tomorrow.getDate() + 1);
     const saleDate = tomorrow.toISOString().substring(0, 10);
 
-    const [marketId, setMarketId] = useState(initialMarketId || 4);
 
     const handleSave = async () => {
         const parsedNumBaskets = parseInt(numBaskets, 10);
@@ -79,88 +79,102 @@ function VendorBasketCard({ vendorId = 2, initialMarketId }) {
         setIsSaved(false);
     };
 
+
     return (
         <div className="market-card">
-            <h3><strong>Union Square Market</strong></h3>
-            <h4>{saleDate}, Wednesday</h4>
-            <br />
-            <p>Available Baskets:</p>
-            <br />
-            <input
-                type="number"
-                name="basket_input"
-                className="basket-input"
-                onChange={(e) => setNumBaskets(e.target.value)}
-                value={numBaskets}
-            />
-            <br />
-            <br />
-            <p>Enter Value:</p>
-            <input 
-                type="number"
-                step="0.01"
-                name="price"
-                placeholder="$15.00"
-                className="pickup-time-input"
-                onChange={(e) => setBasketValue(e.target.value)}
-                value={basketValue}
-            />
-            <p>Enter Price:</p>
-            <input 
-                type="number"
-                step="0.01"
-                name="price"
-                placeholder="$5.00"
-                className="pickup-time-input"
-                onChange={(e) => setPrice(e.target.value)}
-                value={price}
-            />
-            <br />
-            <br />
-            <p>Pick Up Time Start:</p>
-            <div className="time-picker">
+            {marketDay && marketDay.date ? (
+                <>
+                    <h3>{marketDay ? marketDay.markets.name : ''}</h3>
+                    <h4 className='margin-t-8'>{marketDay.date ? months[marketDay.date.getMonth()] : ''} {marketDay.date ? marketDay.date.getDate() : ''}, {marketDay.date ? weekDay[marketDay.date.getDay()] : ''}</h4>
+                </>
+            ) : (
+                <h3>Loading...</h3>
+            )}
+            <br></br>
+            <div className='form-baskets'>
+                <label className='margin-t-16 margin-b-8'>Baskets for Sale:</label>
                 <input
-                    // mask="99:99"
-                    placeholder="HH:MM"
-                    name="pickup_start"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    className="pickup-time-input"
-                    // maskChar={null}
+                    type="text"
+                    name="basket_input"
+                    placeholder="5"
+                    size="4"
+                    onChange={(e) => setNumBaskets(e.target.value)}
+                    value={numBaskets}
                 />
+            </div>
+            <div className='form-baskets'>
+                <label className='margin-t-16 margin-b-8'>Enter est. Value:</label>
+                <input 
+                    type="text"
+                    name="price"
+                    placeholder="$15.00"
+                    size="4"
+                    onChange={(e) => setBasketValue(e.target.value)}
+                    value={basketValue}
+                />
+            </div>
+            <div className='form-baskets'>
+                <label className='margin-t-16 margin-b-8'>Enter Price:</label>
+                <input 
+                    type="text"
+                    step="0.01"
+                    name="price"
+                    size="4"
+                    placeholder="$5.00"
+                    onChange={(e) => setPrice(e.target.value)}
+                    value={price}
+                />
+            </div>
+            <br></br>
+            <div className='form-baskets'>
+                <label className='margin-t-16 margin-b-8'>Pick Up:</label>
+                <div className='flex-start'>
+                    <input
+                        // mask="99:99"
+                        placeholder="HH:MM"
+                        size="4"
+                        name="pickup_start"
+                        value={startTime}
+                        onChange={(e) => setStartTime(e.target.value)}
+                        // maskChar={null}
+                        />
+                    <select
+                        name="amPm"
+                        value={amPm}
+                        className='am-pm'
+                        onChange={(e) => setAmPm(e.target.value)}
+                    >
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+            </div>
+            {/* <br></br> */}
+            <div className='form-baskets'>
+                <label className='margin-t-16 margin-b-8'>Duration:</label>
                 <select
-                    name="amPm"
-                    value={amPm}
-                    onChange={(e) => setAmPm(e.target.value)}
-                    className="amPm-dropdown"
+                    name="duration"
+                    value={selectedDuration}
+                    onChange={(e) => setSelectedDuration(e.target.value)}
                 >
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
+                    <option value="0.5">30 mins</option>
+                    <option value="0.75">45 mins</option>
+                    <option value="1">1 hour</option>
+                    <option value="1.25">1.25 hours</option>
+                    <option value="1.5">1.5 hours</option>
+                    <option value="1.75">1.75 hours</option>
+                    <option value="2">2 hours</option>
+                    <option value="3">3 hours</option>
+                    <option value="4">4 hours</option>
                 </select>
             </div>
-            <br />
-            <p>Select Duration Window:</p>
-            <select
-                name="duration"
-                value={selectedDuration}
-                onChange={(e) => setSelectedDuration(e.target.value)}
-            >
-                <option value="0.5">30 mins</option>
-                <option value="0.75">45 mins</option>
-                <option value="1">1 hour</option>
-                <option value="1.25">1.25 hours</option>
-                <option value="1.5">1.5 hours</option>
-                <option value="1.75">1.75 hours</option>
-                <option value="2">2 hours</option>
-            </select>
-            <br/>
-            {errorMessage && <p className="error-message">{errorMessage}</p>}
             <button
                 onClick={handleSave}
-                className={`basket-save-button ${isSaved ? 'saved' : ''}`}
-            >
+                className={`btn-basket-save ${isSaved ? 'saved' : ''}`}
+                >
                 {isSaved ? 'Saved' : 'Save'}
             </button>
+            {errorMessage && <p className="error-message margin-t-16">{errorMessage}</p>}
             {isSaved && (
                 <p>
                     <a href="#edit" onClick={handleEdit} className="edit-link">Edit</a>

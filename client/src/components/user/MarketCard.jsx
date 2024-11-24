@@ -30,7 +30,7 @@ function MarketCard({ marketData }) {
             <p><strong>Schedule:</strong> {marketData.schedule}</p>
             <p><strong>Open Year Round:</strong> {marketData.year_round ? "Yes" : "No"}</p>
             <p><strong>Zipcode:</strong> {marketData.zipcode}</p>
-            <button className="market-card-button" onClick={handleLearnMore}>Learn More!</button>
+            <button className="btn-market-card" onClick={handleLearnMore}>Learn More!</button>
         </div>
     );
 }

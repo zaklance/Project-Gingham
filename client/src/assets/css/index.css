@@ -834,6 +834,53 @@ ul {
   border-style: solid; */
 }
 
+.btn-market-card {
+  display: block;
+  width: 100%;
+  max-width: 200px;
+  margin: 10px auto;
+  padding: 8px 16px;
+  border: 1px solid #ff3399;
+  background-color: #ff6699;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.btn-market-card:hover {
+  background-color: #ff8300;
+}
+
+.btn-basket-save {
+  background-color: #ff6699;
+  border: none;
+  width: 200px;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-basket-save:hover {
+  background-color: #ff9e5c ;
+}
+
+.btn-basket-save:active {
+  background-color: #ff8300;
+}
+
+.btn-basket-save.saved {
+  background-color: #28a745;
+}
+
 .tabs {
   /* display: flex; */
   margin-bottom: 20px;
@@ -902,12 +949,6 @@ link {
   scale: 120%;
   transition: .4s;
 }
-
-/* .button-container {
-  display: flex;
-  align-items: center;
-} */
-
 
 .big-logo {
   float: left;
@@ -1025,7 +1066,7 @@ link {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.form-group, .form-address {
+.form-group, .form-address, .form-baskets {
   display: table-row;
   margin-bottom: 15px;
 }
@@ -1059,7 +1100,6 @@ link {
   display: table-cell;
   padding: 8px;
   box-sizing: border-box;
-  
 }
 
 .form-login input {
@@ -1080,9 +1120,39 @@ link {
   border-radius: 12px;
 }
 
-input[type='number'] {
-  max-width: 40px !important;
+.form-baskets label {
+  display: table-cell;
+  vertical-align: top;
+  margin-bottom: 5px;
+  padding: 8px;
+  background-color: #eee;
+  text-align: left;
 }
+
+.form-baskets input {
+  display: table-cell;
+  /* font-size: 1em; */
+  padding: 8px;
+  height: fit-content;
+  width: fit-content;
+}
+
+.form-baskets select {
+  display: table-cell;
+  /* font-size: 1em; */
+  padding: 8px;
+  height: fit-content;
+  width: calc(100% + 8px);
+}
+
+.am-pm {
+  min-width: 52px;
+}
+
+
+/* input[type='number'] {
+  max-width: 40px !important;
+} */
 
 .cell-title {
   padding: 8px;
@@ -1281,24 +1351,6 @@ select:hover {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   background-color: #fff;
   text-align: center;
-}
-
-.market-card-button {
-  display: block;
-  width: 100%;
-  max-width: 200px;
-  margin: 10px auto;
-  padding: 8px 16px;
-  border: 1px solid #ff3399;
-  background-color: #ff6699;
-  color: #fff;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  border-radius: 8px;
-}
-.market-card-button:hover {
-  background-color: #ff8300;
 }
 
 .market-image {
@@ -1504,56 +1556,6 @@ select:hover {
 
 .market-card-popup img {
   width: 100%;
-}
-
-.basket-input {
-  width: 60px;
-  height: 60px; 
-  margin-right: 10px;
-  padding: 10px;
-  font-size: 24px; 
-  border: 1px solid #ccc; 
-  border-radius: 5px; 
-}
-
-.pickup-time-input {
-  width: 120px;
-  height: 50px; 
-  padding: 10px;
-  font-size: 16px; 
-  border: 1px solid #ccc; 
-  border-radius: 5px; 
-}
-
-.time-picker {
-  display: center;
-  align-items: center;
-}
-
-.amPm-dropdown {
-  width: 60px;
-  height: 50px;
-  padding: 5px;
-}
-
-.basket-save-button {
-  background-color: #ff6699;
-  border: none;
-  width: 200px;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 4px;
-  margin-top: 10px;
-  transition: background-color 0.3s ease;
-}
-
-.basket-save-button.saved {
-  background-color: #28a745;
 }
 
 .edit-link {

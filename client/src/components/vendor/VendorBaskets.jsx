@@ -4,14 +4,13 @@ import VendorBasketCard from './VendorBasketCard';
 import VendorCreate from './VendorCreate';
 import VendorNotification from './VendorNotification';
 
-function VendorBaskets({ marketId, vendorUserData, newVendor, setNewVendor }) {
+function VendorBaskets({ marketId, vendorUserData }) {
     const [locations, setLocations] = useState([]);
     const [vendorId, setVendorId] = useState(null);
     const [allVendorMarkets, setAllVendorMarkets] = useState([]);
     const [filteredMarketDays, setFilteredMarketDays] = useState([]);
     const [filteredMarkets, setFilteredMarkets] = useState([]);
-    const [nextMarketDay, setNextMarketDay] = useState(null);
-    const [nextMarketDayDate, setNextMarketDayDate] = useState(null);
+    const [nextMarketDays, setNextMarketDays] = useState(null);
     const [marketDetails, setMarketDetails] = useState({});
     const [availableBaskets, setAvailableBaskets] = useState({});
     const [price, setPrice] = useState({});
@@ -26,9 +25,6 @@ function VendorBaskets({ marketId, vendorUserData, newVendor, setNewVendor }) {
     const dayOfWeek = today.getDay()
     const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-    const dayName = weekDay[dayOfWeek]
-
-    console.log(dayOfWeek)
 
 
     useEffect(() => {
@@ -63,28 +59,32 @@ function VendorBaskets({ marketId, vendorUserData, newVendor, setNewVendor }) {
     }, []);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${vendorId}`)
-            .then(response => response.json())
-            .then(data => {
-                setAllVendorMarkets(data)
-                // if (Array.isArray(markets)) {
-                //     const marketIds = markets.map(market => market.market_day_id);
-                //     setMarkets(marketIds);
-                // }
-            })
-            .catch(error => console.error('Error fetching market locations:', error));
+        if (vendorId) {
+            fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${vendorId}`)
+                .then(response => response.json())
+                .then(data => {
+                    setAllVendorMarkets(data)
+                    // if (Array.isArray(markets)) {
+                    //     const marketIds = markets.map(market => market.market_day_id);
+                    //     setMarkets(marketIds);
+                    // }
+                })
+                .catch(error => console.error('Error fetching market locations:', error));
+            }
     }, [vendorId]);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/market-days")
-            .then(response => response.json())
-            .then(data => {
-                const filteredData = data.filter(item =>
-                    allVendorMarkets.some(vendorMarket => vendorMarket.market_day_id === item.id)
-                );
-                setFilteredMarketDays(filteredData)
-            })
-            .catch(error => console.error('Error fetching market days', error));
+        if (allVendorMarkets.length > 0) {
+            fetch("http://127.0.0.1:5555/api/market-days")
+                .then(response => response.json())
+                .then(data => {
+                    const filteredData = data.filter(item =>
+                        allVendorMarkets.some(vendorMarket => vendorMarket.market_day_id === item.id)
+                    );
+                    setFilteredMarketDays(filteredData)
+                })
+                .catch(error => console.error('Error fetching market days', error));
+            }
     }, [allVendorMarkets]);
 
     useEffect(() => {
@@ -99,51 +99,33 @@ function VendorBaskets({ marketId, vendorUserData, newVendor, setNewVendor }) {
             .catch(error => console.error('Error fetching market days', error));
     }, [filteredMarketDays]);
 
-    // console.log(allVendorMarkets)
-    // console.log(filteredMarketDays)
-    // console.log(filteredMarkets)
-
     const todaysMarketDay = filteredMarketDays.filter(item => item.day_of_week === dayOfWeek);
 
 
     useEffect(() => {
-        let closestMarketDay = null;
-        let closestDayDiff = Infinity; // Start with a large difference to find the minimum
-        // Check if any market day matches today's day_of_week
-        filteredMarketDays.forEach((item) => {
-            const diff = (item.day_of_week - dayOfWeek + 7) % 7; // Calculate the difference in days
-            if (diff === 0) {
-                // If the market day is today, set it as the nextMarketDay
-                closestMarketDay = item;
-                closestDayDiff = 0;  // We found today's market day
-            } else if (diff > 0 && diff < closestDayDiff) {
-                // If no match for today, look for the closest future day
-                closestDayDiff = diff;
-                closestMarketDay = item;
-            }
-        });
-        setNextMarketDay(closestMarketDay)
-        // If we found a closest market day (either today or future), set it
-        if (closestMarketDay) {
+        const calculateNextMarketDays = () => {
             const today = new Date();
-            const nextMarketDayDate = new Date(today);
-            // If the closest market day is a future day, calculate the date
-            if (closestDayDiff !== 0) {
-                nextMarketDayDate.setDate(today.getDate() + closestDayDiff);
-            }
-            setNextMarketDayDate(nextMarketDayDate);
-            console.log("Selected Market Day Date:", nextMarketDayDate);
-        } else {
-            console.log("No matching or closest day found");
+            const next7Days = Array.from({ length: 7 }, (_, i) => {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                return date;
+            });
+
+            const nextMarketDays = filteredMarketDays
+                .map(day => ({
+                    ...day,
+                    date: next7Days.find(d => d.getDay() === day.day_of_week),
+                }))
+                .filter(day => day.date)
+                .sort((a, b) => a.date - b.date);
+
+            setNextMarketDays(nextMarketDays);
+        };
+
+        if (filteredMarketDays.length > 0) {
+            calculateNextMarketDays();
         }
-    }, [filteredMarketDays, dayOfWeek]);
-
-
-    // console.log(nextMarketDay)
-    // console.log(nextMarketDayDate)
-    
-
-
+    }, [filteredMarketDays]);
 
 
 
@@ -240,8 +222,15 @@ function VendorBaskets({ marketId, vendorUserData, newVendor, setNewVendor }) {
                     <h3>Todays Markets:</h3>
                     <div className='market-cards-container'>
                         <div className='market-card'>
-                            <h3>{nextMarketDay.markets.name}</h3>
-                            <h4>{months[nextMarketDayDate.getMonth()]} {nextMarketDayDate.getDate()}, {weekDay[nextMarketDayDate.getDay()]}</h4>
+                                {nextMarketDays ? (
+                                <>
+                                    <h3>{nextMarketDays[0].markets.name}</h3>
+                                    <h4>{months[nextMarketDays[0].date.getMonth()]} {nextMarketDays[0].date.getDate()}, {weekDay[nextMarketDays[0].date.getDay()]}</h4>
+                                </>
+                            ) : (
+                                <h3>Loading...</h3>
+                            )}
+                    
                             <br />
                             <p>Available Baskets: 5</p>
                             <br />
@@ -285,9 +274,15 @@ function VendorBaskets({ marketId, vendorUserData, newVendor, setNewVendor }) {
                     <p>Edits can be made until 9AM the day of the market unless basket has already been claimed by customer</p>
                     <br />
                     <div className='market-cards-container'>
-                        <VendorBasketCard vendorId={vendorId} />
-                        <VendorBasketCard />
-                        <VendorBasketCard />
+                            {nextMarketDays ? nextMarketDays.map((marketDay, index) => (
+                                <VendorBasketCard
+                                    key={index}
+                                    vendorId={vendorId}
+                                    months={months}
+                                    weekDay={weekDay}
+                                    marketDay={marketDay}
+                                />
+                            )) : ''}
                     </div>
                 </div>
             )}
