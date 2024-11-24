@@ -14,6 +14,8 @@ function VendorCreate () {
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
     const [vendorImageURL, setVendorImageURL] = useState(null);
+    const [requestSent, setRequestSent] = useState(false);
+
 
     const navigate = useNavigate();
   
@@ -46,37 +48,16 @@ function VendorCreate () {
             })
             .then((data) => setVendors(data))
             .catch((error) => console.error("Error fetching vendors:", error));
-        }, []);
+    }, []);
 
     useEffect(() => {
-        const fetchVendorNotifications = async () => {
-            if (!vendorUserId) return; 
-
-            try {
-                console.log('Fetching notifications for vendorUserId:', vendorUserId);
-                const response = await fetch(`/api/vendor-notifications/${vendorUserId}`);
-                const data = await response.json();
-                console.log('API Response:', data);
-
-                if (data.message) {
-                    setPendingRequest((prev) => ({
-                        ...prev,
-                        [vendorUserId]: data.message
-                    }));
-                } else {
-                    setPendingRequest((prev) => ({
-                        ...prev,
-                        [vendorUserId]: null
-                    }));
-                }
-
-                setNotifications(data.notifications || []);
-            } catch (error) {
-                console.error('Error fetching vendor notifications:', error);
-            }
-        };
-
-        fetchVendorNotifications();
+        const storedPendingRequest = localStorage.getItem(`pendingRequest_${vendorUserId}`);
+        if (storedPendingRequest) {
+            setPendingRequest(prev => ({
+                ...prev,
+                [vendorUserId]: storedPendingRequest,
+            }));
+        }
     }, [vendorUserId]);
 
     const onUpdateQuery = (event) => setQuery(event.target.value);
@@ -280,26 +261,26 @@ function VendorCreate () {
     
             if (response.ok) {
                 const responseData = await response.json();
-                console.log('Notification created:', responseData);
-                const newNotificationId = responseData.notification_id;
-                
-                setPendingRequest((prev) => ({
+                const notificationId = responseData.notification_id;
+    
+                localStorage.setItem(`pendingRequest_${vendorUserId}`, notificationId);
+    
+                setPendingRequest(prev => ({
                     ...prev,
-                    [vendorUserId]: 'Your request is pending.',
+                    [vendorUserId]: notificationId,
                 }));
     
                 alert('Your request has been sent to the vendor admins!');
             } else {
                 const errorData = await response.json();
                 alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
-                console.error('Error details:', errorData);
             }
         } catch (error) {
             console.error('Error processing request:', error);
             alert('An error occurred while sending the request. Please try again later.');
         }
     };
-
+    
     const handleCancelRequest = async () => {
         if (!selectedVendor) {
             alert('No vendor selected.');
@@ -312,7 +293,7 @@ function VendorCreate () {
             return;
         }
     
-        const notificationId = pendingRequest[selectedVendor.id];
+        const notificationId = pendingRequest[vendorUserId];
     
         if (!notificationId) {
             alert('No pending request found.');
@@ -332,22 +313,22 @@ function VendorCreate () {
             });
     
             if (response.ok) {
-                setPendingRequest((prev) => ({
+                setPendingRequest(prev => ({
                     ...prev,
-                    [vendorUserId]: null
+                    [vendorUserId]: null,
                 }));
     
+                localStorage.removeItem(`pendingRequest_${vendorUserId}`);
                 alert(`Your request to join ${selectedVendor.name} has been canceled.`);
             } else {
                 const errorData = await response.json();
-                console.error('Error canceling request:', errorData);
                 alert(`Error canceling request: ${errorData.message || 'Unknown error'}`);
             }
         } catch (error) {
             console.error('Error:', error);
             alert('An error occurred while canceling the request. Please try again later.');
         }
-    };    
+    };
 
     console.log("VendorUserId:", vendorUserId)
     console.log("Pending Request:", pendingRequest[vendorUserId]);
@@ -405,14 +386,14 @@ function VendorCreate () {
             <br />
 
             <div>
-                <div className="tab-content margin-b-24">
-                    <h2>Already a Vendor?</h2>
-                </div>
+            <div className="tab-content margin-b-24">
+                <h2>Already a Vendor?</h2>
+            </div>
 
-                <div>
-                {pendingRequest[vendorUserId] ? (
-                    <div className="selected-vendor">
-                        <p>Your request to be added to {selectedVendor?.name} is pending.</p>
+            <div>
+                {pendingRequest[vendorUserId] && selectedVendor ? (
+                    <div className="notification">
+                        <p>Your request has been sent to the admins of {selectedVendor.name} for approval.</p>
                         <button className="btn-edit" onClick={handleCancelRequest}>
                             Cancel Request
                         </button>
@@ -429,7 +410,7 @@ function VendorCreate () {
                                         <div className="dropdown-content">
                                             {query &&
                                                 filteredVendors.slice(0, 10).map((item) => (
-                                                    <div className="search-results" key={item.id} onClick={() => handleSelectVendor(item)}>
+                                                    <div className="search-results" key={item.id} onClick={() => handleSelectVendor(item)} >
                                                         {item.name}
                                                     </div>
                                                 ))}
@@ -438,19 +419,23 @@ function VendorCreate () {
                                 </tr>
                             </tbody>
                         </table>
+
                         {selectedVendor && (
                             <div className="selected-vendor">
                                 <p>You have selected: {selectedVendor.name}</p>
-                                <button className="btn-edit" onClick={handleRequestJoin} disabled={!selectedVendor}>
-                                    Request
-                                </button>
+                                {!pendingRequest[vendorUserId] && (
+                                    <button className="btn-edit" onClick={handleRequestJoin} disabled={!selectedVendor} >
+                                        Request
+                                    </button>
+                                )}
                             </div>
                         )}
-                        </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
         </div>
+
+            </div>
     )
 }
 
