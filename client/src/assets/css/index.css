@@ -1047,6 +1047,10 @@ link {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
+#chart-baskets {
+  width: 100%;
+}
+
 /* Basic form styling */
 /* form { */
   /* display: flex;
