@@ -83,9 +83,10 @@ function VendorNotification() {
             });
     
             if (response.ok) {
-                setNotifications(notifications.filter((notif) => notif.id !== notificationId));
+                setNotifications((prevNotifications) => 
+                    prevNotifications.filter((notif) => notif.id !== notificationId)
+                );
                 alert('Notification approved and user updated successfully');
-                window.location.reload();
             } else {
                 console.error('Failed to approve request');
                 const responseData = await response.json();
@@ -108,8 +109,9 @@ function VendorNotification() {
             });
 
             if (response.ok) {
-                setNotifications(notifications.filter((notif) => notif.id !== notificationId));
-                window.location.reload();
+                setNotifications((prevNotifications) => 
+                    prevNotifications.filter((notif) => notif.id !== notificationId)
+                );
             } else {
                 console.error('Failed to reject request');
             }
