@@ -322,7 +322,7 @@ function VendorDetail () {
             </div>
             <div className={events.length < 1 ? 'flex-start flex-align-start flex-gap-16' : 'flex-start flex-align-center flex-gap-16'}>
                 {events.length > 0 ? (
-                    <h2 className='margin-t-16'>Events:</h2>
+                    <h2 className='color-4 margin-t-16'>Events:</h2>
                 ) : (
                     <>
                     </>
@@ -430,72 +430,75 @@ function VendorDetail () {
                 <h2>Reviews</h2>
                 <br />
                 {vendorReviews.length > 0 ? (
-                    vendorReviews.map((review, index) => (
-                        <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                        {review.user_id !== userId && editingReviewId !== review.id ? (
-                            <div className='flex-start'>
-                                <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
-                                <button className='btn btn-small btn-x btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
-                            </div>
-                        ) : (
-                            <h4>You</h4>
-                        )}
-                        {review.user_id === userId && editingReviewId === review.id ? (
-                            <>
-                                <textarea className='textarea-edit'
-                                    value={editedReviewData}
-                                    onChange={handleEditInputChange}
-                                    />
-                                <br></br>
-                                <button className='btn btn-small' onClick={() => handleReviewUpdate(review.id)}>Save</button>
-                                <button className='btn btn-small' onClick={() => setEditingReviewId(null)}>Cancel</button>
-                            </>
-                        ) : (
-                            <>
-                                <p>{review.review_text}</p>
-                            </>
-                        )}
-                        {review.user_id === userId && editingReviewId !== review.id && (
-                            <div className='margin-t-8'>
-                                <button className='btn btn-small' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
-                                    Edit
-                                </button>
-                                <button className='btn btn-small btn-x btn-gap' onClick={() => handleReviewDelete(review.id)}>x</button>
-                            </div>
-                        )}
-                    </div>
-                ))
-                ) : (
-                    <p>No reviews available.</p>
-                )}
-                <div>
-                    {reviewMode ? (
-                        <>
-                            <div>
-                                <textarea
-                                    className='textarea-review'
-                                    name="review_text"
-                                    value={reviewData}
-                                    placeholder="Enter your review"
-                                    onChange={(event) => setReviewData(event.target.value)}
-                                    rows="6"
-                                    // cols="80"
-                                    required
-                                />
-                            </div>
-                            <div className='flex-start flex-center-align'>
-                                <button className='btn-edit' onClick={hanldeReviewSubmit} type="submit">Post Review</button>
-                                <button className='btn-edit' onClick={handleReviewToggle}>Cancel</button>
-                                {showDupeAlert && (
-                                    <div className='alert-reviews'>
-                                        {alertMessage}
-                                    </div>
-                                )}
-                            </div>
-                        </>
+                    vendorReviews
+                        .sort((a, b) => new Date(b.post_date) - new Date(a.post_date))
+                        .map((review, index) => (
+                            <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
+                            {review.user_id !== userId && editingReviewId !== review.id ? (
+                                <div className='flex-start flex-align-center'>
+                                    <h4 className='margin-r-8'>{review.user ? review.user.first_name : 'Anonymous'}</h4>
+                                    <p className='margin-t-4'>{review ? review.post_date : ''}</p>
+                                    <button className='btn btn-small btn-x btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
+                                </div>
+                            ) : (
+                                <h4>You</h4>
+                            )}
+                            {review.user_id === userId && editingReviewId === review.id ? (
+                                <>
+                                    <textarea className='textarea-edit'
+                                        value={editedReviewData}
+                                        onChange={handleEditInputChange}
+                                        />
+                                    <br></br>
+                                    <button className='btn btn-small' onClick={() => handleReviewUpdate(review.id)}>Save</button>
+                                    <button className='btn btn-small' onClick={() => setEditingReviewId(null)}>Cancel</button>
+                                </>
+                            ) : (
+                                <>
+                                    <p>{review.review_text}</p>
+                                </>
+                            )}
+                            {review.user_id === userId && editingReviewId !== review.id && (
+                                <div className='margin-t-8'>
+                                    <button className='btn btn-small' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
+                                        Edit
+                                    </button>
+                                    <button className='btn btn-small btn-x btn-gap' onClick={() => handleReviewDelete(review.id)}>x</button>
+                                </div>
+                            )}
+                        </div>
+                    ))
                     ) : (
-                            <button className={isUserLoggedIn > 0 ? 'btn btn-plus' : 'hidden'} onClick={handleReviewToggle} title='Leave a review'>+</button>
+                        <p>No reviews available.</p>
                     )}
+                    <div>
+                        {reviewMode ? (
+                            <>
+                                <div>
+                                    <textarea
+                                        className='textarea-review'
+                                        name="review_text"
+                                        value={reviewData}
+                                        placeholder="Enter your review"
+                                        onChange={(event) => setReviewData(event.target.value)}
+                                        rows="6"
+                                        // cols="80"
+                                        required
+                                    />
+                                </div>
+                                <div className='flex-start flex-center-align'>
+                                    <button className='btn-edit' onClick={hanldeReviewSubmit} type="submit">Post Review</button>
+                                    <button className='btn-edit' onClick={handleReviewToggle}>Cancel</button>
+                                    {showDupeAlert && (
+                                        <div className='alert-reviews'>
+                                            {alertMessage}
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                        ) : (
+                                <button className={isUserLoggedIn > 0 ? 'btn btn-plus' : 'hidden'} onClick={handleReviewToggle} title='Leave a review'>+</button>
+                        )}
                 </div>
             </div>
         </div>

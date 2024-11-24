@@ -267,6 +267,7 @@ class MarketReview(db.Model, SerializerMixin):
     review_text = db.Column(db.String, nullable=False)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    post_date = db.Column(db.Date, nullable=False, default=date.today)
     is_reported = db.Column(db.Boolean, default=False)
 
     # Relationships
@@ -291,6 +292,7 @@ class VendorReview(db.Model, SerializerMixin):
     review_text = db.Column(db.String, nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    post_date = db.Column(db.Date, nullable=False, default=date.today)
     is_reported = db.Column(db.Boolean, default=False)
 
     # Relationships

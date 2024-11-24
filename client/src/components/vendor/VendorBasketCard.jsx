@@ -84,8 +84,8 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
         <div className="market-card">
             {marketDay && marketDay.date ? (
                 <>
-                    <h3>{marketDay ? marketDay.markets.name : ''}</h3>
-                    <h4 className='margin-t-8'>{marketDay.date ? months[marketDay.date.getMonth()] : ''} {marketDay.date ? marketDay.date.getDate() : ''}, {marketDay.date ? weekDay[marketDay.date.getDay()] : ''}</h4>
+                    <h4>{marketDay ? marketDay.markets.name : ''}</h4>
+                    <h4 className='margin-t-8'>{marketDay.date ? weekDay[marketDay.date.getDay()] : ''}, {marketDay.date ? months[marketDay.date.getMonth()] : ''} {marketDay.date ? marketDay.date.getDate() : ''}</h4>
                 </>
             ) : (
                 <h3>Loading...</h3>
