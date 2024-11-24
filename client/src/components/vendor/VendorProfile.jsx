@@ -287,7 +287,7 @@ function VendorProfile () {
                     <h2 className='title'>Profile Information </h2>
                     
                     <div className='box-bounding'>
-                    {editMode && vendorUserData?.is_admin ? (
+                    {editMode ? (
                         <>
                             <div className='form-group flex-form'>
                                 <label>First Name:</label>
@@ -457,7 +457,8 @@ function VendorProfile () {
                                         </div>
                                     </div>
                                     )}
-                                    
+                                    <VendorLocations vendorId={vendorId} />
+
                                     {/* <p><strong>Locations:&emsp;</strong></p>
                                     {Array.isArray(locations) && locations.length > 0 ? (
                                         locations.map((marketId, index) => (
@@ -471,9 +472,8 @@ function VendorProfile () {
                                 </>
                             )
                         ) : (
-                            <VendorCreate />
+                        <VendorCreate />
                         )}
-                        <VendorLocations vendorId={vendorId} />
                     </div>
                 </div>
             </div>

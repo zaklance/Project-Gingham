@@ -96,6 +96,7 @@ function VendorDashboard({ marketId }) {
         <div>
             <div className='flex-start flex-center-align flex-gap-48'>
                 <h2 className=''>Vendor Dashboard</h2>
+                <br/>
                 <div className='tabs margin-t-20'>
                     <Link to="#" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                         Baskets
@@ -110,9 +111,14 @@ function VendorDashboard({ marketId }) {
                     )}
                 </div>
             </div>
+            <br />
+
+            {/* <p>Welcome to your Vendor Portal, <strong>{vendorUserData.first_name}</strong></p> */}
+            
             {activeTab === 'baskets' && <VendorBaskets marketId={marketId} vendorId={vendorId} vendorUserData={vendorUserData} newVendor={newVendor} setNewVendor={setNewVendor} />}
             {activeTab === 'events' && <VendorEvents vendors={vendors} vendorId={vendorId} vendorUserData={vendorUserData} />}
             {activeTab === 'team' && <VendorTeam vendors={vendors} vendorId={vendorId} vendorUserData={vendorUserData} />}
+        
         </div>
     );
 }

@@ -1714,7 +1714,7 @@ def get_all_vendor_notifications():
 def get_vendor_notifications(vendor_id):
     notifications = VendorNotification.query.filter_by(vendor_id=vendor_id, is_read=False).all()
 
-    notifications_data = [{'id': n.id, 'message': n.message} for n in notifications]
+    notifications_data = [{'id': n.id, 'message': n.message, 'vendor_id': n.vendor_id, 'vendor_user_id': n.vendor_user_id} for n in notifications]
     return jsonify({'notifications': notifications_data}), 200
 
 @app.route('/api/vendor-notifications/<int:vendor_user_id>', methods=['GET'])
@@ -1722,12 +1722,30 @@ def get_vendor_user_notifications(vendor_user_id):
     pending_request = VendorNotification.query.filter_by(vendor_user_id=vendor_user_id, status='pending').first()
 
     if pending_request:
-        return jsonify({'message': 'You have a pending request.'}), 200
-    
+        return jsonify({'message': 'Your request is pending.'}), 200
+
     notifications = VendorNotification.query.filter_by(vendor_user_id=vendor_user_id, is_read=False).all()
 
-    notifications_data = [{'id': n.id, 'message': n.message, 'status': n.is_read, 'vendor_id': n.vendor_id} for n in notifications]
+    notifications_data = [
+        {
+            'id': n.id,
+            'message': n.message,
+            'status': n.status,
+            'vendor_id': n.vendor_id
+        } for n in notifications
+    ]
     return jsonify({'notifications': notifications_data}), 200
+
+@app.route('/api/vendor-notifications/<int:vendor_user_id>/pending', methods=['GET'])
+def check_pending_request(vendor_user_id):
+    pending_request = VendorNotification.query.filter_by(
+        vendor_user_id=vendor_user_id, 
+        is_read=False
+    ).first()
+
+    if pending_request:
+        return jsonify({'message': 'Your request is pending.'}), 200
+    return jsonify({'message': 'No pending requests.'}), 404
 
 @app.route('/api/vendor-notifications/<int:notification_id>/approve', methods=['POST'])
 def approve_notification(notification_id):
