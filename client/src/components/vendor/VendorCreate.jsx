@@ -14,8 +14,6 @@ function VendorCreate () {
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
     const [vendorImageURL, setVendorImageURL] = useState(null);
-    const [requestSent, setRequestSent] = useState(false);
-
 
     const navigate = useNavigate();
   
@@ -39,6 +37,18 @@ function VendorCreate () {
     }, [vendorUserData]); 
 
     useEffect(() => {
+        const storedRequest = localStorage.getItem('pendingRequest');
+        if (storedRequest) {
+            const request = JSON.parse(storedRequest);
+            setPendingRequest(request);
+    
+            if (request.vendorId) {
+                fetchVendorDetails(request.vendorId);
+            }
+        }
+    }, []);
+
+    useEffect(() => {
         fetch("http://127.0.0.1:5555/api/vendors")
             .then((response) => {
                 if (!response.ok) {
@@ -50,29 +60,20 @@ function VendorCreate () {
             .catch((error) => console.error("Error fetching vendors:", error));
     }, []);
 
-    useEffect(() => {
-        const storedPendingRequest = localStorage.getItem(`pendingRequest_${vendorUserId}`);
-        if (storedPendingRequest) {
-            setPendingRequest(prev => ({
-                ...prev,
-                [vendorUserId]: storedPendingRequest,
-            }));
+    const fetchVendorDetails = async (vendorId) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendors/${vendorId}`);
+            if (response.ok) {
+                const vendorData = await response.json();
+                setSelectedVendor({ id: vendorData.id, name: vendorData.name });
+            } else {
+                console.error('Error fetching vendor details');
+            }
+        } catch (error) {
+            console.error('Error fetching vendor details:', error);
         }
-    }, [vendorUserId]);
-
-    const onUpdateQuery = (event) => setQuery(event.target.value);
-
-    const filteredVendors = vendors.filter(
-    (vendor) =>
-        vendor.name.toLowerCase().includes(query.toLowerCase()) &&
-        vendor.name !== query
-    );
-
-    const handleSelectVendor = (vendor) => {
-        setSelectedVendor(vendor);
-        setQuery(vendor.name);
     };
-    
+
     useEffect(() => {
         const fetchVendorUserData = async () => {
             const id = sessionStorage.getItem('vendor_user_id');
@@ -110,35 +111,30 @@ function VendorCreate () {
     
         fetchVendorUserData();
     }, []);
-    
 
+    const onUpdateQuery = (event) => setQuery(event.target.value);
+
+    const filteredVendors = vendors.filter(
+        (vendor) => vendor.name.toLowerCase().includes(query.toLowerCase()) && vendor.name !== query 
+    );
+
+    const handleSelectVendor = (vendor) => {
+        setSelectedVendor(vendor);
+        setQuery(vendor.name);
+    };
+    
     useEffect(() => {
         if (newVendor && !vendorData) {
-            setVendorData({
-                name: '',
-                city: '', 
-                state: '', 
-                product: '', 
-                image: ''
-            });
+            setVendorData({ name: '', city: '', state: '', product: '', image: '' });
             setVendorEditMode(true); 
         } else if (vendorUserData) {
-            setVendorData({
-                name: vendorUserData.name || '',
-                city: vendorUserData.city || '',
-                state: vendorUserData.state || '',
-                product: vendorUserData.product || '',
-                image: vendorUserData.image || ''
-            });
+            setVendorData({ name: vendorUserData.name || '', city: vendorUserData.city || '', state: vendorUserData.state || '', product: vendorUserData.product || '', image: vendorUserData.image || '' });
             setVendorEditMode(true);
         }
     }, [newVendor, vendorUserData]);
 
     const handleVendorInputChange = (event) => {
-        setVendorData({
-            ...vendorData,
-            [event.target.name]: event.target.value,
-        });
+        setVendorData({ ...vendorData, [event.target.name]: event.target.value, });
     };
 
     const handleVendorEditToggle = () => {
@@ -146,10 +142,7 @@ function VendorCreate () {
     };
 
     const handleFileChange = (event) => {
-        if (event.target.files) {
-            setStatus('initial');
-            setImage(event.target.files[0]);
-        }
+        if (event.target.files) { setStatus('initial'); setImage(event.target.files[0]); }
     };
 
     const handleSaveNewVendor = async () => {
@@ -158,13 +151,7 @@ function VendorCreate () {
             return;
         }
 
-        const newVendorData = {
-            name: vendorData.name,
-            city: vendorData.city,
-            state: vendorData.state,
-            product: vendorData.product,
-            image: vendorImageURL,
-        };
+        const newVendorData = { name: vendorData.name, city: vendorData.city, state: vendorData.state, product: vendorData.product, image: vendorImageURL, };
 
         try {
             const vendorResponse = await fetch('http://127.0.0.1:5555/api/vendors', {
@@ -219,7 +206,6 @@ function VendorCreate () {
                 setVendorEditMode(false);
                 setNewVendor(false);
                 navigate('/vendor/dashboard');
-                window.location.reload();
             } else {
                 console.log('Error updating user with vendor_id');
             }
@@ -228,16 +214,17 @@ function VendorCreate () {
         }
     };
 
-    const handleRequestJoin = async () => {
-        if (!selectedVendor) {
-            alert('No vendor selected.');
+    const handleRequestJoin = async (event) => {
+        event.preventDefault();
+    
+        if (!selectedVendor || !vendorUserId) {
+            alert('Please select a vendor and ensure you are logged in.');
             return;
         }
     
-        if (!vendorUserId) {
-            alert('Vendor user data is missing.');
-            return;
-        }
+        const request = { id: selectedVendor.id, name: selectedVendor.name, vendorId: selectedVendor.id };
+        setPendingRequest(request);
+        localStorage.setItem('pendingRequest', JSON.stringify(request));
     
         const token = sessionStorage.getItem('jwt-token');
         if (!token) {
@@ -261,42 +248,35 @@ function VendorCreate () {
     
             if (response.ok) {
                 const responseData = await response.json();
-                const notificationId = responseData.notification_id;
-    
-                localStorage.setItem(`pendingRequest_${vendorUserId}`, notificationId);
-    
-                setPendingRequest(prev => ({
-                    ...prev,
-                    [vendorUserId]: notificationId,
-                }));
-    
-                alert('Your request has been sent to the vendor admins!');
+                setPendingRequest(responseData);
+
+                setSelectedVendor(null);
+                setQuery('');
+
+                alert(`Your request has been sent to the admins of ${selectedVendor.name}!`);
+                
             } else {
                 const errorData = await response.json();
                 alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
             }
         } catch (error) {
-            console.error('Error processing request:', error);
+            console.error('Error sending request:', error);
             alert('An error occurred while sending the request. Please try again later.');
+            setPendingRequest(null);
+            localStorage.removeItem('pendingRequest');
         }
     };
     
+    
     const handleCancelRequest = async () => {
-        if (!selectedVendor) {
-            alert('No vendor selected.');
+        if (!pendingRequest?.id) {
+            alert('No pending request found to cancel.');
             return;
         }
     
         const token = sessionStorage.getItem('jwt-token');
         if (!token) {
             alert('Authorization token is missing. Please log in.');
-            return;
-        }
-    
-        const notificationId = pendingRequest[vendorUserId];
-    
-        if (!notificationId) {
-            alert('No pending request found.');
             return;
         }
     
@@ -307,32 +287,25 @@ function VendorCreate () {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    notification_id: notificationId,
-                }),
+                body: JSON.stringify({ notification_id: pendingRequest.id }),
             });
     
             if (response.ok) {
-                setPendingRequest(prev => ({
-                    ...prev,
-                    [vendorUserId]: null,
-                }));
-    
-                localStorage.removeItem(`pendingRequest_${vendorUserId}`);
-                alert(`Your request to join ${selectedVendor.name} has been canceled.`);
+                setSelectedVendor(null);
+
+                setPendingRequest(null);
+                localStorage.removeItem('pendingRequest');
+                alert('Your request has been canceled.');
+                navigate('/vendor/dashboard');
             } else {
                 const errorData = await response.json();
                 alert(`Error canceling request: ${errorData.message || 'Unknown error'}`);
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error canceling request:', error);
             alert('An error occurred while canceling the request. Please try again later.');
         }
     };
-
-    console.log("VendorUserId:", vendorUserId)
-    console.log("Pending Request:", pendingRequest[vendorUserId]);
-    console.log("Selected Vendor:", selectedVendor);
 
     return (
         <div>
@@ -391,9 +364,9 @@ function VendorCreate () {
             </div>
 
             <div>
-                {pendingRequest[vendorUserId] && selectedVendor ? (
+                {pendingRequest?.id ? (
                     <div className="notification">
-                        <p>Your request has been sent to the admins of {selectedVendor.name} for approval.</p>
+                        <p>Your request has been sent to the admins of <strong>{pendingRequest?.name}</strong> for approval.</p>
                         <button className="btn-edit" onClick={handleCancelRequest}>
                             Cancel Request
                         </button>
@@ -423,8 +396,8 @@ function VendorCreate () {
                         {selectedVendor && (
                             <div className="selected-vendor">
                                 <p>You have selected: {selectedVendor.name}</p>
-                                {!pendingRequest[vendorUserId] && (
-                                    <button className="btn-edit" onClick={handleRequestJoin} disabled={!selectedVendor} >
+                                {!pendingRequest?.id && (
+                                    <button className="btn-edit" onClick={handleRequestJoin}>
                                         Request
                                     </button>
                                 )}
@@ -433,9 +406,9 @@ function VendorCreate () {
                     </div>
                 )}
             </div>
-        </div>
 
-            </div>
+        </div>
+    </div>
     )
 }
 
