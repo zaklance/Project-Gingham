@@ -103,11 +103,11 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         </li>
                         <li className='notification' onClick={handleNotifPopup}>
                             <a className='nav-tab color-1 btn-nav nav-tab-wide' reloadDocument to="/notifications"><img className='img-notifications' src="/site-images/notifications-1.svg" alt="Notification" /></a>
-                            <p className='badge'>{notifications.length}</p>
+                            {notifications.length > 0 && <p className='badge'>{notifications.length}</p>}
                         </li>
                         <div className='notification'>
-                            <div className={`popup-notif ${isNotifPopup ? 'popup-notif-on' : ''}`} style={{ top: window.scrollY }}>
-                                {notifications.length > 0 &&
+                            {notifications.length > 0 &&
+                                <div className={`popup-notif ${isNotifPopup ? 'popup-notif-on' : ''}`} style={{ top: window.scrollY }}>
                                     <div className=''>
                                         <ul className='flex-start flex-wrap ul-notif'>
                                             {notifications.map((notification) => (
@@ -120,8 +120,8 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                             ))}
                                         </ul>
                                     </div>
-                                }
-                            </div>
+                                </div>
+                            }
                         </div>
                         <li style={{ marginLeft: 'auto' }}>
                             <NavLink className='nav-tab color-3 tab-right btn-nav' reloadDocument to="/user/logout">Logout</NavLink>
