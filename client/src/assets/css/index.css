@@ -914,15 +914,6 @@ button:active {
   transition: .1s;
 }
 
-.link-yellow:hover {
-  background: #fffa9c;
-}
-
-.link-yellow:active {
-  background-color: #fff669;
-  transition: .1s;
-}
-
 .btn-nav:hover {
   background: #fffa9c;
 }
@@ -934,6 +925,25 @@ button:active {
 
 link {
   padding: 0;
+}
+
+.link-yellow:hover {
+  background: #fffa9c;
+}
+
+.link-yellow:active {
+  background-color: #fff669;
+  transition: .1s;
+}
+
+.link-edit {
+  color: #007BFF;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.link-edit:hover {
+  text-decoration: underline;
 }
 
 .add-cart {
@@ -1563,16 +1573,6 @@ select:hover {
 
 .market-card-popup img {
   width: 100%;
-}
-
-.edit-link {
-  color: #007BFF;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.edit-link:hover {
-  text-decoration: underline;
 }
 
 .forgot-password {

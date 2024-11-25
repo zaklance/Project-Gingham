@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
-import ReviewCard from './ReviewCard';
+import ReviewMarket from './ReviewMarket';
 // import VendorDetail from './VendorDetail';
 
 function MarketDetail ({ match }) {
@@ -390,7 +390,7 @@ function MarketDetail ({ match }) {
                     <p>No vendors at this market</p>
                 )}
             </div>
-            <ReviewCard reviewType={reviewType} />
+            <ReviewMarket market={market} alertMessage={alertMessage} setAlertMessage={setAlertMessage} />
         </div>
     );
 };

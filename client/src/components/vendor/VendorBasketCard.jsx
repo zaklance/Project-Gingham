@@ -177,7 +177,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
             {errorMessage && <p className="error-message margin-t-16">{errorMessage}</p>}
             {isSaved && (
                 <p>
-                    <a href="#edit" onClick={handleEdit} className="edit-link">Edit</a>
+                    <a href="#edit" onClick={handleEdit} className="link-edit">Edit</a>
                 </p>
             )}
         </div>

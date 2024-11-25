@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useOutletContext, useNavigate } from 'react-router-dom';
 import MarketCard from './MarketCard';
-import ReviewCard from './ReviewCard';
+import ReviewVendor from './ReviewVendor';
 
 
 function VendorDetail () {
@@ -315,7 +315,7 @@ function VendorDetail () {
                     )}
                 </div>
                 <br />
-                <ReviewCard reviewType={reviewType} />
+                <ReviewVendor vendor={vendor} alertMessage={alertMessage} setAlertMessage={setAlertMessage} />
             </div>
         </div>
     );
