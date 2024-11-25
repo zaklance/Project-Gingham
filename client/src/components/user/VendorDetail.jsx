@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useOutletContext, useNavigate } from 'react-router-dom';
 import MarketCard from './MarketCard';
+import ReviewCard from './ReviewCard';
+
 
 function VendorDetail () {
     const { id } = useParams();
@@ -21,6 +23,7 @@ function VendorDetail () {
     const [hoveredMarket, setHoveredMarket] = useState(null);
     const [events, setEvents] = useState([]);
 
+    const reviewType = "vendor"
     
     // To be deleted after baskets state is moved to BasketCard
     const [marketBaskets, setMarketBaskets] = useState({});
@@ -99,20 +102,6 @@ function VendorDetail () {
     
         fetchMarketDetails();
     }, [markets]);
-
-    useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/vendor-reviews?vendor_id=${id}`)
-            .then(response => response.json())
-            .then(data => {
-                if (Array.isArray(data)) {
-                    setVendorReviews(data);
-                } else {
-                    console.error('Unexpected response format:', data);
-                    setVendorReviews([]);
-                }
-            })
-            .catch(error => console.error('Error fetching reviews:', error));
-    }, [id]);
 
     const handleAddToCart = (marketId) => {
         if (marketBaskets[marketId] > 0) {
@@ -208,107 +197,6 @@ function VendorDetail () {
             setShowAlert(false);
         }, 3000);
     };
-
-    const handleReviewToggle = () => {
-        setReviewMode(!reviewMode);
-    };
-
-    // const handleInputChange = event => {
-    //     setReviewData({
-    //         ...reviewData
-    //     });
-    // };
-
-    const handleReviewEditToggle = (reviewId, currentText) => {
-        setEditingReviewId(reviewId);
-        setEditedReviewData(currentText);
-    };
-
-    const handleEditInputChange = (event) => {
-        setEditedReviewData(event.target.value);
-    };
-
-
-    const hanldeReviewSubmit = async () => {
-        const existingReview = vendorReviews.some(review => review.user_id === userId);
-
-        if (existingReview) {
-            setAlertMessage('You have already submitted a review for this vendor.');
-            setShowDupeAlert(true);
-            setTimeout(() => setShowDupeAlert(null), 3000);
-            return;
-        }
-
-        try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    user_id: userId,
-                    vendor_id: vendor.id,
-                    review_text: reviewData
-                })
-            });
-
-            if (response.ok) {
-                const newReview = await response.json();
-                setVendorReviews([...vendorReviews, newReview]);
-                setReviewData("");
-                setReviewMode(false);
-                console.log('Review submitted successfully:', newReview);
-            } else {
-                console.log('Failed to submit review:', await response.text());
-            }
-        } catch (error) {
-            console.error('Error submitting review:', error);
-        }
-    };
-
-    const handleReviewUpdate = async (reviewId) => {
-        try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ review_text: editedReviewData })
-            });
-
-            if (response.ok) {
-                const updatedReview = await response.json();
-                setVendorReviews((prevReviews) => prevReviews.map((review) =>
-                    review.id === reviewId ? updatedReview : review
-                ));
-                setEditingReviewId(null);
-            }
-        } catch (error) {
-            console.error('Error updating review:', error);
-        }
-    };
-
-    const handleReviewDelete = async (reviewId) => {
-        try {
-
-            fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
-                method: "DELETE",
-            }).then(() => {
-                setAlertMessage('Review deleted');
-                setVendorReviews((prevReviews) => prevReviews.filter((review) => review.id !== reviewId))
-            })
-        } catch (error) {
-            console.error("Error deleting review", error)
-        }
-    }
-
-    useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/events")
-            .then(response => response.json())
-            .then(data => {
-                const filteredData = data.filter(item => item.vendor_id === Number(id));
-                setEvents(filteredData)
-            })
-            .catch(error => console.error('Error fetching events', error));
-    }, []);
 
     if (!vendor) {
         return <div>Loading...</div>;
@@ -427,79 +315,7 @@ function VendorDetail () {
                     )}
                 </div>
                 <br />
-                <h2>Reviews</h2>
-                <br />
-                {vendorReviews.length > 0 ? (
-                    vendorReviews
-                        .sort((a, b) => new Date(b.post_date) - new Date(a.post_date))
-                        .map((review, index) => (
-                            <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                            {review.user_id !== userId && editingReviewId !== review.id ? (
-                                <div className='flex-start flex-align-center'>
-                                    <h4 className='margin-r-8'>{review.user ? review.user.first_name : 'Anonymous'}</h4>
-                                    <p className='margin-t-4'>{review ? review.post_date : ''}</p>
-                                    <button className='btn btn-small btn-x btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
-                                </div>
-                            ) : (
-                                <h4>You</h4>
-                            )}
-                            {review.user_id === userId && editingReviewId === review.id ? (
-                                <>
-                                    <textarea className='textarea-edit'
-                                        value={editedReviewData}
-                                        onChange={handleEditInputChange}
-                                        />
-                                    <br></br>
-                                    <button className='btn btn-small' onClick={() => handleReviewUpdate(review.id)}>Save</button>
-                                    <button className='btn btn-small' onClick={() => setEditingReviewId(null)}>Cancel</button>
-                                </>
-                            ) : (
-                                <>
-                                    <p>{review.review_text}</p>
-                                </>
-                            )}
-                            {review.user_id === userId && editingReviewId !== review.id && (
-                                <div className='margin-t-8'>
-                                    <button className='btn btn-small' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
-                                        Edit
-                                    </button>
-                                    <button className='btn btn-small btn-x btn-gap' onClick={() => handleReviewDelete(review.id)}>x</button>
-                                </div>
-                            )}
-                        </div>
-                    ))
-                    ) : (
-                        <p>No reviews available.</p>
-                    )}
-                    <div>
-                        {reviewMode ? (
-                            <>
-                                <div>
-                                    <textarea
-                                        className='textarea-review'
-                                        name="review_text"
-                                        value={reviewData}
-                                        placeholder="Enter your review"
-                                        onChange={(event) => setReviewData(event.target.value)}
-                                        rows="6"
-                                        // cols="80"
-                                        required
-                                    />
-                                </div>
-                                <div className='flex-start flex-center-align'>
-                                    <button className='btn-edit' onClick={hanldeReviewSubmit} type="submit">Post Review</button>
-                                    <button className='btn-edit' onClick={handleReviewToggle}>Cancel</button>
-                                    {showDupeAlert && (
-                                        <div className='alert-reviews'>
-                                            {alertMessage}
-                                        </div>
-                                    )}
-                                </div>
-                            </>
-                        ) : (
-                                <button className={isUserLoggedIn > 0 ? 'btn btn-plus' : 'hidden'} onClick={handleReviewToggle} title='Leave a review'>+</button>
-                        )}
-                </div>
+                <ReviewCard reviewType={reviewType} />
             </div>
         </div>
     );
