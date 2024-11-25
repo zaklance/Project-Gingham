@@ -2,22 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 
-function ReviewCard({ reviewType }) {
+function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
     const { id } = useParams();
 
-    const [reviewreviewType, setReviewreviewType] = useState(reviewType);
     const [reviews, sertReviews] = useState([]);
     const [showDupeAlert, setShowDupeAlert] = useState(false);
     const [reviewMode, setReviewMode] = useState(false);
     const [reviewData, setReviewData] = useState("");
     const [editingReviewId, setEditingReviewId] = useState(null);
     const [editedReviewData, setEditedReviewData] = useState("");
-    
+
     const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
 
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/${reviewType}-reviews?${reviewType}_id=${id}`)
+        fetch(`http://127.0.0.1:5555/api/vendor-reviews?vendor_id=${id}`)
             .then(response => response.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -54,14 +53,14 @@ function ReviewCard({ reviewType }) {
         }
 
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/${reviewType}-reviews`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews`, {
                 method: 'POST',
                 headers: {
-                    'Content-reviewType': 'application/json'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     user_id: userId,
-                    market_id: market.id,
+                    vendor_id: vendor.id,
                     review_text: reviewData
                 })
             });
@@ -82,9 +81,9 @@ function ReviewCard({ reviewType }) {
 
     const handleReviewUpdate = async (reviewId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/${reviewType}-reviews/${reviewId}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
                 method: 'PATCH',
-                headers: { 'Content-reviewType': 'application/json' },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ review_text: editedReviewData })
             });
 
@@ -103,7 +102,7 @@ function ReviewCard({ reviewType }) {
     const handleReviewDelete = async (reviewId) => {
         try {
 
-            fetch(`http://127.0.0.1:5555/api/${reviewType}-reviews/${reviewId}`, {
+            fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
                 method: "DELETE",
             }).then(() => {
                 setAlertMessage('Review deleted');
@@ -116,9 +115,9 @@ function ReviewCard({ reviewType }) {
 
     const handleReviewReport = async (reviewId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/${reviewType}-reviews/${reviewId}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
                 method: 'PATCH',
-                headers: { 'Content-reviewType': 'application/json' },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ is_reported: true })
             });
 
@@ -210,4 +209,4 @@ function ReviewCard({ reviewType }) {
     )
 }
 
-export default ReviewCard;
+export default ReviewVendor;
