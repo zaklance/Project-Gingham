@@ -890,7 +890,7 @@ def run():
     # add fake market reviews
     market_revs = []
     reported = (False, False, False, False, False, False, False, False, False, True)
-    for i in range(100):
+    for i in range(200):
         rev_len = randint(2, 5)
 
         review_text = str(fake.paragraph(nb_sentences=rev_len))
@@ -914,7 +914,7 @@ def run():
 
     # add fake vendor reviews
     vendor_revs = []
-    for i in range(100):
+    for i in range(200):
         rev_len = randint(2, 5)
 
         review_text = fake.paragraph(nb_sentences=rev_len)
@@ -1154,7 +1154,7 @@ def run():
     user_notifs.append(unm)
     user_notifs.append(unv)
 
-    for i in range(400):
+    for i in range(200):
         msg_len = randint(1, 2)
         rand_market = choice([None, randint(1, 40)])
         if rand_market is None:
