@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 // import '../../assets/css/index.css';
 
 function Login({ handlePopup }) {
-    const [loginEmail, setLoginEmail] = useState('');  // Use email instead of username
+    const [loginEmail, setLoginEmail] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [signupEmail, setSignupEmail] = useState('');
     const [signupPassword, setSignupPassword] = useState('');
@@ -25,36 +25,43 @@ function Login({ handlePopup }) {
         "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
         "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
     ];
+    
+    const startLogoutTimer = (timeout) => {
+        setTimeout(() => {
+            navigate('/user/logout');
+            alert('You have been logged out due to session expiration.')
+        }, timeout);
+    };
 
     const handleLogin = async (event) => {
         event.preventDefault();
-    
+
         try {
             const response = await fetch('http://127.0.0.1:5555/api/login', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     email: loginEmail,
-                    password: loginPassword
+                    password: loginPassword,
                 }),
-                credentials: 'include'
+                credentials: 'include',
             });
-    
+
             if (response.ok) {
                 const data = await response.json();
-    
-                // Store token in sessionStorage
+
+                // Store token and user info
                 globalThis.sessionStorage.setItem('jwt-token', data.access_token);
-    
-                // Store user ID if necessary
                 globalThis.sessionStorage.setItem('user_id', data.user_id);
-    
+
+                // Start the logout timer
+                startLogoutTimer(12 * 60 * 60 * 1000);
+
                 console.log('Login successful:', data);
-    
-                // Navigate to home page
-                window.location.href = '/';
+                
+                navigate('/');
             } else {
                 alert('Login failed');
             }

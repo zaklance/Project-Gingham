@@ -13,6 +13,13 @@ function VendorLogin({ handlePopup }) {
 
     const navigate = useNavigate();
 
+    const startLogoutTimer = (timeout) => {
+        setTimeout(() => {
+            navigate('/user/logout');
+            alert('You have been logged out due to session expiration.')
+        }, timeout);
+    };
+
     const handleLogin = async (event) => {
         event.preventDefault();
         const lowercaseEmail = loginEmail.toLowerCase();
@@ -36,9 +43,10 @@ function VendorLogin({ handlePopup }) {
                 globalThis.sessionStorage.setItem('jwt-token', data.access_token);
                 globalThis.sessionStorage.setItem('vendor_user_id', data.vendor_user_id);
                 console.log('Login successful:', data);
+
+                startLogoutTimer(12 * 60 * 60 * 1000);
     
                 navigate(`/vendor/dashboard`);
-                window.location.reload();
             } else {
                 alert('Login failed:', errorData.error);
             }
