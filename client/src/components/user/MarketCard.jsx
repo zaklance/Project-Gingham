@@ -17,11 +17,11 @@ function MarketCard({ marketData }) {
         });
         return time12
     }
-
+    
     function formatDate(dateString) {
         const date = new Date(dateString);
         const day = date.getDate();
-        const year = date.getFullYear();
+        const year = date.getFullYear();;
         const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
         return `${month} ${day}`;
     }
