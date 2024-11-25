@@ -12,21 +12,21 @@ function Footer() {
                 <div className='flex-space-around flex-center-align box-blue'>
                     <ul className='ul-footer'>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/"><strong>Gingham Home</strong></NavLink>
+                            <NavLink to="/"><strong>Gingham Home</strong></NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/vendor/home"><strong>Vendor Portal</strong></NavLink>
+                            <NavLink to="/vendor/home"><strong>Vendor Portal</strong></NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/admin/home"><strong>Admin Portal</strong></NavLink>
+                            <NavLink to="/admin/home"><strong>Admin Portal</strong></NavLink>
                         </li>
                     </ul>
                     <ul className='ul-footer'>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/"><strong>About</strong></NavLink>
+                            <NavLink to="/"><strong>About</strong></NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink reloadDocument to="/contact"><strong>Contact</strong></NavLink>
+                            <NavLink to="/contact"><strong>Contact</strong></NavLink>
                         </li>
                         <li className='footer-li'>
                             <a href='https://www.mufo.nyc/' target='_blank' rel="noreferrer noopener"><strong>Mû.F.O. Inc</strong></a>

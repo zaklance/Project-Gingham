@@ -49,18 +49,18 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     return (
         <nav className="nav-bar">
             <ul>
-                <NavLink className="btn-home" reloadDocument to="/" ><img className='logo' src="/site-images/gingham-logo-3.svg" alt="Gingham Logo" /></NavLink>
+                <NavLink className="btn-home" to="/" ><img className='logo' src="/site-images/gingham-logo-3.svg" alt="Gingham Logo" /></NavLink>
                 {/* User Tabs */}
                 {!isNotUser && (
                     <>
                         <li>
-                            <NavLink className='nav-tab color-3 btn-nav' reloadDocument to="/user/markets">Markets</NavLink>
+                            <NavLink className='nav-tab color-3 btn-nav' to="/user/markets">Markets</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav' reloadDocument to="/user/vendors">Vendors</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav' to="/user/vendors">Vendors</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-5 btn-nav nowrap' reloadDocument to="/user/your-cart">Cart ({amountInCart})</NavLink>
+                            <NavLink className='nav-tab color-5 btn-nav nowrap' to="/user/your-cart">Cart ({amountInCart})</NavLink>
                         </li>
                     </>
                 )}
@@ -68,13 +68,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isVendorLoggedIn && isVendorPage && (
                     <>
                         <li>
-                            <NavLink className='nav-tab color-3 btn-nav' reloadDocument to="/vendor/dashboard">Dashboard</NavLink>
+                            <NavLink className='nav-tab color-3 btn-nav' to="/vendor/dashboard">Dashboard</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav' reloadDocument to="/vendor/sales">Sales</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav' to="/vendor/sales">Sales</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-5 btn-nav' reloadDocument to={`/vendor/profile/${vendor_id}`}>Profile</NavLink>
+                            <NavLink className='nav-tab color-5 btn-nav' to={`/vendor/profile/${vendor_id}`}>Profile</NavLink>
                         </li>
                     </>
                 )}
@@ -82,16 +82,16 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isAdminLoggedIn && isAdminPage && (
                     <>
                         <li>
-                            <NavLink className='nav-tab color-3 btn-nav' reloadDocument to={`/admin/profile/${admin_id}`}>Profile</NavLink>
+                            <NavLink className='nav-tab color-3 btn-nav' to={`/admin/profile/${admin_id}`}>Profile</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-5 btn-nav' reloadDocument to={`/admin/markets`}>Markets</NavLink>
+                            <NavLink className='nav-tab color-5 btn-nav' to={`/admin/markets`}>Markets</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav' reloadDocument to={`/admin/vendors`}>Vendors</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav' to={`/admin/vendors`}>Vendors</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-1 btn-nav' reloadDocument to={`/admin/users`}>Users</NavLink>
+                            <NavLink className='nav-tab color-1 btn-nav' to={`/admin/users`}>Users</NavLink>
                         </li>
                     </>
                 )}
@@ -99,10 +99,10 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isUserLoggedIn && !isVendorPage && !isAdminPage ?  (
                     <>
                         <li>
-                            <NavLink className='nav-tab color-2 btn-nav' reloadDocument to={`/user/profile/${userId}`}>Profile</NavLink>
+                            <NavLink className='nav-tab color-2 btn-nav' to={`/user/profile/${userId}`}>Profile</NavLink>
                         </li>
                         <li className='notification' onClick={handleNotifPopup}>
-                            <a className='nav-tab color-1 btn-nav nav-tab-wide' reloadDocument to="/notifications"><img className='img-notifications' src="/site-images/notifications-1.svg" alt="Notification" /></a>
+                            <a className='nav-tab color-1 btn-nav nav-tab-wide' to="/notifications"><img className='img-notifications' src="/site-images/notifications-1.svg" alt="Notification" /></a>
                             {notifications.length > 0 && <p className='badge'>{notifications.length}</p>}
                         </li>
                         <div className='notification'>
@@ -124,7 +124,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             }
                         </div>
                         <li style={{ marginLeft: 'auto' }}>
-                            <NavLink className='nav-tab color-3 tab-right btn-nav' reloadDocument to="/user/logout">Logout</NavLink>
+                            <NavLink className='nav-tab color-3 tab-right btn-nav' to="/user/logout">Logout</NavLink>
                         </li>
                     </>
                 ) : (
@@ -140,7 +140,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isVendorLoggedIn && isVendorPage ?  (
                     <>
                         <li style={{ marginLeft: 'auto' }}>
-                            <NavLink className='nav-tab color-3 tab-right btn-nav' reloadDocument to="/vendor/logout">Logout</NavLink>
+                            <NavLink className='nav-tab color-3 tab-right btn-nav' to="/vendor/logout">Logout</NavLink>
                         </li>
                     </>
                 ) : (
@@ -156,7 +156,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isAdminLoggedIn && isAdminPage ?  (
                     <>
                         <li style={{ marginLeft: 'auto' }}>
-                            <NavLink className='nav-tab color-3 tab-right btn-nav' reloadDocument to="/admin/logout">Logout</NavLink>
+                            <NavLink className='nav-tab color-3 tab-right btn-nav' to="/admin/logout">Logout</NavLink>
                         </li>
                     </>
                 ) : (
