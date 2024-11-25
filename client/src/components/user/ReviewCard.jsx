@@ -142,7 +142,7 @@ function ReviewCard({ reviewType }) {
                             {review.user_id !== userId && editingReviewId !== review.id ? (
                                 <div className='flex-start flex-align-center'>
                                     <h4 className='margin-r-8'>{review.user ? review.user.first_name : 'Anonymous'}</h4>
-                                    <p className='margin-t-4'>{review ? review.post_date : ''}</p>
+                                    <p className='margin-t-8'>{review ? review.post_date : ''}</p>
                                     <button className='btn btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
                                 </div>
                             ) : (

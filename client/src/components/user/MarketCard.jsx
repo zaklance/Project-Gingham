@@ -18,6 +18,14 @@ function MarketCard({ marketData }) {
         return time12
     }
 
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const day = date.getDate();
+        const year = date.getFullYear();
+        const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
+        return `${month} ${day}`;
+    }
+
     const handleLearnMore = () => {
         navigate(`/user/markets/${marketData.id}`);
     };
@@ -28,8 +36,12 @@ function MarketCard({ marketData }) {
             <h3>{marketData.name}</h3>
             <p><strong>Location:</strong> {marketData.location}</p>
             <p><strong>Schedule:</strong> {marketData.schedule}</p>
-            <p><strong>Open Year Round:</strong> {marketData.year_round ? "Yes" : "No"}</p>
-            <p><strong>Zipcode:</strong> {marketData.zipcode}</p>
+            
+            {marketData.year_round === false ? (
+                <p><strong>Season:</strong> {formatDate(marketData.season_start)} – {formatDate(marketData.season_end)}</p>  
+            ) : (
+                <p><strong>Open Year Round</strong></p>
+            )}
             <button className="btn-market-card" onClick={handleLearnMore}>Learn More!</button>
         </div>
     );
