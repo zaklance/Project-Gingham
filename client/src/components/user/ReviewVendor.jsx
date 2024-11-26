@@ -304,7 +304,7 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                             ...prevState,
                             [reviewId]: false,
                         }));
-                        setAlertMessage('Downvote updated.');
+                        setAlertMessage('down-vote updated.');
                     }
                 } else {
                     const matchingVotes = downVoteRatings.filter((vote) => vote.review_id === reviewId);
