@@ -240,7 +240,7 @@ def logout():
 @app.route('/api/check_user_session', methods=['GET'])
 @jwt_required()
 def check_user_session():
-    if not check_role('user'):
+    if not check_role('user') or check_role('admin'):
         return {'error': 'Access forbidden: User only'}, 403
 
     user_id = get_jwt_identity()
@@ -254,7 +254,7 @@ def check_user_session():
 @app.route('/api/check-vendor-session', methods=['GET'])
 @jwt_required()
 def check_vendor_session():
-    if not check_role('vendor'):
+    if not check_role('vendor') or not check_role('user') or not check_role('admin'):
         return {'error': 'Access forbidden: Vendor only'}, 403
 
     vendor_user_id = get_jwt_identity()
@@ -496,8 +496,8 @@ def get_vendor_image(vendor_id):
 @jwt_required()
 def profile(id):
     
-    if not check_role('user'):
-        return {'error': "Access forbidden: User only"}, 403
+    if not (check_role('user') or check_role('admin')):
+        return {'error': "Access forbidden: User and Admin only"}, 403
     
     if request.method == 'GET':
         user = User.query.filter_by(id=id).first()

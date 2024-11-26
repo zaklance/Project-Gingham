@@ -15,7 +15,7 @@ function CheckSession() {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Session expired or unauthorized');
+                throw new Error('Session check failed');
             }
             return response.json();
         })
@@ -29,7 +29,7 @@ function CheckSession() {
         })
         .catch(error => {
             console.error('Session check failed:', error);
-            setError('Session expired or unauthorized');
+            setError('Unable to validate session');
             navigate('/');
         })
         .finally(() => {
