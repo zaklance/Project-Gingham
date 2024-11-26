@@ -40,10 +40,30 @@ function Profile({ marketData }) {
         return phone;
     };
 
+    const decodeJwt = (token) => {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return payload;
+        } catch (error) {
+            console.error('Failed to decode JWT:', error);
+            return null;
+        }
+    };
+    
+
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
                 const token = sessionStorage.getItem('jwt-token');
+
+                if (token) {
+                    // Decode the token to extract the role
+                    const decodedToken = decodeJwt(token);
+                    if (decodedToken && decodedToken.role) {
+                        console.log('Role from JWT:', decodedToken.role);
+                    }
+                }
+                
                 const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
                     method: 'GET',
                     headers: {
