@@ -46,6 +46,7 @@ function VendorLogin({ handlePopup }) {
 
                 startLogoutTimer(12 * 60 * 60 * 1000);
     
+                handlePopup();
                 navigate(`/vendor/dashboard`);
             } else {
                 alert('Login failed:', errorData.error);
