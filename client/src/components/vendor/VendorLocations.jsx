@@ -15,6 +15,16 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
 
     const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
+    function timeConverter(time24) {
+        const date = new Date('1970-01-01T' + time24);
+
+        const time12 = date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+        return time12
+    }
 
     const onUpdateQueryMarkets = event => setQueryMarkets(event.target.value);
     const filteredQueryMarkets = allMarkets.filter(market => market.name.toLowerCase().includes(queryMarkets.toLowerCase()) && market.name !== queryMarkets)
@@ -154,57 +164,71 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
     return (
         <>
             <div className='box-bounding'>
-                <h2 className='margin-b-16'>Add Markets</h2>
-                <form>
-                    <div className='form-group'>
-                        <label>Search Market:</label>
-                        <input id='search' className="search-bar" type="text" placeholder="Search markets..." value={queryMarkets} onChange={onUpdateQueryMarkets} />
-                        <div className="dropdown-content">
-                            {
-                                queryMarkets &&
-                                filteredQueryMarkets.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => setQueryMarkets(item.name)}>
-                                    {item.name}
-                                </div>)
-                            }
-                        </div>
-                    </div>
-                    <div className='form-group'>
-                        <label>Day of Week:</label>
-                        {filteredQueryMarketDaysByMarket.length > 0 ? (
-                            <select id="marketSelect" name="market" onChange={(e) => handleMarketDayChange(e)}>
-                                {filteredQueryMarketDaysByMarket.map((market, index) => (
-                                    <option key={index} value={market.id}>
-                                        {weekDay[market.day_of_week]}
-                                    </option>
-                                ))}
-                            </select>
-                        ) : (
-                            <>
-                            </>
-                        )}
-                    </div>
-                    <button className='btn-edit' onClick={handleAddVendorMarket}>Add Day</button>
-                </form>
-                <h2 className='margin-b-16 margin-t-24'>Delete Markets</h2>
-                <form>
-                    <div className='form-group'>
-                        <label>Market:</label>
-                        {filteredMarketDays.length > 0 ? (
-                            <select id="marketSelect" name="market" onChange={(e) => handleMarketDaySelect(e)}>
-                                {filteredMarketDays.map((market, index) => (
-                                    <option key={index} value={market.id}>
-                                        {market.markets.name} on {weekDay[market.day_of_week]}s
-                                    </option>
-                                ))}
-                            </select>
-                        ) : (
-                            <p>Loading markets...</p> // Optional: Placeholder or spinner while loading
-                        )}
-                    </div>
-                    <button className='btn btn-small btn-x btn-gap margin-t-16' onClick={() => handleMarketDayDelete()}>
-                        Delete
-                    </button>
-                </form>
+                <h2 className='margin-b-16'>Locations</h2>
+                <ul className='ul-team'>
+                    {filteredMarketDays.map((market, index) => (
+                        <li key={index} value={market.id} className='li-team'>
+                            <strong>{market.markets.name}</strong> on <i>{weekDay[market.day_of_week]}s</i> from {timeConverter(market.hour_start)} to {timeConverter(market.hour_end)}
+                        </li>
+                    ))}
+                </ul>
+                {vendorUserData?.is_admin === true ? (
+                    <>
+                        <h2 className='margin-b-16 margin-t-24'>Add Markets</h2>
+                        <form>
+                            <div className='form-group'>
+                                <label>Search Market:</label>
+                                <input id='search' className="search-bar" type="text" placeholder="Search markets..." value={queryMarkets} onChange={onUpdateQueryMarkets} />
+                                <div className="dropdown-content">
+                                    {
+                                        queryMarkets &&
+                                        filteredQueryMarkets.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => setQueryMarkets(item.name)}>
+                                            {item.name}
+                                        </div>)
+                                    }
+                                </div>
+                            </div>
+                            <div className='form-group'>
+                                <label>Day of Week:</label>
+                                {filteredQueryMarketDaysByMarket.length > 0 ? (
+                                    <select id="marketSelect" name="market" onChange={(e) => handleMarketDayChange(e)}>
+                                        {filteredQueryMarketDaysByMarket.map((market, index) => (
+                                            <option key={index} value={market.id}>
+                                                {weekDay[market.day_of_week]}
+                                            </option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <>
+                                    </>
+                                )}
+                            </div>
+                            <button className='btn-edit' onClick={handleAddVendorMarket}>Add Day</button>
+                        </form>
+                        <h2 className='margin-b-16 margin-t-24'>Delete Markets</h2>
+                        <form>
+                            <div className='form-group'>
+                                <label>Market:</label>
+                                {filteredMarketDays.length > 0 ? (
+                                    <select id="marketSelect" name="market" onChange={(e) => handleMarketDaySelect(e)}>
+                                        {filteredMarketDays.map((market, index) => (
+                                            <option key={index} value={market.id}>
+                                                {market.markets.name} on {weekDay[market.day_of_week]}s
+                                            </option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <p>Loading markets...</p> // Optional: Placeholder or spinner while loading
+                                )}
+                            </div>
+                            <button className='btn btn-small btn-x btn-gap margin-t-16' onClick={() => handleMarketDayDelete()}>
+                                Delete
+                            </button>
+                        </form>
+                    </>
+                ) : (
+                    <></>
+                )}
             </div>
         </>
     )
