@@ -1141,7 +1141,7 @@ link {
   /* font-size: 1em; */
   padding: 8px;
   height: fit-content;
-  width: fit-content;
+  width: 80px;
 }
 
 .form-baskets select {
