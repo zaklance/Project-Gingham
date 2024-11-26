@@ -182,7 +182,6 @@ def homepage():
 def login():
     # Clear other account type sessions before logging in a user
     session.pop('vendor_user_id', None)
-    session.pop('admin_user_id', None)
     
     data = request.get_json()
     user = User.query.filter(User.email == data['email']).first()
@@ -738,7 +737,6 @@ def delete_vendor_market(id):
 @app.route('/api/vendor/login', methods=['POST'])
 def vendorLogin():
     # Clear other account type sessions before logging in a vendor
-    session.pop('user_id', None)
     session.pop('admin_user_id', None)
 
     data = request.get_json()
@@ -1209,7 +1207,6 @@ def get_user_sales_history():
 @app.route('/api/admin/login', methods=['POST'])
 def adminLogin():
     # Clear other account type sessions before logging in an admin
-    session.pop('user_id', None)
     session.pop('vendor_user_id', None)
 
     data = request.get_json()
