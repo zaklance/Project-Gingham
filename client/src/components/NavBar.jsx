@@ -7,9 +7,9 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const [isNotifPopup, setIsNotifPopup] = useState(false);
 
     const location = useLocation();
-    const userId = parseInt(globalThis.sessionStorage.getItem('user_id'), 10);
-    const vendor_id = parseInt(globalThis.sessionStorage.getItem('vendor_user_id'));
-    const admin_id = parseInt(globalThis.sessionStorage.getItem('admin_user_id'));
+    const userId = globalThis.sessionStorage.getItem('user_id');
+    const vendor_id = globalThis.sessionStorage.getItem('vendor_user_id');
+    const admin_id = globalThis.sessionStorage.getItem('admin_user_id');
     const isUserLoggedIn = userId;
     const isVendorLoggedIn = vendor_id;
     const isAdminLoggedIn = admin_id;
@@ -22,7 +22,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
         fetch("http://127.0.0.1:5555/api/user-notifications")
             .then(response => response.json())
             .then(data => {
-                const userNotifications = data.filter(notif => notif.user_id === userId);
+                const userNotifications = data.filter(notif => notif.user_id === parseFloat(userId, 10));
                 setNotifications(userNotifications);
             })
             .catch(error => console.error('Error fetching notifications', error));

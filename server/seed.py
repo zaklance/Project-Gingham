@@ -1,7 +1,7 @@
 from app import app
 from faker import Faker
 from random import random, choice, randint
-from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, bcrypt
+from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketReviewRating, VendorReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, bcrypt
 import json
 from datetime import date, time, timedelta
 
@@ -14,6 +14,8 @@ def run():
     Vendor.query.delete()
     MarketReview.query.delete()
     VendorReview.query.delete()
+    MarketReviewRating.query.delete()
+    VendorReviewRating.query.delete()
     MarketFavorite.query.delete()
     VendorFavorite.query.delete()
     VendorMarket.query.delete()
@@ -1182,6 +1184,55 @@ def run():
         user_notifs.append(un)
 
     db.session.add_all(user_notifs)
+    db.session.commit()
+
+    # add fake market review ratings
+    market_rev_ratings = []
+    for i in range(200):
+        rand_bool = choice([True, False])
+
+        review_id = str(randint(1, 200))
+        user_id = str(randint(1, 50))
+        vote_down = rand_bool
+        if rand_bool is False:
+            vote_up = True
+        else:
+            vote_up = False
+
+        mrr = MarketReviewRating(
+            review_id=review_id,
+            user_id=user_id,
+            vote_down=vote_down,
+            vote_up=vote_up
+        )
+        market_rev_ratings.append(mrr)
+
+    db.session.add_all(market_rev_ratings)
+    db.session.commit()
+
+
+    # add fake market review ratings
+    vendor_rev_ratings = []
+    for i in range(800):
+        rand_bool = choice([True, False])
+
+        review_id = str(randint(1, 200))
+        user_id = str(randint(1, 50))
+        vote_down = rand_bool
+        if rand_bool is False:
+            vote_up = True
+        else:
+            vote_up = False
+
+        vrr = VendorReviewRating(
+            review_id=review_id,
+            user_id=user_id,
+            vote_down=vote_down,
+            vote_up=vote_up
+        )
+        market_rev_ratings.append(vrr)
+
+    db.session.add_all(vendor_rev_ratings)
     db.session.commit()
 
     

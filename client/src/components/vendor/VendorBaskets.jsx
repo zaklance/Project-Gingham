@@ -270,7 +270,6 @@ function VendorBaskets({ marketId, vendorUserData }) {
                             </div>
                         ))} */}
                     <h2 className='margin-t-48 margin-b-16'>Future Markets:</h2>
-                    <p>Edits can be made until 9AM the day of the market unless basket has already been claimed by customer</p>
                     <br />
                     <div className='market-cards-container'>
                             {nextMarketDays ? nextMarketDays.map((marketDay, index) => (

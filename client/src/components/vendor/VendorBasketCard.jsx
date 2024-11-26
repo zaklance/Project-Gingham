@@ -21,19 +21,33 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
     const handleSave = async () => {
         const parsedNumBaskets = parseInt(numBaskets, 10);
         const parsedPrice = parseFloat(price);
-        
+    
+        const durationInMinutes = parseFloat(selectedDuration) * 60;
+        const hours = Math.floor(durationInMinutes / 60);
+        const minutes = Math.round(durationInMinutes % 60);
+        const formattedDuration = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+    
+        const [hour, minute] = startTime.split(':').map(Number);
+        const formattedHour =
+            amPm === 'PM' && hour !== 12
+                ? hour + 12
+                : amPm === 'AM' && hour === 12
+                ? 0
+                : hour;
+        const formattedPickupTime = `${formattedHour}:${minute.toString().padStart(2, '0')} ${amPm}`;
+    
         console.log('Saving baskets with the following values:');
         console.log('Vendor ID:', vendorId);
-        console.log('Market ID:', marketId);
+        console.log('Market ID:', marketDay.market_id);
         console.log('Sale Date:', saleDate);
-        console.log('Pickup Time:', `${startTime} ${amPm}`);
+        console.log('Pickup Time:', formattedPickupTime);
         console.log('Basket Value:', basketValue);
         console.log('Price:', parsedPrice);
         console.log('Number of Baskets:', parsedNumBaskets);
-        
+    
         if (parsedNumBaskets > 0 && vendorId && marketId && !isNaN(parsedPrice) && parsedPrice > 0) {
             const promises = [];
-
+    
             for (let i = 0; i < parsedNumBaskets; i++) {
                 promises.push(fetch('http://127.0.0.1:5555/api/baskets', {
                     method: 'POST',
@@ -42,18 +56,18 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                     },
                     body: JSON.stringify({
                         vendor_id: vendorId,
-                        market_id: marketId,
+                        market_day_id: marketDay.market_id,
                         sale_date: saleDate,
-                        pickup_time: `${startTime} ${amPm}`,
+                        pickup_time: formattedPickupTime,
                         is_sold: false,
                         is_grabbed: false,
                         price: parsedPrice,
                         basket_value: basketValue,
-                        pick_up_duration: selectedDuration,
+                        pickup_duration: formattedDuration,
                     }),
                 }));
             }
-
+    
             try {
                 const responses = await Promise.all(promises);
                 for (const response of responses) {
@@ -74,6 +88,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
             setErrorMessage('Please enter valid data for all fields.');
         }
     };
+    
 
     const handleEdit = () => {
         setIsSaved(false);
@@ -162,10 +177,10 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                     <option value="1">1 hour</option>
                     <option value="1.25">1.25 hours</option>
                     <option value="1.5">1.5 hours</option>
-                    <option value="1.75">1.75 hours</option>
+                    {/* <option value="1.75">1.75 hours</option>
                     <option value="2">2 hours</option>
                     <option value="3">3 hours</option>
-                    <option value="4">4 hours</option>
+                    <option value="4">4 hours</option> */}
                 </select>
             </div>
             <button

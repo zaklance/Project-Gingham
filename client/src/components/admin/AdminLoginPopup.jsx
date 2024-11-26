@@ -51,6 +51,7 @@ function Login({ handlePopup }) {
                 startLogoutTimer(12 * 60 * 60 * 1000);
     
                 // Navigate to the user's profile or refresh the page
+                handlePopup();
                 navigate(`/admin/profile/${globalThis.sessionStorage.getItem('admin_user_id', data.admin_user_id) }`);
             } else {
                 alert('Login failed');
