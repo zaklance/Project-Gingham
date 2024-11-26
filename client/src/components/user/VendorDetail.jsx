@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useOutletContext, useNavigate } from 'react-router-dom';
 import MarketCard from './MarketCard';
-import ReviewCard from './ReviewCard';
+import ReviewVendor from './ReviewVendor';
 
 
 function VendorDetail () {
@@ -10,16 +10,10 @@ function VendorDetail () {
     const [vendor, setVendor] = useState(null);
     const [marketDetails, setMarketDetails] = useState({});
     const [markets, setMarkets] = useState([]);
-    const [vendorReviews, setVendorReviews] = useState([]);
     const [vendorFavs, setVendorFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
     const [alertMessage, setAlertMessage] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
-    const [showDupeAlert, setShowDupeAlert] = useState(false);
-    const [reviewMode, setReviewMode] = useState(false);
-    const [reviewData, setReviewData] = useState("");
-    const [editingReviewId, setEditingReviewId] = useState(null);
-    const [editedReviewData, setEditedReviewData] = useState("");
     const [hoveredMarket, setHoveredMarket] = useState(null);
     const [events, setEvents] = useState([]);
 
@@ -147,16 +141,6 @@ function VendorDetail () {
         }
     }, [vendor, vendorFavs]);
     
-    // useEffect(() => {
-    //     fetch("http://127.0.0.1:5555/api/vendor-favorites")
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
-    //             setVendorFavs(filteredData)
-    //         })
-    //         .catch(error => console.error('Error fetching vendor favorites', error));
-    // }, []);
-
     const handleClick = async (event) => {
         if (globalThis.sessionStorage.getItem('user_id') !== null) {
             setIsClicked((isClick) => !isClick);
@@ -315,7 +299,7 @@ function VendorDetail () {
                     )}
                 </div>
                 <br />
-                <ReviewCard reviewType={reviewType} />
+                <ReviewVendor vendor={vendor} alertMessage={alertMessage} setAlertMessage={setAlertMessage} />
             </div>
         </div>
     );

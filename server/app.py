@@ -2,7 +2,7 @@ import os
 import json
 import smtplib
 from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
-from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, bcrypt
+from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, MarketReviewRating, VendorReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
@@ -639,6 +639,90 @@ def vendor_review_by_id(id):
         return review.to_dict(), 200
     elif request.method == 'DELETE':
         db.session.delete(review)
+        db.session.commit()
+        return {}, 204
+    
+@app.route('/api/market-review-ratings', methods=['GET', 'POST', 'DELETE'])
+def all_market_review_ratings():
+    if request.method == 'GET':
+        review_id = request.args.get('review_id')
+        user_id = request.args.get('user_id')
+        if review_id:
+            reviews = MarketReviewRating.query.filter_by(review_id=review_id).all()
+        elif user_id:
+            reviews = MarketReviewRating.query.filter_by(user_id=user_id).all()
+        else:
+            reviews = MarketReviewRating.query.all()
+        return jsonify([review.to_dict() for review in reviews]), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_review_rating = MarketReviewRating(
+            review_id=data['review_id'],
+            user_id=data['user_id'],
+            vote_down=data['vote_down'],
+            vote_up=data['vote_up']
+        )
+        db.session.add(new_review_rating)
+        db.session.commit()
+        return new_review_rating.to_dict(), 201
+
+@app.route('/api/market-review-ratings/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def market_review_rating_by_id(id):
+    rating = MarketReviewRating.query.filter(MarketReviewRating.id == id).first()
+    if not rating:
+        return {'error': 'review not found'}, 404
+    if request.method == 'GET':
+        return rating.to_dict(), 200
+    elif request.method == 'PATCH':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(rating, key, value)
+        db.session.commit()
+        return rating.to_dict(), 200
+    elif request.method == 'DELETE':
+        db.session.delete(rating)
+        db.session.commit()
+        return {}, 204
+    
+@app.route('/api/vendor-review-ratings', methods=['GET', 'POST', 'DELETE'])
+def all_vendor_review_ratings():
+    if request.method == 'GET':
+        review_id = request.args.get('review_id')
+        user_id = request.args.get('user_id')
+        if review_id:
+            reviews = VendorReviewRating.query.filter_by(review_id=review_id).all()
+        elif user_id:
+            reviews = VendorReviewRating.query.filter_by(user_id=user_id).all()
+        else:
+            reviews = VendorReviewRating.query.all()
+        return jsonify([review.to_dict() for review in reviews]), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_review_rating = VendorReviewRating(
+            review_id=data['review_id'],
+            user_id=data['user_id'],
+            vote_down=data['vote_down'],
+            vote_up=data['vote_up']
+        )
+        db.session.add(new_review_rating)
+        db.session.commit()
+        return new_review_rating.to_dict(), 201
+
+@app.route('/api/vendor-review-ratings/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def vendor_review_rating_by_id(id):
+    rating = VendorReviewRating.query.filter(VendorReviewRating.id == id).first()
+    if not rating:
+        return {'error': 'review not found'}, 404
+    if request.method == 'GET':
+        return rating.to_dict(), 200
+    elif request.method == 'PATCH':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(rating, key, value)
+        db.session.commit()
+        return rating.to_dict(), 200
+    elif request.method == 'DELETE':
+        db.session.delete(rating)
         db.session.commit()
         return {}, 204
 
