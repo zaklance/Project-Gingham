@@ -457,7 +457,7 @@ function VendorProfile () {
                                         </div>
                                     </div>
                                     )}
-                                    <VendorLocations vendorId={vendorId} />
+                                    <VendorLocations vendorId={vendorId} vendorUserData={vendorUserData} />
 
                                     {/* <p><strong>Locations:&emsp;</strong></p>
                                     {Array.isArray(locations) && locations.length > 0 ? (
