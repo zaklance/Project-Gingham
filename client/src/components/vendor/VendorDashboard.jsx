@@ -11,6 +11,7 @@ function VendorDashboard({ marketId }) {
     const [vendorUserData, setVendorUserData] = useState(null);
     const [newVendor, setNewVendor] = useState(false);
 
+
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/vendors")
             .then(response => response.json())
@@ -96,20 +97,23 @@ function VendorDashboard({ marketId }) {
         <div>
             <div className='flex-start flex-center-align flex-gap-48'>
                 <h2 className=''>Vendor Dashboard</h2>
-                <br/>
-                <div className='tabs margin-t-20'>
-                    <Link to="#" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
-                        Baskets
-                    </Link>
-                    <Link to="#" onClick={() => setActiveTab('events')} className={activeTab === 'events' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
-                        Events
-                    </Link>
-                    {vendorUserData?.is_admin && (
-                        <Link to="#" onClick={() => setActiveTab('team')} className={activeTab === 'team' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
-                            Team
+                {vendorUserData?.is_admin === true ? (
+                    <div className='tabs margin-t-20'>
+                        <Link to="#" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                            Baskets
                         </Link>
-                    )}
-                </div>
+                        <Link to="#" onClick={() => setActiveTab('events')} className={activeTab === 'events' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                            Events
+                        </Link>
+                        {vendorUserData?.is_admin && (
+                            <Link to="#" onClick={() => setActiveTab('team')} className={activeTab === 'team' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                                Team
+                            </Link>
+                        )}
+                    </div>
+                ) : (
+                    <></>
+                )}
             </div>
             <br />
 
