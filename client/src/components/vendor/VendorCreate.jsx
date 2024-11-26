@@ -8,9 +8,9 @@ function VendorCreate () {
     const [vendors, setVendors] = useState([]);
     const [newVendor, setNewVendor] = useState(false);
     const [vendorData, setVendorData] = useState(null);
+    const [notifications, setNotifications] = useState([]);
     const [query, setQuery] = useState("");
     const [selectedVendor, setSelectedVendor] = useState(null);
-    const [pendingRequest, setPendingRequest] = useState({});
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
     const [vendorImageURL, setVendorImageURL] = useState(null);
@@ -35,18 +35,6 @@ function VendorCreate () {
             setVendorUserId(vendorUserData.id);
         }
     }, [vendorUserData]); 
-
-    useEffect(() => {
-        const storedRequest = localStorage.getItem('pendingRequest');
-        if (storedRequest) {
-            const request = JSON.parse(storedRequest);
-            setPendingRequest(request);
-    
-            if (request.vendorId) {
-                fetchVendorDetails(request.vendorId);
-            }
-        }
-    }, []);
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/vendors")
@@ -222,10 +210,6 @@ function VendorCreate () {
             return;
         }
     
-        const request = { id: selectedVendor.id, name: selectedVendor.name, vendorId: selectedVendor.id };
-        setPendingRequest(request);
-        localStorage.setItem('pendingRequest', JSON.stringify(request));
-    
         const token = sessionStorage.getItem('jwt-token');
         if (!token) {
             alert('Authorization token is missing. Please log in.');
@@ -248,13 +232,10 @@ function VendorCreate () {
     
             if (response.ok) {
                 const responseData = await response.json();
-                setPendingRequest(responseData);
-
+                setNotifications(...notifications, responseData);
                 setSelectedVendor(null);
                 setQuery('');
-
                 alert(`Your request has been sent to the admins of ${selectedVendor.name}!`);
-                
             } else {
                 const errorData = await response.json();
                 alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
@@ -262,50 +243,80 @@ function VendorCreate () {
         } catch (error) {
             console.error('Error sending request:', error);
             alert('An error occurred while sending the request. Please try again later.');
-            setPendingRequest(null);
-            localStorage.removeItem('pendingRequest');
         }
     };
     
-    
     const handleCancelRequest = async () => {
-        if (!pendingRequest?.id) {
-            alert('No pending request found to cancel.');
-            return;
-        }
-    
         const token = sessionStorage.getItem('jwt-token');
-        if (!token) {
-            alert('Authorization token is missing. Please log in.');
+        if (!notifications) {
+            console.error("No notifications found to cancel.");
+            alert("No pending requests to cancel.");
             return;
         }
-    
+        const notificationArray = Array.isArray(notifications) ? notifications : [notifications];
         try {
-            const response = await fetch('http://127.0.0.1:5555/api/delete-vendor-notification', {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ notification_id: pendingRequest.id }),
-            });
-    
-            if (response.ok) {
-                setSelectedVendor(null);
-
-                setPendingRequest(null);
-                localStorage.removeItem('pendingRequest');
-                alert('Your request has been canceled.');
-                navigate('/vendor/dashboard');
-            } else {
-                const errorData = await response.json();
-                alert(`Error canceling request: ${errorData.message || 'Unknown error'}`);
+            for (const notification of notificationArray) {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-notification/${notification.id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error(`Error deleting notification ${notification.id}:`, errorData.message || 'Unknown error');
+                }
+                if (response.ok) {
+                    setSelectedVendor(null);
+                    setNotifications([]);
+                    alert('Your request has been canceled.');
+                    navigate('/vendor/dashboard');
+                } else {
+                    const errorData = await response.json();
+                    alert(`Error canceling request: ${errorData.message || 'Unknown error'}`);
+                }
             }
         } catch (error) {
             console.error('Error canceling request:', error);
             alert('An error occurred while canceling the request. Please try again later.');
         }
     };
+
+    useEffect(() => {
+        if (!vendorUserId) return;
+
+        const fetchNotifications = async () => {
+            const token = sessionStorage.getItem('jwt-token');;
+            if (!token) {
+                console.error("Token missing");
+                setIsLoading(false);
+                return;
+            }
+            try {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/vendor-user/${vendorUserId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Notifications fetched:', data);
+                    setNotifications(data.notifications || []);
+                } else {
+                    console.error('Failed to fetch notifications');
+                    setNotifications([]);
+                }
+            } catch (error) {
+                console.error('Error fetching notifications:', error);
+                setNotifications([]);
+            }
+        };
+        fetchNotifications();
+    }, [vendorUserId]);
+    
 
     return (
         <div>
@@ -328,10 +339,9 @@ function VendorCreate () {
                 </select>
             </div>
             <div className="form-group">
-
                 <label>Based out of:</label>
                 <input type="text" name="city" value={vendorData?.city || ''} onChange={handleVendorInputChange} />
-                <select className="select-state" name="state" value={vendorData?.state || ''} onChange={handleVendorInputChange}>
+                <select className="select-state margin-l--8" name="state" value={vendorData?.state || ''} onChange={handleVendorInputChange}>
                     <option value="">Select</option>
                     {states.map((state, index) => (
                         <option key={index} value={state}>
@@ -339,6 +349,7 @@ function VendorCreate () {
                         </option>
                     ))}
                 </select>
+
 
             </div>
             <div className="form-group">
@@ -364,9 +375,9 @@ function VendorCreate () {
             </div>
 
             <div>
-                {pendingRequest?.id ? (
+                {notifications.length !== 0 ? (
                     <div className="notification">
-                        <p>Your request has been sent to the admins of <strong>{pendingRequest?.name}</strong> for approval.</p>
+                        <p>Your request has been sent to the admins of <strong>{notifications?.name}</strong> for approval.</p>
                         <button className="btn-edit" onClick={handleCancelRequest}>
                             Cancel Request
                         </button>
@@ -396,7 +407,7 @@ function VendorCreate () {
                         {selectedVendor && (
                             <div className="selected-vendor">
                                 <p>You have selected: {selectedVendor.name}</p>
-                                {!pendingRequest?.id && (
+                                {!notifications?.id && (
                                     <button className="btn-edit" onClick={handleRequestJoin}>
                                         Request
                                     </button>

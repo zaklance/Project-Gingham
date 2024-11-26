@@ -901,7 +901,7 @@ def get_vendor_users():
     
 @app.route('/api/vendor-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 @jwt_required()
-def vendorProfile(id):
+def get_vendor_user(id):
     if not check_role('vendor'):
         return {'error': "Access forbidden: Vendor only"}, 403
     
@@ -1722,8 +1722,11 @@ def create_notification():
         db.session.commit()
 
         return jsonify({
-            'message': 'Notification created successfully',
-            'notification_id': new_notification.id
+            'id': new_notification.id,
+            'message': new_notification.message,
+            'vendor_id': new_notification.vendor_id,
+            'vendor_user_id': new_notification.vendor_user_id,
+            'is_read': new_notification.is_read
         }), 201
 
     except Exception as e:
@@ -1731,28 +1734,29 @@ def create_notification():
         print(f"Error creating notification: {str(e)}")
         return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
     
-@app.route('/api/delete-vendor-notification', methods=['DELETE'])
-def delete_notification():
-    data = request.get_json()
+# @app.route('/api/delete-vendor-notification', methods=['DELETE'])
+# def delete_notification():
+#     data = request.get_json()
 
-    if not data or 'notification_id' not in data:
-        return jsonify({'message': 'Invalid request data.'}), 400
+#     if not data or 'id' not in data:
+#         print("Received data:", data)
+#         return jsonify({'message': 'Invalid request data.'}), 400
 
-    try:
-        notification = VendorNotification.query.get(data['notification_id'])
+#     try:
+#         notification = VendorNotification.query.get(data['notification_id'])
 
-        if not notification:
-            return jsonify({'message': 'Notification not found.'}), 404
+#         if not notification:
+#             return jsonify({'message': 'Notification not found.'}), 404
 
-        db.session.delete(notification)
-        db.session.commit()
+#         db.session.delete(notification)
+#         db.session.commit()
 
-        return jsonify({'message': 'Notification deleted successfully.'}), 200
+#         return jsonify({'message': 'Notification deleted successfully.'}), 200
 
-    except Exception as e:
-        db.session.rollback()
-        print(f"Error deleting notification: {str(e)}")
-        return jsonify({'message': f'Error deleting notification: {str(e)}'}), 500
+#     except Exception as e:
+#         db.session.rollback()
+#         print(f"Error deleting notification: {str(e)}")
+#         return jsonify({'message': f'Error deleting notification: {str(e)}'}), 500
 
 @app.route('/api/vendor-notifications', methods=['GET'])
 def fetch_vendor_notifications():
@@ -1776,15 +1780,29 @@ def fetch_vendor_notifications():
         'created_at': n.created_at, 'vendor_name': Vendor.query.get(n.vendor_id).name if Vendor.query.get(n.vendor_id) else 'Unknown Vendor', } for n in notifications ]
     
     return jsonify({'notifications': notifications_data}), 200
+
+@app.route('/api/vendor-notification/<int:id>', methods=['DELETE'])
+def delete_notification(id):
+    if request.method == 'DELETE':
+        notification = VendorNotification.query.filter_by(id=id).first()
+
+        if not notification:
+            return jsonify({'message': 'No notifications found'}), 404
+
+        notification_data = {'id': notification.id, 'message': notification.message}
+        
+        db.session.delete(notification)
+        db.session.commit()
+        return jsonify({'notifications': notification_data}) 
     
-@app.route('/api/vendor-notifications/<int:vendor_id>', methods=['GET'])
+@app.route('/api/vendor-notifications/vendor/<int:vendor_id>', methods=['GET'])
 def get_vendor_notifications(vendor_id):
     notifications = VendorNotification.query.filter_by(vendor_id=vendor_id, is_read=False).all()
 
     notifications_data = [{'id': n.id, 'message': n.message, 'vendor_id': n.vendor_id, 'vendor_user_id': n.vendor_user_id} for n in notifications]
     return jsonify({'notifications': notifications_data}), 200
 
-@app.route('/api/vendor-notifications/<int:vendor_user_id>', methods=['GET'])
+@app.route('/api/vendor-notifications/vendor-user/<int:vendor_user_id>', methods=['GET'])
 def get_vendor_user_notifications(vendor_user_id):
     is_pending = request.args.get('is_pending', None)
 
