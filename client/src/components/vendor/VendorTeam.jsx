@@ -23,7 +23,7 @@ function VendorTeam({ vendors, vendorId, vendorUserData }) {
             }
 
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${vendorId}`, {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/vendor/${vendorId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -161,7 +161,7 @@ function VendorTeam({ vendors, vendorId, vendorUserData }) {
             <div className='box-bounding'>
                 <h2 className='margin-b-16'>Notifications</h2>
                 {notifications && notifications.length > 0 ? (
-                    <VendorNotification notifications={notifications} vendorId={vendorId} />
+                    <VendorNotification notifications={notifications} vendorId={vendorId} teamMembers={teamMembers} setTeamMembers={setTeamMembers} vendorUserData={vendorUserData} />
                 ) : (
                     <p>No notifications.</p>
                 )}

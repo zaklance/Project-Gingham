@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-function VendorNotification() {
+function VendorNotification({ teamMembers, setTeamMembers, vendorUserData }) {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchvendorNotification = async () => {
+        const fetchVendorNotification = async () => {
             try {
                 const vendorUserId = sessionStorage.getItem('vendor_user_id');
                 if (!vendorUserId) {
@@ -42,7 +42,7 @@ function VendorNotification() {
                     throw new Error("Vendor ID not found in the response");
                 }
 
-                const notificationsResponse = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${vendorIdFromApi}`, {
+                const notificationsResponse = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/vendor/${vendorIdFromApi}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -64,27 +64,39 @@ function VendorNotification() {
             }
         };
 
-        fetchvendorNotification();
+        fetchVendorNotification();
     }, []);
     
 
-    const handleApprove = async (notificationId, isAdmin) => {
-        console.log(`Approval notification with ID: ${notificationId}`);
-        const token = localStorage.getItem('authToken');
+    const handleApprove = async (notification, isAdmin) => {
+        console.log(`Approval notification with ID: ${notification.id}`);
+        const token = localStorage.getItem('jwt-token');
     
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${notificationId}/approve`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${notification.id}/approve`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`, 
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ is_admin: isAdmin }),
             });
-    
             if (response.ok) {
+                const vendorUserResponse = await fetch(`http://127.0.0.1:5555/api/vendor-users?vendor_id=${vendorUserData.vendor_id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (!vendorUserResponse.ok) {
+                    throw new Error('Error fetching vendor user details');
+                }
+                const vendorUser = await vendorUserResponse.json();
+                console.log(vendorUser)
+                setTeamMembers(vendorUser);
                 setNotifications((prevNotifications) => 
-                    prevNotifications.filter((notif) => notif.id !== notificationId)
+                    prevNotifications.filter((notif) => notif.id !== notification.id)
                 );
                 alert('Notification approved and user updated successfully');
             } else {
@@ -99,7 +111,7 @@ function VendorNotification() {
     
 
     const handleReject = async (notificationId) => {
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('jwt-token');
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${notificationId}/reject`, {
                 method: 'DELETE',
@@ -127,10 +139,10 @@ function VendorNotification() {
                     {notifications.map((notification) => (
                         <li key={notification.id}>
                             <p><strong>{notification.message}</strong></p>
-                            <button className='btn-edit' onClick={() => handleApprove(notification.id, true)}>
+                            <button className='btn-edit' onClick={() => handleApprove(notification, true)}>
                                 Approve as Admin
                             </button>
-                            <button className='btn-edit' onClick={() => handleApprove(notification.id, false)}>
+                            <button className='btn-edit' onClick={() => handleApprove(notification, false)}>
                                 Approve as Employee
                             </button>
                             <button className='btn-edit' onClick={() => handleReject(notification.id)}>

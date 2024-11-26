@@ -1230,7 +1230,7 @@ def run():
             vote_down=vote_down,
             vote_up=vote_up
         )
-        market_rev_ratings.append(vrr)
+        vendor_rev_ratings.append(vrr)
 
     db.session.add_all(vendor_rev_ratings)
     db.session.commit()
