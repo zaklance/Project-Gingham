@@ -8,8 +8,8 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
 
     const location = useLocation();
     const userId = parseInt(globalThis.sessionStorage.getItem('user_id'), 10);
-    const vendor_id = globalThis.sessionStorage.getItem('vendor_user_id');
-    const admin_id = globalThis.sessionStorage.getItem('admin_user_id');
+    const vendor_id = parseInt(globalThis.sessionStorage.getItem('vendor_user_id'));
+    const admin_id = parseInt(globalThis.sessionStorage.getItem('admin_user_id'));
     const isUserLoggedIn = userId;
     const isVendorLoggedIn = vendor_id;
     const isAdminLoggedIn = admin_id;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
-import ReviewCard from './ReviewCard';
+import ReviewMarket from './ReviewMarket';
 // import VendorDetail from './VendorDetail';
 
 function MarketDetail ({ match }) {
@@ -186,6 +186,12 @@ function MarketDetail ({ match }) {
             })
             .catch(error => console.error('Error fetching market favorites', error));
     }, []);
+
+    useEffect(() => {
+        if (market && marketFavs.some(fav => fav.market_id === market.id)) {
+            setIsClicked(true);
+        }
+    }, [market, marketFavs]);
 
     const handleClick = async (event) => {
         if (globalThis.sessionStorage.getItem('user_id') !== null) {
@@ -390,7 +396,7 @@ function MarketDetail ({ match }) {
                     <p>No vendors at this market</p>
                 )}
             </div>
-            <ReviewCard reviewType={reviewType} />
+            <ReviewMarket market={market} alertMessage={alertMessage} setAlertMessage={setAlertMessage} />
         </div>
     );
 };
