@@ -341,7 +341,7 @@ function VendorCreate () {
             <div className="form-group">
                 <label>Based out of:</label>
                 <input type="text" name="city" value={vendorData?.city || ''} onChange={handleVendorInputChange} />
-                <select className="select-state margin-l--8" name="state" value={vendorData?.state || ''} onChange={handleVendorInputChange}>
+                <select className="select-state" name="state" value={vendorData?.state || ''} onChange={handleVendorInputChange}>
                     <option value="">Select</option>
                     {states.map((state, index) => (
                         <option key={index} value={state}>
@@ -349,8 +349,6 @@ function VendorCreate () {
                         </option>
                     ))}
                 </select>
-
-
             </div>
             <div className="form-group">
 
