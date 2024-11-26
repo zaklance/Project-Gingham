@@ -105,27 +105,29 @@ function VendorTeam({ vendors, vendorId, vendorUserData }) {
     };
 
     const handleDeleteTeamMember = async (memberId) => {
-        try {
-            const token = sessionStorage.getItem('jwt-token');
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${memberId}`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    vendor_id: null
-                })
-            });
-
-            if (response.ok) {
-                setTeamMembers(teamMembers.filter(member => member.id !== memberId));
-            } else {
-                const errorData = await response.json();
-                console.error('Error updating team member:', errorData);
+        if (confirm(`Are you sure you want to delete this team member?`)) {
+            try {
+                const token = sessionStorage.getItem('jwt-token');
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${memberId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        vendor_id: null
+                    })
+                });
+    
+                if (response.ok) {
+                    setTeamMembers(teamMembers.filter(member => member.id !== memberId));
+                } else {
+                    const errorData = await response.json();
+                    console.error('Error updating team member:', errorData);
+                }
+            } catch (error) {
+                console.error('Error updating team member:', error);
             }
-        } catch (error) {
-            console.error('Error updating team member:', error);
         }
     };
 

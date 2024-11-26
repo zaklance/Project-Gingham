@@ -2,14 +2,14 @@ import os
 import json
 import smtplib
 from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
-from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, bcrypt
+from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, MarketReviewRating, VendorReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
-from datetime import timedelta
+from datetime import timedelta, time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
@@ -640,6 +640,90 @@ def vendor_review_by_id(id):
         db.session.delete(review)
         db.session.commit()
         return {}, 204
+    
+@app.route('/api/market-review-ratings', methods=['GET', 'POST', 'DELETE'])
+def all_market_review_ratings():
+    if request.method == 'GET':
+        review_id = request.args.get('review_id')
+        user_id = request.args.get('user_id')
+        if review_id:
+            reviews = MarketReviewRating.query.filter_by(review_id=review_id).all()
+        elif user_id:
+            reviews = MarketReviewRating.query.filter_by(user_id=user_id).all()
+        else:
+            reviews = MarketReviewRating.query.all()
+        return jsonify([review.to_dict() for review in reviews]), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_review_rating = MarketReviewRating(
+            review_id=data['review_id'],
+            user_id=data['user_id'],
+            vote_down=data['vote_down'],
+            vote_up=data['vote_up']
+        )
+        db.session.add(new_review_rating)
+        db.session.commit()
+        return new_review_rating.to_dict(), 201
+
+@app.route('/api/market-review-ratings/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def market_review_rating_by_id(id):
+    rating = MarketReviewRating.query.filter(MarketReviewRating.id == id).first()
+    if not rating:
+        return {'error': 'review not found'}, 404
+    if request.method == 'GET':
+        return rating.to_dict(), 200
+    elif request.method == 'PATCH':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(rating, key, value)
+        db.session.commit()
+        return rating.to_dict(), 200
+    elif request.method == 'DELETE':
+        db.session.delete(rating)
+        db.session.commit()
+        return {}, 204
+    
+@app.route('/api/vendor-review-ratings', methods=['GET', 'POST', 'DELETE'])
+def all_vendor_review_ratings():
+    if request.method == 'GET':
+        review_id = request.args.get('review_id')
+        user_id = request.args.get('user_id')
+        if review_id:
+            reviews = VendorReviewRating.query.filter_by(review_id=review_id).all()
+        elif user_id:
+            reviews = VendorReviewRating.query.filter_by(user_id=user_id).all()
+        else:
+            reviews = VendorReviewRating.query.all()
+        return jsonify([review.to_dict() for review in reviews]), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_review_rating = VendorReviewRating(
+            review_id=data['review_id'],
+            user_id=data['user_id'],
+            vote_down=data['vote_down'],
+            vote_up=data['vote_up']
+        )
+        db.session.add(new_review_rating)
+        db.session.commit()
+        return new_review_rating.to_dict(), 201
+
+@app.route('/api/vendor-review-ratings/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def vendor_review_rating_by_id(id):
+    rating = VendorReviewRating.query.filter(VendorReviewRating.id == id).first()
+    if not rating:
+        return {'error': 'review not found'}, 404
+    if request.method == 'GET':
+        return rating.to_dict(), 200
+    elif request.method == 'PATCH':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(rating, key, value)
+        db.session.commit()
+        return rating.to_dict(), 200
+    elif request.method == 'DELETE':
+        db.session.delete(rating)
+        db.session.commit()
+        return {}, 204
 
 @app.route('/api/market-favorites', methods=['GET', 'POST'])
 def all_market_favorites():
@@ -1027,7 +1111,6 @@ def event_by_id(id):
         db.session.commit()
         return {}, 204
 
-        
 @app.route('/api/baskets', methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def handle_baskets():
     if request.method == 'GET':
@@ -1043,28 +1126,38 @@ def handle_baskets():
         app.logger.debug(f'Received data for new basket: {data}')
 
         try:
-            # Convert string dates to datetime.date objects
             sale_date = datetime.strptime(data['sale_date'], '%Y-%m-%d').date()
-            pickup_time = datetime.strptime(data['pickup_time'], '%I:%M %p').time()
+            try:
+                pickup_time = datetime.strptime(data['pickup_time'], '%H:%M %p').time()
+            except ValueError:
+                return jsonify({'error': 'Invalid pickup_time format. Expected HH:MM AM/PM.'}), 400
+        
+            pickup_duration = data.get('pickup_duration')
+            if pickup_duration:
+                try:
+                    hours, minutes, seconds = map(int, pickup_duration.split(':'))
+                    pickup_duration = time(hours, minutes, seconds)
+                except (ValueError, AttributeError):
+                    return jsonify({'error': 'Invalid pickup_duration format. Expected HH:MM:SS.'}), 400
 
-            # Validate and convert price
-            price = float(data['price'])
+            try:
+                price = float(data['price'])
+                if price < 0:
+                    return {'error': 'Price must be a non-negative number'}, 400
+                price = int(price * 100)
+            except (ValueError, TypeError):
+                return jsonify({'error': 'Invalid price format. Must be a positive number.'}), 400
 
-            if price < 0:
-                return {'error': 'Price must be a non-negative number'}, 400
-            
-            price = int(price * 100)
-           
             new_basket = Basket(
                 vendor_id=data['vendor_id'],
                 user_id=data.get('user_id'),
-                market_id=data['market_id'],
+                market_day_id=data['market_day_id'],
                 sale_date=sale_date,
                 pickup_time=pickup_time,
                 is_sold=data.get('is_sold', False),
                 is_grabbed=data.get('is_grabbed', False),
                 price=price,
-                pickup_duration=data.get('pickup_time_duration', 0.0)
+                pickup_duration=pickup_duration,
             )
             db.session.add(new_basket)
             db.session.commit()
@@ -1073,7 +1166,7 @@ def handle_baskets():
         except Exception as e:
             db.session.rollback()
             app.logger.error(f'Error creating basket: {e}')
-            return {'error': str(e)}, 500
+            return jsonify({'error': 'Failed to create basket due to a server error.'}), 500
 
     elif request.method == 'PATCH':
         data = request.get_json()
@@ -1092,8 +1185,8 @@ def handle_baskets():
                 basket.vendor_id = data['vendor_id']
             if 'user_id' in data:
                 basket.user_id = data['user_id']
-            if 'market_id' in data:
-                basket.market_id = data['market_id']
+            if 'market_day_id' in data:
+                basket.market_day_id = data['market_day_id']
             if 'sale_date' in data:
                 basket.sale_date = datetime.strptime(data['sale_date'], '%Y-%m-%d').date()
             if 'pickup_time' in data:
@@ -1104,8 +1197,8 @@ def handle_baskets():
                 basket.is_grabbed = data['is_grabbed']
             if 'price' in data:
                 basket.price = data['price']
-            if 'pick_up_duration' in data:
-                basket.pick_up_duration = data['pick_up_duration']
+            if 'pickup_duration' in data:
+                basket.pickup_duration = data['pickup_duration']
 
             db.session.commit()
             return jsonify(basket.to_dict()), 200
@@ -1135,42 +1228,6 @@ def handle_baskets():
         except Exception as e:
             db.session.rollback()
             app.logger.error(f'Error deleting basket: {e}') 
-            return {'error': str(e)}, 500
-
-
-@app.route('/api/baskets/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
-def handle_basket_by_id(id):
-    basket = Basket.query.filter_by(id=id).first()
-    
-    if not basket:
-        return {'error': 'Basket not found'}, 404
-
-    if request.method == 'GET':
-        try:
-            return jsonify(basket.to_dict()), 200
-        except Exception as e:
-            return {'error': f'Exception: {str(e)}'}, 500
-
-    elif request.method == 'PATCH':
-        try:
-            data = request.get_json()
-            for key, value in data.items():
-                setattr(basket, key, value)
-            db.session.commit()
-            return jsonify(basket.to_dict()), 200
-
-        except Exception as e:
-            db.session.rollback()
-            return {'error': str(e)}, 500
-
-    elif request.method == 'DELETE':
-        try:
-            db.session.delete(basket)
-            db.session.commit()
-            return {}, 204
-
-        except Exception as e:
-            db.session.rollback()
             return {'error': str(e)}, 500
 
 @app.route('/api/baskets/user-sales-history', methods=['GET'])

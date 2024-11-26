@@ -309,6 +309,48 @@ class VendorReview(db.Model, SerializerMixin):
         if not value:
             raise ValueError(f"Review text cannot be empty")
         return value
+
+class MarketReviewRating(db.Model):
+    __tablename__ = 'market_review_ratings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    review_id = db.Column(db.Integer, db.ForeignKey('market_reviews.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    vote_down = db.Column(db.Boolean, default=False)
+    vote_up = db.Column(db.Boolean, default=False)
+
+    def __repr__(self) -> str:
+        return f"<VendorReviewRating {self.id}>"
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "review_id": self.review_id,
+            "user_id": self.user_id,
+            "vote_down": self.vote_down,
+            "vote_up": self.vote_up
+        }
+
+class VendorReviewRating(db.Model):
+    __tablename__ = 'vendor_review_ratings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    review_id = db.Column(db.Integer, db.ForeignKey('vendor_reviews.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    vote_down = db.Column(db.Boolean, default=False)
+    vote_up = db.Column(db.Boolean, default=False)
+
+    def __repr__(self) -> str:
+        return f"<VendorReviewRating {self.id}>"
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "review_id": self.review_id,
+            "user_id": self.user_id,
+            "vote_down": self.vote_down,
+            "vote_up": self.vote_up
+        }
     
 class MarketFavorite(db.Model, SerializerMixin):
     __tablename__ = 'market_favorites'
