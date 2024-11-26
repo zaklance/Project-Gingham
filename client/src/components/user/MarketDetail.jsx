@@ -187,6 +187,12 @@ function MarketDetail ({ match }) {
             .catch(error => console.error('Error fetching market favorites', error));
     }, []);
 
+    useEffect(() => {
+        if (market && marketFavs.some(fav => fav.market_id === market.id)) {
+            setIsClicked(true);
+        }
+    }, [market, marketFavs]);
+
     const handleClick = async (event) => {
         if (globalThis.sessionStorage.getItem('user_id') !== null) {
             setIsClicked((isClick) => !isClick);
