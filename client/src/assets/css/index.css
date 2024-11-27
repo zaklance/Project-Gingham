@@ -479,6 +479,10 @@ ul {
   align-items: flex-end;
 }
 
+.flex-column{
+  flex-direction: column;
+}
+
 .flex-gap-16 {
   gap: 16px;
 }
@@ -1429,11 +1433,11 @@ select:hover {
   /* Adjust max-width based on desired spacing */
   float: none;
   position: auto;
-  top: calc(20vh );
+  top: calc(20vh);
 }
 
 .market-card {
-  border: 1px solid #ccc;
+  border: .5px solid #ccc;
   padding: 10px;
   width: 100%;
   max-width: 300px;
@@ -1442,12 +1446,12 @@ select:hover {
   text-align: center;
 }
 
-.market-image {
+/* .market-image {
   width: 70%;
   max-width: 100%;
   display: block;
   margin: 20px 0;
-}
+} */
 
 .market-info {
   float: left;
@@ -1459,6 +1463,12 @@ select:hover {
   height: 400px;
   object-fit: cover;
   max-width: 1120px;
+}
+
+.img-market-card {
+  width: 260px;
+  height: 174px;
+  object-fit: cover;
 }
 
 .img-vendor {
