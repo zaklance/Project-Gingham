@@ -31,18 +31,22 @@ function MarketCard({ marketData }) {
     };
 
     return (
-        <div className="market-card">
-            <img src={`/market-images/${marketData.image}`} alt="Market Image" style={{ width: '260px' }} />
-            <h3>{marketData.name}</h3>
-            <p><strong>Location:</strong> {marketData.location}</p>
-            <p><strong>Schedule:</strong> {marketData.schedule}</p>
-            
-            {marketData.year_round === false ? (
-                <p><strong>Season:</strong> {formatDate(marketData.season_start)} – {formatDate(marketData.season_end)}</p>  
-            ) : (
-                <p><strong>Open Year Round</strong></p>
-            )}
-            <button className="btn-market-card" onClick={handleLearnMore}>Learn More!</button>
+        <div className="market-card flex-space-between flex-column">
+            <div>
+                <img src={`/market-images/${marketData.image}`} alt="Market Image" className='img-market-card' />
+                <h3 className='margin-b-16'>{marketData.name}</h3>
+                <p><strong>Location:</strong> {marketData.location}</p>
+                <p><strong>Schedule:</strong> {marketData.schedule}</p>
+                
+                {marketData.year_round === false ? (
+                    <p><strong>Season:</strong> {formatDate(marketData.season_start)} – {formatDate(marketData.season_end)}</p>  
+                ) : (
+                    <p><strong>Open Year Round</strong></p>
+                )}
+            </div>
+            <div>
+                <button className="btn-market-card" onClick={handleLearnMore}>Learn More!</button>
+            </div>
         </div>
     );
 }
