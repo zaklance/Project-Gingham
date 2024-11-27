@@ -4,7 +4,9 @@ import { useNavigate } from 'react-router-dom';
 
 function VendorLogin({ handlePopup }) {
     const [loginEmail, setLoginEmail] = useState('');
+    const [signupConfirmEmail, setSignupConfirmEmail] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
+    const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
     const [signupEmail, setSignupEmail] = useState('');
     const [signupPassword, setSignupPassword] = useState('');
     const [signupFirstName, setSignupFirstName] = useState('');
@@ -59,6 +61,17 @@ function VendorLogin({ handlePopup }) {
 
     const handleSignup = async (event) => {
         event.preventDefault();
+
+        if (signupEmail !== signupConfirmEmail) {
+            alert("Emails do not match.");
+            return;
+        }
+    
+        if (signupPassword !== signupConfirmPassword) {
+            alert("Passwords do not match.");
+            return;
+        }
+
         try {
             const response = await fetch('http://127.0.0.1:5555/api/vendor-signup', {
                 method: 'POST',
@@ -148,12 +161,32 @@ function VendorLogin({ handlePopup }) {
                             />
                         </div>
                         <div className="form-group form-login">
+                            <label>Confirm Email: </label>
+                            <input
+                                type="email"
+                                value={signupConfirmEmail}
+                                placeholder="re-enter your email"
+                                onChange={(event) => setSignupConfirmEmail(event.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="form-group form-login">
                             <label>Password: </label>
                             <input
                                 type="password"
                                 value={signupPassword}
                                 placeholder='enter a password'
                                 onChange={(event) => setSignupPassword(event.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="form-group form-login">
+                            <label>Confirm Password: </label>
+                            <input
+                                type="password"
+                                value={signupConfirmPassword}
+                                placeholder="re-enter your password"
+                                onChange={(event) => setSignupConfirmPassword(event.target.value)}
                                 required
                             />
                         </div>

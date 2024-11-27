@@ -214,7 +214,7 @@ def signup():
             address_2=data.get('address2', ''),
             city=data['city'],
             state=data['state'],
-            zip=data['zip']
+            zipcode=data['zipcode']
         )
 
         db.session.add(new_user)
