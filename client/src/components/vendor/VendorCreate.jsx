@@ -283,6 +283,11 @@ function VendorCreate () {
         }
     };
 
+    const getVendorName = (vendorId) => {
+        const vendor = vendors.find((vendor) => vendor.id === vendorId);
+        return vendor ? vendor.name : 'Unknown Vendor';
+    };
+
     useEffect(() => {
         if (!vendorUserId) return;
 
@@ -375,7 +380,7 @@ function VendorCreate () {
             <div>
                 {notifications.length !== 0 ? (
                     <div className="notification">
-                        <p>Your request has been sent to the admins of <strong>{notifications?.name}</strong> for approval.</p>
+                    <p>Your request has been sent to the admins of <strong>{notifications.vendor_name}</strong> for approval.</p>
                         <button className="btn-edit" onClick={handleCancelRequest}>
                             Cancel Request
                         </button>
