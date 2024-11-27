@@ -586,6 +586,9 @@ class VendorNotification(db.Model, SerializerMixin):
 
     serialize_rules = ('vendor_user.first_name', 'vendor_user.last_name')
 
+    def get_vendor_name(self):
+        return Vendor.query.filter_by(id=self.vendor_id).first().name
+
     def __repr__(self):
         return (f"<Vendor Notification ID: {self.id}, created on {self.created_at}")
 
