@@ -401,7 +401,6 @@ function VendorCreate () {
                                 </tr>
                             </tbody>
                         </table>
-
                         {selectedVendor && (
                             <div className="selected-vendor">
                                 <p>You have selected: {selectedVendor.name}</p>
