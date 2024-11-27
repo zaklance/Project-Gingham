@@ -7,6 +7,7 @@ function VendorTeam({ vendors, vendorId, vendorUserData }) {
     const [isLoading, setIsLoading] = useState(true);
     const [teamMembers, setTeamMembers] = useState([]);
     const [newMemberEmail, setNewMemberEmail] = useState('');
+    const [confirmMemberEmail, setConfirmMemberEmail] = useState('');
     const [newMemberRole, setNewMemberRole] = useState('Employee'); 
 
 
@@ -76,6 +77,12 @@ function VendorTeam({ vendors, vendorId, vendorUserData }) {
     }, [vendorUserData]);
 
     const handleAddTeamMember = async () => {
+
+        if (newMemberEmail !== confirmMemberEmail) {
+            alert("Emails do not match")
+            return;
+        }
+
         try {
             const token = sessionStorage.getItem('jwt-token');
             const response = await fetch('http://127.0.0.1:5555/api/vendor-users', {
@@ -177,6 +184,15 @@ function VendorTeam({ vendors, vendorId, vendorUserData }) {
                             value={newMemberEmail}
                             onChange={e => setNewMemberEmail(e.target.value)}
                             placeholder="Enter team member's email"
+                        />
+                    </div>
+                    <div className='form-group'>
+                        <label>Email:</label>
+                        <input
+                            type="email"
+                            value={confirmMemberEmail}
+                            onChange={e => setConfirmMemberEmail(e.target.value)}
+                            placeholder="re-enter team member's email"
                         />
                     </div>
                     <div className='form-group'>
