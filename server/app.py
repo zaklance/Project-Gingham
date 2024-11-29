@@ -1128,9 +1128,12 @@ def handle_baskets():
     if request.method == 'GET':
         try:
             market_day_id = request.args.get('market_day_id', type=int)
+            vendor_id = request.args.get('vendor_id', type=int)
             query = Basket.query
             if market_day_id:
                 query = query.filter_by(market_day_id=market_day_id)
+            if vendor_id:
+                query = query.filter_by(vendor_id=vendor_id)
             baskets = query.all()
             return jsonify([basket.to_dict() for basket in baskets]), 200
         except Exception as e:
