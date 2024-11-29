@@ -16,8 +16,6 @@ function VendorDetail () {
     const [showAlert, setShowAlert] = useState(false);
     const [hoveredMarket, setHoveredMarket] = useState(null);
     const [events, setEvents] = useState([]);
-
-    const reviewType = "vendor"
     
     // To be deleted after baskets state is moved to BasketCard
     const [marketBaskets, setMarketBaskets] = useState({});
@@ -126,12 +124,9 @@ function VendorDetail () {
     // };
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/vendor-favorites")
+        fetch(`http://127.0.0.1:5555/api/vendor-favorites?user_id=${userId}`)
             .then(response => response.json())
-            .then(data => {
-                const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
-                setVendorFavs(filteredData);
-            })
+            .then(data => { setVendorFavs(data) })
             .catch(error => console.error('Error fetching vendor favorites', error));
     }, []);
 
