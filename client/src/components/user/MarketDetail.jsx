@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
 import ReviewMarket from './ReviewMarket';
-// import VendorDetail from './VendorDetail';
 
 function MarketDetail ({ match }) {
     const { id } = useParams();
@@ -23,18 +22,16 @@ function MarketDetail ({ match }) {
     const [selectedDay, setSelectedDay] = useState(null);
     const [vendorMarkets, setVendorMarkets] = useState();
     const [events, setEvents] = useState([]);
+    const [marketBaskets, setMarketBaskets] = useState([]);
     
     // To be deleted after baskets state is moved to BasketCard
-    const [marketBaskets, setMarketBaskets] = useState({});
-    const [price, setPrice] = useState(5);
+    // const [price, setPrice] = useState(5);
     
     const { handlePopup, amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
     
     const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
     
     const navigate = useNavigate();
-
-    const reviewType = "market"
 
     const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
@@ -59,23 +56,50 @@ function MarketDetail ({ match }) {
     }, [id]);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/market-days")
-            .then(response => response.json())
-            .then(data => {
-                setAllMarketDays(data)       
-            })
-            .catch(error => console.error('Error fetching market days', error));
-    }, []);
+        const fetchData = async () => {
+            try {
+                // Fetch multiple endpoints in parallel
+                const [marketDaysRes, vendorMarketsRes, vendorsRes, eventsRes, marketFavsRes] = await Promise.all([
+                    fetch(`http://127.0.0.1:5555/api/market-days?market_id=${market?.id}`).then(res => res.json()),
+                    fetch("http://127.0.0.1:5555/api/vendor-markets").then(res => res.json()),
+                    fetch("http://127.0.0.1:5555/api/vendors").then(res => res.json()),
+                    fetch("http://127.0.0.1:5555/api/events").then(res => res.json()),
+                    fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`).then(res => res.json())
+                ]);
 
-    useEffect(() => {
-        if (allMarketDays.length > 0 && market?.id) {
-            const filteredData = allMarketDays.filter((item) => item.market_id === market.id);
-            setMarketDays(filteredData);
-            if (filteredData.length > 0) {
-                setSelectedDay(filteredData[0]);
+                // Set state with fetched data
+                setMarketDays(marketDaysRes);
+                if (Array.isArray(vendorMarketsRes)) {
+                    const vendorIds = vendorMarketsRes.map(vendor => vendor.vendor_id);
+                    setVendors(vendorIds);
+                    setVendorMarkets(vendorMarketsRes)
+                }
+                if (marketDaysRes.length > 0) {
+                    setSelectedDay(marketDaysRes[0]);
+                }
+                setVendorMarkets(vendorMarketsRes);
+                setAllVendorDetails(vendorsRes);
+                setEvents(eventsRes.filter(event => {
+                    const today = new Date();
+                    const sevenDaysFromNow = new Date();
+                    sevenDaysFromNow.setDate(today.getDate() + 7);
+
+                    const startDate = new Date(event.start_date);
+                    const endDate = new Date(event.end_date);
+
+                    return event.market_id === Number(id) && (
+                        (today >= startDate && today <= endDate) ||
+                        (startDate <= sevenDaysFromNow)
+                    );
+                }));
+                setMarketFavs(marketFavsRes);
+            } catch (error) {
+                console.error("Error fetching data in parallel:", error);
             }
-        }
-    }, [allMarketDays, market?.id]);
+        };
+
+        fetchData();
+    }, [id, userId, market?.id]);
 
     const handleDayChange = (event) => {
         const dayId = parseInt(event.target.value);
@@ -91,35 +115,19 @@ function MarketDetail ({ match }) {
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/vendor-markets`)
             .then(response => response.json())
-            .then(vendors => {
-                if (Array.isArray(vendors)) {
-                    const vendorIds = vendors.map(vendor => vendor.vendor_id);
+            .then(data => {
+                if (Array.isArray(data)) {
+                    const vendorIds = data.map(item => item.vendor_id);
                     setVendors(vendorIds);
-                    setVendorMarkets(vendors)
+                    setVendorMarkets(data)
 
-                    const initialBaskets = {};
-                    vendorIds.forEach(vendorId => initialBaskets[vendorId] = 5);
-                    setMarketBaskets(initialBaskets);
+                    // const initialBaskets = {};
+                    // vendorIds.forEach(vendorId => initialBaskets[vendorId] = 5);
+                    // setMarketBaskets(initialBaskets);
                 }
             })
             .catch(error => console.error('Error fetching vendors:', error));
     }, [id]);
-
-    // Fetch all vendors
-    useEffect(() => {
-        const fetchAllVendors = async () => {
-            try {
-                const response = await fetch("http://127.0.0.1:5555/api/vendors");
-                if (!response.ok) throw new Error("Failed to fetch vendors");
-                const data = await response.json();
-                setAllVendorDetails(data); // Store all fetched vendors
-            } catch (error) {
-                console.error("Error fetching vendors:", error);
-            }
-        };
-
-        fetchAllVendors();
-    }, []);
 
     // filter all fetched vendors
     useEffect(() => {
@@ -151,18 +159,26 @@ function MarketDetail ({ match }) {
     // Gets rid of duplicate vendors (from different market_days)
     const uniqueFilteredVendorsList = [...new Set(filteredVendorsList)];
 
-    
-
-    const handleAddToCart = (vendorId, marketId) => {
-        if (marketBaskets[vendorId] > 0) {
-            setMarketBaskets((prev) => ({
-                ...prev,
-                [vendorId]: prev[vendorId] - 1
-            }));            
+    const handleAddToCart = (vendorId, vendorDetail, marketId) => {
+        const basketInCart = marketBaskets.find(
+            item => item.vendor_id === vendorId && item.is_sold === false
+        );
+        if (basketInCart) {
             setAmountInCart(amountInCart + 1);
-
             const vendor = vendorDetailsMap[vendorId];
-            setCartItems([...cartItems, { vendorName: vendor.name, location: market.name, id: cartItems.length + 1, price: price }]);
+            const basketId = 
+            setCartItems([
+                ...cartItems,
+                {
+                    vendorName: vendor.name,
+                    location: market.name,
+                    id: basketInCart.id,
+                    price: basketInCart.price,
+                },
+            ]);
+            setMarketBaskets(prevBaskets =>
+                prevBaskets.filter(item => item.id !== basketInCart.id)
+            );
         } else {
             alert("Sorry, all baskets are sold out!");
         }
@@ -176,16 +192,6 @@ function MarketDetail ({ match }) {
     const handleBackButtonClick = () => {
         navigate('/user/markets');
     };
-
-    useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/market-favorites")
-            .then(response => response.json())
-            .then(data => {
-                const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
-                setMarketFavs(filteredData)
-            })
-            .catch(error => console.error('Error fetching market favorites', error));
-    }, []);
 
     useEffect(() => {
         if (market && marketFavs.some(fav => fav.market_id === market.id)) {
@@ -234,7 +240,6 @@ function MarketDetail ({ match }) {
         }, 1000);
     };
 
-
     useEffect(() => {
         if (vendorMarkets && selectedDay) {
             // Filter `vendorMarkets` based on selected day
@@ -250,24 +255,17 @@ function MarketDetail ({ match }) {
     }, [vendorMarkets, selectedDay]);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/events")
+        if (!selectedDay?.id) return;
+        fetch(`http://127.0.0.1:5555/api/baskets?market_day_id=${selectedDay.id}`)
             .then(response => response.json())
             .then(data => {
-                const today = new Date();
-                const sevenDaysFromNow = new Date();
-                sevenDaysFromNow.setDate(today.getDate() + 7);
-
-                const filteredData = data.filter(item => {
-                    const startDate = new Date(item.start_date);
-                    const endDate = new Date(item.end_date);
-                    return item.market_id === Number(id) &&
-                        // Check if today is within range or start_date is within 7 days from now
-                        (today >= startDate && today <= endDate || startDate <= sevenDaysFromNow);
-                });
-                setEvents(filteredData);
+                const filteredData = data.filter(item =>
+                    !cartItems.some(cartItem => cartItem.id === item.id)
+                );
+                setMarketBaskets(filteredData);
             })
-            .catch(error => console.error('Error fetching events', error));
-    }, [id]);
+            .catch(error => console.error('Error fetching market baskets', error));
+    }, [selectedDay, cartItems]);
     
 
     if (!market) {
@@ -381,12 +379,25 @@ function MarketDetail ({ match }) {
                                     {vendorDetail.name || 'Loading...'}
                                 </Link>
                                 <span className="market-name">{vendorDetail.product || 'No product listed'}</span>
-
-                                <span className="market-price">Price: ${price.toFixed(2)}</span>
+                                {marketBaskets.filter(
+                                        item => item.vendor_id === vendorDetail.id && item.is_sold === false
+                                    ).filter(
+                                        item => !cartItems.some(cartItem => cartItem.id === item.id)
+                                    ).length > 0 ? (
+                                    <span className="market-price">
+                                        Price: ${marketBaskets.find(item => item.vendor_id === vendorDetail.id)?.price || ''}
+                                    </span>
+                                ) : (
+                                    <span className="market-price">Out of Stock</span>
+                                )}
                                 <span className="market-baskets">
-                                    Available Baskets: {marketBaskets[vendorId] ?? 'Loading...'}
+                                    Available Baskets: {marketBaskets.filter(
+                                        item => item.vendor_id === vendorDetail.id && item.is_sold === false
+                                    ).filter(
+                                        item => !cartItems.some(cartItem => cartItem.id === item.id)
+                                    ).length ?? 'Loading...'}
                                 </span>
-                                <button className="btn-edit" onClick={() => handleAddToCart(vendorId)}>
+                                <button className="btn-edit" onClick={() => handleAddToCart(vendorId, vendorDetail)}>
                                     Add to Cart
                                 </button>
                             </div>
