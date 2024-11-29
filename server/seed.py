@@ -1050,6 +1050,7 @@ def run():
         is_sold = user_id is not None
         is_grabbed = bool(fake.boolean()) if is_sold else bool(False)
         price = int(randint(4, 8))
+        basket_value = int(randint(12, 20))
         pickup_duration = choice(duration)
 
         bsk = Basket(
@@ -1061,6 +1062,7 @@ def run():
             is_sold=is_sold,
             is_grabbed=is_grabbed,
             price=price,
+            basket_value=basket_value,
             pickup_duration=pickup_duration
         )
         baskets.append(bsk)

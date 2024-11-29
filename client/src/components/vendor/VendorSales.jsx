@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import Chart from 'chart.js/auto';
 
 function VendorSales () {
     const chartRef = useRef();
     const [vendorId, setVendorId] = useState(null);
     const [baskets, setBaskets] = useState([]);
+    const [salesHistory, setSalesHistory] = useState([]);
 
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
@@ -44,48 +46,82 @@ function VendorSales () {
 
     const formattedDate = formatDate("2024-06-24");
 
-    useEffect(() => {
-        const fetchVendorId = async () => {
-            const vendorUserId = sessionStorage.getItem('vendor_user_id');
-            if (!vendorUserId) {
-                console.error("No vendor user ID found in session storage");
-                return;
-            }
-            try {
-                const token = sessionStorage.getItem('jwt-token');
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.vendor_id) {
-                        setVendorId(parseInt(data.vendor_id, 10));
-                    }
-                } else {
-                    console.error('Failed to fetch vendor user data');
+    const fetchVendorId = async () => {
+        const vendorUserId = sessionStorage.getItem('vendor_user_id');
+        if (!vendorUserId) {
+            console.error("No vendor user ID found in session storage");
+            return;
+        }
+        try {
+            const token = sessionStorage.getItem('jwt-token');
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 }
-            } catch (error) {
-                console.error('Error fetching vendor user data:', error);
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setVendorId(data.vendor_id);
+            } else {
+                console.error('Failed to fetch vendor user data');
             }
-        };
+        } catch (error) {
+            console.error('Error fetching vendor user data:', error);
+        }
+    };
+
+    useEffect(() => {
         fetchVendorId();
     }, []);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/baskets")
-            .then(response => response.json())
-            .then(data => {
-                console.log("Raw basket data:", data);
-                const filteredData = data.filter(item => item.vendor_id === vendorId)
-                setBaskets(filteredData)
-            })
-            .catch(error => console.error('Error fetching market days', error));
+        const fetchBaskets = async () => {
+            try {
+                const response = await fetch("http://127.0.0.1:5555/api/baskets");
+                if (response.ok) {
+                    const data = await response.json();
+                    setBaskets(data.filter(item => item.vendor_id === vendorId));
+                } else {
+                    console.error('Failed to fetch baskets');
+                }
+            } catch (error) {
+                console.error('Error fetching baskets:', error);
+            }
+        };
+        if (vendorId) fetchBaskets();
     }, [vendorId]);
 
+    useEffect(() => {
+        const fetchSalesHistory = async () => {
+            const token = sessionStorage.getItem('jwt-token');
+            if (!token) {
+                console.error('JWT token not found in sessionStorage');
+                return;
+            }
+            try {
+                const response = await fetch('http://127.0.0.1:5555/api/baskets/vendor-sales-history', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setSalesHistory(data);
+                } else {
+                    console.error('Failed to fetch sales history');
+                }
+            } catch (error) {
+                console.error('Error fetching sales history:', error);
+            }
+        };
+        fetchSalesHistory();
+    }, []);
+
+    console.log(salesHistory)
 
     useEffect(() => {
         const ctx = document.getElementById(`chart-baskets`);
@@ -172,12 +208,61 @@ function VendorSales () {
     return(
         <div>
             <h2 className='margin-t-16'>Vendor Sales</h2>
-            <div className='box-bounding'>
-                {baskets ? (
-                    <canvas id="chart-baskets"></canvas>
-                ) : (
-                    <h2>Loading...</h2>
-                )}
+            <div>
+                <div className='box-bounding'>
+                    {baskets ? (
+                        <canvas id="chart-baskets"></canvas>
+                    ) : (
+                        <h2>Loading...</h2>
+                    )}
+                </div>
+                <br/>
+                    <h3>Sales Breakdown:</h3>
+                    <div className='table-overflow'>
+                        <table className='table-basket'>
+                            <thead>
+                                <tr>
+                                    <th>Sale Date</th>
+                                    <th>Market</th>
+                                    <th>Pick Up Time</th>
+                                    <th>Pick Up Duration</th>
+                                    <th>Basket Value</th>
+                                    <th>Price</th>
+                                    <th>Available</th>
+                                    <th>Sold</th>
+                                    {/* <th>Baskets Count</th> */}
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {salesHistory.length > 0 ? (
+                                salesHistory
+                                    .sort((a, b) => new Date(b.sale_date) - new Date(a.sale_date))
+                                    .map((history, index) => (
+                                        <tr key={index}>
+                                            <td className='table-center'>{history.sale_date || 'N/A'}</td>
+                                            <td>
+                                                <Link className='btn-nav' to={`/user/markets/${history.market_id}`}>
+                                                    {history.market_name || 'No Market Name'}
+                                                </Link>
+                                            </td>
+                                            <td className='table-center'> {history.pickup_time ? history.pickup_time : 'N/A'} </td>
+                                            <td className='table-center'> {history.pickup_duration ? history.pickup_duration : 'N/A'} </td>
+                                            <td className='table-center'> ${history.basket_value ? history.basket_value.toFixed(2) : 'N/A'} </td>
+                                            <td className='table-center'> ${history.price ? history.price.toFixed(2) : 'N/A'} </td>
+                                            <td className='table-center'> {history.available_baskets || 0} </td>
+                                            <td className='table-center'> {history.sold_baskets || 0} </td>
+                                        </tr>
+                                    ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="8">No sales history available</td>
+                                </tr>
+                            )}
+                            </tbody>
+                        </table>
+                    </div>                    
+                <br/>
+
             </div>
         </div>
     )
