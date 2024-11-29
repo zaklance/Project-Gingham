@@ -112,23 +112,6 @@ function MarketDetail ({ match }) {
         setSelectedProduct(event.target.value);
     };
 
-    useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/vendor-markets`)
-            .then(response => response.json())
-            .then(data => {
-                if (Array.isArray(data)) {
-                    const vendorIds = data.map(item => item.vendor_id);
-                    setVendors(vendorIds);
-                    setVendorMarkets(data)
-
-                    // const initialBaskets = {};
-                    // vendorIds.forEach(vendorId => initialBaskets[vendorId] = 5);
-                    // setMarketBaskets(initialBaskets);
-                }
-            })
-            .catch(error => console.error('Error fetching vendors:', error));
-    }, [id]);
-
     // filter all fetched vendors
     useEffect(() => {
         if (allVendorDetails.length > 0 && vendors.length > 0) {
