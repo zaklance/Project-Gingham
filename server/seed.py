@@ -1039,7 +1039,7 @@ def run():
     for i in range(500):
         rand_user = [None, randint(1, 50)]
         duration = [time(0, 15, 0), time(0, 20, 0), time(0, 30, 0), time(0, 45, 0), time(1, 0, 0), time(1, 15, 0), time(1, 30, 0)]
-        last_month = randint(0, 31)
+        last_month = randint(-1, 7)
         dates = date.today() - timedelta(days=last_month)
 
         vendor_id = str(randint(1, 150))
