@@ -349,7 +349,11 @@ def market_by_id(id):
 @app.route('/api/market-days', methods=['GET', 'POST', 'DELETE'])
 def all_market_days():
     if request.method == 'GET':
-        market_days = MarketDay.query.all()
+        market_id = request.args.get('market_id')
+        if market_id:
+            market_days = MarketDay.query.filter_by(market_id=market_id).all()
+        else:
+            market_days = MarketDay.query.all()
         return jsonify([market.to_dict() for market in market_days]), 200
     elif request.method == 'POST':
         data = request.get_json()
@@ -728,7 +732,11 @@ def vendor_review_rating_by_id(id):
 @app.route('/api/market-favorites', methods=['GET', 'POST'])
 def all_market_favorites():
     if request.method == 'GET':
-        marketFavorites = MarketFavorite.query.all()
+        user_id = request.args.get('user_id')
+        query = MarketFavorite.query
+        if user_id:
+            query = query.filter_by(user_id=user_id)
+        marketFavorites = query.all()
         return jsonify([marketFavorite.to_dict() for marketFavorite in marketFavorites]), 200
     
     elif request.method == 'POST':
@@ -756,7 +764,11 @@ def del_market_fav(id):
 @app.route('/api/vendor-favorites', methods=['GET', 'POST'])
 def all_vendor_favorites():
     if request.method == 'GET':
-        vendorFavorites = VendorFavorite.query.all()
+        user_id = request.args.get('user_id')
+        query = VendorFavorite.query
+        if user_id:
+            query = query.filter_by(user_id=user_id)
+        vendorFavorites = query.all()
         return jsonify([vendorFavorite.to_dict() for vendorFavorite in vendorFavorites]), 200
     
     elif request.method == 'POST':
@@ -1115,7 +1127,14 @@ def event_by_id(id):
 def handle_baskets():
     if request.method == 'GET':
         try:
-            baskets = Basket.query.all()
+            market_day_id = request.args.get('market_day_id', type=int)
+            vendor_id = request.args.get('vendor_id', type=int)
+            query = Basket.query
+            if market_day_id:
+                query = query.filter_by(market_day_id=market_day_id)
+            if vendor_id:
+                query = query.filter_by(vendor_id=vendor_id)
+            baskets = query.all()
             return jsonify([basket.to_dict() for basket in baskets]), 200
         except Exception as e:
             app.logger.error(f'Error fetching baskets: {e}')  
