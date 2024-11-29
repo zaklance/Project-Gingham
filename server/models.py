@@ -535,21 +535,15 @@ class Basket(db.Model, SerializerMixin):
             raise ValueError(f"{key} must be a boolean value")
         return value
     
-    @validates('price')
+    @validates('price', 'basket_value')
     def validate_price(self, key, value):
         if not isinstance(value, (int, float)) or value < 0:
-            raise ValueError("Price must be a non-negative integer")
-        return value
-
-    @validates('basket_value')
-    def validate_value(self, key, value):
-        if not isinstance(value, (int, float)) or value < 0:
-            raise ValueError("Basket Value must be a non-negative number")
+            raise ValueError(f"{key} must be a non-negative integer")
         return value
 
     def __repr__(self):
         return (f"<Basket ID: {self.id}, Vendor: {self.vendor.name}, "
-                f"Market ID: {self.market_day_id}, Sold: {self.is_sold}, Value: {self.value}>")
+                f"Market ID: {self.market_day_id}, Sold: {self.is_sold}, Value: {self.basket_value}>")
 
 class UserNotification(db.Model):
     __tablename__ = 'user_notifications'

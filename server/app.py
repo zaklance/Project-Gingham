@@ -1144,7 +1144,6 @@ def handle_baskets():
                 price = float(data['price'])
                 if price < 0:
                     return {'error': 'Price must be a non-negative number'}, 400
-                price = int(price * 100)
             except (ValueError, TypeError):
                 return jsonify({'error': 'Invalid price format. Must be a positive number.'}), 400
 
@@ -1292,6 +1291,47 @@ def get_user_sales_history():
         return jsonify(user_sales_history), 200
     
     except Exception as e: 
+        app.logger.error(f"Error fetching sales history: {e}")
+        return {'error': f"Exception: {str(e)}"}, 500
+    
+@app.route('/api/baskets/vendor-sales-history', methods=['GET'])
+@jwt_required()
+def get_vendor_sales_history():
+    try:
+        current_vendor_id = get_jwt_identity()
+        if not current_vendor_id:
+            return {'error': 'User not logged in'}, 401
+
+        baskets = Basket.query.filter_by(vendor_id=current_vendor_id).all()
+
+        sales_history = {}
+        for basket in baskets:
+            sale_date = basket.sale_date
+            market_day_id = basket.market_day_id
+
+            if (sale_date, market_day_id) not in sales_history:
+                sales_history[(sale_date, market_day_id)] = {
+                    "vendor_name": basket.vendor.name,
+                    "vendor_id": basket.vendor.id,
+                    "sale_date": sale_date.strftime('%Y-%m-%d'),
+                    "market_name": basket.market_day.markets.name if basket.market_day else None,
+                    "market_id": basket.market_day.markets.id if basket.market_day else None,
+                    "basket_value": basket.basket_value,
+                    "price": basket.price,
+                    "pickup_time": basket.pickup_time.strftime('%H:%M'),
+                    "pickup_duration": basket.pickup_duration.strftime('%H:%M'),
+                    "available_baskets": 0,
+                    "sold_baskets": 0,
+                }
+
+            sales_history[(sale_date, market_day_id)]["available_baskets"] += 1
+            if basket.is_sold:
+                sales_history[(sale_date, market_day_id)]["sold_baskets"] += 1
+
+        vendor_sales_history = list(sales_history.values())
+        return jsonify(vendor_sales_history), 200
+
+    except Exception as e:
         app.logger.error(f"Error fetching sales history: {e}")
         return {'error': f"Exception: {str(e)}"}, 500
 
