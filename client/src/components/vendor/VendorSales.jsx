@@ -19,6 +19,19 @@ function VendorSales () {
         return dates;
     }
 
+    function getDatesForMonth(year, month) {
+        const dates = [];
+        let currentDate = new Date(year, month, 1); // First day of the given month
+        const nextMonth = month === 11 ? 0 : month + 1;
+        const nextMonthYear = month === 11 ? year + 1 : year;
+
+        while (currentDate < new Date(nextMonthYear, nextMonth, 1)) {
+            dates.push(`${months[currentDate.getMonth()]} ${currentDate.getDate()}`);
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        return dates;
+    }
+
     // const datesThisYear = getDatesForYear(2024);
 
     function formatDate(dateString) {
@@ -76,12 +89,12 @@ function VendorSales () {
     }, []);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/baskets")
+        fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}`)
             .then(response => response.json())
             .then(data => {
-                console.log("Raw basket data:", data);
-                const filteredData = data.filter(item => item.vendor_id === vendorId)
-                setBaskets(filteredData)
+                // console.log("Raw basket data:", data);
+                // const filteredData = data.filter(item => item.vendor_id === vendorId)
+                setBaskets(data)
             })
             .catch(error => console.error('Error fetching market days', error));
     }, [vendorId]);
@@ -113,7 +126,7 @@ function VendorSales () {
         const { soldData, unsoldData } = processBaskets(baskets);
 
         const data = {
-            labels: getDatesForYear(2024), // Use your function to get all dates for the year
+            labels: getDatesForMonth(2024, 10), // Use your function to get all dates for the year
             datasets: [
                 {
                     label: 'Sold Baskets',
