@@ -1038,40 +1038,35 @@ def run():
     vendor_markets = []
     for i in range(500):
         rand_user = [None, randint(1, 50)]
-        duration = [time(0, 15, 0), time(0, 20, 0), time(0, 30, 0), time(0, 45, 0), time(1, 0, 0), time(1, 15, 0), time(1, 30, 0)]
-        last_month = randint(-1, 7)
+        last_month = randint(-2, 1)
         dates = date.today() - timedelta(days=last_month)
 
         vendor_id = str(randint(1, 150))
         market_day_id = str(randint(1, 57))
         sale_date = dates
-        pickup_time = fake.time_object()
+        pickup_start = fake.time_object()
+        random_duration_minutes = randint(30, 120)
+        hours, minutes = divmod(random_duration_minutes, 60)
+        pickup_end_hour = (pickup_start.hour + hours + (pickup_start.minute + minutes) // 60) % 24
+        pickup_end_minute = (pickup_start.minute + minutes) % 60
+        pickup_end = time(pickup_end_hour, pickup_end_minute)
         user_id = choice(rand_user)
         is_sold = user_id is not None
         is_grabbed = bool(fake.boolean()) if is_sold else bool(False)
         price = int(randint(4, 8))
         basket_value = int(randint(12, 20))
-<<<<<<< HEAD
-        pickup_duration = choice(duration)
-=======
->>>>>>> refs/remotes/origin/main
 
         bsk = Basket(
             vendor_id=vendor_id,
             market_day_id=market_day_id,
             sale_date=sale_date,
-            pickup_time=pickup_time,
+            pickup_start=pickup_start,
+            pickup_end=pickup_end,
             user_id=user_id,
             is_sold=is_sold,
             is_grabbed=is_grabbed,
-<<<<<<< HEAD
             price=price,
-            basket_value=basket_value,
-            pickup_duration=pickup_duration
-=======
-            price=price, 
             basket_value=basket_value
->>>>>>> refs/remotes/origin/main
         )
         baskets.append(bsk)
 
