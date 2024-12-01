@@ -1064,8 +1064,16 @@ def handle_vendor_vendor_users():
 @app.route('/api/events', methods=['GET', 'POST'])
 def all_events():
     if request.method == 'GET':
-        events = Event.query.all()
-        return jsonify([event.to_dict() for event in events]), 200
+        try:
+            vendor_id = request.args.get('vendor_id', type=int)
+            query = Event.query
+            if vendor_id:
+                query = query.filter_by(vendor_id=vendor_id)
+            events = query.all()
+            return jsonify([event.to_dict() for event in events]), 200
+        except Exception as e:
+            app.logger.error(f'Error fetching events: {e}')  
+            return {'error': f'Exception: {str(e)}'}, 500
     elif request.method == 'POST':
         data = request.get_json()
         print("Received data:", data)
