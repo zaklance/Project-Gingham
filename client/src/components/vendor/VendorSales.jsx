@@ -97,12 +97,14 @@ function VendorSales() {
     }, [vendorUserId]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}`)
-            .then(response => response.json())
-            .then(data => {
-                setBaskets(data)
-            })
-            .catch(error => console.error('Error fetching market days', error));
+        if (vendorId) {
+            fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}`)
+                .then(response => response.json())
+                .then(data => {
+                    setBaskets(data)
+                })
+                .catch(error => console.error('Error fetching market days', error));
+        }
     }, [vendorId]);
 
     useEffect(() => {
