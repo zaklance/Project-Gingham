@@ -1054,7 +1054,7 @@ def run():
         is_sold = user_id is not None
         is_grabbed = bool(fake.boolean()) if is_sold else bool(False)
         price = int(randint(4, 8))
-        basket_value = int(randint(12, 20))
+        basket_value = int(randint(12, 16))
 
         bsk = Basket(
             vendor_id=vendor_id,
@@ -1065,7 +1065,7 @@ def run():
             user_id=user_id,
             is_sold=is_sold,
             is_grabbed=is_grabbed,
-            price=price,
+            price=price, 
             basket_value=basket_value
         )
         baskets.append(bsk)
