@@ -56,7 +56,16 @@ function VendorSales() {
     //     }
     // }
 
-    const formattedDate = formatDate("2024-06-24");
+    function timeConverter(time24) {
+        const date = new Date('1970-01-01T' + time24);
+
+        const time12 = date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+        return time12
+    }
 
     const fetchVendorId = async () => {
         if (!vendorUserId) {
@@ -123,8 +132,6 @@ function VendorSales() {
         };
         fetchSalesHistory();
     }, []);
-
-    console.log(salesHistory)
 
     useEffect(() => {
         const ctx = document.getElementById(`chart-baskets`);
@@ -221,7 +228,7 @@ function VendorSales() {
                 </div>
                 <br/>
                     <h3>Sales Breakdown:</h3>
-                    <div className='table-overflow'>
+                    <div className='box-scroll'>
                         <table className='table-basket'>
                             <thead>
                                 <tr>
@@ -241,14 +248,14 @@ function VendorSales() {
                                     .sort((a, b) => new Date(b.sale_date) - new Date(a.sale_date))
                                     .map((history, index) => (
                                         <tr key={index}>
-                                            <td className='table-center'>{history.sale_date || 'N/A'}</td>
+                                            <td className='table-center nowrap'>{history.sale_date || 'N/A'}</td>
                                             <td>
                                                 <Link className='btn-nav' to={`/user/markets/${history.market_id}`}>
                                                     {history.market_name || 'No Market Name'}
                                                 </Link>
                                             </td>
-                                            <td className='table-center'> {history.pickup_start ? history.pickup_start : 'N/A'} </td>
-                                            <td className='table-center'> {history.pickup_end ? history.pickup_end : 'N/A'} </td>
+                                            <td className='table-center'> {history.pickup_start ? timeConverter(history.pickup_start) : 'N/A'} </td>
+                                            <td className='table-center'> {history.pickup_end ? timeConverter(history.pickup_end) : 'N/A'} </td>
                                             <td className='table-center'> ${history.basket_value ? history.basket_value.toFixed(2) : 'N/A'} </td>
                                             <td className='table-center'> ${history.price ? history.price.toFixed(2) : 'N/A'} </td>
                                             <td className='table-center'> {history.available_baskets || 0} </td>
