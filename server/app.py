@@ -1345,8 +1345,8 @@ def get_vendor_sales_history():
                     "market_id": basket.market_day.markets.id if basket.market_day else None,
                     "basket_value": basket.basket_value,
                     "price": basket.price,
-                    "pickup_time": basket.pickup_time.strftime('%H:%M'),
-                    "pickup_duration": basket.pickup_duration.strftime('%H:%M'),
+                    "pickup_start": basket.pickup_start.strftime('%H:%M'),
+                    "pickup_end": basket.pickup_end.strftime('%H:%M'),
                     "available_baskets": 0,
                     "sold_baskets": 0,
                 }
