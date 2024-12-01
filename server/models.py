@@ -529,7 +529,7 @@ class Basket(db.Model, SerializerMixin):
     #         raise ValueError("Sale date cannot be in the past")
     #     return value
 
-    @validates('is_sold', 'is_grabbed')
+    @validates('is_sold', 'is_grabbed', "in_cart")
     def validate_boolean(self, key, value):
         if not isinstance(value, bool):
             raise ValueError(f"{key} must be a boolean value")
