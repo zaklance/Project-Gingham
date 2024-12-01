@@ -237,8 +237,8 @@ function VendorSales () {
                                 <tr>
                                     <th>Sale Date</th>
                                     <th>Market</th>
-                                    <th>Pick Up Time</th>
-                                    <th>Pick Up Duration</th>
+                                    <th>Pick Up Start</th>
+                                    <th>Pick Up End</th>
                                     <th>Basket Value</th>
                                     <th>Price</th>
                                     <th>Available</th>
@@ -258,8 +258,8 @@ function VendorSales () {
                                                     {history.market_name || 'No Market Name'}
                                                 </Link>
                                             </td>
-                                            <td className='table-center'> {history.pickup_time ? history.pickup_time : 'N/A'} </td>
-                                            <td className='table-center'> {history.pickup_duration ? history.pickup_duration : 'N/A'} </td>
+                                            <td className='table-center'> {history.pickup_start ? history.pickup_start : 'N/A'} </td>
+                                            <td className='table-center'> {history.pickup_end ? history.pickup_end : 'N/A'} </td>
                                             <td className='table-center'> ${history.basket_value ? history.basket_value.toFixed(2) : 'N/A'} </td>
                                             <td className='table-center'> ${history.price ? history.price.toFixed(2) : 'N/A'} </td>
                                             <td className='table-center'> {history.available_baskets || 0} </td>
