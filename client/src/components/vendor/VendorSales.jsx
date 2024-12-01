@@ -7,7 +7,7 @@ function VendorSales() {
     const [vendorId, setVendorId] = useState(null);
     const [baskets, setBaskets] = useState([]);
     const [salesHistory, setSalesHistory] = useState([]);
-    const [selectedRange, setSelectedRange] = useState([]);
+    const [selectedRange, setSelectedRange] = useState(31);
 
     const vendorUserId = sessionStorage.getItem('vendor_user_id');
 
@@ -65,6 +65,20 @@ function VendorSales() {
             hour12: true
         });
         return time12
+    }
+
+    function convertToLocalDate(gmtDateString) {
+        // Parse the GMT/UTC date string into a Date object
+        const gmtDate = new Date(gmtDateString);
+
+        // Use toLocaleDateString() to format the date in the local time zone
+        const localDate = gmtDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short', // e.g., "Jan"
+            day: 'numeric', // e.g., "1"
+        });
+
+        return localDate;
     }
 
     const fetchVendorId = async () => {
@@ -161,7 +175,7 @@ function VendorSales() {
         const { soldData, unsoldData } = processBaskets(baskets);
 
         const data = {
-            labels: getDatesForRange(31), // Use your function to get all dates for the year
+            labels: getDatesForRange(selectedRange), // Use your function to get all dates for the year
             datasets: [
                 {
                     label: 'Sold Baskets',
@@ -194,7 +208,7 @@ function VendorSales() {
                     },
                     y: {
                         stacked: true,
-                        max: 5,
+                        // max: 5,
                         min: 0,
                         ticks: {
                             stepSize: 1
@@ -250,7 +264,7 @@ function VendorSales() {
                                     .sort((a, b) => new Date(b.sale_date) - new Date(a.sale_date))
                                     .map((history, index) => (
                                         <tr key={index}>
-                                            <td className='table-center nowrap'>{history.sale_date || 'N/A'}</td>
+                                            <td className='table-center nowrap'>{convertToLocalDate(history.sale_date) || 'N/A'}</td>
                                             <td>
                                                 <Link className='btn-nav' to={`/user/markets/${history.market_id}`}>
                                                     {history.market_name || 'No Market Name'}
