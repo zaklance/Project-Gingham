@@ -26,13 +26,12 @@ function BasketSales() {
                 return response.json();
             })
             .then(data => {
-                console.log("Fetched sales history:", data);
+                // console.log("Fetched sales history:", data);
                 setSalesHistory(data);
             })
             .catch(error => console.error('Error fetching sales history:', error.message));
     }, []);
     
-    console.log(salesHistory)
 
     return (
         <div>

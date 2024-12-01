@@ -452,7 +452,7 @@ ul {
   justify-content: space-between;
 }
 
-.flex-align-start {
+.flex-start-align {
   align-items: flex-start;
   align-self: flex-start;
   align-content: flex-start;
