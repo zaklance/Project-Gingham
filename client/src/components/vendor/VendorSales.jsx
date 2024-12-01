@@ -2,36 +2,35 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Chart from 'chart.js/auto';
 
-function VendorSales () {
+function VendorSales() {
     const chartRef = useRef();
     const [vendorId, setVendorId] = useState(null);
     const [baskets, setBaskets] = useState([]);
     const [salesHistory, setSalesHistory] = useState([]);
+    const [selectedRange, setSelectedRange] = useState([]);
+
+    const vendorUserId = sessionStorage.getItem('vendor_user_id');
 
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-
-    // Get Every Date of a year
-    function getDatesForYear(year) {
-        const dates = [];
-        let currentDate = new Date(year, 0, 1); // January 1st of the given year
-        while (currentDate.getFullYear() === year) {
-            dates.push(`${months[new Date(currentDate).getMonth()]} ${new Date(currentDate).getDate()}`);
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-        return dates;
+    const dateRange = {
+        "Week": 7,
+        "Month": 31,
+        "3 Months": 91,
+        "6 Months": 183,
+        "12 Months": 365,
     }
 
-    function getDatesForMonth(year, month) {
+    function getDatesForRange(range = 31) {
         const dates = [];
-        let currentDate = new Date(year, month, 1); // First day of the given month
-        const nextMonth = month === 11 ? 0 : month + 1;
-        const nextMonthYear = month === 11 ? year + 1 : year;
+        const today = new Date();
 
-        while (currentDate < new Date(nextMonthYear, nextMonth, 1)) {
+        // Start from today and go backwards by the specified range (days, months, or years)
+        for (let i = 0; i < range; i++) {
+            const currentDate = new Date(today);
+            currentDate.setDate(today.getDate() - i);
             dates.push(`${months[currentDate.getMonth()]} ${currentDate.getDate()}`);
-            currentDate.setDate(currentDate.getDate() + 1);
         }
-        return dates;
+        return dates.reverse(); // reverse to start from the earliest date
     }
 
     // const datesThisYear = getDatesForYear(2024);
@@ -60,7 +59,6 @@ function VendorSales () {
     const formattedDate = formatDate("2024-06-24");
 
     const fetchVendorId = async () => {
-        const vendorUserId = sessionStorage.getItem('vendor_user_id');
         if (!vendorUserId) {
             console.error("No vendor user ID found in session storage");
             return;
@@ -87,23 +85,15 @@ function VendorSales () {
 
     useEffect(() => {
         fetchVendorId();
-    }, []);
+    }, [vendorUserId]);
 
     useEffect(() => {
-        const fetchBaskets = async () => {
-            try {
-                const response = await fetch("http://127.0.0.1:5555/api/baskets");
-                if (response.ok) {
-                    const data = await response.json();
-                    setBaskets(data.filter(item => item.vendor_id === vendorId));
-                } else {
-                    console.error('Failed to fetch baskets');
-                }
-            } catch (error) {
-                console.error('Error fetching baskets:', error);
-            }
-        };
-        if (vendorId) fetchBaskets();
+        fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}`)
+            .then(response => response.json())
+            .then(data => {
+                setBaskets(data)
+            })
+            .catch(error => console.error('Error fetching market days', error));
     }, [vendorId]);
 
     useEffect(() => {
@@ -162,7 +152,7 @@ function VendorSales () {
         const { soldData, unsoldData } = processBaskets(baskets);
 
         const data = {
-            labels: getDatesForMonth(2024, 10), // Use your function to get all dates for the year
+            labels: getDatesForRange(31), // Use your function to get all dates for the year
             datasets: [
                 {
                     label: 'Sold Baskets',
@@ -218,7 +208,7 @@ function VendorSales () {
     }, [baskets]);
 
 
-    return(
+    return (
         <div>
             <h2 className='margin-t-16'>Vendor Sales</h2>
             <div>
@@ -229,24 +219,24 @@ function VendorSales () {
                         <h2>Loading...</h2>
                     )}
                 </div>
-                <br/>
-                    <h3>Sales Breakdown:</h3>
-                    <div className='table-overflow'>
-                        <table className='table-basket'>
-                            <thead>
-                                <tr>
-                                    <th>Sale Date</th>
-                                    <th>Market</th>
-                                    <th>Pick Up Time</th>
-                                    <th>Pick Up Duration</th>
-                                    <th>Basket Value</th>
-                                    <th>Price</th>
-                                    <th>Available</th>
-                                    <th>Sold</th>
-                                    {/* <th>Baskets Count</th> */}
-                                </tr>
-                            </thead>
-                            <tbody>
+                <br />
+                <h3>Sales Breakdown:</h3>
+                <div className='box-scroll'>
+                    <table className='table-basket'>
+                        <thead>
+                            <tr>
+                                <th>Sale Date</th>
+                                <th>Market</th>
+                                <th>Pick Up Time</th>
+                                <th>Pick Up Duration</th>
+                                <th>Basket Value</th>
+                                <th>Price</th>
+                                <th>Available</th>
+                                <th>Sold</th>
+                                {/* <th>Baskets Count</th> */}
+                            </tr>
+                        </thead>
+                        <tbody>
                             {salesHistory.length > 0 ? (
                                 salesHistory
                                     .sort((a, b) => new Date(b.sale_date) - new Date(a.sale_date))
@@ -271,10 +261,10 @@ function VendorSales () {
                                     <td colSpan="8">No sales history available</td>
                                 </tr>
                             )}
-                            </tbody>
-                        </table>
-                    </div>                    
-                <br/>
+                        </tbody>
+                    </table>
+                </div>
+                <br />
 
             </div>
         </div>
