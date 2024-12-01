@@ -149,7 +149,6 @@ function MarketDetail ({ match }) {
         if (basketInCart) {
             setAmountInCart(amountInCart + 1);
             const vendor = vendorDetailsMap[vendorId];
-            const basketId = 
             setCartItems([
                 ...cartItems,
                 {
@@ -242,7 +241,18 @@ function MarketDetail ({ match }) {
         fetch(`http://127.0.0.1:5555/api/baskets?market_day_id=${selectedDay.id}`)
             .then(response => response.json())
             .then(data => {
-                const filteredData = data.filter(item =>
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Start of today
+                const sixDaysFromNow = new Date();
+                sixDaysFromNow.setDate(today.getDate() + 6);
+                sixDaysFromNow.setHours(23, 59, 59, 999); // End of the sixth day
+
+                const filteredBaskets = data.filter((basket) => {
+                    const saleDate = new Date(basket.sale_date);
+                    return saleDate >= today && saleDate <= sixDaysFromNow;
+                });
+
+                const filteredData = filteredBaskets.filter(item =>
                     !cartItems.some(cartItem => cartItem.id === item.id)
                 );
                 setMarketBaskets(filteredData);
@@ -269,7 +279,7 @@ function MarketDetail ({ match }) {
                 <h2>{market.name}</h2>
                 <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Markets</button>
             </div>
-            <div className={events.length < 1 ? 'flex-start flex-align-start flex-gap-16' : 'flex-start flex-align-center flex-gap-16'}>
+            <div className={events.length < 1 ? 'flex-start flex-start-align flex-gap-16' : 'flex-start flex-align-center flex-gap-16'}>
                 {events.length > 0 ? (
                     <h2 className='color-4 margin-t-16'>Events:</h2>
                 ) : (
@@ -355,6 +365,7 @@ function MarketDetail ({ match }) {
                 {Array.isArray(uniqueFilteredVendorsList) && uniqueFilteredVendorsList.length > 0 ? (
                     uniqueFilteredVendorsList.map((vendorId, index) => {
                         const vendorDetail = vendorDetailsMap[vendorId] || {};
+                        const firstBasket = (marketBaskets.length > 0 ? marketBaskets.find(item => item.vendor_id === vendorDetail.id) : '');
 
                         return (
                             <div key={index} className="market-item">
@@ -371,7 +382,7 @@ function MarketDetail ({ match }) {
                                         Price: ${marketBaskets.find(item => item.vendor_id === vendorDetail.id)?.price || ''}
                                     </span>
                                 ) : (
-                                    <span className="market-price">Out of Stock</span>
+                                    <span className="market-price"></span>
                                 )}
                                 <span className="market-baskets">
                                     Available Baskets: {marketBaskets.filter(
@@ -379,6 +390,10 @@ function MarketDetail ({ match }) {
                                     ).filter(
                                         item => !cartItems.some(cartItem => cartItem.id === item.id)
                                     ).length ?? 'Loading...'}
+                                    <br />
+                                    {firstBasket
+                                        ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
+                                        : ''}
                                 </span>
                                 <button className="btn-edit" onClick={() => handleAddToCart(vendorId, vendorDetail)}>
                                     Add to Cart

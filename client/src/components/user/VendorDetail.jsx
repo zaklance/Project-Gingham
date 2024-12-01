@@ -16,10 +16,10 @@ function VendorDetail () {
     const [showAlert, setShowAlert] = useState(false);
     const [hoveredMarket, setHoveredMarket] = useState(null);
     const [events, setEvents] = useState([]);
+    const [marketBaskets, setMarketBaskets] = useState([]);
     
     // To be deleted after baskets state is moved to BasketCard
-    const [marketBaskets, setMarketBaskets] = useState({});
-    const [price, setPrice] = useState(5.00);
+    // const [price, setPrice] = useState(5.00);
 
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
     const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
@@ -39,6 +39,18 @@ function VendorDetail () {
         });
         return time12
     }
+
+    function addDuration(time24, duration) {
+        const [hours, minutes] = time24.split(':').map(Number);
+        const [durationHours, durationMinutes] = duration.split(':').map(Number);
+        const totalMinutes = hours * 60 + minutes + durationHours * 60 + durationMinutes;
+
+        const newHours = Math.floor(totalMinutes / 60) % 24;
+        const newMinutes = totalMinutes % 60;
+
+        return `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+    }
+
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/vendors/${id}`)
@@ -62,9 +74,9 @@ function VendorDetail () {
                     const marketIds = markets.map(market => market.market_day_id);
                     setMarkets(marketIds);
 
-                    const initialBaskets = {};
-                    marketIds.forEach(marketId => initialBaskets[marketId] = 5);
-                    setMarketBaskets(initialBaskets);
+                    // const initialBaskets = {};
+                    // marketIds.forEach(marketId => initialBaskets[marketId] = 5);
+                    // setMarketBaskets(initialBaskets);
                 }
             })
             .catch(error => console.error('Error fetching market locations:', error));
@@ -95,20 +107,43 @@ function VendorDetail () {
         fetchMarketDetails();
     }, [markets]);
 
-    const handleAddToCart = (marketId) => {
-        if (marketBaskets[marketId] > 0) {
-            setMarketBaskets((prev) => ({
-                ...prev,
-                [marketId]: prev[marketId] - 1
-            }));
-            setAmountInCart(amountInCart + 1);
 
-            const market = marketDetails[marketId];
-            setCartItems([...cartItems, { vendorName: vendor.name, location: market.name, id: cartItems.length + 1, price: price }]);
+    const handleAddToCart = (marketDay) => {
+        const basketInCart = marketBaskets.find(
+            item => item.market_day_id === marketDay.id && item.is_sold === false
+        );
+        if (basketInCart) {
+            setAmountInCart(amountInCart + 1);
+            setCartItems(prevCartItems => [
+                ...prevCartItems,
+                {
+                    vendorName: vendor.name,
+                    location: marketDay.markets.name,
+                    id: basketInCart.id,
+                    price: basketInCart.price,
+                },
+            ]);
+            setMarketBaskets(prevBaskets => 
+                prevBaskets.filter(item => item.id !== basketInCart.id));
         } else {
-            alert("Sorry, all baskets are sold out at this market!");
+            alert("Sorry, all baskets are sold out!");
         }
     };
+
+
+    // const handleAddToCart = (marketId) => {
+    //     if (marketBaskets[marketId] > 0) {
+    //         setMarketBaskets((prev) => ({
+    //             ...prev,
+    //             [marketId]: prev[marketId] - 1
+    //         }));
+    //         setAmountInCart(amountInCart + 1);
+
+    //         setCartItems([...cartItems, { vendorName: vendor.name, location: market.name, id: cartItems.length + 1, price: price }]);
+    //     } else {
+    //         alert("Sorry, all baskets are sold out at this market!");
+    //     }
+    // };
 
     useEffect(() => {
         console.log("Amount in cart:", amountInCart);
@@ -177,6 +212,41 @@ function VendorDetail () {
         }, 3000);
     };
 
+    useEffect(() => {
+        fetch(`http://127.0.0.1:5555/api/events?vendor_id=${Number(id)}`)
+            .then(response => response.json())
+            .then(data => {
+                // const filteredData = data.filter(item => item.vendor_id === Number(id));
+                setEvents(data)
+            })
+            .catch(error => console.error('Error fetching events', error));
+    }, [id]);
+
+    useEffect(() => {
+        if (!vendor?.id) return;
+
+        fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendor.id}`)
+            .then((response) => response.json())
+            .then((data) => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Start of today
+                const sixDaysFromNow = new Date();
+                sixDaysFromNow.setDate(today.getDate() + 6);
+                sixDaysFromNow.setHours(23, 59, 59, 999); // End of the sixth day
+
+                const filteredBaskets = data.filter((basket) => {
+                    const saleDate = new Date(basket.sale_date);
+                    return saleDate >= today && saleDate <= sixDaysFromNow;
+                });
+                const filteredData = filteredBaskets.filter(item =>
+                    !cartItems.some(cartItem => cartItem.id === item.id)
+                );
+                setMarketBaskets(filteredData);
+            })
+            .catch((error) => console.error('Error fetching market baskets', error));
+    }, [vendor]);
+
+
     if (!vendor) {
         return <div>Loading...</div>;
     }
@@ -187,29 +257,27 @@ function VendorDetail () {
                 <h2>{vendor.name}</h2>
                 <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Vendors</button>
             </div>
-            <div className={events.length < 1 ? 'flex-start flex-align-start flex-gap-16' : 'flex-start flex-align-center flex-gap-16'}>
+            <div className={events.length < 1 ? 'flex-start flex-start-align flex-gap-16' : 'flex-start flex-align-center flex-gap-16'}>
                 {events.length > 0 ? (
                     <h2 className='color-4 margin-t-16'>Events:</h2>
                 ) : (
                     <>
                     </>
                 )}
-                <div className='flex-wrap'>
+                <div className='flex-wrap margin-t-8'>
                     {events.length > 0 ? (
                         events.map((event, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                                {event.user_id !== userId && editingReviewId !== event.id && (
-                                    <div className='flex-start flex-center-align flex-gap-16 margin-t-16'>
-                                        <p className='text-italic nowrap'>
-                                            {event.start_date}
-                                            {event.end_date !== event.start_date && ` - `}
-                                            <br></br>
-                                            {event.end_date !== event.start_date && `${event.end_date}`}
-                                        </p>
-                                        <h3 className='nowrap'>{event.title ? event.title : 'Loading...'}:</h3>
-                                        <p>{event.message}</p>
-                                    </div>
-                                )}
+                                <div className='flex-start flex-center-align flex-gap-16'>
+                                    <p className='text-italic nowrap'>
+                                        {event.start_date}
+                                        {event.end_date !== event.start_date && ` - `}
+                                        <br></br>
+                                        {event.end_date !== event.start_date && `${event.end_date}`}
+                                    </p>
+                                    <h3 className='nowrap'>{event.title ? event.title : 'Loading...'}:</h3>
+                                    <p>{event.message}</p>
+                                </div>
                             </div>
                         ))
                     ) : (
@@ -249,6 +317,8 @@ function VendorDetail () {
                 {Array.isArray(markets) && markets.length > 0 ? (
                     markets.map((marketId, index) => {
                         const marketDetail = marketDetails[marketId] || {};
+                        const firstBasket = (marketBaskets.length > 0 ? marketBaskets.find((item) => item.market_day_id === marketDetail.id) : '');
+                        const allBaskets = (marketBaskets.length > 0 ? marketBaskets.filter((item) => item.market_day_id === marketDetail.id) : '');
                         return (
                             <div 
                                 key={index} 
@@ -266,19 +336,24 @@ function VendorDetail () {
                                     ${marketDetail.hour_end && timeConverter(marketDetail.hour_end)}`}
                                 </span>
                                 <span></span>
-                                {index === 0 && (
                                     <>
-                                        <span className="market-price">Price: ${price.toFixed(2)}</span>
+                                        {marketBaskets.filter((item) => item.market_day_id === marketDetail.id).length > 0 ? (
+                                            <span className="market-price">Price: ${firstBasket ? firstBasket.price : ''}</span>
+                                        ) : (
+                                            <span className="market-price">Out of Stock</span>
+                                        )}
                                         <span className="market-baskets">
-                                            Available Baskets: {marketBaskets[marketId] ?? 'Loading...'}
+                                            Available Baskets: {allBaskets.length}
                                             <br/>
-                                            Pick Up Time: 3:30 PM - 4:00 PM
+                                            Pick Up:
+                                            {firstBasket && firstBasket.pickup_start
+                                                ? ` ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
+                                                : ' Not Available'}
                                         </span>
-                                        <button className="btn-edit" onClick={() => handleAddToCart(marketId)}>
+                                        <button className="btn-edit" onClick={() => handleAddToCart(marketDetail)}>
                                             Add to Cart
                                         </button>                                    
                                     </>
-                                )}
 
                                 {hoveredMarket === marketId && (
                                     <div className='market-card-popup'>
