@@ -16,7 +16,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
     const matchingMarketId = matchingMarket ? matchingMarket.id : null;
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/market-days")
+        fetch("http://127.0.0.1:5555/api/market-days")
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item => item.market_id === matchingMarketId);
@@ -50,7 +50,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
             }
 
             // Save market details first
-            const response = await fetch(`http://127.0.0.1:5555/markets`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/markets`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -84,7 +84,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
         formData.append('market_id', marketId);
 
         try {
-            const response = await fetch('http://127.0.0.1:5555/upload', {
+            const response = await fetch('http://127.0.0.1:5555/api/upload', {
                 method: 'POST',
                 body: formData,
             });
@@ -102,7 +102,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
 
     const handleSaveMarketDay = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/market-days`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/market-days`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
