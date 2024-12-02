@@ -351,6 +351,21 @@ class VendorReviewRating(db.Model):
             "vote_down": self.vote_down,
             "vote_up": self.vote_up
         }
+
+class ReportedReview(db.Model):
+    __tablename__ = 'reported_reviews'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    def __repr__(self) -> str:
+        return f"<ReportedReview {self.id}>"
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id
+        }
     
 class MarketFavorite(db.Model, SerializerMixin):
     __tablename__ = 'market_favorites'

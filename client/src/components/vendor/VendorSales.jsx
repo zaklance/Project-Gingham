@@ -57,13 +57,13 @@ function VendorSales({ timeConverter, convertToLocalDate }) {
     // }
 
     function timeConverter(time24) {
-        const date = new Date('1970-01-01T' + time24);
+        const date = new Date(`1970-01-01T${time24}Z`); // Add 'Z' to indicate UTC
         const time12 = date.toLocaleTimeString('en-US', {
             hour: 'numeric',
             minute: 'numeric',
             hour12: true
         });
-        return time12
+        return time12;
     }
 
     function convertToLocalDate(gmtDateString) {

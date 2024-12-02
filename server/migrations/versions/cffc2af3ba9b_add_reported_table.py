@@ -1,8 +1,8 @@
-"""reinitialize db
+"""add reported table
 
-Revision ID: c51e1ac6eced
+Revision ID: cffc2af3ba9b
 Revises: 
-Create Date: 2024-12-01 14:05:12.213748
+Create Date: 2024-12-02 09:54:52.370104
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c51e1ac6eced'
+revision = 'cffc2af3ba9b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -105,6 +105,12 @@ def upgrade():
     sa.ForeignKeyConstraint(['market_id'], ['markets.id'], name=op.f('fk_market_reviews_market_id_markets')),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_market_reviews_user_id_users')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_market_reviews'))
+    )
+    op.create_table('reported_reviews',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_reported_reviews_user_id_users')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_reported_reviews'))
     )
     op.create_table('user_notifications',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -242,6 +248,7 @@ def downgrade():
     op.drop_table('vendor_reviews')
     op.drop_table('vendor_favorites')
     op.drop_table('user_notifications')
+    op.drop_table('reported_reviews')
     op.drop_table('market_reviews')
     op.drop_table('market_favorites')
     op.drop_table('market_days')
