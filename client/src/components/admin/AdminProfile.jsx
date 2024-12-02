@@ -30,7 +30,7 @@ function AdminProfile () {
     useEffect(() => {
         const fetchAdminUserData = async () => {
             try {
-                const token = sessionStorage.getItem('jwt-token');
+                const token = localStorage.getItem('jwt-token');
                 // console.log('JWT Token:', token);
 
                 if (token) {

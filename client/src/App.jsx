@@ -17,20 +17,20 @@ function App() {
     const isVendorPage = location.pathname.startsWith('/vendor');
     const isAdminPage = location.pathname.startsWith('/admin');
     const [amountInCart, setAmountInCart] = useState(() => {
-        return parseInt(globalThis.sessionStorage.getItem('amountInCart') || 0);
+        return parseInt(globalThis.localStorage.getItem('amountInCart') || 0);
     });
 
     const [cartItems, setCartItems] = useState(() => {
-        const savedCartItems = globalThis.sessionStorage.getItem('cartItems');
+        const savedCartItems = globalThis.localStorage.getItem('cartItems');
         return savedCartItems ? JSON.parse(savedCartItems) : [];
     });
 
     useEffect(() => {
-        globalThis.sessionStorage.setItem('amountInCart', amountInCart);
+        globalThis.localStorage.setItem('amountInCart', amountInCart);
     }, [amountInCart]);
 
     useEffect(() => {
-        globalThis.sessionStorage.setItem('cartItems', JSON.stringify(cartItems));
+        globalThis.localStorage.setItem('cartItems', JSON.stringify(cartItems));
     }, [cartItems]);
 
     const handlePopup = () => {
@@ -38,7 +38,7 @@ function App() {
     }
 
     const checkAuth = () => {
-        return globalThis.sessionStorage.getItem('jwt-token') !== null;
+        return globalThis.localStorage.getItem('jwt-token') !== null;
     }
 
     useEffect(() => {
