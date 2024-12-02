@@ -19,6 +19,7 @@ jwt = "*"
 flask-jwt-extended = "*"
 pillow = "*"
 stripe = "*"
+pytz = "*"
 
 [dev-packages]
 

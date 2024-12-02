@@ -101,7 +101,7 @@ function VendorBaskets({ vendorUserData }) {
                         console.log('Market Day Object:', basket.market_day);
     
                         const marketDayId = basket.market_day_id;
-                        const marketName = basket.market_day?.markets?.name || 'Unknown Market';
+                        const marketName = basket.market_day ? basket.market_day.name || 'Unknown Market' : 'Unknown Market';
     
                         if (!acc[marketDayId]) {
                             acc[marketDayId] = {
