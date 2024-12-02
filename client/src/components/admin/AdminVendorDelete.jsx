@@ -14,6 +14,7 @@ function AdminVendorDelete({ vendors }) {
     const matchingVendorId = matchingVendor ? matchingVendor.id : null;
 
     useEffect(() => {
+        if (!matchingVendorId) return
         const fetchVendorData = async () => {
             try {
                 const token = sessionStorage.getItem('jwt-token');

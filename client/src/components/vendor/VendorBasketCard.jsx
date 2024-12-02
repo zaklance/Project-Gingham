@@ -62,21 +62,37 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
         const parsedNumBaskets = parseInt(numBaskets, 10);
         const parsedPrice = parseFloat(price);
 
-        const durationInMinutes = parseFloat(selectedDuration) * 60;
-        const hours = Math.floor(durationInMinutes / 60);
-        const minutes = Math.round(durationInMinutes % 60);
-        const formattedDuration = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+        const [startHour, startMinute] = startTime.split(':').map(Number);
+        const [endHour, endMinute] = endTime.split(':').map(Number);
 
-        const [hour, minute] = startTime.split(':').map(Number);
-        const formattedHour =
-            amPm === 'PM' && hour !== 12
-                ? hour + 12
-                : amPm === 'AM' && hour === 12
+        const formattedStartHour =
+            amPm === 'PM' && startHour !== 12
+                ? startHour + 12
+                : amPm === 'AM' && startHour === 12
                 ? 0
-                : hour;
-        const formattedPickupStart = `${formattedHour}:${minute.toString().padStart(2, '0')} ${amPm}`;
-        const formattedPickupEnd = `${formattedHour}:${minute.toString().padStart(2, '0')} ${amPm}`;
+                : startHour;
 
+        const formattedEndHour =
+            amPm === 'PM' && endHour !== 12
+                ? endHour + 12
+                : amPm === 'AM' && endHour === 12
+                ? 0
+                : endHour;
+
+        const startTimeDate = new Date();
+        startTimeDate.setHours(formattedStartHour, startMinute, 0, 0);
+
+        const endTimeDate = new Date();
+        endTimeDate.setHours(formattedEndHour, endMinute, 0, 0);
+
+        console.log('Formatted start time:', startTimeDate);
+        console.log('Formatted end time:', endTimeDate);
+
+        const formattedPickupStart = `${startTimeDate.getHours().toString().padStart(2, '0')}:${startTimeDate.getMinutes().toString().padStart(2, '0')} ${amPm}`;
+        const formattedPickupEnd = `${endTimeDate.getHours().toString().padStart(2, '0')}:${endTimeDate.getMinutes().toString().padStart(2, '0')} ${amPm}`;
+
+        console.log('Formatted pickup start:', formattedPickupStart);
+        console.log('Formatted pickup end:', formattedPickupEnd);
 
         if (parsedNumBaskets > 0 && vendorId && marketId && !isNaN(parsedPrice) && parsedPrice > 0) {
             const promises = [];
@@ -90,7 +106,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                     body: JSON.stringify({
                         vendor_id: vendorId,
                         market_day_id: marketDay.market_id,
-                        sale_date: saleDate,
+                        sale_date: marketDay.date,
                         pickup_start: formattedPickupStart,
                         pickup_end: formattedPickupEnd,
                         is_sold: false,
@@ -144,7 +160,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                     <p><strong>Estimated Value:</strong> ${basketValue}</p>
                     <p><strong>Price:</strong> ${price}</p>
                     <p><strong>Pick-Up Start:</strong> {startTime} {amPm}</p>
-                    <p><strong>Pick-Up End:</strong> {endTime} hours</p>
+                    <p><strong>Pick-Up End:</strong> {endTime} {amPm}</p>
                 </div>
             ) : isEditing ? (
                 <>
