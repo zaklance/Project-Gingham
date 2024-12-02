@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Chart from 'chart.js/auto';
 
-function VendorSales() {
+function VendorSales({ timeConverter, convertToLocalDate }) {
     const chartRef = useRef();
     const [vendorId, setVendorId] = useState(null);
     const [baskets, setBaskets] = useState([]);
@@ -58,7 +58,6 @@ function VendorSales() {
 
     function timeConverter(time24) {
         const date = new Date('1970-01-01T' + time24);
-
         const time12 = date.toLocaleTimeString('en-US', {
             hour: 'numeric',
             minute: 'numeric',
@@ -68,16 +67,12 @@ function VendorSales() {
     }
 
     function convertToLocalDate(gmtDateString) {
-        // Parse the GMT/UTC date string into a Date object
         const gmtDate = new Date(gmtDateString);
-
-        // Use toLocaleDateString() to format the date in the local time zone
         const localDate = gmtDate.toLocaleDateString('en-US', {
             year: 'numeric',
-            month: 'short', // e.g., "Jan"
-            day: 'numeric', // e.g., "1"
+            month: 'short',
+            day: 'numeric',
         });
-
         return localDate;
     }
 

@@ -20,6 +20,15 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
     
     const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
 
+    function convertToLocalDate(gmtDateString) {
+        const gmtDate = new Date(gmtDateString);
+        const localDate = gmtDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
+        return localDate;
+    }
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/market-reviews?market_id=${id}`)
@@ -343,7 +352,7 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                             {review.user_id !== userId && editingReviewId !== review.id ? (
                                 <div className='flex-start flex-center-align'>
                                     <h4 className='margin-r-8'>{review.user ? review.user.first_name : 'Anonymous'}</h4>
-                                    <p className='margin-r-8'>{review ? review.post_date : ''}</p>
+                                    <p className='margin-r-8'>{review ? convertToLocalDate(review.post_date) : ''}</p>
                                     <div className='notification margin-r-4'>
                                         {filterRatingsUpVote(review.id).length > 0 ? (
                                             <p className='badge-votes'>{filterRatingsUpVote(review.id).length}</p>

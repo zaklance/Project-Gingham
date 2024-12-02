@@ -18,6 +18,16 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
     tomorrow.setDate(tomorrow.getDate() + 1);
     const saleDate = tomorrow.toISOString().substring(0, 10);
 
+    function convertToLocalDate(gmtDateString) {
+        const gmtDate = new Date(gmtDateString);
+        const localDate = gmtDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
+        return localDate;
+    }
+
     useEffect(() => {
         async function fetchSavedBaskets() {
             if (vendorId && marketDay?.market_id) {
@@ -110,7 +120,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                     <h4>{marketDay ? marketDay.markets.name : ''}</h4>
                     <h4 className='margin-t-8'>
                         {marketDay.date
-                            ? `${weekDay[marketDay.date.getDay()]}, ${months[marketDay.date.getMonth()]} ${marketDay.date.getDate()}`
+                            ? `${weekDay[marketDay.date.getDay()]}, ${convertToLocalDate(marketDay.date)}`
                             : ''}
                     </h4>
                 </>

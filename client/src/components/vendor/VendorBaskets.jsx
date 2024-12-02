@@ -26,6 +26,15 @@ function VendorBaskets({ marketId, vendorUserData }) {
     const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
+    function convertToLocalDate(gmtDateString) {
+        const gmtDate = new Date(gmtDateString);
+        const localDate = gmtDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
+        return localDate;
+    }
 
     useEffect(() => {
         const fetchVendorId = async () => {
@@ -225,7 +234,7 @@ function VendorBaskets({ marketId, vendorUserData }) {
                                 {nextMarketDays ? (
                                 <>
                                     <h3>{nextMarketDays[0].markets.name}</h3>
-                                    <h4>{months[nextMarketDays[0].date.getMonth()]} {nextMarketDays[0].date.getDate()}, {weekDay[nextMarketDays[0].date.getDay()]}</h4>
+                                    <h4>{weekDay[nextMarketDays[0].date.getDay()]} {convertToLocalDate(nextMarketDays[0].date)}</h4>
                                 </>
                             ) : (
                                 <h3>Loading...</h3>

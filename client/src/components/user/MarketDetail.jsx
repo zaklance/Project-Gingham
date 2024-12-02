@@ -24,9 +24,6 @@ function MarketDetail ({ match }) {
     const [events, setEvents] = useState([]);
     const [marketBaskets, setMarketBaskets] = useState([]);
     
-    // To be deleted after baskets state is moved to BasketCard
-    // const [price, setPrice] = useState(5);
-    
     const { handlePopup, amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
     
     const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
@@ -44,6 +41,16 @@ function MarketDetail ({ match }) {
             hour12: true
         });
         return time12
+    }
+
+    function convertToLocalDate(gmtDateString) {
+        const gmtDate = new Date(gmtDateString);
+        const localDate = gmtDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
+        return localDate;
     }
 
     useEffect(() => {
@@ -292,10 +299,10 @@ function MarketDetail ({ match }) {
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                     <div className='flex-start flex-center-align flex-gap-16'>
                                         <p className='text-italic nowrap'>
-                                            {event.start_date}
+                                        {convertToLocalDate(event.start_date)}
                                             {event.end_date !== event.start_date && ` - `}
                                             <br></br>
-                                            {event.end_date !== event.start_date && `${event.end_date}`}
+                                        {event.end_date !== event.start_date && `${convertToLocalDate(event.end_date)}`}
                                         </p>
                                         <h3 className='nowrap'>{event.title ? event.title : 'Loading...'}:</h3>
                                         <p>{event.message}</p>
