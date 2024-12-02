@@ -4,6 +4,7 @@ import '../../assets/css/index.css';
 function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
     const [marketId, setMarketId] = useState(4);
     const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
     const [amPm, setAmPm] = useState('PM');
     const [isSaved, setIsSaved] = useState(false);
     const [isEditing, setIsEditing] = useState(true); 
@@ -13,7 +14,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
     const [basketValue, setBasketValue] = useState('')
     const [errorMessage, setErrorMessage] = useState('');
     const [savedBaskets, setSavedBaskets] = useState([]);
-
+    
     function timeConverter(time24) {
         const date = new Date(`1970-01-01T${time24}Z`); // Add 'Z' to indicate UTC
         const time12 = date.toLocaleTimeString('en-US', {
@@ -61,19 +62,37 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
         const parsedNumBaskets = parseInt(numBaskets, 10);
         const parsedPrice = parseFloat(price);
 
-        const durationInMinutes = parseFloat(selectedDuration) * 60;
-        const hours = Math.floor(durationInMinutes / 60);
-        const minutes = Math.round(durationInMinutes % 60);
-        const formattedDuration = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+        const [startHour, startMinute] = startTime.split(':').map(Number);
+        const [endHour, endMinute] = endTime.split(':').map(Number);
 
-        const [hour, minute] = startTime.split(':').map(Number);
-        const formattedHour =
-            amPm === 'PM' && hour !== 12
-                ? hour + 12
-                : amPm === 'AM' && hour === 12
+        const formattedStartHour =
+            amPm === 'PM' && startHour !== 12
+                ? startHour + 12
+                : amPm === 'AM' && startHour === 12
                 ? 0
-                : hour;
-        const formattedPickupTime = `${formattedHour}:${minute.toString().padStart(2, '0')} ${amPm}`;
+                : startHour;
+
+        const formattedEndHour =
+            amPm === 'PM' && endHour !== 12
+                ? endHour + 12
+                : amPm === 'AM' && endHour === 12
+                ? 0
+                : endHour;
+
+        const startTimeDate = new Date();
+        startTimeDate.setHours(formattedStartHour, startMinute, 0, 0);
+
+        const endTimeDate = new Date();
+        endTimeDate.setHours(formattedEndHour, endMinute, 0, 0);
+
+        console.log('Formatted start time:', startTimeDate);
+        console.log('Formatted end time:', endTimeDate);
+
+        const formattedPickupStart = `${startTimeDate.getHours().toString().padStart(2, '0')}:${startTimeDate.getMinutes().toString().padStart(2, '0')} ${amPm}`;
+        const formattedPickupEnd = `${endTimeDate.getHours().toString().padStart(2, '0')}:${endTimeDate.getMinutes().toString().padStart(2, '0')} ${amPm}`;
+
+        console.log('Formatted pickup start:', formattedPickupStart);
+        console.log('Formatted pickup end:', formattedPickupEnd);
 
         if (parsedNumBaskets > 0 && vendorId && marketId && !isNaN(parsedPrice) && parsedPrice > 0) {
             const promises = [];
@@ -88,12 +107,12 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                         vendor_id: vendorId,
                         market_day_id: marketDay.market_id,
                         sale_date: marketDay.date,
-                        pickup_time: formattedPickupTime,
+                        pickup_start: formattedPickupStart,
+                        pickup_end: formattedPickupEnd,
                         is_sold: false,
                         is_grabbed: false,
                         price: parsedPrice,
                         basket_value: basketValue,
-                        pickup_duration: formattedDuration,
                     }),
                 }));
             }
@@ -140,8 +159,8 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                     <p><strong>Baskets Saved:</strong> {numBaskets}</p>
                     <p><strong>Estimated Value:</strong> ${basketValue}</p>
                     <p><strong>Price:</strong> ${price}</p>
-                    <p><strong>Pick-Up Time:</strong> {startTime} {amPm}</p>
-                    <p><strong>Duration:</strong> {selectedDuration} hours</p>
+                    <p><strong>Pick-Up Start:</strong> {startTime} {amPm}</p>
+                    <p><strong>Pick-Up End:</strong> {endTime} {amPm}</p>
                 </div>
             ) : isEditing ? (
                 <>
@@ -181,7 +200,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                     </div>
                     <br></br>
                     <div className='form-baskets'>
-                        <label className='margin-t-16 margin-b-8'>Pick Up:</label>
+                        <label className='margin-t-16 margin-b-8'>Pick Up Start:</label>
                         <div className='flex-start'>
                             <input
                                 // mask="99:99"
@@ -203,8 +222,32 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                             </select>
                         </div>
                     </div>
-                    {/* <br></br> */}
+                    <br/>
+                    <br/>
                     <div className='form-baskets'>
+                        <label className='margin-t-16 margin-b-8'>Pick Up End:</label>
+                        <div className='flex-start'>
+                            <input
+                                // mask="99:99"
+                                placeholder="HH:MM"
+                                size="4"
+                                name="pickup_end"
+                                value={endTime}
+                                onChange={(e) => setEndTime(e.target.value)}
+                                // maskChar={null}
+                                />
+                            <select
+                                name="amPm"
+                                value={amPm}
+                                className='am-pm'
+                                onChange={(e) => setAmPm(e.target.value)}
+                            >
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
+                    </div>
+                    {/* <div className='form-baskets'>
                         <label className='margin-t-16 margin-b-8'>Duration:</label>
                         <select
                             name="duration"
@@ -216,12 +259,12 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                             <option value="1">1 hour</option>
                             <option value="1.25">1.25 hours</option>
                             <option value="1.5">1.5 hours</option>
-                            {/* <option value="1.75">1.75 hours</option>
+                            <option value="1.75">1.75 hours</option>
                             <option value="2">2 hours</option>
                             <option value="3">3 hours</option>
-                            <option value="4">4 hours</option> */}
+                            <option value="4">4 hours</option>
                         </select>
-                    </div>
+                    </div> */}
                     {/* If baskets are saved - and the page is refreshed, the saved baskets should still show as saved...  */}
                     <button
                         onClick={handleSave}
