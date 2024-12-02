@@ -181,7 +181,7 @@ class MarketDay(db.Model, SerializerMixin):
 
     # Relationships
     markets = db.relationship('Market', back_populates='market_days')
-    vendor_markets = db.relationship( 'VendorMarket', back_populates="market_day" )
+    vendor_markets = db.relationship( 'VendorMarket', back_populates="market_day")
 
     serialize_rules = ('-markets.market_days', '-markets.reviews')
 
@@ -534,9 +534,6 @@ class Basket(db.Model, SerializerMixin):
     pickup_end = db.Column(db.Time, nullable=False)
 
     vendor = db.relationship('Vendor', lazy='joined')
-    market_day = db.relationship('MarketDay', lazy='joined')
-
-    # serialize_rules = ('-user_id', '-vendor_id', '-market_id')
 
     # @validates('sale_date')
     # def validate_sale_date(self, key, value):
@@ -555,6 +552,23 @@ class Basket(db.Model, SerializerMixin):
         if not isinstance(value, (int, float)) or value < 0:
             raise ValueError(f"{key} must be a non-negative integer")
         return value
+    
+    def to_dict(self):
+        market_name = db.session.query(Market.name).filter(Market.id == self.market_day.market_id).scalar()
+        return {
+            "id": self.id,
+            "vendor_id": self.vendor_id,
+            "market_day_id": self.market_day_id,
+            "market_name": market_name,
+            "sale_date": self.sale_date,
+            "pickup_start": str(self.pickup_start),
+            "pickup_end": str(self.pickup_end),
+            "price": self.price,
+            "basket_value": self.basket_value,
+            "is_sold": self.is_sold,
+            "is_grabbed": self.is_grabbed,
+            "user_id": self.user_id
+        }
 
     def __repr__(self):
         return (f"<Basket ID: {self.id}, Vendor: {self.vendor.name}, "
