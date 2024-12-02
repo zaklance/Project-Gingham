@@ -1,6 +1,7 @@
 import os
 import json
 import smtplib
+import pytz
 from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
 from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, VendorReviewRating, MarketReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, bcrypt
 from dotenv import load_dotenv
@@ -9,7 +10,7 @@ from sqlalchemy.orm import joinedload
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
-from datetime import timedelta, time, date
+from datetime import timedelta, time, date, timezone
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
@@ -1153,11 +1154,17 @@ def handle_baskets():
         app.logger.debug(f'Received data for new basket: {data}')
 
         try:
-            sale_date = datetime.strptime(data['sale_date'], '%Y-%m-%d').date()
+            sale_date = datetime.fromisoformat(data['sale_date'].replace('Z', '+00:00'))
             try:
-                pickup_time = datetime.strptime(data['pickup_time'], '%H:%M %p').time()
+                pickup_start = datetime.strptime(data['pickup_start'], '%H:%M %p').time()
+                pickup_start = datetime.combine(datetime.today(), pickup_start)
+                pickup_start = pickup_start.replace(tzinfo=timezone.utc).time()
+
+                pickup_end = datetime.strptime(data['pickup_end'], '%H:%M %p').time()
+                pickup_end = datetime.combine(datetime.today(), pickup_end)
+                pickup_end = pickup_end.replace(tzinfo=timezone.utc).time()
             except ValueError:
-                return jsonify({'error': 'Invalid pickup_time format. Expected HH:MM AM/PM.'}), 400
+                return jsonify({'error': 'Invalid pickup time format. Expected HH:MM AM/PM.'}), 400
         
             pickup_duration = data.get('pickup_duration')
             if pickup_duration:
@@ -1174,16 +1181,23 @@ def handle_baskets():
             except (ValueError, TypeError):
                 return jsonify({'error': 'Invalid price format. Must be a positive number.'}), 400
 
+            try:
+                basket_value = float(data['basket_value'])
+                if basket_value < 0:
+                    return {'error': 'basket_value must be a non-negative number'}, 400
+            except (ValueError, TypeError):
+                return jsonify({'error': 'Invalid basket_value format. Must be a number.'}), 400
+
             new_basket = Basket(
                 vendor_id=data['vendor_id'],
-                user_id=data.get('user_id'),
                 market_day_id=data['market_day_id'],
-                sale_date=sale_date,
-                pickup_time=pickup_time,
+                sale_date=datetime.fromisoformat(data['sale_date'].replace('Z', '+00:00')),
+                pickup_start=datetime.strptime(data['pickup_start'], '%H:%M %p').time(),
+                pickup_end=datetime.strptime(data['pickup_end'], '%H:%M %p').time(),
+                price=float(data['price']),
+                basket_value=basket_value,
                 is_sold=data.get('is_sold', False),
-                is_grabbed=data.get('is_grabbed', False),
-                price=price,
-                pickup_duration=pickup_duration,
+                is_grabbed=data.get('is_grabbed', False)
             )
             db.session.add(new_basket)
             db.session.commit()
