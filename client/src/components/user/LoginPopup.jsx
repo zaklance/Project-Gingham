@@ -64,7 +64,7 @@ function Login({ handlePopup }) {
                 console.log('Login successful:', data);
     
                 handlePopup();
-                navigate('/');
+                // navigate('/');
             } else {
                 alert('Login failed');
             }

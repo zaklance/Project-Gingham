@@ -22,7 +22,7 @@ function VendorDetail () {
     // const [price, setPrice] = useState(5.00);
 
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
-    const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
+    const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const isUserLoggedIn = userId;
 
     const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
@@ -181,7 +181,7 @@ function VendorDetail () {
     }, [vendor, vendorFavs]);
     
     const handleClick = async (event) => {
-        if (globalThis.sessionStorage.getItem('user_id') !== null) {
+        if (globalThis.localStorage.getItem('user_id') !== null) {
             setIsClicked((isClick) => !isClick);
             if (isClicked == false) {
                 const response = await fetch('http://127.0.0.1:5555/api/vendor-favorites', {
@@ -190,7 +190,7 @@ function VendorDetail () {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        user_id: globalThis.sessionStorage.getItem('user_id'),
+                        user_id: globalThis.localStorage.getItem('user_id'),
                         vendor_id: vendor.id
                     })
                     // credentials: 'include'
@@ -307,7 +307,7 @@ function VendorDetail () {
                         <div className='button-container flex-start flex-center-align nowrap'>
                             <button 
                                 className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
-                                onClick={handleClick}> ❤️
+                                onClick={handleClick}> &#9829;
                             </button>
                             {showAlert && (
                                 <div className='alert-favorites nowrap'>
@@ -326,8 +326,8 @@ function VendorDetail () {
                 {Array.isArray(markets) && markets.length > 0 ? (
                     markets.map((marketId, index) => {
                         const marketDetail = marketDetails[marketId] || {};
-                        const firstBasket = (marketBaskets.length > 0 ? marketBaskets.find((item) => item.market_day_id === marketDetail.id) : '');
-                        const allBaskets = (marketBaskets.length > 0 ? marketBaskets.filter((item) => item.market_day_id === marketDetail.id) : '');
+                        const firstBasket = (marketBaskets.length > 0 ? marketBaskets.find((item) => item.market_day_id === marketDetail.id && item.is_sold === false) : '');
+                        const allBaskets = (marketBaskets.length > 0 ? marketBaskets.filter((item) => item.market_day_id === marketDetail.id && item.is_sold === false) : '');
                         return (
                             <div 
                                 key={index} 
@@ -346,12 +346,12 @@ function VendorDetail () {
                                 </span>
                                 <span></span>
                                     <>
-                                        {marketBaskets.filter((item) => item.market_day_id === marketDetail.id).length > 0 ? (
+                                    {marketBaskets.filter((item) => item.market_day_id === marketDetail.id && item.is_sold === false).length > 0 ? (
                                             <span className="market-price">Price: ${firstBasket ? firstBasket.price : ''}</span>
                                         ) : (
                                             <span className="market-price">Out of Stock</span>
                                         )}
-                                        <span className="market-baskets">
+                                        <span className="market-baskets nowrap">
                                             Available Baskets: {allBaskets.length}
                                             <br/>
                                             Pick Up:
@@ -359,9 +359,15 @@ function VendorDetail () {
                                                 ? ` ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
                                                 : ' Not Available'}
                                         </span>
-                                        <button className="btn-edit" onClick={() => handleAddToCart(marketDetail)}>
-                                            Add to Cart
-                                        </button>                                    
+                                        {allBaskets.length > 0 ? (
+                                            <button className="btn-add" onClick={() => handleAddToCart(marketDetail)}>
+                                                Add to Cart
+                                            </button>
+                                        ) : (
+                                            <button className="btn-add" onClick={() => handleAddToCart(marketDetail)}>
+                                                Sold Out
+                                            </button>
+                                        )}                                
                                     </>
 
                                 {hoveredMarket === marketId && (

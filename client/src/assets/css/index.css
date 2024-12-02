@@ -578,6 +578,11 @@ ul {
   max-height: 248px;
 }
 
+.box-scroll-large {
+  overflow: scroll;
+  max-height: 1024px;
+}
+
 .market-details {
   width: fit-content;
   max-width: calc(100% - 48px); 
@@ -724,6 +729,18 @@ ul {
   margin-right: 12px;
 }
 
+.btn-add {
+  padding: 10px 12px;
+  border-radius: 8px;
+  height: fit-content;
+  border: none;
+  background-color: #eee;
+  margin: 12px 0px;
+  margin-right: 12px;
+  margin-left: 4px;
+  width: 88px;
+}
+
 .btn-cart {
   padding: 10px 12px;
   border-radius: 8px;
@@ -741,13 +758,16 @@ ul {
 }
 
 .btn-like {
-  height: fit-content;
+  height: 34px;
+  width: 34px;
+  font-size: .8em;
   margin-left: 20px;
   margin-top: -4px;
-  padding: 10px 10px;
+  padding: 9px 10px;
   border-radius: 8px;
   border: none;
   background-color: #ffd1d8;
+  color: #ff4b5a;
 }
 
 .btn-like:hover {
@@ -764,17 +784,21 @@ ul {
 }
 
 .btn-like-on {
-  height: fit-content;
+  height: 34px;
+  width: 34px;
+  font-size: .8em;
   /* padding: 10px 12px; */
   border-radius: 8px;
   border: none;
   background-color: #ff7b8a;
+  color: #ffd1d8;
 }
 
 .btn-like-on:hover {
   background-color: #ffd1d8;
   transition: .2s;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+  color: #ff4b5a ;
 }
 
 .x-btn {
@@ -1069,6 +1093,9 @@ link {
   margin-bottom: 4px;
 }
 
+.map-market-detail{
+  max-width: 400px;
+}
 
 .map-circle {
   shape-outside: circle();

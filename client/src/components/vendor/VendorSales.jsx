@@ -9,7 +9,7 @@ function VendorSales({ timeConverter, convertToLocalDate }) {
     const [salesHistory, setSalesHistory] = useState([]);
     const [selectedRange, setSelectedRange] = useState(31);
 
-    const vendorUserId = sessionStorage.getItem('vendor_user_id');
+    const vendorUserId = localStorage.getItem('vendor_user_id');
 
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     const dateRange = {
@@ -82,7 +82,7 @@ function VendorSales({ timeConverter, convertToLocalDate }) {
             return;
         }
         try {
-            const token = sessionStorage.getItem('jwt-token');
+            const token = localStorage.getItem('jwt-token');
             const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
                 method: 'GET',
                 headers: {
@@ -118,9 +118,9 @@ function VendorSales({ timeConverter, convertToLocalDate }) {
 
     useEffect(() => {
         const fetchSalesHistory = async () => {
-            const token = sessionStorage.getItem('jwt-token');
+            const token = localStorage.getItem('jwt-token');
             if (!token) {
-                console.error('JWT token not found in sessionStorage');
+                console.error('JWT token not found in localStorage');
                 return;
             }
             try {

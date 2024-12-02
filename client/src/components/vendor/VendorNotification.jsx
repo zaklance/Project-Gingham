@@ -8,7 +8,7 @@ function VendorNotification({ teamMembers, setTeamMembers, vendorUserData }) {
     useEffect(() => {
         const fetchVendorNotification = async () => {
             try {
-                const vendorUserId = sessionStorage.getItem('vendor_user_id');
+                const vendorUserId = localStorage.getItem('vendor_user_id');
                 if (!vendorUserId) {
                     console.error("No vendor user ID found in session storage");
                     setError("Vendor user ID is missing");
@@ -16,7 +16,7 @@ function VendorNotification({ teamMembers, setTeamMembers, vendorUserData }) {
                     return;
                 }
 
-                const token = sessionStorage.getItem('jwt-token');
+                const token = localStorage.getItem('jwt-token');
                 if (!token) {
                     console.error("No JWT token found in session storage");
                     setError("JWT token is missing");

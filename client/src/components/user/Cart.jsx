@@ -90,8 +90,8 @@ function Cart() {
                                 /> */}
                             <button 
                                 className='btn-cart' 
-                                onClick={(globalThis.sessionStorage.getItem('user_id') == null) ? (
-                                    handlePopup
+                                onClick={(globalThis.localStorage.getItem('user_id') == null) ? (
+                                    handlePopup()
                                 ) : (
                                     handleCheckout)}
                                 >Checkout</button>

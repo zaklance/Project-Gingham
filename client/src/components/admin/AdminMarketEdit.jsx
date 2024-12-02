@@ -38,7 +38,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         if (matchingMarketId) {
             const fetchAdminMarketData = async () => {
                 try {
-                    const token = sessionStorage.getItem('jwt-token');
+                    const token = localStorage.getItem('jwt-token');
                     const response = await fetch(`http://127.0.0.1:5555/api/markets/${matchingMarketId}`, {
                         method: 'GET',
                         headers: {

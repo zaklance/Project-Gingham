@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
 import ReviewMarket from './ReviewMarket';
@@ -26,7 +26,7 @@ function MarketDetail ({ match }) {
     
     const { handlePopup, amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
     
-    const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
+    const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     
     const navigate = useNavigate();
 
@@ -134,17 +134,17 @@ function MarketDetail ({ match }) {
         }
     }, [allVendorDetails, vendors]);
 
-    const filteredVendorsList = vendors.filter((vendorId) => {
-        const vendorDetail = vendorDetailsMap[vendorId];
-        // Filter vendorMarkets to find the market_days that match the selected market_id and selected day
-        const availableOnSelectedDay = vendorMarkets.filter(vendorMarket => {
-            return vendorMarket.vendor_id === vendorId &&
-                vendorMarket.market_day.market_id === market.id &&
-                vendorMarket.market_day.day_of_week === selectedDay?.day_of_week;
+    const filteredVendorsList = useMemo(() => {
+        return vendors.filter((vendorId) => {
+            const vendorDetail = vendorDetailsMap[vendorId];
+            const availableOnSelectedDay = vendorMarkets.filter(vendorMarket => {
+                return vendorMarket.vendor_id === vendorId &&
+                    vendorMarket.market_day.market_id === market.id &&
+                    vendorMarket.market_day.day_of_week === selectedDay?.day_of_week;
+            });
+            return availableOnSelectedDay.length > 0 && (!selectedProduct || vendorDetail.product === selectedProduct);
         });
-        // Only include vendors that are available on the selected day and match the selected product
-        return availableOnSelectedDay.length > 0 && (!selectedProduct || vendorDetail.product === selectedProduct);
-    });
+    }, [vendors, vendorMarkets, selectedDay, selectedProduct, market, vendorDetailsMap]);
 
     // Gets rid of duplicate vendors (from different market_days)
     const uniqueFilteredVendorsList = [...new Set(filteredVendorsList)];
@@ -154,19 +154,15 @@ function MarketDetail ({ match }) {
             item => item.vendor_id === vendorId && item.is_sold === false
         );
         if (basketInCart) {
-            setAmountInCart(amountInCart + 1);
-            const vendor = vendorDetailsMap[vendorId];
-            setCartItems([
-                ...cartItems,
-                {
-                    vendorName: vendor.name,
-                    location: market.name,
-                    id: basketInCart.id,
-                    price: basketInCart.price,
-                },
-            ]);
-            setMarketBaskets(prevBaskets =>
-                prevBaskets.filter(item => item.id !== basketInCart.id)
+            const updatedCartItems = [...cartItems, {
+                vendorName: vendorDetailsMap[vendorId]?.name,
+                location: market.name,
+                id: basketInCart.id,
+                price: basketInCart.price,
+            }];
+            setCartItems(updatedCartItems);
+            setAmountInCart(updatedCartItems.length);
+            setMarketBaskets(prev => prev.filter(item => item.id !== basketInCart.id)
             );
         } else {
             alert("Sorry, all baskets are sold out!");
@@ -189,7 +185,7 @@ function MarketDetail ({ match }) {
     }, [market, marketFavs]);
 
     const handleClick = async (event) => {
-        if (globalThis.sessionStorage.getItem('user_id') !== null) {
+        if (globalThis.localStorage.getItem('user_id') !== null) {
             setIsClicked((isClick) => !isClick);
             if (isClicked == false) {
                 const response = await fetch('http://127.0.0.1:5555/api/market-favorites', {
@@ -198,7 +194,7 @@ function MarketDetail ({ match }) {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        user_id: globalThis.sessionStorage.getItem('user_id'),
+                        user_id: globalThis.localStorage.getItem('user_id'),
                         market_id: market.id
                     })
                     // credentials: 'include'
@@ -266,6 +262,12 @@ function MarketDetail ({ match }) {
             })
             .catch(error => console.error('Error fetching market baskets', error));
     }, [selectedDay, cartItems]);
+
+    const getAvailableBaskets = (vendorId) => {
+        return marketBaskets.filter(
+            item => item.vendor_id === vendorId && item.is_sold === false
+        ).filter(item => !cartItems.some(cartItem => cartItem.id === item.id));
+    };
     
 
     if (!market) {
@@ -371,7 +373,8 @@ function MarketDetail ({ match }) {
             <div className='box-scroll'>
                 {Array.isArray(uniqueFilteredVendorsList) && uniqueFilteredVendorsList.length > 0 ? (
                     uniqueFilteredVendorsList.map((vendorId, index) => {
-                        const vendorDetail = vendorDetailsMap[vendorId] || {};
+                        const vendorDetail = vendorDetailsMap[vendorId];
+                        const availableBaskets = getAvailableBaskets(vendorId);
                         const firstBasket = (marketBaskets.length > 0 ? marketBaskets.find(item => item.vendor_id === vendorDetail.id) : '');
 
                         return (
@@ -380,31 +383,30 @@ function MarketDetail ({ match }) {
                                     {vendorDetail.name || 'Loading...'}
                                 </Link>
                                 <span className="market-name">{vendorDetail.product || 'No product listed'}</span>
-                                {marketBaskets.filter(
-                                        item => item.vendor_id === vendorDetail.id && item.is_sold === false
-                                    ).filter(
-                                        item => !cartItems.some(cartItem => cartItem.id === item.id)
-                                    ).length > 0 ? (
+                                {availableBaskets.length > 0 ? (
                                     <span className="market-price">
-                                        Price: ${marketBaskets.find(item => item.vendor_id === vendorDetail.id)?.price || ''}
+                                        Price: ${firstBasket.price}
                                     </span>
                                 ) : (
                                     <span className="market-price"></span>
                                 )}
-                                <span className="market-baskets">
-                                    Available Baskets: {marketBaskets.filter(
-                                        item => item.vendor_id === vendorDetail.id && item.is_sold === false
-                                    ).filter(
-                                        item => !cartItems.some(cartItem => cartItem.id === item.id)
-                                    ).length ?? 'Loading...'}
+                                <span className="market-baskets nowrap">
+                                    Available Baskets: {availableBaskets.length}
                                     <br />
                                     {firstBasket
                                         ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
                                         : ''}
                                 </span>
-                                <button className="btn-edit" onClick={() => handleAddToCart(vendorId, vendorDetail)}>
-                                    Add to Cart
-                                </button>
+                                {availableBaskets.length > 0 ? (
+                                        <button className="btn-add" onClick={() => handleAddToCart(vendorId, vendorDetail)}>
+                                            Add to Cart
+                                        </button>
+                                    ) : (
+                                        <button className="btn-add" onClick={() => handleAddToCart(vendorId, vendorDetail)}>
+                                            Sold Out
+                                        </button>
+                                    )}
+                                
                             </div>
                         );
                     })
