@@ -10,7 +10,8 @@ function AdminLogout () {
             credentials: 'include'
         })
         .then(() => {
-            globalThis.sessionStorage.removeItem('admin_user_id');
+            globalThis.localStorage.removeItem('admin_user_id');
+            globalThis.localStorage.removeItem('jwt-token');
             navigate('/admin/home')
         })
         .catch((error) => {

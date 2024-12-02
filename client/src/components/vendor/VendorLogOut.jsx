@@ -10,7 +10,8 @@ function VendorLogout () {
             credentials: 'include'
         })
         .then(() => {
-            globalThis.sessionStorage.removeItem('vendor_user_id');
+            globalThis.localStorage.removeItem('vendor_user_id');
+            globalThis.localStorage.removeItem('jwt-token');
             navigate('/vendor/home')
         })
         .catch((error) => {

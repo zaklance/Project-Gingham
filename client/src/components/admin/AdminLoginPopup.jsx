@@ -41,11 +41,8 @@ function Login({ handlePopup }) {
             if (response.ok) {
                 const data = await response.json();
     
-                // Store token in sessionStorage
-                globalThis.sessionStorage.setItem('jwt-token', data.access_token);
-    
-                // Store user ID if necessary
-                globalThis.sessionStorage.setItem('admin_user_id', data.admin_user_id);
+                globalThis.localStorage.setItem('jwt-token', data.access_token);
+                globalThis.localStorage.setItem('admin_user_id', data.admin_user_id);
     
                 console.log('Login successful:', data);
 
@@ -54,7 +51,7 @@ function Login({ handlePopup }) {
     
                 // Navigate to the user's profile or refresh the page
                 handlePopup();
-                navigate(`/admin/profile/${globalThis.sessionStorage.getItem('admin_user_id', data.admin_user_id) }`);
+                navigate(`/admin/profile/${globalThis.localStorage.getItem('admin_user_id', data.admin_user_id) }`);
             } else {
                 alert('Login failed');
             }

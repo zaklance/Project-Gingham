@@ -10,10 +10,10 @@ function Logout() {
             credentials: 'include'
         })
         .then(() => {
-            globalThis.sessionStorage.removeItem('amountInCart');
-            globalThis.sessionStorage.removeItem('cartItems');
-            globalThis.sessionStorage.removeItem('user_id');
-            globalThis.sessionStorage.removeItem('jwt-token');
+            globalThis.localStorage.removeItem('amountInCart');
+            globalThis.localStorage.removeItem('cartItems');
+            globalThis.localStorage.removeItem('user_id');
+            globalThis.localStorage.removeItem('jwt-token');
 
             navigate('/');
         })
