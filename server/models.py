@@ -534,9 +534,6 @@ class Basket(db.Model, SerializerMixin):
     pickup_end = db.Column(db.Time, nullable=False)
 
     vendor = db.relationship('Vendor', lazy='joined')
-    market_day = db.relationship('MarketDay', lazy='joined')
-
-    # serialize_rules = ('-user_id', '-vendor_id', '-market_id')
 
     # @validates('sale_date')
     # def validate_sale_date(self, key, value):

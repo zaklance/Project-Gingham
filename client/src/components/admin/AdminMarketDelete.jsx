@@ -16,6 +16,7 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
 
     useEffect(() => {
         const fetchAdminMarketData = async () => {
+            if (!matchingMarketId) return
             try {
                 const token = sessionStorage.getItem('jwt-token');
                 // console.log('JWT Token:', token);

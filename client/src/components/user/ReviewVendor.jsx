@@ -16,6 +16,7 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
     const [upVoteRatings, setUpVoteRatings] = useState([]);
     const [isClickedDown, setIsClickedDown] = useState({});
     const [downVoteRatings, setDownVoteRatings] = useState([]);
+    const [reports, setReports] = useState([]);
 
     const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
 
@@ -335,6 +336,16 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
         }
     }
 
+    useEffect(() => {
+        if (!userId) return;
+        fetch(`http://127.0.0.1:5555/api/reported-reviews?user_id=${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                setReports(data);
+            })
+            .catch(error => console.error('Error fetching market baskets', error));
+    }, [userId]);
+
 
     return (
         <>
@@ -371,13 +382,16 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                                         <button
                                             className={`btn btn-emoji btn-gap ${isClickedDown[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
                                             onClick={() => handleClickDownVote(review)}
-                                        >&#9786;
+                                        >&#9785;
                                         </button>
                                     </div>
                                     <button className='btn btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
                                 </div>
                             ) : (
-                                <h4>You</h4>
+                                <div className='flex-start flex-center-align'>
+                                    <h4 className='margin-r-8'>You</h4>
+                                    <p className='margin-r-8'>{review ? convertToLocalDate(review.post_date) : ''}</p>
+                                </div>
                             )}
                             {review.user_id === userId && editingReviewId === review.id ? (
                                 <>
@@ -410,7 +424,7 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                 <p>No reviews available.</p>
             )}
             <div>
-                {reviewMode ? (
+                {reviewMode && reports.length < 6 ? (
                     <>
                         <div>
                             <textarea
@@ -424,11 +438,19 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                                 required
                             />
                         </div>
-                        <button className='btn-login' onClick={handleReviewSubmit} reviewType="submit">Post Review</button>
+                        <button className='btn-login nowrap margin-r-8' onClick={handleReviewSubmit} reviewType="submit">Post Review</button>
+                        <button className='btn-login' onClick={handleReviewToggle} title='Cancel review'>Cancel</button>
                     </>
                 ) : (
                     <>
-                        <button className='btn btn-plus' onClick={handleReviewToggle} title='Leave a review'>+</button>
+                        {reports.length < 5 ? (
+                            <>
+                                <button className='btn btn-plus margin-r-8' onClick={handleReviewToggle} title='Leave a review'>+</button>
+                            </>
+                        ) : (
+                            <>
+                            </>
+                        )}
                     </>
                 )}
                 {showDupeAlert && (

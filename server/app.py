@@ -3,7 +3,7 @@ import json
 import smtplib
 import pytz
 from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
-from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, VendorReviewRating, MarketReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, bcrypt
+from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, ReportedReview, VendorReviewRating, MarketReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
@@ -645,6 +645,24 @@ def vendor_review_by_id(id):
         db.session.delete(review)
         db.session.commit()
         return {}, 204
+
+@app.route('/api/reported-reviews', methods=['GET', 'POST'])
+def all_reported_reviews():
+    if request.method == 'GET':
+        user_id = request.args.get('user_id')
+        if user_id:
+            reviews = ReportedReview.query.filter_by(user_id=user_id).all()
+        else:
+            reviews = ReportedReview.query.all()
+        return jsonify([review.to_dict() for review in reviews]), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_reported_review = ReportedReview(
+            user_id=data['user_id']
+        )
+        db.session.add(new_reported_review)
+        db.session.commit()
+        return new_reported_review.to_dict(), 201
 
 @app.route('/api/market-review-ratings', methods=['GET', 'POST', 'DELETE'])
 def all_market_review_ratings():
