@@ -54,7 +54,7 @@ function Profile({ marketData }) {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const token = sessionStorage.getItem('jwt-token');
+                const token = localStorage.getItem('jwt-token');
 
                 if (token) {
                     // Decode the token to extract the role
@@ -115,7 +115,7 @@ function Profile({ marketData }) {
 
     const handleSaveChanges = async () => {
         try {
-            const token = sessionStorage.getItem('jwt-token');
+            const token = localStorage.getItem('jwt-token');
             const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
                 method: 'PATCH',
                 headers: {
@@ -146,7 +146,7 @@ function Profile({ marketData }) {
         fetch("http://127.0.0.1:5555/api/vendor-favorites")
             .then(response => response.json())
             .then(data => {
-                const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
+                const filteredData = data.filter(item => item.user_id === parseInt(globalThis.localStorage.getItem('user_id')));
                 setVendorFavs(filteredData);
             })
             .catch(error => console.error('Error fetching vendor favorites', error));
@@ -156,7 +156,7 @@ function Profile({ marketData }) {
         fetch("http://127.0.0.1:5555/api/market-favorites")
             .then(response => response.json())
             .then(data => {
-                const filteredData = data.filter(item => item.user_id === parseInt(globalThis.sessionStorage.getItem('user_id')));
+                const filteredData = data.filter(item => item.user_id === parseInt(globalThis.localStorage.getItem('user_id')));
                 setMarketFavs(filteredData);
             })
             .catch(error => console.error('Error fetching market favorites', error));

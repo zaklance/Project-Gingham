@@ -7,9 +7,9 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const [isNotifPopup, setIsNotifPopup] = useState(false);
 
     const location = useLocation();
-    const userId = globalThis.sessionStorage.getItem('user_id');
-    const vendor_id = globalThis.sessionStorage.getItem('vendor_user_id');
-    const admin_id = globalThis.sessionStorage.getItem('admin_user_id');
+    const userId = globalThis.localStorage.getItem('user_id');
+    const vendor_id = globalThis.localStorage.getItem('vendor_user_id');
+    const admin_id = globalThis.localStorage.getItem('admin_user_id');
     const isUserLoggedIn = userId;
     const isVendorLoggedIn = vendor_id;
     const isAdminLoggedIn = admin_id;

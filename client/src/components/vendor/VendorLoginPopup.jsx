@@ -42,8 +42,8 @@ function VendorLogin({ handlePopup }) {
             if (response.ok) {
                 const data = await response.json();
     
-                globalThis.sessionStorage.setItem('jwt-token', data.access_token);
-                globalThis.sessionStorage.setItem('vendor_user_id', data.vendor_user_id);
+                globalThis.localStorage.setItem('jwt-token', data.access_token);
+                globalThis.localStorage.setItem('vendor_user_id', data.vendor_user_id);
                 console.log('Login successful:', data);
 
                 startLogoutTimer(12 * 60 * 60 * 1000);

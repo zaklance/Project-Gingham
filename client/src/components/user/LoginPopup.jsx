@@ -37,7 +37,7 @@ function Login({ handlePopup }) {
 
     const handleLogin = async (event) => {
         event.preventDefault();
-
+    
         try {
             const response = await fetch('http://127.0.0.1:5555/api/login', {
                 method: 'POST',
@@ -50,19 +50,19 @@ function Login({ handlePopup }) {
                 }),
                 credentials: 'include',
             });
-
+    
             if (response.ok) {
                 const data = await response.json();
-
-                // Store token and user info
-                globalThis.sessionStorage.setItem('jwt-token', data.access_token);
-                globalThis.sessionStorage.setItem('user_id', data.user_id);
-
+    
+                // Store token and user info in localStorage
+                globalThis.localStorage.setItem('jwt-token', data.access_token);
+                globalThis.localStorage.setItem('user_id', data.user_id);
+    
                 // Start the logout timer
                 startLogoutTimer(12 * 60 * 60 * 1000);
-
+    
                 console.log('Login successful:', data);
-                
+    
                 handlePopup();
                 navigate('/');
             } else {
