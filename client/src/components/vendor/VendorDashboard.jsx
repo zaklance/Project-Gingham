@@ -11,7 +11,6 @@ function VendorDashboard({ marketId }) {
     const [vendorUserData, setVendorUserData] = useState(null);
     const [newVendor, setNewVendor] = useState(false);
 
-
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/vendors")
             .then(response => response.json())
@@ -21,14 +20,14 @@ function VendorDashboard({ marketId }) {
 
     useEffect(() => {
         const fetchVendorUserData = async () => {
-            const vendorUserId = sessionStorage.getItem('vendor_user_id');
+            const vendorUserId = localStorage.getItem('vendor_user_id');
             if (!vendorUserId) {
                 console.error("No vendor user ID found");
                 return;
             }
 
             try {
-                const token = sessionStorage.getItem('jwt-token');
+                const token = localStorage.getItem('jwt-token');
                 const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
                     method: 'GET',
                     headers: {
@@ -61,13 +60,13 @@ function VendorDashboard({ marketId }) {
 
     useEffect(() => {
         const fetchVendorId = async () => {
-            const vendorUserId = sessionStorage.getItem('vendor_user_id');
+            const vendorUserId = localStorage.getItem('vendor_user_id');
             if (!vendorUserId) {
-                console.error("No vendor user ID found in session storage");
+                console.error("No vendor user ID found in local storage");
                 return;
             }
             try {
-                const token = sessionStorage.getItem('jwt-token');
+                const token = localStorage.getItem('jwt-token');
                 const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
                     method: 'GET',
                     headers: {

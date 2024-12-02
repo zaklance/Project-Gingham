@@ -836,8 +836,7 @@ def get_vendor_markets():
         db.session.add(new_vendor_market)
         db.session.commit()
         return new_vendor_market.to_dict(), 201
-
-
+    
 @app.route('/api/vendor-markets/<int:id>', methods=['GET', 'DELETE'])
 def delete_vendor_market(id):
     vendorMarket = VendorMarket.query.filter(VendorMarket.id == id).first()
@@ -1323,29 +1322,29 @@ def handle_basket_by_id(id):
             db.session.rollback()
             return {'error': str(e)}, 500
         
-@app.route('/api/todays_baskets', methods=['GET'])
+@app.route('/api/todays-baskets', methods=['GET'])
 def handle_todays_baskets():
     try:
         today = date.today()
-
         vendor_id = request.args.get('vendor_id', type=int)
 
-        query = db.session.query(Basket).filter(
+        # Query with joinedload to ensure market data is loaded
+        baskets = Basket.query.filter(
             Basket.sale_date == today,
             Basket.vendor_id == vendor_id
-        )
+        ).options(
+            joinedload(Basket.market_day).joinedload(MarketDay.markets)
+        ).all()
 
-        app.logger.debug(f"Generated query for today's baskets: {query}")
-
-        baskets = query.all()
-
-        app.logger.debug(f"Baskets found: {len(baskets)}")
+        # Log for debugging
+        for basket in baskets:
+            app.logger.debug(f"Basket ID: {basket.id}, Market Name: {basket.market_day.markets.name if basket.market_day and basket.market_day.markets else 'Unknown'}")
 
         return jsonify([basket.to_dict() for basket in baskets])
 
     except Exception as e:
-        app.logger.error(f'Error fetching today\'s baskets: {e}')
-        return {'error': f'Exception: {str(e)}'}, 500
+        app.logger.error(f"Error fetching today's baskets: {e}")
+        return {'error': f"Exception: {str(e)}"}, 500
 
 @app.route('/api/baskets/user-sales-history', methods=['GET'])
 @jwt_required()

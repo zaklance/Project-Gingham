@@ -31,20 +31,20 @@ function VendorBaskets({ vendorUserData }) {
         const localDate = gmtDate.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
-            day: 'numeric',
+            day: 'numeric',se
         });
         return localDate;
     }
 
     useEffect(() => {
         const fetchVendorId = async () => {
-            const vendorUserId = sessionStorage.getItem('vendor_user_id');
+            const vendorUserId = localStorage.getItem('vendor_user_id');
             if (!vendorUserId) {
-                console.error("No vendor user ID found in session storage");
+                console.error("No vendor user ID found in local storage");
                 return;
             }
             try {
-                const token = sessionStorage.getItem('jwt-token');
+                const token = localStorage.getItem('jwt-token');
                 const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
                     method: 'GET',
                     headers: {
@@ -95,37 +95,30 @@ function VendorBaskets({ vendorUserData }) {
                 .then(response => response.json())
                 .then(data => {
                     console.log('Fetched data for today\'s baskets:', data);
-                    
+    
                     const groupedData = data.reduce((acc, basket) => {
-                        console.log('Basket:', basket);
-                        console.log('Market Day Object:', basket.market_name);
+                        const { market_day_id, market_name } = basket;
     
-                        const marketDayId = basket.market_day_id;
-                        const marketName = basket.market_name || 'Unknown Market';
-    
-                        if (!acc[marketDayId]) {
-                            acc[marketDayId] = {
-                                marketId: marketDayId,
-                                marketName,
+                        if (!acc[market_day_id]) {
+                            acc[market_day_id] = {
+                                marketId: market_day_id,
+                                marketName: market_name,
                                 baskets: []
                             };
                         }
-                        acc[marketDayId].baskets.push(basket);
+                        acc[market_day_id].baskets.push(basket);
                         return acc;
                     }, {});
     
                     const groupedBasketsArray = Object.values(groupedData);
                     setTodayBaskets(groupedBasketsArray);
     
-                    const availableBasketsArray = groupedBasketsArray.map(entry => ({
-                        marketId: entry.marketId,
-                        baskets: entry.baskets.filter(basket => !basket.is_sold)
-                    })).flat();
-    
-                    const claimedBasketsArray = groupedBasketsArray.map(entry => ({
-                        marketId: entry.marketId,
-                        baskets: entry.baskets.filter(basket => basket.is_sold)
-                    })).flat();
+                    const availableBasketsArray = groupedBasketsArray
+                        .map(entry => entry.baskets.filter(basket => !basket.is_sold))
+                        .flat();
+                    const claimedBasketsArray = groupedBasketsArray
+                        .map(entry => entry.baskets.filter(basket => basket.is_sold))
+                        .flat();
     
                     setAvailableBaskets(availableBasketsArray);
                     setClaimedBaskets(claimedBasketsArray);
@@ -137,8 +130,7 @@ function VendorBaskets({ vendorUserData }) {
             console.log('Vendor ID is not available');
         }
     }, [vendorId]);
-    
-
+ 
     useEffect(() => {
         const calculateNextMarketDays = () => {
             const today = new Date();
