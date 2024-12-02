@@ -193,7 +193,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                         </tr>
                     </tbody>
                 </table>
-                <div className='margin-t-16'>
+                <div>
                     {editMode ? (
                         <>
                             <div className='form-group'>
