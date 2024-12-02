@@ -286,7 +286,7 @@ function MarketDetail ({ match }) {
                 <h2>{market.name}</h2>
                 <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Markets</button>
             </div>
-            <div className={events.length < 1 ? 'flex-start flex-start-align flex-gap-16' : 'flex-start flex-align-center flex-gap-16'}>
+            <div className={events.length < 1 ? 'flex-start flex-start-align flex-gap-16' : 'flex-start flex-gap-16'}>
                 {events.length > 0 ? (
                     <h2 className='color-4 margin-t-16'>Events:</h2>
                 ) : (
@@ -298,7 +298,7 @@ function MarketDetail ({ match }) {
                         events.map((event, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                     <div className='flex-start flex-center-align flex-gap-16'>
-                                        <p className='text-italic nowrap'>
+                                        <p className='text-italic nowrap margin-t-8'>
                                         {convertToLocalDate(event.start_date)}
                                             {event.end_date !== event.start_date && ` - `}
                                             <br></br>

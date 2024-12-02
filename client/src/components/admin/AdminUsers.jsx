@@ -6,7 +6,6 @@ function AdminUsers() {
     const [vendorReported, setVendorReported] = useState([]);
 
 
-
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/market-reviews")
             .then(response => response.json())
@@ -17,7 +16,7 @@ function AdminUsers() {
             .catch(error => console.error('Error fetching market reviews', error));
     }, []);
 
-    const handleMarketReviewDelete = async (reviewId) => {
+    const handleMarketReviewDelete = async (reviewId, userId) => {
         try {
 
             fetch(`http://127.0.0.1:5555/api/market-reviews/${reviewId}`, {
@@ -28,9 +27,18 @@ function AdminUsers() {
         } catch (error) {
             console.error("Error deleting review", error)
         }
+        fetch(`http://127.0.0.1:5555/api/reported-reviews`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: userId
+            })
+        });
     }
 
-    const handleMarketReviewReport = async (reviewId) => {
+    const handleMarketReviewUnReport = async (reviewId) => {
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/market-reviews/${reviewId}`, {
                 method: 'PATCH',
@@ -57,7 +65,8 @@ function AdminUsers() {
             .catch(error => console.error('Error fetching vendor reviews', error));
     }, []);
 
-    const handleVendorReviewDelete = async (reviewId) => {
+    const handleVendorReviewDelete = async (reviewId, userId) => {
+        console.log(userId)
         try {
 
             fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
@@ -68,9 +77,18 @@ function AdminUsers() {
         } catch (error) {
             console.error("Error deleting review", error)
         }
+        fetch(`http://127.0.0.1:5555/api/reported-reviews`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: userId
+            })
+        });
     }
 
-    const handleVendorReviewReport = async (reviewId) => {
+    const handleVendorReviewUnReport = async (reviewId) => {
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
                 method: 'PATCH',
@@ -90,7 +108,7 @@ function AdminUsers() {
 
     return (
         <div>
-            <h2 className='margin-t-16'>User Management</h2>
+            <h2>User Management</h2>
             <div className='box-bounding'>
                 <h2 className='margin-b-24'>Reported Market Reviews</h2>
                 <div className='box-scroll'>
@@ -99,8 +117,8 @@ function AdminUsers() {
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                 <div className='flex-start'>
                                     <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
-                                    <button className='btn btn-small btn-x btn-unreport btn-gap' onClick={() => handleMarketReviewReport(review.id)}>&#9873;</button>
-                                    <button className='btn btn-small btn-x btn-gap' onClick={() => handleMarketReviewDelete(review.id)}>x</button>
+                                    <button className='btn btn-small btn-x btn-gap btn-emoji' onClick={() => handleMarketReviewUnReport(review.id, review.user_id)}>&#9786;</button>
+                                    <button className='btn btn-small btn-x btn-gap' onClick={() => handleMarketReviewDelete(review.id, review.user_id)}>Delete</button>
                                 </div>
                                 <p>{review.review_text}</p>
                             </div>
@@ -119,8 +137,8 @@ function AdminUsers() {
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                 <div className='flex-start'>
                                     <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
-                                    <button className='btn btn-small btn-x btn-unreport btn-gap' onClick={() => handleMarketReviewReport(review.id)}>&#9873;</button>
-                                    <button className='btn btn-small btn-x btn-gap' onClick={() => handleMarketReviewDelete(review.id)}>x</button>
+                                    <button className='btn btn-small btn-x btn-gap btn-emoji' onClick={() => handleVendorReviewUnReport(review.id, review.user_id)}>&#9786;</button>
+                                    <button className='btn btn-small btn-x btn-gap' onClick={() => handleVendorReviewDelete(review.id, review.user_id)}>Delete</button>
                                 </div>
                                 <p>{review.review_text}</p>
                             </div>

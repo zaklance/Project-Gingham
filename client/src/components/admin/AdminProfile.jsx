@@ -37,7 +37,7 @@ function AdminProfile () {
                     // Decode the token to extract the role
                     const decodedToken = decodeJwt(token);
                     if (decodedToken && decodedToken.role) {
-                        console.log('Role from JWT:', decodedToken.role);
+                        // console.log('Role from JWT:', decodedToken.role);
                     }
                 }
                 
@@ -54,7 +54,7 @@ function AdminProfile () {
                 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Fetched admin user data:', data);
+                    // console.log('Fetched admin user data:', data);
                     setAdminUserData(data);
                 } else {
                     console.error('Error fetching profile:', response.status);
@@ -110,7 +110,7 @@ function AdminProfile () {
         <div>
             <div className="tab-content">
                 <div>
-                    <h2 className='margin-t-16'>Profile Information</h2>
+                    <h2>Profile Information</h2>
                     <div className='box-bounding'>
                         {editMode ? (
                             <>

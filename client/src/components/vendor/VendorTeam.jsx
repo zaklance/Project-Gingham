@@ -215,7 +215,7 @@ function VendorTeam({ vendors, vendorId, vendorUserData }) {
                                     <p><strong>{member.first_name} {member.last_name}</strong> - {member.role}</p>
                                     {member.id !== vendorUserData.id && (
                                         <>
-                                            <div className='flex-end flex-align-center'>
+                                            <div className='flex-end flex-center-align'>
                                                 <button className="btn btn-small btn-white margin-r-8" onClick={() => handleToggleRole(member.id, member.role)} > Switch to {member.role === 'Admin' ? 'Employee' : 'Admin'} </button>
                                                 <button className="btn btn-small btn-unreport" onClick={() => handleDeleteTeamMember(member.id)} > Remove from Vendor Team</button>
                                             </div> 
