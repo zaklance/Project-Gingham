@@ -9,7 +9,7 @@ from sqlalchemy.orm import joinedload
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
-from datetime import timedelta, time
+from datetime import timedelta, time, date
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
@@ -1290,6 +1290,30 @@ def handle_basket_by_id(id):
         except Exception as e:
             db.session.rollback()
             return {'error': str(e)}, 500
+        
+@app.route('/api/todays_baskets', methods=['GET'])
+def handle_todays_baskets():
+    try:
+        today = date.today()
+
+        vendor_id = request.args.get('vendor_id', type=int)
+
+        query = db.session.query(Basket).filter(
+            Basket.sale_date == today,
+            Basket.vendor_id == vendor_id
+        )
+
+        app.logger.debug(f"Generated query for today's baskets: {query}")
+
+        baskets = query.all()
+
+        app.logger.debug(f"Baskets found: {len(baskets)}")
+
+        return jsonify([basket.to_dict() for basket in baskets])
+
+    except Exception as e:
+        app.logger.error(f'Error fetching today\'s baskets: {e}')
+        return {'error': f'Exception: {str(e)}'}, 500
 
 @app.route('/api/baskets/user-sales-history', methods=['GET'])
 @jwt_required()
