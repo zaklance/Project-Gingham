@@ -122,18 +122,15 @@ function VendorDetail () {
             item => item.market_day_id === marketDay.id && item.is_sold === false
         );
         if (basketInCart) {
-            setAmountInCart(amountInCart + 1);
-            setCartItems(prevCartItems => [
-                ...prevCartItems,
-                {
-                    vendorName: vendor.name,
-                    location: marketDay.markets.name,
-                    id: basketInCart.id,
-                    price: basketInCart.price,
-                },
-            ]);
-            setMarketBaskets(prevBaskets => 
-                prevBaskets.filter(item => item.id !== basketInCart.id));
+            const updatedCartItems = [...cartItems, {
+                vendorName: vendor.name,
+                location: marketDay.markets.name,
+                id: basketInCart.id,
+                price: basketInCart.price,
+            }];
+            setCartItems(updatedCartItems);
+            setAmountInCart(updatedCartItems.length);
+            setMarketBaskets(prevBaskets => prevBaskets.filter(item => item.id !== basketInCart.id));
         } else {
             alert("Sorry, all baskets are sold out!");
         }
