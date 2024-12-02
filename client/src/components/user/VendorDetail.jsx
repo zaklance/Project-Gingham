@@ -31,13 +31,22 @@ function VendorDetail () {
 
     function timeConverter(time24) {
         const date = new Date('1970-01-01T' + time24);
-
         const time12 = date.toLocaleTimeString('en-US', {
             hour: 'numeric',
             minute: 'numeric',
             hour12: true
         });
         return time12
+    }
+
+    function convertToLocalDate(gmtDateString) {
+        const gmtDate = new Date(gmtDateString);
+        const localDate = gmtDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
+        return localDate;
     }
 
     function addDuration(time24, duration) {
@@ -270,10 +279,10 @@ function VendorDetail () {
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                 <div className='flex-start flex-center-align flex-gap-16'>
                                     <p className='text-italic nowrap'>
-                                        {event.start_date}
+                                        {convertToLocalDate(event.start_date)}
                                         {event.end_date !== event.start_date && ` - `}
                                         <br></br>
-                                        {event.end_date !== event.start_date && `${event.end_date}`}
+                                        {event.end_date !== event.start_date && `${convertToLocalDate(event.end_date)}`}
                                     </p>
                                     <h3 className='nowrap'>{event.title ? event.title : 'Loading...'}:</h3>
                                     <p>{event.message}</p>
