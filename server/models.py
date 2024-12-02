@@ -555,12 +555,11 @@ class Basket(db.Model, SerializerMixin):
         return value
     
     def to_dict(self):
-        market_name = db.session.query(Market.name).filter(Market.id == self.market_day_id).scalar()
         return {
             "id": self.id,
             "vendor_id": self.vendor_id,
             "market_day_id": self.market_day_id,
-            "market_name": market_name,
+            "market_name": self.market_day.markets.name if self.market_day and self.market_day.markets else "Unknown Market",
             "sale_date": self.sale_date,
             "pickup_start": str(self.pickup_start),
             "pickup_end": str(self.pickup_end),

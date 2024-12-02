@@ -138,6 +138,31 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
         }
     };
 
+    const handleDelete = async () => {
+        if (vendorId && marketDay?.market_id) {
+            try {
+                const response = await fetch(
+                    `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.market_id}`,
+                    {
+                        method: 'DELETE',
+                    }
+                );
+
+                if (response.ok) {
+                    console.log('Baskets deleted successfully');
+                    setSavedBaskets([]);
+                    setIsSaved(false);
+                } else {
+                    console.error('Failed to delete baskets:', response.statusText);
+                    setErrorMessage('Failed to delete baskets. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error deleting baskets:', error);
+                setErrorMessage('An error occurred while deleting baskets.');
+            }
+        }
+    };
+
     return (
         <div className="market-card">
             {marketDay && marketDay.date ? (
@@ -161,11 +186,14 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                     <p><strong>Price:</strong> ${price}</p>
                     <p><strong>Pick-Up Start:</strong> {startTime} {amPm}</p>
                     <p><strong>Pick-Up End:</strong> {endTime} {amPm}</p>
+                    <button onClick={handleDelete} className="btn-basket-delete">
+                        Delete All Baskets
+                    </button>
                 </div>
             ) : isEditing ? (
                 <>
                     <div className='form-baskets'>
-                        <label className='margin-t-16 margin-b-8'>Baskets for Sale:</label>
+                        <label className='margin-t-16 margin-b-8'># of Baskets Available:</label>
                         <input
                             type="text"
                             name="basket_input"
@@ -176,7 +204,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                         />
                     </div>
                     <div className='form-baskets'>
-                        <label className='margin-t-16 margin-b-8'>Enter est. Value:</label>
+                        <label className='margin-t-16 margin-b-8'>Est. Basket Value:</label>
                         <input 
                             type="text"
                             name="price"
@@ -187,7 +215,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                         />
                     </div>
                     <div className='form-baskets'>
-                        <label className='margin-t-16 margin-b-8'>Enter Price:</label>
+                        <label className='margin-t-16 margin-b-8'>Enter Basket Price:</label>
                         <input 
                             type="text"
                             step="0.01"

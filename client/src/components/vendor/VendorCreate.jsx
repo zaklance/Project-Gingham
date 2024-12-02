@@ -64,14 +64,14 @@ function VendorCreate () {
 
     useEffect(() => {
         const fetchVendorUserData = async () => {
-            const id = sessionStorage.getItem('vendor_user_id');
+            const id = localStorage.getItem('vendor_user_id');
             if (!id) {
                 console.error("No vendor user ID found");
                 return;
             }
     
             try {
-                const token = sessionStorage.getItem('jwt-token');
+                const token = localStorage.getItem('jwt-token');
                 const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${id}`, {
                     method: 'GET',
                     headers: {
@@ -172,7 +172,7 @@ function VendorCreate () {
                 vendor_id: vendorId,
             };
 
-            const token = sessionStorage.getItem('jwt-token');
+            const token = localStorage.getItem('jwt-token');
             if (!token) {
                 alert('Authorization token is missing. Please log in.');
                 return;
@@ -210,7 +210,7 @@ function VendorCreate () {
             return;
         }
     
-        const token = sessionStorage.getItem('jwt-token');
+        const token = localStorage.getItem('jwt-token');
         if (!token) {
             alert('Authorization token is missing. Please log in.');
             return;
@@ -247,7 +247,7 @@ function VendorCreate () {
     };
     
     const handleCancelRequest = async () => {
-        const token = sessionStorage.getItem('jwt-token');
+        const token = localStorage.getItem('jwt-token');
         if (!notifications) {
             console.error("No notifications found to cancel.");
             alert("No pending requests to cancel.");
@@ -292,7 +292,7 @@ function VendorCreate () {
         if (!vendorUserId) return;
 
         const fetchNotifications = async () => {
-            const token = sessionStorage.getItem('jwt-token');;
+            const token = localStorage.getItem('jwt-token');;
             if (!token) {
                 console.error("Token missing");
                 setIsLoading(false);
