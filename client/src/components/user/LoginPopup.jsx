@@ -267,7 +267,6 @@ function Login({ handlePopup }) {
                                 value={signupAddress2}
                                 placeholder='enter your address 2'
                                 onChange={(event => setSignupAddress2(event.target.value))}
-                                required
                             />
                         </div>
                         <div className="form-group form-login">
