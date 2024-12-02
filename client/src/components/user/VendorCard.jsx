@@ -15,7 +15,7 @@ function VendorCard({ vendorData }) {
             <h2>{vendorData.name}</h2>
             <h4>{vendorData.city}, {vendorData.state}</h4>
             <h4>{vendorData.product}</h4>
-            <button className="btn-market-card" onClick={handleLearnMore}>Buy a Farmers Market Basket!</button>
+            <button className="btn-market-card" onClick={handleLearnMore}>Learn More</button>
         </div>
     )
 }

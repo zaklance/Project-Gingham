@@ -18,7 +18,7 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
         const fetchAdminMarketData = async () => {
             if (!matchingMarketId) return
             try {
-                const token = sessionStorage.getItem('jwt-token');
+                const token = localStorage.getItem('jwt-token');
                 // console.log('JWT Token:', token);
                 const response = await fetch(`http://127.0.0.1:5555/api/markets/${matchingMarketId}`, {
                     method: 'GET',
@@ -57,7 +57,7 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
 
     const handleDelete = async () => {
         if (confirm(`Are you sure you want to delete ${matchingMarket.name} and all its associated days?`)) {
-            const token = sessionStorage.getItem('jwt-token');
+            const token = localStorage.getItem('jwt-token');
 
             try {
                 for (const day of marketDays) {

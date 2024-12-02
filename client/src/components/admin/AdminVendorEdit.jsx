@@ -30,7 +30,7 @@ function AdminVendorEdit({ vendors }) {
         if (!matchingVendorId) return
         const fetchVendorData = async () => {
             try {
-                const token = sessionStorage.getItem('jwt-token');
+                const token = localStorage.getItem('jwt-token');
                 // console.log('JWT Token:', token);
                 const response = await fetch(`http://127.0.0.1:5555/api/vendors/${matchingVendorId}`, {
                     method: 'GET',

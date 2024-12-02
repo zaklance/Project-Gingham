@@ -15,7 +15,7 @@ function VendorTeam({ vendors, vendorId, vendorUserData }) {
         if (!vendorId) return;
 
         const fetchNotifications = async () => {
-            const token = sessionStorage.getItem('jwt-token');
+            const token = localStorage.getItem('jwt-token');
             setIsLoading(true);
             if (!token) {
                 console.error("Token missing");
@@ -55,7 +55,7 @@ function VendorTeam({ vendors, vendorId, vendorUserData }) {
         const fetchTeamMembers = async () => {
             if (vendorUserData && vendorUserData.vendor_id) {
                 try {
-                    const token = sessionStorage.getItem('jwt-token');
+                    const token = localStorage.getItem('jwt-token');
                     const response = await fetch(`http://127.0.0.1:5555/api/vendor-users?vendor_id=${vendorUserData.vendor_id}`, {
                         method: 'GET',
                         headers: {
@@ -84,7 +84,7 @@ function VendorTeam({ vendors, vendorId, vendorUserData }) {
         }
 
         try {
-            const token = sessionStorage.getItem('jwt-token');
+            const token = localStorage.getItem('jwt-token');
             const response = await fetch('http://127.0.0.1:5555/api/vendor-users', {
                 method: 'POST',
                 headers: {
@@ -114,7 +114,7 @@ function VendorTeam({ vendors, vendorId, vendorUserData }) {
     const handleDeleteTeamMember = async (memberId) => {
         if (confirm(`Are you sure you want to delete this team member?`)) {
             try {
-                const token = sessionStorage.getItem('jwt-token');
+                const token = localStorage.getItem('jwt-token');
                 const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${memberId}`, {
                     method: 'PATCH',
                     headers: {
@@ -141,7 +141,7 @@ function VendorTeam({ vendors, vendorId, vendorUserData }) {
     const handleToggleRole = async (memberId, currentRole) => {
         const isAdmin = currentRole === 'Admin' ? false : true;
         try {
-            const token = sessionStorage.getItem('jwt-token');
+            const token = localStorage.getItem('jwt-token');
             const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${memberId}`, {
                 method: 'PATCH',
                 headers: {

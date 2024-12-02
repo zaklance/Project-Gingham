@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useOutletContext } from 'react-router-dom';
 
 
 function ReviewMarket({ market, alertMessage, setAlertMessage }) {
@@ -18,8 +18,9 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
     const [downVoteRatings, setDownVoteRatings] = useState([]);
     const [reports, setReports] = useState([]);
 
-    
-    const userId = parseInt(globalThis.sessionStorage.getItem('user_id'));
+    const { handlePopup } = useOutletContext();
+
+    const userId = parseInt(globalThis.localStorage.getItem('user_id'));
 
     function convertToLocalDate(gmtDateString) {
         const gmtDate = new Date(gmtDateString);
@@ -129,7 +130,7 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
     }
 
     const handleReviewReport = async (reviewId) => {
-        if (globalThis.sessionStorage.getItem('user_id') !== null) {
+        if (globalThis.localStorage.getItem('user_id') !== null) {
             if (confirm(`Are you sure you want to report the review?`)) {
                 try {
                     const response = await fetch(`http://127.0.0.1:5555/api/market-reviews/${reviewId}`, {
@@ -198,7 +199,7 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
 
     const handleClickUpVote = async (review) => {
         const reviewId = review.id;
-        if (globalThis.sessionStorage.getItem('user_id') !== null) {
+        if (globalThis.localStorage.getItem('user_id') !== null) {
             const currentClickedState = isClickedUp[reviewId] || false;
             setIsClickedUp((prevState) => ({
                 ...prevState,
@@ -216,7 +217,7 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify({
-                                user_id: globalThis.sessionStorage.getItem('user_id'),
+                                user_id: globalThis.localStorage.getItem('user_id'),
                                 review_id: review.id,
                                 vote_up: true,
                                 vote_down: false
@@ -272,7 +273,7 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
 
     const handleClickDownVote = async (review) => {
         const reviewId = review.id;
-        if (globalThis.sessionStorage.getItem('user_id') !== null) {
+        if (globalThis.localStorage.getItem('user_id') !== null) {
             const currentClickedState = isClickedDown[reviewId] || false;
             setIsClickedDown((prevState) => ({
                 ...prevState,
@@ -290,7 +291,7 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify({
-                                user_id: globalThis.sessionStorage.getItem('user_id'),
+                                user_id: globalThis.localStorage.getItem('user_id'),
                                 review_id: review.id,
                                 vote_up: false,
                                 vote_down: true

@@ -122,7 +122,7 @@ function Markets() {
                 </gmp-map> */}
             </div>
             <br />
-            <div className="market-cards-container">
+            <div className="market-cards-container box-scroll-large">
                 {markets.map((marketData) => (
                     <MarketCard key={marketData.id} marketData={marketData} />
                 ))}
