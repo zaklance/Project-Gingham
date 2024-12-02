@@ -642,12 +642,9 @@ ul {
 
 .login-bar {
   /* width: 70%; */
-  /* margin-left: 15%;
-  margin-right: 15%; */
+  /* margin-left: 15%; */
+  /* margin-right: 15%; */
   height: fit-content;
-}
-
-.login-bar {
   font-size: 11pt;
 }
 
@@ -1145,8 +1142,8 @@ link {
 
 .form input,
 .form textarea {
-  margin-bottom: 10px;
-  padding: 10px;
+  /* margin-bottom: 8px; */
+  padding: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
@@ -1195,8 +1192,12 @@ link {
   box-sizing: border-box;
 }
 
+.form-login label {
+  min-width: 144px;
+}
+
 .form-login input {
-  min-width: 312px;
+  min-width: 280px;
 }
 
 .form-contact label{
