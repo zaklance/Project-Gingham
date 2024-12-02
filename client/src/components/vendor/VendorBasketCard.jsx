@@ -13,10 +13,16 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
     const [basketValue, setBasketValue] = useState('')
     const [errorMessage, setErrorMessage] = useState('');
     const [savedBaskets, setSavedBaskets] = useState([]);
-    
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const saleDate = tomorrow.toISOString().substring(0, 10);
+
+    function timeConverter(time24) {
+        const date = new Date('1970-01-01T' + time24);
+        const time12 = date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+        return time12
+    }
 
     function convertToLocalDate(gmtDateString) {
         const gmtDate = new Date(gmtDateString);
@@ -81,7 +87,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                     body: JSON.stringify({
                         vendor_id: vendorId,
                         market_day_id: marketDay.market_id,
-                        sale_date: saleDate,
+                        sale_date: marketDay.date,
                         pickup_time: formattedPickupTime,
                         is_sold: false,
                         is_grabbed: false,

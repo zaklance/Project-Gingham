@@ -16,6 +16,16 @@ function VendorBaskets({ vendorUserData }) {
 
     const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
+    function timeConverter(time24) {
+        const date = new Date('1970-01-01T' + time24);
+        const time12 = date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+        return time12
+    }
+
     function convertToLocalDate(gmtDateString) {
         const gmtDate = new Date(gmtDateString);
         const localDate = gmtDate.toLocaleDateString('en-US', {
