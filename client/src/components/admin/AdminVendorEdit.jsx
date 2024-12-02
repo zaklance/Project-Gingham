@@ -76,7 +76,7 @@ function AdminVendorEdit({ vendors }) {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(adminMarketData),
+                body: JSON.stringify(vendorData),
 
             });
             console.log('Request body:', JSON.stringify(vendorData));
