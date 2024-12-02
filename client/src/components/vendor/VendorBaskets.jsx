@@ -14,8 +14,7 @@ function VendorBaskets({ vendorUserData }) {
     const [availableBaskets, setAvailableBaskets] = useState([]);
     const [claimedBaskets, setClaimedBaskets] = useState([]);
 
-    const today = new Date();
-    const dayOfWeek = today.getDay();
+    const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
     function convertToLocalDate(gmtDateString) {
         const gmtDate = new Date(gmtDateString);
@@ -170,7 +169,7 @@ function VendorBaskets({ vendorUserData }) {
                         todayBaskets.map((entry, index) => (
                             <div key={index}>
                                 <h4>{entry.marketName}</h4>
-                                <h4>{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h4>
+                                <h4>{new Date(entry.baskets[0].sale_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}</h4>
                                 <br/>
                                 <h4>Total Available Baskets: {entry.baskets.length}</h4>          
                                 {entry.baskets.length > 0 && (
@@ -202,13 +201,7 @@ function VendorBaskets({ vendorUserData }) {
                 <br />
                 <div className='market-cards-container'>
                     {nextMarketDays ? nextMarketDays.map((marketDay, index) => (
-                        <VendorBasketCard
-                            key={index}
-                            vendorId={vendorId}
-                            months={months}
-                            weekDay={weekDay}
-                            marketDay={marketDay}
-                        />
+                        <VendorBasketCard key={index} vendorId={vendorId} marketDay={marketDay} weekDay={weekDay} />
                     )) : <p>No upcoming market days available.</p>}
                 </div>
             </div>
