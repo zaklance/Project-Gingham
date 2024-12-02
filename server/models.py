@@ -182,7 +182,6 @@ class MarketDay(db.Model, SerializerMixin):
     # Relationships
     markets = db.relationship('Market', back_populates='market_days')
     vendor_markets = db.relationship( 'VendorMarket', back_populates="market_day")
-    baskets = db.relationship('Basket', back_populates='market_day')
 
     serialize_rules = ('-markets.market_days', '-markets.reviews')
 
@@ -558,10 +557,12 @@ class Basket(db.Model, SerializerMixin):
         return value
     
     def to_dict(self):
+        market_name = db.session.query(Market.name).filter(Market.id == self.market_day.market_id).scalar()
         return {
             "id": self.id,
             "vendor_id": self.vendor_id,
             "market_day_id": self.market_day_id,
+            "market_name": market_name,
             "sale_date": self.sale_date,
             "pickup_start": str(self.pickup_start),
             "pickup_end": str(self.pickup_end),

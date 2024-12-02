@@ -98,10 +98,10 @@ function VendorBaskets({ vendorUserData }) {
                     
                     const groupedData = data.reduce((acc, basket) => {
                         console.log('Basket:', basket);
-                        console.log('Market Day Object:', basket.market_day);
+                        console.log('Market Day Object:', basket.market_name);
     
                         const marketDayId = basket.market_day_id;
-                        const marketName = basket.market_day ? basket.market_day.name || 'Unknown Market' : 'Unknown Market';
+                        const marketName = basket.market_name || 'Unknown Market';
     
                         if (!acc[marketDayId]) {
                             acc[marketDayId] = {
