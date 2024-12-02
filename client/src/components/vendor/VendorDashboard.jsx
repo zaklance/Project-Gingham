@@ -97,6 +97,7 @@ function VendorDashboard({ marketId }) {
         <div>
             <div className='flex-start flex-center-align flex-gap-48'>
                 <h2 className=''>Vendor Dashboard</h2>
+                <br/>
                 {vendorUserData?.is_admin === true ? (
                     <div className='tabs margin-t-20'>
                         <Link to="#" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>

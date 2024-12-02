@@ -534,6 +534,7 @@ class Basket(db.Model, SerializerMixin):
     pickup_end = db.Column(db.Time, nullable=False)
 
     vendor = db.relationship('Vendor', lazy='joined')
+    market_day = db.relationship('MarketDay', lazy='joined')
 
     # @validates('sale_date')
     # def validate_sale_date(self, key, value):
@@ -554,7 +555,7 @@ class Basket(db.Model, SerializerMixin):
         return value
     
     def to_dict(self):
-        market_name = db.session.query(Market.name).filter(Market.id == self.market_day.market_id).scalar()
+        market_name = db.session.query(Market.name).filter(Market.id == self.market_day_id).scalar()
         return {
             "id": self.id,
             "vendor_id": self.vendor_id,
@@ -589,7 +590,7 @@ class UserNotification(db.Model):
             'id': self.id,
             'user_id': self.user_id,
             'message': self.message,
-            'created_at': self.created_at.isoformat()  # Convert to ISO 8601 format
+            'created_at': self.created_at.isoformat()
         }
     
     def __repr__(self):

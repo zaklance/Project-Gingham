@@ -168,7 +168,7 @@ function Profile({ marketData }) {
 
     return (
         <div>
-            <h1>Welcome to Your Profile</h1>
+            <h1>Welcome to Your Profile, {profileData.first_name}!</h1>
             <div className='box-bounding'>
                 <h2>Profile Information</h2>
                 {editMode ? (
@@ -255,7 +255,7 @@ function Profile({ marketData }) {
                                 name="zip"
                                 size="5"
                                 placeholder='Zipcode'
-                                value={tempProfileData ? tempProfileData.zip : ''}
+                                value={tempProfileData ? tempProfileData.zipcode : ''}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -284,7 +284,7 @@ function Profile({ marketData }) {
                                 </tr>
                                 <tr>
                                     <td className='cell-title'></td>
-                                    <td className='cell-text'>{profileData.city}, {profileData.state} {profileData.zip}</td>
+                                    <td className='cell-text'>{profileData.city}, {profileData.state} {profileData.zipcode}</td>
                                 </tr>
                             </tbody>
                         </table>
