@@ -173,7 +173,7 @@ function AdminProfile () {
                                     <tbody>
                                         <tr>
                                             <td className='cell-title'>Name:</td>
-                                            <td className='cell-text'>{tempProfileData ? `${adminUserData.first_name} ${adminUserData.last_name}` : 'Loading...'}</td>
+                                            <td className='cell-text'>{adminUserData ? `${adminUserData.first_name} ${adminUserData.last_name}` : 'Loading...'}</td>
                                         </tr>
                                         <tr>
                                             <td className='cell-title'>Email:</td>

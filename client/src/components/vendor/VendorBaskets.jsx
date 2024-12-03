@@ -169,29 +169,63 @@ function VendorBaskets({ vendorUserData }) {
                 <div className='market-cards-container'>
                     {todayBaskets.length > 0 ? (
                         todayBaskets.map((entry, index) => (
-                            <div key={index}>
-                                <h4>{entry.marketName}</h4>
-                                <h4>{new Date(entry.baskets[0].sale_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}</h4>
-                                <br/>
-                                <h4>Total Available Baskets: {entry.baskets.length}</h4>          
+                            <div key={index} className='basket-card'>
+                                <div className='text-center'>
+                                    <h4>{entry.marketName}</h4>
+                                    <h4>{new Date(entry.baskets[0].sale_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}</h4>
+                                </div>
+                                <br/>          
                                 {entry.baskets.length > 0 && (
-                                    <>
-                                        <p>Pickup Start: {timeConverter(entry.baskets[0]?.pickup_start)}</p>
-                                        <p>Pickup End: {timeConverter(entry.baskets[0]?.pickup_end)}</p>
-                                        <p>Basket Value: ${entry.baskets[0]?.basket_value}</p>
-                                        <p>Basket Price: ${entry.baskets[0]?.price}</p>
-                                    </>
+                                    <table>
+                                        <tbody className='table-basket'>
+                                            <tr className='blue'>
+                                                <td>Total Available Baskets:</td>
+                                                <td className='text-center'>{entry.baskets.length}</td>
+                                            </tr>
+                                            <tr className='row-blank'>
+                                            </tr>
+                                            <tr>
+                                                <td>Pickup Start:</td>
+                                                <td className='nowrap text-center'>{timeConverter(entry.baskets[0]?.pickup_start)}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Pickup End:</td>
+                                                <td className='nowrap text-center'>{timeConverter(entry.baskets[0]?.pickup_end)}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Basket Value:</td>
+                                                <td className='text-center'>${entry.baskets[0]?.basket_value}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Basket Price:</td>
+                                                <td className='text-center'>${entry.baskets[0]?.price}</td>
+                                            </tr>
+                                            <tr className='row-blank'>
+                                            </tr>
+                                            <tr className='blue'>
+                                                <td>Sold Baskets:</td>
+                                                <td className='text-center'>{entry.baskets.filter(basket => basket.is_sold).length}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 )}
                                 <br/>
-                                <h4>Sold Baskets: {entry.baskets.filter(basket => basket.is_sold).length}</h4>
+                                <h4> </h4>
                                 {entry.baskets.filter(basket => basket.is_sold).length > 0 && (
-                                    <ul>
+                                    <table className='table-basket'>
+                                        <thead>
+                                            <tr className='blue-bright'>
+                                                <td className='text-light' colspan="2"> Is Grabbed?</td>
+                                            </tr>
+                                        </thead>
                                         {entry.baskets.filter(basket => basket.is_sold).map((basket) => (
-                                            <li key={basket.id}>
-                                                Basket ID: {basket.id}, Grabbed: {basket.is_grabbed ? "✅" : "❌"}
-                                            </li>
+                                            <tr>
+                                                <td>Basket ID: {basket.id}</td>
+                                                {basket.is_grabbed ? <td className='text-center'>&#10003;</td> : <td className='text-center'>X</td>}
+                                            </tr>
                                         ))}
-                                    </ul>
+                                    </table>
+
                                 )}
                             </div>
                         ))

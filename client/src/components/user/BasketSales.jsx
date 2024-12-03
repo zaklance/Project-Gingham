@@ -38,7 +38,7 @@ function BasketSales() {
             <h2>Basket History</h2>
             <br />
             <div className='table-overflow'>
-                <table className='table-basket'>
+                <table className='table-history'>
                     <thead>
                         <tr>
                             <th>Market</th>
