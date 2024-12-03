@@ -10,7 +10,7 @@ function VendorNotification({ teamMembers, setTeamMembers, vendorUserData }) {
             try {
                 const vendorUserId = localStorage.getItem('vendor_user_id');
                 if (!vendorUserId) {
-                    console.error("No vendor user ID found in session storage");
+                    console.error("No vendor user ID found in local storage");
                     setError("Vendor user ID is missing");
                     setLoading(false);
                     return;
@@ -18,7 +18,7 @@ function VendorNotification({ teamMembers, setTeamMembers, vendorUserData }) {
 
                 const token = localStorage.getItem('jwt-token');
                 if (!token) {
-                    console.error("No JWT token found in session storage");
+                    console.error("No JWT token found in local storage");
                     setError("JWT token is missing");
                     setLoading(false);
                     return;
