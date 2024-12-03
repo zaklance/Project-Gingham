@@ -113,10 +113,10 @@ function VendorCreate () {
     
     useEffect(() => {
         if (newVendor && !vendorData) {
-            setVendorData({ name: '', city: '', state: '', product: '', image: '' });
+            setVendorData({ name: '', city: '', state: '', bio: '', product: '', image: '' });
             setVendorEditMode(true); 
         } else if (vendorUserData) {
-            setVendorData({ name: vendorUserData.name || '', city: vendorUserData.city || '', state: vendorUserData.state || '', product: vendorUserData.product || '', image: vendorUserData.image || '' });
+            setVendorData({ name: vendorUserData.name || '', city: vendorUserData.city || '', state: vendorUserData.state || '', bio: vendorUserData.bio || '', product: vendorUserData.product || '', image: vendorUserData.image || '' });
             setVendorEditMode(true);
         }
     }, [newVendor, vendorUserData]);
@@ -139,7 +139,7 @@ function VendorCreate () {
             return;
         }
 
-        const newVendorData = { name: vendorData.name, city: vendorData.city, state: vendorData.state, product: vendorData.product, image: vendorImageURL, };
+        const newVendorData = { name: vendorData.name, city: vendorData.city, state: vendorData.state, bio: vendorData.bio, product: vendorData.product, image: vendorImageURL, };
 
         try {
             const vendorResponse = await fetch('http://127.0.0.1:5555/api/vendors', {
@@ -342,6 +342,12 @@ function VendorCreate () {
                         <option key={index} value={product}> {product} </option>
                     ))}
                 </select>
+            </div>
+            <div className="form-group">
+
+                <label>Bio:</label>
+                <textarea className='textarea-edit' type="text" name="name" value={vendorData?.bio || ''} onChange={handleVendorInputChange} />
+            
             </div>
             <div className="form-group">
                 <label>Based out of:</label>
