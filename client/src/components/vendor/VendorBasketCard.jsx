@@ -10,7 +10,6 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
     const [isSaved, setIsSaved] = useState(false);
     const [isEditing, setIsEditing] = useState(true); 
     const [numBaskets, setNumBaskets] = useState('');
-    const [selectedDuration, setSelectedDuration] = useState('0.5');
     const [price, setPrice] = useState('');
     const [basketValue, setBasketValue] = useState('')
     const [errorMessage, setErrorMessage] = useState('');

@@ -67,7 +67,7 @@ def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
     temp_output.seek(0)
     return Image.open(temp_output)
 
-@app.route('/api/api/upload', methods=['POST'])
+@app.route('/api/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
         return {'error': 'No file part in the request'}, 400
@@ -78,19 +78,34 @@ def upload_file():
         return {'error': 'No file selected'}, 400
 
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
+        # Use the original filename
+        original_filename = secure_filename(file.filename)
 
         # Check whether the upload is for a vendor or market
         upload_type = request.form.get('type')
         if upload_type == 'vendor':
-            file_path = os.path.join(VENDOR_UPLOAD_FOLDER, filename)
+            upload_folder = VENDOR_UPLOAD_FOLDER
         elif upload_type == 'market':
-            file_path = os.path.join(MARKET_UPLOAD_FOLDER, filename)
+            upload_folder = MARKET_UPLOAD_FOLDER
         else:
             return {'error': 'Invalid type specified. Must be "vendor" or "market"'}, 400
 
+        # Ensure the upload folder exists
+        if not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)
+
+        file_path = os.path.join(upload_folder, original_filename)
+
+        # Prevent overwriting files by appending a number to the filename if it already exists
+        if os.path.exists(file_path):
+            base, ext = os.path.splitext(original_filename)
+            counter = 1
+            while os.path.exists(file_path):
+                file_path = os.path.join(upload_folder, f"{base}_{counter}{ext}")
+                counter += 1
+
         try:
-            if filename.rsplit('.', 1)[1].lower() == 'svg':
+            if original_filename.rsplit('.', 1)[1].lower() == 'svg':
                 # Save the SVG file directly without resizing or compressing
                 file.save(file_path)
             else:
@@ -99,6 +114,7 @@ def upload_file():
                 image = resize_image(image)
                 image.save(file_path)
 
+            # Update the database record based on upload type
             if upload_type == 'vendor':
                 vendor_id = request.form.get('vendor_id')
                 if not vendor_id:
@@ -108,7 +124,7 @@ def upload_file():
                 if not vendor:
                     return {'error': 'Vendor not found'}, 404
 
-                vendor.image = filename
+                vendor.image = os.path.basename(file_path)
                 db.session.commit()
 
             elif upload_type == 'market':
@@ -120,10 +136,10 @@ def upload_file():
                 if not market:
                     return {'error': 'Market not found'}, 404
 
-                market.image = filename
+                market.image = os.path.basename(file_path)
                 db.session.commit()
 
-            return {'message': 'File successfully uploaded', 'filename': filename}, 201
+            return {'message': 'File successfully uploaded', 'filename': os.path.basename(file_path)}, 201
 
         except Exception as e:
             db.session.rollback()
@@ -467,7 +483,6 @@ def vendor_by_id(id):
 
         try:          
             data = request.get_json()
-
            
             if 'name' in data:
                 vendor.name = data['name']
@@ -477,8 +492,10 @@ def vendor_by_id(id):
                 vendor.city = data['city']
             if 'state' in data:
                 vendor.state = data['state']
-            if 'locations' in data:
-                vendor.locations = data['locations']
+            if 'bio' in data:
+                vendor.bio = data['bio']
+            if 'image' in data:
+                vendor.image = data['image']
 
             db.session.commit()
             return jsonify(vendor.to_dict()), 200
@@ -487,12 +504,12 @@ def vendor_by_id(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route('/api/vendors/<int:vendor_id>/image', methods=['GET'])
+@app.route('/api/vendors/<int:vendor_id>/image', methods=['GET', 'POST'])
 def get_vendor_image(vendor_id):
     vendor = Vendor.query.get(vendor_id)
     if vendor and vendor.image:
         try:
-            return send_from_directory(app.config['UPLOAD_FOLDER'], vendor.image)
+            return send_from_directory(app.config['VENDOR_UPLOAD_FOLDER'], vendor.image)
         except FileNotFoundError:
             return {'error': 'Image not found'}, 404
     return {'error': 'Vendor or image not found'}, 404
