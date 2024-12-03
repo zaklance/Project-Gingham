@@ -4,9 +4,9 @@ import MarketCard from './MarketCard';
 import ReviewVendor from './ReviewVendor';
 
 
-function VendorDetail () {
+function VendorDetail() {
     const { id } = useParams();
-    
+
     const [vendor, setVendor] = useState(null);
     const [marketDetails, setMarketDetails] = useState({});
     const [markets, setMarkets] = useState([]);
@@ -17,10 +17,6 @@ function VendorDetail () {
     const [hoveredMarket, setHoveredMarket] = useState(null);
     const [events, setEvents] = useState([]);
     const [marketBaskets, setMarketBaskets] = useState([]);
-    
-    // To be deleted after baskets state is moved to BasketCard
-    // const [price, setPrice] = useState(5.00);
-
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const isUserLoggedIn = userId;
@@ -28,6 +24,20 @@ function VendorDetail () {
     const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        // Timer to clear cart items after 3 seconds
+        if (cartItems.length > 0) {
+            const timer = setTimeout(() => {
+                setCartItems([]);
+                setAmountInCart(0);
+                console.log("Cart cleared after 3 seconds");
+            }, (3 * 60 * 60 * 1000));
+
+            // Clear the timer if cartItems changes
+            return () => clearTimeout(timer);
+        }
+    }, [cartItems, setCartItems, setAmountInCart]);
 
     function timeConverter(time24) {
         const date = new Date(`1970-01-01T${time24}Z`); // Add 'Z' to indicate UTC
