@@ -33,7 +33,7 @@ function VendorDetail({ products }) {
                 setCartItems([]);
                 setAmountInCart(0);
                 console.log("Cart cleared after 3 seconds");
-            }, (3 * 60 * 60 * 1000));
+            }, ((3 * 60) * (60 * 1000)));
 
             // Clear the timer if cartItems changes
             return () => clearTimeout(timer);
@@ -137,6 +137,9 @@ function VendorDetail({ products }) {
                 location: marketDay.markets.name,
                 id: basketInCart.id,
                 price: basketInCart.price,
+                pickup_start: basketInCart.pickup_start,
+                pickup_end: basketInCart.pickup_end,
+                day_of_week: marketDay.day_of_week
             }];
             setCartItems(updatedCartItems);
             setAmountInCart(updatedCartItems.length);

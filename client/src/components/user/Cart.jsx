@@ -9,6 +9,18 @@ function Cart() {
 
     const navigate = useNavigate();
 
+    const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+    function timeConverter(time24) {
+        const date = new Date(`1970-01-01T${time24}Z`); // Add 'Z' to indicate UTC
+        const time12 = date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+        return time12;
+    }
+
     function startCartTimer() {
         if (cartTimer) {
             clearTimeout(cartTimer);
@@ -67,7 +79,8 @@ function Cart() {
                             <ul>
                                 {cartItems.map((item, index) => (
                                     <li className='cart-item' key={index}>
-                                        <span><b>{item.vendorName}</b> at <i>{item.location}</i> — ${item.price}</span>
+                                        <span><b>{item.vendorName}</b> at <i>{item.location}</i>&ensp; {weekDay[item.day_of_week]} from {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</span>
+                                        <span><b>${item.price}</b></span>
                                         <button className='btn-cart' onClick={() => removeFromCart(item)}>Remove</button>
                                     </li>
                                 ))}

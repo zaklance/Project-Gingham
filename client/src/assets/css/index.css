@@ -1090,7 +1090,8 @@ link {
 .cart-item {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
+  gap: 8px;
   margin: 8px;
   padding: 8px;
 }

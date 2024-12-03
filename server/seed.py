@@ -1066,7 +1066,7 @@ def run():
         user_id = choice(rand_user)
         is_sold = user_id is not None
         is_grabbed = bool(fake.boolean()) if is_sold else bool(False)
-        price = int(randint(4, 8))
+        price = int(randint(5, 10))
         basket_value = int(price + randint(2, 8))
 
         selected_vm = choice(vendor_markets)
@@ -1084,6 +1084,40 @@ def run():
             basket_value=basket_value
         )
         baskets.append(bsk)
+    
+    for i in range(12):
+        rand_user = [None, randint(1, 50)]
+        last_month = randint(-1, 1)
+        dates = date.today() - timedelta(days=last_month)
+
+        sale_date = dates
+        pickup_start = fake.time_object()
+        random_duration_minutes = randint(30, 120)
+        hours, minutes = divmod(random_duration_minutes, 60)
+        pickup_end_hour = (pickup_start.hour + hours + (pickup_start.minute + minutes) // 60) % 24
+        pickup_end_minute = (pickup_start.minute + minutes) % 60
+        pickup_end = time(pickup_end_hour, pickup_end_minute)
+        user_id = choice(rand_user)
+        is_sold = user_id is not None
+        is_grabbed = bool(fake.boolean()) if is_sold else bool(False)
+        price = int(randint(5, 10))
+        basket_value = int(price + randint(2, 8))
+
+        selected_vm = choice(vendor_markets)
+
+        bsk2 = Basket(
+            vendor_id=1,
+            market_day_id=1,
+            sale_date=sale_date,
+            pickup_start=pickup_start,
+            pickup_end=pickup_end,
+            user_id=user_id,
+            is_sold=is_sold,
+            is_grabbed=is_grabbed,
+            price=price, 
+            basket_value=basket_value
+        )
+        baskets.append(bsk2)
     
     db.session.add_all(baskets)
     db.session.commit()
