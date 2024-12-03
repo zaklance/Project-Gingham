@@ -78,7 +78,7 @@ function VendorSales({ timeConverter, convertToLocalDate }) {
 
     const fetchVendorId = async () => {
         if (!vendorUserId) {
-            console.error("No vendor user ID found in session storage");
+            console.error("No vendor user ID found in local storage");
             return;
         }
         try {
