@@ -362,37 +362,40 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                     .map((review, index) => (
                         <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                             {review.user_id !== userId && editingReviewId !== review.id ? (
-                                <div className='flex-start flex-center-align'>
-                                    <h4 className='margin-r-8'>{review.user ? review.user.first_name : 'Anonymous'}</h4>
-                                    <p className='margin-r-8'>{review ? convertToLocalDate(review.post_date) : ''}</p>
-                                    <div className='notification margin-r-4'>
-                                        {filterRatingsUpVote(review.id).length > 0 ? (
-                                            <p className='badge-votes'>{filterRatingsUpVote(review.id).length}</p>
-                                        ) : (
-                                            <></>
-                                        )}
+                                <>
+                                    <div className='flex-start flex-center-align'>
+                                        <h4 className='margin-r-8'>{review.user ? review.user.first_name : 'Anonymous'}</h4>
+                                        <p className='margin-r-8'>{review ? convertToLocalDate(review.post_date) : ''}</p>
+                                        <div className='notification margin-r-4'>
+                                            {filterRatingsUpVote(review.id).length > 0 ? (
+                                                <p className='badge-votes'>{filterRatingsUpVote(review.id).length}</p>
+                                            ) : (
+                                                <></>
+                                            )}
 
-                                        <button
-                                            className={`btn btn-emoji btn-gap ${isClickedUp[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
-                                            onClick={() => handleClickUpVote(review)}
-                                        >&#9786;
-                                        </button>
-                                    </div>
-                                    <div className='notification margin-r-4'>
-                                        {filterRatingsDownVote(review.id).length > 0 ? (
-                                            <p className='badge-votes'>{filterRatingsDownVote(review.id).length}</p>
-                                        ) : (
-                                            <></>
-                                        )}
+                                            <button
+                                                className={`btn btn-emoji btn-gap ${isClickedUp[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
+                                                onClick={() => handleClickUpVote(review)}
+                                            >&#9786;
+                                            </button>
+                                        </div>
+                                        <div className='notification margin-r-4'>
+                                            {filterRatingsDownVote(review.id).length > 0 ? (
+                                                <p className='badge-votes'>{filterRatingsDownVote(review.id).length}</p>
+                                            ) : (
+                                                <></>
+                                            )}
 
-                                        <button
-                                            className={`btn btn-emoji btn-gap ${isClickedDown[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
-                                            onClick={() => handleClickDownVote(review)}
-                                        >&#9785;
-                                        </button>
+                                            <button
+                                                className={`btn btn-emoji btn-gap ${isClickedDown[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
+                                                onClick={() => handleClickDownVote(review)}
+                                            >&#9785;
+                                            </button>
+                                        </div>
+                                        <button className='btn btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
+                                        <img className='img-hot margin-l-12' src="/site-images/chili-pepper-4.svg" alt="Notification" />
                                     </div>
-                                    <button className='btn btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
-                                </div>
+                                </>
                             ) : (
                                 <div className='flex-start flex-center-align'>
                                     <h4 className='margin-r-8'>You</h4>
