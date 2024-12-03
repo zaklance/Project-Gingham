@@ -560,7 +560,7 @@ class Basket(db.Model, SerializerMixin):
             "vendor_id": self.vendor_id,
             "market_day_id": self.market_day_id,
             "market_name": self.market_day.markets.name if self.market_day and self.market_day.markets else "Unknown Market",
-            "sale_date": self.sale_date,
+            "sale_date": self.sale_date.isoformat() if self.sale_date else None,
             "pickup_start": str(self.pickup_start),
             "pickup_end": str(self.pickup_end),
             "price": self.price,
