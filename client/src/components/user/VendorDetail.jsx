@@ -3,9 +3,9 @@ import { useParams, Link, useOutletContext, useNavigate, useLocation } from 'rea
 import MarketCard from './MarketCard';
 import ReviewVendor from './ReviewVendor';
 
-function VendorDetail ({ products }) {
+function VendorDetail({ products }) {
     const { id } = useParams();
-    
+
     const [vendor, setVendor] = useState(null);
     const [marketDetails, setMarketDetails] = useState({});
     const [markets, setMarkets] = useState([]);
@@ -16,7 +16,6 @@ function VendorDetail ({ products }) {
     const [hoveredMarket, setHoveredMarket] = useState(null);
     const [events, setEvents] = useState([]);
     const [marketBaskets, setMarketBaskets] = useState([]);
-
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const isUserLoggedIn = userId;
@@ -26,6 +25,20 @@ function VendorDetail ({ products }) {
     const navigate = useNavigate();
     const location = useLocation();
     const { selectedProduct } = location.state || {};
+
+    useEffect(() => {
+        // Timer to clear cart items after 3 seconds
+        if (cartItems.length > 0) {
+            const timer = setTimeout(() => {
+                setCartItems([]);
+                setAmountInCart(0);
+                console.log("Cart cleared after 3 seconds");
+            }, (3 * 60 * 60 * 1000));
+
+            // Clear the timer if cartItems changes
+            return () => clearTimeout(timer);
+        }
+    }, [cartItems, setCartItems, setAmountInCart]);
 
     function timeConverter(time24) {
         const date = new Date(`1970-01-01T${time24}Z`); // Add 'Z' to indicate UTC
