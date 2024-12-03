@@ -199,6 +199,10 @@ h2 {
   margin-right: 24px;
 }
 
+.margin-l-12 {
+  margin-left: 12px;
+}
+
 .margin-l-16 {
   margin-left: 16px;
 }
@@ -1574,6 +1578,10 @@ select:hover {
   margin-bottom: -6px;
   margin-left: -12px;
   margin-right: -12px;
+}
+
+.img-hot {
+  width: 20px;
 }
 
 .favorites-list li {
