@@ -89,7 +89,6 @@ function VendorDetail ({ products }) {
             .catch(error => console.error('Error fetching market locations:', error));
     }, [id]);
 
-
     useEffect(() => {
         const fetchMarketDetails = async () => {
             if (markets.length === 0) return;
