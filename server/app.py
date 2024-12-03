@@ -1202,15 +1202,24 @@ def handle_baskets():
         app.logger.debug(f'Received data for new basket: {data}')
 
         try:
-            sale_date = datetime.fromisoformat(data['sale_date'].replace('Z', '+00:00'))
+            sale_date_str = data.get('sale_date')
+            if sale_date_str:
+                try:
+                    sale_date = datetime.fromisoformat(sale_date_str.replace('Z', '+00:00'))
+                    
+                    if sale_date.tzinfo is None:
+                        sale_date = sale_date.replace(tzinfo=timezone.utc)
+
+                    target_tz = pytz.timezone('America/New_York')
+                    sale_date = sale_date.astimezone(target_tz)
+                except ValueError:
+                    return jsonify({'error': 'Invalid sale_date format. Expected ISO 8601 date-time.'}), 400
+            else:
+                sale_date = None
+          
             try:
                 pickup_start = datetime.strptime(data['pickup_start'], '%H:%M %p').time()
-                pickup_start = datetime.combine(datetime.today(), pickup_start)
-                pickup_start = pickup_start.replace(tzinfo=timezone.utc).time()
-
                 pickup_end = datetime.strptime(data['pickup_end'], '%H:%M %p').time()
-                pickup_end = datetime.combine(datetime.today(), pickup_end)
-                pickup_end = pickup_end.replace(tzinfo=timezone.utc).time()
             except ValueError:
                 return jsonify({'error': 'Invalid pickup time format. Expected HH:MM AM/PM.'}), 400
         
@@ -1358,26 +1367,23 @@ def handle_basket_by_id(id):
 @app.route('/api/todays-baskets', methods=['GET'])
 def handle_todays_baskets():
     try:
-        today = date.today()
+        local_tz = pytz.timezone('America/New_York')
+
+        now = datetime.now(local_tz)
+        today = now.date()
 
         vendor_id = request.args.get('vendor_id', type=int)
 
-        query = db.session.query(Basket).filter(
+        baskets = db.session.query(Basket).filter(
             Basket.sale_date == today,
             Basket.vendor_id == vendor_id
-        )
+        ).all()
 
-        app.logger.debug(f"Generated query for today's baskets: {query}")
-
-        baskets = query.all()
-
-        app.logger.debug(f"Baskets found: {len(baskets)}")
-
-        return jsonify([basket.to_dict() for basket in baskets])
+        return jsonify([basket.to_dict() for basket in baskets]), 200
 
     except Exception as e:
-        app.logger.error(f'Error fetching today\'s baskets: {e}')
-        return {'error': f'Exception: {str(e)}'}, 500
+        app.logger.error(f"Error fetching today's baskets: {e}")
+        return jsonify({'error': f'Exception: {str(e)}'}), 500
 
 @app.route('/api/baskets/user-sales-history', methods=['GET'])
 @jwt_required()
