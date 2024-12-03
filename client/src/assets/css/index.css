@@ -410,6 +410,10 @@ ul {
   background-color: #d8f4fe !important;
 }
 
+.blue-bright {
+  background-color: #007BFF !important;
+}
+
 .box-blue {
   background-color: #d8f4fe;
   padding-bottom: 4px;
@@ -1193,7 +1197,7 @@ link {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.form-group, .form-address, .form-baskets {
+.form-group, .form-address, .form-baskets, .form-baskets-small {
   display: table-row;
   margin-bottom: 15px;
 }
@@ -1251,21 +1255,32 @@ link {
   border-radius: 12px;
 }
 
-.form-baskets label {
+.form-baskets label, .form-baskets-small label {
   display: table-cell;
   vertical-align: top;
   margin-bottom: 5px;
   padding: 8px;
   background-color: #eee;
   text-align: left;
+  font-size: .88em;
+}
+
+.form-baskets-small label {
+  font-size: .88em;
 }
 
 .form-baskets input {
   display: table-cell;
   /* font-size: 1em; */
+  font-size: .88em;
   padding: 8px;
-  height: fit-content;
+  /* height: fit-content; */
   width: 80px;
+}
+
+.form-baskets-small input {
+  font-size: .8em;
+  padding: 4px;
 }
 
 .form-baskets select {
@@ -1310,6 +1325,7 @@ link {
   border-width: 1px; */
 }
 
+
 .table-rect>label, .table-rect>input {
   border-radius: 0 !important;
 }
@@ -1324,22 +1340,42 @@ link {
   width: 100%
 }
 
-.table-basket th {
+.table-history th {
   background-color: #007BFF;
   color: white;
   padding: 4px;
 }
 
-.table-basket tr:nth-child(even) {
+.table-history tr:nth-child(even) {
   background-color: #eee;
 }
 
-.table-basket td {
+.table-history td {
   padding: 4px;
+}
+
+.table-basket {
+  width: 100%;
+}
+
+.table-basket td {
+  padding: 2px;
+}
+
+.table-basket tr:nth-child(odd) {
+  background-color: #eee;
+}
+
+.table-basket tr:nth-child(even) {
+  background-color: #dbdbdb;
 }
 
 .table-center {
   text-align: center;
+}
+
+.row-blank {
+  height: 20px;
 }
 
 select {
@@ -1482,6 +1518,16 @@ select:hover {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   background-color: #fff;
   text-align: center;
+}
+
+.basket-card {
+  border: .5px solid #ccc;
+  padding: 10px;
+  width: 100%;
+  max-width: 300px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  /* text-align: center; */
 }
 
 /* .market-image {

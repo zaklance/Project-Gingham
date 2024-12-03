@@ -5,7 +5,8 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
     const [marketId, setMarketId] = useState(4);
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
-    const [amPm, setAmPm] = useState('PM');
+    const [startAmPm, setStartAmPm] = useState('PM');
+    const [endAmPm, setEndAmPm] = useState('PM');
     const [isSaved, setIsSaved] = useState(false);
     const [isEditing, setIsEditing] = useState(true); 
     const [numBaskets, setNumBaskets] = useState('');
@@ -66,14 +67,14 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
         const [endHour, endMinute] = endTime.split(':').map(Number);
 
         const formattedStartHour =
-            amPm === 'PM' && startHour !== 12
+            startAmPm === 'PM' && startHour !== 12
                 ? startHour + 12
                 : amPm === 'AM' && startHour === 12
                 ? 0
                 : startHour;
 
         const formattedEndHour =
-            amPm === 'PM' && endHour !== 12
+            endAmPm === 'PM' && endHour !== 12
                 ? endHour + 12
                 : amPm === 'AM' && endHour === 12
                 ? 0
@@ -88,8 +89,8 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
         console.log('Formatted start time:', startTimeDate);
         console.log('Formatted end time:', endTimeDate);
 
-        const formattedPickupStart = `${startTimeDate.getHours().toString().padStart(2, '0')}:${startTimeDate.getMinutes().toString().padStart(2, '0')} ${amPm}`;
-        const formattedPickupEnd = `${endTimeDate.getHours().toString().padStart(2, '0')}:${endTimeDate.getMinutes().toString().padStart(2, '0')} ${amPm}`;
+        const formattedPickupStart = `${startTimeDate.getHours().toString().padStart(2, '0')}:${startTimeDate.getMinutes().toString().padStart(2, '0')} ${startAmPm}`;
+        const formattedPickupEnd = `${endTimeDate.getHours().toString().padStart(2, '0')}:${endTimeDate.getMinutes().toString().padStart(2, '0')} ${endAmPm}`;
 
         console.log('Formatted pickup start:', formattedPickupStart);
         console.log('Formatted pickup end:', formattedPickupEnd);
@@ -164,15 +165,17 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
     };
 
     return (
-        <div className="market-card">
+        <div className="basket-card">
             {marketDay && marketDay.date ? (
                 <>
-                    <h4>{marketDay ? marketDay.markets.name : ''}</h4>
-                    <h4 className='margin-t-8'>
-                        {marketDay.date
-                            ? `${weekDay[marketDay.date.getDay()]}, ${convertToLocalDate(marketDay.date)}`
-                            : ''}
-                    </h4>
+                    <div className='text-center'>
+                        <h4>{marketDay ? marketDay.markets.name : ''}</h4>
+                        <h4 className='margin-t-8'>
+                            {marketDay.date
+                                ? `${weekDay[marketDay.date.getDay()]}, ${convertToLocalDate(marketDay.date)}`
+                                : ''}
+                        </h4>
+                    </div>
                 </>
             ) : (
                 <h3>Loading...</h3>
@@ -180,20 +183,41 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
             <br />
             <br />
             {isSaved ? (
-                <div className="">
-                    <p><strong>Baskets Saved:</strong> {numBaskets}</p>
-                    <p><strong>Estimated Value:</strong> ${basketValue}</p>
-                    <p><strong>Price:</strong> ${price}</p>
-                    <p><strong>Pick-Up Start:</strong> {startTime} {amPm}</p>
-                    <p><strong>Pick-Up End:</strong> {endTime} {amPm}</p>
-                    <button onClick={handleDelete} className="btn-basket-delete">
-                        Delete All Baskets
-                    </button>
-                </div>
+                <>
+                    <table className='table-basket'>
+                        <tbody>
+                            <tr>
+                                <td>Baskets Saved:</td>
+                                <td className='text-center'>{numBaskets}</td>
+                            </tr>
+                            <tr>
+                                <td>Estimated Value:</td>
+                                <td className='text-center'>${basketValue}</td>
+                            </tr>
+                            <tr>
+                                <td>Price:</td>
+                                <td className='text-center'>${price}</td>
+                            </tr>
+                            <tr>
+                                <td>Pick-Up Start:</td>
+                                <td className='text-center'>{startTime} {startAmPm}</td>
+                            </tr>
+                            <tr>
+                                <td>Pick-Up End:</td>
+                                <td className='text-center'>{endTime} {endAmPm}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div className='text-center'>
+                        <button onClick={handleDelete} className="btn-basket-save">
+                            Delete All Baskets
+                        </button>
+                    </div>
+                </>
             ) : isEditing ? (
                 <>
                     <div className='form-baskets'>
-                        <label className='margin-t-16 margin-b-8'># of Baskets Available:</label>
+                        <label className='margin-t-16 margin-b-8'>Baskets Available:</label>
                         <input
                             type="text"
                             name="basket_input"
@@ -204,7 +228,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                         />
                     </div>
                     <div className='form-baskets'>
-                        <label className='margin-t-16 margin-b-8'>Est. Basket Value:</label>
+                        <label className='margin-t-16 margin-b-8'>Basket Value:</label>
                         <input 
                             type="text"
                             name="price"
@@ -215,7 +239,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                         />
                     </div>
                     <div className='form-baskets'>
-                        <label className='margin-t-16 margin-b-8'>Enter Basket Price:</label>
+                        <label className='margin-t-16 margin-b-8'>Basket Price:</label>
                         <input 
                             type="text"
                             step="0.01"
@@ -227,7 +251,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                         />
                     </div>
                     <br></br>
-                    <div className='form-baskets'>
+                    <div className='form-baskets-small'>
                         <label className='margin-t-16 margin-b-8'>Pick Up Start:</label>
                         <div className='flex-start'>
                             <input
@@ -241,18 +265,16 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                                 />
                             <select
                                 name="amPm"
-                                value={amPm}
+                                value={startAmPm}
                                 className='am-pm'
-                                onChange={(e) => setAmPm(e.target.value)}
+                                onChange={(e) => setStartAmPm(e.target.value)}
                             >
                                 <option value="AM">AM</option>
                                 <option value="PM">PM</option>
                             </select>
                         </div>
                     </div>
-                    <br/>
-                    <br/>
-                    <div className='form-baskets'>
+                    <div className='form-baskets-small'>
                         <label className='margin-t-16 margin-b-8'>Pick Up End:</label>
                         <div className='flex-start'>
                             <input
@@ -266,40 +288,24 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                                 />
                             <select
                                 name="amPm"
-                                value={amPm}
+                                value={endAmPm}
                                 className='am-pm'
-                                onChange={(e) => setAmPm(e.target.value)}
+                                onChange={(e) => setEndAmPm(e.target.value)}
                             >
                                 <option value="AM">AM</option>
                                 <option value="PM">PM</option>
                             </select>
                         </div>
                     </div>
-                    {/* <div className='form-baskets'>
-                        <label className='margin-t-16 margin-b-8'>Duration:</label>
-                        <select
-                            name="duration"
-                            value={selectedDuration}
-                            onChange={(e) => setSelectedDuration(e.target.value)}
-                        >
-                            <option value="0.5">30 mins</option>
-                            <option value="0.75">45 mins</option>
-                            <option value="1">1 hour</option>
-                            <option value="1.25">1.25 hours</option>
-                            <option value="1.5">1.5 hours</option>
-                            <option value="1.75">1.75 hours</option>
-                            <option value="2">2 hours</option>
-                            <option value="3">3 hours</option>
-                            <option value="4">4 hours</option>
-                        </select>
-                    </div> */}
                     {/* If baskets are saved - and the page is refreshed, the saved baskets should still show as saved...  */}
-                    <button
-                        onClick={handleSave}
-                        className={`btn-basket-save ${isSaved ? 'saved' : ''}`}
-                        >
-                        {isSaved ? 'Saved' : 'Save'}
-                    </button>
+                   <div className='text-center'>
+                        <button
+                            onClick={handleSave}
+                            className={`btn-basket-save ${isSaved ? 'saved' : ''}`}
+                            >
+                            {isSaved ? 'Saved' : 'Save'}
+                        </button>
+                   </div>
                 </>
             ) : null}
         </div>

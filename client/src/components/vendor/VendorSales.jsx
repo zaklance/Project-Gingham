@@ -240,7 +240,7 @@ function VendorSales({ timeConverter, convertToLocalDate }) {
                 <br/>
                     <h3>Sales Breakdown:</h3>
                     <div className='box-scroll'>
-                        <table className='table-basket'>
+                        <table className='table-history'>
                             <thead>
                                 <tr>
                                     <th>Sale Date</th>
