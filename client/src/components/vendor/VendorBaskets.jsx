@@ -172,7 +172,7 @@ function VendorBaskets({ vendorUserData }) {
                             <div key={index} className='basket-card'>
                                 <div className='text-center'>
                                     <h4>{entry.marketName}</h4>
-                                    <h4>{new Date(entry.baskets[0].sale_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}</h4>
+                                    <h4>{new convertToLocalDate(Date(entry.baskets[0].sale_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' }))}</h4>
                                 </div>
                                 <br/>          
                                 {entry.baskets.length > 0 && (
