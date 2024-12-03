@@ -149,7 +149,7 @@ function MarketDetail ({ match }) {
     // Gets rid of duplicate vendors (from different market_days)
     const uniqueFilteredVendorsList = [...new Set(filteredVendorsList)];
 
-    const handleAddToCart = (vendorId, vendorDetail, marketId) => {
+    const handleAddToCart = (vendorId, vendorDetail, basket) => {
         const basketInCart = marketBaskets.find(
             item => item.vendor_id === vendorId && item.is_sold === false
         );
@@ -159,6 +159,9 @@ function MarketDetail ({ match }) {
                 location: market.name,
                 id: basketInCart.id,
                 price: basketInCart.price,
+                pickup_start: basketInCart.pickup_start,
+                pickup_end: basketInCart.pickup_end,
+                day_of_week: new Date(basketInCart.sale_date).getDay()
             }];
             setCartItems(updatedCartItems);
             setAmountInCart(updatedCartItems.length);
@@ -268,6 +271,8 @@ function MarketDetail ({ match }) {
             item => item.vendor_id === vendorId && item.is_sold === false
         ).filter(item => !cartItems.some(cartItem => cartItem.id === item.id));
     };
+
+    console.log(getAvailableBaskets(1))
     
 
     if (!market) {
@@ -398,7 +403,7 @@ function MarketDetail ({ match }) {
                                         : ''}
                                 </span>
                                 {availableBaskets.length > 0 ? (
-                                        <button className="btn-add" onClick={() => handleAddToCart(vendorId, vendorDetail)}>
+                                    <button className="btn-add" onClick={() => handleAddToCart(vendorId, vendorDetail, availableBaskets)}>
                                             Add to Cart
                                         </button>
                                     ) : (
