@@ -28,14 +28,16 @@ function VendorBaskets({ vendorUserData }) {
 
     function convertToLocalDate(gmtDateString) {
         const gmtDate = new Date(gmtDateString);
-        const localDate = gmtDate.toLocaleDateString('en-US', {
+        if (isNaN(gmtDate)) {
+            console.error('Invalid date format:', gmtDateString);
+        }
+        return gmtDate.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
-            day: 'numeric',se
+            day: 'numeric',
+            timeZone: 'America/New_York'
         });
-        return localDate;
     }
-
     useEffect(() => {
         const fetchVendorId = async () => {
             const vendorUserId = localStorage.getItem('vendor_user_id');
@@ -95,33 +97,49 @@ function VendorBaskets({ vendorUserData }) {
                 .then(response => response.json())
                 .then(data => {
                     console.log('Fetched data for today\'s baskets:', data);
+
+                    if (Array.isArray(data)) {
+                        data.forEach(basket => {
+                            if (basket.sale_date) {
+                                // console.log('Original sale_date:', basket.sale_date);
     
-                    const groupedData = data.reduce((acc, basket) => {
-                        const { market_day_id, market_name } = basket;
+                                const localDate = new Date(basket.sale_date + 'T00:00:00');
+                                // console.log('Date constructed:', localDate);
     
-                        if (!acc[market_day_id]) {
-                            acc[market_day_id] = {
-                                marketId: market_day_id,
-                                marketName: market_name,
-                                baskets: []
-                            };
-                        }
-                        acc[market_day_id].baskets.push(basket);
-                        return acc;
-                    }, {});
-    
-                    const groupedBasketsArray = Object.values(groupedData);
-                    setTodayBaskets(groupedBasketsArray);
-    
-                    const availableBasketsArray = groupedBasketsArray
-                        .map(entry => entry.baskets.filter(basket => !basket.is_sold))
-                        .flat();
-                    const claimedBasketsArray = groupedBasketsArray
-                        .map(entry => entry.baskets.filter(basket => basket.is_sold))
-                        .flat();
-    
-                    setAvailableBaskets(availableBasketsArray);
-                    setClaimedBaskets(claimedBasketsArray);
+                                basket.sale_date = localDate.toDateString();
+                                // console.log('Converted sale_date:', basket.sale_date);
+                            }
+                        });
+
+                        const groupedData = data.reduce((acc, basket) => {
+                            const { market_day_id, market_name } = basket;
+
+                            if (!acc[market_day_id]) {
+                                acc[market_day_id] = {
+                                    marketId: market_day_id,
+                                    marketName: market_name,
+                                    baskets: []
+                                };
+                            }
+                            acc[market_day_id].baskets.push(basket);
+                            return acc;
+                        }, {});
+
+                        const groupedBasketsArray = Object.values(groupedData);
+                        setTodayBaskets(groupedBasketsArray);
+
+                        const availableBasketsArray = groupedBasketsArray
+                            .map(entry => entry.baskets.filter(basket => !basket.is_sold))
+                            .flat();
+                        const claimedBasketsArray = groupedBasketsArray
+                            .map(entry => entry.baskets.filter(basket => basket.is_sold))
+                            .flat();
+
+                        setAvailableBaskets(availableBasketsArray);
+                        setClaimedBaskets(claimedBasketsArray);
+                    } else {
+                        console.error('Unexpected data format:', data);
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching today\'s baskets:', error);
@@ -130,7 +148,7 @@ function VendorBaskets({ vendorUserData }) {
             console.log('Vendor ID is not available');
         }
     }, [vendorId]);
- 
+
     useEffect(() => {
         const calculateNextMarketDays = () => {
             const today = new Date();
@@ -172,7 +190,9 @@ function VendorBaskets({ vendorUserData }) {
                             <div key={index} className='basket-card'>
                                 <div className='text-center'>
                                     <h4>{entry.marketName}</h4>
-                                    <h4>{new convertToLocalDate(Date(entry.baskets[0].sale_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' }))}</h4>
+                                    <h4>
+                                        {new Date(entry.baskets[0].sale_date).toLocaleDateString('en-US', { timeZone: 'America/New_York', weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}
+                                    </h4>                                
                                 </div>
                                 <br/>          
                                 {entry.baskets.length > 0 && (
@@ -215,15 +235,17 @@ function VendorBaskets({ vendorUserData }) {
                                     <table className='table-basket'>
                                         <thead>
                                             <tr className='blue-bright'>
-                                                <td className='text-light' colspan="2"> Is Grabbed?</td>
+                                                <td className='text-light' colSpan="2"> Is Grabbed?</td>
                                             </tr>
                                         </thead>
-                                        {entry.baskets.filter(basket => basket.is_sold).map((basket) => (
-                                            <tr>
-                                                <td>Basket ID: {basket.id}</td>
-                                                {basket.is_grabbed ? <td className='text-center'>&#10003;</td> : <td className='text-center'>X</td>}
-                                            </tr>
-                                        ))}
+                                        <tbody>
+                                            {entry.baskets.filter(basket => basket.is_sold).map((basket, index) => (
+                                                <tr key={basket.id || index}>
+                                                    <td>Basket ID: {basket.id}</td>
+                                                    {basket.is_grabbed ? <td className='text-center'>&#10003;</td> : <td className='text-center'>X</td>}
+                                                </tr>
+                                            ))}
+                                        </tbody>
                                     </table>
 
                                 )}
