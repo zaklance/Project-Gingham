@@ -198,7 +198,7 @@ def homepage():
 @app.route('/api/login', methods=['POST'])
 def login():
     # Clear other account type sessions before logging in a user
-    session.pop('vendor_user_id', None)
+    session.pop('user_id', None)
     
     data = request.get_json()
     user = User.query.filter(User.email == data['email']).first()
@@ -451,14 +451,16 @@ def all_vendors():
 
         if 'name' in data:
             vendor.name = data['name']
+        if 'product' in data:
+            vendor.product = data['product']
         if 'city' in data:
             vendor.city = data['city']
         if 'state' in data:
             vendor.state = data['state']
-        if 'locations' in data:
-            vendor.locations = data['locations']
-        if 'product' in data:
-            vendor.product = data['product']
+        if 'bio' in data:
+            vendor.bio = data['bio']
+        if 'image' in data: 
+            vendor.image = data['image']
 
         try:
             db.session.commit()
@@ -874,7 +876,7 @@ def delete_vendor_market(id):
 @app.route('/api/vendor/login', methods=['POST'])
 def vendorLogin():
     # Clear other account type sessions before logging in a vendor
-    session.pop('admin_user_id', None)
+    session.pop('vendor_user_id', None)
 
     data = request.get_json()
     vendorUser = VendorUser.query.filter(VendorUser.email == data['email']).first()
@@ -1275,16 +1277,18 @@ def handle_baskets():
                 basket.market_day_id = data['market_day_id']
             if 'sale_date' in data:
                 basket.sale_date = datetime.strptime(data['sale_date'], '%Y-%m-%d').date()
-            if 'pickup_time' in data:
-                basket.pickup_time = datetime.strptime(data['pickup_time'], '%I:%M %p')
+            if 'pickup_start' in data:
+                basket.pickup_start = datetime.strptime(data['pickup_start'], '%I:%M %p')
+            if 'pickup_end' in data:
+                basket.pickup_end = datetime.strptime(data['pickup_end'], '%I:%M %p')
             if 'is_sold' in data:
                 basket.is_sold = data['is_sold']
             if 'is_grabbed' in data:
                 basket.is_grabbed = data['is_grabbed']
             if 'price' in data:
                 basket.price = data['price']
-            if 'pickup_duration' in data:
-                basket.pickup_duration = data['pickup_duration']
+            if 'basket_value' in data: 
+                basket.basket_value = data['basket_value']
 
             db.session.commit()
             return jsonify(basket.to_dict()), 200
@@ -1450,7 +1454,7 @@ def get_vendor_sales_history():
 @app.route('/api/admin/login', methods=['POST'])
 def adminLogin():
     # Clear other account type sessions before logging in an admin
-    session.pop('vendor_user_id', None)
+    session.pop('admin_user_id', None)
 
     data = request.get_json()
     adminUser = AdminUser.query.filter(AdminUser.email == data['email']).first()
