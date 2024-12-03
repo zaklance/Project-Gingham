@@ -1,8 +1,8 @@
-"""catch up
+"""reinitialize database
 
-Revision ID: 07dfdc5ac6d3
+Revision ID: 561e5b2b4adc
 Revises: 
-Create Date: 2024-12-03 10:47:18.720526
+Create Date: 2024-12-03 15:25:54.583589
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '07dfdc5ac6d3'
+revision = '561e5b2b4adc'
 down_revision = None
 branch_labels = None
 depends_on = None
