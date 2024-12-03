@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 function VendorLocations({ vendors, vendorId, vendorUserData }) {
     const [newMarketDay, setNewMarketDay] = useState({});
@@ -33,7 +33,12 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
     
     
     const onUpdateQueryMarketDays = event => setQueryMarketDays(event.target.value);
-    const filteredQueryMarketDaysByMarket = allMarketDays.filter(marketDay => marketDay.market_id === matchingMarketId)
+    const filteredQueryMarketDaysByMarket = useMemo(() => {
+        return allMarketDays.filter(marketDay =>
+            marketDay.market_id === matchingMarketId &&
+            weekDay[marketDay.day_of_week].includes(queryMarketDays)
+        );
+    }, [allMarketDays, matchingMarketId, queryMarketDays]);
     const filteredQueryMarketDays = filteredQueryMarketDaysByMarket.filter(marketDay => weekDay[marketDay.day_of_week].includes(queryMarketDays) && weekDay[marketDay.day_of_week] !== queryMarketDays)
     const matchingMarketDay = filteredQueryMarketDays.find(marketDay => weekDay[marketDay.day_of_week] === queryMarketDays);
     const matchingMarketDayId = matchingMarketDay ? matchingMarketDay.id : null;
@@ -44,10 +49,6 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
             .then(response => response.json())
             .then(data => {
                 setAllVendorMarkets(data)
-                // if (Array.isArray(markets)) {
-                //     const marketIds = markets.map(market => market.market_day_id);
-                //     setMarkets(marketIds);
-                // }
             })
             .catch(error => console.error('Error fetching market locations:', error));
     }, [vendorId]);
@@ -66,17 +67,24 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
     }, [allVendorMarkets]);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/markets")
-            .then(response => response.json())
-            .then(data => {
+    const fetchData = async () => {
+        try {
+            const response = await fetch("http://127.0.0.1:5555/api/markets");
+            const data = await response.json();
+            setAllMarkets(data);
+            if (filteredMarketDays.length > 0) {
                 const filteredData = data.filter(item =>
                     filteredMarketDays.some(vendorMarket => vendorMarket.market_id === item.id)
                 );
-                setFilteredMarkets(filteredData)
-                setAllMarkets(data)
-            })
-            .catch(error => console.error('Error fetching market days', error));
-    }, [filteredMarketDays]);
+                setFilteredMarkets(filteredData);
+            }
+        } catch (error) {
+            console.error("Error fetching markets:", error);
+        }
+    };
+    fetchData();
+}, [filteredMarketDays]);
+
 
     useEffect(() => {
         if (allVendorMarkets.length > 0 && markets?.id) {
@@ -85,24 +93,21 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
     }, [filteredMarketDays]);
 
     useEffect(() => {
-        if (filteredQueryMarketDaysByMarket.length > 0) {
-            const firstMarketDay = filteredQueryMarketDaysByMarket[0];
-            if (newMarketDay.market_day_id !== firstMarketDay.id) {
-                setNewMarketDay({
-                    ...newMarketDay,
-                    market_day_id: firstMarketDay.id,
-                    vendor_id: parseInt(vendorId, 10),
-                });
-            }
+        if (filteredQueryMarketDaysByMarket.length > 0 && !newMarketDay.market_day_id) {
+            setNewMarketDay((prev) => ({
+                ...prev,
+                market_day_id: filteredQueryMarketDaysByMarket[0].id,
+                vendor_id: parseInt(vendorId, 10),
+            }));
         }
-    }, [filteredQueryMarketDaysByMarket, vendorId, newMarketDay]);
+    }, [filteredQueryMarketDaysByMarket, vendorId]);
 
     const handleMarketDayChange = (event) => {
-        const marketDayId = parseInt(event.target.value);
-        setNewMarketDay((prevEvent) => ({
-            ...prevEvent,
+        const marketDayId = parseInt(event.target.value, 10);
+        setNewMarketDay((prev) => ({
+            ...prev,
             market_day_id: marketDayId,
-            vendor_id: parseInt(vendorId, 10)
+            vendor_id: parseInt(vendorId, 10),
         }));
     };
 
@@ -113,53 +118,50 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
     }
 
     const handleAddVendorMarket = async () => {
-        const existingVendorMarket = allVendorMarkets.find(
-            vendorMarket => vendorMarket.vendor_id === newMarketDay.vendor_id && vendorMarket.market_day_id === newMarketDay.market_day_id
-        );
-        if (existingVendorMarket) {
-            alert('This vendor is already assigned to this market day.');
+        if (!newMarketDay.market_day_id) {
+            alert("Please select a market day.");
             return;
         }
-
+        const existingVendorMarket = allVendorMarkets.find(
+            vm => vm.vendor_id === newMarketDay.vendor_id && vm.market_day_id === newMarketDay.market_day_id
+        );
+        if (existingVendorMarket) {
+            alert("This vendor is already assigned to this market day.");
+            return;
+        }
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-markets`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+            const response = await fetch("http://127.0.0.1:5555/api/vendor-markets", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newMarketDay),
-
             });
-            console.log('Request body:', JSON.stringify(newMarketDay));
-
             if (response.ok) {
                 const updatedData = await response.json();
-                alert('Market Day successfully added')
-                console.log('Market Day data added successfully:', updatedData);
+                alert("Market Day successfully added");
+                console.log("Market Day data added successfully:", updatedData);
             } else {
-                console.log('Failed to save changes');
-                console.log('Response status;', response.status);
-                console.log('Response text:', await response.text());
+                console.error("Failed to save changes:", response.statusText);
             }
         } catch (error) {
-            console.error('Error saving changes:', error);
+            console.error("Error saving changes:", error);
         }
     };
 
     const handleMarketDayDelete = async () => {
-        try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-markets/${selectedMarketDay}`, {
-                method: "DELETE",
-            });
-            if (!response.ok) {
-                throw new Error("Failed to delete notification");
+        if (confirm(`Are you sure you want to delete the chosen Market?`)) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-markets/${selectedMarketDay}`, {
+                    method: "DELETE",
+                });
+                if (!response.ok) {
+                    throw new Error("Failed to delete notification");
+                }
+                setFilteredMarketDays((prevMarketDays) => prevMarketDays.filter((md) => md.id !== selectedMarketDay));
+            } catch (error) {
+                console.error("Error deleting notification", error);
             }
-            setFilteredMarketDays((prevMarketDays) => prevMarketDays.filter((md) => md.id !== selectedMarketDay));
-        } catch (error) {
-            console.error("Error deleting notification", error);
         }
     };
-
 
     return (
         <>
@@ -191,7 +193,12 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
                             <div className='form-group'>
                                 <label>Day of Week:</label>
                                 {filteredQueryMarketDaysByMarket.length > 0 ? (
-                                    <select id="marketSelect" name="market" onChange={(e) => handleMarketDayChange(e)}>
+                                    <select
+                                        id="marketSelect"
+                                        name="market"
+                                        value={newMarketDay.market_day_id || ""}
+                                        onChange={handleMarketDayChange}
+                                    >
                                         {filteredQueryMarketDaysByMarket.map((market, index) => (
                                             <option key={index} value={market.id}>
                                                 {weekDay[market.day_of_week]}
