@@ -252,7 +252,7 @@ function Profile({ marketData }) {
                             </select>
                             <input
                                 type="text"
-                                name="zip"
+                                name="zipcode"
                                 size="5"
                                 placeholder='Zipcode'
                                 value={tempProfileData ? tempProfileData.zipcode : ''}

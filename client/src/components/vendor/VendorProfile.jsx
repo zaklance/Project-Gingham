@@ -122,6 +122,8 @@ function VendorProfile () {
                 },
                 body: JSON.stringify(tempVendorUserData),
             });
+            console.log('Request body:', JSON.stringify(tempVendorUserData));
+
     
             if (response.ok) {
                 const updatedData = await response.json();
@@ -278,7 +280,6 @@ function VendorProfile () {
         }
     }, [locations]);
 
-    console.log(locations)
 
     return(
         <div>

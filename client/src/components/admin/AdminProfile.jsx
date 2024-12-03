@@ -5,6 +5,7 @@ function AdminProfile () {
     const { id } = useParams();
     const [editMode, setEditMode] = useState(false);
     const [adminUserData, setAdminUserData] = useState(null);
+    const [tempProfileData, setTempProfileData] = useState(null);
 
     // Function to format phone numbers
     const formatPhoneNumber = (phone) => {
@@ -69,15 +70,28 @@ function AdminProfile () {
         fetchAdminUserData();
     }, [id]);
 
-    const handleInputChange = (event) => {
-        setAdminUserData({
-            ...adminUserData,
-            [event.target.name]: event.target.value,
-        });
-    };
+    // const handleInputChange = (event) => {
+    //     setAdminUserData({
+    //         ...adminUserData,
+    //         [event.target.name]: event.target.value,
+    //     });
+    // };
 
     const handleEditToggle = () => {
+        if (!editMode) {
+            setTempProfileData({ ...adminUserData });
+        } else {
+            setTempProfileData(null);
+        }
         setEditMode(!editMode);
+    };
+
+    const handleInputChange = event => {
+        const { name, value } = event.target;
+        setTempProfileData({
+            ...tempProfileData,
+            [name]: value
+        });
     };
 
     const handleSaveChanges = async () => {
@@ -87,9 +101,9 @@ function AdminProfile () {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(adminUserData)
+                body: JSON.stringify(tempProfileData)
             });
-            console.log('Request body:', JSON.stringify(adminUserData));
+            console.log('Request body:', JSON.stringify(tempProfileData));
 
             if (response.ok) {
                 const updatedData = await response.json();
@@ -119,7 +133,7 @@ function AdminProfile () {
                                     <input
                                         type="text"
                                         name="first_name"
-                                        value={adminUserData ? adminUserData.first_name : ''}
+                                        value={tempProfileData ? tempProfileData.first_name : ''}
                                         onChange={handleInputChange}
                                     />
                                 </div>
@@ -128,7 +142,7 @@ function AdminProfile () {
                                     <input
                                         type="text"
                                         name="last_name"
-                                        value={adminUserData ? adminUserData.last_name : ''}
+                                        value={tempProfileData ? tempProfileData.last_name : ''}
                                         onChange={handleInputChange}
                                     />
                                 </div>
@@ -137,7 +151,7 @@ function AdminProfile () {
                                     <input
                                         type="email"
                                         name="email"
-                                        value={adminUserData ? adminUserData.email : ''}
+                                        value={tempProfileData ? tempProfileData.email : ''}
                                         onChange={handleInputChange}
                                     />
                                 </div>
@@ -146,7 +160,7 @@ function AdminProfile () {
                                     <input
                                         type="text"
                                         name="phone"
-                                        value={adminUserData ? adminUserData.phone : ''}
+                                        value={tempProfileData ? tempProfileData.phone : ''}
                                         onChange={handleInputChange}
                                     />
                                 </div>
@@ -159,7 +173,7 @@ function AdminProfile () {
                                     <tbody>
                                         <tr>
                                             <td className='cell-title'>Name:</td>
-                                            <td className='cell-text'>{adminUserData ? `${adminUserData.first_name} ${adminUserData.last_name}` : 'Loading...'}</td>
+                                            <td className='cell-text'>{tempProfileData ? `${adminUserData.first_name} ${adminUserData.last_name}` : 'Loading...'}</td>
                                         </tr>
                                         <tr>
                                             <td className='cell-title'>Email:</td>
