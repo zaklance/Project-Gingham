@@ -11,6 +11,7 @@ function VendorProfile () {
     const [vendorUserData, setVendorUserData] = useState(null);
     const [vendorId, setVendorId] = useState(null);
     const [tempVendorUserData, setTempVendorUserData] = useState(null);
+    const [tempVendorData, setTempVendorData] = useState(null);
     const [locations, setLocations] = useState([]);
     const [marketDetails, setMarketDetails] = useState({});
     const [vendorData, setVendorData] = useState(null);
@@ -39,7 +40,6 @@ function VendorProfile () {
         }
         return phone;
     };
-
     
     useEffect(() => {
         const fetchVendorUserData = async () => {
@@ -161,14 +161,23 @@ function VendorProfile () {
     }, [vendorUserData]);
 
     const handleVendorInputChange = (event) => {
-        setVendorData({
-            ...vendorData,
+        setTempVendorData({
+            ...tempVendorData,
             [event.target.name]: event.target.value,
         });
     };
 
     const handleVendorEditToggle = () => {
         setVendorEditMode(!vendorEditMode);
+        if (!vendorEditMode) {
+            setTempVendorData({
+                name: vendorData.name,
+                product: vendorData.product, 
+                city: vendorData.city,
+                state: vendorData.state,
+                image: vendorData.image
+            });
+        }
     };
 
     const handleSaveVendorChanges = async () => {
@@ -213,7 +222,7 @@ function VendorProfile () {
             }
         }
     
-        const updatedVendorData = { ...vendorData };
+        const updatedVendorData = { ...tempVendorData };
         if (uploadedFilename) {
             updatedVendorData.image = uploadedFilename;
         }
@@ -279,7 +288,6 @@ function VendorProfile () {
             fetchMarketDetails();
         }
     }, [locations]);
-
 
     return(
         <div>
@@ -362,7 +370,7 @@ function VendorProfile () {
                                     <input 
                                         type="text"
                                         name="name"
-                                        value={vendorData ? vendorData.name : ''}
+                                        value={tempVendorData ? tempVendorData.name : ''}
                                         onChange={handleVendorInputChange}
                                     />
                                 </div>
@@ -370,7 +378,7 @@ function VendorProfile () {
                                     <label>Product:</label>
                                     <select
                                         name="product"
-                                        value={vendorData ? vendorData.product : ''}
+                                        value={tempVendorData ? tempVendorData.product : ''}
                                         onChange={handleVendorInputChange}
                                     >
                                         <option value="">Select</option>
@@ -386,12 +394,12 @@ function VendorProfile () {
                                     <input
                                         type="text"
                                         name="city"
-                                        value={vendorData ? vendorData.city : ''}
+                                        value={tempVendorData ? tempVendorData.city : ''}
                                         onChange={handleVendorInputChange}
                                     />
                                     <select className='select-state'
                                         name="state"
-                                        value={vendorData ? vendorData.state : ''} 
+                                        value={tempVendorData ? tempVendorData.state : ''} 
                                         onChange={handleVendorInputChange}
                                     >
                                         <option value="">Select</option>
