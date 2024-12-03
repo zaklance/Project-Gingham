@@ -173,6 +173,7 @@ function VendorProfile () {
             setTempVendorData({
                 name: vendorData.name,
                 product: vendorData.product, 
+                bio: vendorData.bio,
                 city: vendorData.city,
                 state: vendorData.state,
                 image: vendorData.image
@@ -390,6 +391,16 @@ function VendorProfile () {
                                     </select>
                                 </div>
                                 <div className='form-group'>
+                                    <label>Bio:</label>
+                                    <textarea
+                                        className='textarea-edit'
+                                        type="text"
+                                        name="bio"
+                                        value={tempVendorData ? tempVendorData.bio : ''}
+                                        onChange={handleVendorInputChange}
+                                    />
+                                </div>
+                                <div className='form-group'>
                                     <label>Based out of:</label>
                                     <input
                                         type="text"
@@ -438,6 +449,10 @@ function VendorProfile () {
                                                 <tr>
                                                     <td className='cell-title'>Product:</td>
                                                     <td className='cell-text'>{vendorData ? vendorData.product : ' Loading...'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Bio:</td>
+                                                    <td className='cell-text'>{vendorData ? vendorData.bio : ' Loading...'}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className='cell-title'>Based in:</td>
