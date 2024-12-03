@@ -186,13 +186,20 @@ function VendorProfile () {
             setStatus('uploading');
             const formData = new FormData();
             formData.append('file', image);
+            formData.append('type', 'vendor');
             formData.append('vendor_id', id);
+
+            for (const [key, value] of formData.entries()) {
+                console.log(`${key}:`, value);
+            }
     
             try {
                 const result = await fetch('http://127.0.0.1:5555/api/upload', {
                     method: 'POST',
                     body: formData,
                 });
+    
+                console.log('Request Body:', formData);
     
                 if (result.ok) {
                     const data = await result.json();
