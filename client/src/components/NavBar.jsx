@@ -46,6 +46,12 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
         setIsNotifPopup(!isNotifPopup);
     }
 
+    const closePopup = () => {
+        if (isNotifPopup) {
+            setIsNotifPopup(false);
+        }
+    };
+
     return (
         <nav className="nav-bar">
             <ul>
@@ -122,6 +128,9 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                     </div>
                                 </div>
                             }
+                            {isNotifPopup && (
+                                <div className="popup-overlay" onClick={closePopup}></div>
+                            )}
                         </div>
                         <li style={{ marginLeft: 'auto' }}>
                             <NavLink className='nav-tab color-3 tab-right btn-nav' to="/user/logout">Logout</NavLink>
