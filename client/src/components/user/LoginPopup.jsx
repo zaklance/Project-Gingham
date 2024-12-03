@@ -54,8 +54,14 @@ function Login({ handlePopup }) {
             if (response.ok) {
                 const data = await response.json();
     
+                // Clear any existing admin or vendor_user session data
+                globalThis.localStorage.removeItem('admin_user_id');
+                globalThis.localStorage.removeItem('vendor_user_id');
+                globalThis.localStorage.removeItem('admin_jwt-token');
+                globalThis.localStorage.removeItem('vendor_jwt-token');
+
                 // Store token and user info in localStorage
-                globalThis.localStorage.setItem('jwt-token', data.access_token);
+                globalThis.localStorage.setItem('user_jwt-token', data.access_token);
                 globalThis.localStorage.setItem('user_id', data.user_id);
     
                 // Start the logout timer
