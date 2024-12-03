@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useOutletContext, useNavigate } from 'react-router-dom';
+import { useParams, Link, useOutletContext, useNavigate, useLocation } from 'react-router-dom';
 import MarketCard from './MarketCard';
 import ReviewVendor from './ReviewVendor';
 
-
-function VendorDetail () {
+function VendorDetail ({ products }) {
     const { id } = useParams();
     
     const [vendor, setVendor] = useState(null);
@@ -17,9 +16,6 @@ function VendorDetail () {
     const [hoveredMarket, setHoveredMarket] = useState(null);
     const [events, setEvents] = useState([]);
     const [marketBaskets, setMarketBaskets] = useState([]);
-    
-    // To be deleted after baskets state is moved to BasketCard
-    // const [price, setPrice] = useState(5.00);
 
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
@@ -28,6 +24,8 @@ function VendorDetail () {
     const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
     const navigate = useNavigate();
+    const location = useLocation();
+    const { selectedProduct } = location.state || {};
 
     function timeConverter(time24) {
         const date = new Date(`1970-01-01T${time24}Z`); // Add 'Z' to indicate UTC
@@ -116,7 +114,6 @@ function VendorDetail () {
         fetchMarketDetails();
     }, [markets]);
 
-
     const handleAddToCart = (marketDay) => {
         const basketInCart = marketBaskets.find(
             item => item.market_day_id === marketDay.id && item.is_sold === false
@@ -135,7 +132,6 @@ function VendorDetail () {
             alert("Sorry, all baskets are sold out!");
         }
     };
-
 
     // const handleAddToCart = (marketId) => {
     //     if (marketBaskets[marketId] > 0) {
@@ -156,13 +152,22 @@ function VendorDetail () {
         console.log("Cart items:", cartItems);
     }, [amountInCart, cartItems]);
 
+    useEffect(() => {
+        console.log("Selected Product in VendorDetail:", selectedProduct);
+    }, [selectedProduct]);
+
     const handleBackButtonClick = () => {
-        navigate('/user/vendors');
+        if (selectedProduct) {
+            navigate('/user/vendors', { state: { selectedProduct } });
+        } else {
+            console.log("Selected Product is undefined");
+            navigate('/user/vendors');
+        }
     };
 
-    // const handleMarketChange = (event) => {
-    //     setSelectedVendor(parseInt(event.target.value));
-    // };
+    useEffect(() => {
+        console.log("Products passed to VendorDetail:", products);
+    }, [products]);
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/vendor-favorites?user_id=${userId}`)
@@ -329,8 +334,6 @@ function VendorDetail () {
                             <div 
                                 key={index} 
                                 className="market-item"
-                                // onMouseEnter={() => setHoveredMarket(marketId)}
-                                // onMouseLeave={() => setHoveredMarket(null)}
                             >
                                 <span>
                                     <Link to={`/user/markets/${marketId}`} className="market-name">
@@ -370,7 +373,6 @@ function VendorDetail () {
                                 {hoveredMarket === marketId && (
                                     <div className='market-card-popup'>
                                         <MarketCard marketData={marketId} />
-                                        {/* Why isnt the other info populating?!? */}
                                     </div>
                                 )}
                             </div>

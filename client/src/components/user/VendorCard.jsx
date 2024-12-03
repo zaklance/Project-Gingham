@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../assets/css/index.css';
 
-function VendorCard({ vendorData }) {
+function VendorCard({ vendorData, selectedProduct }) {
     const navigate = useNavigate();
 
     const handleLearnMore = () => {
-        navigate(`/user/vendors/${vendorData.id}`);
+        navigate(`/user/vendors/${vendorData.id}`, { state: { selectedProduct } });
     };
 
     return (
