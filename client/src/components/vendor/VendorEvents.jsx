@@ -47,6 +47,12 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
     };
 
     const handleSaveNewEvent = async () => {
+
+        if (newEvent.title && newEvent.title.length > 24) {
+            alert('Title cannot exceed 24 characters.');
+            return;
+        }
+
         try {
             console.log(newEvent);
             // Save market details first
