@@ -473,7 +473,7 @@ ul {
 }
 
 .flex-bottom-align {
-  /* align-items: baseline; */
+  align-items: baseline;
   align-self: baseline;
   align-content: baseline;
 }
@@ -489,6 +489,10 @@ ul {
 
 .flex-column{
   flex-direction: column;
+}
+
+.flex-gap-8 {
+  gap: 8px;
 }
 
 .flex-gap-16 {
