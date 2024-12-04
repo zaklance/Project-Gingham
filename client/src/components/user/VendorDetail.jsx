@@ -259,8 +259,6 @@ function VendorDetail({ products }) {
             .catch((error) => console.error('Error fetching market baskets', error));
     }, [vendor]);
 
-    console.log(marketDetails)
-
 
     if (!vendor) {
         return <div>Loading...</div>;
