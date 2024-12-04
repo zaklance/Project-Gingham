@@ -1278,12 +1278,10 @@ def handle_baskets():
             if sale_date_str:
                 try:
                     sale_date = datetime.fromisoformat(sale_date_str.replace('Z', '+00:00'))
-                    
                     if sale_date.tzinfo is None:
                         sale_date = sale_date.replace(tzinfo=timezone.utc)
-
-                    target_tz = pytz.timezone('America/New_York')
-                    sale_date = sale_date.astimezone(target_tz)
+                    else:
+                        sale_date = sale_date.astimezone(timezone.utc)
                 except ValueError:
                     return jsonify({'error': 'Invalid sale_date format. Expected ISO 8601 date-time.'}), 400
             else:
@@ -1440,14 +1438,17 @@ def handle_basket_by_id(id):
 def handle_todays_baskets():
     try:
         local_tz = pytz.timezone('America/New_York')
-
         now = datetime.now(local_tz)
         today = now.date()
 
         vendor_id = request.args.get('vendor_id', type=int)
 
+        start_of_day = local_tz.localize(datetime.combine(today, time(0, 0, 0)))
+        end_of_day = local_tz.localize(datetime.combine(today, time(23, 59, 59)))
+
         baskets = db.session.query(Basket).filter(
-            Basket.sale_date == today,
+            Basket.sale_date >= start_of_day,
+            Basket.sale_date <= end_of_day,
             Basket.vendor_id == vendor_id
         ).all()
 
