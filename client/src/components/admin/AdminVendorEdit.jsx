@@ -4,6 +4,8 @@ function AdminVendorEdit({ vendors }) {
     const [query, setQuery] = useState("");
     const [editMode, setEditMode] = useState(false);
     const [vendorData, setVendorData] = useState(null);
+    const [image, setImage] = useState(null);
+    const [status, setStatus] = useState('initial');
 
     const products = [
         'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 
@@ -57,6 +59,37 @@ function AdminVendorEdit({ vendors }) {
         fetchVendorData();
     }, [matchingVendorId]);
 
+    const handleImageUpload = async (vendorId) => {
+        if (!image) return;
+    
+        const formData = new FormData();
+        formData.append('file', image);
+        formData.append('type', 'vendor');
+        formData.append('vendor_id', vendorId);
+    
+        try {
+            const response = await fetch('http://127.0.0.1:5555/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                setVendorData((prevData) => ({
+                    ...prevData,
+                    image: data.filename,
+                }));
+                setStatus('success');
+            } else {
+                setStatus('fail');
+                console.error('Failed to upload image:', await response.text());
+            }
+        } catch (error) {
+            setStatus('fail');
+            console.error('Error uploading image:', error);
+        }
+    };
+
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setVendorData({
@@ -74,36 +107,34 @@ function AdminVendorEdit({ vendors }) {
             const response = await fetch(`http://127.0.0.1:5555/api/vendors/${matchingVendorId}`, {
                 method: 'PATCH',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(vendorData),
-
             });
-            console.log('Request body:', JSON.stringify(vendorData));
-
+    
             if (response.ok) {
                 const updatedData = await response.json();
                 setVendorData(updatedData);
                 setEditMode(false);
-                console.log('Market data updated successful:', updatedData);
-                window.location.reload();
+                alert('Vendor details updated successfully.');
+    
+                if (image) {
+                    await handleImageUpload(matchingVendorId);
+                }
             } else {
-                console.log('Failed to save changes');
-                console.log('Response status;', response.status);
-                console.log('Response text:', await response.text());
+                console.error('Failed to save vendor details:', await response.text());
             }
         } catch (error) {
-            console.error('Error saving changes:', error);
+            console.error('Error saving vendor details:', error);
         }
     };
 
     const handleFileChange = (event) => {
         if (event.target.files) {
-            setStatus('initial');
             setImage(event.target.files[0]);
+            setStatus('initial');
         }
-    }
-
+    };
 
     return (
         <>
@@ -206,7 +237,15 @@ function AdminVendorEdit({ vendors }) {
                                 <tbody>
                                     <tr>
                                         <td className='cell-title'>Image:</td>
-                                        <td className='cell-text'>{vendorData ? <img className='img-market' src={`/vendor-images/${vendorData.image}`} alt="Market Image" /> : ''}</td>
+                                        <td className='cell-text'>
+                                            {vendorData ? (
+                                                <img
+                                                    className='img-market'
+                                                    src={`/vendor-images/${vendorData.image}`}
+                                                    alt="Vendor Image"
+                                                />
+                                            ) : ''}
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title'>Name:</td>
