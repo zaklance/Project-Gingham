@@ -65,22 +65,43 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         }
     }, [matchingMarketId]);
 
+    const handleImageUpload = async (marketId) => {
+        if (!image) return;
+    
+        const formData = new FormData();
+        formData.append('file', image);
+        formData.append('type', 'market'); // Indicate it's a market image
+        formData.append('market_id', marketId);
+    
+        try {
+            const response = await fetch('http://127.0.0.1:5555/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                setAdminMarketData((prevData) => ({
+                    ...prevData,
+                    image: data.filename, // Update the image in the state
+                }));
+                setStatus('success');
+            } else {
+                setStatus('fail');
+                console.error('Failed to upload image:', await response.text());
+            }
+        } catch (error) {
+            setStatus('fail');
+            console.error('Error uploading image:', error);
+        }
+    };
+
     const handleInputChange = (event) => {
         const { name, value } = event.target;
-        if (name === 'coordinates_lat' || name === 'coordinates_lng') {
-            setAdminMarketData(prevData => ({
-                ...prevData,
-                coordinates: {
-                    ...prevData.coordinates, // Keep other coordinate values intact
-                    [name === 'coordinates_lat' ? 'lat' : 'lng']: value
-                }
-            }));
-        } else {
-            setAdminMarketData({
-                ...adminMarketData,
-                [name]: value
-            });
-        }
+        setAdminMarketData((prevData) => ({
+            ...prevData,
+            [name]: value, // Handles date fields like season_start and season_end
+        }));
     };
 
     const handleInputMarketDayChange = (event) => {
@@ -110,28 +131,25 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
             const response = await fetch(`http://127.0.0.1:5555/api/markets/${matchingMarketId}`, {
                 method: 'PATCH',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(adminMarketData),
-
             });
-            console.log('Request body:', JSON.stringify(adminMarketData));
-
+    
             if (response.ok) {
                 const updatedData = await response.json();
                 setAdminMarketData(updatedData);
                 setEditMode(false);
-                alert('Market successfully updated')
-                console.log('Market data updated successful:', updatedData);
-                // window.location.reload();
+                alert('Market details updated successfully.');
+    
+                if (image) {
+                    await handleImageUpload(matchingMarketId);
+                }
             } else {
-                console.log('Failed to save changes');
-                console.log('Response status;', response.status);
-                console.log('Response text:', await response.text());
-                window.location.reload();
+                console.error('Failed to save market details:', await response.text());
             }
         } catch (error) {
-            console.error('Error saving changes:', error);
+            console.error('Error saving market changes:', error);
         }
     };
 
@@ -164,10 +182,10 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
 
     const handleFileChange = (event) => {
         if (event.target.files) {
-            setStatus('initial');
             setImage(event.target.files[0]);
+            setStatus('initial');
         }
-    }
+    };
 
     
     return(
@@ -261,22 +279,20 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 />
                             </div>
                             <div className='form-group'>
-                                <label title="yyyy-mm-dd">Season Start:</label>
+                                <label>Season Start:</label>
                                 <input
-                                    type="text"
+                                    type="date"
                                     name="season_start"
-                                    placeholder='yyyy-mm-dd if Year Round is False'
-                                    value={adminMarketData ? adminMarketData.season_start : ''}
+                                    value={adminMarketData?.season_start || ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
                             <div className='form-group'>
-                                <label title="yyyy-mm-dd">Season End:</label>
+                                <label>Season End:</label>
                                 <input
-                                    type="text"
+                                    type="date"
                                     name="season_end"
-                                    placeholder='yyyy-mm-dd if Year Round is False'
-                                    value={adminMarketData ? adminMarketData.season_end : ''}
+                                    value={adminMarketData?.season_end || ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
