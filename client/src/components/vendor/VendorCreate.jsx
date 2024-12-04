@@ -71,7 +71,7 @@ function VendorCreate () {
             }
     
             try {
-                const token = localStorage.getItem('jwt-token');
+                const token = localStorage.getItem('vendor_jwt-token');
                 const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${id}`, {
                     method: 'GET',
                     headers: {
@@ -172,7 +172,7 @@ function VendorCreate () {
                 vendor_id: vendorId,
             };
 
-            const token = localStorage.getItem('jwt-token');
+            const token = localStorage.getItem('vendor_jwt-token');
             if (!token) {
                 alert('Authorization token is missing. Please log in.');
                 return;
@@ -210,7 +210,7 @@ function VendorCreate () {
             return;
         }
     
-        const token = localStorage.getItem('jwt-token');
+        const token = localStorage.getItem('vendor_jwt-token');
         if (!token) {
             alert('Authorization token is missing. Please log in.');
             return;
@@ -247,7 +247,7 @@ function VendorCreate () {
     };
     
     const handleCancelRequest = async () => {
-        const token = localStorage.getItem('jwt-token');
+        const token = localStorage.getItem('vendor_jwt-token');
         if (!notifications) {
             console.error("No notifications found to cancel.");
             alert("No pending requests to cancel.");
@@ -292,7 +292,7 @@ function VendorCreate () {
         if (!vendorUserId) return;
 
         const fetchNotifications = async () => {
-            const token = localStorage.getItem('jwt-token');;
+            const token = localStorage.getItem('vendor_jwt-token');;
             if (!token) {
                 console.error("Token missing");
                 setIsLoading(false);
