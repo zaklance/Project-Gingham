@@ -126,7 +126,8 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         setEditDayMode(!editDayMode);
     };
 
-    const handleSaveChanges = async () => {
+    const handleSaveChanges = async (event) => {
+        event.preventDefault();
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/markets/${matchingMarketId}`, {
                 method: 'PATCH',
@@ -153,7 +154,8 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         }
     };
 
-    const handleSaveDayChanges = async () => {
+    const handleSaveDayChanges = async (event) => {
+        event.preventDefault();
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/market-days/${selectedDay.id}`, {
                 method: 'PATCH',
