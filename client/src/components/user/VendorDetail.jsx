@@ -16,7 +16,9 @@ function VendorDetail({ products }) {
     const [hoveredMarket, setHoveredMarket] = useState(null);
     const [events, setEvents] = useState([]);
     const [marketBaskets, setMarketBaskets] = useState([]);
+    
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
+    
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const isUserLoggedIn = userId;
 
@@ -313,7 +315,7 @@ function VendorDetail({ products }) {
                         <div className='button-container flex-start flex-center-align nowrap'>
                             <button 
                                 className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
-                                onClick={handleClick}> &#9829;
+                                onClick={handleClick}>&#9829;
                             </button>
                             {showAlert && (
                                 <div className='alert-favorites nowrap'>
