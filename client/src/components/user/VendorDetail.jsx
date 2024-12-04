@@ -267,7 +267,10 @@ function VendorDetail({ products }) {
     return (
         <div>
             <div className='flex-space-between'>
-                <h2>{vendor.name}</h2>
+                <div className='flex-start flex-gap-8 flex-bottom-align'>
+                    <h2>{vendor.name},</h2>
+                    
+                </div>
                 <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Vendors</button>
             </div>
             <div className={events.length < 1 ? 'flex-start flex-start-align flex-gap-16' : 'flex-start flex-gap-16'}>
@@ -304,9 +307,8 @@ function VendorDetail({ products }) {
                     <img className='img-vendor' src={`/vendor-images/${vendor.image}`} alt="Vendor Image"/>
                 </div>
                 <div className='side-basket'>
-                    <h2 className='margin-t-16'>Vendor Bio</h2>
-                    <p className='margin-t-16'>{vendor.bio}</p>
-                    <div className='flex-start margin-t-16'>
+                    <h3 className='margin-t-8'>Product: {vendor.product}</h3>
+                    <div className='flex-start'>
                         <h4 className='nowrap'>Based out of: {vendor.city}, {vendor.state}</h4>
                         <div className='button-container flex-start flex-center-align nowrap'>
                             <button 
@@ -320,6 +322,8 @@ function VendorDetail({ products }) {
                             )}
                         </div>
                     </div>
+                    <h2 className='margin-t-16'>Vendor Bio</h2>
+                    <p className='margin-t-8'>{vendor.bio}</p>
                 </div>
             </div>
             <div>
