@@ -335,14 +335,14 @@ function MarketDetail ({ match }) {
                 </div>
             </div>
             <p>{market.description}</p>
-            <div className='flex-start market-details'>
+            <div className='flex-start market-details margin-t-8'>
                 <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}
                 </a></h4>
                 <div className='flex-start'>
                     <button
                         className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
-                        onClick={handleClick}> ❤️ </button>
+                        onClick={handleClick}>&#9829;</button>
                     {showAlert && (
                         <div className={`alert-favorites ${!showAlert ? 'alert-favorites-hidden' : ''}`}>
                             {alertMessage}
