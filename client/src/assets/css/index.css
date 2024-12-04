@@ -116,8 +116,10 @@ header {
 
 .header {
   /* background-color: #d8f4fe; */
-  width: 90%;
-  margin: 0 20px 20px 20px;
+  width: 100%;
+  /* margin: 0 20px 20px 20px; */
+  padding-left: 36px;
+  padding-right: 36px;
 }
 
 .logo {
@@ -473,7 +475,7 @@ ul {
 }
 
 .flex-bottom-align {
-  /* align-items: baseline; */
+  align-items: baseline;
   align-self: baseline;
   align-content: baseline;
 }
@@ -489,6 +491,10 @@ ul {
 
 .flex-column{
   flex-direction: column;
+}
+
+.flex-gap-8 {
+  gap: 8px;
 }
 
 .flex-gap-16 {
@@ -788,7 +794,7 @@ ul {
   color: #ff4b5a;
 }
 
-.btn-like:hover {
+.btn-like:hover, .btn-fav-filter:hover {
   /* padding: 10px 12px; */
   border-radius: 8px;
   border: none;
@@ -797,8 +803,9 @@ ul {
   transition: .2s;
 }
 
-.btn-like:active {
+.btn-like:active, .btn-fav-filter:active {
   background-color: #ff4b5a;
+  transition: .1s;
 }
 
 .btn-like-on {
@@ -809,14 +816,35 @@ ul {
   border-radius: 8px;
   border: none;
   background-color: #ff7b8a;
-  color: #ffd1d8;
+  color: #ff4b5a;
 }
 
-.btn-like-on:hover {
+.btn-like-on:hover, .btn-fav-filter-on:hover {
   background-color: #ffd1d8;
   transition: .2s;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
   color: #ff4b5a ;
+}
+
+.btn-fav-filter {
+  height: 48px;
+  width: 48px;
+  font-size: 1.1em;;
+  border-radius: 12px;
+  border: none;
+  background-color: #ffd1d8;
+  color: #ff4b5a;
+}
+
+.btn-fav-filter-on {
+  height: 48px;
+  width: 48px;
+  font-size: 1.1em;
+  /* padding: 10px 12px; */
+  border-radius: 12px;
+  border: none;
+  background-color: #ff7b8a;
+  color: #ff4b5a;
 }
 
 .x-btn {
@@ -1323,6 +1351,13 @@ link {
   word-wrap: break-word;
 }
 
+.cell-filter {
+  padding: 4px 12px;
+  font-size: 1em;
+  font-weight: 600;
+  background-color: #eee;
+}
+
 .cell-text input {
   border-radius: 8px;
   border: none;
@@ -1330,6 +1365,9 @@ link {
   border-width: 1px; */
 }
 
+.table-search {
+  min-width: 100%
+}
 
 .table-rect>label, .table-rect>input {
   border-radius: 0 !important;
@@ -1407,6 +1445,11 @@ select:hover {
 
 .select-state {
   width: fit-content;
+}
+
+.select-filter {
+  border-radius: 12px;
+  height: 48px
 }
 
 .form-group .select-state {

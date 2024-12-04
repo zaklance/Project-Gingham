@@ -16,7 +16,9 @@ function VendorDetail({ products }) {
     const [hoveredMarket, setHoveredMarket] = useState(null);
     const [events, setEvents] = useState([]);
     const [marketBaskets, setMarketBaskets] = useState([]);
+    
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
+    
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const isUserLoggedIn = userId;
 
@@ -259,8 +261,6 @@ function VendorDetail({ products }) {
             .catch((error) => console.error('Error fetching market baskets', error));
     }, [vendor]);
 
-    console.log(marketDetails)
-
 
     if (!vendor) {
         return <div>Loading...</div>;
@@ -269,7 +269,10 @@ function VendorDetail({ products }) {
     return (
         <div>
             <div className='flex-space-between'>
-                <h2>{vendor.name}</h2>
+                <div className='flex-start flex-gap-8 flex-bottom-align'>
+                    <h2>{vendor.name},</h2>
+                    
+                </div>
                 <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Vendors</button>
             </div>
             <div className={events.length < 1 ? 'flex-start flex-start-align flex-gap-16' : 'flex-start flex-gap-16'}>
@@ -306,14 +309,13 @@ function VendorDetail({ products }) {
                     <img className='img-vendor' src={`/vendor-images/${vendor.image}`} alt="Vendor Image"/>
                 </div>
                 <div className='side-basket'>
-                    <h2 className='margin-t-16'>Vendor Bio</h2>
-                    <p className='margin-t-16'>{vendor.bio}</p>
-                    <div className='flex-start margin-t-16'>
+                    <h3 className='margin-t-8'>Product: {vendor.product}</h3>
+                    <div className='flex-start'>
                         <h4 className='nowrap'>Based out of: {vendor.city}, {vendor.state}</h4>
                         <div className='button-container flex-start flex-center-align nowrap'>
                             <button 
                                 className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
-                                onClick={handleClick}> &#9829;
+                                onClick={handleClick}>&#9829;
                             </button>
                             {showAlert && (
                                 <div className='alert-favorites nowrap'>
@@ -322,6 +324,8 @@ function VendorDetail({ products }) {
                             )}
                         </div>
                     </div>
+                    <h2 className='margin-t-16'>Vendor Bio</h2>
+                    <p className='margin-t-8'>{vendor.bio}</p>
                 </div>
             </div>
             <div>
