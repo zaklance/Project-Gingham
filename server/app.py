@@ -302,27 +302,45 @@ def all_markets():
     if request.method == 'GET':
         markets = Market.query.all()
         return jsonify([market.to_dict() for market in markets]), 200
+    
     elif request.method == 'POST':
         data = request.get_json()
+
+        # Parse season_start and season_end as optional dates
         season_start = None
         if data.get('season_start'):
-            season_start = datetime.strptime(data.get('season_start'), '%Y-%m-%d').date()
+            try:
+                season_start = datetime.strptime(data['season_start'], '%Y-%m-%d').date()
+            except ValueError:
+                return {'error': 'Invalid date format for season_start'}, 400
+        
         season_end = None
         if data.get('season_end'):
-            season_end = datetime.strptime(data.get('season_end'), '%Y-%m-%d').date()
+            try:
+                season_end = datetime.strptime(data['season_end'], '%Y-%m-%d').date()
+            except ValueError:
+                return {'error': 'Invalid date format for season_end'}, 400
 
+        # Create a new Market object
         new_market = Market(
-            name=data['name'],
-            location=data['location'],
-            zipcode=data['zipcode'],
-            coordinates={"lat": data.get('coordinates_lat'), "lng": data.get('coordinates_lng')},
-            schedule=data['schedule'],
-            year_round=data['year_round'],
+            name=data.get('name'),
+            location=data.get('location'),
+            zipcode=data.get('zipcode'),
+            coordinates=data.get('coordinates'),
+            schedule=data.get('schedule'),
+            year_round=data.get('year_round'),
             season_start=season_start,
             season_end=season_end
         )
-        db.session.add(new_market)
-        db.session.commit()
+
+        # Add to database
+        try:
+            db.session.add(new_market)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Failed to create market: {str(e)}'}, 500
+
         return new_market.to_dict(), 201
 
 @app.route('/api/markets/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
