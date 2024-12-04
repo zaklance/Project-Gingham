@@ -11,7 +11,7 @@ function VendorLogout () {
         })
         .then(() => {
             globalThis.localStorage.removeItem('vendor_user_id');
-            globalThis.localStorage.removeItem('jwt-token');
+            globalThis.localStorage.removeItem('vendor_jwt-token');
             navigate('/vendor/home')
         })
         .catch((error) => {
