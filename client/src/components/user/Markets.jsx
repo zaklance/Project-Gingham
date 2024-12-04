@@ -7,7 +7,24 @@ import { APIProvider, Map, Marker, AdvancedMarker, Pin } from '@vis.gl/react-goo
 
 function Markets() {
     const [markets, setMarkets] = useState([]);
+    const [query, setQuery] = useState("");
+    const [marketFavs, setMarketFavs] = useState([]);
+    const [isClicked, setIsClicked] = useState(false);
 
+    const userId = parseInt(globalThis.localStorage.getItem('user_id'));
+
+    
+    const onUpdateQuery = event => setQuery(event.target.value);
+    const filteredMarkets = markets.filter(market =>
+        market.name.toLowerCase().includes(query.toLowerCase()) &&
+        market.name !== query &&
+        (!isClicked || marketFavs.some(marketFavs => marketFavs.market_id === market.id)) // Filter by favVendors only when isClicked is true
+    );
+    const matchingMarket = markets.find(market => market.name.toLowerCase() === query.toLowerCase());
+    const matchingMarketId = matchingMarket ? matchingMarket.id : null;
+    
+    console.log(filteredMarkets)
+    
     function timeConverter(time24) {
         const date = new Date('1970-01-01T' + time24);
 
@@ -106,24 +123,61 @@ function Markets() {
         }
     }, [markets]);
 
+    useEffect(() => {
+        fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`)
+            .then(response => response.json())
+            .then(data => { setMarketFavs(data) })
+            .catch(error => console.error('Error fetching market favorites', error));
+    }, []);
+
+    const handleClick = (event) => {
+        setIsClicked((isClick) => !isClick);
+    }
+
     return (
         <>
         <div className="markets-container">
-            <div id='map'>
-                <APIProvider apiKey={import.meta.env.VITE_GOOGLE_KEY} onLoad={() => console.log('Maps API has loaded.')}>
-                    <Map defaultCenter={unionSquare} defaultZoom={13} mapId={import.meta.env.VITE_GOOGLE_MAP_ID}>
-                        {/* {markets.map((marketData) => (
-                            <AdvancedMarkerCard key={marketData.id} marketData={marketData} />
-                        ))}  */}
-                    </Map>
-                </APIProvider>
-                {/* <gmp-map defaultCenter={unionSquare} zoom={13} map-id="DEMO_MAP_ID">
-                        <gmp-advanced-marker position={unionSquare} title="Union Square"></gmp-advanced-marker>
-                </gmp-map> */}
+            <div className='header'>
+                <div id='map'>
+                    <APIProvider apiKey={import.meta.env.VITE_GOOGLE_KEY} onLoad={() => console.log('Maps API has loaded.')}>
+                        <Map defaultCenter={unionSquare} defaultZoom={13} mapId={import.meta.env.VITE_GOOGLE_MAP_ID}>
+                            {/* {markets.map((marketData) => (
+                                <AdvancedMarkerCard key={marketData.id} marketData={marketData} />
+                            ))}  */}
+                        </Map>
+                    </APIProvider>
+                    {/* <gmp-map defaultCenter={unionSquare} zoom={13} map-id="DEMO_MAP_ID">
+                            <gmp-advanced-marker position={unionSquare} title="Union Square"></gmp-advanced-marker>
+                    </gmp-map> */}
+                </div>
+                <table className='table-search margin-t-24'>
+                    <tbody>
+                        <tr>
+                            <td className='cell-title'>Search:</td>
+                            <td className='cell-text'>
+                                <input id='search' className="search-bar" type="text" placeholder="Search vendors..." value={query} onChange={onUpdateQuery} />
+                                <div className="dropdown-content">
+                                    {
+                                        query &&
+                                            filteredMarkets.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => setQuery(item.name)}>
+                                                {item.name}
+                                        </div>)
+                                    }
+                                </div>
+                            </td>
+                            <td className='cell-text cell-filter'>Filters: </td>
+                            <td>
+                                <button
+                                    className={`btn-fav-filter ${isClicked ? 'btn-fav-filter-on' : ''}`}
+                                    onClick={handleClick}>&#9829;
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <br />
-            <div className="market-cards-container box-scroll-large">
-                {markets.map((marketData) => (
+            <div className="market-cards-container box-scroll-large margin-t-24">
+                {filteredMarkets.map((marketData) => (
                     <MarketCard key={marketData.id} marketData={marketData} />
                 ))}
             </div>
