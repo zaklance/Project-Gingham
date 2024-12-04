@@ -55,7 +55,8 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
             .catch(error => console.error('Error fetching market days', error));
     }, [matchingMarketId]);
 
-    const handleDelete = async () => {
+    const handleDelete = async (event) => {
+        event.preventDefault();
         if (confirm(`Are you sure you want to delete ${matchingMarket.name} and all its associated days?`)) {
             const token = localStorage.getItem('admin_jwt-token');
 
@@ -131,11 +132,11 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
                         </tr>
                         <tr>
                             <td className='cell-title'>Latitude:</td>
-                            <td className='cell-text'>{adminMarketData ? adminMarketData.coordinates.lat : ''}</td>
+                            <td className='cell-text'>{adminMarketData?.coordinates?.lat || ''}</td>
                         </tr>
                         <tr>
                             <td className='cell-title'>Longitude:</td>
-                            <td className='cell-text'>{adminMarketData ? adminMarketData.coordinates.lng : ''}</td>
+                            <td className='cell-text'>{adminMarketData?.coordinates?.lng || ''}</td>
                         </tr>
                         <tr>
                             <td className='cell-title' title="Day ( # a.m. - # p.m.)">Schedule:</td>
