@@ -306,7 +306,6 @@ def all_markets():
     elif request.method == 'POST':
         data = request.get_json()
 
-        # Parse season_start and season_end as optional dates
         season_start = None
         if data.get('season_start'):
             try:
@@ -321,7 +320,6 @@ def all_markets():
             except ValueError:
                 return {'error': 'Invalid date format for season_end'}, 400
 
-        # Create a new Market object
         new_market = Market(
             name=data.get('name'),
             location=data.get('location'),
@@ -333,7 +331,6 @@ def all_markets():
             season_end=season_end
         )
 
-        # Add to database
         try:
             db.session.add(new_market)
             db.session.commit()
@@ -345,42 +342,50 @@ def all_markets():
 
 @app.route('/api/markets/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def market_by_id(id):
-    market = Market.query.filter(Market.id == id).first()
+    market = Market.query.get(id)
     if not market:
-        return {'error': 'market not found'}, 404
+        return {'error': 'Market not found'}, 404
+
     if request.method == 'GET':
         return market.to_dict(), 200
+
     elif request.method == 'PATCH':
-        market = Market.query.filter_by(id=id).first()
-        if not market:
-            return {'error': 'user not found'}, 404
+        data = request.get_json()
+
         try:
-            data = request.get_json()
-            # for key, value in data.items():
-            #     setattr(user, key, value)
-            market.name = data.get('name')
-            market.image = data.get('image')
-            market.location = data.get('location')
-            market.zipcode = data.get('zipcode')
-            market.coordinates = {
-                "lat": data.get('coordinates', {}).get('lat'),
-                "lng": data.get('coordinates', {}).get('lng')
-            }
-            market.schedule = data.get('schedule')
-            market.year_round = data.get('year_round')
-            if data.get('season_start'):
-                market.season_start = datetime.strptime(data.get('season_start'), '%Y-%m-%d').date()
-            if data.get('season_end'):
-                market.season_end = datetime.strptime(data.get('season_end'), '%Y-%m-%d').date()            
+            if 'name' in data:
+                market.name = data['name']
+            if 'image' in data:
+                market.image = data['image']
+            if 'location' in data:
+                market.location = data['location']
+            if 'zipcode' in data:
+                market.zipcode = data['zipcode']
+            if 'coordinates' in data:
+                market.coordinates = data['coordinates']
+            if 'schedule' in data:
+                market.schedule = data['schedule']
+            if 'year_round' in data:
+                market.year_round = data['year_round']
+            if 'season_start' in data:
+                market.season_start = datetime.strptime(data['season_start'], '%Y-%m-%d').date()
+            if 'season_end' in data:
+                market.season_end = datetime.strptime(data['season_end'], '%Y-%m-%d').date()
+            
             db.session.commit()
             return market.to_dict(), 200
         except Exception as e:
             db.session.rollback()
             return {'error': str(e)}, 500
+
     elif request.method == 'DELETE':
-        db.session.delete(market)
-        db.session.commit()
-        return {}, 204
+        try:
+            db.session.delete(market)
+            db.session.commit()
+            return {}, 204
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
 
 @app.route('/api/market-days', methods=['GET', 'POST', 'DELETE'])
 def all_market_days():
@@ -1215,6 +1220,7 @@ def all_events():
         except Exception as e:
             app.logger.error(f'Error fetching events: {e}')  
             return {'error': f'Exception: {str(e)}'}, 500
+        
     elif request.method == 'POST':
         data = request.get_json()
         print("Received data:", data)

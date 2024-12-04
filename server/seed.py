@@ -1137,7 +1137,7 @@ def run():
     
     last_month = randint(0, 4)
     few_days = 14
-    date_start = (datetime.now(timezone.utc) - timedelta(days=last_month)).date()
+    date_start = (datetime.now() - timedelta(days=last_month)).date()
     date_end = date_start + timedelta(days=few_days)
 
     holiday = Event(
@@ -1168,9 +1168,8 @@ def run():
             rand_vendor = None
         last_month = randint(0, 31)
         few_days = randint(0, 14)
-        date_start = (datetime.now(timezone.utc) - timedelta(days=last_month)).date()
+        date_start = (datetime.now() - timedelta(days=last_month)).date()
         date_end = date_start + timedelta(days=few_days)
-
 
         title = fake.sentence(nb_words=heading)
         message = fake.paragraph(nb_sentences=msg_len)
@@ -1178,7 +1177,6 @@ def run():
         vendor_id = rand_vendor
         start_date = date_start
         end_date = date_end
-
         
         ev = Event(
             title=title,
@@ -1192,7 +1190,6 @@ def run():
 
     db.session.add_all(events)
     db.session.commit()
-
 
     user_notifs = []
 

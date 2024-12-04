@@ -1,8 +1,8 @@
-"""reinitialize
+"""reinitialize database
 
-Revision ID: 4f8cadf46ae0
+Revision ID: a8373871f5af
 Revises: 
-Create Date: 2024-12-04 14:55:04.297045
+Create Date: 2024-12-04 18:28:37.990159
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '4f8cadf46ae0'
+revision = 'a8373871f5af'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -34,7 +34,7 @@ def upgrade():
     sa.Column('image', sa.String(), nullable=True),
     sa.Column('location', sa.String(), nullable=False),
     sa.Column('zipcode', sa.String(), nullable=True),
-    sa.Column('coordinates', sa.JSON(), nullable=False),
+    sa.Column('coordinates', sa.JSON(), nullable=True),
     sa.Column('schedule', sa.String(), nullable=True),
     sa.Column('year_round', sa.Boolean(), nullable=True),
     sa.Column('season_start', sa.Date(), nullable=True),
