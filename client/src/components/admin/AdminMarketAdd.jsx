@@ -26,10 +26,22 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
     }, [matchingMarketId]);
 
     const handleInputMarketChange = (event) => {
-        setNewMarket({
-            ...newMarket,
-            [event.target.name]: event.target.value,
-        });
+        const { name, value } = event.target;
+
+        if (name === 'coordinates_lat' || name === 'coordinates_lng') {
+            setNewMarket((prev) => ({
+                ...prev,
+                coordinates: {
+                    ...prev.coordinates,
+                    [name === 'coordinates_lat' ? 'lat' : 'lng']: value,
+                },
+            }));
+        } else {
+            setNewMarket((prev) => ({
+                ...prev,
+                [name]: value,
+            }));
+        }
     };
 
     const handleInputChange = (event) => {
@@ -41,7 +53,8 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
         }));
     };
 
-    const handleSaveMarket = async () => {
+    const handleSaveMarket = async (event) => {
+        event.preventDefault();
         try {
             // Convert year_round to boolean
             newMarket.year_round = newMarket.year_round === 'true' || newMarket.year_round === true;
@@ -96,7 +109,8 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
         }
     };
 
-    const handleSaveMarketDay = async () => {
+    const handleSaveMarketDay = async (event) => {
+        event.preventDefault();
         try {
             if (!newMarketDay.market_id || !newMarketDay.day_of_week) {
                 alert("Market ID and Day of Week are required.");
@@ -128,10 +142,10 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
 
     const handleWeekDayChange = (event) => {
         const dayValue = weekDayReverse[event.target.value.toLowerCase()];
-        if (dayValue === undefined) {
-            alert("Invalid day of the week. Please enter a valid day.");
-            return;
-        }
+        // if (dayValue === undefined) {
+        //     alert("Invalid day of the week. Please enter a valid day.");
+        //     return;
+        // }
     
         setNewMarketDay({
             ...newMarketDay,
@@ -196,7 +210,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                                 type="text"
                                 name="coordinates_lat"
                                 placeholder='40.736358642578125'
-                                value={newMarket ? newMarket.coordinates_lat : ''}
+                                value={newMarket ? newMarket.coordinates?.lat : ''}
                                 onChange={handleInputMarketChange}
                             />
                         </div>
@@ -206,7 +220,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                                 type="text"
                                 name="coordinates_lng"
                                 placeholder='-73.99076080322266'
-                                value={newMarket ? newMarket.coordinates_lng : ''}
+                                value={newMarket ? newMarket.coordinates?.lng : ''}
                                 onChange={handleInputMarketChange}
                             />
                         </div>
