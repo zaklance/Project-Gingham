@@ -5,7 +5,7 @@ function BasketSales() {
     const [salesHistory, setSalesHistory] = useState([]);
 
     useEffect(() => {
-        const token = localStorage.getItem('jwt-token');
+        const token = localStorage.getItem('user_jwt-token');
 
         if (!token) {
             console.error('JWT token not found in localStorage');
