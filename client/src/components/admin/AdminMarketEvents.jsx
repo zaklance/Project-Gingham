@@ -42,6 +42,7 @@ function AdminMarketEvents({ markets }) {
         };
 
     const handleSaveNewEvent = async () => {
+        preventDefault();
         try {
             console.log(newEvent);
             // Save market details first
@@ -90,6 +91,7 @@ function AdminMarketEvents({ markets }) {
     }, [matchingMarketId]);
 
     const handleEventUpdate = async (eventId) => {
+        preventDefault();
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/events/${eventId}`, {
                 method: 'PATCH',
@@ -115,6 +117,7 @@ function AdminMarketEvents({ markets }) {
     };
     
     const handleEventDelete = async (eventId) => {
+        preventDefault();
         try {
 
             fetch(`http://127.0.0.1:5555/api/events/${eventId}`, {
