@@ -690,10 +690,11 @@ def get_top_market_reviews():
 
     # Calculate the 80th percentile
     if vote_up_list:
-        percentile_index = int(len(vote_up_list) * 0.8) - 1
+        percentile_index = int(len(vote_up_list) * 0.9) - 1
         percentile_value = vote_up_list[max(0, percentile_index)]
     else:
         percentile_value = 0
+    print("Percentile value for top reviews:", percentile_value)
     # Get reviews with vote_up_count in the top 20%
     top_reviews = (
         db.session.query(MarketReview)
@@ -725,7 +726,7 @@ def get_top_vendor_reviews():
     vote_up_list.sort()
     # Calculate the 80th percentile
     if vote_up_list:
-        percentile_index = int(len(vote_up_list) * 0.8) - 1
+        percentile_index = int(len(vote_up_list) * 0.9) - 1
         percentile_value = vote_up_list[max(0, percentile_index)]
     else:
         percentile_value = 0
@@ -737,6 +738,7 @@ def get_top_vendor_reviews():
         .order_by(desc(vote_up_counts.c.vote_up_count))
         .all()
     )
+    print("Percentile value for top reviews:", percentile_value)
     # Convert the reviews to dictionaries for JSON response
     response_data = [review.to_dict() for review in top_reviews]
     return jsonify(response_data)

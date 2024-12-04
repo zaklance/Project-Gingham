@@ -356,7 +356,7 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
     useEffect(() => {
         const fetchTopReviews = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:5555/api/top-vendor-reviews');
+                const response = await fetch('http://127.0.0.1:5555/api/top-market-reviews');
                 if (!response.ok) {
                     throw new Error('Failed to fetch reviews');
                 }
