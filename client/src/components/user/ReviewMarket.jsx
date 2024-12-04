@@ -17,6 +17,7 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
     const [isClickedDown, setIsClickedDown] = useState({});
     const [downVoteRatings, setDownVoteRatings] = useState([]);
     const [reports, setReports] = useState([]);
+    const [hotReviews, setHotReviews] = useState([]);
 
     const { handlePopup } = useOutletContext();
 
@@ -352,6 +353,25 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
             .catch(error => console.error('Error fetching market baskets', error));
     }, [userId]);
 
+    useEffect(() => {
+        const fetchTopReviews = async () => {
+            try {
+                const response = await fetch('http://127.0.0.1:5555/api/top-vendor-reviews');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch reviews');
+                }
+                const data = await response.json();
+                setHotReviews(data);
+            } catch (error) {
+                console.log(error.message);
+            }
+        };
+
+        fetchTopReviews();
+    }, []);
+
+    
+
 
     return (
         <>
@@ -392,6 +412,11 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                                         </button>
                                     </div>
                                     <button className='btn btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
+                                    {hotReviews.some(item => item.id === review.id) && (
+                                        <img className='img-hot margin-l-12' src="/site-images/chili-pepper-4.svg" alt="Notification" title='Hot review!!!' />
+                                    )}
+                                    {console.log(hotReviews.find(item => item.id === review.id))}
+                                    {console.log(review)}
                                 </div>
                             ) : (
                                 <div className='flex-start flex-center-align'>
