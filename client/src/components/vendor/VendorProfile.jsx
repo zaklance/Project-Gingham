@@ -44,7 +44,7 @@ function VendorProfile () {
     useEffect(() => {
         const fetchVendorUserData = async () => {
             try {
-                const token = localStorage.getItem('jwt-token');
+                const token = localStorage.getItem('vendor_jwt-token');
                 const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${id}`, {
                     method: 'GET',
                     headers: {
@@ -113,7 +113,7 @@ function VendorProfile () {
 
     const handleSaveChanges = async () => {
         try {
-            const token = localStorage.getItem('jwt-token');
+            const token = localStorage.getItem('vendor_jwt-token');
             const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${id}`, {
                 method: 'PATCH',
                 headers: {

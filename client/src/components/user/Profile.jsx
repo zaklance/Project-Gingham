@@ -54,7 +54,7 @@ function Profile({ marketData }) {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const token = localStorage.getItem('jwt-token');
+                const token = localStorage.getItem('user_jwt-token');
 
                 if (token) {
                     // Decode the token to extract the role
@@ -115,7 +115,7 @@ function Profile({ marketData }) {
 
     const handleSaveChanges = async () => {
         try {
-            const token = localStorage.getItem('jwt-token');
+            const token = localStorage.getItem('user_jwt-token');
             const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
                 method: 'PATCH',
                 headers: {
