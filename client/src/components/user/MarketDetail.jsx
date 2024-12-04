@@ -43,14 +43,29 @@ function MarketDetail ({ match }) {
         return time12
     }
 
-    function convertToLocalDate(gmtDateString) {
-        const gmtDate = new Date(gmtDateString);
-        const localDate = gmtDate.toLocaleDateString('en-US', {
+    function formatEventDate(dateString) {   
+        const date = new Date(dateString + "T00:00:00");
+    
+        if (isNaN(date.getTime())) return "Invalid Date";
+    
+        return date.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
         });
-        return localDate;
+    }
+
+    function formatDate(dateString) {
+        if (!dateString || dateString.length !== 10) return "Invalid Date";
+    
+        const date = new Date(dateString + "T00:00:00");
+    
+        if (isNaN(date.getTime())) return "Invalid Date";
+    
+        const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
+        const day = date.getDate();
+    
+        return `${monthName} ${day}`;
     }
 
     useEffect(() => {
@@ -65,7 +80,6 @@ function MarketDetail ({ match }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch multiple endpoints in parallel
                 const [marketDaysRes, vendorMarketsRes, vendorsRes, eventsRes, marketFavsRes] = await Promise.all([
                     fetch(`http://127.0.0.1:5555/api/market-days?market_id=${market?.id}`).then(res => res.json()),
                     fetch("http://127.0.0.1:5555/api/vendor-markets").then(res => res.json()),
@@ -73,40 +87,50 @@ function MarketDetail ({ match }) {
                     fetch("http://127.0.0.1:5555/api/events").then(res => res.json()),
                     fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`).then(res => res.json())
                 ]);
-
-                // Set state with fetched data
+                
                 setMarketDays(marketDaysRes);
                 if (Array.isArray(vendorMarketsRes)) {
                     const vendorIds = vendorMarketsRes.map(vendor => vendor.vendor_id);
                     setVendors(vendorIds);
-                    setVendorMarkets(vendorMarketsRes)
+                    setVendorMarkets(vendorMarketsRes);
                 }
                 if (marketDaysRes.length > 0) {
                     setSelectedDay(marketDaysRes[0]);
                 }
                 setVendorMarkets(vendorMarketsRes);
                 setAllVendorDetails(vendorsRes);
-                setEvents(eventsRes.filter(event => {
-                    const today = new Date();
-                    const sevenDaysFromNow = new Date();
-                    sevenDaysFromNow.setDate(today.getDate() + 7);
+                
+                const today = new Date();
+                const sevenDaysFromNow = new Date();
+                sevenDaysFromNow.setDate(today.getDate() + 7);
+                
+                today.setHours(0, 0, 0, 0);
+                sevenDaysFromNow.setHours(0, 0, 0, 0);
 
-                    const startDate = new Date(event.start_date);
-                    const endDate = new Date(event.end_date);
+                const filteredEvents = eventsRes.filter(event => {
+                    const startDate = new Date(event.start_date + 'T00:00:00');
+                    const endDate = new Date(event.end_date + 'T00:00:00');
+
+                    startDate.setHours(0, 0, 0, 0);
+                    endDate.setHours(0, 0, 0, 0);
 
                     return event.market_id === Number(id) && (
-                        (today >= startDate && today <= endDate) ||
-                        (startDate <= sevenDaysFromNow)
+                        (startDate >= today && startDate <= sevenDaysFromNow) ||
+                        (endDate >= today && endDate <= sevenDaysFromNow) ||
+                        (startDate <= today && endDate >= today)
                     );
-                }));
+                });
+    
+                setEvents(filteredEvents);
                 setMarketFavs(marketFavsRes);
             } catch (error) {
                 console.error("Error fetching data in parallel:", error);
             }
         };
-
+    
         fetchData();
     }, [id, userId, market?.id]);
+    
 
     const handleDayChange = (event) => {
         const dayId = parseInt(event.target.value);
@@ -306,10 +330,10 @@ function MarketDetail ({ match }) {
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                     <div className='flex-start flex-center-align flex-gap-16'>
                                         <p className='text-italic nowrap margin-t-8'>
-                                        {convertToLocalDate(event.start_date)}
+                                        {formatEventDate(event.start_date)}
                                             {event.end_date !== event.start_date && ` - `}
                                             <br></br>
-                                        {event.end_date !== event.start_date && `${convertToLocalDate(event.end_date)}`}
+                                        {event.end_date !== event.start_date && `${formatEventDate(event.end_date)}`}
                                         </p>
                                         <h3 className='nowrap'>{event.title ? event.title : 'Loading...'}:</h3>
                                         <p>{event.message}</p>
@@ -362,6 +386,10 @@ function MarketDetail ({ match }) {
                 {selectedDay && (
                     <h4 className='btn-gap'>Hours: {timeConverter(selectedDay.hour_start)} - {timeConverter(selectedDay.hour_end)}</h4>
                 )}
+            </div>
+            <div className='flex-start'>
+                <h4>Season: {formatDate(market.season_start)} - {formatDate(market.season_end)}</h4>
+
             </div>
             <br/>
             <br/>

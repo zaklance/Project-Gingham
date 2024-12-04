@@ -11,8 +11,6 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
     const [allMarkets, setAllMarkets] = useState([]);
     const [selectedMarket, setSelectedMarket] = useState(null);
 
-
-
     console.log()
 
     useEffect(() => {

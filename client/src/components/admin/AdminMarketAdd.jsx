@@ -9,7 +9,6 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
     const [query, setQuery] = useState("");
     const [adminMarketDayData, setAdminMarketDayData] = useState(null);
 
-
     const onUpdateQuery = event => setQuery(event.target.value);
     const filteredMarkets = markets.filter(market => market.name.toLowerCase().includes(query.toLowerCase()) && market.name !== query)
     const matchingMarket = markets.find(market => market.name.toLowerCase() === query.toLowerCase());
@@ -26,9 +25,22 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
     }, [matchingMarketId]);
 
     const handleInputMarketChange = (event) => {
-        setNewMarket({
-            ...newMarket,
-            [event.target.name]: event.target.value,
+        const { name, value } = event.target;
+    
+        setNewMarket((prev) => {
+            const updatedMarket = {
+                ...prev,
+                [name]: value,
+            };
+    
+            if (name === 'coordinates_lat' || name === 'coordinates_lng') {
+                updatedMarket.coordinates = {
+                    lat: updatedMarket.coordinates_lat,
+                    lng: updatedMarket.coordinates_lng,
+                };
+            }
+    
+            return updatedMarket;
         });
     };
 
