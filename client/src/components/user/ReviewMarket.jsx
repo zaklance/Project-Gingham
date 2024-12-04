@@ -415,8 +415,6 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                                     {hotReviews.some(item => item.id === review.id) && (
                                         <img className='img-hot margin-l-12' src="/site-images/chili-pepper-4.svg" alt="Notification" title='Hot review!!!' />
                                     )}
-                                    {console.log(hotReviews.find(item => item.id === review.id))}
-                                    {console.log(review)}
                                 </div>
                             ) : (
                                 <div className='flex-start flex-center-align'>
