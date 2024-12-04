@@ -82,7 +82,7 @@ function VendorSales({ timeConverter, convertToLocalDate }) {
             return;
         }
         try {
-            const token = localStorage.getItem('jwt-token');
+            const token = localStorage.getItem('vendor_jwt-token');
             const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
                 method: 'GET',
                 headers: {
@@ -118,7 +118,7 @@ function VendorSales({ timeConverter, convertToLocalDate }) {
 
     useEffect(() => {
         const fetchSalesHistory = async () => {
-            const token = localStorage.getItem('jwt-token');
+            const token = localStorage.getItem('vendor_jwt-token');
             if (!token) {
                 console.error('JWT token not found in localStorage');
                 return;
