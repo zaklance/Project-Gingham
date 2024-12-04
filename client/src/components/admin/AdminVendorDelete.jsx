@@ -17,7 +17,7 @@ function AdminVendorDelete({ vendors }) {
         if (!matchingVendorId) return
         const fetchVendorData = async () => {
             try {
-                const token = localStorage.getItem('jwt-token');
+                const token = localStorage.getItem('admin_jwt-token');
                 // console.log('JWT Token:', token);
                 const response = await fetch(`http://127.0.0.1:5555/api/vendors/${matchingVendorId}`, {
                     method: 'GET',
@@ -46,7 +46,7 @@ function AdminVendorDelete({ vendors }) {
 
     const handleDelete = async () => {
         if (confirm(`Are you sure you want to delete ${matchingVendor.name} and all its associated days?`)) {
-            const token = localStorage.getItem('jwt-token');
+            const token = localStorage.getItem('admin_jwt-token');
 
             try {
                 await fetch(`http://127.0.0.1:5555/api/vendors/${matchingVendorId}`, {

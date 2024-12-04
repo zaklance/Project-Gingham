@@ -11,7 +11,7 @@ function AdminLogout () {
         })
         .then(() => {
             globalThis.localStorage.removeItem('admin_user_id');
-            globalThis.localStorage.removeItem('jwt-token');
+            globalThis.localStorage.removeItem('admin_jwt-token');
             navigate('/admin/home')
         })
         .catch((error) => {
