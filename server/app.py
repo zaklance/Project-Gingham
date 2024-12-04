@@ -5,6 +5,7 @@ import pytz
 from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
 from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, ReportedReview, VendorReviewRating, MarketReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, bcrypt
 from dotenv import load_dotenv
+from sqlalchemy import func, desc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from flask_migrate import Migrate
@@ -669,6 +670,77 @@ def vendor_review_by_id(id):
         db.session.delete(review)
         db.session.commit()
         return {}, 204
+
+@app.route('/api/top-market-reviews', methods=['GET'])
+def get_top_market_reviews():
+    # Subquery: Calculate total vote_up count per review_id
+    vote_up_counts = (
+        db.session.query(
+            MarketReviewRating.review_id,
+            func.count(MarketReviewRating.vote_up).label("vote_up_count")
+        )
+        .filter(MarketReviewRating.vote_up == True)
+        .group_by(MarketReviewRating.review_id)
+        .subquery()
+    )
+    # Fetch all vote_up counts to calculate the 80th percentile manually
+    vote_up_values = db.session.query(vote_up_counts.c.vote_up_count).all()
+    vote_up_list = [v[0] for v in vote_up_values]
+    vote_up_list.sort()
+
+    # Calculate the 80th percentile
+    if vote_up_list:
+        percentile_index = int(len(vote_up_list) * 0.8) - 1
+        percentile_value = vote_up_list[max(0, percentile_index)]
+    else:
+        percentile_value = 0
+    # Get reviews with vote_up_count in the top 20%
+    top_reviews = (
+        db.session.query(MarketReview)
+        .join(vote_up_counts, MarketReview.id == vote_up_counts.c.review_id)
+        .filter(vote_up_counts.c.vote_up_count >= percentile_value)
+        .order_by(desc(vote_up_counts.c.vote_up_count))
+        .all()
+    )
+    # Convert the reviews to dictionaries for JSON response
+    response_data = [review.to_dict() for review in top_reviews]
+    return jsonify(response_data)
+
+
+@app.route('/api/top-vendor-reviews', methods=['GET'])
+def get_top_vendor_reviews():
+    # Subquery: Calculate total vote_up count per review_id
+    vote_up_counts = (
+        db.session.query(
+            VendorReviewRating.review_id,
+            func.count(VendorReviewRating.vote_up).label("vote_up_count")
+        )
+        .filter(VendorReviewRating.vote_up == True)
+        .group_by(VendorReviewRating.review_id)
+        .subquery()
+    )
+    # Fetch all vote_up counts to calculate the 80th percentile manually
+    vote_up_values = db.session.query(vote_up_counts.c.vote_up_count).all()
+    vote_up_list = [v[0] for v in vote_up_values]
+    vote_up_list.sort()
+    # Calculate the 80th percentile
+    if vote_up_list:
+        percentile_index = int(len(vote_up_list) * 0.8) - 1
+        percentile_value = vote_up_list[max(0, percentile_index)]
+    else:
+        percentile_value = 0
+    # Get reviews with vote_up_count in the top 20%
+    top_reviews = (
+        db.session.query(VendorReview)
+        .join(vote_up_counts, VendorReview.id == vote_up_counts.c.review_id)
+        .filter(vote_up_counts.c.vote_up_count >= percentile_value)
+        .order_by(desc(vote_up_counts.c.vote_up_count))
+        .all()
+    )
+    # Convert the reviews to dictionaries for JSON response
+    response_data = [review.to_dict() for review in top_reviews]
+    return jsonify(response_data)
+
 
 @app.route('/api/reported-reviews', methods=['GET', 'POST'])
 def all_reported_reviews():

@@ -334,7 +334,6 @@ function VendorDetail({ products }) {
                         const marketDetail = marketDetails[market.market_day_id] || {};
                         const firstBasket = (marketBaskets.length > 0 ? marketBaskets.find((item) => item.market_day_id === marketDetail.id && item.is_sold === false) : '');
                         const allBaskets = (marketBaskets.length > 0 ? marketBaskets.filter((item) => item.market_day_id === marketDetail.id && item.is_sold === false) : '');
-                        console.log(marketDetail)
                         return (
                             <div key={index} className="market-item" >
                                 <span>
