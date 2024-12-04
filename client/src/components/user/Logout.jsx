@@ -13,7 +13,7 @@ function Logout() {
             globalThis.localStorage.removeItem('amountInCart');
             globalThis.localStorage.removeItem('cartItems');
             globalThis.localStorage.removeItem('user_id');
-            globalThis.localStorage.removeItem('jwt-token');
+            globalThis.localStorage.removeItem('user_jwt-token');
 
             navigate('/');
         })

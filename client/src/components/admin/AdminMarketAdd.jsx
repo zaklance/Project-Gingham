@@ -43,12 +43,9 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
 
     const handleSaveMarket = async () => {
         try {
-            if (newMarket.year_round === 'True' || "true") {
-                newMarket.year_round = true;
-            } else if (newMarket.year_round === 'False' || "false") {
-                newMarket.year_round = false;
-            }
-
+            // Convert year_round to boolean
+            newMarket.year_round = newMarket.year_round === 'true' || newMarket.year_round === true;
+    
             // Save market details first
             const response = await fetch(`http://127.0.0.1:5555/api/markets`, {
                 method: 'POST',
@@ -57,20 +54,19 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                 },
                 body: JSON.stringify(newMarket),
             });
-
+    
             if (response.ok) {
                 const updatedData = await response.json();
                 console.log('Market data updated successfully:', updatedData);
-                alert('Market successfully created')
-
+                alert('Market successfully created');
+    
                 if (image) {
                     await handleImageUpload(updatedData.id);
                 }
                 window.location.reload();
             } else {
-                console.log('Failed to save market details');
-                console.log('Response status:', response.status);
-                console.log('Response text:', await response.text());
+                console.error('Failed to save market details');
+                console.error('Response:', await response.text());
             }
         } catch (error) {
             console.error('Error saving market details:', error);
@@ -102,24 +98,28 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
 
     const handleSaveMarketDay = async () => {
         try {
+            if (!newMarketDay.market_id || !newMarketDay.day_of_week) {
+                alert("Market ID and Day of Week are required.");
+                return;
+            }
+    
             const response = await fetch(`http://127.0.0.1:5555/api/market-days`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(newMarketDay),
-
             });
+    
             console.log('Request body:', JSON.stringify(newMarketDay));
-
+    
             if (response.ok) {
                 const updatedData = await response.json();
-                alert('Market Day successfully created')
+                alert('Market Day successfully created');
                 console.log('Market Day data created successfully:', updatedData);
             } else {
-                console.log('Failed to save changes');
-                console.log('Response status;', response.status);
-                console.log('Response text:', await response.text());
+                console.error('Failed to save changes');
+                console.error('Response:', await response.text());
             }
         } catch (error) {
             console.error('Error saving changes:', error);
@@ -127,18 +127,32 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
     };
 
     const handleWeekDayChange = (event) => {
+        const dayValue = weekDayReverse[event.target.value.toLowerCase()];
+        if (dayValue === undefined) {
+            alert("Invalid day of the week. Please enter a valid day.");
+            return;
+        }
+    
         setNewMarketDay({
             ...newMarketDay,
-            [event.target.name]: weekDayReverse[event.target.value],
+            day_of_week: dayValue,
         });
     };
 
     const handleFileChange = (event) => {
         if (event.target.files) {
+            const file = event.target.files[0];
+            const maxFileSize = 5 * 1024 * 1024; // 5 MB limit
+    
+            if (file.size > maxFileSize) {
+                alert("File size exceeds 5 MB. Please upload a smaller file.");
+                return;
+            }
+    
             setStatus('initial');
-            setImage(event.target.files[0]);
+            setImage(file);
         }
-    }
+    };
 
     return (
         <>
@@ -219,21 +233,23 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                         <div className='form-group'>
                             <label title="yyyy-mm-dd">Season Start:</label>
                             <input
-                                type="text"
+                                type="date"  // Changed to 'date' to enforce the format
                                 name="season_start"
                                 placeholder='yyyy-mm-dd'
                                 value={newMarket ? newMarket.season_start : ''}
                                 onChange={handleInputMarketChange}
+                                required // Ensure the field is required
                             />
                         </div>
                         <div className='form-group'>
                             <label title="yyyy-mm-dd">Season End:</label>
                             <input
-                                type="text"
+                                type="date"  // Changed to 'date' to enforce the format
                                 name="season_end"
                                 placeholder='yyyy-mm-dd'
                                 value={newMarket ? newMarket.season_end : ''}
                                 onChange={handleInputMarketChange}
+                                required // Ensure the field is required
                             />
                         </div>
                         <div className='form-group'>
