@@ -16,24 +16,57 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
     const [savedBaskets, setSavedBaskets] = useState([]);
     
     function timeConverter(time24) {
-        const date = new Date(`1970-01-01T${time24}Z`); // Add 'Z' to indicate UTC
+        const [hours, minutes, seconds] = time24.split(':').map(Number);
+        const date = new Date();
+        date.setHours(hours, minutes, seconds || 0);
         const time12 = date.toLocaleTimeString('en-US', {
             hour: 'numeric',
             minute: 'numeric',
-            hour12: true
+            hour12: true,
         });
         return time12;
     }
 
-    function convertToLocalDate(gmtDateString) {
-        const gmtDate = new Date(gmtDateString);
-        const localDate = gmtDate.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-        return localDate;
-    }
+    function formatDate(dateInput) {
+        try {
+            if (!dateInput) {
+                console.warn('Invalid date input:', dateInput);
+                return 'Invalid Date';
+            }
+    
+            let date;
+            if (dateInput instanceof Date) {
+                date = dateInput;
+            } else if (typeof dateInput === 'string') {
+                const dateParts = dateInput.split('-');
+                date = new Date(`${dateParts[0]}-${dateParts[1]}-${dateParts[2]}T00:00:00`);
+            } else {
+                console.error('Unsupported date format:', dateInput);
+                return 'Invalid Date';
+            }
+    
+            // console.log('Original date input:', dateInput);
+            // console.log('Date object created:', date);
+    
+            if (isNaN(date.getTime())) {
+                console.error('Invalid date:', dateInput);
+                return 'Invalid Date';
+            }
+    
+            const formattedDate = date.toLocaleString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            // console.log('Formatted date:', formattedDate);
+    
+            return formattedDate;
+        } catch (error) {
+            console.error('Error converting date:', error);
+            return 'Invalid Date';
+        }
+    }    
 
     useEffect(() => {
         async function fetchSavedBaskets() {
@@ -78,6 +111,16 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                 : amPm === 'AM' && endHour === 12
                 ? 0
                 : endHour;
+        
+        const localDate = new Date(marketDay.date);
+        const localDateString = localDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short', 
+            day: 'numeric'
+        });
+
+        const saleDate = new Date(localDateString);
+        const formattedSaleDate = saleDate.toISOString().split('T')[0];
 
         const startTimeDate = new Date();
         startTimeDate.setHours(formattedStartHour, startMinute, 0, 0);
@@ -85,14 +128,14 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
         const endTimeDate = new Date();
         endTimeDate.setHours(formattedEndHour, endMinute, 0, 0);
 
-        console.log('Formatted start time:', startTimeDate);
-        console.log('Formatted end time:', endTimeDate);
+        // console.log('Formatted start time:', startTimeDate);
+        // console.log('Formatted end time:', endTimeDate);
 
         const formattedPickupStart = `${startTimeDate.getHours().toString().padStart(2, '0')}:${startTimeDate.getMinutes().toString().padStart(2, '0')} ${startAmPm}`;
         const formattedPickupEnd = `${endTimeDate.getHours().toString().padStart(2, '0')}:${endTimeDate.getMinutes().toString().padStart(2, '0')} ${endAmPm}`;
 
-        console.log('Formatted pickup start:', formattedPickupStart);
-        console.log('Formatted pickup end:', formattedPickupEnd);
+        // console.log('Formatted pickup start:', formattedPickupStart);
+        // console.log('Formatted pickup end:', formattedPickupEnd);
 
         if (parsedNumBaskets > 0 && vendorId && marketId && !isNaN(parsedPrice) && parsedPrice > 0) {
             const promises = [];
@@ -106,7 +149,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                     body: JSON.stringify({
                         vendor_id: vendorId,
                         market_day_id: marketDay.market_id,
-                        sale_date: marketDay.date,
+                        sale_date: formattedSaleDate,
                         pickup_start: formattedPickupStart,
                         pickup_end: formattedPickupEnd,
                         is_sold: false,
@@ -168,12 +211,12 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
             {marketDay && marketDay.date ? (
                 <>
                     <div className='text-center'>
+                    <div className='text-center'>
                         <h4>{marketDay ? marketDay.markets.name : ''}</h4>
                         <h4 className='margin-t-8'>
-                            {marketDay.date
-                                ? `${weekDay[marketDay.date.getDay()]}, ${(marketDay.date)}`
-                                : ''}
+                            {formatDate(marketDay.date)}
                         </h4>
+                    </div>
                     </div>
                 </>
             ) : (

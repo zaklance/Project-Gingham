@@ -54,8 +54,21 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
     }, [vendorId]);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/market-days")
-            .then(response => response.json())
+        const token = localStorage.getItem('vendor_jwt-token');
+
+        fetch("http://127.0.0.1:5555/api/market-days", {
+            method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 const filteredData = data.filter(item =>
                     allVendorMarkets.some(vendorMarket => vendorMarket.market_day_id === item.id)
