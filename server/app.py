@@ -198,8 +198,6 @@ def homepage():
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    # Clear other account type sessions before logging in a user
-    session.pop('user_id', None)
     
     data = request.get_json()
     user = User.query.filter(User.email == data['email']).first()
@@ -258,7 +256,7 @@ def logout():
 @app.route('/api/check_user_session', methods=['GET'])
 @jwt_required()
 def check_user_session():
-    if not check_role('user') or check_role('admin'):
+    if not check_role('user'):
         return {'error': 'Access forbidden: User only'}, 403
 
     user_id = get_jwt_identity()
@@ -272,7 +270,7 @@ def check_user_session():
 @app.route('/api/check-vendor-session', methods=['GET'])
 @jwt_required()
 def check_vendor_session():
-    if not check_role('vendor') or not check_role('user') or not check_role('admin'):
+    if not check_role('vendor'):
         return {'error': 'Access forbidden: Vendor only'}, 403
 
     vendor_user_id = get_jwt_identity()
@@ -386,7 +384,12 @@ def market_by_id(id):
         return {}, 204
 
 @app.route('/api/market-days', methods=['GET', 'POST', 'DELETE'])
+@jwt_required()
 def all_market_days():
+    
+    if not check_role('admin'):
+        return {'error': "Access forbidden: Admin only"}, 403
+    
     if request.method == 'GET':
         market_id = request.args.get('market_id')
         if market_id:
@@ -412,7 +415,12 @@ def all_market_days():
         return jsonify(new_market_day.to_dict()), 201
 
 @app.route('/api/market-days/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@jwt_required()
 def market_day_by_id(id):
+    
+    if not check_role('admin'):
+        return {'error': 'Access forbidden: Admin only'}
+    
     market_day = MarketDay.query.filter(MarketDay.id == id).first()
     if not market_day:
         return {'error': 'market not found'}, 404
@@ -542,8 +550,8 @@ def get_vendor_image(vendor_id):
 @jwt_required()
 def profile(id):
     
-    if not (check_role('user') or check_role('admin')):
-        return {'error': "Access forbidden: User and Admin only"}, 403
+    if not check_role('user'):
+        return {'error': "Access forbidden: User only"}, 403
     
     if request.method == 'GET':
         user = User.query.filter_by(id=id).first()
@@ -970,8 +978,6 @@ def delete_vendor_market(id):
 # VENDOR PORTAL
 @app.route('/api/vendor/login', methods=['POST'])
 def vendorLogin():
-    # Clear other account type sessions before logging in a vendor
-    session.pop('vendor_user_id', None)
 
     data = request.get_json()
     vendorUser = VendorUser.query.filter(VendorUser.email == data['email']).first()
@@ -1554,8 +1560,6 @@ def get_vendor_sales_history():
 # ADMIN PORTAL
 @app.route('/api/admin/login', methods=['POST'])
 def adminLogin():
-    # Clear other account type sessions before logging in an admin
-    session.pop('admin_user_id', None)
 
     data = request.get_json()
     adminUser = AdminUser.query.filter(AdminUser.email == data['email']).first()
@@ -1645,7 +1649,12 @@ def handle_admin_users():
             return {'error': f'Exception: {str(e)}'}, 500
     
 @app.route('/api/admin-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@jwt_required()
 def handle_admin_user_by_id(id):
+    
+    if not check_role('admin'):
+        return {'error': "Access forbidden: Admin only"}, 403
+    
     admin_user = AdminUser.query.filter_by(id=id).first()
 
     if not admin_user:
