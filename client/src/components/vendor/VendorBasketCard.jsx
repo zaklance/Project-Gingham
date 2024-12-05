@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import '../../assets/css/index.css';
 
 function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
-    const [marketId, setMarketId] = useState(4);
+    const [marketId, setMarketId] = useState(null);
+    const [marketName, setMarketName] = useState('');
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
     const [startAmPm, setStartAmPm] = useState('PM');
@@ -72,13 +73,18 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
         async function fetchSavedBaskets() {
             if (vendorId && marketDay?.market_id) {
                 try {
+                    console.log('Fetching saved baskets...');
                     const response = await fetch(
                         `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.market_id}`
                     );
                     if (response.ok) {
                         const data = await response.json();
-                        setSavedBaskets(data.filter(basket => basket.market_day_id === marketDay.market_id && basket.vendor_id === vendorId));
-                        setIsSaved(savedBaskets.length > 0);
+                        console.log('Fetched data:', data);
+                        const filteredBaskets = data.filter(basket => basket.market_day_id === marketDay.market_id && basket.vendor_id === vendorId);
+                        console.log('Filtered baskets:', filteredBaskets);
+            
+                        setSavedBaskets(filteredBaskets);
+                        setIsSaved(filteredBaskets.length > 0);
                     } else {
                         console.error('Failed to fetch baskets:', response.statusText);
                     }
@@ -87,9 +93,74 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                 }
             }
         }
-
+    
         fetchSavedBaskets();
     }, [vendorId, marketDay]);
+    
+    useEffect(() => {
+        if (savedBaskets.length > 0) {
+            // Set the number of baskets
+            setNumBaskets(savedBaskets.length);
+    
+            // Set the basket value and price from the first basket (as they are the same for all)
+            const firstBasket = savedBaskets[0];
+            setBasketValue(firstBasket.basket_value);
+            setPrice(firstBasket.price);
+    
+            // Set pickup times if they're consistent across all saved baskets
+            if (firstBasket.pickup_start) {
+                const start = timeConverter(firstBasket.pickup_start);
+                setStartTime(start);
+            }
+            if (firstBasket.pickup_end) {
+                const end = timeConverter(firstBasket.pickup_end);
+                setEndTime(end);
+            }
+        } else {
+            // Reset values if there are no saved baskets
+            setNumBaskets('');
+            setBasketValue('');
+            setPrice('');
+            setStartTime('');
+            setEndTime('');
+        }
+    }, [savedBaskets]);    
+
+    useEffect(() => {
+        console.log('Updated savedBaskets:', savedBaskets);
+        setIsSaved(savedBaskets.length > 0);
+    }, [savedBaskets]);
+
+    useEffect(() => {
+        async function fetchMarketName(marketId) {
+            if (marketId) {
+                try {
+                    const response = await fetch(`http://127.0.0.1:5555/api/markets/${marketId}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setMarketName(data.name);
+                    } else {
+                        console.error('Failed to fetch market:', response.statusText);
+                    }
+                } catch (error) {
+                    console.error('Error fetching market name:', error);
+                }
+            }
+        }
+
+        if (marketDay && marketDay.market_id) {
+            setMarketId(marketDay.market_id);
+            fetchMarketName(marketDay.market_id);
+        }
+    }, [marketDay]);
+
+    useEffect(() => {
+        console.log('marketDay object:', marketDay);
+        if (marketDay) {
+            setMarketId(marketDay.market_id);
+            console.log('Market Day ID:', marketDay.id);
+        }
+    }, [marketDay]);
 
     const handleSave = async () => {
         const parsedNumBaskets = parseInt(numBaskets, 10);
@@ -137,9 +208,12 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
         // console.log('Formatted pickup start:', formattedPickupStart);
         // console.log('Formatted pickup end:', formattedPickupEnd);
 
-        if (parsedNumBaskets > 0 && vendorId && marketId && !isNaN(parsedPrice) && parsedPrice > 0) {
-            const promises = [];
+        console.log('Market Day ID to be posted:', marketDay.market_day_id);
 
+        if (parsedNumBaskets > 0 && vendorId && marketDay && marketDay.id && !isNaN(parsedPrice) && parsedPrice > 0) {
+            const promises = [];
+            console.log('Posting to API with market_day_id:', marketDay.id); // Ensure you're using `marketDay.id` here
+    
             for (let i = 0; i < parsedNumBaskets; i++) {
                 promises.push(fetch('http://127.0.0.1:5555/api/baskets', {
                     method: 'POST',
@@ -148,7 +222,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                     },
                     body: JSON.stringify({
                         vendor_id: vendorId,
-                        market_day_id: marketDay.market_id,
+                        market_day_id: marketDay.id, // Use the correct market_day_id here
                         sale_date: formattedSaleDate,
                         pickup_start: formattedPickupStart,
                         pickup_end: formattedPickupEnd,
@@ -159,7 +233,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                     }),
                 }));
             }
-
+    
             try {
                 const responses = await Promise.all(promises);
                 for (const response of responses) {
@@ -182,15 +256,19 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
     };
 
     const handleDelete = async () => {
-        if (vendorId && marketDay?.market_id) {
+        if (vendorId && marketDay?.id) {
+            console.log('vendorId:', vendorId);
+            console.log('marketDay:', marketDay);
+            console.log('marketDay.id:', marketDay.id);
+    
             try {
                 const response = await fetch(
-                    `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.market_id}`,
+                    `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.id}`,
                     {
                         method: 'DELETE',
                     }
                 );
-
+    
                 if (response.ok) {
                     console.log('Baskets deleted successfully');
                     setSavedBaskets([]);
@@ -203,6 +281,9 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                 console.error('Error deleting baskets:', error);
                 setErrorMessage('An error occurred while deleting baskets.');
             }
+        } else {
+            console.error('Missing vendorId or marketDay.id');
+            setErrorMessage('Missing vendor ID or market day ID.');
         }
     };
 
@@ -212,8 +293,8 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                 <>
                     <div className='text-center'>
                     <div className='text-center'>
-                        <h4>{marketDay ? marketDay.markets.name : ''}</h4>
-                        <h4 className='margin-t-8'>
+                    <h4>{marketName ? marketName : 'Loading Market...'}</h4>
+                    <h4 className='margin-t-8'>
                             {formatDate(marketDay.date)}
                         </h4>
                     </div>
@@ -242,11 +323,11 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                             </tr>
                             <tr>
                                 <td>Pick-Up Start:</td>
-                                <td className='text-center'>{startTime} {startAmPm}</td>
+                                <td className='text-center'>{startTime}</td>
                             </tr>
                             <tr>
                                 <td>Pick-Up End:</td>
-                                <td className='text-center'>{endTime} {endAmPm}</td>
+                                <td className='text-center'>{endTime}</td>
                             </tr>
                         </tbody>
                     </table>
