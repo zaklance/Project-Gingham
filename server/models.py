@@ -524,7 +524,7 @@ class Basket(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     market_day_id = db.Column(db.Integer, db.ForeignKey('market_days.id'), nullable=True)
-    sale_date = db.Column(db.DateTime, nullable=False, default=lambda: datetime.combine(datetime.utcnow().date(), time(0, 0, 0)))
+    sale_date = db.Column(db.Date, nullable=True)
     pickup_start = db.Column(db.Time, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     is_sold = db.Column(db.Boolean, nullable=True)
