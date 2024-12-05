@@ -32,16 +32,12 @@ function AdminProfile () {
         const fetchAdminUserData = async () => {
             try {
                 const token = localStorage.getItem('admin_jwt-token');
-                // console.log('JWT Token:', token);
-
-                if (token) {
-                    // Decode the token to extract the role
-                    const decodedToken = decodeJwt(token);
-                    if (decodedToken && decodedToken.role) {
-                        // console.log('Role from JWT:', decodedToken.role);
-                    }
+                if (!token) {
+                    console.error('Token missing, redirecting to login.');
+                    // Redirect to login page or unauthorized page
+                    return;
                 }
-                
+    
                 const response = await fetch(`http://127.0.0.1:5555/api/admin-users/${id}`, {
                     method: 'GET',
                     headers: {
@@ -49,24 +45,21 @@ function AdminProfile () {
                         'Content-Type': 'application/json'
                     }
                 });
-
-                // const text = await response.text();
-                // console.log('Raw response:', text);
-                
+    
                 if (response.ok) {
                     const data = await response.json();
-                    // console.log('Fetched admin user data:', data);
                     setAdminUserData(data);
+                } else if (response.status === 403) {
+                    console.error('Access forbidden: Admin role required');
+                    // Redirect to unauthorized page or show an error
                 } else {
-                    console.error('Error fetching profile:', response.status);
-                    if (response.status === 401) {
-                        console.error('Unauthorized: Token may be missing or invalid');
-                    }
+                    console.error(`Error fetching profile: ${response.status}`);
                 }
             } catch (error) {
                 console.error('Error fetching profile data:', error);
             }
         };
+    
         fetchAdminUserData();
     }, [id]);
 
