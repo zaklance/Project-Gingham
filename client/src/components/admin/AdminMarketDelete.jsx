@@ -56,7 +56,6 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
     }, [matchingMarketId]);
 
     const handleDelete = async (event) => {
-        event.preventDefault();
         if (confirm(`Are you sure you want to delete ${matchingMarket.name} and all its associated days?`)) {
             const token = localStorage.getItem('admin_jwt-token');
 

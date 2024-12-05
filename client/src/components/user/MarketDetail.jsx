@@ -197,8 +197,8 @@ function MarketDetail ({ match }) {
     };
 
     useEffect(() => {
-        console.log("Amount in cart:", amountInCart);
-        console.log("Cart items:", cartItems);
+        // console.log("Amount in cart:", amountInCart);
+        // console.log("Cart items:", cartItems);
     }, [amountInCart, cartItems]);
 
     const handleBackButtonClick = () => {
@@ -295,8 +295,6 @@ function MarketDetail ({ match }) {
             item => item.vendor_id === vendorId && item.is_sold === false
         ).filter(item => !cartItems.some(cartItem => cartItem.id === item.id));
     };
-
-    console.log(getAvailableBaskets(1))
     
 
     if (!market) {

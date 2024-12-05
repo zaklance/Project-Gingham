@@ -8,6 +8,8 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const [editMode, setEditMode] = useState(false);
     const [editDayMode, setEditDayMode] = useState(false);
     const [adminMarketData, setAdminMarketData] = useState(null);
+    const [tempMarketData, setTempMarketData] = useState(null);
+    const [tempMarketDayData, setTempMarketDayData] = useState(null);
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
     
@@ -98,9 +100,9 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
-        setAdminMarketData((prevData) => ({
+        setTempMarketData((prevData) => ({
             ...prevData,
-            [name]: value, // Handles date fields like season_start and season_end
+            [name]: value,
         }));
     };
 
@@ -119,6 +121,17 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     };
 
     const handleEditToggle = () => {
+        if (!editMode) {
+            setTempMarketData({
+                ...adminMarketData,
+                coordinates: {
+                    lat: adminMarketData?.coordinates?.lat || '',
+                    lng: adminMarketData?.coordinates?.lng || '',
+                },
+            });
+        } else {
+            setTempMarketData(null);
+        }
         setEditMode(!editMode);
     };
 
@@ -126,15 +139,14 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         setEditDayMode(!editDayMode);
     };
 
-    const handleSaveChanges = async (event) => {
-        event.preventDefault();
+    const handleSaveChanges = async (event) => {;
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/markets/${matchingMarketId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(adminMarketData),
+                body: JSON.stringify(tempMarketData),
             });
     
             if (response.ok) {
@@ -155,7 +167,6 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     };
 
     const handleSaveDayChanges = async (event) => {
-        event.preventDefault();
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/market-days/${selectedDay.id}`, {
                 method: 'PATCH',
@@ -189,6 +200,8 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         }
     };
 
+    console.log(selectedDay)
+
     
     return(
         <>
@@ -221,7 +234,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 <input
                                     type="text"
                                     name="name"
-                                    value={adminMarketData ? adminMarketData.name : ''}
+                                    value={tempMarketData ? tempMarketData.name : ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -230,7 +243,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 <input
                                     type="text"
                                     name="location"
-                                    value={adminMarketData ? adminMarketData.location : ''}
+                                    value={tempMarketData ? tempMarketData.location : ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -239,7 +252,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 <input
                                     type="text"
                                     name="zipcode"
-                                    value={adminMarketData ? adminMarketData.zipcode : ''}
+                                    value={tempMarketData ? tempMarketData.zipcode : ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -248,7 +261,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 <input
                                     type="text"
                                     name="coordinates_lat"
-                                    value={adminMarketData ? adminMarketData.coordinates.lat : ''}
+                                    value={tempMarketData ? tempMarketData.coordinates.lat : ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -257,17 +270,16 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 <input
                                     type="text"
                                     name="coordinates_lng"
-                                    value={adminMarketData ? adminMarketData.coordinates.lng : ''}
+                                    value={tempMarketData ? tempMarketData.coordinates.lng : ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
                             <div className='form-group'>
                                 <label title="Day ( # a.m. - # p.m.)">Schedule:</label>
-                                <p>True</p>
                                 <input
                                     type="text"
                                     name="schedule"
-                                    value={adminMarketData ? adminMarketData.schedule : ''}
+                                    value={tempMarketData ? tempMarketData.schedule : ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -276,7 +288,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 <input
                                     type="text"
                                     name="year_round"
-                                    value={adminMarketData ? adminMarketData.year_round : ''}
+                                    value={tempMarketData ? tempMarketData.year_round : ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -285,7 +297,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 <input
                                     type="date"
                                     name="season_start"
-                                    value={adminMarketData?.season_start || ''}
+                                    value={tempMarketData?.season_start || ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -294,7 +306,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 <input
                                     type="date"
                                     name="season_end"
-                                    value={adminMarketData?.season_end || ''}
+                                    value={tempMarketData?.season_end || ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -356,7 +368,12 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     </tr>
                                 </tbody>
                             </table>
-                            <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
+                            {matchingMarketId ? (
+                                <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
+                            ) : (
+                                <>
+                                </>
+                            )}
                         </>
                     )}
                     <div className='flex-start margin-t-16'>
