@@ -1053,18 +1053,8 @@ def run():
     for i in range(2000):
         rand_user = [None, randint(1, 50)]
         last_month = randint(-4, 4)
-        sale_date = datetime.combine(
-                (datetime.now(timezone.utc) - timedelta(days=last_month)).date(),
-                time(0, 0, 0),
-                tzinfo=timezone.utc,
-            )
-        
-        pickup_start = datetime.combine(
-                sale_date.date(),  # sale_date's date
-                fake.time_object(),  # Naive time
-                tzinfo=timezone.utc
-            )
-        
+        sale_date = (datetime.now() - timedelta(days=last_month)).date()
+        pickup_start = datetime.combine(sale_date, fake.time_object())
         random_duration_minutes = randint(30, 120)
         pickup_end = pickup_start + timedelta(minutes=random_duration_minutes)
 
@@ -1093,17 +1083,8 @@ def run():
     for i in range(12):
         rand_user = [None, randint(1, 50)]
         last_month = randint(-1, 1)
-        sale_date = datetime.combine(
-            (datetime.now(timezone.utc) - timedelta(days=last_month)).date(),
-            time(0, 0, 0),
-            tzinfo=timezone.utc,
-        )
-        
-        pickup_start = datetime.combine(
-            sale_date.date(),
-            fake.time_object(),
-            tzinfo=timezone.utc
-        )
+        sale_date = (datetime.now() - timedelta(days=last_month)).date()
+        pickup_start = datetime.combine(sale_date, fake.time_object())
         random_duration_minutes = randint(30, 120)
         pickup_end = pickup_start + timedelta(minutes=random_duration_minutes)
 

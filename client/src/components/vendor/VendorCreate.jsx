@@ -346,7 +346,7 @@ function VendorCreate () {
             <div className="form-group">
 
                 <label>Bio:</label>
-                <textarea className='textarea-edit' type="text" name="name" value={vendorData?.bio || ''} onChange={handleVendorInputChange} />
+                <textarea className='textarea-edit' type="text" name="bio" value={vendorData?.bio || ''} onChange={handleVendorInputChange} />
             
             </div>
             <div className="form-group">
