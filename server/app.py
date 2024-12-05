@@ -417,7 +417,7 @@ def all_market_days():
         return jsonify(new_market_day.to_dict()), 201
 
 @app.route('/api/market-days/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
-@jwt_required()
+# @jwt_required()
 def market_day_by_id(id):
     
     # if not check_role('admin'):
@@ -1342,7 +1342,7 @@ def handle_baskets():
             except (ValueError, TypeError):
                 return jsonify({'error': 'Invalid basket_value format. Must be a number.'}), 400
 
-            app.logger.debug(f'Parsed values: sale_date={sale_date}, pickup_start={pickup_start}, pickup_end={pickup_end}')
+            # app.logger.debug(f'Parsed values: sale_date={sale_date}, pickup_start={pickup_start}, pickup_end={pickup_end}')
 
             new_basket = Basket(
                 vendor_id=data['vendor_id'],
@@ -1406,17 +1406,52 @@ def handle_baskets():
             return {'error': str(e)}, 500
 
     elif request.method == 'DELETE':
-        data = request.get_json()
-        app.logger.debug(f'Received data for deleting basket: {data}')
-        basket_id = data.get('id')
+        vendor_id = request.args.get('vendor_id', type=int)
+        market_day_id = request.args.get('market_day_id', type=int)
 
-        if not basket_id:
-            return {'error': 'Basket ID is required for deletion'}, 400
+        if not vendor_id or not market_day_id:
+            return {'error': 'Both vendor_id and market_day_id are required for deletion'}, 400
 
-        basket = Basket.query.filter_by(id=basket_id).first()
-        if not basket:
-            return {'error': 'Basket not found'}, 404
+        try:
+            deleted_count = Basket.query.filter_by(vendor_id=vendor_id, market_day_id=market_day_id).delete()
+            db.session.commit()
 
+            if deleted_count > 0:
+                return jsonify({"message": f"{deleted_count} baskets deleted successfully."}), 200
+            else:
+                return jsonify({"message": "No baskets found to delete."}), 404
+
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f'Error deleting baskets: {e}')
+            return {'error': f'Error: {str(e)}'}, 500
+        
+@app.route('/api/baskets/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def handle_basket_by_id(id):
+    basket = Basket.query.filter_by(id=id).first()
+    
+    if not basket:
+        return {'error': 'Basket not found'}, 404
+
+    if request.method == 'GET':
+        try:
+            return jsonify(basket.to_dict()), 200
+        except Exception as e:
+            return {'error': f'Exception: {str(e)}'}, 500
+
+    elif request.method == 'PATCH':
+        try:
+            data = request.get_json()
+            for key, value in data.items():
+                setattr(basket, key, value)
+            db.session.commit()
+            return jsonify(basket.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
+    elif request.method == 'DELETE':
         try:
             db.session.delete(basket)
             db.session.commit()
@@ -1424,7 +1459,6 @@ def handle_baskets():
 
         except Exception as e:
             db.session.rollback()
-            app.logger.error(f'Error deleting basket: {e}') 
             return {'error': str(e)}, 500
 
 @app.route('/api/todays-baskets', methods=['GET'])
