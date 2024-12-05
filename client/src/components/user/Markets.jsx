@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import MarketCard from './MarketCard';
 // import AdvancedMarkerCard from './AdvancedMarkerCard';
 import '../../assets/css/index.css';
@@ -11,8 +12,8 @@ function Markets() {
     const [marketFavs, setMarketFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
 
+    const { handlePopup } = useOutletContext();
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
-
     
     const onUpdateQuery = event => setQuery(event.target.value);
     const filteredMarkets = markets.filter(market =>
@@ -22,8 +23,6 @@ function Markets() {
     );
     const matchingMarket = markets.find(market => market.name.toLowerCase() === query.toLowerCase());
     const matchingMarketId = matchingMarket ? matchingMarket.id : null;
-    
-    console.log(filteredMarkets)
     
     function timeConverter(time24) {
         const date = new Date('1970-01-01T' + time24);
@@ -124,14 +123,20 @@ function Markets() {
     }, [markets]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`)
-            .then(response => response.json())
-            .then(data => { setMarketFavs(data) })
-            .catch(error => console.error('Error fetching market favorites', error));
-    }, []);
+        if (userId && !isNaN(userId)) {
+            fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`)
+                .then(response => response.json())
+                .then(data => { setMarketFavs(data) })
+                .catch(error => console.error('Error fetching market favorites', error));
+        }
+    }, [userId]);
 
     const handleClick = (event) => {
-        setIsClicked((isClick) => !isClick);
+        if (globalThis.localStorage.getItem('user_id') !== null) {
+            setIsClicked((isClick) => !isClick);
+        } else {
+            handlePopup()
+        }
     }
 
     return (
