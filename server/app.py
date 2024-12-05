@@ -198,8 +198,6 @@ def homepage():
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    # Clear other account type sessions before logging in a user
-    session.pop('user_id', None)
     
     data = request.get_json()
     user = User.query.filter(User.email == data['email']).first()
@@ -258,7 +256,7 @@ def logout():
 @app.route('/api/check_user_session', methods=['GET'])
 @jwt_required()
 def check_user_session():
-    if not check_role('user') or check_role('admin'):
+    if not check_role('user'):
         return {'error': 'Access forbidden: User only'}, 403
 
     user_id = get_jwt_identity()
@@ -272,7 +270,7 @@ def check_user_session():
 @app.route('/api/check-vendor-session', methods=['GET'])
 @jwt_required()
 def check_vendor_session():
-    if not check_role('vendor') or not check_role('user') or not check_role('admin'):
+    if not check_role('vendor'):
         return {'error': 'Access forbidden: Vendor only'}, 403
 
     vendor_user_id = get_jwt_identity()
@@ -306,7 +304,6 @@ def all_markets():
     elif request.method == 'POST':
         data = request.get_json()
 
-        # Parse season_start and season_end as optional dates
         season_start = None
         if data.get('season_start'):
             try:
@@ -321,22 +318,17 @@ def all_markets():
             except ValueError:
                 return {'error': 'Invalid date format for season_end'}, 400
 
-        # Create a new Market object
         new_market = Market(
             name=data.get('name'),
             location=data.get('location'),
             zipcode=data.get('zipcode'),
-            coordinates = {
-                "lat": data.get('coordinates', {}).get('lat'),
-                "lng": data.get('coordinates', {}).get('lng')
-            },
+            coordinates=data.get('coordinates'),
             schedule=data.get('schedule'),
             year_round=data.get('year_round'),
             season_start=season_start,
             season_end=season_end
         )
 
-        # Add to database
         try:
             db.session.add(new_market)
             db.session.commit()
@@ -348,45 +340,58 @@ def all_markets():
 
 @app.route('/api/markets/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def market_by_id(id):
-    market = Market.query.filter(Market.id == id).first()
+    market = Market.query.get(id)
     if not market:
-        return {'error': 'market not found'}, 404
+        return {'error': 'Market not found'}, 404
+
     if request.method == 'GET':
         return market.to_dict(), 200
+
     elif request.method == 'PATCH':
-        market = Market.query.filter_by(id=id).first()
-        if not market:
-            return {'error': 'user not found'}, 404
+        data = request.get_json()
+
         try:
-            data = request.get_json()
-            # for key, value in data.items():
-            #     setattr(user, key, value)
-            market.name = data.get('name')
-            market.image = data.get('image')
-            market.location = data.get('location')
-            market.zipcode = data.get('zipcode')
-            market.coordinates = {
-                "lat": data.get('coordinates', {}).get('lat'),
-                "lng": data.get('coordinates', {}).get('lng')
-            }
-            market.schedule = data.get('schedule')
-            market.year_round = data.get('year_round')
-            if data.get('season_start'):
-                market.season_start = datetime.strptime(data.get('season_start'), '%Y-%m-%d').date()
-            if data.get('season_end'):
-                market.season_end = datetime.strptime(data.get('season_end'), '%Y-%m-%d').date()            
+            if 'name' in data:
+                market.name = data['name']
+            if 'image' in data:
+                market.image = data['image']
+            if 'location' in data:
+                market.location = data['location']
+            if 'zipcode' in data:
+                market.zipcode = data['zipcode']
+            if 'coordinates' in data:
+                market.coordinates = data['coordinates']
+            if 'schedule' in data:
+                market.schedule = data['schedule']
+            if 'year_round' in data:
+                market.year_round = data['year_round']
+            if 'season_start' in data:
+                market.season_start = datetime.strptime(data['season_start'], '%Y-%m-%d').date()
+            if 'season_end' in data:
+                market.season_end = datetime.strptime(data['season_end'], '%Y-%m-%d').date()
+            
             db.session.commit()
             return market.to_dict(), 200
         except Exception as e:
             db.session.rollback()
             return {'error': str(e)}, 500
+
     elif request.method == 'DELETE':
-        db.session.delete(market)
-        db.session.commit()
-        return {}, 204
+        try:
+            db.session.delete(market)
+            db.session.commit()
+            return {}, 204
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
 
 @app.route('/api/market-days', methods=['GET', 'POST', 'DELETE'])
+@jwt_required()
 def all_market_days():
+    
+    if not check_role('admin'):
+        return {'error': "Access forbidden: Admin only"}, 403
+    
     if request.method == 'GET':
         market_id = request.args.get('market_id')
         if market_id:
@@ -412,7 +417,12 @@ def all_market_days():
         return jsonify(new_market_day.to_dict()), 201
 
 @app.route('/api/market-days/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@jwt_required()
 def market_day_by_id(id):
+    
+    if not check_role('admin'):
+        return {'error': 'Access forbidden: Admin only'}
+    
     market_day = MarketDay.query.filter(MarketDay.id == id).first()
     if not market_day:
         return {'error': 'market not found'}, 404
@@ -542,8 +552,8 @@ def get_vendor_image(vendor_id):
 @jwt_required()
 def profile(id):
     
-    if not (check_role('user') or check_role('admin')):
-        return {'error': "Access forbidden: User and Admin only"}, 403
+    if not check_role('user'):
+        return {'error': "Access forbidden: User only"}, 403
     
     if request.method == 'GET':
         user = User.query.filter_by(id=id).first()
@@ -970,8 +980,6 @@ def delete_vendor_market(id):
 # VENDOR PORTAL
 @app.route('/api/vendor/login', methods=['POST'])
 def vendorLogin():
-    # Clear other account type sessions before logging in a vendor
-    session.pop('vendor_user_id', None)
 
     data = request.get_json()
     vendorUser = VendorUser.query.filter(VendorUser.email == data['email']).first()
@@ -1218,6 +1226,7 @@ def all_events():
         except Exception as e:
             app.logger.error(f'Error fetching events: {e}')  
             return {'error': f'Exception: {str(e)}'}, 500
+        
     elif request.method == 'POST':
         data = request.get_json()
         print("Received data:", data)
@@ -1297,21 +1306,18 @@ def handle_baskets():
         app.logger.debug(f'Received data for new basket: {data}')
 
         try:
-            sale_date_str = data.get('sale_date')
-            if sale_date_str:
+            # Parse sale_date as a local time directly from the request data
+            sale_date = data.get('sale_date')
+            if 'sale_date' in data:
                 try:
-                    sale_date = datetime.fromisoformat(sale_date_str.replace('Z', '+00:00'))
-                    
-                    if sale_date.tzinfo is None:
-                        sale_date = sale_date.replace(tzinfo=timezone.utc)
-
-                    target_tz = pytz.timezone('America/New_York')
-                    sale_date = sale_date.astimezone(target_tz)
+                    # Assume the client sends the date in local time format (e.g., "YYYY-MM-DD")
+                    sale_date = datetime.strptime(data['sale_date'], '%Y-%m-%d').date()
+                    basket.sale_date = sale_date
                 except ValueError:
-                    return jsonify({'error': 'Invalid sale_date format. Expected ISO 8601 date-time.'}), 400
+                    return jsonify({'error': 'Invalid sale_date format. Expected YYYY-MM-DD.'}), 400
             else:
                 sale_date = None
-          
+
             try:
                 pickup_start = datetime.strptime(data['pickup_start'], '%H:%M %p').time()
                 pickup_end = datetime.strptime(data['pickup_end'], '%H:%M %p').time()
@@ -1343,9 +1349,9 @@ def handle_baskets():
             new_basket = Basket(
                 vendor_id=data['vendor_id'],
                 market_day_id=data['market_day_id'],
-                sale_date=datetime.fromisoformat(data['sale_date'].replace('Z', '+00:00')),
-                pickup_start=datetime.strptime(data['pickup_start'], '%H:%M %p').time(),
-                pickup_end=datetime.strptime(data['pickup_end'], '%H:%M %p').time(),
+                sale_date=sale_date,
+                pickup_start=pickup_start,
+                pickup_end=pickup_end,
                 price=float(data['price']),
                 basket_value=basket_value,
                 is_sold=data.get('is_sold', False),
@@ -1382,16 +1388,16 @@ def handle_baskets():
             if 'sale_date' in data:
                 basket.sale_date = datetime.strptime(data['sale_date'], '%Y-%m-%d').date()
             if 'pickup_start' in data:
-                basket.pickup_start = datetime.strptime(data['pickup_start'], '%I:%M %p')
+                basket.pickup_start = datetime.strptime(data['pickup_start'], '%I:%M %p').time()
             if 'pickup_end' in data:
-                basket.pickup_end = datetime.strptime(data['pickup_end'], '%I:%M %p')
+                basket.pickup_end = datetime.strptime(data['pickup_end'], '%I:%M %p').time()
             if 'is_sold' in data:
                 basket.is_sold = data['is_sold']
             if 'is_grabbed' in data:
                 basket.is_grabbed = data['is_grabbed']
             if 'price' in data:
                 basket.price = data['price']
-            if 'basket_value' in data: 
+            if 'basket_value' in data:
                 basket.basket_value = data['basket_value']
 
             db.session.commit()
@@ -1399,7 +1405,6 @@ def handle_baskets():
 
         except Exception as e:
             db.session.rollback()
-            app.logger.error(f'Error updating basket: {e}')
             return {'error': str(e)}, 500
 
     elif request.method == 'DELETE':
@@ -1424,61 +1429,40 @@ def handle_baskets():
             app.logger.error(f'Error deleting basket: {e}') 
             return {'error': str(e)}, 500
 
-@app.route('/api/baskets/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
-def handle_basket_by_id(id):
-    basket = Basket.query.filter_by(id=id).first()
-    
-    if not basket:
-        return {'error': 'Basket not found'}, 404
-
-    if request.method == 'GET':
-        try:
-            return jsonify(basket.to_dict()), 200
-        except Exception as e:
-            return {'error': f'Exception: {str(e)}'}, 500
-
-    elif request.method == 'PATCH':
-        try:
-            data = request.get_json()
-            for key, value in data.items():
-                setattr(basket, key, value)
-            db.session.commit()
-            return jsonify(basket.to_dict()), 200
-
-        except Exception as e:
-            db.session.rollback()
-            return {'error': str(e)}, 500
-
-    elif request.method == 'DELETE':
-        try:
-            db.session.delete(basket)
-            db.session.commit()
-            return {}, 204
-
-        except Exception as e:
-            db.session.rollback()
-            return {'error': str(e)}, 500
-        
 @app.route('/api/todays-baskets', methods=['GET'])
 def handle_todays_baskets():
     try:
-        local_tz = pytz.timezone('America/New_York')
+        today_str = request.args.get('date', type=str)
+        
+        if not today_str:
+            return jsonify({'error': 'Date parameter is required'}), 400
 
-        now = datetime.now(local_tz)
-        today = now.date()
+        try:
+            today = datetime.strptime(today_str, '%Y-%m-%d').date()
+        except ValueError:
+            return jsonify({'error': 'Invalid date format. Expected YYYY-MM-DD.'}), 400
 
         vendor_id = request.args.get('vendor_id', type=int)
+        if vendor_id is None:
+            return jsonify({'error': 'Vendor ID is required'}), 400
 
         baskets = db.session.query(Basket).filter(
-            Basket.sale_date == today,
+            func.date(Basket.sale_date) == today,
             Basket.vendor_id == vendor_id
         ).all()
 
+        if not baskets:
+            return jsonify({'message': 'No baskets found for today'}), 404
+
         return jsonify([basket.to_dict() for basket in baskets]), 200
 
+    except ValueError as ve:
+        app.logger.error(f"Value error in fetching today's baskets: {ve}")
+        return jsonify({'error': f'Value error: {str(ve)}'}), 400
     except Exception as e:
         app.logger.error(f"Error fetching today's baskets: {e}")
-        return jsonify({'error': f'Exception: {str(e)}'}), 500
+        return jsonify({'error': f'An error occurred: {str(e)}'}), 500
+
 
 @app.route('/api/baskets/user-sales-history', methods=['GET'])
 @jwt_required()
@@ -1554,8 +1538,6 @@ def get_vendor_sales_history():
 # ADMIN PORTAL
 @app.route('/api/admin/login', methods=['POST'])
 def adminLogin():
-    # Clear other account type sessions before logging in an admin
-    session.pop('admin_user_id', None)
 
     data = request.get_json()
     adminUser = AdminUser.query.filter(AdminUser.email == data['email']).first()
@@ -1645,7 +1627,12 @@ def handle_admin_users():
             return {'error': f'Exception: {str(e)}'}, 500
     
 @app.route('/api/admin-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@jwt_required()
 def handle_admin_user_by_id(id):
+    
+    if not check_role('admin'):
+        return {'error': "Access forbidden: Admin only"}, 403
+    
     admin_user = AdminUser.query.filter_by(id=id).first()
 
     if not admin_user:
