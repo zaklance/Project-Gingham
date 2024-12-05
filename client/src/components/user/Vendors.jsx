@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useOutletContext } from 'react-router-dom';
 import VendorCard from './VendorCard';
 import '../../assets/css/index.css';
 
@@ -12,8 +12,7 @@ function Vendors() {
 
     const navigate = useNavigate();
     const location = useLocation();
-
-    console.log(vendorFavs)
+    const { handlePopup } = useOutletContext();
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     
@@ -43,11 +42,15 @@ function Vendors() {
     }, [location.state]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/vendor-favorites?user_id=${userId}`)
-            .then(response => response.json())
-            .then(data => { setVendorFavs(data) })
-            .catch(error => console.error('Error fetching vendor favorites', error));
-    }, []);
+        if (userId && !isNaN(userId)) { // Check if userId is valid
+            fetch(`http://127.0.0.1:5555/api/vendor-favorites?user_id=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    setVendorFavs(data);
+                })
+                .catch(error => console.error('Error fetching vendor favorites', error));
+        }
+    }, [userId]);
     
     const handleProductChange = (event) => {
         setSelectedProduct(event.target.value);
@@ -58,7 +61,11 @@ function Vendors() {
     };
 
     const handleClick = (event) => {
-        setIsClicked((isClick) => !isClick);
+        if (globalThis.localStorage.getItem('user_id') !== null) {
+            setIsClicked((isClick) => !isClick);
+        } else {
+            handlePopup()
+        }
     }
 
 
