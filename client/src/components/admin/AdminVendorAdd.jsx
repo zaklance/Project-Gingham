@@ -18,10 +18,37 @@ function AdminVendorEdit({ vendors }) {
         "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
     ];
 
+    const handleImageUpload = async (vendorId) => {
+        if (!image) return;
+    
+        const formData = new FormData();
+        formData.append('file', image);
+        formData.append('type', 'vendor');
+        formData.append('vendor_id', vendorId);
+    
+        try {
+            const response = await fetch('http://127.0.0.1:5555/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Image uploaded successfully:', data);
+            } else {
+                console.error('Failed to upload image');
+                console.log('Response status:', response.status);
+                console.log('Response text:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error uploading image:', error);
+        }
+    };
+
     const handleSaveVendor = async () => {
         try {
-            // Save market details first
-            console.log('Vendor Data', vendorData)
+            console.log('Vendor Data:', vendorData);
+    
             const response = await fetch(`http://127.0.0.1:5555/api/vendors`, {
                 method: 'POST',
                 headers: {
@@ -29,23 +56,25 @@ function AdminVendorEdit({ vendors }) {
                 },
                 body: JSON.stringify(vendorData),
             });
-
+    
             if (response.ok) {
                 const updatedData = await response.json();
-                alert("Vendor Created")
+                alert("Vendor Created");
                 console.log('Vendor data posted successfully:', updatedData);
-                
+    
                 if (image) {
                     await handleImageUpload(updatedData.id);
                 }
+    
+                // Reload or reset the form
                 window.location.reload();
             } else {
-                console.log('Failed to save vendor details');
+                console.error('Failed to save vendor details');
                 console.log('Response status:', response.status);
                 console.log('Response text:', await response.text());
             }
         } catch (error) {
-            console.error('Error saving market details:', error);
+            console.error('Error saving vendor details:', error);
         }
     };
 

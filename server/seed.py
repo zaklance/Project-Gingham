@@ -3,7 +3,7 @@ from faker import Faker
 from random import random, choice, randint
 from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketReviewRating, VendorReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, bcrypt
 import json
-from datetime import date, time, timedelta
+from datetime import datetime, timedelta, timezone, time, date
 
 fake = Faker()
 
@@ -27,7 +27,6 @@ def run():
     VendorNotification.query.delete()
 
     db.session.commit()
-
 
     markets = [
         Market(
@@ -900,7 +899,7 @@ def run():
         user_id = str(randint(1, 50))
         is_reported = choice(reported)
         last_year = randint(0, 365)
-        post_date = date.today() - timedelta(days=last_year)
+        post_date = datetime.now(timezone.utc) - timedelta(days=last_year)
 
         mr = MarketReview(
             review_text=review_text,
@@ -924,7 +923,7 @@ def run():
         user_id = str(randint(1, 50))
         is_reported = choice(reported)
         last_year = randint(0, 365)
-        post_date = date.today() - timedelta(days=last_year)
+        post_date = datetime.now(timezone.utc) - timedelta(days=last_year)
         
         vr = VendorReview(
             review_text=review_text,
@@ -1054,15 +1053,21 @@ def run():
     for i in range(2000):
         rand_user = [None, randint(1, 50)]
         last_month = randint(-4, 4)
-        dates = date.today() - timedelta(days=last_month)
-
-        sale_date = dates
-        pickup_start = fake.time_object()
+        sale_date = datetime.combine(
+                (datetime.now(timezone.utc) - timedelta(days=last_month)).date(),
+                time(0, 0, 0),
+                tzinfo=timezone.utc,
+            )
+        
+        pickup_start = datetime.combine(
+                sale_date.date(),  # sale_date's date
+                fake.time_object(),  # Naive time
+                tzinfo=timezone.utc
+            )
+        
         random_duration_minutes = randint(30, 120)
-        hours, minutes = divmod(random_duration_minutes, 60)
-        pickup_end_hour = (pickup_start.hour + hours + (pickup_start.minute + minutes) // 60) % 24
-        pickup_end_minute = (pickup_start.minute + minutes) % 60
-        pickup_end = time(pickup_end_hour, pickup_end_minute)
+        pickup_end = pickup_start + timedelta(minutes=random_duration_minutes)
+
         user_id = choice(rand_user)
         is_sold = user_id is not None
         is_grabbed = bool(fake.boolean()) if is_sold else bool(False)
@@ -1075,8 +1080,8 @@ def run():
             vendor_id=selected_vm.vendor_id,
             market_day_id=selected_vm.market_day_id,
             sale_date=sale_date,
-            pickup_start=pickup_start,
-            pickup_end=pickup_end,
+            pickup_start=pickup_start.time(),
+            pickup_end=pickup_end.time(),
             user_id=user_id,
             is_sold=is_sold,
             is_grabbed=is_grabbed,
@@ -1088,15 +1093,20 @@ def run():
     for i in range(12):
         rand_user = [None, randint(1, 50)]
         last_month = randint(-1, 1)
-        dates = date.today() - timedelta(days=last_month)
-
-        sale_date = dates
-        pickup_start = fake.time_object()
+        sale_date = datetime.combine(
+            (datetime.now(timezone.utc) - timedelta(days=last_month)).date(),
+            time(0, 0, 0),
+            tzinfo=timezone.utc,
+        )
+        
+        pickup_start = datetime.combine(
+            sale_date.date(),
+            fake.time_object(),
+            tzinfo=timezone.utc
+        )
         random_duration_minutes = randint(30, 120)
-        hours, minutes = divmod(random_duration_minutes, 60)
-        pickup_end_hour = (pickup_start.hour + hours + (pickup_start.minute + minutes) // 60) % 24
-        pickup_end_minute = (pickup_start.minute + minutes) % 60
-        pickup_end = time(pickup_end_hour, pickup_end_minute)
+        pickup_end = pickup_start + timedelta(minutes=random_duration_minutes)
+
         user_id = choice(rand_user)
         is_sold = user_id is not None
         is_grabbed = bool(fake.boolean()) if is_sold else bool(False)
@@ -1109,8 +1119,8 @@ def run():
             vendor_id=1,
             market_day_id=1,
             sale_date=sale_date,
-            pickup_start=pickup_start,
-            pickup_end=pickup_end,
+            pickup_start=pickup_start.time(),
+            pickup_end=pickup_end.time(),
             user_id=user_id,
             is_sold=is_sold,
             is_grabbed=is_grabbed,
@@ -1118,17 +1128,16 @@ def run():
             basket_value=basket_value
         )
         baskets.append(bsk2)
-    
+
     db.session.add_all(baskets)
     db.session.commit()
-
 
     #  Events
     events = []
     
     last_month = randint(0, 4)
     few_days = 14
-    date_start = date.today() - timedelta(days=last_month)
+    date_start = (datetime.now() - timedelta(days=last_month)).date()
     date_end = date_start + timedelta(days=few_days)
 
     holiday = Event(
@@ -1159,9 +1168,8 @@ def run():
             rand_vendor = None
         last_month = randint(0, 31)
         few_days = randint(0, 14)
-        date_start = date.today() - timedelta(days=last_month)
+        date_start = (datetime.now() - timedelta(days=last_month)).date()
         date_end = date_start + timedelta(days=few_days)
-
 
         title = fake.sentence(nb_words=heading)
         message = fake.paragraph(nb_sentences=msg_len)
@@ -1169,7 +1177,6 @@ def run():
         vendor_id = rand_vendor
         start_date = date_start
         end_date = date_end
-
         
         ev = Event(
             title=title,
@@ -1183,7 +1190,6 @@ def run():
 
     db.session.add_all(events)
     db.session.commit()
-
 
     user_notifs = []
 
@@ -1216,7 +1222,7 @@ def run():
         user_id = randint(1, 51)
         market_id = rand_market
         vendor_id = rand_vendor
-        created_at = date.today() - timedelta(days=few_days)
+        created_at = datetime.now(timezone.utc) - timedelta(days=few_days)
         is_read = bool(False)
 
         
