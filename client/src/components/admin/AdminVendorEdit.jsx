@@ -4,6 +4,7 @@ function AdminVendorEdit({ vendors }) {
     const [query, setQuery] = useState("");
     const [editMode, setEditMode] = useState(false);
     const [vendorData, setVendorData] = useState(null);
+    const [tempVendorData, setTempVendorData] = useState(null);
     const [image, setImage] = useState(null);
     const [status, setStatus] = useState('initial');
 
@@ -92,13 +93,20 @@ function AdminVendorEdit({ vendors }) {
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
-        setVendorData({
-            ...vendorData,
+        setTempVendorData({
+            ...tempVendorData,
             [name]: value
         });
     };
 
     const handleEditToggle = () => {
+        if (!editMode) {
+            setTempVendorData({
+                ...vendorData,
+            });
+        } else {
+            setTempVendorData(null);
+        }
         setEditMode(!editMode);
     };
 
@@ -109,7 +117,7 @@ function AdminVendorEdit({ vendors }) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(vendorData),
+                body: JSON.stringify(tempVendorData),
             });
     
             if (response.ok) {
@@ -166,7 +174,7 @@ function AdminVendorEdit({ vendors }) {
                                 <input
                                     type="text"
                                     name="name"
-                                    value={vendorData ? vendorData.name : ''}
+                                    value={tempVendorData ? tempVendorData.name : ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -174,16 +182,16 @@ function AdminVendorEdit({ vendors }) {
                                 <label>City:</label>
                                 <input
                                     type="text"
-                                    name="location"
-                                    value={vendorData ? vendorData.city : ''}
+                                    name="city"
+                                    value={tempVendorData ? tempVendorData.city : ''}
                                     onChange={handleInputChange}
                                 />
                             </div>
                             <div className='form-group'>
                                 <label>State:</label>
                                 <select
-                                    name="product"
-                                    value={vendorData ? vendorData.state : ''}
+                                    name="state"
+                                    value={tempVendorData ? tempVendorData.state : ''}
                                     onChange={handleInputChange}
                                 >
                                     <option value="">Select</option>
@@ -198,7 +206,7 @@ function AdminVendorEdit({ vendors }) {
                                 <label>Product:</label>
                                 <select
                                     name="product"
-                                    value={vendorData ? vendorData.product : ''}
+                                    value={tempVendorData ? tempVendorData.product : ''}
                                     onChange={handleInputChange}
                                 >
                                     <option value="">Select</option>
@@ -214,8 +222,8 @@ function AdminVendorEdit({ vendors }) {
                                 <textarea
                                     className='textarea-edit'
                                     type="text"
-                                    name="coordinates_lng"
-                                    value={vendorData ? vendorData.bio : ''}
+                                    name="bio"
+                                    value={tempVendorData ? tempVendorData.bio : ''}
                                     onChange={handleInputChange}
                                 />
                             </div>

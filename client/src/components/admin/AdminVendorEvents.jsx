@@ -5,7 +5,7 @@ function AdminVendorEvents({ vendors }) {
     const [query, setQuery] = useState("");
     const [events, setEvents] = useState([]);
     const [editingEventId, setEditingEventId] = useState(null);
-    const [editedEventData, setEditedEventData] = useState({});
+    const [tempEventData, setTempEventData] = useState(null);
 
 
     const onUpdateQuery = event => setQuery(event.target.value);
@@ -30,7 +30,7 @@ function AdminVendorEvents({ vendors }) {
 
     const handleEditInputChange = (event) => {
         const { name, value } = event.target;
-        setEditedEventData((prev) => ({
+        setTempEventData((prev) => ({
             ...prev,
             [name]: value,
         }));
@@ -38,7 +38,7 @@ function AdminVendorEvents({ vendors }) {
 
     const handleEventEditToggle = (eventId, title, message, start_date, end_date) => {
         setEditingEventId(eventId);
-        setEditedEventData({ title, message, start_date, end_date });
+        setTempEventData({ title, message, start_date, end_date });
     };
 
     const handleSaveNewEvent = async () => {
@@ -96,7 +96,7 @@ function AdminVendorEvents({ vendors }) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(editedEventData),
+                body: JSON.stringify(tempEventData),
             });
 
             if (response.ok) {
@@ -115,15 +115,17 @@ function AdminVendorEvents({ vendors }) {
     };
 
     const handleEventDelete = async (eventId) => {
-        try {
-
-            fetch(`http://127.0.0.1:5555/api/events/${eventId}`, {
-                method: "DELETE",
-            }).then(() => {
-                setEvents((prevEvents) => prevEvents.filter((review) => review.id !== eventId))
-            })
-        } catch (error) {
-            console.error("Error deleting review", error)
+        if (confirm(`Are you sure you want to delete this event?`)) {
+            try {
+    
+                fetch(`http://127.0.0.1:5555/api/events/${eventId}`, {
+                    method: "DELETE",
+                }).then(() => {
+                    setEvents((prevEvents) => prevEvents.filter((review) => review.id !== eventId))
+                })
+            } catch (error) {
+                console.error("Error deleting review", error)
+            }
         }
     }
 
@@ -222,7 +224,7 @@ function AdminVendorEvents({ vendors }) {
                                                     type="text"
                                                     name="title"
                                                     placeholder='Holiday Market'
-                                                    value={editedEventData ? editedEventData.title : ''}
+                                                    value={tempEventData ? tempEventData.title : ''}
                                                     onChange={handleEditInputChange}
                                                 />
                                             </div>
@@ -233,7 +235,7 @@ function AdminVendorEvents({ vendors }) {
                                                     type="text"
                                                     name="message"
                                                     placeholder='Description here'
-                                                    value={editedEventData ? editedEventData.message : ''}
+                                                    value={tempEventData ? tempEventData.message : ''}
                                                     onChange={handleEditInputChange}
                                                 />
                                             </div>
@@ -243,7 +245,7 @@ function AdminVendorEvents({ vendors }) {
                                                     type="text"
                                                     name="start_date"
                                                     placeholder='yyyy-mm-dd'
-                                                    value={editedEventData ? editedEventData.start_date : ''}
+                                                    value={tempEventData ? tempEventData.start_date : ''}
                                                     onChange={handleEditInputChange}
                                                 />
                                             </div>
@@ -253,7 +255,7 @@ function AdminVendorEvents({ vendors }) {
                                                     type="text"
                                                     name="end_date"
                                                     placeholder='yyyy-mm-dd'
-                                                    value={editedEventData ? editedEventData.end_date : ''}
+                                                    value={tempEventData ? tempEventData.end_date : ''}
                                                     onChange={handleEditInputChange}
                                                 />
                                             </div>
