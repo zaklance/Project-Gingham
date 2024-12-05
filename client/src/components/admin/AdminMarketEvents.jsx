@@ -5,8 +5,7 @@ function AdminMarketEvents({ markets }) {
     const [query, setQuery] = useState("");
     const [events, setEvents] = useState([]);
     const [editingEventId, setEditingEventId] = useState(null);
-    const [editedEventData, setEditedEventData] = useState({});
-
+    const [tempEventData, setTempEventData] = useState(null);
 
     const onUpdateQuery = event => setQuery(event.target.value);
     const filteredMarkets = markets.filter(market => market.name.toLowerCase().includes(query.toLowerCase()) && market.name !== query)
@@ -30,19 +29,18 @@ function AdminMarketEvents({ markets }) {
     
     const handleEditInputChange = (event) => {
         const { name, value } = event.target;
-        setEditedEventData((prev) => ({
+        setTempEventData((prev) => ({
             ...prev,
             [name]: value,
         }));
     };
     
-        const handleEventEditToggle = (eventId, title, message, start_date, end_date) => {
-            setEditingEventId(eventId);
-            setEditedEventData({ title, message, start_date, end_date });
-        };
+    const handleEventEditToggle = (eventId, title, message, start_date, end_date) => {
+        setEditingEventId(eventId);
+        setTempEventData({ title, message, start_date, end_date });
+    };
 
     const handleSaveNewEvent = async () => {
-        preventDefault();
         try {
             console.log(newEvent);
             // Save market details first
@@ -91,14 +89,13 @@ function AdminMarketEvents({ markets }) {
     }, [matchingMarketId]);
 
     const handleEventUpdate = async (eventId) => {
-        preventDefault();
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/events/${eventId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(editedEventData),
+                body: JSON.stringify(tempEventData),
             });
 
             if (response.ok) {
@@ -117,16 +114,17 @@ function AdminMarketEvents({ markets }) {
     };
     
     const handleEventDelete = async (eventId) => {
-        preventDefault();
-        try {
-
-            fetch(`http://127.0.0.1:5555/api/events/${eventId}`, {
-                method: "DELETE",
-            }).then(() => {
-                setEvents((prevEvents) => prevEvents.filter((review) => review.id !== eventId))
-            })
-        } catch (error) {
-            console.error("Error deleting review", error)
+        if (confirm(`Are you sure you want to delete this event?`)) {
+            try {
+    
+                fetch(`http://127.0.0.1:5555/api/events/${eventId}`, {
+                    method: "DELETE",
+                }).then(() => {
+                    setEvents((prevEvents) => prevEvents.filter((review) => review.id !== eventId))
+                })
+            } catch (error) {
+                console.error("Error deleting review", error)
+            }
         }
     }
 
@@ -225,7 +223,7 @@ function AdminMarketEvents({ markets }) {
                                                     type="text"
                                                     name="title"
                                                     placeholder='Holiday Market'
-                                                    value={editedEventData ? editedEventData.title : ''}
+                                                    value={tempEventData ? tempEventData.title : ''}
                                                     onChange={handleEditInputChange}
                                                 />
                                             </div>
@@ -236,7 +234,7 @@ function AdminMarketEvents({ markets }) {
                                                     type="text"
                                                     name="message"
                                                     placeholder='Description here'
-                                                    value={editedEventData ? editedEventData.message : ''}
+                                                    value={tempEventData ? tempEventData.message : ''}
                                                     onChange={handleEditInputChange}
                                                 />
                                             </div>
@@ -246,7 +244,7 @@ function AdminMarketEvents({ markets }) {
                                                     type="text"
                                                     name="start_date"
                                                     placeholder='yyyy-mm-dd'
-                                                    value={editedEventData ? editedEventData.start_date : ''}
+                                                    value={tempEventData ? tempEventData.start_date : ''}
                                                     onChange={handleEditInputChange}
                                                 />
                                             </div>
@@ -256,7 +254,7 @@ function AdminMarketEvents({ markets }) {
                                                     type="text"
                                                     name="end_date"
                                                     placeholder='yyyy-mm-dd'
-                                                    value={editedEventData ? editedEventData.end_date : ''}
+                                                    value={tempEventData ? tempEventData.end_date : ''}
                                                     onChange={handleEditInputChange}
                                                 />
                                             </div>

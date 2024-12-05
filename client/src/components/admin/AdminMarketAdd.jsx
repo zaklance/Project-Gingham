@@ -1,14 +1,27 @@
 import React, { useState, useEffect } from 'react';
 
 function AdminMarketAdd({ markets, weekDayReverse }) {
-    const [newMarket, setNewMarket] = useState(null);
-    const [newMarketDay, setNewMarketDay] = useState(null);
     const [marketDays, setMarketDays] = useState([])
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
     const [query, setQuery] = useState("");
     const [adminMarketDayData, setAdminMarketDayData] = useState(null);
-
+    const [newMarket, setNewMarket] = useState({
+        name: '',
+        location: '',
+        zipcode: '',
+        coordinates: { lat: '', lng: '' },
+        schedule: '',
+        year_round: '',
+        season_start: '',
+        season_end: '',
+    });
+    const [newMarketDay, setNewMarketDay] = useState({
+        market_id: '',
+        day_of_week: '',
+        hour_start: '',
+        hour_end: '',
+    });
 
     const onUpdateQuery = event => setQuery(event.target.value);
     const filteredMarkets = markets.filter(market => market.name.toLowerCase().includes(query.toLowerCase()) && market.name !== query)
@@ -305,7 +318,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                                 type="text"
                                 name="market_id"
                                 placeholder='1'
-                                value={matchingMarketId ? matchingMarketId : ''}
+                                value={matchingMarketId || ''}
                                 onChange={handleInputChange}
                             />
                         </div>
