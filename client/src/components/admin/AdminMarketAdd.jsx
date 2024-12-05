@@ -26,21 +26,22 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
 
     const handleInputMarketChange = (event) => {
         const { name, value } = event.target;
-
-        if (name === 'coordinates_lat' || name === 'coordinates_lng') {
-            setNewMarket((prev) => ({
-                ...prev,
-                coordinates: {
-                    ...prev.coordinates,
-                    [name === 'coordinates_lat' ? 'lat' : 'lng']: value,
-                },
-            }));
-        } else {
-            setNewMarket((prev) => ({
+    
+        setNewMarket((prev) => {
+            const updatedMarket = {
                 ...prev,
                 [name]: value,
-            }));
-        }
+            };
+    
+            if (name === 'coordinates_lat' || name === 'coordinates_lng') {
+                updatedMarket.coordinates = {
+                    lat: updatedMarket.coordinates_lat,
+                    lng: updatedMarket.coordinates_lng,
+                };
+            }
+    
+            return updatedMarket;
+        });
     };
 
     const handleInputChange = (event) => {
