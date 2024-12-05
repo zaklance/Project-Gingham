@@ -171,7 +171,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                         <h4>{marketDay ? marketDay.markets.name : ''}</h4>
                         <h4 className='margin-t-8'>
                             {marketDay.date
-                                ? `${weekDay[marketDay.date.getDay()]}, ${convertToLocalDate(marketDay.date)}`
+                                ? `${weekDay[marketDay.date.getDay()]}, ${(marketDay.date)}`
                                 : ''}
                         </h4>
                     </div>
