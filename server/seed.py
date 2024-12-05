@@ -1098,7 +1098,7 @@ def run():
 
         bsk2 = Basket(
             vendor_id=1,
-            market_day_id=1,
+            market_day_id=selected_vm.market_day_id,
             sale_date=sale_date,
             pickup_start=pickup_start.time(),
             pickup_end=pickup_end.time(),

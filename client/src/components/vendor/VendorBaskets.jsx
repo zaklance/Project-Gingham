@@ -92,7 +92,7 @@ function VendorBaskets({ vendorUserData }) {
 
     useEffect(() => {
         if (vendorId) {
-            fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${vendorId}`)
+            fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${vendorId}`, )
                 .then(response => response.json())
                 .then(data => setAllVendorMarkets(data))
                 .catch(error => console.error('Error fetching vendor markets:', error));
@@ -101,17 +101,36 @@ function VendorBaskets({ vendorUserData }) {
 
     useEffect(() => {
         if (allVendorMarkets.length > 0) {
-            fetch("http://127.0.0.1:5555/api/market-days")
-                .then(response => response.json())
+            const token = localStorage.getItem('vendor_jwt-token');
+
+            fetch("http://127.0.0.1:5555/api/market-days", {
+                method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    const filteredData = data.filter(item =>
-                        allVendorMarkets.some(vendorMarket => vendorMarket.market_day_id === item.id)
-                    );
-                    setFilteredMarketDays(filteredData);
+                    console.log('Market days data:', data);
+
+                    if (Array.isArray(data)) {
+                        const filteredData = data.filter(item =>
+                            allVendorMarkets.some(vendorMarket => vendorMarket.market_day_id === item.id)
+                        );
+                        setFilteredMarketDays(filteredData);
+                    } else {
+                        console.error("Unexpected response format:", data);
+                    }
                 })
                 .catch(error => console.error('Error fetching market days:', error));
-        }
-    }, [allVendorMarkets]);
+            }
+        }, [allVendorMarkets]);
 
     useEffect(() => {
         if (vendorId) {
@@ -181,23 +200,43 @@ function VendorBaskets({ vendorUserData }) {
     useEffect(() => {
         const calculateNextMarketDays = () => {
             const today = new Date();
+            const currentTime = today.getTime();
+            const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    
+            const nineAMToday = new Date(today);
+            nineAMToday.setHours(9, 0, 0, 0);
+            const nineAMTime = nineAMToday.getTime();
+    
             const next7Days = Array.from({ length: 7 }, (_, i) => {
                 const date = new Date(today);
                 date.setDate(today.getDate() + i);
                 return date;
             });
-
+    
             const nextMarketDays = filteredMarketDays
-                .map(day => ({
-                    ...day,
-                    date: next7Days.find(d => d.getDay() === day.day_of_week),
-                }))
-                .filter(day => day.date)
+                .map(day => {
+                    const date = next7Days.find(d => d.getDay() === day.day_of_week);
+                    return {
+                        ...day,
+                        date: date ? new Date(date.setHours(0, 0, 0, 0)) : null,
+                    };
+                })
+                .filter(day => {
+                    if (!day.date) return false;
+    
+                    const dayTime = new Date(day.date);
+                    dayTime.setHours(9, 0, 0, 0); // Show todays market as future market until 9:00AM of market day
+    
+                    if (day.date.toDateString() === today.toDateString() && currentTime >= nineAMTime) {
+                        return false;
+                    }
+                    return day.date.getTime() > today.getTime();
+                })
                 .sort((a, b) => a.date - b.date);
-
+    
             setNextMarketDays(nextMarketDays);
         };
-
+    
         if (filteredMarketDays.length > 0) {
             calculateNextMarketDays();
         }

@@ -389,8 +389,8 @@ def market_by_id(id):
 @jwt_required()
 def all_market_days():
     
-    if not check_role('admin'):
-        return {'error': "Access forbidden: Admin only"}, 403
+    # if not check_role('admin'):
+    #     return {'error': "Access forbidden: Admin only"}, 403
     
     if request.method == 'GET':
         market_id = request.args.get('market_id')
@@ -420,8 +420,8 @@ def all_market_days():
 @jwt_required()
 def market_day_by_id(id):
     
-    if not check_role('admin'):
-        return {'error': 'Access forbidden: Admin only'}
+    # if not check_role('admin'):
+    #     return {'error': 'Access forbidden: Admin only'}
     
     market_day = MarketDay.query.filter(MarketDay.id == id).first()
     if not market_day:
@@ -1304,33 +1304,29 @@ def handle_baskets():
     elif request.method == 'POST':
         data = request.get_json()
         app.logger.debug(f'Received data for new basket: {data}')
+        
+        sale_date = None
+        pickup_start = None
+        pickup_end = None
 
         try:
-            # Parse sale_date as a local time directly from the request data
-            sale_date = data.get('sale_date')
             if 'sale_date' in data:
                 try:
-                    # Assume the client sends the date in local time format (e.g., "YYYY-MM-DD")
                     sale_date = datetime.strptime(data['sale_date'], '%Y-%m-%d').date()
-                    basket.sale_date = sale_date
                 except ValueError:
                     return jsonify({'error': 'Invalid sale_date format. Expected YYYY-MM-DD.'}), 400
-            else:
-                sale_date = None
 
-            try:
-                pickup_start = datetime.strptime(data['pickup_start'], '%H:%M %p').time()
-                pickup_end = datetime.strptime(data['pickup_end'], '%H:%M %p').time()
-            except ValueError:
-                return jsonify({'error': 'Invalid pickup time format. Expected HH:MM AM/PM.'}), 400
-        
-            pickup_duration = data.get('pickup_duration')
-            if pickup_duration:
+            if 'pickup_start' in data:
                 try:
-                    hours, minutes, seconds = map(int, pickup_duration.split(':'))
-                    pickup_duration = time(hours, minutes, seconds)
-                except (ValueError, AttributeError):
-                    return jsonify({'error': 'Invalid pickup_duration format. Expected HH:MM:SS.'}), 400
+                    pickup_start = datetime.strptime(data['pickup_start'], '%H:%M %p').time()
+                except ValueError:
+                    return jsonify({'error': 'Invalid pickup_start format. Expected HH:MM AM/PM.'}), 400
+            
+            if 'pickup_end' in data:
+                try:
+                    pickup_end = datetime.strptime(data['pickup_end'], '%H:%M %p').time()
+                except ValueError:
+                    return jsonify({'error': 'Invalid pickup_end format. Expected HH:MM AM/PM.'}), 400
 
             try:
                 price = float(data['price'])
@@ -1346,13 +1342,15 @@ def handle_baskets():
             except (ValueError, TypeError):
                 return jsonify({'error': 'Invalid basket_value format. Must be a number.'}), 400
 
+            app.logger.debug(f'Parsed values: sale_date={sale_date}, pickup_start={pickup_start}, pickup_end={pickup_end}')
+
             new_basket = Basket(
                 vendor_id=data['vendor_id'],
                 market_day_id=data['market_day_id'],
                 sale_date=sale_date,
                 pickup_start=pickup_start,
                 pickup_end=pickup_end,
-                price=float(data['price']),
+                price=price,
                 basket_value=basket_value,
                 is_sold=data.get('is_sold', False),
                 is_grabbed=data.get('is_grabbed', False)
