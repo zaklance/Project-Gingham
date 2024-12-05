@@ -1,10 +1,10 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData
+from sqlalchemy import MetaData, func
 from sqlalchemy.orm import validates, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_bcrypt import Bcrypt
 from sqlalchemy_serializer import SerializerMixin
-from datetime import date, time, datetime
+from datetime import date, time, datetime, timezone
 import re
 
 convention = {
@@ -28,7 +28,7 @@ class User(db.Model, SerializerMixin):
     _password = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
-    phone = db.Column(db.String, nullable=False)  # New phone column added
+    phone = db.Column(db.String, nullable=False)
     address_1 = db.Column(db.String, nullable=False)
     address_2 = db.Column(db.String, nullable=True)
     city = db.Column(db.String, nullable=False)
@@ -141,7 +141,7 @@ class Market(db.Model, SerializerMixin):
     image = db.Column(db.String, nullable=True)
     location = db.Column(db.String, nullable=False)
     zipcode = db.Column(db.String, nullable=True)
-    coordinates = db.Column(db.JSON, nullable=False)
+    coordinates = db.Column(db.JSON, nullable=True)
     schedule = db.Column(db.String, nullable=True)
     year_round = db.Column(db.Boolean, nullable=True)
     season_start = db.Column(db.Date, nullable=True)
@@ -524,7 +524,7 @@ class Basket(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     market_day_id = db.Column(db.Integer, db.ForeignKey('market_days.id'), nullable=True)
-    sale_date = db.Column(db.Date, nullable=False, default=date.today)
+    sale_date = db.Column(db.DateTime, nullable=False, default=lambda: datetime.combine(datetime.utcnow().date(), time(0, 0, 0)))
     pickup_start = db.Column(db.Time, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     is_sold = db.Column(db.Boolean, nullable=True)
@@ -636,6 +636,7 @@ class Event(db.Model):
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
+
     
     @validates('title')
     def validate_title(self, key, value):
@@ -644,14 +645,17 @@ class Event(db.Model):
         return value
 
     def to_dict(self):
+        start_date_str = self.start_date.strftime('%Y-%m-%d')
+        end_date_str = self.end_date.strftime('%Y-%m-%d')
+        
         return {
             "id": self.id,
             "title": self.title,
             "message": self.message,
             "market_id": self.market_id,
             "vendor_id": self.vendor_id,
-            "start_date": self.start_date.isoformat() if self.start_date else None,
-            "end_date": self.end_date.isoformat() if self.end_date else None,
+            "start_date": start_date_str,
+            "end_date": end_date_str,
         }
     
     def __repr__(self):
