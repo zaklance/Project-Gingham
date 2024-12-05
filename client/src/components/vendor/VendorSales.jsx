@@ -2,36 +2,65 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Chart from 'chart.js/auto';
 
-function VendorSales({ timeConverter, convertToLocalDate }) {
+function VendorSales() {
     const chartRef = useRef();
     const [vendorId, setVendorId] = useState(null);
     const [baskets, setBaskets] = useState([]);
     const [salesHistory, setSalesHistory] = useState([]);
-    const [selectedRange, setSelectedRange] = useState(31);
+    const [selectedRange, setSelectedRange] = useState(7);
 
     const vendorUserId = localStorage.getItem('vendor_user_id');
 
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     const dateRange = {
+        "Next Week": -7,
         "Week": 7,
         "Month": 31,
         "3 Months": 91,
         "6 Months": 183,
-        "12 Months": 365,
+        "Year": 365,
     }
 
-    function getDatesForRange(range = 31) {
+    function getDatesForRange(range = 31, baskets = []) {
         const dates = [];
         const today = new Date();
+        // Extract years from baskets for proper date comparison
+        const basketYears = new Set(baskets.map((basket) => new Date(basket.sale_date).getFullYear()));
+        // If basket years are available, use them for date generation
+        const yearsToConsider = basketYears.size ? [...basketYears] : [today.getFullYear()];
+        if (range < 0) {
+            // Future range (moving forward in time)
+            for (let i = 0; i < Math.abs(range); i++) {
+                yearsToConsider.forEach((year) => {
+                    const currentDate = new Date(today);
+                    currentDate.setDate(today.getDate() + i);
+                    // Set the year as the current year, since we are moving into future dates
+                    currentDate.setFullYear(today.getFullYear());
+                    dates.push(`${months[currentDate.getMonth()]} ${currentDate.getDate()}, ${currentDate.getFullYear()}`);
+                });
+            }
+        } else {
+            // Past range (moving backward in time)
+            for (let i = 0; i < range; i++) {
+                yearsToConsider.forEach((year) => {
+                    const currentDate = new Date(today);
+                    currentDate.setDate(today.getDate() - i);
+                    // When moving backward and it goes past December, update the year to last year
+                    if (currentDate.getMonth() === 11 && currentDate.getDate() > today.getDate()) {
+                        currentDate.setFullYear(today.getFullYear() - 1);
+                    } else {
+                        currentDate.setFullYear(today.getFullYear());
+                    }
 
-        // Start from today and go backwards by the specified range (days, months, or years)
-        for (let i = 0; i < range; i++) {
-            const currentDate = new Date(today);
-            currentDate.setDate(today.getDate() - i);
-            dates.push(`${months[currentDate.getMonth()]} ${currentDate.getDate()}`);
+                    dates.push(`${months[currentDate.getMonth()]} ${currentDate.getDate()}, ${currentDate.getFullYear()}`);
+                });
+            }
+            dates.reverse();
         }
-        return dates.reverse(); // reverse to start from the earliest date
+        return dates;
     }
+
+
 
     // const datesThisYear = getDatesForYear(2024);
 
@@ -42,19 +71,6 @@ function VendorSales({ timeConverter, convertToLocalDate }) {
         const month = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date);
         return `${month} ${day}`;
     }
-    // function getDaySuffix(day) {
-    //     if (day >= 11 && day <= 13) return 'th';
-    //     switch (day % 10) {
-    //         case 1:
-    //             return 'st';
-    //         case 2:
-    //             return 'nd';
-    //         case 3:
-    //             return 'rd';
-    //         default:
-    //             return 'th';
-    //     }
-    // }
 
     function timeConverter(time24) {
         const date = new Date(`1970-01-01T${time24}Z`); // Add 'Z' to indicate UTC
@@ -144,6 +160,10 @@ function VendorSales({ timeConverter, convertToLocalDate }) {
         fetchSalesHistory();
     }, []);
 
+    const handleDateChange = (event) => {
+        setSelectedRange(event.target.value);
+    };
+
     useEffect(() => {
         const ctx = document.getElementById(`chart-baskets`);
 
@@ -151,30 +171,45 @@ function VendorSales({ timeConverter, convertToLocalDate }) {
             chartRef.current.destroy();
         }
 
-        // Create a function to process baskets into chart data
+        // Process baskets and filter based on the selected date range
         const processBaskets = (baskets) => {
+            const isFuture = selectedRange < 0;
+
+            // Get the correct range of dates for the selected range, including the year
+            const allowedDates = getDatesForRange(Math.abs(selectedRange), baskets).map(
+                (date) => new Date(date).toDateString() // Ensures full date format including year
+            );
+
+            const filteredBaskets = baskets.filter((basket) => {
+                const basketDate = new Date(basket.sale_date).toDateString(); // Normalize the date format
+                return allowedDates.includes(basketDate);
+            });
+
             const soldData = {};
             const unsoldData = {};
-            // Iterate over baskets and group by formatted sale_date
-            baskets.forEach((basket) => {
-                const formattedDate = formatDate(basket.sale_date);
+
+            // Group baskets by sale_date and categorize into sold/unsold
+            filteredBaskets.forEach((basket) => {
+                const formattedDate = formatDate(basket.sale_date); // Ensure formatted date includes month and day
+                const fullFormattedDate = `${formattedDate}, ${new Date(basket.sale_date).getFullYear()}`; // Add the year
                 if (basket.is_sold) {
-                    soldData[formattedDate] = (soldData[formattedDate] || 0) + 1;
+                    soldData[fullFormattedDate] = (soldData[fullFormattedDate] || 0) + 1;
                 } else {
-                    unsoldData[formattedDate] = (unsoldData[formattedDate] || 0) + 1;
+                    unsoldData[fullFormattedDate] = (unsoldData[fullFormattedDate] || 0) + 1;
                 }
             });
+
             return { soldData, unsoldData };
         };
-
+        
         const { soldData, unsoldData } = processBaskets(baskets);
-
+        
         const data = {
-            labels: getDatesForRange(selectedRange), // Use your function to get all dates for the year
+            labels: getDatesForRange(selectedRange),
             datasets: [
                 {
                     label: 'Sold Baskets',
-                    data: soldData, // Dynamic data for sold baskets
+                    data: getDatesForRange(selectedRange).map(date => soldData[date] || 0),
                     borderColor: "#007BFF",
                     backgroundColor: "#6c7ae0",
                     borderWidth: 2,
@@ -183,7 +218,7 @@ function VendorSales({ timeConverter, convertToLocalDate }) {
                 },
                 {
                     label: 'Unsold Baskets',
-                    data: unsoldData, // Dynamic data for unsold baskets
+                    data: getDatesForRange(selectedRange).map(date => unsoldData[date] || 0),
                     borderColor: "#ff6699",
                     backgroundColor: "#ff806b",
                     borderWidth: 2,
@@ -203,7 +238,6 @@ function VendorSales({ timeConverter, convertToLocalDate }) {
                     },
                     y: {
                         stacked: true,
-                        // max: 5,
                         min: 0,
                         ticks: {
                             stepSize: 1
@@ -223,12 +257,22 @@ function VendorSales({ timeConverter, convertToLocalDate }) {
                 chartRef.current.destroy();
             }
         };
-    }, [baskets]);
+    }, [baskets, selectedRange]);
 
 
     return (
         <div>
-            <h2 className='margin-t-16'>Vendor Sales</h2>
+            <div className='flex-space-between flex-bottom-align'>
+                <h2 className='margin-t-16'>Vendor Sales</h2>
+                <select className='' value={selectedRange} onChange={handleDateChange}>
+                    <option value="">Time Frame</option>
+                    {Object.entries(dateRange).map(([label, value]) => (
+                        <option key={value} value={value}>
+                            {label}
+                        </option>
+                    ))}
+                </select>
+            </div>
             <div>
                 <div className='box-bounding'>
                     {baskets ? (
