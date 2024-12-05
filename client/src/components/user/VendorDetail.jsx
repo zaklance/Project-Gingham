@@ -13,7 +13,6 @@ function VendorDetail({ products }) {
     const [isClicked, setIsClicked] = useState(false);
     const [alertMessage, setAlertMessage] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
-    const [hoveredMarket, setHoveredMarket] = useState(null);
     const [events, setEvents] = useState([]);
     const [marketBaskets, setMarketBaskets] = useState([]);
     
@@ -43,36 +42,53 @@ function VendorDetail({ products }) {
     }, [cartItems, setCartItems, setAmountInCart]);
 
     function timeConverter(time24) {
-        const date = new Date(`1970-01-01T${time24}Z`); // Add 'Z' to indicate UTC
-        const time12 = date.toLocaleTimeString('en-US', {
+        if (!time24) return 'Loading...';
+        const hours = parseInt(time24.slice(0, 2), 10);
+        const minutes = parseInt(time24.slice(3, 5), 10);
+    
+        const date = new Date(1970, 0, 1, hours, minutes);
+        return date.toLocaleTimeString('en-US', {
             hour: 'numeric',
             minute: 'numeric',
-            hour12: true
+            hour12: true,
         });
-        return time12;
     }
 
-    function convertToLocalDate(gmtDateString) {
-        const gmtDate = new Date(gmtDateString);
-        const localDate = gmtDate.toLocaleDateString('en-US', {
+    function formatEventDate(dateString) {   
+        const date = new Date(dateString + "T00:00:00");
+    
+        if (isNaN(date.getTime())) return "Invalid Date";
+    
+        return date.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
         });
-        return localDate;
     }
 
-    function addDuration(time24, duration) {
-        const [hours, minutes] = time24.split(':').map(Number);
-        const [durationHours, durationMinutes] = duration.split(':').map(Number);
-        const totalMinutes = hours * 60 + minutes + durationHours * 60 + durationMinutes;
-
-        const newHours = Math.floor(totalMinutes / 60) % 24;
-        const newMinutes = totalMinutes % 60;
-
-        return `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+    function formatDate(dateString) {
+        if (!dateString || dateString.length !== 10) return "Invalid Date";
+    
+        const date = new Date(dateString + "T00:00:00");
+    
+        if (isNaN(date.getTime())) return "Invalid Date";
+    
+        const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
+        const day = date.getDate();
+    
+        return `${monthName} ${day}`;
     }
 
+    // function addDuration(time24, duration) {
+    //     const [hours, minutes] = time24.split(':').map(Number);
+    //     const [durationHours, durationMinutes] = duration.split(':').map(Number);
+    //     const totalMinutes = hours * 60 + minutes + durationHours * 60 + durationMinutes;
+
+    //     const newHours = Math.floor(totalMinutes / 60) % 24;
+    //     const newMinutes = totalMinutes % 60;
+
+    //     return `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+    // }
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/vendors/${id}`)
@@ -270,7 +286,7 @@ function VendorDetail({ products }) {
         <div>
             <div className='flex-space-between'>
                 <div className='flex-start flex-gap-8 flex-bottom-align'>
-                    <h2>{vendor.name},</h2>
+                    <h2>{vendor.name}</h2>
                     
                 </div>
                 <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Vendors</button>
@@ -288,10 +304,10 @@ function VendorDetail({ products }) {
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                 <div className='flex-start flex-center-align flex-gap-16'>
                                     <p className='text-italic nowrap'>
-                                        {convertToLocalDate(event.start_date)}
+                                        {formatEventDate(event.start_date)}
                                         {event.end_date !== event.start_date && ` - `}
                                         <br></br>
-                                        {event.end_date !== event.start_date && `${convertToLocalDate(event.end_date)}`}
+                                        {event.end_date !== event.start_date && `${formatEventDate(event.end_date)}`}
                                     </p>
                                     <h3 className='nowrap'>{event.title ? event.title : 'Loading...'}:</h3>
                                     <p>{event.message}</p>
@@ -374,13 +390,6 @@ function VendorDetail({ products }) {
                                             </button>
                                         )}                                
                                     </>
-
-                                {hoveredMarket === market.market_day.market_id && (
-                                    <div className='market-card-popup'>
-                                        <MarketCard marketData={marketDay} />
-                                        {/* Why isnt the other info populating?!? */}
-                                    </div>
-                                )}
                             </div>
                         );
                     })
