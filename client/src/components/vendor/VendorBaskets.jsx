@@ -26,7 +26,6 @@ function VendorBaskets({ vendorUserData }) {
             hour12: true,
         });
         return time12;
-
     }
 
     function formatDate(dateInput) {
@@ -39,8 +38,8 @@ function VendorBaskets({ vendorUserData }) {
             const dateParts = dateInput.split('-');
             const date = new Date(`${dateParts[0]}-${dateParts[1]}-${dateParts[2]}T00:00:00`);
             
-            console.log('Original date input:', dateInput);
-            console.log('Date object created:', date);
+            // console.log('Original date input:', dateInput);
+            // console.log('Date object created:', date);
     
             if (isNaN(date.getTime())) {
                 console.error('Invalid date:', dateInput);
@@ -53,7 +52,7 @@ function VendorBaskets({ vendorUserData }) {
                 month: 'short',
                 day: 'numeric'
             });
-            console.log('Formatted date:', formattedDate);
+            // console.log('Formatted date:', formattedDate);
     
             return formattedDate;
         } catch (error) {
@@ -120,10 +119,10 @@ function VendorBaskets({ vendorUserData }) {
     
             const today = new Date();
             const formattedDate = today.toISOString().split('T')[0];
-            console.log('Formatted date being sent:', formattedDate);
+            // console.log('Formatted date being sent:', formattedDate);
     
             const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            console.log('Browser timezone:', browserTimezone);
+            // console.log('Browser timezone:', browserTimezone);
     
             fetch(`http://127.0.0.1:5555/api/todays-baskets?vendor_id=${vendorId}&date=${formattedDate}`, {
                 method: 'GET',
