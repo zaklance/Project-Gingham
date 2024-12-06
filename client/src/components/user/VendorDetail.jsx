@@ -7,6 +7,7 @@ function VendorDetail({ products }) {
     const { id } = useParams();
 
     const [vendor, setVendor] = useState(null);
+    const [product, setProduct] = useState(null);
     const [marketDetails, setMarketDetails] = useState({});
     const [markets, setMarkets] = useState([]);
     const [vendorFavs, setVendorFavs] = useState([]);
@@ -103,6 +104,14 @@ function VendorDetail({ products }) {
             })
             .catch(error => console.error('Error fetching vendor data:', error));
     }, [id]);
+
+    useEffect(() => {
+        if (vendor) {
+            fetch(`http://127.0.0.1:5555/api/products/${vendor.product}`)
+                .then(response => response.json())
+                .then(data => setProduct(data))
+        }
+    }, [vendor]); 
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${id}`)
@@ -325,7 +334,7 @@ function VendorDetail({ products }) {
                     <img className='img-vendor' src={`/vendor-images/${vendor.image}`} alt="Vendor Image"/>
                 </div>
                 <div className='side-basket'>
-                    <h3 className='margin-t-8'>Product: {vendor.product}</h3>
+                    <h3 className='margin-t-8'>Product: {product ? product.product : ""}</h3>
                     <div className='flex-start'>
                         <h4 className='nowrap'>Based out of: {vendor.city}, {vendor.state}</h4>
                         <div className='button-container flex-start flex-center-align nowrap'>
