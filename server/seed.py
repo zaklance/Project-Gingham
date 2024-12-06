@@ -1,7 +1,7 @@
 from app import app
 from faker import Faker
 from random import random, choice, randint
-from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketReviewRating, VendorReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, bcrypt
+from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketReviewRating, VendorReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, Product, bcrypt
 import json
 from datetime import datetime, timedelta, timezone, time, date
 
@@ -789,7 +789,6 @@ def run():
 
 
     vendors = []
-    products = ['Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables']
     companies = ['Goods', 'Produce', 'Farms', 'Organics', 'and Son', 'and Daughter', 'Market', 'Apothecary', 'Orchard']
     states = ['CT', 'DE', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT']
     rev_len = randint(2, 7)
@@ -1267,6 +1266,24 @@ def run():
         vendor_rev_ratings.append(vrr)
 
     db.session.add_all(vendor_rev_ratings)
+    db.session.commit()
+
+
+    products_list = [
+        'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 
+        'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 'International', 
+        'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 
+        'Pickles', "Spices", 'Spirits', 'Vegetables'
+        ]
+    products = []
+
+    for product_name in products_list:
+        product = Product(
+            product=product_name
+            )
+        products.append(product)
+
+    db.session.add_all(products)
     db.session.commit()
 
     
