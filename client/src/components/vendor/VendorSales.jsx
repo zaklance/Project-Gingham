@@ -281,23 +281,22 @@ function VendorSales() {
                         <h2>Loading...</h2>
                     )}
                 </div>
-                <br/>
-                    <h3>Sales Breakdown:</h3>
-                    <div className='box-scroll'>
-                        <table className='table-history'>
-                            <thead>
-                                <tr>
-                                    <th>Sale Date</th>
-                                    <th>Market</th>
-                                    <th>Pick Up Start</th>
-                                    <th>Pick Up End</th>
-                                    <th>Basket Value</th>
-                                    <th>Price</th>
-                                    <th>Available</th>
-                                    <th>Sold</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                <h3 className='margin-t-16'>Sales Breakdown:</h3>
+                <div className='box-scroll'>
+                    <table className='table-history'>
+                        <thead>
+                            <tr>
+                                <th>Sale Date</th>
+                                <th>Market</th>
+                                <th>Pick Up Start</th>
+                                <th>Pick Up End</th>
+                                <th>Basket Value</th>
+                                <th>Price</th>
+                                <th>Available</th>
+                                <th>Sold</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             {salesHistory.length > 0 ? (
                                 salesHistory
                                     .sort((a, b) => new Date(b.sale_date) - new Date(a.sale_date))
