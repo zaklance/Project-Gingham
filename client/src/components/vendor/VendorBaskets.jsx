@@ -117,7 +117,7 @@ function VendorBaskets({ vendorUserData }) {
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Market days data:', data);
+                    // console.log('Market days data:', data);
 
                     if (Array.isArray(data)) {
                         const filteredData = data.filter(item =>
@@ -152,10 +152,10 @@ function VendorBaskets({ vendorUserData }) {
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Fetched data for today\'s baskets:', data);
+                // console.log('Fetched data for today\'s baskets:', data);
                 if (Array.isArray(data)) {
                     data.forEach(basket => {
-                        console.log('Basket date:', basket.sale_date);
+                        // console.log('Basket date:', basket.sale_date);
                     });
     
                     const groupedData = data.reduce((acc, basket) => {

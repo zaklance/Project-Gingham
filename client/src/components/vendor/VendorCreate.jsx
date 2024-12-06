@@ -308,10 +308,10 @@ function VendorCreate () {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Notifications fetched:', data);
+                    // console.log('Notifications fetched:', data);
                     setNotifications(data.notifications || []);
                 } else {
-                    console.error('Failed to fetch notifications');
+                    // console.error('Failed to fetch notifications');
                     setNotifications([]);
                 }
             } catch (error) {
