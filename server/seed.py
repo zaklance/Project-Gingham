@@ -789,7 +789,10 @@ def run():
 
 
     vendors = []
-    companies = ['Goods', 'Produce', 'Farms', 'Organics', 'and Son', 'and Daughter', 'Market', 'Apothecary', 'Orchard']
+    
+    companies = ['Goods', 'Produce', 'Farms', 'Organics', 'and Son', 
+                 'and Daughter', 'Market', 'Apothecary', 'Orchard'
+                 ]
     states = ['CT', 'DE', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT']
     rev_len = randint(2, 7)
     images = [
@@ -819,7 +822,7 @@ def run():
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
         city = str(fake.city())
         state = str(choice(states))
-        product = str(choice(products))
+        product = str(randint(0, 22))
         bio = str(fake.paragraph(nb_sentences=rev_len))
         image = str(choice(images))
 
@@ -1267,7 +1270,6 @@ def run():
 
     db.session.add_all(vendor_rev_ratings)
     db.session.commit()
-
 
     products_list = [
         'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 
