@@ -5,6 +5,7 @@ import '../../assets/css/index.css';
 
 function Vendors() {
     const [vendors, setVendors] = useState([]);
+    const [products, setProducts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState('');
     const [query, setQuery] = useState("");
     const [vendorFavs, setVendorFavs] = useState([]);
@@ -16,11 +17,6 @@ function Vendors() {
     const { handlePopup } = useOutletContext();
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
-    
-    const products = [
-        'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey',
-        'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables'
-    ];
 
     const onUpdateQuery = event => setQuery(event.target.value);
     const filteredVendors = vendors.filter(vendor =>
@@ -31,6 +27,12 @@ function Vendors() {
     );
     const matchingVendor = vendors.find(vendor => vendor.name.toLowerCase() === query.toLowerCase());
     const matchingVendorId = matchingVendor ? matchingVendor.id : null;
+    
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/api/products")
+            .then(response => response.json())
+            .then(data => setProducts(data))
+    }, []); 
 
     useEffect(() => {
         if (location.state?.selectedProduct) { 
@@ -68,6 +70,8 @@ function Vendors() {
             handlePopup()
         }
     }
+
+    // console.log(products)
 
     useEffect(() => {
         // Create a unique list of products available on the selected day

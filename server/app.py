@@ -1575,11 +1575,9 @@ def all_products():
     
     elif request.method == 'POST':
         data = request.get_json()
-
-        new_product = Market(
+        new_product = Product(
             product=data.get('product'),
         )
-
         try:
             db.session.add(new_product)
             db.session.commit()
@@ -1588,6 +1586,65 @@ def all_products():
             return {'error': f'Failed to create market: {str(e)}'}, 500
 
         return new_product.to_dict(), 201
+    
+@app.route('/api/products/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
+def product(id):
+    if request.method == 'GET':
+        product = Product.query.filter_by(id=id).first()
+        if not product:
+            return {'error': 'product not found'}, 404
+        product_data = product.to_dict()
+        return jsonify(product_data), 200
+
+    elif request.method == 'PATCH':
+        product = Product.query.filter_by(id=id).first()
+        if not product:
+            return {'error': 'product not found'}, 404
+        try:
+            data = request.get_json()
+            # for key, value in data.items():
+            #     setattr(user, key, value)
+            product.product = data.get('product')
+
+            db.session.commit()
+            return jsonify(product.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+        
+    elif request.method == 'POST':
+        data = request.get_json()
+
+        existing_product = Product.query.filter_by(product=data['product']).first()
+        if existing_product:
+            return {'error': 'Email already in use'}, 400
+        
+        try: 
+            new_product = Product(
+                product=data['product']
+            )
+            db.session.add(new_product)
+            db.session.commit()
+            return jsonify(new_product.to_dict()), 201
+        
+        except Exception as e: 
+            db.session.rollback()
+            return {'error': str(e)}, 500
+        
+    elif request.method == 'DELETE':
+        product = Product.query.filter_by(id=id).first()
+        if not product: 
+            return {'error': 'user not found'}, 404
+        
+        try: 
+            db.session.delete(product)
+            db.session.commit()
+            return {}, 204
+        
+        except Exception as e: 
+            db.session.rollback()
+            return {'error': str(e)}, 500
 
 # ADMIN PORTAL
 @app.route('/api/admin/login', methods=['POST'])
