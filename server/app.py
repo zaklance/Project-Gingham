@@ -3,7 +3,7 @@ import json
 import smtplib
 import pytz
 from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
-from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, ReportedReview, VendorReviewRating, MarketReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, bcrypt
+from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, ReportedReview, VendorReviewRating, MarketReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, Product, UserNotification, VendorNotification, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy import func, desc
 from sqlalchemy.exc import IntegrityError
@@ -1566,6 +1566,28 @@ def get_vendor_sales_history():
     except Exception as e:
         app.logger.error(f"Error fetching sales history: {e}")
         return {'error': f"Exception: {str(e)}"}, 500
+
+@app.route('/api/products', methods=['GET', 'POST'])
+def all_products():
+    if request.method == 'GET':
+        products = Product.query.all()
+        return jsonify([product.to_dict() for product in products]), 200
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+
+        new_product = Market(
+            product=data.get('product'),
+        )
+
+        try:
+            db.session.add(new_product)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Failed to create market: {str(e)}'}, 500
+
+        return new_product.to_dict(), 201
 
 # ADMIN PORTAL
 @app.route('/api/admin/login', methods=['POST'])

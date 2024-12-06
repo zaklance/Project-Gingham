@@ -660,3 +660,12 @@ class Event(db.Model):
     
     def __repr__(self):
         return (f"<User Notification ID: {self.id}, created on {self.created_at}")
+
+class Product(db.Model):
+    __tablename__ = 'products'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product = db.Column(db.String, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"<Product ID: {self.id}, Product: {self.product}>"

@@ -9,6 +9,7 @@ function Vendors() {
     const [query, setQuery] = useState("");
     const [vendorFavs, setVendorFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
+    const [productList, setProductList] = useState([]);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -68,6 +69,11 @@ function Vendors() {
         }
     }
 
+    useEffect(() => {
+        // Create a unique list of products available on the selected day
+        const uniqueProducts = [...new Set(vendors.map(item => item.product))];
+        setProductList(uniqueProducts.sort());
+    }, [vendors]);
 
     return (
         <div className="markets-container">
@@ -100,7 +106,7 @@ function Vendors() {
                             <td>
                                 <select className='select-filter' value={selectedProduct} onChange={handleProductChange}>
                                     <option value="">All Products</option>
-                                    {products.map(product => (
+                                    {productList.map(product => (
                                         <option key={product} value={product}>{product}</option>
                                     ))}
                                 </select>
