@@ -27,6 +27,10 @@ function AdminMarkets () {
             .then(response => response.json())
             .then(markets => setMarkets(markets))
             .catch(error => console.error('Error fetching markets', error));
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab) setActiveTab(tab);
     }, []);
 
     

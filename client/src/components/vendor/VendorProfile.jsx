@@ -19,11 +19,7 @@ function VendorProfile () {
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
     const [vendorImageURL, setVendorImageURL] = useState(null);
-    
-    const products = [
-        'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 
-        'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables'
-    ];
+    const [products, setProducts] = useState([])
     
     const formatPhoneNumber = (phone) => {
         const cleaned = ('' + phone).replace(/\D/g, '');
@@ -33,6 +29,18 @@ function VendorProfile () {
         }
         return phone;
     };
+
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/api/products")
+            .then(response => response.json())
+            .then(data => setProducts(data))
+    }, []);
+
+    useEffect(() => {
+        if (location.state?.selectedProduct) {
+            setSelectedProduct(location.state.selectedProduct);
+        }
+    })
     
     useEffect(() => {
         const fetchVendorUserData = async () => {
@@ -297,207 +305,211 @@ function VendorProfile () {
                     <h2 className='title'>Profile Information </h2>
                     
                     <div className='box-bounding'>
-                    {editMode ? (
-                        <>
-                            <div className='form-group flex-form'>
-                                <label>First Name:</label>
-                                <input
-                                    type="text"
-                                    name="first_name"
-                                    value={tempVendorUserData ? tempVendorUserData.first_name : ''}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <div className='form-group flex-form'>
-                                <label>Last Name:</label>
-                                <input
-                                    type="text"
-                                    name="last_name"
-                                    value={tempVendorUserData ? tempVendorUserData.last_name : ''}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <div className='form-group flex-form'>
-                                <label>Email:</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={tempVendorUserData ? tempVendorUserData.email : ''}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <div className='form-group flex-form'>
-                                <label>Phone Number:</label>
-                                <input
-                                    type="tel"
-                                    name="phone"
-                                    value={tempVendorUserData ? tempVendorUserData.phone : ''}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
-                            <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
-                        </>
-                    ) : (
-                        <>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td className='cell-title'>Name:</td>
-                                        <td className='cell-text'>{vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : ' Loading...'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className='cell-title'>Email:</td>
-                                        <td className='cell-text'>{vendorUserData ? vendorUserData.email : ' Loading...'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className='cell-title'>Phone:</td>
-                                        <td className='cell-text'>{vendorUserData ? formatPhoneNumber(vendorUserData.phone) : 'Loading...'}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
-                        </>
-                    )}
+                        {editMode ? (
+                            <>
+                                <div className='form-group flex-form'>
+                                    <label>First Name:</label>
+                                    <input
+                                        type="text"
+                                        name="first_name"
+                                        value={tempVendorUserData ? tempVendorUserData.first_name : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className='form-group flex-form'>
+                                    <label>Last Name:</label>
+                                    <input
+                                        type="text"
+                                        name="last_name"
+                                        value={tempVendorUserData ? tempVendorUserData.last_name : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className='form-group flex-form'>
+                                    <label>Email:</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={tempVendorUserData ? tempVendorUserData.email : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className='form-group flex-form'>
+                                    <label>Phone Number:</label>
+                                    <input
+                                        type="tel"
+                                        name="phone"
+                                        value={tempVendorUserData ? tempVendorUserData.phone : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
+                                <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
+                            </>
+                        ) : (
+                            <>
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td className='cell-title'>Name:</td>
+                                            <td className='cell-text'>{vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : ' Loading...'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='cell-title'>Email:</td>
+                                            <td className='cell-text'>{vendorUserData ? vendorUserData.email : ' Loading...'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='cell-title'>Phone:</td>
+                                            <td className='cell-text'>{vendorUserData ? formatPhoneNumber(vendorUserData.phone) : 'Loading...'}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
+                            </>
+                        )}
                     </div>
                     <br />
                     <h2 className='title'>Vendor Information</h2>
                     <div className='box-bounding'>
-                    {vendorData?.id ? (
-                        vendorEditMode && vendorUserData?.is_admin ? (
-                            <>
-                                <div className='form-group'>
-                                    <label>Vendor Name:</label>
-                                    <input 
-                                        type="text"
-                                        name="name"
-                                        value={tempVendorData ? tempVendorData.name : ''}
-                                        onChange={handleVendorInputChange}
-                                    />
-                                </div>
-                                <div className='form-group'>
-                                    <label>Product:</label>
-                                    <select
-                                        name="product"
-                                        value={tempVendorData ? tempVendorData.product : ''}
-                                        onChange={handleVendorInputChange}
-                                    >
-                                        <option value="">Select</option>
-                                        {products.map((product, index) => (
-                                            <option key={index} value={product}>
-                                                {product}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className='form-group'>
-                                    <label>Bio:</label>
-                                    <textarea
-                                        className='textarea-edit'
-                                        type="text"
-                                        name="bio"
-                                        value={tempVendorData ? tempVendorData.bio : ''}
-                                        onChange={handleVendorInputChange}
-                                    />
-                                </div>
-                                <div className='form-group'>
-                                    <label>Based out of:</label>
-                                    <input
-                                        type="text"
-                                        name="city"
-                                        value={tempVendorData ? tempVendorData.city : ''}
-                                        onChange={handleVendorInputChange}
-                                    />
-                                    <select className='select-state'
-                                        name="state"
-                                        value={tempVendorData ? tempVendorData.state : ''} 
-                                        onChange={handleVendorInputChange}
-                                    >
-                                        <option value="">Select</option>
-                                        {states.map((state, index) => (
-                                            <option key={index} value={state}>
-                                                {state}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className='form-group'>
-                                    <label>Vendor Image:</label>
-                                    <input
-                                        type="file"
-                                        name="file"
-                                        accept="image/*"
-                                        onChange={handleFileChange}
-                                    />
-                                </div>
-                                <button className='btn-edit' onClick={handleSaveVendorChanges}>Save Changes</button>
-                                <button className='btn-edit' onClick={handleVendorEditToggle}>Cancel</button>
-                            </>
-                        ) : (
+                        {vendorData?.id ? (
+                            vendorEditMode && vendorUserData?.is_admin ? (
                                 <>
-                                    <div className='flex-start flex-gap-48'>
-                                        <table>
-                                            <tbody>
-                                                <tr>
-                                                    <td className='cell-title'>Role:</td>
-                                                    <td className='cell-text'>{vendorUserData?.is_admin ? 'Admin' : 'Vendor'}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className='cell-title'>Name:</td>
-                                                    <td className='cell-text'>{vendorData ? vendorData.name : ' Loading...'}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className='cell-title'>Product:</td>
-                                                    <td className='cell-text'>{vendorData ? vendorData.product : ' Loading...'}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className='cell-title'>Bio:</td>
-                                                    <td className='cell-text'>{vendorData ? vendorData.bio : ' Loading...'}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className='cell-title'>Based in:</td>
-                                                    <td className='cell-text'>{vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className='cell-title'>Image:</td>
-                                                    <td className='cell-text'>{vendorData ? <img src={`/vendor-images/${vendorData.image}`} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                    <div className='form-group'>
+                                        <label>Vendor Name:</label>
+                                        <input 
+                                            type="text"
+                                            name="name"
+                                            value={tempVendorData ? tempVendorData.name : ''}
+                                            onChange={handleVendorInputChange}
+                                        />
                                     </div>
-                                    {vendorUserData?.is_admin && (    
-                                        <div className='flex-start'>
-                                            <button className='btn-edit' onClick={handleVendorEditToggle}>Edit</button>
-                                        <div>
-                                            <div className={status === 'success' ? 'alert-favorites' : 'alert-favorites-hidden'}>
-                                                Success Uploading Image
-                                            </div>
-                                            <div className={status === 'fail' ? 'alert-favorites alert-fail' : 'alert-favorites-hidden'}>
-                                                Uploading Image Failed
-                                            </div>
-                                            <div className={status === 'Uploading' ? 'alert-favorites' : 'alert-favorites-hidden'}>
-                                                Uploading Image
+                                    <div className='form-group'>
+                                        <label>Product:</label>
+                                        <select
+                                            name="product"
+                                            value={tempVendorData ? tempVendorData.product : ''}
+                                            onChange={handleVendorInputChange}
+                                        >
+                                            <option value="">Select</option>
+                                            {Array.isArray(products) && products.map((product) => (
+                                                <option key={product.id} value={product.id}>
+                                                    {product.product}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className='form-group'>
+                                        <label>Bio:</label>
+                                        <textarea
+                                            className='textarea-edit'
+                                            type="text"
+                                            name="bio"
+                                            value={tempVendorData ? tempVendorData.bio : ''}
+                                            onChange={handleVendorInputChange}
+                                        />
+                                    </div>
+                                    <div className='form-group'>
+                                        <label>Based out of:</label>
+                                        <input
+                                            type="text"
+                                            name="city"
+                                            value={tempVendorData ? tempVendorData.city : ''}
+                                            onChange={handleVendorInputChange}
+                                        />
+                                        <select className='select-state'
+                                            name="state"
+                                            value={tempVendorData ? tempVendorData.state : ''} 
+                                            onChange={handleVendorInputChange}
+                                        >
+                                            <option value="">Select</option>
+                                            {states.map((state, index) => (
+                                                <option key={index} value={state}>
+                                                    {state}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className='form-group'>
+                                        <label>Vendor Image:</label>
+                                        <input
+                                            type="file"
+                                            name="file"
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                        />
+                                    </div>
+                                    <button className='btn-edit' onClick={handleSaveVendorChanges}>Save Changes</button>
+                                    <button className='btn-edit' onClick={handleVendorEditToggle}>Cancel</button>
+                                </>
+                            ) : (
+                                    <>
+                                        <div className='flex-start flex-gap-48'>
+                                            <table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td className='cell-title'>Role:</td>
+                                                        <td className='cell-text'>{vendorUserData?.is_admin ? 'Admin' : 'Vendor'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className='cell-title'>Name:</td>
+                                                        <td className='cell-text'>{vendorData ? vendorData.name : ' Loading...'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className='cell-title'>Product:</td>
+                                                        <td className='cell-text'>
+                                                            {vendorData?.product
+                                                                ? products.find(product => Number(product.id) === Number(vendorData.product))?.product || 'Unknown Product'
+                                                                : ''}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className='cell-title'>Bio:</td>
+                                                        <td className='cell-text'>{vendorData ? vendorData.bio : ' Loading...'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className='cell-title'>Based in:</td>
+                                                        <td className='cell-text'>{vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className='cell-title'>Image:</td>
+                                                        <td className='cell-text'>{vendorData ? <img src={`/vendor-images/${vendorData.image}`} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {vendorUserData?.is_admin && (    
+                                            <div className='flex-start'>
+                                                <button className='btn-edit' onClick={handleVendorEditToggle}>Edit</button>
+                                            <div>
+                                                <div className={status === 'success' ? 'alert-favorites' : 'alert-favorites-hidden'}>
+                                                    Success Uploading Image
+                                                </div>
+                                                <div className={status === 'fail' ? 'alert-favorites alert-fail' : 'alert-favorites-hidden'}>
+                                                    Uploading Image Failed
+                                                </div>
+                                                <div className={status === 'Uploading' ? 'alert-favorites' : 'alert-favorites-hidden'}>
+                                                    Uploading Image
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    )}
-                                    <VendorLocations vendorId={vendorId} vendorUserData={vendorUserData} />
+                                        )}
+                                        <VendorLocations vendorId={vendorId} vendorUserData={vendorUserData} />
 
-                                    {/* <p><strong>Locations:&emsp;</strong></p>
-                                    {Array.isArray(locations) && locations.length > 0 ? (
-                                        locations.map((marketId, index) => (
-                                            <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                                                <Link to={`/user/markets/${marketId}`}> {marketDetails[marketId] || 'Loading...'} </Link>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p>No market locations at this time</p>
-                                    )} */}
-                                </>
-                            )
-                        ) : (
-                        <VendorCreate />
-                        )}
+                                        {/* <p><strong>Locations:&emsp;</strong></p>
+                                        {Array.isArray(locations) && locations.length > 0 ? (
+                                            locations.map((marketId, index) => (
+                                                <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
+                                                    <Link to={`/user/markets/${marketId}`}> {marketDetails[marketId] || 'Loading...'} </Link>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p>No market locations at this time</p>
+                                        )} */}
+                                    </>
+                                )
+                            ) : (
+                            <VendorCreate />
+                            )}
                     </div>
                 </div>
             </div>

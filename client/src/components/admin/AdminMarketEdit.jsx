@@ -200,8 +200,6 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         }
     };
 
-    console.log(selectedDay)
-
     
     return(
         <>

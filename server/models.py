@@ -148,9 +148,9 @@ class Market(db.Model, SerializerMixin):
     season_end = db.Column(db.Date, nullable=True)
 
     # Relationships
-    reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic')
-    market_favorites = db.relationship('MarketFavorite', back_populates='market', lazy='dynamic')
-    market_days = db.relationship('MarketDay', back_populates='markets')
+    reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic', cascade="all, delete")
+    market_favorites = db.relationship('MarketFavorite', back_populates='market', lazy='dynamic', cascade="all, delete")
+    market_days = db.relationship('MarketDay', back_populates='markets', cascade="all, delete")
 
     serialize_rules = ('-reviews.market', '-market_favorites.market', '-vendor_markets.market', '-reviews.user.vendor_reviews', '-reviews.user.market_reviews')
 
