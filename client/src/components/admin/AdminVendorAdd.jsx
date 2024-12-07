@@ -10,10 +10,16 @@ function AdminVendorEdit({ vendors }) {
 
     const location = useLocation();
 
+    
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/products")
             .then(response => response.json())
-            .then(data => setProducts(data))
+            .then(data => {
+                const sortedProducts = data.sort((a, b) =>
+                    a.product.localeCompare(b.product) 
+                );
+                setProducts(sortedProducts);
+            });
     }, []);
     
     useEffect(() => {
