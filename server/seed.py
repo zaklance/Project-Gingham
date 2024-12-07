@@ -25,6 +25,7 @@ def run():
     Event.query.delete()
     UserNotification.query.delete()
     VendorNotification.query.delete()
+    Product.query.delete()
 
     db.session.commit()
 
