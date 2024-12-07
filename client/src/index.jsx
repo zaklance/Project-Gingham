@@ -58,16 +58,7 @@ const AdminRoute = ({ children }) => {
         return <div style={{ color: "red", fontWeight: "bold" }}>Protected route: Admin not authenticated</div>;
     }
 
-    try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        if (payload.role === "admin") {
-            return children;
-        }
-        return <div style={{ color: "red", fontWeight: "bold" }}>Protected route: Insufficient permissions</div>;
-    } catch (error) {
-        console.error("Invalid token:", error);
-        return <div style={{ color: "red", fontWeight: "bold" }}>Protected route: Invalid token</div>;
-    }
+    return children;
 };
 
 const CheckoutForm = () => {
