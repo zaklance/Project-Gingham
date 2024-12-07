@@ -207,10 +207,10 @@ class Vendor(db.Model, SerializerMixin):
     image = db.Column(db.String)
 
     # Relationships
-    reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic')
-    vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic')
+    reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic', cascade="all, delete")
+    vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic', cascade="all, delete")
     # vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor', lazy='dynamic')
-    vendor_markets = db.relationship('VendorMarket', back_populates='vendor')
+    vendor_markets = db.relationship('VendorMarket', back_populates='vendor', cascade="all, delete")
     # notifications = db.relationship('VendorNotification', back_populates='vendor', lazy='dynamic')
 
     serialize_rules = (

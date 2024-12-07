@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import MarketCard from './MarketCard';
 // import AdvancedMarkerCard from './AdvancedMarkerCard';
@@ -11,18 +11,27 @@ function Markets() {
     const [query, setQuery] = useState("");
     const [marketFavs, setMarketFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
-
+    const [showDropdown, setShowDropdown] = useState(false);
+    
+    const dropdownRef = useRef(null);
+    
     const { handlePopup } = useOutletContext();
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     
-    const onUpdateQuery = event => setQuery(event.target.value);
-    const filteredMarkets = markets.filter(market =>
+    const onUpdateQuery = (event) => {
+        const value = event.target.value;
+        setQuery(value);
+        setShowDropdown(value.trim().length > 0); // Show dropdown if there's input
+    };
+    const filteredMarketsDropdown = markets.filter(market =>
         market.name.toLowerCase().includes(query.toLowerCase()) &&
         market.name !== query &&
-        (!isClicked || marketFavs.some(marketFavs => marketFavs.market_id === market.id)) // Filter by favVendors only when isClicked is true
+        (!isClicked || marketFavs.some(marketFavs => marketFavs.market_id === market.id))
     );
-    const matchingMarket = markets.find(market => market.name.toLowerCase() === query.toLowerCase());
-    const matchingMarketId = matchingMarket ? matchingMarket.id : null;
+    const filteredMarketsResults = markets.filter(market =>
+        market.name.toLowerCase().includes(query.toLowerCase()) &&
+        (!isClicked || marketFavs.some(marketFavs => marketFavs.market_id === market.id))
+    );
     
     function timeConverter(time24) {
         const date = new Date('1970-01-01T' + time24);
@@ -139,6 +148,20 @@ function Markets() {
         }
     }
 
+    const handleClickOutside = (event) => {
+        // Close dropdown if clicked outside
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            setShowDropdown(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     return (
         <>
         <div className="markets-container">
@@ -160,15 +183,23 @@ function Markets() {
                         <tr>
                             <td className='cell-title'>Search:</td>
                             <td className='cell-text'>
-                                <input id='search' className="search-bar" type="text" placeholder="Search vendors..." value={query} onChange={onUpdateQuery} />
-                                <div className="dropdown-content">
-                                    {
-                                        query &&
-                                            filteredMarkets.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => setQuery(item.name)}>
+                                <input id='search' className="search-bar" type="text" placeholder="Search markets..." value={query} onChange={onUpdateQuery} />
+                                {showDropdown && (
+                                    <div className="dropdown-content" ref={dropdownRef}>
+                                        {filteredMarketsDropdown.slice(0, 10).map(item => (
+                                            <div
+                                                className="search-results"
+                                                key={item.id}
+                                                onClick={() => {
+                                                    setQuery(item.name);
+                                                    setShowDropdown(false);
+                                                }}
+                                            >
                                                 {item.name}
-                                        </div>)
-                                    }
-                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </td>
                             <td className='cell-text cell-filter'>Filters: </td>
                             <td>
@@ -182,7 +213,7 @@ function Markets() {
                 </table>
             </div>
             <div className="market-cards-container box-scroll-large margin-t-24">
-                {filteredMarkets.map((marketData) => (
+                {filteredMarketsResults.map((marketData) => (
                     <MarketCard key={marketData.id} marketData={marketData} />
                 ))}
             </div>

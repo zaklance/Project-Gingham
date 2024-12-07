@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { weekDay } from '../../utils/common';
 import VendorBasketCard from './VendorBasketCard';
 import VendorCreate from './VendorCreate';
 import VendorNotification from './VendorNotification';
@@ -13,8 +14,6 @@ function VendorBaskets({ vendorUserData }) {
     const [todayBaskets, setTodayBaskets] = useState([]);
     const [availableBaskets, setAvailableBaskets] = useState([]);
     const [claimedBaskets, setClaimedBaskets] = useState([]);
-
-    const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
     function timeConverter(time24) {
         const [hours, minutes, seconds] = time24.split(':').map(Number);

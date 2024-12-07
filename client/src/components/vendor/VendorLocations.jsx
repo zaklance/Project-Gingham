@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { weekDay } from '../../utils/common';
 
 function VendorLocations({ vendors, vendorId, vendorUserData }) {
     const [newMarketDay, setNewMarketDay] = useState({});
@@ -12,8 +13,6 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
     const [selectedMarketDay, setSelectedMarketDay] = useState(null);
     const [queryMarkets, setQueryMarkets] = useState("");
     const [queryMarketDays, setQueryMarketDays] = useState("");
-
-    const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
     function timeConverter(time24) {
         const date = new Date('1970-01-01T' + time24);

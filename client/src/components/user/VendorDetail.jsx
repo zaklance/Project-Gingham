@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useOutletContext, useNavigate, useLocation } from 'react-router-dom';
+import { weekDay } from '../../utils/common';
 import MarketCard from './MarketCard';
 import ReviewVendor from './ReviewVendor';
 
@@ -21,8 +22,6 @@ function VendorDetail({ products }) {
     
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const isUserLoggedIn = userId;
-
-    const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
     const navigate = useNavigate();
     const location = useLocation();

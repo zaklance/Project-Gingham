@@ -5,8 +5,6 @@ import '../../assets/css/index.css';
 function MarketCard({ marketData }) {
     const navigate = useNavigate();
 
-    const weekDay = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat", "Sun"];
-
     function timeConverter(time24) {
         const date = new Date('1970-01-01T' + time24);
 
