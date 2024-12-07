@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
+import { weekDay, weekDayReverse } from '../../utils/common';
 import AdminMarketEdit from './AdminMarketEdit'
 import AdminMarketAdd from './AdminMarketAdd'
 import AdminMarketDelete from './AdminMarketDelete'
@@ -9,25 +10,6 @@ import AdminMarketEvents from './AdminMarketEvents'
 function AdminMarkets () {
     const [markets, setMarkets] = useState([]);
     const [activeTab, setActiveTab] = useState('edit');
-    
-    const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-    
-    const weekDayReverse = {
-        "Sunday": 0,
-        "sunday": 0,
-        "Monday": 1,
-        "monday": 1,
-        "Tuesday": 2,
-        "tuesday": 2,
-        "Wednesday": 3,
-        "wednesday": 3,
-        "Thursday": 4,
-        "thursday": 4,
-        "Friday": 5,
-        "friday": 5,
-        "Saturday": 6,
-        "saturday": 6
-    }
 
     function timeConverter(time24) {
         const date = new Date('1970-01-01T' + time24);

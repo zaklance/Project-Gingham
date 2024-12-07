@@ -1,35 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, useOutletContext } from 'react-router-dom';
 import VendorCard from './VendorCard';
 import '../../assets/css/index.css';
 
 function Vendors() {
     const [vendors, setVendors] = useState([]);
+    const [products, setProducts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState('');
     const [query, setQuery] = useState("");
     const [vendorFavs, setVendorFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
+    const [productList, setProductList] = useState([]);
+    const [showDropdown, setShowDropdown] = useState(false);
 
+    const dropdownRef = useRef(null);
     const navigate = useNavigate();
     const location = useLocation();
     const { handlePopup } = useOutletContext();
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
-    
-    const products = [
-        'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey',
-        'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables'
-    ];
 
-    const onUpdateQuery = event => setQuery(event.target.value);
-    const filteredVendors = vendors.filter(vendor =>
+    const onUpdateQuery = (event) => {
+        const value = event.target.value;
+        setQuery(value);
+        setShowDropdown(value.trim().length > 0); // Show dropdown if there's input
+    };
+    const filteredVendorsDropdown = vendors.filter(vendor =>
         vendor.name.toLowerCase().includes(query.toLowerCase()) &&
         vendor.name !== query &&
-        (!selectedProduct || vendor.product === selectedProduct) && // Include selectedProduct condition if it exists
-        (!isClicked || vendorFavs.some(vendorFavs => vendorFavs.vendor_id === vendor.id)) // Filter by favVendors only when isClicked is true
+        (!selectedProduct || vendor.product === selectedProduct) &&
+        (!isClicked || vendorFavs.some(vendorFavs => vendorFavs.vendor_id === vendor.id))
     );
-    const matchingVendor = vendors.find(vendor => vendor.name.toLowerCase() === query.toLowerCase());
-    const matchingVendorId = matchingVendor ? matchingVendor.id : null;
+    const filteredVendorsResults = vendors.filter(vendor =>
+        vendor.name.toLowerCase().includes(query.toLowerCase()) &&
+        (!selectedProduct || vendor.product === selectedProduct) &&
+        (!isClicked || vendorFavs.some(vendorFavs => vendorFavs.vendor_id === vendor.id))
+    );
+    
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/api/products")
+            .then(response => response.json())
+            .then(data => setProducts(data))
+    }, []); 
 
     useEffect(() => {
         if (location.state?.selectedProduct) { 
@@ -68,6 +80,27 @@ function Vendors() {
         }
     }
 
+    // console.log(products)
+
+    useEffect(() => {
+        // Create a unique list of products available on the selected day
+        const uniqueProducts = [...new Set(vendors.map(item => item.product))];
+        setProductList(uniqueProducts.sort());
+    }, [vendors]);
+
+    const handleClickOutside = (event) => {
+        // Close dropdown if clicked outside
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            setShowDropdown(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     return (
         <div className="markets-container">
@@ -81,14 +114,22 @@ function Vendors() {
                             <td className='cell-title'>Search:</td>
                             <td className='cell-text'>
                                 <input id='search' className="search-bar" type="text" placeholder="Search vendors..." value={query} onChange={onUpdateQuery} />
-                                <div className="dropdown-content">
-                                    {
-                                        query &&
-                                        filteredVendors.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => setQuery(item.name)}>
-                                            {item.name}
-                                        </div>)
-                                    }
-                                </div>
+                                {showDropdown && (
+                                    <div className="dropdown-content" ref={dropdownRef}>
+                                        {filteredVendorsDropdown.slice(0, 10).map(item => (
+                                            <div
+                                                className="search-results"
+                                                key={item.id}
+                                                onClick={() => {
+                                                    setQuery(item.name);
+                                                    setShowDropdown(false);
+                                                }}
+                                            >
+                                                {item.name}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </td>
                             <td className='cell-text cell-filter'>Filters: </td>
                             <td>
@@ -100,7 +141,7 @@ function Vendors() {
                             <td>
                                 <select className='select-filter' value={selectedProduct} onChange={handleProductChange}>
                                     <option value="">All Products</option>
-                                    {products.map(product => (
+                                    {productList.map(product => (
                                         <option key={product} value={product}>{product}</option>
                                     ))}
                                 </select>
@@ -110,7 +151,7 @@ function Vendors() {
                 </table>
             </div>
             <div className="market-cards-container box-scroll-large">
-                {filteredVendors.map((vendorData) => (
+                {filteredVendorsResults.map((vendorData) => (
                     <VendorCard 
                         key={vendorData.id} 
                         vendorData={vendorData} 

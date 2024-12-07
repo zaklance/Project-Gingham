@@ -202,15 +202,15 @@ class Vendor(db.Model, SerializerMixin):
     name = db.Column(db.String, nullable=False)
     city = db.Column(db.String, nullable=True)
     state = db.Column(db.String(2), nullable=True)
-    product = db.Column(db.String, nullable=False)
+    product = db.Column(db.Integer, nullable=False)
     bio = db.Column(db.String, nullable=True)
     image = db.Column(db.String)
 
     # Relationships
-    reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic')
-    vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic')
+    reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic', cascade="all, delete")
+    vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic', cascade="all, delete")
     # vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor', lazy='dynamic')
-    vendor_markets = db.relationship('VendorMarket', back_populates='vendor')
+    vendor_markets = db.relationship('VendorMarket', back_populates='vendor', cascade="all, delete")
     # notifications = db.relationship('VendorNotification', back_populates='vendor', lazy='dynamic')
 
     serialize_rules = (
@@ -660,3 +660,18 @@ class Event(db.Model):
     
     def __repr__(self):
         return (f"<User Notification ID: {self.id}, created on {self.created_at}")
+
+class Product(db.Model, SerializerMixin):
+    __tablename__ = 'products'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product = db.Column(db.String, nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'product': self.product
+        }
+
+    def __repr__(self) -> str:
+        return f"<Product ID: {self.id}, Product: {self.product}>"

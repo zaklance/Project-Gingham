@@ -58,7 +58,7 @@ function AdminVendorDelete({ vendors }) {
                 });
 
                 alert(`Market "${matchingVendor.name}" was successfully deleted.`);
-                window.location.reload();
+                window.location.href = "/admin/vendors?tab=delete";
             } catch (error) {
                 console.error('Error deleting market or associated days:', error);
                 alert('An error occurred while deleting the market and its associated days.');

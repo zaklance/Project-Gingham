@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { states } from '../../utils/common';
 
 function VendorCreate () {
     const [vendorEditMode, setVendorEditMode] = useState(false);
@@ -20,14 +21,6 @@ function VendorCreate () {
     const products = [
         'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 
         'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables'
-    ];
-
-    const states = [
-        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", 
-        "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", 
-        "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", 
-        "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", 
-        "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
     ];
 
     useEffect(() => {

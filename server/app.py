@@ -3,7 +3,7 @@ import json
 import smtplib
 import pytz
 from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
-from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, ReportedReview, VendorReviewRating, MarketReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, bcrypt
+from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, ReportedReview, VendorReviewRating, MarketReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, Product, UserNotification, VendorNotification, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy import func, desc
 from sqlalchemy.exc import IntegrityError
@@ -448,6 +448,14 @@ def market_day_by_id(id):
         db.session.delete(market_day)
         db.session.commit()
         return {}, 204
+    elif request.method == 'DELETE':
+        try:
+            db.session.delete(market_day)
+            db.session.commit()
+            return {}, 204
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
     
 @app.route('/api/vendors', methods=['GET', 'POST', 'PATCH'])
 def all_vendors():
@@ -501,17 +509,15 @@ def all_vendors():
             db.session.rollback()
             return {'error': f'Exception: {str(e)}'}, 500
 
-@app.route('/api/vendors/<int:id>', methods=['GET', 'PATCH'])
+@app.route('/api/vendors/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def vendor_by_id(id):
+    vendor = Vendor.query.filter_by(id=id).first()
+    if not vendor:
+        return {'error': 'vendor not found'}, 404
     if request.method == 'GET':
-        vendor = Vendor.query.filter_by(id=id).first()
-        if not vendor:
-            return {'error': 'vendor not found'}, 404
         vendor_data = vendor.to_dict()
         return jsonify(vendor_data), 200
-    
     elif request.method == 'PATCH':
-        vendor = Vendor.query.filter_by(id=id).first()
         if not vendor:
             return {'error': 'vendor not found'}, 404
 
@@ -533,9 +539,17 @@ def vendor_by_id(id):
 
             db.session.commit()
             return jsonify(vendor.to_dict()), 200
-        
         except Exception as e: 
             db.session.rollback()
+            return {'error': str(e)}, 500
+    elif request.method == 'DELETE':
+        try:
+            db.session.delete(vendor)
+            db.session.commit()
+            return {}, 204
+        except Exception as e:
+            db.session.rollback()
+            print(f"Exception during DELETE: {e}")
             return {'error': str(e)}, 500
 
 @app.route('/api/vendors/<int:vendor_id>/image', methods=['GET', 'POST'])
@@ -725,7 +739,7 @@ def get_top_market_reviews():
         percentile_value = vote_up_list[max(0, percentile_index)]
     else:
         percentile_value = 0
-    print("Percentile value for top reviews:", percentile_value)
+    # print("Percentile value for top reviews:", percentile_value)
     # Get reviews with vote_up_count in the top 20%
     top_reviews = (
         db.session.query(MarketReview)
@@ -1566,6 +1580,85 @@ def get_vendor_sales_history():
     except Exception as e:
         app.logger.error(f"Error fetching sales history: {e}")
         return {'error': f"Exception: {str(e)}"}, 500
+
+@app.route('/api/products', methods=['GET', 'POST'])
+def all_products():
+    if request.method == 'GET':
+        products = Product.query.all()
+        return jsonify([product.to_dict() for product in products]), 200
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_product = Product(
+            product=data.get('product'),
+        )
+        try:
+            db.session.add(new_product)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Failed to create market: {str(e)}'}, 500
+
+        return new_product.to_dict(), 201
+    
+@app.route('/api/products/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
+def product(id):
+    if request.method == 'GET':
+        product = Product.query.filter_by(id=id).first()
+        if not product:
+            return {'error': 'product not found'}, 404
+        product_data = product.to_dict()
+        return jsonify(product_data), 200
+
+    elif request.method == 'PATCH':
+        product = Product.query.filter_by(id=id).first()
+        if not product:
+            return {'error': 'product not found'}, 404
+        try:
+            data = request.get_json()
+            # for key, value in data.items():
+            #     setattr(user, key, value)
+            product.product = data.get('product')
+
+            db.session.commit()
+            return jsonify(product.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+        
+    elif request.method == 'POST':
+        data = request.get_json()
+
+        existing_product = Product.query.filter_by(product=data['product']).first()
+        if existing_product:
+            return {'error': 'Email already in use'}, 400
+        
+        try: 
+            new_product = Product(
+                product=data['product']
+            )
+            db.session.add(new_product)
+            db.session.commit()
+            return jsonify(new_product.to_dict()), 201
+        
+        except Exception as e: 
+            db.session.rollback()
+            return {'error': str(e)}, 500
+        
+    elif request.method == 'DELETE':
+        product = Product.query.filter_by(id=id).first()
+        if not product: 
+            return {'error': 'user not found'}, 404
+        
+        try: 
+            db.session.delete(product)
+            db.session.commit()
+            return {}, 204
+        
+        except Exception as e: 
+            db.session.rollback()
+            return {'error': str(e)}, 500
 
 # ADMIN PORTAL
 @app.route('/api/admin/login', methods=['POST'])

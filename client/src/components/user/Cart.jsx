@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
+import { weekDay } from '../../utils/common';
 
 function Cart() {
     const { handlePopup, cartItems, setCartItems, amountInCart, setAmountInCart } = useOutletContext();
@@ -8,8 +9,6 @@ function Cart() {
     const [cartTimer, setCartTimer] = useState(null);
 
     const navigate = useNavigate();
-
-    const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
     function timeConverter(time24) {
         const date = new Date(`1970-01-01T${time24}Z`); // Add 'Z' to indicate UTC
