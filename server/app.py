@@ -386,7 +386,7 @@ def market_by_id(id):
             return {'error': str(e)}, 500
 
 @app.route('/api/market-days', methods=['GET', 'POST', 'DELETE'])
-@jwt_required()
+# @jwt_required()
 def all_market_days():
     
     # if not check_role('admin'):
@@ -448,6 +448,14 @@ def market_day_by_id(id):
         db.session.delete(market_day)
         db.session.commit()
         return {}, 204
+    elif request.method == 'DELETE':
+        try:
+            db.session.delete(market_day)
+            db.session.commit()
+            return {}, 204
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
     
 @app.route('/api/vendors', methods=['GET', 'POST', 'PATCH'])
 def all_vendors():
@@ -501,17 +509,15 @@ def all_vendors():
             db.session.rollback()
             return {'error': f'Exception: {str(e)}'}, 500
 
-@app.route('/api/vendors/<int:id>', methods=['GET', 'PATCH'])
+@app.route('/api/vendors/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def vendor_by_id(id):
+    vendor = Vendor.query.filter_by(id=id).first()
+    if not vendor:
+        return {'error': 'vendor not found'}, 404
     if request.method == 'GET':
-        vendor = Vendor.query.filter_by(id=id).first()
-        if not vendor:
-            return {'error': 'vendor not found'}, 404
         vendor_data = vendor.to_dict()
         return jsonify(vendor_data), 200
-    
     elif request.method == 'PATCH':
-        vendor = Vendor.query.filter_by(id=id).first()
         if not vendor:
             return {'error': 'vendor not found'}, 404
 
@@ -533,9 +539,17 @@ def vendor_by_id(id):
 
             db.session.commit()
             return jsonify(vendor.to_dict()), 200
-        
         except Exception as e: 
             db.session.rollback()
+            return {'error': str(e)}, 500
+    elif request.method == 'DELETE':
+        try:
+            db.session.delete(vendor)
+            db.session.commit()
+            return {}, 204
+        except Exception as e:
+            db.session.rollback()
+            print(f"Exception during DELETE: {e}")
             return {'error': str(e)}, 500
 
 @app.route('/api/vendors/<int:vendor_id>/image', methods=['GET', 'POST'])
@@ -725,7 +739,7 @@ def get_top_market_reviews():
         percentile_value = vote_up_list[max(0, percentile_index)]
     else:
         percentile_value = 0
-    print("Percentile value for top reviews:", percentile_value)
+    # print("Percentile value for top reviews:", percentile_value)
     # Get reviews with vote_up_count in the top 20%
     top_reviews = (
         db.session.query(MarketReview)

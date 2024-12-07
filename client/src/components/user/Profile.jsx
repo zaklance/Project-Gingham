@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { states } from '../../utils/common';
 import BasketSales from './BasketSales';
 
 function Profile({ marketData }) {
@@ -10,16 +11,6 @@ function Profile({ marketData }) {
     const [editMode, setEditMode] = useState(false);
     const [vendorFavs, setVendorFavs] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
-
-    const weekDay = ["Mon", "Tues", "Wed", "Thur", "Fri", "Sat", "Sun"];
-
-    const states = [
-        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
-        "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
-        "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
-        "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
-        "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
-    ];
 
     function timeConverter(time24) {
         const date = new Date('1970-01-01T' + time24);

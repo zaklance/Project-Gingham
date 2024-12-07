@@ -793,7 +793,7 @@ def run():
     companies = ['Goods', 'Produce', 'Farms', 'Organics', 'and Son', 
                  'and Daughter', 'Market', 'Apothecary', 'Orchard'
                  ]
-    states = ['CT', 'DE', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT']
+    states_ne = ['CT', 'DE', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT']
     rev_len = randint(2, 7)
     images = [
         '05bd2f_2b30b89b49eb4b2e95810360a9357bd2~mv2_d_7360_4912_s_4_2.jpeg',
@@ -821,7 +821,7 @@ def run():
     for i in range(150):
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
         city = str(fake.city())
-        state = str(choice(states))
+        state = str(choice(states_ne))
         product = str(randint(0, 22))
         bio = str(fake.paragraph(nb_sentences=rev_len))
         image = str(choice(images))
