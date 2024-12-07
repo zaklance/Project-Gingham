@@ -386,7 +386,7 @@ def market_by_id(id):
             return {'error': str(e)}, 500
 
 @app.route('/api/market-days', methods=['GET', 'POST', 'DELETE'])
-@jwt_required()
+# @jwt_required()
 def all_market_days():
     
     # if not check_role('admin'):
