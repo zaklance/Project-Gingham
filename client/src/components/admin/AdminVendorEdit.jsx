@@ -8,19 +8,25 @@ function AdminVendorEdit({ vendors }) {
     const [tempVendorData, setTempVendorData] = useState(null);
     const [image, setImage] = useState(null);
     const [status, setStatus] = useState('initial');
-
-    const products = [
-        'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 
-        'Coffee/Tea','Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey',
-        'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 
-        'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables'
-    ];
-
+    const [products, setProducts] = useState([])
 
     const onUpdateQuery = event => setQuery(event.target.value);
     const filteredVendors = vendors.filter(vendor => vendor.name.toLowerCase().includes(query.toLowerCase()) && vendor.name !== query)
     const matchingVendor = vendors.find(vendor => vendor.name.toLowerCase() === query.toLowerCase());
     const matchingVendorId = matchingVendor ? matchingVendor.id : null;
+
+
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/api/products")
+            .then(response => response.json())
+            .then(data => setProducts(data))
+    }, []);
+
+    useEffect(() => {
+        if (location.state?.selectedProduct) {
+            setSelectedProduct(location.state.selectedProduct);
+        }
+    })
 
     useEffect(() => {
         if (!matchingVendorId) return
@@ -136,6 +142,7 @@ function AdminVendorEdit({ vendors }) {
             setStatus('initial');
         }
     };
+;
 
     return (
         <>
@@ -203,9 +210,9 @@ function AdminVendorEdit({ vendors }) {
                                     onChange={handleInputChange}
                                 >
                                     <option value="">Select</option>
-                                    {products.map((product, index) => (
-                                        <option key={index} value={product}>
-                                            {product}
+                                    {Array.isArray(products) && products.map((product) => (
+                                        <option key={product.id} value={product.id}>
+                                            {product.product}
                                         </option>
                                     ))}
                                 </select>
@@ -262,7 +269,11 @@ function AdminVendorEdit({ vendors }) {
                                     </tr>
                                     <tr>
                                         <td className='cell-title'>Product:</td>
-                                        <td className='cell-text'>{vendorData ? vendorData.product : ''}</td>
+                                        <td className='cell-text'>
+                                            {vendorData?.product
+                                                ? products.find(product => Number(product.id) === Number(vendorData.product))?.product || 'Unknown Product'
+                                                : ''}
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title'>Bio:</td>
