@@ -78,7 +78,7 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
                 });
 
                 alert(`Market "${matchingMarket.name}" and its associated days were successfully deleted.`);
-                window.location.reload();
+                window.location.href = "/admin/markets?tab=delete";
             } catch (error) {
                 console.error('Error deleting market or associated days:', error);
                 alert('An error occurred while deleting the market and its associated days.');
