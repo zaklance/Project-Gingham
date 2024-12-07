@@ -75,7 +75,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                 try {
                     console.log('Fetching saved baskets...');
                     const response = await fetch(
-                        `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.market_id}`
+                        `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&id=${marketDay.market_id}`
                     );
                     if (response.ok) {
                         const data = await response.json();
@@ -212,7 +212,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
 
         if (parsedNumBaskets > 0 && vendorId && marketDay && marketDay.id && !isNaN(parsedPrice) && parsedPrice > 0) {
             const promises = [];
-            console.log('Posting to API with market_day_id:', marketDay.id); // Ensure you're using `marketDay.id` here
+            console.log('Posting to API with market_day_id:', marketDay.id);
     
             for (let i = 0; i < parsedNumBaskets; i++) {
                 promises.push(fetch('http://127.0.0.1:5555/api/baskets', {
@@ -222,7 +222,7 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                     },
                     body: JSON.stringify({
                         vendor_id: vendorId,
-                        market_day_id: marketDay.id, // Use the correct market_day_id here
+                        market_day_id: marketDay.id,
                         sale_date: formattedSaleDate,
                         pickup_start: formattedPickupStart,
                         pickup_end: formattedPickupEnd,
