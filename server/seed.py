@@ -1,7 +1,7 @@
 from app import app
 from faker import Faker
 from random import random, choice, randint
-from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketReviewRating, VendorReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, bcrypt
+from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketReviewRating, VendorReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, Product, bcrypt
 import json
 from datetime import datetime, timedelta, timezone, time, date
 
@@ -789,9 +789,11 @@ def run():
 
 
     vendors = []
-    products = ['Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables']
-    companies = ['Goods', 'Produce', 'Farms', 'Organics', 'and Son', 'and Daughter', 'Market', 'Apothecary', 'Orchard']
-    states = ['CT', 'DE', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT']
+    
+    companies = ['Goods', 'Produce', 'Farms', 'Organics', 'and Son', 
+                 'and Daughter', 'Market', 'Apothecary', 'Orchard'
+                 ]
+    states_ne = ['CT', 'DE', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT']
     rev_len = randint(2, 7)
     images = [
         '05bd2f_2b30b89b49eb4b2e95810360a9357bd2~mv2_d_7360_4912_s_4_2.jpeg',
@@ -819,8 +821,8 @@ def run():
     for i in range(150):
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
         city = str(fake.city())
-        state = str(choice(states))
-        product = str(choice(products))
+        state = str(choice(states_ne))
+        product = str(randint(0, 22))
         bio = str(fake.paragraph(nb_sentences=rev_len))
         image = str(choice(images))
 
@@ -1267,6 +1269,23 @@ def run():
         vendor_rev_ratings.append(vrr)
 
     db.session.add_all(vendor_rev_ratings)
+    db.session.commit()
+
+    products_list = [
+        'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 
+        'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 'International', 
+        'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 
+        'Pickles', "Spices", 'Spirits', 'Vegetables'
+        ]
+    products = []
+
+    for product_name in products_list:
+        product = Product(
+            product=product_name
+            )
+        products.append(product)
+
+    db.session.add_all(products)
     db.session.commit()
 
     

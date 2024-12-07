@@ -1383,6 +1383,11 @@ link {
   width: 100%
 }
 
+.table-history thead {
+  position: sticky;
+  top: -2px;
+}
+
 .table-history th {
   background-color: #007BFF;
   color: white;
