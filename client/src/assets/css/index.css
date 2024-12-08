@@ -1355,6 +1355,17 @@ link {
   word-wrap: break-word;
 }
 
+.cell-text-small {
+  width: 120px;
+  height: 34px;
+  padding: 4px;
+  border: #eee;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 8px;
+  word-wrap: break-word;
+}
+
 .cell-filter {
   padding: 4px 12px;
   font-size: 1em;

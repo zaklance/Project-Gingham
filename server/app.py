@@ -2123,7 +2123,7 @@ def delete_user_notifications(id):
         
         db.session.delete(notification)
         db.session.commit()
-        return jsonify({'notifications': notification_data}) 
+        return jsonify({'notifications': notification_data})
 
 @app.route('/api/create-vendor-notification', methods=['POST'])
 def create_vendor_notification():
@@ -2321,6 +2321,27 @@ def create_admin_notification():
         db.session.rollback()
         print(f"Error creating notification: {str(e)}")
         return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
+
+
+@app.route('/api/admin-notifications', methods=['GET'])
+def get_admin_notifications():
+    if request.method == 'GET':
+        notifications = AdminNotification.query.all()
+        return jsonify([notif.to_dict() for notif in notifications]), 200
+    
+@app.route('/api/admin-notifications/<int:id>', methods=['DELETE'])
+def delete_admin_notifications(id):
+    if request.method == 'DELETE':
+        notification = AdminNotification.query.filter_by(id=id).first()
+
+        if not notification:
+            return jsonify({'message': 'No notifications found'}), 404
+
+        notification_data = {'id': notification.id, 'message': notification.message}
+        
+        db.session.delete(notification)
+        db.session.commit()
+        return jsonify({'notifications': notification_data})
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

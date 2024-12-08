@@ -202,7 +202,7 @@ class Vendor(db.Model, SerializerMixin):
     name = db.Column(db.String, nullable=False)
     city = db.Column(db.String, nullable=True)
     state = db.Column(db.String(2), nullable=True)
-    product = db.Column(db.Integer, nullable=False)
+    product = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     bio = db.Column(db.String, nullable=True)
     image = db.Column(db.String)
 
@@ -623,6 +623,16 @@ class AdminNotification(db.Model):
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "vendor_id": self.vendor_id,
+            "vendor_user_id": self.vendor_user_id,
+            "message": self.message,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "is_read": self.is_read
+        }
     
     def __repr__(self):
         return (f"<Vendor Notification ID: {self.id}, created on {self.created_at}")

@@ -67,7 +67,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
         }));
     };
 
-    const handleSaveMarket = async (event) => {
+    const handleCreateMarket = async (event) => {
         event.preventDefault();
         try {
             // Convert year_round to boolean
@@ -123,7 +123,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
         }
     };
 
-    const handleSaveMarketDay = async (event) => {
+    const handleCreateMarketDay = async (event) => {
         event.preventDefault();
         try {
             if (!newMarketDay.market_id || !newMarketDay.day_of_week) {
@@ -289,7 +289,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                                 onChange={handleFileChange}
                             />
                         </div>
-                        <button className='btn-edit' onClick={handleSaveMarket}>Save Market</button>
+                        <button className='btn-edit' onClick={handleCreateMarket}>Save Market</button>
                     </div>
                 </div>
                 <div>
@@ -353,7 +353,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                                 onChange={handleInputChange}
                             />
                         </div>
-                        <button className='btn-edit' onClick={handleSaveMarketDay}>Save Market Day</button>
+                        <button className='btn-edit' onClick={handleCreateMarketDay}>Save Market Day</button>
                     </>
                 </div>
             </div>
