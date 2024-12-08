@@ -3,7 +3,7 @@ import json
 import smtplib
 import pytz
 from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
-from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, ReportedReview, VendorReviewRating, MarketReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, Product, UserNotification, VendorNotification, bcrypt
+from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, ReportedReview, VendorReviewRating, MarketReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, Product, UserNotification, VendorNotification, AdminNotification, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy import func, desc
 from sqlalchemy.exc import IntegrityError
@@ -2104,7 +2104,7 @@ def delete_user_notifications(id):
         return jsonify({'notifications': notification_data}) 
 
 @app.route('/api/create-vendor-notification', methods=['POST'])
-def create_notification():
+def create_vendor_notification():
     data = request.get_json()
 
     if not data or 'message' not in data or 'vendor_id' not in data or 'vendor_user_id' not in data:
@@ -2262,6 +2262,43 @@ def reject_notification(notification_id):
     db.session.commit()
 
     return jsonify({'message': 'Notification rejected successfully'}), 200
+
+@app.route('/api/create-admin-notification', methods=['POST'])
+def create_admin_notification():
+    data = request.get_json()
+
+    if not data or 'message' not in data:
+        return jsonify({'message': 'Invalid request data.'}), 400
+
+    try:
+        new_notification = AdminNotification(
+            message=data['message'],
+            vendor_user_id=data['vendor_user_id'],
+            vendor_id=data['vendor_id'],
+            created_at=datetime.utcnow(),
+            is_read=False
+        )
+        db.session.add(new_notification)
+        db.session.commit()
+
+        response_data = {
+            'id': new_notification.id,
+            'message': new_notification.message,
+            'is_read': new_notification.is_read
+        }
+
+        if new_notification.vendor_id is not None:
+            response_data['vendor_id'] = new_notification.vendor_id
+        if new_notification.vendor_user_id is not None:
+            response_data['vendor_user_id'] = new_notification.vendor_user_id
+
+        return jsonify(response_data), 201
+
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error creating notification: {str(e)}")
+        return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

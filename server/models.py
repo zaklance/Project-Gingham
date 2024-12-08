@@ -619,8 +619,8 @@ class AdminNotification(db.Model):
     __tablename__ = 'admin_notifications'
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String, nullable=False)
-    market_reviews_id = db.Column(db.Integer, db.ForeignKey('market_reviews.id'), nullable=True)
-    vendor_reviews_id = db.Column(db.Integer, db.ForeignKey('vendor_reviews.id'), nullable=True)
+    vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
     

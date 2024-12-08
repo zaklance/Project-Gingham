@@ -15,9 +15,11 @@ function AdminVendorEdit({ vendors }) {
         fetch("http://127.0.0.1:5555/api/products")
             .then(response => response.json())
             .then(data => {
-                const sortedProducts = data.sort((a, b) =>
-                    a.product.localeCompare(b.product) 
-                );
+                const sortedProducts = data.sort((a, b) => {
+                    if (a.product === "Other") return 1;
+                    if (b.product === "Other") return -1;
+                    return a.product.localeCompare(b.product);
+                });
                 setProducts(sortedProducts);
             });
     }, []);

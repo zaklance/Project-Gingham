@@ -16,6 +16,7 @@ function VendorCreate () {
     const [status, setStatus] = useState('initial')
     const [vendorImageURL, setVendorImageURL] = useState(null);
     const [products, setProducts] = useState([])
+    const [productRequest, setProductRequest] = useState('')
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -25,9 +26,11 @@ function VendorCreate () {
         fetch("http://127.0.0.1:5555/api/products")
             .then(response => response.json())
             .then(data => {
-                const sortedProducts = data.sort((a, b) =>
-                    a.product.localeCompare(b.product) 
-                );
+                const sortedProducts = data.sort((a, b) => {
+                    if (a.product === "Other") return 1;
+                    if (b.product === "Other") return -1;
+                    return a.product.localeCompare(b.product);
+                });
                 setProducts(sortedProducts);
             });
     }, []);
@@ -132,16 +135,20 @@ function VendorCreate () {
     const handleVendorInputChange = (event) => {
         setVendorData({ ...vendorData, [event.target.name]: event.target.value, });
     };
-
+    
     const handleVendorEditToggle = () => {
         setVendorEditMode(!vendorEditMode);
+    };
+
+    const handleProductInputChange = (event) => {
+        setProductRequest(event.target.value);
     };
 
     const handleFileChange = (event) => {
         if (event.target.files) { setStatus('initial'); setImage(event.target.files[0]); }
     };
 
-    const handleSaveNewVendor = async () => {
+    const handleCreateVendor = async () => {
         if (!vendorUserData || !vendorUserData.id) {
             console.log('No user data available or user ID is missing');
             return;
@@ -201,14 +208,41 @@ function VendorCreate () {
 
                 setVendorEditMode(false);
                 setNewVendor(false);
-                navigate('/vendor/dashboard');
-                window.location.reload()
             } else {
                 console.log('Error updating user with vendor_id');
             }
         } catch (error) {
             console.error('Error creating vendor and updating user:', error);
         }
+        
+        if (Number(vendorData.product) === 1 && productRequest.trim() !== '') {
+            try {
+                const response = await fetch('http://127.0.0.1:5555/api/create-admin-notification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        vendor_id: vendorUserData.id,
+                        vendor_user_id: vendorUserId,
+                        message: `${vendorData.name} has requested to for a new Product category: ${productRequest}.`,
+                    }),
+                });
+                if (response.ok) {
+                    const responseData = await response.json();
+                    alert(`Your product request has been sent to the admins for approval!`);
+                    navigate('/vendor/dashboard');
+                    window.location.reload()
+                } else {
+                    const errorData = await response.json();
+                    alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Error sending request:', error);
+                alert('An error occurred while sending the request. Please try again later.');
+            }
+        }
+
     };
 
     const handleRequestJoin = async (event) => {
@@ -218,7 +252,6 @@ function VendorCreate () {
             alert('Please select a vendor and ensure you are logged in.');
             return;
         }
-    
         const token = localStorage.getItem('vendor_jwt-token');
         if (!token) {
             alert('Authorization token is missing. Please log in.');
@@ -338,10 +371,13 @@ function VendorCreate () {
                 <h2>Create a Vendor Profile</h2>
             </div>
             <div className="form-group">
-
                 <label>Vendor Name:</label>
-                <input type="text" name="name" value={vendorData?.name || ''} onChange={handleVendorInputChange} />
-            
+                <input
+                    type="text"
+                    name="name" 
+                    value={vendorData?.name || ''} 
+                    onChange={handleVendorInputChange} 
+                />
             </div>
             <div className="form-group">
                 <label>Product:</label>
@@ -354,15 +390,36 @@ function VendorCreate () {
                     ))}
                 </select>
             </div>
+            {Number(vendorData?.product) === 1 && (
+                <div className="form-group">
+                    <label>Other Product:</label>
+                    <input
+                        type="text"
+                        name="new_product"
+                        value={productRequest || ''}
+                        onChange={handleProductInputChange}
+                    />
+                </div>
+            )}
             <div className="form-group">
-
                 <label>Bio:</label>
-                <textarea className='textarea-edit' type="text" name="bio" value={vendorData?.bio || ''} onChange={handleVendorInputChange} />
-            
+                <textarea 
+                    className='textarea-edit' 
+                    type="text" 
+                    name="bio" 
+                    value={vendorData?.bio || ''} 
+                    placeholder='Super excellent bio goes here!'
+                    onChange={handleVendorInputChange} 
+                />
             </div>
             <div className="form-group">
                 <label>Based out of:</label>
-                <input type="text" name="city" value={vendorData?.city || ''} onChange={handleVendorInputChange} />
+                <input 
+                    type="text" 
+                    name="city" 
+                    value={vendorData?.city || ''} 
+                    onChange={handleVendorInputChange} 
+                />
                 <select className="select-state" name="state" value={vendorData?.state || ''} onChange={handleVendorInputChange}>
                     <option value="">Select</option>
                     {states.map((state, index) => (
@@ -381,7 +438,7 @@ function VendorCreate () {
 
             {/* {vendorUserData?.is_admin && ( */}
                 <>
-                    <button className="btn-edit" onClick={handleSaveNewVendor}>Create Vendor</button>
+                    <button className="btn-edit" onClick={handleCreateVendor}>Create Vendor</button>
                     <button className="btn-edit" onClick={() => setNewVendor(false)}>Cancel</button>
                 </>
             {/* )} */}
