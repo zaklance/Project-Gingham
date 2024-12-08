@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { timeConverter } from '../../utils/helpers';
 import { weekDay } from '../../utils/common';
 
 function VendorLocations({ vendors, vendorId, vendorUserData }) {
@@ -13,23 +14,10 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
     const [selectedMarketDay, setSelectedMarketDay] = useState(null);
     const [queryMarkets, setQueryMarkets] = useState("");
     const [queryMarketDays, setQueryMarketDays] = useState("");
-
-    function timeConverter(time24) {
-        const date = new Date('1970-01-01T' + time24);
-
-        const time12 = date.toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-        });
-        return time12
-    }
-
     const onUpdateQueryMarkets = event => setQueryMarkets(event.target.value);
     const filteredQueryMarkets = allMarkets.filter(market => market.name.toLowerCase().includes(queryMarkets.toLowerCase()) && market.name !== queryMarkets)
     const matchingMarket = allMarkets.find(market => market.name.toLowerCase() === queryMarkets.toLowerCase());
     const matchingMarketId = matchingMarket ? matchingMarket.id : null;
-    
     
     const onUpdateQueryMarketDays = event => setQueryMarketDays(event.target.value);
     const filteredQueryMarketDaysByMarket = useMemo(() => {
@@ -79,24 +67,23 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
     }, [allVendorMarkets]);
 
     useEffect(() => {
-    const fetchData = async () => {
-        try {
-            const response = await fetch("http://127.0.0.1:5555/api/markets");
-            const data = await response.json();
-            setAllMarkets(data);
-            if (filteredMarketDays.length > 0) {
-                const filteredData = data.filter(item =>
-                    filteredMarketDays.some(vendorMarket => vendorMarket.market_id === item.id)
-                );
-                setFilteredMarkets(filteredData);
+        const fetchData = async () => {
+            try {
+                const response = await fetch("http://127.0.0.1:5555/api/markets");
+                const data = await response.json();
+                setAllMarkets(data);
+                if (filteredMarketDays.length > 0) {
+                    const filteredData = data.filter(item =>
+                        filteredMarketDays.some(vendorMarket => vendorMarket.market_id === item.id)
+                    );
+                    setFilteredMarkets(filteredData);
+                }
+            } catch (error) {
+                console.error("Error fetching markets:", error);
             }
-        } catch (error) {
-            console.error("Error fetching markets:", error);
-        }
-    };
-    fetchData();
-}, [filteredMarketDays]);
-
+        };
+        fetchData();
+    }, [filteredMarketDays]);
 
     useEffect(() => {
         if (allVendorMarkets.length > 0 && markets?.id) {

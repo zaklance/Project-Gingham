@@ -23,26 +23,17 @@ function Markets() {
         setQuery(value);
         setShowDropdown(value.trim().length > 0); // Show dropdown if there's input
     };
+
     const filteredMarketsDropdown = markets.filter(market =>
         market.name.toLowerCase().includes(query.toLowerCase()) &&
         market.name !== query &&
         (!isClicked || marketFavs.some(marketFavs => marketFavs.market_id === market.id))
     );
+
     const filteredMarketsResults = markets.filter(market =>
         market.name.toLowerCase().includes(query.toLowerCase()) &&
         (!isClicked || marketFavs.some(marketFavs => marketFavs.market_id === market.id))
     );
-    
-    function timeConverter(time24) {
-        const date = new Date('1970-01-01T' + time24);
-
-        const time12 = date.toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-        });
-        return time12
-    }
     
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/markets")
@@ -50,7 +41,6 @@ function Markets() {
             .then(markets => setMarkets(markets))
             .catch(error => console.error('Error fetching markets', error));
     }, []);
-
 
     const unionSquare = { lat:40.736358642578125, lng: -73.99076080322266 }
 

@@ -188,7 +188,6 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
         }));
     };
 
-
     return (
         <>
             <div className='box-bounding'>

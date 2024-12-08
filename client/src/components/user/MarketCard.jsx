@@ -1,33 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../assets/css/index.css';
+import { timeConverter, formatDate } from '../../utils/helpers';
 
 function MarketCard({ marketData }) {
     const navigate = useNavigate();
-
-    function timeConverter(time24) {
-        const date = new Date('1970-01-01T' + time24);
-
-        const time12 = date.toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true,
-        });
-        return time12;
-    }
-
-    function formatDate(dateString) {
-        if (!dateString || dateString.length !== 10) return "Invalid Date";
-    
-        const date = new Date(dateString + "T00:00:00");
-    
-        if (isNaN(date.getTime())) return "Invalid Date";
-    
-        const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
-        const day = date.getDate();
-    
-        return `${monthName} ${day}`;
-    }
 
     const handleLearnMore = () => {
         navigate(`/user/markets/${marketData.id}`);

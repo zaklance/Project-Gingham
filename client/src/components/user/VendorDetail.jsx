@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useOutletContext, useNavigate, useLocation } from 'react-router-dom';
 import { weekDay } from '../../utils/common';
+import { timeConverter, formatEventDate } from '../../utils/helpers';
 import MarketCard from './MarketCard';
 import ReviewVendor from './ReviewVendor';
 
@@ -40,55 +41,6 @@ function VendorDetail({ products }) {
             return () => clearTimeout(timer);
         }
     }, [cartItems, setCartItems, setAmountInCart]);
-
-    function timeConverter(time24) {
-        if (!time24) return 'Loading...';
-        const hours = parseInt(time24.slice(0, 2), 10);
-        const minutes = parseInt(time24.slice(3, 5), 10);
-    
-        const date = new Date(1970, 0, 1, hours, minutes);
-        return date.toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true,
-        });
-    }
-
-    function formatEventDate(dateString) {   
-        const date = new Date(dateString + "T00:00:00");
-    
-        if (isNaN(date.getTime())) return "Invalid Date";
-    
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-    }
-
-    function formatDate(dateString) {
-        if (!dateString || dateString.length !== 10) return "Invalid Date";
-    
-        const date = new Date(dateString + "T00:00:00");
-    
-        if (isNaN(date.getTime())) return "Invalid Date";
-    
-        const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
-        const day = date.getDate();
-    
-        return `${monthName} ${day}`;
-    }
-
-    // function addDuration(time24, duration) {
-    //     const [hours, minutes] = time24.split(':').map(Number);
-    //     const [durationHours, durationMinutes] = duration.split(':').map(Number);
-    //     const totalMinutes = hours * 60 + minutes + durationHours * 60 + durationMinutes;
-
-    //     const newHours = Math.floor(totalMinutes / 60) % 24;
-    //     const newMinutes = totalMinutes % 60;
-
-    //     return `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
-    // }
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/vendors/${id}`)

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { timeConverter } from '../../utils/helpers';
 import Chart from 'chart.js/auto';
 
 function VendorSales() {
@@ -70,16 +71,6 @@ function VendorSales() {
         // const suffix = getDaySuffix(day);
         const month = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date);
         return `${month} ${day}`;
-    }
-
-    function timeConverter(time24) {
-        const date = new Date(`1970-01-01T${time24}Z`); // Add 'Z' to indicate UTC
-        const time12 = date.toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-        });
-        return time12;
     }
 
     function convertToLocalDate(gmtDateString) {
