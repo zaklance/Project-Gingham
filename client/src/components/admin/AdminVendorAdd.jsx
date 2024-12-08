@@ -9,7 +9,6 @@ function AdminVendorEdit({ vendors }) {
     const [products, setProducts] = useState([])
 
     const location = useLocation();
-
     
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/products")
@@ -100,7 +99,6 @@ function AdminVendorEdit({ vendors }) {
             setImage(event.target.files[0]);
         }
     }
-
 
     return (
         <>

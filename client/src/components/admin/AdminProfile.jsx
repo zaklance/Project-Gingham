@@ -1,21 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, NavLink, Link } from 'react-router-dom';
+import { formatPhoneNumber } from '../../utils/helpers';
 
 function AdminProfile () {
     const { id } = useParams();
     const [editMode, setEditMode] = useState(false);
     const [adminUserData, setAdminUserData] = useState(null);
     const [tempProfileData, setTempProfileData] = useState(null);
-
-    // Function to format phone numbers
-    const formatPhoneNumber = (phone) => {
-        const cleaned = ('' + phone).replace(/\D/g, '');
-        const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-        if (match) {
-            return `(${match[1]}) ${match[2]}-${match[3]}`;
-        }
-        return phone;
-    };
 
     const decodeJwt = (token) => {
         try {
@@ -26,7 +17,6 @@ function AdminProfile () {
             return null;
         }
     };
-
 
     useEffect(() => {
         const fetchAdminUserData = async () => {

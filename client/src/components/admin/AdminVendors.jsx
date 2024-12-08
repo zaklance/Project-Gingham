@@ -9,7 +9,6 @@ function AdminVendors () {
     const [vendors, setVendors] = useState([]);
     const [activeTab, setActiveTab] = useState('edit');
 
-
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/vendors")
             .then(response => response.json())
@@ -20,7 +19,6 @@ function AdminVendors () {
         const tab = urlParams.get('tab');
         if (tab) setActiveTab(tab);
     }, []);
-
 
     return(
         <>
