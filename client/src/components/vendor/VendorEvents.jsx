@@ -124,15 +124,17 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
     };
 
     const handleEventDelete = async (eventId) => {
-        try {
+        if (confirm(`Are you sure you want to delete this event?`)) {
+            try {
 
-            fetch(`http://127.0.0.1:5555/api/events/${eventId}`, {
-                method: "DELETE",
-            }).then(() => {
-                setEvents((prevEvents) => prevEvents.filter((review) => review.id !== eventId))
-            })
-        } catch (error) {
-            console.error("Error deleting review", error)
+                fetch(`http://127.0.0.1:5555/api/events/${eventId}`, {
+                    method: "DELETE",
+                }).then(() => {
+                    setEvents((prevEvents) => prevEvents.filter((review) => review.id !== eventId))
+                })
+            } catch (error) {
+                console.error("Error deleting review", error)
+            }
         }
     }
 

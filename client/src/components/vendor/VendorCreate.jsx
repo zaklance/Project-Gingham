@@ -211,36 +211,35 @@ function VendorCreate () {
             } else {
                 console.log('Error updating user with vendor_id');
             }
+            if (Number(vendorData.product) === 1 && productRequest.trim() !== '') {
+                try {
+                    const response = await fetch('http://127.0.0.1:5555/api/create-admin-notification', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            vendor_id: createdVendor.id,
+                            vendor_user_id: vendorUserId,
+                            message: `${vendorData.name} has requested to for a new Product category: ${productRequest}.`,
+                        }),
+                    });
+                    if (response.ok) {
+                        const responseData = await response.json();
+                        alert(`Your product request has been sent to the admins for approval!`);
+                        navigate('/vendor/dashboard');
+                        window.location.reload()
+                    } else {
+                        const errorData = await response.json();
+                        alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    console.error('Error sending request:', error);
+                    alert('An error occurred while sending the request. Please try again later.');
+                }
+            }
         } catch (error) {
             console.error('Error creating vendor and updating user:', error);
-        }
-        
-        if (Number(vendorData.product) === 1 && productRequest.trim() !== '') {
-            try {
-                const response = await fetch('http://127.0.0.1:5555/api/create-admin-notification', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        vendor_id: vendorUserData.id,
-                        vendor_user_id: vendorUserId,
-                        message: `${vendorData.name} has requested to for a new Product category: ${productRequest}.`,
-                    }),
-                });
-                if (response.ok) {
-                    const responseData = await response.json();
-                    alert(`Your product request has been sent to the admins for approval!`);
-                    navigate('/vendor/dashboard');
-                    window.location.reload()
-                } else {
-                    const errorData = await response.json();
-                    alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
-                }
-            } catch (error) {
-                console.error('Error sending request:', error);
-                alert('An error occurred while sending the request. Please try again later.');
-            }
         }
 
     };

@@ -4,6 +4,7 @@ import '../assets/css/index.css';
 
 function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const [notifications, setNotifications] = useState([]);
+    const [adminNotifications, setAdminNotifications] = useState([]);
     const [isNotifPopup, setIsNotifPopup] = useState(false);
 
     const location = useLocation();
@@ -18,15 +19,17 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const isVendorPage = location.pathname.startsWith('/vendor');
     const isAdminPage = location.pathname.startsWith('/admin');
 
-    useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/user-notifications")
-            .then(response => response.json())
-            .then(data => {
-                const userNotifications = data.filter(notif => notif.user_id === parseFloat(userId, 10));
-                setNotifications(userNotifications);
-            })
-            .catch(error => console.error('Error fetching notifications', error));
-    }, [userId]);
+    if (isUserLoggedIn) {
+        useEffect(() => {
+            fetch("http://127.0.0.1:5555/api/user-notifications")
+                .then(response => response.json())
+                .then(data => {
+                    const userNotifications = data.filter(notif => notif.user_id === parseFloat(userId, 10));
+                    setNotifications(userNotifications);
+                })
+                .catch(error => console.error('Error fetching notifications', error));
+        }, [userId]);
+    }
 
     const handleNotificationDelete = async (notifId) => {
         try {
@@ -42,15 +45,49 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
         }
     };
 
-    const handleNotifPopup = () => {
-        setIsNotifPopup(!isNotifPopup);
+    if (isAdminLoggedIn) {
+        useEffect(() => {
+            fetch("http://127.0.0.1:5555/api/admin-notifications")
+                .then(response => response.json())
+                .then(data => {
+                    setAdminNotifications(data);
+                })
+                .catch(error => console.error('Error fetching notifications', error));
+        }, []);
     }
 
+    const handleAdminNotificationDelete = async (notifId) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/api/admin-notifications/${notifId}`, {
+                method: "DELETE",
+            });
+            if (!response.ok) {
+                throw new Error("Failed to delete notification");
+            }
+            setNotifications((prevNotifs) => prevNotifs.filter((notif) => notif.id !== notifId));
+        } catch (error) {
+            console.error("Error deleting notification", error);
+        }
+    };
+
+    const handleNotifPopup = () => {
+        if (notifications.length > 0) {
+            setIsNotifPopup(!isNotifPopup);
+        }
+    }
+
+    const handleAdminNotifPopup = () => {
+        if (adminNotifications.length > 0) {
+            setIsNotifPopup(!isNotifPopup);
+        }
+    }
+    
     const closePopup = () => {
         if (isNotifPopup) {
             setIsNotifPopup(false);
         }
     };
+    
 
     return (
         <nav className="nav-bar">
@@ -99,6 +136,31 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li>
                             <NavLink className='nav-tab color-1 btn-nav' to={`/admin/users`}>Users</NavLink>
                         </li>
+                        <li className='notification' onClick={handleAdminNotifPopup}>
+                            <a className='nav-tab color-2 btn-nav nav-tab-wide' to="/notifications"><img className='img-notifications' src="/site-images/notifications-1.svg" alt="Notification" /></a>
+                            {adminNotifications.length > 0 && <p className='badge'>{adminNotifications.length}</p>}
+                        </li>
+                        <div className='notification'>
+                            {adminNotifications.length > 0 &&
+                                <div className={`popup-notif ${isNotifPopup ? 'popup-notif-on' : ''}`} style={{ top: window.scrollY }}>
+                                    <div className=''>
+                                        <ul className='flex-start flex-wrap ul-notif'>
+                                            {adminNotifications.map((notification) => (
+                                                <li key={notification.id} className='li-notif'>
+                                                    <div className='flex-start'>
+                                                        <button className='btn btn-unreport btn-notif' onClick={() => handleAdminNotificationDelete(notification.id)}>x</button>
+                                                        <p className=''>{notification.message}</p>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            }
+                            {isNotifPopup && (
+                                <div className="popup-overlay" onClick={closePopup}></div>
+                            )}
+                        </div>
                     </>
                 )}
                 {/* User Login / Logout */}

@@ -823,7 +823,7 @@ def run():
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
         city = str(fake.city())
         state = str(choice(states_ne))
-        product = str(randint(0, 22))
+        product = str(randint(1, 23))
         bio = str(fake.paragraph(nb_sentences=rev_len))
         image = str(choice(images))
 
