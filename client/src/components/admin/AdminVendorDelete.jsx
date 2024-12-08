@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-
 function AdminVendorDelete({ vendors }) {
     const [query, setQuery] = useState("");
     const [vendorData, setVendorData] = useState(null);
@@ -67,7 +66,6 @@ function AdminVendorDelete({ vendors }) {
             setQuery('');
         }
     };
-
 
     return (
         <>

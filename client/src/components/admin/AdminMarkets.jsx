@@ -1,26 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { weekDay, weekDayReverse } from '../../utils/common';
+import { timeConverter } from '../../utils/helpers';
 import AdminMarketEdit from './AdminMarketEdit'
 import AdminMarketAdd from './AdminMarketAdd'
 import AdminMarketDelete from './AdminMarketDelete'
 import AdminMarketEvents from './AdminMarketEvents'
 
-
 function AdminMarkets () {
     const [markets, setMarkets] = useState([]);
     const [activeTab, setActiveTab] = useState('edit');
-
-    function timeConverter(time24) {
-        const date = new Date('1970-01-01T' + time24);
-
-        const time12 = date.toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-        });
-        return time12
-    }
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/markets")
@@ -33,7 +22,6 @@ function AdminMarkets () {
         if (tab) setActiveTab(tab);
     }, []);
 
-    
     return(
         <div>
             <div className='flex-start flex-center-align flex-gap-48'>

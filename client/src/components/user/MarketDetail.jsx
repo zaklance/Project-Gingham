@@ -163,7 +163,12 @@ function MarketDetail ({ match }) {
     }, [amountInCart, cartItems]);
 
     const handleBackButtonClick = () => {
-        navigate('/user/markets');
+        if (isClicked) {
+            navigate('/user/markets', { state: { isClicked } });
+        } else {
+            console.log("No filters applied");
+            navigate('/user/markets');
+        }
     };
 
     useEffect(() => {

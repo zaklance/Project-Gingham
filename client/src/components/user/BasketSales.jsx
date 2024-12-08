@@ -32,7 +32,6 @@ function BasketSales() {
             .catch(error => console.error('Error fetching sales history:', error.message));
     }, []);
     
-
     return (
         <div>
             <h2>Basket History</h2>

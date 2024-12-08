@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useLocation, useOutletContext } from 'react-router-dom';
 import MarketCard from './MarketCard';
 // import AdvancedMarkerCard from './AdvancedMarkerCard';
 import '../../assets/css/index.css';
@@ -14,6 +14,7 @@ function Markets() {
     const [showDropdown, setShowDropdown] = useState(false);
     
     const dropdownRef = useRef(null);
+    const location = useLocation();
     
     const { handlePopup } = useOutletContext();
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
@@ -41,6 +42,15 @@ function Markets() {
             .then(markets => setMarkets(markets))
             .catch(error => console.error('Error fetching markets', error));
     }, []);
+
+    useEffect(() => {
+        if (location.state?.isClicked !== undefined) {
+            setIsClicked(location.state.isClicked);
+        }
+        fetch("http://127.0.0.1:5555/api/markets")
+            .then(response => response.json())
+            .then(data => setMarkets(data))
+    }, [location.state]);
 
     const unionSquare = { lat:40.736358642578125, lng: -73.99076080322266 }
 
