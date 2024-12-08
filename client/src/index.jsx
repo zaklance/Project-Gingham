@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import './assets/css/index.css';
 
 // main routes
@@ -47,14 +47,22 @@ import AdminPasswordReset from './components/admin/AdminPasswordReset.jsx';
 
 import { loadStripe } from '@stripe/stripe-js';
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
-import { Navigate } from 'react-router-dom';
 
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_JS_KEY);
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_JS_KEY)
+// Function to check admin authentication
+const AdminRoute = ({ children }) => {
+    const token = localStorage.getItem("admin_jwt-token");
+
+    if (!token) {
+        return <div style={{ color: "red", fontWeight: "bold" }}>Protected route: Admin not authenticated</div>;
+    }
+
+    return children;
+};
 
 const CheckoutForm = () => {
     const fetchClientSecret = useCallback(() => {
-        // Create a Checkout Session
         return fetch("http://127.0.0.1:5555/api/create-checkout-session", {
             method: "POST",
         })
@@ -66,15 +74,12 @@ const CheckoutForm = () => {
 
     return (
         <div id="checkout">
-            <EmbeddedCheckoutProvider
-                stripe={stripePromise}
-                options={options}
-            >
+            <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
                 <EmbeddedCheckout />
             </EmbeddedCheckoutProvider>
         </div>
-    )
-}
+    );
+};
 
 const Return = () => {
     const [status, setStatus] = useState(null);
@@ -94,9 +99,7 @@ const Return = () => {
     }, []);
 
     if (status === 'open') {
-        return (
-            <Navigate to="/checkout" />
-        )
+        return <Navigate to="/checkout" />;
     }
 
     if (status === 'complete') {
@@ -104,16 +107,14 @@ const Return = () => {
             <section id="success">
                 <p>
                     We appreciate your business! A confirmation email will be sent to {customerEmail}.
-
                     If you have any questions, please email <a href="mailto:orders@example.com">orders@example.com</a>.
                 </p>
             </section>
-        )
+        );
     }
 
     return null;
-}
-
+};
 
 const router = createBrowserRouter([
     {
@@ -122,7 +123,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
         children: [
             { path: "/", element: <Home /> },
-            { path: "contact", element: <Contact />},
+            { path: "contact", element: <Contact /> },
             {
                 path: "user",
                 children: [
@@ -136,43 +137,69 @@ const router = createBrowserRouter([
                     { path: "your-cart", element: <Cart /> },
                     { path: "checkout", element: <CheckoutForm /> },
                     { path: "check-session", element: <CheckSession /> },
-                    { path: "return", element: <Return />},
+                    { path: "return", element: <Return /> },
                     { path: "reset-request", element: <UserResetRequest /> },
                     { path: "password-reset/:token", element: <UserPasswordReset /> },
-                    { path: "return", element: <Return /> }
-                ]
+                ],
             },
             {
                 path: "vendor",
                 children: [
                     { path: "home", element: <VendorHome /> },
                     { path: "dashboard", element: <VendorDashboard /> },
-                    { path: "/vendor-dashboard/:vendorId", element: <VendorDashboard />},
                     { path: "sales", element: <VendorSales /> },
-                    { path: "signup", element: <VendorLoginPopup />},
+                    { path: "signup", element: <VendorLoginPopup /> },
                     { path: "profile/:id", element: <VendorProfile /> },
-                    { path: "vendor-create/:id", element: <VendorCreate />},
+                    { path: "vendor-create/:id", element: <VendorCreate /> },
                     { path: "logout", element: <VendorLogout /> },
-                    { path: "password-reset", element: <VendorPasswordReset />},
-                    { path: "reset-request", element: <VendorResetRequest />}
-                ]
+                    { path: "password-reset", element: <VendorPasswordReset /> },
+                    { path: "reset-request", element: <VendorResetRequest /> },
+                ],
             },
             {
                 path: "admin",
                 children: [
                     { path: "home", element: <AdminHome /> },
-                    { path: "markets", element: <AdminMarkets />},
-                    { path: "vendors", element: <AdminVendors />},
-                    { path: "users", element: <AdminUsers />},
-                    { path: "profile/:id", element: <AdminProfile /> },
+                    {
+                        path: "markets",
+                        element: (
+                            <AdminRoute>
+                                <AdminMarkets />
+                            </AdminRoute>
+                        ),
+                    },
+                    {
+                        path: "vendors",
+                        element: (
+                            <AdminRoute>
+                                <AdminVendors />
+                            </AdminRoute>
+                        ),
+                    },
+                    {
+                        path: "users",
+                        element: (
+                            <AdminRoute>
+                                <AdminUsers />
+                            </AdminRoute>
+                        ),
+                    },
+                    {
+                        path: "profile/:id",
+                        element: (
+                            <AdminRoute>
+                                <AdminProfile />
+                            </AdminRoute>
+                        ),
+                    },
                     { path: "logout", element: <AdminLogout /> },
-                    { path: "password-reset", element: <AdminPasswordReset />},
-                    { path: "reset-request", element: <AdminResetRequest />}
-                ]
-            }
-        ]      
-    }
+                    { path: "password-reset", element: <AdminPasswordReset /> },
+                    { path: "reset-request", element: <AdminResetRequest /> },
+                ],
+            },
+        ],
+    },
 ]);
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<RouterProvider router={router} />);
