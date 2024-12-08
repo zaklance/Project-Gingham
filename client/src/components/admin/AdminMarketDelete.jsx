@@ -88,7 +88,6 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
         }
     };
 
-
     return(
         <>
             <div className='box-bounding'>

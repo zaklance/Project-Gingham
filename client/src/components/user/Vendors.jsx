@@ -31,6 +31,7 @@ function Vendors() {
         (!selectedProduct || vendor.product === selectedProduct) &&
         (!isClicked || vendorFavs.some(vendorFavs => vendorFavs.vendor_id === vendor.id))
     );
+
     const filteredVendorsResults = vendors.filter(vendor =>
         vendor.name.toLowerCase().includes(query.toLowerCase()) &&
         (!selectedProduct || vendor.product === selectedProduct) &&
@@ -53,6 +54,9 @@ function Vendors() {
     useEffect(() => {
         if (location.state?.selectedProduct) { 
             setSelectedProduct(location.state.selectedProduct);
+        }
+        if (location.state?.isClicked !== undefined) {
+            setIsClicked(location.state.isClicked);
         }
 
         fetch("http://127.0.0.1:5555/api/vendors")
