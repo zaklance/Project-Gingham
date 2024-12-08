@@ -11,7 +11,7 @@ function Login({ handlePopup }) {
     const [signupPassword, setSignupPassword] = useState('');
     const [signupFirstName, setSignupFirstName] = useState('');
     const [signupLastName, setSignupLastName] = useState('');
-    const [signupAddress, setSignupAddress] = useState('');
+    const [signupPhone, setSignupPhone] = useState('');
 
     const navigate = useNavigate();
 
@@ -89,7 +89,7 @@ function Login({ handlePopup }) {
                 password: signupPassword,
                 first_name: signupFirstName,
                 last_name: signupLastName,
-                address: signupAddress
+                address: signupPhone
             }),
             credentials: 'include'
         });
@@ -100,7 +100,7 @@ function Login({ handlePopup }) {
             setSignupPassword('');
             setSignupFirstName('');
             setSignupLastName('');
-            setSignupAddress('');
+            setSignupPhone('');
         } else {
             const errorData = await response.json();
             if (errorData.error) {
@@ -219,12 +219,12 @@ function Login({ handlePopup }) {
                             />
                         </div>
                         <div className="form-group form-login">
-                            <label>Address:</label>
+                            <label>Phone:</label>
                             <input 
                                 type="text"
-                                value={signupAddress}
-                                placeholder='enter your address'
-                                onChange={(event => setSignupAddress(event.target.value))}
+                                value={signupPhone}
+                                placeholder='enter your phone number'
+                                onChange={(event => setSignupPhone(event.target.value))}
                                 required
                             />
                         </div>

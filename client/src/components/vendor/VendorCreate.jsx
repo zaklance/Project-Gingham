@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { states } from '../../utils/common';
 
 function VendorCreate () {
@@ -15,13 +15,28 @@ function VendorCreate () {
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
     const [vendorImageURL, setVendorImageURL] = useState(null);
+    const [products, setProducts] = useState([])
 
     const navigate = useNavigate();
-  
-    const products = [
-        'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 
-        'International', 'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 'Pickles', 'Spirits', 'Vegetables'
-    ];
+    const location = useLocation();
+
+
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/api/products")
+            .then(response => response.json())
+            .then(data => {
+                const sortedProducts = data.sort((a, b) =>
+                    a.product.localeCompare(b.product) 
+                );
+                setProducts(sortedProducts);
+            });
+    }, []);
+
+    useEffect(() => {
+        if (location.state?.selectedProduct) {
+            setSelectedProduct(location.state.selectedProduct);
+        }
+    })
 
     useEffect(() => {
         if (vendorUserData?.id) {
@@ -187,6 +202,7 @@ function VendorCreate () {
                 setVendorEditMode(false);
                 setNewVendor(false);
                 navigate('/vendor/dashboard');
+                window.location.reload()
             } else {
                 console.log('Error updating user with vendor_id');
             }
@@ -326,8 +342,10 @@ function VendorCreate () {
                 <label>Product:</label>
                 <select name="product" value={vendorData?.product || ''} onChange={handleVendorInputChange}>
                     <option value="">Select</option>
-                    {products.map((product, index) => (
-                        <option key={index} value={product}> {product} </option>
+                    {Array.isArray(products) && products.map((product) => (
+                        <option key={product.id} value={product.id}>
+                            {product.product}
+                        </option>
                     ))}
                 </select>
             </div>
