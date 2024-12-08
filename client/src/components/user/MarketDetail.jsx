@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
+import { weekDay } from '../../utils/common';
+import { timeConverter, formatEventDate, formatDate } from '../../utils/helpers';
 import ReviewMarket from './ReviewMarket';
 
 function MarketDetail ({ match }) {
     const { id } = useParams();
-
     const [market, setMarket] = useState();
     const [vendors, setVendors] = useState([]);
-    const [vendorDetails, setVendorDetails] = useState({});
     const [allVendorDetails, setAllVendorDetails] = useState([]);
     const [vendorDetailsMap, setVendorDetailsMap] = useState({});
     const [marketFavs, setMarketFavs] = useState([]);
@@ -18,7 +18,6 @@ function MarketDetail ({ match }) {
     const [productList, setProductList] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState("");
     const [marketDays, setMarketDays] = useState([]);
-    const [allMarketDays, setAllMarketDays] = useState([]);
     const [selectedDay, setSelectedDay] = useState(null);
     const [vendorMarkets, setVendorMarkets] = useState();
     const [events, setEvents] = useState([]);
@@ -29,44 +28,6 @@ function MarketDetail ({ match }) {
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     
     const navigate = useNavigate();
-
-    const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-
-    function timeConverter(time24) {
-        const date = new Date('1970-01-01T' + time24);
-
-        const time12 = date.toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-        });
-        return time12
-    }
-
-    function formatEventDate(dateString) {   
-        const date = new Date(dateString + "T00:00:00");
-    
-        if (isNaN(date.getTime())) return "Invalid Date";
-    
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-    }
-
-    function formatDate(dateString) {
-        if (!dateString || dateString.length !== 10) return "Invalid Date";
-    
-        const date = new Date(dateString + "T00:00:00");
-    
-        if (isNaN(date.getTime())) return "Invalid Date";
-    
-        const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
-        const day = date.getDate();
-    
-        return `${monthName} ${day}`;
-    }
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/markets/${id}`)
@@ -296,7 +257,6 @@ function MarketDetail ({ match }) {
         ).filter(item => !cartItems.some(cartItem => cartItem.id === item.id));
     };
     
-
     if (!market) {
         return <div>Loading...</div>;
     }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { states } from '../../utils/common';
+import { timeConverter, formatPhoneNumber } from '../../utils/helpers';
 import BasketSales from './BasketSales';
 
 function Profile({ marketData }) {
@@ -12,25 +13,6 @@ function Profile({ marketData }) {
     const [vendorFavs, setVendorFavs] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
 
-    function timeConverter(time24) {
-        const date = new Date('1970-01-01T' + time24);
-        const time12 = date.toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-        });
-        return time12;
-    }
-
-    const formatPhoneNumber = (phone) => {
-        const cleaned = ('' + phone).replace(/\D/g, '');
-        const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-        if (match) {
-            return `(${match[1]}) ${match[2]}-${match[3]}`;
-        }
-        return phone;
-    };
-
     const decodeJwt = (token) => {
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
@@ -39,8 +21,7 @@ function Profile({ marketData }) {
             console.error('Failed to decode JWT:', error);
             return null;
         }
-    };
-    
+    };    
 
     useEffect(() => {
         const fetchProfileData = async () => {

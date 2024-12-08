@@ -32,8 +32,11 @@ function Home() {
                 </div>
                 <div className="box-inside">
                     <h3 className="margin-b-16">How Gingham Works:</h3>
-                    <p>As the day winds down, you may have surplus products you'd like to sell quickly. With Gingham, 
-                        you can easily list discount bundles of your unsold items in the morning.
+                    <p>
+                        <strong>
+                            Build mystery baskets of bundled surplus products you'd like to sell quickly. With Gingham, 
+                            you can easily list discount bundles of your unsold items for consumers to preorder then pick-up.
+                        </strong>
                     </p>
                     <br/>
                     <img src="/site-images/GINGHAM_VENDOR_HOWITWORKS.png" style={{ width: '100%' }} />
