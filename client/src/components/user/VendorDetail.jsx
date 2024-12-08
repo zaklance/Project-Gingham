@@ -137,10 +137,10 @@ function VendorDetail({ products }) {
     }, [selectedProduct]);
 
     const handleBackButtonClick = () => {
-        if (selectedProduct) {
-            navigate('/user/vendors', { state: { selectedProduct } });
+        if (selectedProduct || isClicked) {
+            navigate('/user/vendors', { state: { selectedProduct, isClicked } });
         } else {
-            console.log("Selected Product is undefined");
+            console.log("No filters applied");
             navigate('/user/vendors');
         }
     };
