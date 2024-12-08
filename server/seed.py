@@ -1273,7 +1273,7 @@ def run():
     db.session.commit()
 
     products_list = [
-        'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 
+        'Other', 'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 
         'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 'International', 
         'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 
         'Pickles', "Spices", 'Spirits', 'Vegetables'
