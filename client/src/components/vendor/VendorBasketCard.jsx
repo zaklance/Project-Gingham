@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { timeConverter, formatBasketDate } from '../../utils/helpers';
 import '../../assets/css/index.css';
 
-function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
+function VendorBasketCard({ vendorId, marketDay }) {
     const [marketId, setMarketId] = useState(null);
     const [marketName, setMarketName] = useState('');
     const [startTime, setStartTime] = useState('');
@@ -15,99 +16,65 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
     const [basketValue, setBasketValue] = useState('')
     const [errorMessage, setErrorMessage] = useState('');
     const [savedBaskets, setSavedBaskets] = useState([]);
-    
-    function timeConverter(time24) {
-        const [hours, minutes, seconds] = time24.split(':').map(Number);
-        const date = new Date();
-        date.setHours(hours, minutes, seconds || 0);
-        const time12 = date.toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true,
-        });
-        return time12;
-    }
-
-    function formatDate(dateInput) {
-        try {
-            if (!dateInput) {
-                console.warn('Invalid date input:', dateInput);
-                return 'Invalid Date';
-            }
-    
-            let date;
-            if (dateInput instanceof Date) {
-                date = dateInput;
-            } else if (typeof dateInput === 'string') {
-                const dateParts = dateInput.split('-');
-                date = new Date(`${dateParts[0]}-${dateParts[1]}-${dateParts[2]}T00:00:00`);
-            } else {
-                console.error('Unsupported date format:', dateInput);
-                return 'Invalid Date';
-            }
-    
-            // console.log('Original date input:', dateInput);
-            // console.log('Date object created:', date);
-    
-            if (isNaN(date.getTime())) {
-                console.error('Invalid date:', dateInput);
-                return 'Invalid Date';
-            }
-    
-            const formattedDate = date.toLocaleString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-            // console.log('Formatted date:', formattedDate);
-    
-            return formattedDate;
-        } catch (error) {
-            console.error('Error converting date:', error);
-            return 'Invalid Date';
-        }
-    }    
 
     useEffect(() => {
-        async function fetchSavedBaskets() {
-            if (vendorId && marketDay?.market_id) {
-                try {
-                    console.log('Fetching saved baskets...');
-                    const response = await fetch(
-                        `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&id=${marketDay.market_id}`
-                    );
-                    if (response.ok) {
-                        const data = await response.json();
-                        console.log('Fetched data:', data);
-                        const filteredBaskets = data.filter(basket => basket.market_day_id === marketDay.market_id && basket.vendor_id === vendorId);
-                        console.log('Filtered baskets:', filteredBaskets);
-            
-                        setSavedBaskets(filteredBaskets);
-                        setIsSaved(filteredBaskets.length > 0);
-                    } else {
-                        console.error('Failed to fetch baskets:', response.statusText);
+        if (vendorId && marketDay?.id && marketDay?.vendor_markets) {
+            const vendorMarketEntry = marketDay.vendor_markets.find(vm => vm.vendor_id === vendorId);
+    
+            if (vendorMarketEntry) {
+                const marketDayId = vendorMarketEntry.market_day_id;
+    
+                if (marketDayId && marketDay?.date) {
+                    const formattedMarketDate = new Date(marketDay.date).toISOString().split('T')[0];
+                    async function fetchSavedBaskets() {
+                        try {
+                            const response = await fetch(
+                                `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDayId}&sale_date=${formattedMarketDate}`
+                            );
+    
+                            if (response.ok) {
+                                const data = await response.json();
+                                
+                                if (data.length === 0) {
+                                    setSavedBaskets([]);
+                                    setIsSaved(false);
+                                    setErrorMessage('No saved baskets found for future markets');
+                                } else {
+                                    const filteredBaskets = data.filter(basket => 
+                                        basket.vendor_id === vendorId &&
+                                        basket.market_day_id === marketDayId &&
+                                        new Date(basket.sale_date).toISOString().split('T')[0] === formattedMarketDate
+                                    );    
+                                    setSavedBaskets(filteredBaskets);
+                                    setIsSaved(filteredBaskets.length > 0);
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Error fetching saved baskets:', error);
+                            setErrorMessage('An error occurred while fetching saved baskets.');
+                        }
                     }
-                } catch (error) {
-                    console.error('Error fetching saved baskets:', error);
+                    fetchSavedBaskets();
                 }
             }
         }
-    
-        fetchSavedBaskets();
     }, [vendorId, marketDay]);
+    
+
+    useEffect(() => {
+        if (savedBaskets.length === 0) {
+            setIsEditing(true);
+        }
+    }, [savedBaskets]);
     
     useEffect(() => {
         if (savedBaskets.length > 0) {
-            // Set the number of baskets
             setNumBaskets(savedBaskets.length);
     
-            // Set the basket value and price from the first basket (as they are the same for all)
             const firstBasket = savedBaskets[0];
             setBasketValue(firstBasket.basket_value);
             setPrice(firstBasket.price);
     
-            // Set pickup times if they're consistent across all saved baskets
             if (firstBasket.pickup_start) {
                 const start = timeConverter(firstBasket.pickup_start);
                 setStartTime(start);
@@ -117,7 +84,6 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                 setEndTime(end);
             }
         } else {
-            // Reset values if there are no saved baskets
             setNumBaskets('');
             setBasketValue('');
             setPrice('');
@@ -125,11 +91,6 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
             setEndTime('');
         }
     }, [savedBaskets]);    
-
-    useEffect(() => {
-        console.log('Updated savedBaskets:', savedBaskets);
-        setIsSaved(savedBaskets.length > 0);
-    }, [savedBaskets]);
 
     useEffect(() => {
         async function fetchMarketName(marketId) {
@@ -147,18 +108,9 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                 }
             }
         }
-
         if (marketDay && marketDay.market_id) {
             setMarketId(marketDay.market_id);
             fetchMarketName(marketDay.market_id);
-        }
-    }, [marketDay]);
-
-    useEffect(() => {
-        console.log('marketDay object:', marketDay);
-        if (marketDay) {
-            setMarketId(marketDay.market_id);
-            console.log('Market Day ID:', marketDay.id);
         }
     }, [marketDay]);
 
@@ -199,20 +151,11 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
         const endTimeDate = new Date();
         endTimeDate.setHours(formattedEndHour, endMinute, 0, 0);
 
-        // console.log('Formatted start time:', startTimeDate);
-        // console.log('Formatted end time:', endTimeDate);
-
         const formattedPickupStart = `${startTimeDate.getHours().toString().padStart(2, '0')}:${startTimeDate.getMinutes().toString().padStart(2, '0')} ${startAmPm}`;
         const formattedPickupEnd = `${endTimeDate.getHours().toString().padStart(2, '0')}:${endTimeDate.getMinutes().toString().padStart(2, '0')} ${endAmPm}`;
 
-        // console.log('Formatted pickup start:', formattedPickupStart);
-        // console.log('Formatted pickup end:', formattedPickupEnd);
-
-        console.log('Market Day ID to be posted:', marketDay.market_day_id);
-
         if (parsedNumBaskets > 0 && vendorId && marketDay && marketDay.id && !isNaN(parsedPrice) && parsedPrice > 0) {
             const promises = [];
-            console.log('Posting to API with market_day_id:', marketDay.id);
     
             for (let i = 0; i < parsedNumBaskets; i++) {
                 promises.push(fetch('http://127.0.0.1:5555/api/baskets', {
@@ -256,14 +199,16 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
     };
 
     const handleDelete = async () => {
-        if (vendorId && marketDay?.id) {
+        if (vendorId && marketDay?.id && marketDay?.date) {
             console.log('vendorId:', vendorId);
             console.log('marketDay:', marketDay);
             console.log('marketDay.id:', marketDay.id);
     
+            const formattedSaleDate = new Date(marketDay.date).toISOString().split('T')[0];
+    
             try {
                 const response = await fetch(
-                    `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.id}`,
+                    `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.id}&sale_date=${formattedSaleDate}`,
                     {
                         method: 'DELETE',
                     }
@@ -273,6 +218,12 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                     console.log('Baskets deleted successfully');
                     setSavedBaskets([]);
                     setIsSaved(false);
+                    setIsEditing(true);
+                    setNumBaskets('');
+                    setBasketValue('');
+                    setPrice('');
+                    setStartTime('');
+                    setEndTime('');
                 } else {
                     console.error('Failed to delete baskets:', response.statusText);
                     setErrorMessage('Failed to delete baskets. Please try again.');
@@ -282,22 +233,23 @@ function VendorBasketCard({ vendorId, months, weekDay, marketDay }) {
                 setErrorMessage('An error occurred while deleting baskets.');
             }
         } else {
-            console.error('Missing vendorId or marketDay.id');
-            setErrorMessage('Missing vendor ID or market day ID.');
+            console.error('Missing vendorId, marketDay.id, or marketDay.date');
+            setErrorMessage('Missing vendor ID, market day ID, or sale date.');
         }
     };
+    
 
     return (
         <div className="basket-card">
             {marketDay && marketDay.date ? (
                 <>
                     <div className='text-center'>
-                    <div className='text-center'>
-                    <h4>{marketName ? marketName : 'Loading Market...'}</h4>
-                    <h4 className='margin-t-8'>
-                            {formatDate(marketDay.date)}
-                        </h4>
-                    </div>
+                        <div className='text-center'>
+                        <h4>{marketName ? marketName : 'Loading Market...'}</h4>
+                        <h4 className='margin-t-8'>
+                                {formatBasketDate(marketDay.date)}
+                            </h4>
+                        </div>
                     </div>
                 </>
             ) : (

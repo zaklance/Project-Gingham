@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, NavLink, Link, Route, Routes, BrowserRouter as Router} from 'react-router-dom';
 import { states } from '../../utils/common';
-import VendorBasketCard from './VendorBasketCard';
+import { formatPhoneNumber } from '../../utils/helpers';
 import VendorCreate from './VendorCreate';
 import VendorLocations from './VendorLocations';
 
@@ -20,15 +20,6 @@ function VendorProfile () {
     const [status, setStatus] = useState('initial')
     const [vendorImageURL, setVendorImageURL] = useState(null);
     const [products, setProducts] = useState([])
-    
-    const formatPhoneNumber = (phone) => {
-        const cleaned = ('' + phone).replace(/\D/g, '');
-        const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-        if (match) {
-            return `(${match[1]}) ${match[2]}-${match[3]}`;
-        }
-        return phone;
-    };
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/products")

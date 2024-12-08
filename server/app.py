@@ -1,7 +1,6 @@
 import os
 import json
 import smtplib
-import pytz
 from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
 from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, ReportedReview, VendorReviewRating, MarketReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, Product, UserNotification, VendorNotification, AdminNotification, bcrypt
 from dotenv import load_dotenv
@@ -11,11 +10,10 @@ from sqlalchemy.orm import joinedload
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
-from datetime import timedelta, time, date, timezone
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import datetime, date, time, timedelta
 from PIL import Image
 from io import BytesIO
 import stripe
@@ -1304,16 +1302,32 @@ def handle_baskets():
         try:
             market_day_id = request.args.get('market_day_id', type=int)
             vendor_id = request.args.get('vendor_id', type=int)
+            sale_date = request.args.get('sale_date', type=str)
+
             query = Basket.query
-            if market_day_id:
+
+            if market_day_id is not None:
                 query = query.filter_by(market_day_id=market_day_id)
-            if vendor_id:
+            if vendor_id is not None:
                 query = query.filter_by(vendor_id=vendor_id)
-            baskets = query.all()
-            return jsonify([basket.to_dict() for basket in baskets]), 200
+            if sale_date is not None:
+                try:
+                    from datetime import datetime
+                    sale_date_obj = datetime.strptime(sale_date, '%Y-%m-%d').date()
+                    query = query.filter_by(sale_date=sale_date_obj)
+                except ValueError:
+                    return jsonify({'error': 'Invalid date format. Expected format: YYYY-MM-DD'}), 400
+
+            saved_baskets = query.all()
+
+            if not saved_baskets:
+                return jsonify([]), 200
+
+            app.logger.debug(f"Found {len(saved_baskets)} baskets.")
+            return jsonify([basket.to_dict() for basket in saved_baskets]), 200
+
         except Exception as e:
-            app.logger.error(f'Error fetching baskets: {e}')  
-            return {'error': f'Exception: {str(e)}'}, 500
+            return jsonify({'message': 'No saved baskets found'}), 200
 
     elif request.method == 'POST':
         data = request.get_json()
@@ -1326,18 +1340,21 @@ def handle_baskets():
         try:
             if 'sale_date' in data:
                 try:
+                    from datetime import datetime
                     sale_date = datetime.strptime(data['sale_date'], '%Y-%m-%d').date()
                 except ValueError:
                     return jsonify({'error': 'Invalid sale_date format. Expected YYYY-MM-DD.'}), 400
 
             if 'pickup_start' in data:
                 try:
+                    from datetime import datetime
                     pickup_start = datetime.strptime(data['pickup_start'], '%H:%M %p').time()
                 except ValueError:
                     return jsonify({'error': 'Invalid pickup_start format. Expected HH:MM AM/PM.'}), 400
             
             if 'pickup_end' in data:
                 try:
+                    from datetime import datetime
                     pickup_end = datetime.strptime(data['pickup_end'], '%H:%M %p').time()
                 except ValueError:
                     return jsonify({'error': 'Invalid pickup_end format. Expected HH:MM AM/PM.'}), 400
@@ -1355,8 +1372,6 @@ def handle_baskets():
                     return {'error': 'basket_value must be a non-negative number'}, 400
             except (ValueError, TypeError):
                 return jsonify({'error': 'Invalid basket_value format. Must be a number.'}), 400
-
-            # app.logger.debug(f'Parsed values: sale_date={sale_date}, pickup_start={pickup_start}, pickup_end={pickup_end}')
 
             new_basket = Basket(
                 vendor_id=data['vendor_id'],
@@ -1422,23 +1437,30 @@ def handle_baskets():
     elif request.method == 'DELETE':
         vendor_id = request.args.get('vendor_id', type=int)
         market_day_id = request.args.get('market_day_id', type=int)
+        sale_date = request.args.get('sale_date', type=str)
 
-        if not vendor_id or not market_day_id:
-            return {'error': 'Both vendor_id and market_day_id are required for deletion'}, 400
+        if not vendor_id or not market_day_id or not sale_date:
+            return jsonify({"error": "Missing query parameters"}), 400
 
-        try:
-            deleted_count = Basket.query.filter_by(vendor_id=vendor_id, market_day_id=market_day_id).delete()
-            db.session.commit()
+    try:
+        from datetime import datetime
+        sale_date = datetime.strptime(sale_date, '%Y-%m-%d').date()
 
-            if deleted_count > 0:
-                return jsonify({"message": f"{deleted_count} baskets deleted successfully."}), 200
-            else:
-                return jsonify({"message": "No baskets found to delete."}), 404
+        deleted_count = Basket.query.filter(
+            Basket.vendor_id == vendor_id,
+            Basket.market_day_id == market_day_id,
+            Basket.sale_date == sale_date
+        ).delete()
 
-        except Exception as e:
-            db.session.rollback()
-            app.logger.error(f'Error deleting baskets: {e}')
-            return {'error': f'Error: {str(e)}'}, 500
+        db.session.commit()
+
+        if deleted_count > 0:
+            return jsonify({"message": "Baskets deleted successfully"}), 200
+        else:
+            return jsonify({"message": "No baskets found matching criteria"}), 404
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
         
 @app.route('/api/baskets/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def handle_basket_by_id(id):

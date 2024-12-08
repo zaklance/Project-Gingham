@@ -325,11 +325,6 @@ function VendorCreate () {
         }
     };
 
-    const getVendorName = (vendorId) => {
-        const vendor = vendors.find((vendor) => vendor.id === vendorId);
-        return vendor ? vendor.name : 'Unknown Vendor';
-    };
-
     useEffect(() => {
         if (!vendorUserId) return;
 

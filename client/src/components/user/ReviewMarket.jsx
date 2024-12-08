@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useOutletContext } from 'react-router-dom';
-
+import { convertToLocalDate } from '../../utils/helpers';
 
 function ReviewMarket({ market, alertMessage, setAlertMessage }) {
     const { id } = useParams();
@@ -22,16 +22,6 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
     const { handlePopup } = useOutletContext();
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
-
-    function convertToLocalDate(gmtDateString) {
-        const gmtDate = new Date(gmtDateString);
-        const localDate = gmtDate.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-        return localDate;
-    }
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/market-reviews?market_id=${id}`)

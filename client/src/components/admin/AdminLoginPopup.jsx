@@ -97,7 +97,9 @@ function Login({ handlePopup }) {
             const data = await response.json();
             alert("Sign Up Successful. Please log in!");
             setSignupEmail('');
+            setSignupConfirmEmail('');
             setSignupPassword('');
+            setSignupConfirmPassword('');
             setSignupFirstName('');
             setSignupLastName('');
             setSignupPhone('');

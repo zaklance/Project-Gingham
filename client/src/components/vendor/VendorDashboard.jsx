@@ -91,7 +91,6 @@ function VendorDashboard({ marketId }) {
         fetchVendorId();
     }, []);
 
-
     return (
         <div>
             <div className='flex-start flex-center-align flex-gap-48'>
@@ -115,14 +114,10 @@ function VendorDashboard({ marketId }) {
                     <></>
                 )}
             </div>
-            <br />
-
-            {/* <p>Welcome to your Vendor Portal, <strong>{vendorUserData.first_name}</strong></p> */}
-            
+            <br />            
             {activeTab === 'baskets' && <VendorBaskets marketId={marketId} vendorId={vendorId} vendorUserData={vendorUserData} newVendor={newVendor} setNewVendor={setNewVendor} />}
             {activeTab === 'events' && <VendorEvents vendors={vendors} vendorId={vendorId} vendorUserData={vendorUserData} />}
             {activeTab === 'team' && <VendorTeam vendors={vendors} vendorId={vendorId} vendorUserData={vendorUserData} />}
-        
         </div>
     );
 }

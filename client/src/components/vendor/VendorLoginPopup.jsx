@@ -96,7 +96,9 @@ function VendorLogin({ handlePopup }) {
             if (response.ok) {
                 alert("Sign Up Successful. Please log in!");
                 setSignupEmail('');
+                setSignupConfirmEmail('');
                 setSignupPassword('');
+                setSignupConfirmPassword('');
                 setSignupFirstName('');
                 setSignupLastName('');
                 setSignupPhone('');
