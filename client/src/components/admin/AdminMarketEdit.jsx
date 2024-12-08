@@ -12,7 +12,6 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const [tempMarketDayData, setTempMarketDayData] = useState(null);
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
-    
 
     const onUpdateQuery = event => setQuery(event.target.value);
     const filteredMarkets = markets.filter(market => market.name.toLowerCase().includes(query.toLowerCase()) && market.name !== query)
@@ -199,7 +198,6 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
             setStatus('initial');
         }
     };
-
     
     return(
         <>
