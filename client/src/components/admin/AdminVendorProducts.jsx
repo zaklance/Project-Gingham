@@ -26,7 +26,7 @@ function AdminVendorProducts({ vendors }) {
 
     const handleCreateProduct = async (event) => {
         event.preventDefault();
-        
+
         const isDuplicate = products.some((item) => item.product === newProduct?.product);
         if (isDuplicate) {
             alert("New Product matches one already in the system.");

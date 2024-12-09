@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import '../assets/css/index.css';
 
 function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
@@ -18,6 +18,9 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const isNotUser = location.pathname.startsWith('/vendor') || location.pathname.startsWith('/admin');
     const isVendorPage = location.pathname.startsWith('/vendor');
     const isAdminPage = location.pathname.startsWith('/admin');
+
+    const navigate = useNavigate();
+
 
     if (isUserLoggedIn) {
         useEffect(() => {
@@ -69,6 +72,10 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
             console.error("Error deleting notification", error);
         }
     };
+
+    const handleAdminNotificationLink = () => {
+        window.location.href = "/admin/vendors?tab=products";
+    }
 
     const handleNotifPopup = () => {
         if (notifications.length > 0) {
@@ -149,7 +156,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                                 <li key={notification.id} className='li-notif'>
                                                     <div className='flex-start'>
                                                         <button className='btn btn-unreport btn-notif' onClick={() => handleAdminNotificationDelete(notification.id)}>x</button>
-                                                        <p className=''>{notification.message}</p>
+                                                        <p className='link-underline' onClick={handleAdminNotificationLink}>{notification.message}</p>
                                                     </div>
                                                 </li>
                                             ))}

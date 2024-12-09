@@ -226,7 +226,7 @@ function VendorCreate () {
                     });
                     if (response.ok) {
                         const responseData = await response.json();
-                        alert(`Your product request has been sent to the admins for approval!`);
+                        alert(`Your product request has been sent to the admins for approval, if approved your product will be automatically changed!`);
                         navigate('/vendor/dashboard');
                         window.location.reload()
                     } else {
