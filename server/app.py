@@ -895,9 +895,8 @@ def all_market_favorites():
         user_id = request.args.get('user_id')
         query = MarketFavorite.query
         if user_id:
-            query = query.filter_by(user_id=user_id)
-        marketFavorites = query.all()
-        return jsonify([marketFavorite.to_dict() for marketFavorite in marketFavorites]), 200
+            query = query.filter_by(user_id=user_id).all()
+        return jsonify([q.to_dict() for q in query]), 200
     
     elif request.method == 'POST':
         data = request.get_json()
@@ -925,11 +924,11 @@ def del_market_fav(id):
 def all_vendor_favorites():
     if request.method == 'GET':
         user_id = request.args.get('user_id')
+
         query = VendorFavorite.query
         if user_id:
-            query = query.filter_by(user_id=user_id)
-        vendorFavorites = query.all()
-        return jsonify([vendorFavorite.to_dict() for vendorFavorite in vendorFavorites]), 200
+            query = query.filter_by(user_id=user_id).all()
+        return jsonify([q.to_dict() for q in query]), 200
     
     elif request.method == 'POST':
         data = request.get_json()
@@ -945,6 +944,7 @@ def all_vendor_favorites():
 def del_vendor_fav(id):
     vendorFav = VendorFavorite.query.filter(VendorFavorite.id == id).first()
     if request.method == 'GET':
+        user_id = request.args.get('user_id')
         return vendorFav.to_dict(), 200
     if request.method == 'DELETE':
         db.session.delete(vendorFav)
@@ -1623,7 +1623,7 @@ def all_products():
 
         return new_product.to_dict(), 201
     
-@app.route('/api/products/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
+@app.route('/api/products/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def product(id):
     if request.method == 'GET':
         product = Product.query.filter_by(id=id).first()
@@ -1646,25 +1646,6 @@ def product(id):
             return jsonify(product.to_dict()), 200
 
         except Exception as e:
-            db.session.rollback()
-            return {'error': str(e)}, 500
-        
-    elif request.method == 'POST':
-        data = request.get_json()
-
-        existing_product = Product.query.filter_by(product=data['product']).first()
-        if existing_product:
-            return {'error': 'Email already in use'}, 400
-        
-        try: 
-            new_product = Product(
-                product=data['product']
-            )
-            db.session.add(new_product)
-            db.session.commit()
-            return jsonify(new_product.to_dict()), 201
-        
-        except Exception as e: 
             db.session.rollback()
             return {'error': str(e)}, 500
         
