@@ -411,6 +411,15 @@ function MarketDetail ({ match }) {
                                 ) : (
                                     <span className="market-price"></span>
                                 )}
+                                {availableBaskets.length > 4 ? (
+                                    <span className="market-baskets nowrap">
+                                        Baskets Available
+                                        <br />
+                                        {firstBasket
+                                            ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
+                                            : ''}
+                                    </span>
+                                ) : (
                                 <span className="market-baskets nowrap">
                                     Available Baskets: {availableBaskets.length}
                                     <br />
@@ -418,6 +427,7 @@ function MarketDetail ({ match }) {
                                         ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
                                         : ''}
                                 </span>
+                                )}
                                 {availableBaskets.length > 0 ? (
                                     <button className="btn-add" onClick={() => handleAddToCart(vendorId, vendorDetail, availableBaskets)}>
                                             Add to Cart
