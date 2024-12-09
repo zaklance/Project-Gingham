@@ -74,6 +74,18 @@ function Vendors() {
     }, [location.state]);
 
     useEffect(() => {
+        if (location.state?.resetFilters) {
+            setSelectedProduct(false);
+            setIsClicked(false);
+        }
+        
+        fetch("http://127.0.0.1:5555/api/vendors")
+            .then(response => response.json())
+            .then(data => setVendors(data))
+    }, [location.state]);
+    
+
+    useEffect(() => {
         if (userId && !isNaN(userId)) { // Check if userId is valid
             fetch(`http://127.0.0.1:5555/api/vendor-favorites?user_id=${userId}`)
                 .then(response => response.json())
