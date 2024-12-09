@@ -22,17 +22,17 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const navigate = useNavigate();
 
 
+    useEffect(() => {
     if (isUserLoggedIn) {
-        useEffect(() => {
-            fetch("http://127.0.0.1:5555/api/user-notifications")
-                .then(response => response.json())
-                .then(data => {
-                    const userNotifications = data.filter(notif => notif.user_id === parseFloat(userId, 10));
-                    setNotifications(userNotifications);
-                })
-                .catch(error => console.error('Error fetching notifications', error));
-        }, [userId]);
+        fetch("http://127.0.0.1:5555/api/user-notifications")
+            .then(response => response.json())
+            .then(data => {
+                const userNotifications = data.filter(notif => notif.user_id === parseFloat(userId, 10));
+                setNotifications(userNotifications);
+            })
+            .catch(error => console.error('Error fetching notifications', error));
     }
+}, [isUserLoggedIn, userId]);
 
     const handleNotificationDelete = async (notifId) => {
         try {
@@ -48,16 +48,16 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
         }
     };
 
-    if (isAdminLoggedIn) {
-        useEffect(() => {
+    useEffect(() => {
+        if (isAdminLoggedIn) {
             fetch("http://127.0.0.1:5555/api/admin-notifications")
                 .then(response => response.json())
                 .then(data => {
                     setAdminNotifications(data);
                 })
                 .catch(error => console.error('Error fetching notifications', error));
-        }, []);
-    }
+        }
+    }, [isAdminLoggedIn]);
 
     const handleAdminNotificationDelete = async (notifId) => {
         try {
