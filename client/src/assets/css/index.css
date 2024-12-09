@@ -1296,6 +1296,7 @@ link {
   background-color: #eee;
   text-align: left;
   font-size: .88em;
+  white-space: nowrap;
 }
 
 .form-baskets-small label {
@@ -1308,15 +1309,18 @@ link {
   font-size: .88em;
   padding: 8px;
   /* height: fit-content; */
-  width: 80px;
+  /* width: 90px; */
+  width: 100%;
 }
 
 .form-baskets-small input {
   font-size: .8em;
   padding: 4px;
+  min-width: 58px;
+  width: 100%;
 }
 
-.form-baskets select {
+.form-baskets-select {
   display: table-cell;
   /* font-size: 1em; */
   padding: 8px;
@@ -1325,7 +1329,7 @@ link {
 }
 
 .am-pm {
-  min-width: 52px;
+  min-width: 60px;
 }
 
 
