@@ -99,7 +99,7 @@ const VendorRoute = ({ children }) => {
     const storedId = localStorage.getItem("vendor_user_id");
     const { id: routeId } = useParams();
 
-    if (!token || !id) {
+    if ( !token || !storedId) {
         return <Navigate to="/vendor/home" />;
     }
 
@@ -199,8 +199,8 @@ const router = createBrowserRouter([
                 path: "vendor",
                 children: [
                     { path: "home", element: <VendorHome /> },
-                    { path: "dashboard", element: <VendorRoute><VendorDashboard /></VendorRoute> },
-                    { path: "sales", element: <VendorRoute><VendorSales /></VendorRoute> },
+                    { path: "dashboard/:id", element: <VendorRoute><VendorDashboard /></VendorRoute> },
+                    { path: "sales/:id", element: <VendorRoute><VendorSales /></VendorRoute> },
                     { path: "signup", element: <VendorLoginPopup /> },
                     { path: "profile/:id", element: <VendorRoute><VendorProfile /></VendorRoute> },
                     { path: "vendor-create/:id", element: <VendorRoute><VendorCreate /></VendorRoute> },
