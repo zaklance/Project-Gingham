@@ -213,9 +213,9 @@ const router = createBrowserRouter([
                 path: "admin",
                 children: [
                     { path: "home", element: <AdminHome /> },
-                    { path: "markets",element:<AdminRoute><AdminMarkets /></AdminRoute>},
-                    { path: "vendors",element:<AdminRoute><AdminVendors /></AdminRoute>},
-                    { path: "users",element:<AdminRoute><AdminUsers /></AdminRoute>},
+                    { path: "markets/:id",element:<AdminRoute><AdminMarkets /></AdminRoute>},
+                    { path: "vendors/:id",element:<AdminRoute><AdminVendors /></AdminRoute>},
+                    { path: "users/:id",element:<AdminRoute><AdminUsers /></AdminRoute>},
                     { path: "profile/:id",element:<AdminRoute><AdminProfile /></AdminRoute>},
                     { path: "logout", element: <AdminLogout /> },
                     { path: "password-reset", element: <AdminPasswordReset /> },
