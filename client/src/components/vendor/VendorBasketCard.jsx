@@ -298,7 +298,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                             type="text"
                             name="basket_input"
                             placeholder="5"
-                            size="4"
+                            // size="4"
                             onChange={(e) => setNumBaskets(e.target.value)}
                             value={numBaskets}
                         />
@@ -309,7 +309,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                             type="text"
                             name="price"
                             placeholder="$15.00"
-                            size="4"
+                            // size="4"
                             onChange={(e) => setBasketValue(e.target.value)}
                             value={basketValue}
                         />
@@ -320,7 +320,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                             type="text"
                             step="0.01"
                             name="price"
-                            size="4"
+                            // size="4"
                             placeholder="$5.00"
                             onChange={(e) => setPrice(e.target.value)}
                             value={price}
@@ -333,7 +333,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                             <input
                                 // mask="99:99"
                                 placeholder="HH:MM"
-                                size="4"
+                                // size="4"
                                 name="pickup_start"
                                 value={startTime}
                                 onChange={(e) => setStartTime(e.target.value)}
