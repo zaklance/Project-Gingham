@@ -10,6 +10,11 @@ function AdminVendorNotifications({ notifications, setNotifications }) {
         console.log(`Approval notification with ID: ${notification.id}`);
         const token = localStorage.getItem('jwt-token');
 
+        if (!newProduct?.product || newProduct.product.trim() === "") {
+            alert("Product name cannot be empty.");
+            return; // Exit the function early
+        }
+
         try {
             const productResponse = await fetch(`http://127.0.0.1:5555/api/products`, {
                 method: 'POST',

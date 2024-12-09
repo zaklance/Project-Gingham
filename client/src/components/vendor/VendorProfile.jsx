@@ -20,14 +20,18 @@ function VendorProfile () {
     const [status, setStatus] = useState('initial')
     const [vendorImageURL, setVendorImageURL] = useState(null);
     const [products, setProducts] = useState([])
+    const [productRequest, setProductRequest] = useState('')
+
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/products")
             .then(response => response.json())
             .then(data => {
-                const sortedProducts = data.sort((a, b) =>
-                    a.product.localeCompare(b.product)
-                );
+                const sortedProducts = data.sort((a, b) => {
+                    if (a.product === "Other") return 1;
+                    if (b.product === "Other") return -1;
+                    return a.product.localeCompare(b.product);
+                });
                 setProducts(sortedProducts);
             });
     }, []);
@@ -213,7 +217,7 @@ function VendorProfile () {
                     uploadedFilename = data.filename;
                     console.log('Image uploaded:', uploadedFilename);
                     setStatus('success');
-                    setVendorImageURL(`http://127.0.0.1:5555/api/vendors/${id}/image`);
+                    setVendorImageURL(`http://127.0.0.1:5555/api/vendors/${vendorId}/image`);
                 } else {
                     console.log('Image upload failed');
                     console.log('Response:', await result.text());
@@ -233,7 +237,7 @@ function VendorProfile () {
         }
     
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendors/${id}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendors/${vendorId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -253,6 +257,31 @@ function VendorProfile () {
                 console.log('Failed to save changes');
                 console.log('Response status:', response.status);
                 console.log('Response text:', await response.text());
+            }
+            if (Number(vendorData.product) === 1 && productRequest.trim() !== '') {
+                try {
+                    const response = await fetch('http://127.0.0.1:5555/api/create-admin-notification', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            vendor_id: vendorId,
+                            vendor_user_id: id,
+                            message: `${vendorData.name} has requested to for a new Product category: ${productRequest}.`,
+                        }),
+                    });
+                    if (response.ok) {
+                        const responseData = await response.json();
+                        alert(`Your product request has been sent to the admins for approval, if approved your product will be automatically changed!`);
+                    } else {
+                        const errorData = await response.json();
+                        alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    console.error('Error sending request:', error);
+                    alert('An error occurred while sending the request. Please try again later.');
+                }
             }
         } catch (error) {
             console.error('Error saving changes:', error);
@@ -293,6 +322,11 @@ function VendorProfile () {
             fetchMarketDetails();
         }
     }, [locations]);
+
+    const handleProductInputChange = (event) => {
+        setProductRequest(event.target.value);
+    };
+
 
     return(
         <div>
@@ -394,6 +428,17 @@ function VendorProfile () {
                                             ))}
                                         </select>
                                     </div>
+                                    {Number(tempVendorData?.product) === 1 && (
+                                        <div className="form-group">
+                                            <label>Other Product:</label>
+                                            <input
+                                                type="text"
+                                                name="new_product"
+                                                value={productRequest || ''}
+                                                onChange={handleProductInputChange}
+                                            />
+                                        </div>
+                                    )}
                                     <div className='form-group'>
                                         <label>Bio:</label>
                                         <textarea
