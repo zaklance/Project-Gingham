@@ -104,10 +104,10 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {!isNotUser && (
                     <>
                         <li>
-                            <NavLink className='nav-tab color-3 btn-nav' to="/user/markets">Markets</NavLink>
+                            <NavLink className='nav-tab color-3 btn-nav' to="/user/markets" state={{ resetFilters: true }}>Markets</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav' to="/user/vendors">Vendors</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav' to="/user/vendors" state={{ resetFilters: true }}>Vendors</NavLink>
                         </li>
                         <li>
                             <NavLink className='nav-tab color-5 btn-nav nowrap' to="/user/your-cart">Cart ({amountInCart})</NavLink>

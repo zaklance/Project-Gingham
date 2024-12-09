@@ -44,8 +44,17 @@ function Markets() {
     }, []);
 
     useEffect(() => {
-        if (location.state?.isClicked !== undefined) {
+        if (location.state?.isClicked !== undefined) { 
             setIsClicked(location.state.isClicked);
+        }
+        fetch("http://127.0.0.1:5555/api/markets")
+            .then(response => response.json())
+            .then(data => setMarkets(data))
+    }, [location.state]);
+
+    useEffect(() => {
+        if (location.state?.resetFilters) {
+            setIsClicked(false);
         }
         fetch("http://127.0.0.1:5555/api/markets")
             .then(response => response.json())

@@ -199,10 +199,11 @@ function VendorBasketCard({ vendorId, marketDay }) {
     };
 
     const handleDelete = async () => {
+        if (!confirm('Are you sure you want to delete all baskets?')) {
+            return;
+        }
+
         if (vendorId && marketDay?.id && marketDay?.date) {
-            console.log('vendorId:', vendorId);
-            console.log('marketDay:', marketDay);
-            console.log('marketDay.id:', marketDay.id);
     
             const formattedSaleDate = new Date(marketDay.date).toISOString().split('T')[0];
     
