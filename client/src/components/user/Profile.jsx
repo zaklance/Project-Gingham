@@ -13,6 +13,8 @@ function Profile({ marketData }) {
     const [vendorFavs, setVendorFavs] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
 
+    const userId = parseInt(globalThis.localStorage.getItem('user_id'))
+
     const decodeJwt = (token) => {
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
@@ -115,21 +117,19 @@ function Profile({ marketData }) {
     };
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/vendor-favorites")
+        fetch(`http://127.0.0.1:5555/api/vendor-favorites?user_id=${userId}`)
             .then(response => response.json())
             .then(data => {
-                const filteredData = data.filter(item => item.user_id === parseInt(globalThis.localStorage.getItem('user_id')));
-                setVendorFavs(filteredData);
+                setVendorFavs(data);
             })
             .catch(error => console.error('Error fetching vendor favorites', error));
     }, []);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/market-favorites")
+        fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`)
             .then(response => response.json())
             .then(data => {
-                const filteredData = data.filter(item => item.user_id === parseInt(globalThis.localStorage.getItem('user_id')));
-                setMarketFavs(filteredData);
+                setMarketFavs(data);
             })
             .catch(error => console.error('Error fetching market favorites', error));
     }, []);
