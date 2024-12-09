@@ -332,14 +332,25 @@ function VendorDetail({ products }) {
                                         ) : (
                                             <span className="market-price">Out of Stock</span>
                                         )}
-                                        <span className="market-baskets nowrap">
-                                            Available Baskets: {allBaskets.length}
-                                            <br/>
-                                            Pick Up:
-                                            {firstBasket && firstBasket.pickup_start
-                                                ? ` ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
-                                                : ' Not Available'}
-                                        </span>
+                                        {allBaskets.length > 4 ? (
+                                            <span className="market-baskets nowrap">
+                                                Baskets Available
+                                                <br/>
+                                                Pick Up:
+                                                {firstBasket && firstBasket.pickup_start
+                                                    ? ` ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
+                                                    : ' Not Available'}
+                                            </span>
+                                        ) : (
+                                            <span className="market-baskets nowrap">
+                                                Available Baskets: {allBaskets.length}
+                                                <br />
+                                                Pick Up:
+                                                {firstBasket && firstBasket.pickup_start
+                                                    ? ` ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
+                                                    : ' Not Available'}
+                                            </span>
+                                        )}
                                         {allBaskets.length > 0 ? (
                                             <button className="btn-add" onClick={() => handleAddToCart(marketDetail)}>
                                                 Add to Cart
