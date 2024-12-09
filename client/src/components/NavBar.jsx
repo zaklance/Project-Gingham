@@ -118,10 +118,10 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isVendorLoggedIn && isVendorPage && (
                     <>
                         <li>
-                            <NavLink className='nav-tab color-3 btn-nav' to="/vendor/dashboard">Dashboard</NavLink>
+                            <NavLink className='nav-tab color-3 btn-nav' to={`/vendor/dashboard/${vendor_id}`}>Dashboard</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav' to="/vendor/sales">Sales</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav' to={`/vendor/sales/${vendor_id}`}>Sales</NavLink>
                         </li>
                         <li>
                             <NavLink className='nav-tab color-5 btn-nav' to={`/vendor/profile/${vendor_id}`}>Profile</NavLink>

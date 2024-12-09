@@ -51,10 +51,12 @@ function VendorLogin({ handlePopup }) {
                 globalThis.localStorage.setItem('vendor_user_id', data.vendor_user_id);
                 console.log('Login successful:', data);
 
+                const vendor_id = globalThis.localStorage.getItem('vendor_user_id');
+
                 startLogoutTimer(12 * 60 * 60 * 1000);
     
                 handlePopup();
-                navigate(`/vendor/dashboard`);
+                navigate(`/vendor/dashboard/${vendor_id}`);
             } else {
                 alert('Login failed:', errorData.error);
             }
