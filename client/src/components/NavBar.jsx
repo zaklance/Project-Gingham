@@ -135,13 +135,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             <NavLink className='nav-tab color-3 btn-nav' to={`/admin/profile/${admin_id}`}>Profile</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-5 btn-nav' to={`/admin/markets`}>Markets</NavLink>
+                            <NavLink className='nav-tab color-5 btn-nav' to={`/admin/markets/${admin_id}`}>Markets</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav' to={`/admin/vendors`}>Vendors</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav' to={`/admin/vendors/${admin_id}`}>Vendors</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-1 btn-nav' to={`/admin/users`}>Users</NavLink>
+                            <NavLink className='nav-tab color-1 btn-nav' to={`/admin/users/${admin_id}`}>Users</NavLink>
                         </li>
                         <li className='notification' onClick={handleAdminNotifPopup}>
                             <a className='nav-tab color-2 btn-nav nav-tab-wide' to="/notifications"><img className='img-notifications' src="/site-images/notifications-1.svg" alt="Notification" /></a>
