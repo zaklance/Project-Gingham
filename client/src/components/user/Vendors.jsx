@@ -6,11 +6,11 @@ import '../../assets/css/index.css';
 function Vendors() {
     const [vendors, setVendors] = useState([]);
     const [products, setProducts] = useState([]);
+    const [productList, setProductList] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState('');
     const [query, setQuery] = useState("");
     const [vendorFavs, setVendorFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
-    const [productList, setProductList] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
 
     const dropdownRef = useRef(null);
@@ -34,10 +34,19 @@ function Vendors() {
 
     const filteredVendorsResults = vendors.filter(vendor =>
         vendor.name.toLowerCase().includes(query.toLowerCase()) &&
-        (!selectedProduct || vendor.product === selectedProduct) &&
+        (!selectedProduct || vendor.product === Number(selectedProduct)) &&
         (!isClicked || vendorFavs.some(vendorFavs => vendorFavs.vendor_id === vendor.id))
     );
-    
+
+    useEffect(() => {
+        if (!vendors || !products?.length) return;
+        const filteredProducts = products.filter(product =>
+            vendors.some(vendor => vendor.product === product.id)
+        );
+        setProductList(filteredProducts);
+    }, [vendors, products]);
+
+
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/products")
             .then(response => response.json())
@@ -93,11 +102,10 @@ function Vendors() {
 
     // console.log(products)
 
-    useEffect(() => {
-        // Create a unique list of products available on the selected day
-        const uniqueProducts = [...new Set(vendors.map(item => item.product))];
-        setProductList(uniqueProducts.sort());
-    }, [vendors]);
+    // useEffect(() => {
+    //     const uniqueProducts = [...new Set(vendors.map(item => item.product))];
+    //     setProductList(uniqueProducts.sort());
+    // }, [vendors]);
 
     const handleClickOutside = (event) => {
         // Close dropdown if clicked outside
@@ -152,8 +160,10 @@ function Vendors() {
                             <td>
                                 <select className='select-filter' value={selectedProduct} onChange={handleProductChange}>
                                     <option value="">All Products</option>
-                                    {productList.map(product => (
-                                        <option key={product} value={product}>{product}</option>
+                                    {Array.isArray(productList) && productList.map((product) => (
+                                        <option key={product.id} value={product.id}>
+                                            {product.product}
+                                        </option>
                                     ))}
                                 </select>
                             </td>

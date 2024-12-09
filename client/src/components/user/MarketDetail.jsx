@@ -15,19 +15,34 @@ function MarketDetail ({ match }) {
     const [isClicked, setIsClicked] = useState(false);
     const [alertMessage, setAlertMessage] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
-    const [productList, setProductList] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState("");
     const [marketDays, setMarketDays] = useState([]);
     const [selectedDay, setSelectedDay] = useState(null);
     const [vendorMarkets, setVendorMarkets] = useState();
     const [events, setEvents] = useState([]);
     const [marketBaskets, setMarketBaskets] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [productList, setProductList] = useState({});
     
     const { handlePopup, amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
     
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     
     const navigate = useNavigate();
+
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/api/products")
+            .then(response => response.json())
+            .then(data => {
+                const sortedProducts = data.sort((a, b) => {
+                    if (a.product === "Other") return 1;
+                    if (b.product === "Other") return -1;
+                    return a.product.localeCompare(b.product);
+                });
+                setProducts(sortedProducts);
+            })
+            .catch(error => console.error('Error fetching products', error));
+    }, []);
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/markets/${id}`)
@@ -119,28 +134,48 @@ function MarketDetail ({ match }) {
         }
     }, [allVendorDetails, vendors]);
 
+    // Filter vendors
     const filteredVendorsList = useMemo(() => {
         return vendors.filter((vendorId) => {
             const vendorDetail = vendorDetailsMap[vendorId];
+            if (!vendorDetail) {
+                return false;
+            }
             const availableOnSelectedDay = vendorMarkets.filter(vendorMarket => {
                 return vendorMarket.vendor_id === vendorId &&
                     vendorMarket.market_day.market_id === market.id &&
                     vendorMarket.market_day.day_of_week === selectedDay?.day_of_week;
             });
-            return availableOnSelectedDay.length > 0 && (!selectedProduct || vendorDetail.product === selectedProduct);
+            return availableOnSelectedDay.length > 0 && (!selectedProduct || Number(vendorDetail.product) === Number(selectedProduct));
         });
     }, [vendors, vendorMarkets, selectedDay, selectedProduct, market, vendorDetailsMap]);
+
+    // Filter productList so that it only shows products that are in filteredVendorsList
+    useEffect(() => {
+        if (!vendorMarkets || !products?.length || !selectedDay) return;
+
+        const filteredMarketsOnDay = vendorMarkets.filter(
+            vendorMarket =>
+                vendorMarket.market_day.day_of_week === selectedDay.day_of_week &&
+                vendorMarket.market_day.market_id === market.id
+        );
+        const filteredProducts = products.filter(product =>
+            filteredMarketsOnDay.some(vendorMarket => vendorMarket.vendor.product === product.id)
+        );
+        setProductList(filteredProducts);
+    }, [vendorMarkets, selectedDay, products, market]);
 
     // Gets rid of duplicate vendors (from different market_days)
     const uniqueFilteredVendorsList = [...new Set(filteredVendorsList)];
 
     const handleAddToCart = (vendorId, vendorDetail, basket) => {
+        const vendorName = vendorDetailsMap[vendorId]?.name || "Unknown Vendor";
         const basketInCart = marketBaskets.find(
             item => item.vendor_id === vendorId && item.is_sold === false
         );
         if (basketInCart) {
             const updatedCartItems = [...cartItems, {
-                vendorName: vendorDetailsMap[vendorId]?.name,
+                vendorName: vendorName,
                 location: market.name,
                 id: basketInCart.id,
                 price: basketInCart.price,
@@ -217,20 +252,6 @@ function MarketDetail ({ match }) {
             setShowAlert(false);
         }, 1000);
     };
-
-    useEffect(() => {
-        if (vendorMarkets && selectedDay) {
-            // Filter `vendorMarkets` based on selected day
-            const availableOnSelectedDay = vendorMarkets.filter(
-                vendorMarket => vendorMarket.market_day.market_id === market.id &&
-                    vendorMarket.market_day.day_of_week === selectedDay.day_of_week
-            );
-
-            // Create a unique list of products available on the selected day
-            const uniqueProducts = [...new Set(availableOnSelectedDay.map(vm => vm.vendor.product))];
-            setProductList(uniqueProducts);
-        }
-    }, [vendorMarkets, selectedDay]);
 
     useEffect(() => {
         if (!selectedDay?.id) return;
@@ -360,8 +381,10 @@ function MarketDetail ({ match }) {
                 <h2>Vendors in this Market:</h2>
                 <select value={selectedProduct} onChange={handleProductChange}>
                     <option value="">All Products</option>
-                    {productList.map(product => (
-                        <option key={product} value={product}>{product}</option>
+                    {Array.isArray(productList) && productList.map((product) => (
+                        <option key={product.id} value={product.id}>
+                            {product.product}
+                        </option>
                     ))}
                 </select>
             </div>
@@ -378,7 +401,9 @@ function MarketDetail ({ match }) {
                                 <Link to={`/user/vendors/${vendorId}`} className="market-name">
                                     {vendorDetail.name || 'Loading...'}
                                 </Link>
-                                <span className="market-name">{vendorDetail.product || 'No product listed'}</span>
+                                <span className="market-name">
+                                    {products.find(p => p.id === vendorDetail.product)?.product || 'No product listed'}
+                                </span>
                                 {availableBaskets.length > 0 ? (
                                     <span className="market-price">
                                         Price: ${firstBasket.price}
