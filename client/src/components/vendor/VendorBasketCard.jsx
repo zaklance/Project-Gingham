@@ -313,10 +313,10 @@ function VendorBasketCard({ vendorId, marketDay }) {
                                 <td>Baskets Saved:</td>
                                 <td className='text-center'>
                                     {isEditing ? (
-                                        <div className="basket-adjustment">
-                                            <button onClick={handleDecrement} className="btn-adjust">-</button>
+                                        <div className="basket-adjustment flex-space-evenly flex-center-align">
+                                            <button onClick={handleDecrement} className="btn btn-adjust">–</button>
                                             <span>{numBaskets}</span>
-                                            <button onClick={handleIncrement} className="btn-adjust">+</button>
+                                            <button onClick={handleIncrement} className="btn btn-adjust">+</button>
                                         </div>                                    
                                     ) : (
                                         numBaskets
@@ -363,7 +363,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                     </div>
                     <div className='form-baskets'>
                         <label className='margin-t-16 margin-b-8'>Basket Value:</label>
-                        <input type="text" name="price" placeholder="$15.00" onChange={(e) => setBasketValue(e.target.value)} value={basketValue} />
+                        <input type="text" name="price" placeholder="$10.00" onChange={(e) => setBasketValue(e.target.value)} value={basketValue} />
                     </div>
                     <div className='form-baskets'>
                         <label className='margin-t-16 margin-b-8'>Basket Price:</label>
