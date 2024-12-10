@@ -12,6 +12,8 @@ function Profile({ marketData }) {
     const [editMode, setEditMode] = useState(false);
     const [vendorFavs, setVendorFavs] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
+    const [image, setImage] = useState(null)
+    const [status, setStatus] = useState('initial')
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'))
 
@@ -111,6 +113,51 @@ function Profile({ marketData }) {
                 console.log('Response status:', response.status);
                 console.log('Response text:', await response.text());
             }
+            if (image) {
+
+                const maxFileSize = 25 * 1024 * 1024
+                if (image.size > maxFileSize) {
+                    alert("File size exceeds 25 MB. Please upload a smaller file.");
+                    return;
+                }
+
+                console.log('Uploading file...');
+                setStatus('uploading');
+                const formData = new FormData();
+                formData.append('file', image);
+                formData.append('type', 'vendor');
+                formData.append('user_id', id);
+
+                for (const [key, value] of formData.entries()) {
+                    console.log(`${key}:`, value);
+                }
+
+                try {
+                    const result = await fetch('http://127.0.0.1:5555/api/upload', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    console.log('Request Body:', formData);
+
+                    if (result.ok) {
+                        const data = await result.json();
+                        uploadedFilename = data.filename;
+                        console.log('Image uploaded:', uploadedFilename);
+                        setStatus('success');
+                        setVendorImageURL(`http://127.0.0.1:5555/api/users/${id}/image`);
+                    } else {
+                        console.log('Image upload failed');
+                        console.log('Response:', await result.text());
+                        setStatus('fail');
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                    setStatus('fail');
+                    return;
+                }
+            }
         } catch (error) {
             console.error('Error saving changes:', error);
         }
@@ -134,6 +181,15 @@ function Profile({ marketData }) {
             .catch(error => console.error('Error fetching market favorites', error));
     }, []);
 
+    const handleFileChange = (event) => {
+        if (event.target.files) {
+            setStatus('initial');
+            setImage(event.target.files[0]);
+        }
+    }
+
+    console.log(profileData)
+
     if (!profileData) {
         return <div>Loading...</div>;
     }
@@ -142,7 +198,7 @@ function Profile({ marketData }) {
         <div>
             <h1>Welcome to Your Profile, {profileData.first_name}!</h1>
             <div className='box-bounding'>
-                <h2>Profile Information</h2>
+                <h2 className='margin-b-16'>Profile Information</h2>
                 {editMode ? (
                     <div className='margin-t-16'>
                         <div className="form-group">
@@ -231,36 +287,54 @@ function Profile({ marketData }) {
                                 onChange={handleInputChange}
                             />
                         </div>
+                        <div className='form-group'>
+                            <label>Avatar:</label>
+                            <input
+                                type="file"
+                                name="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                            />
+                        </div>
                         <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
                         <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
                     </div>
                 ) : (
                     <>
-                        <table className='margin-t-16'>
-                            <tbody>
-                                <tr>
-                                    <td className='cell-title'>Name:</td>
-                                    <td className='cell-text'>{profileData.first_name} {profileData.last_name}</td>
-                                </tr>
-                                <tr>
-                                    <td className='cell-title'>Email:</td>
-                                    <td className='cell-text'>{profileData.email}</td>
-                                </tr>
-                                <tr>
-                                    <td className='cell-title'>Phone:</td>
-                                    <td className='cell-text'>{formatPhoneNumber(profileData.phone)}</td>
-                                </tr>
-                                <tr>
-                                    <td className='cell-title'>Address:</td>
-                                    <td className='cell-text'>{profileData.address_1}, {profileData.address_2}</td>
-                                </tr>
-                                <tr>
-                                    <td className='cell-title'></td>
-                                    <td className='cell-text'>{profileData.city}, {profileData.state} {profileData.zipcode}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
+                        <div className='flex-space-evenly flex-gap-16 flex-start-align'>
+                            {profileData.avatar !== null ? (
+                                <img className='img-avatar-profile' src={`/user-images/${review.user.avatar}`} alt="Avatar" />
+                            ) : (
+                                <img className='img-avatar-profile' src={`/site-images/avatar-orange.jpg`} alt="Avatar" />
+                            )}
+                            <div className='width-80'>
+                                <table className='table-profile'>
+                                    <tbody>
+                                        <tr>
+                                            <td className='cell-title'>Name:</td>
+                                            <td className='cell-text'>{profileData.first_name} {profileData.last_name}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='cell-title'>Email:</td>
+                                            <td className='cell-text'>{profileData.email}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='cell-title'>Phone:</td>
+                                            <td className='cell-text'>{formatPhoneNumber(profileData.phone)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='cell-title'>Address:</td>
+                                            <td className='cell-text'>{profileData.address_1}, {profileData.address_2}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='cell-title'></td>
+                                            <td className='cell-text'>{profileData.city}, {profileData.state} {profileData.zipcode}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
+                            </div>
+                        </div>
                     </>
                 )}
             </div>

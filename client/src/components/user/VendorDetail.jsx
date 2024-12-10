@@ -342,13 +342,13 @@ function VendorDetail({ products }) {
                                                     : ' Not Available'}
                                             </span>
                                         ) : (
-                                            <span className="market-baskets nowrap">
-                                                Available Baskets: {allBaskets.length}
+                                            <span className="market-baskets nowrap margin-r-8">
+                                                {allBaskets.length === 0 ? 'None Available' : `Available Baskets: ${allBaskets.length}`}
                                                 <br />
-                                                Pick Up:
+                                                
                                                 {firstBasket && firstBasket.pickup_start
-                                                    ? ` ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
-                                                    : ' Not Available'}
+                                                    ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
+                                                    : ''}
                                             </span>
                                         )}
                                         {allBaskets.length > 0 ? (

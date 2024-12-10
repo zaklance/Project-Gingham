@@ -420,10 +420,10 @@ function MarketDetail ({ match }) {
                                             : ''}
                                     </span>
                                 ) : (
-                                <span className="market-baskets nowrap">
-                                    Available Baskets: {availableBaskets.length}
+                                <span className="market-baskets nowrap margin-r-8">
+                                    {availableBaskets.length === 0 ? 'None Available' : `Available Baskets: ${availableBaskets.length}`}
                                     <br />
-                                    {firstBasket
+                                    {firstBasket && firstBasket.pickup_start
                                         ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
                                         : ''}
                                 </span>

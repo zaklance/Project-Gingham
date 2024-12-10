@@ -237,10 +237,6 @@ h2 {
   margin-top: 48px;
 }
 
-.margin-t--48 {
-  margin-top: -48px;
-}
-
 .margin-b-8 {
   margin-bottom: 8px;
 }
@@ -251,6 +247,10 @@ h2 {
 
 .margin-b-24 {
   margin-bottom: 24px;
+}
+
+.width-80 {
+  width: 80%;
 }
 
 .hidden {
@@ -462,6 +462,11 @@ ul {
   justify-content: space-between;
 }
 
+.flex-space-evenly {
+  display: flex;
+  justify-content: space-evenly;
+}
+
 .flex-start-align {
   align-items: flex-start;
   align-self: flex-start;
@@ -503,6 +508,10 @@ ul {
 
 .flex-gap-24 {
   gap: 24px;
+}
+
+.flex-gap-36 {
+  gap: 36px;
 }
 
 .flex-gap-48 {
@@ -1417,6 +1426,10 @@ link {
   padding: 4px;
 }
 
+.table-profile {
+  width: 100%;
+}
+
 .table-basket {
   width: 100%;
 }
@@ -1645,6 +1658,20 @@ select:hover {
 
 .img-hot {
   width: 20px;
+}
+
+.img-avatar-profile {
+  object-fit: cover;
+  height: 188px;
+  width: 188px;
+  border-radius: 50%;
+}
+
+.img-avatar {
+  object-fit: cover;
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
 }
 
 .favorites-list li {
