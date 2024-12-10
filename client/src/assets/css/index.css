@@ -952,6 +952,15 @@ ul {
   font-size: 1em;
 }
 
+.btn-adjust {
+  background-color: white;
+  /* padding: 1px 4px; */
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  font-weight: 600;
+}
+
 .btn-nav-login {
   margin-top: -8px;
 }
