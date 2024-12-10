@@ -34,6 +34,7 @@ class User(db.Model, SerializerMixin):
     city = db.Column(db.String, nullable=False)
     state = db.Column(db.String(2), nullable=False)
     zipcode = db.Column(db.String(10), nullable=False)
+    avatar = db.Column(db.String)
 
     # Relationships
     market_reviews = db.relationship('MarketReview', back_populates='user')

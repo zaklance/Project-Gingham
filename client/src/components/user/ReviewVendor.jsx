@@ -372,6 +372,11 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                             {review.user_id !== userId && editingReviewId !== review.id ? (
                                 <>
                                     <div className='flex-start flex-center-align'>
+                                        {review.user.avatar !== null ? (
+                                            <img className='img-avatar margin-r-8' src={`/user-images/${review.user.avatar}`} alt="Avatar" />
+                                        ) : (
+                                            <img className='img-avatar margin-r-8' src={`/site-images/avatar-orange.jpg`} alt="Avatar" />
+                                        )}
                                         <h4 className='margin-r-8'>{review.user ? review.user.first_name : 'Anonymous'}</h4>
                                         <p className='margin-r-8'>{review ? convertToLocalDate(review.post_date) : ''}</p>
                                         <div className='notification margin-r-4'>
@@ -408,6 +413,11 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                                 </>
                             ) : (
                                 <div className='flex-start flex-center-align'>
+                                        {review.user.avatar !== null ? (
+                                            <img className='img-avatar margin-r-8' src={`/user-images/${review.user.avatar}`} alt="Avatar" />
+                                        ) : (
+                                            <img className='img-avatar margin-r-8' src={`/site-images/avatar-orange.jpg`} alt="Avatar" />
+                                        )}
                                     <h4 className='margin-r-8'>You</h4>
                                     <p className='margin-r-8'>{review ? convertToLocalDate(review.post_date) : ''}</p>
                                 </div>

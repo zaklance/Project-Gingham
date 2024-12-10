@@ -16,6 +16,7 @@ from werkzeug.utils import secure_filename
 from datetime import datetime, date, time, timedelta
 from PIL import Image
 from io import BytesIO
+from random import choice
 import stripe
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 
@@ -41,6 +42,14 @@ Migrate(app, db)
 CORS(app, supports_credentials=True)
 
 jwt = JWTManager(app)
+
+avatars = [
+        "avatar-apricot.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage.jpg",
+        "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime.jpg", "avatar-melon.jpg",
+        "avatar-nectarine.jpg", "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg",
+        "avatar-peach.jpg", "avatar-pomegranate.jpg", "avatar-radish.jpg", "avatar-tomato.jpg",
+        "avatar-watermelon.jpg"
+    ]
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -218,6 +227,8 @@ def signup():
         if user:
             return {'error': 'email already exists'}, 400
         
+        avatar = data.get('avatar') or choice(avatars)
+
         new_user = User(
             email=data['email'],
             password=data['password'],
@@ -228,7 +239,8 @@ def signup():
             address_2=data.get('address2', ''),
             city=data['city'],
             state=data['state'],
-            zipcode=data['zipcode']
+            zipcode=data['zipcode'],
+            avatar=avatar
         )
 
         db.session.add(new_user)
@@ -245,6 +257,82 @@ def signup():
 
     except Exception as e:
         return {'error': f'Exception: {str(e)}'}, 500
+    
+@app.route('/api/users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
+@jwt_required()
+def profile(id):
+    
+    if not check_role('user'):
+        return {'error': "Access forbidden: User only"}, 403
+    
+    if request.method == 'GET':
+        user = User.query.filter_by(id=id).first()
+        if not user:
+            return {'error': 'user not found'}, 404
+        profile_data = user.to_dict()
+        return jsonify(profile_data), 200
+
+    elif request.method == 'PATCH':
+        user = User.query.filter_by(id=id).first()
+        if not user:
+            return {'error': 'user not found'}, 404
+        try:
+            data = request.get_json()
+            # for key, value in data.items():
+            #     setattr(user, key, value)
+            user.first_name = data.get('first_name')
+            user.last_name = data.get('last_name')
+            user.email = data.get('email')
+            user.phone = data.get('phone')
+            user.address_1 = data.get('address_1')
+            user.address_2 = data.get('address_2')
+            user.city = data.get('city')
+            user.state = data.get('state')
+            user.zipcode = data.get('zipcode')
+
+            db.session.commit()
+            return jsonify(user.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+        
+    elif request.method == 'POST':
+        data = request.get_json()
+
+        existing_user = User.query.filter_by(email=data['email']).first()
+        if existing_user:
+            return {'error': 'Email already in use'}, 400
+        
+        try: 
+            new_user = User(
+                email=data['email'],
+                password=data['password'],
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                address=data.get('address')
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            return jsonify(new_user.to_dict()), 201
+        
+        except Exception as e: 
+            db.session.rollback()
+            return {'error': str(e)}, 500
+        
+    elif request.method == 'DELETE':
+        user = User.query.filter_by(id=id).first()
+        if not User: 
+            return {'error': 'user not found'}, 404
+        
+        try: 
+            db.session.delete(user)
+            db.session.commit()
+            return {}, 204
+        
+        except Exception as e: 
+            db.session.rollback()
+            return {'error': str(e)}, 500
 
 @app.route('/api/logout', methods=['DELETE'])
 def logout():
@@ -559,82 +647,6 @@ def get_vendor_image(vendor_id):
         except FileNotFoundError:
             return {'error': 'Image not found'}, 404
     return {'error': 'Vendor or image not found'}, 404
-
-@app.route('/api/users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
-@jwt_required()
-def profile(id):
-    
-    if not check_role('user'):
-        return {'error': "Access forbidden: User only"}, 403
-    
-    if request.method == 'GET':
-        user = User.query.filter_by(id=id).first()
-        if not user:
-            return {'error': 'user not found'}, 404
-        profile_data = user.to_dict()
-        return jsonify(profile_data), 200
-
-    elif request.method == 'PATCH':
-        user = User.query.filter_by(id=id).first()
-        if not user:
-            return {'error': 'user not found'}, 404
-        try:
-            data = request.get_json()
-            # for key, value in data.items():
-            #     setattr(user, key, value)
-            user.first_name = data.get('first_name')
-            user.last_name = data.get('last_name')
-            user.email = data.get('email')
-            user.phone = data.get('phone')
-            user.address_1 = data.get('address_1')
-            user.address_2 = data.get('address_2')
-            user.city = data.get('city')
-            user.state = data.get('state')
-            user.zipcode = data.get('zipcode')
-
-            db.session.commit()
-            return jsonify(user.to_dict()), 200
-
-        except Exception as e:
-            db.session.rollback()
-            return {'error': str(e)}, 500
-        
-    elif request.method == 'POST':
-        data = request.get_json()
-
-        existing_user = User.query.filter_by(email=data['email']).first()
-        if existing_user:
-            return {'error': 'Email already in use'}, 400
-        
-        try: 
-            new_user = User(
-                email=data['email'],
-                password=data['password'],
-                first_name=data['first_name'],
-                last_name=data['last_name'],
-                address=data.get('address')
-            )
-            db.session.add(new_user)
-            db.session.commit()
-            return jsonify(new_user.to_dict()), 201
-        
-        except Exception as e: 
-            db.session.rollback()
-            return {'error': str(e)}, 500
-        
-    elif request.method == 'DELETE':
-        user = User.query.filter_by(id=id).first()
-        if not User: 
-            return {'error': 'user not found'}, 404
-        
-        try: 
-            db.session.delete(user)
-            db.session.commit()
-            return {}, 204
-        
-        except Exception as e: 
-            db.session.rollback()
-            return {'error': str(e)}, 500
 
 @app.route('/api/market-reviews', methods=['GET', 'POST', 'DELETE'])
 def all_market_reviews():

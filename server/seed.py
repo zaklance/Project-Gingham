@@ -839,7 +839,25 @@ def run():
 
     db.session.add_all(vendors)
     db.session.commit()
-    
+
+    # add fake users
+    users = []
+    states = [
+         'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA', 
+         'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA', 
+         'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 
+         'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 
+         'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
+         ]
+    apartment = ['Apt', 'Suite', 'Floor', 'Building']
+    avatars = [
+        "avatar-apricot.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage.jpg",
+        "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime.jpg", "avatar-melon.jpg",
+        "avatar-nectarine.jpg", "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg",
+        "avatar-peach.jpg", "avatar-pomegranate.jpg", "avatar-radish.jpg", "avatar-tomato.jpg",
+        "avatar-watermelon.jpg"
+    ]
+
     # user for demo
     user_demo = User(
         email="hamging@gingham.nyc",
@@ -856,11 +874,6 @@ def run():
     db.session.add(user_demo)
     db.session.commit()
 
-    # add fake users
-    users = []
-    states = [ 'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA', 'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY' ];
-    apartment = ['Apt', 'Suite', 'Floor', 'Building']
-
     for i in range(50):
         email = fake.ascii_free_email()
         # password = fake.password()
@@ -873,6 +886,7 @@ def run():
         city = fake.city()
         state = choice(states)
         zipcode = fake.postcode()
+        avatar = choice(avatars)
 
         u = User(
             email=email,
@@ -884,7 +898,8 @@ def run():
             address_2=address_2,
             city=city,
             state=state,
-            zipcode=zipcode
+            zipcode=zipcode,
+            avatar=avatar
         )
         users.append(u)
 
