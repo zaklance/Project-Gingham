@@ -13,13 +13,13 @@ export function timeConverter(time24) {
 }
 
 export function convertToLocalDate(gmtDateString) {
-    const gmtDate = new Date(gmtDateString);
-    const localDate = gmtDate.toLocaleDateString('en-US', {
+    const [year, month, day] = gmtDateString.split('-').map(Number);
+    const localDate = new Date(year, month - 1, day);
+    return localDate.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
     });
-    return localDate;
 }
 
 export function formatDate(dateString) {
