@@ -268,7 +268,7 @@ class MarketReview(db.Model, SerializerMixin):
     review_text = db.Column(db.String, nullable=False)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    post_date = db.Column(db.Date, nullable=False, default=date.today)
+    post_date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
     is_reported = db.Column(db.Boolean, default=False)
 
     # Relationships
@@ -293,7 +293,7 @@ class VendorReview(db.Model, SerializerMixin):
     review_text = db.Column(db.String, nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    post_date = db.Column(db.Date, nullable=False, default=date.today)
+    post_date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
     is_reported = db.Column(db.Boolean, default=False)
 
     # Relationships
@@ -648,7 +648,6 @@ class Event(db.Model):
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
 
-    
     @validates('title')
     def validate_title(self, key, value):
         if len(value) > 24:

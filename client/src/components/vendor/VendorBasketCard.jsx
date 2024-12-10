@@ -238,7 +238,6 @@ function VendorBasketCard({ vendorId, marketDay }) {
             setErrorMessage('Missing vendor ID, market day ID, or sale date.');
         }
     };
-    
 
     return (
         <div className="basket-card">
