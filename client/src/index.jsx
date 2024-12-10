@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate, useParams } from 'react-router-dom';
 import './assets/css/index.css';
 
 // main routes
@@ -50,12 +50,65 @@ import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_JS_KEY);
 
-// Function to check admin authentication
 const AdminRoute = ({ children }) => {
     const token = localStorage.getItem("admin_jwt-token");
+    const storedId = localStorage.getItem("admin_user_id");
+    const { id: routeId } = useParams();
 
-    if (!token) {
-        return <div style={{ color: "red", fontWeight: "bold" }}>Protected route: Admin not authenticated</div>;
+    if (!token || !storedId) {
+        return <Navigate to="/admin/home" />;
+    }
+
+    if (storedId !== routeId) {
+        return (
+            <div style={{ color: "red", fontWeight: "bold", textAlign: "center", marginTop: "20px" }}>
+                Access denied: You can only access your own account.
+            </div>
+        );
+    }
+
+    return children;
+};
+
+const UserRoute = ({ children }) => {
+    const token = localStorage.getItem("user_jwt-token");
+    const storedId = localStorage.getItem("user_id");
+    const { id: routeId } = useParams();
+
+    if (!token || !storedId) {
+        return (
+            <div style={{ color: "red", fontWeight: "bold", textAlign: "center", marginTop: "20px" }}>
+                Protected route: User not authenticated.
+            </div>
+        );
+    }
+
+    if (storedId !== routeId) {
+        return (
+            <div style={{ color: "red", fontWeight: "bold", textAlign: "center", marginTop: "20px" }}>
+                Access denied: You can only access your own account.
+            </div>
+        );
+    }
+
+    return children;
+};
+
+const VendorRoute = ({ children }) => {
+    const token = localStorage.getItem("vendor_jwt-token");
+    const storedId = localStorage.getItem("vendor_user_id");
+    const { id: routeId } = useParams();
+
+    if ( !token || !storedId) {
+        return <Navigate to="/vendor/home" />;
+    }
+
+    if (storedId !== routeId) {
+        return (
+            <div style={{ color: "red", fontWeight: "bold", textAlign: "center", marginTop: "20px" }}>
+                Access denied: You can only access your own account.
+            </div>
+        );
     }
 
     return children;
@@ -128,7 +181,7 @@ const router = createBrowserRouter([
                 path: "user",
                 children: [
                     { path: "login", element: <Login /> },
-                    { path: "profile/:id", element: <Profile /> },
+                    { path: "profile/:id", element: <UserRoute><Profile /></UserRoute> },
                     { path: "logout", element: <Logout /> },
                     { path: "markets", element: <Markets /> },
                     { path: "markets/:id", element: <MarketDetail /> },
@@ -137,7 +190,7 @@ const router = createBrowserRouter([
                     { path: "your-cart", element: <Cart /> },
                     { path: "checkout", element: <CheckoutForm /> },
                     { path: "check-session", element: <CheckSession /> },
-                    { path: "return", element: <Return /> },
+                    { path: "return", element: <Return />},
                     { path: "reset-request", element: <UserResetRequest /> },
                     { path: "password-reset/:token", element: <UserPasswordReset /> },
                 ],
@@ -146,12 +199,12 @@ const router = createBrowserRouter([
                 path: "vendor",
                 children: [
                     { path: "home", element: <VendorHome /> },
-                    { path: "dashboard", element: <VendorDashboard /> },
-                    { path: "sales", element: <VendorSales /> },
+                    { path: "dashboard/:id", element: <VendorRoute><VendorDashboard /></VendorRoute> },
+                    { path: "sales/:id", element: <VendorRoute><VendorSales /></VendorRoute> },
                     { path: "signup", element: <VendorLoginPopup /> },
-                    { path: "profile/:id", element: <VendorProfile /> },
-                    { path: "vendor-create/:id", element: <VendorCreate /> },
-                    { path: "logout", element: <VendorLogout /> },
+                    { path: "profile/:id", element: <VendorRoute><VendorProfile /></VendorRoute> },
+                    { path: "vendor-create/:id", element: <VendorRoute><VendorCreate /></VendorRoute> },
+                    { path: "logout", element: <VendorLogout />},
                     { path: "password-reset", element: <VendorPasswordReset /> },
                     { path: "reset-request", element: <VendorResetRequest /> },
                 ],
@@ -160,38 +213,10 @@ const router = createBrowserRouter([
                 path: "admin",
                 children: [
                     { path: "home", element: <AdminHome /> },
-                    {
-                        path: "markets",
-                        element: (
-                            <AdminRoute>
-                                <AdminMarkets />
-                            </AdminRoute>
-                        ),
-                    },
-                    {
-                        path: "vendors",
-                        element: (
-                            <AdminRoute>
-                                <AdminVendors />
-                            </AdminRoute>
-                        ),
-                    },
-                    {
-                        path: "users",
-                        element: (
-                            <AdminRoute>
-                                <AdminUsers />
-                            </AdminRoute>
-                        ),
-                    },
-                    {
-                        path: "profile/:id",
-                        element: (
-                            <AdminRoute>
-                                <AdminProfile />
-                            </AdminRoute>
-                        ),
-                    },
+                    { path: "markets/:id",element:<AdminRoute><AdminMarkets /></AdminRoute>},
+                    { path: "vendors/:id",element:<AdminRoute><AdminVendors /></AdminRoute>},
+                    { path: "users/:id",element:<AdminRoute><AdminUsers /></AdminRoute>},
+                    { path: "profile/:id",element:<AdminRoute><AdminProfile /></AdminRoute>},
                     { path: "logout", element: <AdminLogout /> },
                     { path: "password-reset", element: <AdminPasswordReset /> },
                     { path: "reset-request", element: <AdminResetRequest /> },
