@@ -360,9 +360,6 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
         fetchTopReviews();
     }, []);
 
-    
-
-
     return (
         <>
             <h2 className='margin-b-16 margin-t-24'>Reviews</h2>
