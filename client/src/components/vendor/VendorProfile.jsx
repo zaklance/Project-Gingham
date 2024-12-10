@@ -124,7 +124,6 @@ function VendorProfile () {
                 body: JSON.stringify(tempVendorUserData),
             });
             console.log('Request body:', JSON.stringify(tempVendorUserData));
-
     
             if (response.ok) {
                 const updatedData = await response.json();
@@ -253,6 +252,7 @@ function VendorProfile () {
                 setVendorData(updatedData);
                 setVendorEditMode(false);
                 console.log('Vendor data updated successfully:', updatedData);
+                window.location.reload()
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status:', response.status);
