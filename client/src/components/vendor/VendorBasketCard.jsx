@@ -314,9 +314,9 @@ function VendorBasketCard({ vendorId, marketDay }) {
                                 <td className='text-center'>
                                     {isEditing ? (
                                         <div className="basket-adjustment flex-space-evenly flex-center-align">
-                                            <button onClick={handleDecrement} className="btn btn-adjust">–</button>
+                                            <button onClick={handleDecrement} className="btn btn-adjust btn-red">–</button>
                                             <span>{numBaskets}</span>
-                                            <button onClick={handleIncrement} className="btn btn-adjust">+</button>
+                                            <button onClick={handleIncrement} className="btn btn-adjust btn-green">+</button>
                                         </div>                                    
                                     ) : (
                                         numBaskets

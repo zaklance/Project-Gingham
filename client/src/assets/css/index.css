@@ -954,11 +954,30 @@ ul {
 
 .btn-adjust {
   background-color: white;
-  /* padding: 1px 4px; */
   height: 18px;
   width: 18px;
   border-radius: 50%;
   font-weight: 600;
+}
+
+.btn-red:hover {
+  background-color: #ff6786;
+  transition: .2s;
+}
+
+.btn-red:active {
+  background-color: #ff4b5a;
+  transition: .1s;
+}
+
+.btn-green:hover {
+  background-color: #69d2c2;
+  transition: .2s;
+}
+
+.btn-green:active {
+  background-color: #00bda4;
+  transition: .1s;
 }
 
 .btn-nav-login {
