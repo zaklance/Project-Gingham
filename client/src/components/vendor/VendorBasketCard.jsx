@@ -60,7 +60,6 @@ function VendorBasketCard({ vendorId, marketDay }) {
         }
     }, [vendorId, marketDay]);
     
-
     useEffect(() => {
         if (savedBaskets.length === 0) {
             setIsEditing(true);
@@ -114,37 +113,50 @@ function VendorBasketCard({ vendorId, marketDay }) {
         }
     }, [marketDay]);
 
+    const handleIncrement = () => {
+        setNumBaskets((prevNum) => prevNum + 1);
+    };
+    
+    const handleDecrement = () => {
+        const soldBasketsCount = savedBaskets.filter(basket => basket.is_sold).length;
+        setNumBaskets((prevNum) => (prevNum > soldBasketsCount ? prevNum - 1 : prevNum));
+    };
+    
     const handleSave = async () => {
-        const parsedNumBaskets = parseInt(numBaskets, 10);
+        const parsedNumBaskets = numBaskets;
         const parsedPrice = parseFloat(price);
-
-        const [startHour, startMinute] = startTime.split(':').map(Number);
-        const [endHour, endMinute] = endTime.split(':').map(Number);
-
-        const formattedStartHour =
-            startAmPm === 'PM' && startHour !== 12
-                ? startHour + 12
-                : amPm === 'AM' && startHour === 12
-                ? 0
-                : startHour;
-
-        const formattedEndHour =
-            endAmPm === 'PM' && endHour !== 12
-                ? endHour + 12
-                : amPm === 'AM' && endHour === 12
-                ? 0
-                : endHour;
+    
+        const soldBasketsCount = savedBaskets.filter(basket => basket.is_sold).length;
+    
+        if (parsedNumBaskets < soldBasketsCount) {
+            setErrorMessage(`You cannot reduce the number of baskets below the sold count (${soldBasketsCount}).`);
+            return;
+        }
+    
+        const [startHour, startMinute] = startTime.split(':').map(num => parseInt(num, 10));
+        const [endHour, endMinute] = endTime.split(':').map(num => parseInt(num, 10));
         
+        if (isNaN(startHour) || isNaN(startMinute) || isNaN(endHour) || isNaN(endMinute)) {
+            console.error('Invalid hour or minute values for pickup start or end.');
+            setErrorMessage('Invalid time values for pickup start or end.');
+            return;
+        }
+        
+        const formattedStartHour = startAmPm === 'PM' && startHour !== 12 
+            ? startHour + 12 
+            : startAmPm === 'AM' && startHour === 12 
+            ? 0 
+            : startHour;
+        
+        const formattedEndHour = endAmPm === 'PM' && endHour !== 12 
+            ? endHour + 12 
+            : endAmPm === 'AM' && endHour === 12 
+            ? 0 
+            : endHour;
+
         const localDate = new Date(marketDay.date);
-        const localDateString = localDate.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short', 
-            day: 'numeric'
-        });
-
-        const saleDate = new Date(localDateString);
-        const formattedSaleDate = saleDate.toISOString().split('T')[0];
-
+        const formattedSaleDate = localDate.toISOString().split('T')[0];
+    
         const startTimeDate = new Date();
         startTimeDate.setHours(formattedStartHour, startMinute, 0, 0);
 
@@ -154,27 +166,49 @@ function VendorBasketCard({ vendorId, marketDay }) {
         const formattedPickupStart = `${startTimeDate.getHours().toString().padStart(2, '0')}:${startTimeDate.getMinutes().toString().padStart(2, '0')} ${startAmPm}`;
         const formattedPickupEnd = `${endTimeDate.getHours().toString().padStart(2, '0')}:${endTimeDate.getMinutes().toString().padStart(2, '0')} ${endAmPm}`;
 
+        console.log('Formatted Pickup Start:', formattedPickupStart);
+        console.log('Formatted Pickup End:', formattedPickupEnd);
+        
         if (parsedNumBaskets > 0 && vendorId && marketDay && marketDay.id && !isNaN(parsedPrice) && parsedPrice > 0) {
             const promises = [];
+            const additionalBaskets = parsedNumBaskets - savedBaskets.length;
     
-            for (let i = 0; i < parsedNumBaskets; i++) {
-                promises.push(fetch('http://127.0.0.1:5555/api/baskets', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        vendor_id: vendorId,
-                        market_day_id: marketDay.id,
-                        sale_date: formattedSaleDate,
-                        pickup_start: formattedPickupStart,
-                        pickup_end: formattedPickupEnd,
-                        is_sold: false,
-                        is_grabbed: false,
-                        price: parsedPrice,
-                        basket_value: basketValue,
-                    }),
-                }));
+            if (additionalBaskets > 0) {
+                // Add new baskets
+                for (let i = 0; i < additionalBaskets; i++) {
+                    promises.push(fetch('http://127.0.0.1:5555/api/baskets', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            vendor_id: vendorId,
+                            market_day_id: marketDay.id,
+                            sale_date: formattedSaleDate,
+                            pickup_start: formattedPickupStart,
+                            pickup_end: formattedPickupEnd,
+                            is_sold: false,
+                            is_grabbed: false,
+                            price: parsedPrice,
+                            basket_value: basketValue,
+                        }),
+                    }));
+                }
+            } else if (additionalBaskets < 0) {
+                // Remove baskets
+                const basketsToDelete = savedBaskets.slice(0, Math.abs(additionalBaskets));
+                const unsoldBasketsToDelete = basketsToDelete.filter(basket => !basket.is_sold);
+    
+                if (unsoldBasketsToDelete.length < Math.abs(additionalBaskets)) {
+                    setErrorMessage('You cannot delete sold baskets.');
+                    return;
+                }
+    
+                for (const basket of unsoldBasketsToDelete) {
+                    promises.push(fetch(`http://127.0.0.1:5555/api/baskets/${basket.id}`, {
+                        method: 'DELETE',
+                    }));
+                }
             }
     
             try {
@@ -198,13 +232,23 @@ function VendorBasketCard({ vendorId, marketDay }) {
         }
     };
 
+    const editSavedBaskets = () => {
+        setIsEditing(true);
+    };
+
     const handleDelete = async () => {
-        if (!confirm('Are you sure you want to delete all baskets?')) {
+        if (!confirm('Are you sure you want to delete all unsold baskets?')) {
             return;
         }
-
-        if (vendorId && marketDay?.id && marketDay?.date) {
     
+        const unsoldBaskets = savedBaskets.filter(basket => !basket.is_sold);
+    
+        if (unsoldBaskets.length === 0) {
+            setErrorMessage('No unsold baskets available for deletion.');
+            return;
+        }
+    
+        if (vendorId && marketDay?.id && marketDay?.date) {
             const formattedSaleDate = new Date(marketDay.date).toISOString().split('T')[0];
     
             try {
@@ -212,12 +256,18 @@ function VendorBasketCard({ vendorId, marketDay }) {
                     `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.id}&sale_date=${formattedSaleDate}`,
                     {
                         method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            baskets: unsoldBaskets.map(basket => basket.id),
+                        }),
                     }
                 );
     
                 if (response.ok) {
-                    console.log('Baskets deleted successfully');
-                    setSavedBaskets([]);
+                    console.log('Unsold baskets deleted successfully');
+                    setSavedBaskets(savedBaskets.filter(basket => basket.is_sold));
                     setIsSaved(false);
                     setIsEditing(true);
                     setNumBaskets('');
@@ -245,10 +295,8 @@ function VendorBasketCard({ vendorId, marketDay }) {
                 <>
                     <div className='text-center'>
                         <div className='text-center'>
-                        <h4>{marketName ? marketName : 'Loading Market...'}</h4>
-                        <h4 className='margin-t-8'>
-                                {formatBasketDate(marketDay.date)}
-                            </h4>
+                            <h4>{marketName ? marketName : 'Loading Market...'}</h4>
+                            <h4 className='margin-t-8'> {formatBasketDate(marketDay.date)} </h4>
                         </div>
                     </div>
                 </>
@@ -263,7 +311,17 @@ function VendorBasketCard({ vendorId, marketDay }) {
                         <tbody>
                             <tr>
                                 <td>Baskets Saved:</td>
-                                <td className='text-center'>{numBaskets}</td>
+                                <td className='text-center'>
+                                    {isEditing ? (
+                                        <div className="basket-adjustment">
+                                            <button onClick={handleDecrement} className="btn-adjust">-</button>
+                                            <span>{numBaskets}</span>
+                                            <button onClick={handleIncrement} className="btn-adjust">+</button>
+                                        </div>                                    
+                                    ) : (
+                                        numBaskets
+                                    )}
+                                </td>
                             </tr>
                             <tr>
                                 <td>Estimated Value:</td>
@@ -284,66 +342,39 @@ function VendorBasketCard({ vendorId, marketDay }) {
                         </tbody>
                     </table>
                     <div className='text-center'>
-                        <button onClick={handleDelete} className="btn-basket-save">
-                            Delete All Baskets
-                        </button>
+                        {isEditing ? (
+                            <button onClick={handleSave} className={`btn-basket-save ${isSaved ? 'saved' : ''}`}>
+                                Save
+                            </button>
+                        ) : (
+                            <button onClick={editSavedBaskets} className="btn-basket-save">
+                                Add Baskets
+                            </button>
+                        )}
+                        <button onClick={handleDelete} className="btn-basket-save">Delete All Baskets</button>
                     </div>
+                    {errorMessage && <p className="error-message">{errorMessage}</p>}
                 </>
             ) : isEditing ? (
                 <>
                     <div className='form-baskets'>
                         <label className='margin-t-16 margin-b-8'>Baskets Available:</label>
-                        <input
-                            type="text"
-                            name="basket_input"
-                            placeholder="5"
-                            // size="4"
-                            onChange={(e) => setNumBaskets(e.target.value)}
-                            value={numBaskets}
-                        />
+                        <input type="text" name="basket_input" placeholder="5" onChange={(e) => setNumBaskets(e.target.value)} value={numBaskets} />
                     </div>
                     <div className='form-baskets'>
                         <label className='margin-t-16 margin-b-8'>Basket Value:</label>
-                        <input 
-                            type="text"
-                            name="price"
-                            placeholder="$15.00"
-                            // size="4"
-                            onChange={(e) => setBasketValue(e.target.value)}
-                            value={basketValue}
-                        />
+                        <input type="text" name="price" placeholder="$15.00" onChange={(e) => setBasketValue(e.target.value)} value={basketValue} />
                     </div>
                     <div className='form-baskets'>
                         <label className='margin-t-16 margin-b-8'>Basket Price:</label>
-                        <input 
-                            type="text"
-                            step="0.01"
-                            name="price"
-                            // size="4"
-                            placeholder="$5.00"
-                            onChange={(e) => setPrice(e.target.value)}
-                            value={price}
-                        />
+                        <input type="text" step="0.01" name="price" placeholder="$5.00" onChange={(e) => setPrice(e.target.value)} value={price} />
                     </div>
                     <br></br>
                     <div className='form-baskets-small'>
                         <label className='margin-t-16 margin-b-8'>Pick Up Start:</label>
                         <div className='flex-start'>
-                            <input
-                                // mask="99:99"
-                                placeholder="HH:MM"
-                                // size="4"
-                                name="pickup_start"
-                                value={startTime}
-                                onChange={(e) => setStartTime(e.target.value)}
-                                // maskChar={null}
-                                />
-                            <select
-                                name="amPm"
-                                value={startAmPm}
-                                className='am-pm'
-                                onChange={(e) => setStartAmPm(e.target.value)}
-                            >
+                            <input placeholder="HH:MM" name="pickup_start" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+                            <select name="amPm" value={startAmPm} className='am-pm' onChange={(e) => setStartAmPm(e.target.value)} >
                                 <option value="AM">AM</option>
                                 <option value="PM">PM</option>
                             </select>
@@ -352,32 +383,15 @@ function VendorBasketCard({ vendorId, marketDay }) {
                     <div className='form-baskets-small'>
                         <label className='margin-t-16 margin-b-8'>Pick Up End:</label>
                         <div className='flex-start'>
-                            <input
-                                // mask="99:99"
-                                placeholder="HH:MM"
-                                size="4"
-                                name="pickup_end"
-                                value={endTime}
-                                onChange={(e) => setEndTime(e.target.value)}
-                                // maskChar={null}
-                                />
-                            <select
-                                name="amPm"
-                                value={endAmPm}
-                                className='am-pm'
-                                onChange={(e) => setEndAmPm(e.target.value)}
-                            >
+                            <input placeholder="HH:MM" name="pickup_end" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+                            <select name="amPm" value={endAmPm} className='am-pm' onChange={(e) => setEndAmPm(e.target.value)} >
                                 <option value="AM">AM</option>
                                 <option value="PM">PM</option>
                             </select>
                         </div>
                     </div>
-                    {/* If baskets are saved - and the page is refreshed, the saved baskets should still show as saved...  */}
                    <div className='text-center'>
-                        <button
-                            onClick={handleSave}
-                            className={`btn-basket-save ${isSaved ? 'saved' : ''}`}
-                            >
+                        <button onClick={handleSave} className={`btn-basket-save ${isSaved ? 'saved' : ''}`} >
                             {isSaved ? 'Saved' : 'Save'}
                         </button>
                    </div>
