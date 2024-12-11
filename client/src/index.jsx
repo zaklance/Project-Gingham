@@ -56,7 +56,7 @@ const AdminRoute = ({ children }) => {
     const { id: routeId } = useParams();
 
     if (!token || !storedId) {
-        return <Navigate to="/admin" />;
+        return <Navigate to="/admin/home" />;
     }
 
     if (storedId !== routeId) {
@@ -195,9 +195,9 @@ const router = createBrowserRouter([
                     { path: "password-reset/:token", element: <UserPasswordReset /> },
                 ],
             },
+            { path: "vendor", element: <VendorHome /> },
             {
                 path: "vendor",
-                element: <VendorHome />,
                 children: [
                     { path: "dashboard/:id", element: <VendorRoute><VendorDashboard /></VendorRoute> },
                     { path: "sales/:id", element: <VendorRoute><VendorSales /></VendorRoute> },
@@ -209,9 +209,9 @@ const router = createBrowserRouter([
                     { path: "reset-request", element: <VendorResetRequest /> },
                 ],
             },
+            { path: "admin", element: <AdminHome /> },
             {
                 path: "admin",
-                element: <AdminHome />,
                 children: [
                     { path: "markets/:id",element:<AdminRoute><AdminMarkets /></AdminRoute>},
                     { path: "vendors/:id",element:<AdminRoute><AdminVendors /></AdminRoute>},
