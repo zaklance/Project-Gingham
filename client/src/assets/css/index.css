@@ -169,6 +169,17 @@ h2 {
   text-align: center;
 }
 
+.text-red {
+  color: #ff4b5a;
+}
+
+.text-error {
+  text-transform: uppercase;
+  background-color: #ffd1d8;
+  border-radius: 24px;
+  text-align: center;
+}
+
 .nowrap {
   white-space: nowrap;
 }
@@ -247,6 +258,10 @@ h2 {
 
 .margin-b-24 {
   margin-bottom: 24px;
+}
+
+.width-100 {
+  width: 100%;
 }
 
 .width-80 {
@@ -905,6 +920,17 @@ ul {
   padding: 0px 0px;
   font-size: 1.3em;
   margin-top: 4px;
+}
+
+.btn-emoji-big {
+  width: 28px;
+  height: 28px;
+  padding: 0px 0px;
+  font-size: 1.4em;
+}
+
+.btn-admin {
+  height: 28px;
 }
 
 .btn-emoji:hover {

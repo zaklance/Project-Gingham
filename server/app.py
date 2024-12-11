@@ -655,11 +655,12 @@ def all_market_reviews():
         is_reported = request.args.get('is_reported')
         if market_id:
             reviews = MarketReview.query.filter_by(market_id=market_id).options(db.joinedload(MarketReview.user)).all()
-        if is_reported:
+        elif is_reported is not None:
             reviews = MarketReview.query.filter_by(is_reported=bool(is_reported)).all()
         else:
-            reviews = MarketReview.query.all()
+            reviews = []  # Default to an empty list if no parameters are provided
         return jsonify([review.to_dict() for review in reviews]), 200
+
     elif request.method == 'POST':
         data = request.get_json()
         new_review = MarketReview(
@@ -670,7 +671,6 @@ def all_market_reviews():
         db.session.add(new_review)
         db.session.commit()
         return new_review.to_dict(), 201
-    
 
 @app.route('/api/market-reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def market_review_by_id(id):
@@ -697,12 +697,12 @@ def all_vendor_reviews():
         is_reported = request.args.get('is_reported')
         if vendor_id:
             reviews = VendorReview.query.filter_by(vendor_id=vendor_id).options(db.joinedload(VendorReview.user)).all()
-        if is_reported:
+        elif is_reported is not None:
             reviews = VendorReview.query.filter_by(is_reported=bool(is_reported)).all()
         else:
-            reviews = VendorReview.query.options(db.joinedload(VendorReview.user)).all()
+            reviews = []
         return jsonify([review.to_dict() for review in reviews]), 200
-    
+
     elif request.method == 'POST':
         data = request.get_json()
         new_review = VendorReview(
@@ -713,6 +713,7 @@ def all_vendor_reviews():
         db.session.add(new_review)
         db.session.commit()
         return new_review.to_dict(), 201
+
 
 @app.route('/api/vendor-reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def vendor_review_by_id(id):
@@ -1519,23 +1520,24 @@ def handle_basket_by_id(id):
 def handle_todays_baskets():
     try:
         today_str = request.args.get('date', type=str)
-        
         if not today_str:
             return jsonify({'error': 'Date parameter is required'}), 400
-
         try:
             today = datetime.strptime(today_str, '%Y-%m-%d').date()
         except ValueError:
             return jsonify({'error': 'Invalid date format. Expected YYYY-MM-DD.'}), 400
 
         vendor_id = request.args.get('vendor_id', type=int)
-        if vendor_id is None:
-            return jsonify({'error': 'Vendor ID is required'}), 400
+        user_id = request.args.get('user_id', type=int)
+        if not vendor_id and not user_id:
+            return jsonify({'error': 'At least one of vendor_id or user_id is required'}), 400
 
-        baskets = db.session.query(Basket).filter(
-            func.date(Basket.sale_date) == today,
-            Basket.vendor_id == vendor_id
-        ).all()
+        query = db.session.query(Basket).filter(func.date(Basket.sale_date) == today)
+        if vendor_id:
+            query = query.filter(Basket.vendor_id == vendor_id)
+        if user_id:
+            query = query.filter(Basket.user_id == user_id)
+        baskets = query.all()
 
         if not baskets:
             return jsonify({'message': 'No baskets found for today'}), 404
@@ -1548,6 +1550,7 @@ def handle_todays_baskets():
     except Exception as e:
         app.logger.error(f"Error fetching today's baskets: {e}")
         return jsonify({'error': f'An error occurred: {str(e)}'}), 500
+
 
 
 @app.route('/api/baskets/user-sales-history', methods=['GET'])

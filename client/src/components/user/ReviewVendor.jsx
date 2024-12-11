@@ -23,8 +23,9 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
     
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
 
+
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/vendor-reviews?vendor_id=${id}`)
+        fetch(`http://127.0.0.1:5555/api/vendor-reviews?vendor_id=${vendor.id}`)
             .then(response => response.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -339,7 +340,7 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
             .then(data => {
                 setReports(data);
             })
-            .catch(error => console.error('Error fetching market baskets', error));
+            .catch(error => console.error('Error fetching reported review', error));
     }, [userId]);
 
 
@@ -407,7 +408,7 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                                         </div>
                                         <button className='btn btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
                                         {hotReviews.some(item => item.id === review.id) && (
-                                            <img className='img-hot margin-l-12' src="/site-images/chili-pepper-4.svg" alt="Notification" title='Hot review!!!'/>
+                                            <img className='img-hot margin-l-12' src="/site-images/chili-pepper-3.svg" alt="Notification" title='Hot review!!!'/>
                                         )}
                                     </div>
                                 </>
