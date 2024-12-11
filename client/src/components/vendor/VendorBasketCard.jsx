@@ -9,13 +9,15 @@ function VendorBasketCard({ vendorId, marketDay }) {
     const [endTime, setEndTime] = useState('');
     const [startAmPm, setStartAmPm] = useState('PM');
     const [endAmPm, setEndAmPm] = useState('PM');
-    const [isSaved, setIsSaved] = useState(false);
-    const [isEditing, setIsEditing] = useState(true); 
-    const [numBaskets, setNumBaskets] = useState('');
+    const [isSaved, setIsSaved] = useState(true);
+    const [isEditing, setIsEditing] = useState(false); 
+    const [numBaskets, setNumBaskets] = useState(0);
+    const [prevNumBaskets, setPrevNumBaskets] = useState(numBaskets);
     const [price, setPrice] = useState('');
     const [basketValue, setBasketValue] = useState('')
     const [errorMessage, setErrorMessage] = useState('');
     const [savedBaskets, setSavedBaskets] = useState([]);
+    const [tempSavedBaskets, setTempSavedBaskets] = useState(null);
 
     useEffect(() => {
         if (vendorId && marketDay?.id && marketDay?.vendor_markets) {
@@ -63,6 +65,10 @@ function VendorBasketCard({ vendorId, marketDay }) {
     useEffect(() => {
         if (savedBaskets.length === 0) {
             setIsEditing(true);
+            setIsSaved(false);
+        } else {
+            setIsEditing(false);
+            setIsSaved(true);
         }
     }, [savedBaskets]);
     
@@ -114,14 +120,16 @@ function VendorBasketCard({ vendorId, marketDay }) {
     }, [marketDay]);
 
     const handleIncrement = () => {
-        setNumBaskets((prevNum) => prevNum + 1);
+        setPrevNumBaskets(prevNumBaskets);
+        setNumBaskets(prevState => prevState + 1);
     };
-    
+     
     const handleDecrement = () => {
         const soldBasketsCount = savedBaskets.filter(basket => basket.is_sold).length;
-        setNumBaskets((prevNum) => (prevNum > soldBasketsCount ? prevNum - 1 : prevNum));
+        setPrevNumBaskets(numBaskets);
+        setNumBaskets((prevNum) => (Number(prevNum) > soldBasketsCount ? Number(prevNum) - 1 : Number(prevNum)));
     };
-    
+
     const handleSave = async () => {
         const parsedNumBaskets = numBaskets;
         const parsedPrice = parseFloat(price);
@@ -135,46 +143,42 @@ function VendorBasketCard({ vendorId, marketDay }) {
     
         const [startHour, startMinute] = startTime.split(':').map(num => parseInt(num, 10));
         const [endHour, endMinute] = endTime.split(':').map(num => parseInt(num, 10));
-        
+    
         if (isNaN(startHour) || isNaN(startMinute) || isNaN(endHour) || isNaN(endMinute)) {
             console.error('Invalid hour or minute values for pickup start or end.');
             setErrorMessage('Invalid time values for pickup start or end.');
             return;
         }
-        
-        const formattedStartHour = startAmPm === 'PM' && startHour !== 12 
-            ? startHour + 12 
-            : startAmPm === 'AM' && startHour === 12 
-            ? 0 
+    
+        const formattedStartHour = startAmPm === 'PM' && startHour !== 12
+            ? startHour + 12
+            : startAmPm === 'AM' && startHour === 12
+            ? 0
             : startHour;
-        
-        const formattedEndHour = endAmPm === 'PM' && endHour !== 12 
-            ? endHour + 12 
-            : endAmPm === 'AM' && endHour === 12 
-            ? 0 
+    
+        const formattedEndHour = endAmPm === 'PM' && endHour !== 12
+            ? endHour + 12
+            : startAmPm === 'AM' && endHour === 12
+            ? 0
             : endHour;
-
+    
         const localDate = new Date(marketDay.date);
         const formattedSaleDate = localDate.toISOString().split('T')[0];
     
         const startTimeDate = new Date();
         startTimeDate.setHours(formattedStartHour, startMinute, 0, 0);
-
+    
         const endTimeDate = new Date();
         endTimeDate.setHours(formattedEndHour, endMinute, 0, 0);
-
+    
         const formattedPickupStart = `${startTimeDate.getHours().toString().padStart(2, '0')}:${startTimeDate.getMinutes().toString().padStart(2, '0')} ${startAmPm}`;
         const formattedPickupEnd = `${endTimeDate.getHours().toString().padStart(2, '0')}:${endTimeDate.getMinutes().toString().padStart(2, '0')} ${endAmPm}`;
-
-        console.log('Formatted Pickup Start:', formattedPickupStart);
-        console.log('Formatted Pickup End:', formattedPickupEnd);
-        
+    
         if (parsedNumBaskets > 0 && vendorId && marketDay && marketDay.id && !isNaN(parsedPrice) && parsedPrice > 0) {
             const promises = [];
-            const additionalBaskets = parsedNumBaskets - savedBaskets.length;
+            const additionalBaskets = parsedNumBaskets - prevNumBaskets;
     
             if (additionalBaskets > 0) {
-                // Add new baskets
                 for (let i = 0; i < additionalBaskets; i++) {
                     promises.push(fetch('http://127.0.0.1:5555/api/baskets', {
                         method: 'POST',
@@ -194,8 +198,8 @@ function VendorBasketCard({ vendorId, marketDay }) {
                         }),
                     }));
                 }
-            } else if (additionalBaskets < 0) {
-                // Remove baskets
+            } 
+            else if (additionalBaskets < 0) {
                 const basketsToDelete = savedBaskets.slice(0, Math.abs(additionalBaskets));
                 const unsoldBasketsToDelete = basketsToDelete.filter(basket => !basket.is_sold);
     
@@ -215,25 +219,39 @@ function VendorBasketCard({ vendorId, marketDay }) {
                 const responses = await Promise.all(promises);
                 for (const response of responses) {
                     if (!response.ok) {
-                        throw new Error(`Error creating basket: ${response.statusText}`);
+                        throw new Error(`Error creating/deleting basket: ${response.statusText}`);
                     }
                     await response.json();
                 }
+                setPrevNumBaskets(numBaskets);
                 setIsEditing(false);
                 setIsSaved(true);
                 setErrorMessage('');
             } catch (error) {
-                console.error('Error creating baskets:', error);
-                setErrorMessage('Failed to create baskets. Please try again.');
+                console.error('Error creating or deleting baskets:', error);
+                setErrorMessage('Failed to update baskets. Please try again.');
             }
         } else {
             console.error('Invalid data or missing vendor/market ID');
             setErrorMessage('Please enter valid data for all fields.');
         }
-    };
+    };    
 
     const editSavedBaskets = () => {
-        setIsEditing(true);
+        if (!isEditing) {
+            setTempSavedBaskets({
+                savedBaskets: numBaskets,
+            });
+        }
+        setIsEditing(!isEditing);
+    };
+
+    const cancelBasketEdit = () => {
+        setIsEditing(false);
+        if (tempSavedBaskets) {
+            setNumBaskets(tempSavedBaskets.savedBaskets || savedBaskets.length);
+        }
+        setErrorMessage('');
     };
 
     const handleDelete = async () => {
@@ -343,15 +361,20 @@ function VendorBasketCard({ vendorId, marketDay }) {
                     </table>
                     <div className='text-center'>
                         {isEditing ? (
-                            <button onClick={handleSave} className={`btn-basket-save ${isSaved ? 'saved' : ''}`}>
-                                Save
-                            </button>
+                            <>
+                                <button onClick={handleSave} className={`btn-basket-save ${isSaved ? 'Saved' : ''}`}>
+                                    Save
+                                </button>
+                                <button onClick={cancelBasketEdit} className="btn-basket-save">Cancel</button>
+                            </>
                         ) : (
-                            <button onClick={editSavedBaskets} className="btn-basket-save">
-                                Add Baskets
-                            </button>
+                            <>
+                                <button onClick={editSavedBaskets} className="btn-basket-save">
+                                    Add Baskets
+                                </button>
+                                <button onClick={handleDelete} className="btn-basket-save">Delete All Baskets</button>
+                            </>
                         )}
-                        <button onClick={handleDelete} className="btn-basket-save">Delete All Baskets</button>
                     </div>
                     {errorMessage && <p className="error-message">{errorMessage}</p>}
                 </>
@@ -359,7 +382,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                 <>
                     <div className='form-baskets'>
                         <label className='margin-t-16 margin-b-8'>Baskets Available:</label>
-                        <input type="text" name="basket_input" placeholder="5" onChange={(e) => setNumBaskets(e.target.value)} value={numBaskets} />
+                        <input type="text" name="basket_input" placeholder="5" onChange={(e) => setNumBaskets(Number(e.target.value))} value={numBaskets} />
                     </div>
                     <div className='form-baskets'>
                         <label className='margin-t-16 margin-b-8'>Basket Value:</label>
