@@ -116,7 +116,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
             if (response.ok) {
                 setAdminMarketData((prevData) => ({
                     ...prevData,
-                    image: null, // Remove the image reference from the state
+                    image: null, 
                 }));
                 alert('Image deleted successfully.');
             } else {

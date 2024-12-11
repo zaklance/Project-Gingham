@@ -111,8 +111,8 @@ function AdminVendorEdit({ vendors }) {
                     'Authorization': `Bearer ${localStorage.getItem('admin_jwt-token')}`,
                 },
                 body: JSON.stringify({
-                    filename: vendorData.image, // Only send the image file name
-                    type: 'vendor', // Specify the type to differentiate
+                    filename: vendorData.image,
+                    type: 'vendor',
                 }),
             });
     
@@ -122,7 +122,7 @@ function AdminVendorEdit({ vendors }) {
     
                 setVendorData((prevData) => ({
                     ...prevData,
-                    image: null, // Clear the image from the local state
+                    image: null, 
                 }));
     
                 alert('Image deleted successfully.');
