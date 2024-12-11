@@ -17,7 +17,7 @@ function VendorLogin({ handlePopup }) {
 
     const startLogoutTimer = (timeout) => {
         setTimeout(() => {
-            navigate('/user/logout');
+            navigate('/vendor/logout');
             alert('You have been logged out due to session expiration.')
         }, timeout);
     };

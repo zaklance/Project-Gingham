@@ -26,7 +26,7 @@ import UserPasswordReset from './components/user/UserPasswordReset.jsx';
 
 // vendor routes
 import VendorHome from './components/vendor/VendorHome.jsx';
-import VendorLogout from './components/vendor/VendorLogout.jsx';
+import VendorLogout from './components/vendor/VendorLogOut.jsx';
 import VendorCreate from './components/vendor/VendorCreate.jsx';
 import VendorDashboard from './components/vendor/VendorDashboard.jsx';
 import VendorNotification from './components/vendor/VendorNotification.jsx';

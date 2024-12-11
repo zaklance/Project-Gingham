@@ -97,6 +97,46 @@ function AdminVendorEdit({ vendors }) {
         }
     };
 
+    const handleDeleteImage = async () => {
+        if (!vendorData || !vendorData.image) {
+            alert('No image to delete.');
+            return;
+        }
+    
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/api/delete-image`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('admin_jwt-token')}`,
+                },
+                body: JSON.stringify({
+                    filename: vendorData.image,
+                    type: 'vendor',
+                }),
+            });
+    
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Image deleted response:', result);
+    
+                setVendorData((prevData) => ({
+                    ...prevData,
+                    image: null, 
+                }));
+    
+                alert('Image deleted successfully.');
+            } else {
+                const errorText = await response.text();
+                console.error('Failed to delete image:', errorText);
+                alert('Failed to delete the image. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error deleting image:', error);
+            alert('An unexpected error occurred while deleting the image.');
+        }
+    };
+
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setTempVendorData({
@@ -250,18 +290,27 @@ function AdminVendorEdit({ vendors }) {
                         <>
                             <table>
                                 <tbody>
-                                    <tr>
-                                        <td className='cell-title'>Image:</td>
-                                        <td className='cell-text'>
-                                            {vendorData ? (
+                                <tr>
+                                    <td className='cell-title'>Image:</td>
+                                    <td className='cell-text'>
+                                        {vendorData ? (
+                                            <div>
                                                 <img
                                                     className='img-market'
                                                     src={`/vendor-images/${vendorData.image}`}
                                                     alt="Vendor Image"
                                                 />
-                                            ) : ''}
-                                        </td>
-                                    </tr>
+                                                <button
+                                                    className='btn-delete margin-t-8'
+                                                    onClick={handleDeleteImage}
+                                                    disabled={!vendorData.image}
+                                                >
+                                                    Delete Image
+                                                </button>
+                                            </div>
+                                        ) : ''}
+                                    </td>
+                                </tr>
                                     <tr>
                                         <td className='cell-title'>Name:</td>
                                         <td className='cell-text'>{vendorData ? `${vendorData.name}` : ''}</td>

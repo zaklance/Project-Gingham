@@ -97,6 +97,36 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         }
     };
 
+    const handleImageDelete = async () => {
+        if (!adminMarketData?.image) return;
+    
+        try {
+            const response = await fetch('http://127.0.0.1:5555/api/delete-image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('admin_jwt-token')}`,
+                },
+                body: JSON.stringify({
+                    filename: adminMarketData.image,
+                    type: 'market',
+                }),
+            });
+    
+            if (response.ok) {
+                setAdminMarketData((prevData) => ({
+                    ...prevData,
+                    image: null, 
+                }));
+                alert('Image deleted successfully.');
+            } else {
+                console.error('Failed to delete image:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error deleting image:', error);
+        }
+    };
+
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setTempMarketData((prevData) => ({
@@ -308,12 +338,19 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                             </div>
                             <div className='form-group'>
                                 <label>Vendor Image:</label>
-                                <input
-                                    type="file"
-                                    name="file"
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                />
+                                {adminMarketData?.image ? (
+                                    <>
+                                        <img className='img-market' src={`/market-images/${adminMarketData.image}`} alt="Market Image" />
+                                        <button className='btn-delete' onClick={handleImageDelete}>Delete Image</button>
+                                    </>
+                                ) : (
+                                    <input
+                                        type="file"
+                                        name="file"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                    />
+                                )}
                             </div>
                             <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
                             <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
