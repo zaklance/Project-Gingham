@@ -5,11 +5,11 @@ function AdminUsers() {
     const [vendorReported, setVendorReported] = useState([]);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/market-reviews")
+        fetch(`http://127.0.0.1:5555/api/market-reviews?is_reported=true`)
             .then(response => response.json())
             .then(data => {
-                const filteredData = data.filter(item => item.is_reported === true);
-                setMarketReported(filteredData)
+                // const filteredData = data.filter(item => item.is_reported === true);
+                setMarketReported(data)
             })
             .catch(error => console.error('Error fetching market reviews', error));
     }, []);
