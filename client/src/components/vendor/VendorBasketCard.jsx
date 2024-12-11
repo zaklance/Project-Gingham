@@ -130,6 +130,11 @@ function VendorBasketCard({ vendorId, marketDay }) {
         setNumBaskets((prevNum) => (Number(prevNum) > soldBasketsCount ? Number(prevNum) - 1 : Number(prevNum)));
     };
 
+    useEffect(() => {
+        setPrevNumBaskets(savedBaskets.length);
+        setNumBaskets(savedBaskets.length);
+    }, [savedBaskets]);
+    
     const handleSave = async () => {
         const parsedNumBaskets = numBaskets;
         const parsedPrice = parseFloat(price);
@@ -235,7 +240,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
             console.error('Invalid data or missing vendor/market ID');
             setErrorMessage('Please enter valid data for all fields.');
         }
-    };    
+    };
 
     const editSavedBaskets = () => {
         if (!isEditing) {
