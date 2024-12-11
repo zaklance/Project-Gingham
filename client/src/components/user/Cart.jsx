@@ -36,14 +36,33 @@ function Cart() {
         setAmountInCart(amountInCart - 1);
     }
 	
-    function handleCheckout() {
-		// alert(`Checkout successful for ${name}`);
-        setCartItems([]);
-        // setName('');
-        // setAddress('');
-        setAmountInCart(0);
-        navigate('/user/checkout');
+    async function handleCheckout() {
+        try {
+            await Promise.all(cartItems.map(async (cartItem) => {
+                const response = await fetch(`http://127.0.0.1:5555/api/baskets/${cartItem.id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        is_sold: true
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to update cartItem with id: ${cartItem.id}`);
+                }
+            }));
+            setCartItems([]);
+            setAmountInCart(0);
+            navigate('/user/checkout');
+        } catch (error) {
+            console.error('Error during checkout:', error);
+        }
     }
+
+
+    console.log(cartItems)
 	
 	useEffect(() => {
 		console.log("Amount in cart:", amountInCart);
