@@ -12,7 +12,7 @@ function AdminLogout () {
         .then(() => {
             globalThis.localStorage.removeItem('admin_user_id');
             globalThis.localStorage.removeItem('admin_jwt-token');
-            navigate('/admin/home')
+            navigate('/admin')
         })
         .catch((error) => {
             console.error('Logout failed:', error);

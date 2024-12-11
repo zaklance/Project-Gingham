@@ -12,7 +12,7 @@ function VendorLogout () {
         .then(() => {
             globalThis.localStorage.removeItem('vendor_user_id');
             globalThis.localStorage.removeItem('vendor_jwt-token');
-            navigate('/vendor/home')
+            navigate('/vendor')
         })
         .catch((error) => {
             console.error('Logout failed:', error);

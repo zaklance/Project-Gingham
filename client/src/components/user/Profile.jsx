@@ -36,7 +36,7 @@ function Profile({ marketData }) {
                     // Decode the token to extract the role
                     const decodedToken = decodeJwt(token);
                     if (decodedToken && decodedToken.role) {
-                        console.log('Role from JWT:', decodedToken.role);
+                        // console.log('Role from JWT:', decodedToken.role);
                     }
                 }
                 
@@ -49,7 +49,7 @@ function Profile({ marketData }) {
                 });
 
                 const text = await response.text();
-                console.log('Raw response:', text);
+                // console.log('Raw response:', text);
 
                 if (response.ok) {
                     try {
@@ -189,11 +189,10 @@ function Profile({ marketData }) {
         }
     }
 
-    console.log(profileData)
-
     if (!profileData) {
         return <div>Loading...</div>;
     }
+
 
     return (
         <div>
