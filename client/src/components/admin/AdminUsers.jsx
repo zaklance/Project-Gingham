@@ -5,10 +5,9 @@ function AdminUsers() {
     const [vendorReported, setVendorReported] = useState([]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/market-reviews?is_reported=true`)
+        fetch(`http://127.0.0.1:5555/api/market-reviews?is_reported=True`)
             .then(response => response.json())
             .then(data => {
-                // const filteredData = data.filter(item => item.is_reported === true);
                 setMarketReported(data)
             })
             .catch(error => console.error('Error fetching market reviews', error));
@@ -54,11 +53,10 @@ function AdminUsers() {
     };
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/vendor-reviews")
+        fetch("http://127.0.0.1:5555/api/vendor-reviews?is_reported=True")
             .then(response => response.json())
             .then(data => {
-                const filteredData = data.filter(item => item.is_reported === true);
-                setVendorReported(filteredData)
+                setVendorReported(data)
             })
             .catch(error => console.error('Error fetching vendor reviews', error));
     }, []);
