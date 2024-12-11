@@ -112,9 +112,9 @@ function AdminUsers() {
                         marketReported.map((review, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                 <div className='flex-start'>
-                                    <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
-                                    <button className='btn btn-small btn-x btn-gap btn-emoji' onClick={() => handleMarketReviewUnReport(review.id, review.user_id)}>&#9786;</button>
-                                    <button className='btn btn-small btn-x btn-gap' onClick={() => handleMarketReviewDelete(review.id, review.user_id)}>Delete</button>
+                                    <h4 className='margin-r-8'>{review.user ? `${review.user.first_name} ${review.user.last_name}` : 'Anonymous'}</h4>
+                                    <button className='btn btn-small btn-green btn-emoji-big btn-gap' onClick={() => handleMarketReviewUnReport(review.id, review.user_id)}>&#9786;</button>
+                                    <button className='btn btn-small btn-red btn-admin btn-gap' onClick={() => handleMarketReviewDelete(review.id, review.user_id)}>Delete</button>
                                 </div>
                                 <p>{review.review_text}</p>
                             </div>
@@ -132,9 +132,9 @@ function AdminUsers() {
                         vendorReported.map((review, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                 <div className='flex-start'>
-                                    <h4>{review.user ? review.user.first_name : 'Anonymous'}</h4>
-                                    <button className='btn btn-small btn-x btn-gap btn-emoji' onClick={() => handleVendorReviewUnReport(review.id, review.user_id)}>&#9786;</button>
-                                    <button className='btn btn-small btn-x btn-gap' onClick={() => handleVendorReviewDelete(review.id, review.user_id)}>Delete</button>
+                                    <h4 className='margin-r-8'>{review.user ? `${review.user.first_name} ${review.user.last_name}` : 'Anonymous'}</h4>
+                                    <button className='btn btn-small btn-green btn-emoji-big btn-gap' onClick={() => handleVendorReviewUnReport(review.id, review.user_id)}>&#9786;</button>
+                                    <button className='btn btn-small btn-red btn-admin btn-gap' onClick={() => handleMarketVendorDelete(review.id, review.user_id)}>Delete</button>
                                 </div>
                                 <p>{review.review_text}</p>
                             </div>

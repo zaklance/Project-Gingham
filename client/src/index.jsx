@@ -16,6 +16,7 @@ import CheckSession from './components/user/CheckSession.jsx';
 import Login from './components/user/LoginPopup.jsx';
 import Markets from './components/user/Markets.jsx';
 import MarketDetail from './components/user/MarketDetail.jsx';
+import PickUp from './components/user/PickUp.jsx';
 import Profile from './components/user/Profile.jsx';
 import Vendors from './components/user/Vendors.jsx';
 import VendorDetail from './components/user/VendorDetail.jsx';
@@ -56,13 +57,13 @@ const AdminRoute = ({ children }) => {
     const { id: routeId } = useParams();
 
     if (!token || !storedId) {
-        return <Navigate to="/admin/home" />;
+        return <Navigate to="/admin" />;
     }
 
     if (storedId !== routeId) {
         return (
-            <div style={{ color: "red", fontWeight: "bold", textAlign: "center", marginTop: "20px" }}>
-                Access denied: You can only access your own account.
+            <div className='wrapper-error text-error margin-t-24'>
+                <h1>Access denied: You can only access your own account.</h1>
             </div>
         );
     }
@@ -77,16 +78,16 @@ const UserRoute = ({ children }) => {
 
     if (!token || !storedId) {
         return (
-            <div style={{ color: "red", fontWeight: "bold", textAlign: "center", marginTop: "20px" }}>
-                Protected route: User not authenticated.
+            <div className='wrapper-error text-error margin-t-24'>
+                <h1 className='text-red'>Protected route: User not authenticated.</h1>
             </div>
         );
     }
 
     if (storedId !== routeId) {
         return (
-            <div style={{ color: "red", fontWeight: "bold", textAlign: "center", marginTop: "20px" }}>
-                Access denied: You can only access your own account.
+            <div className='wrapper-error text-error margin-t-24'>
+                <h1 className='text-red'>Access denied: You can only access your own account.</h1>
             </div>
         );
     }
@@ -105,8 +106,8 @@ const VendorRoute = ({ children }) => {
 
     if (storedId !== routeId) {
         return (
-            <div style={{ color: "red", fontWeight: "bold", textAlign: "center", marginTop: "20px" }}>
-                Access denied: You can only access your own account.
+            <div className='wrapper-error text-error margin-t-24'>
+                <h1>Access denied: You can only access your own account.</h1>
             </div>
         );
     }
@@ -188,6 +189,7 @@ const router = createBrowserRouter([
                     { path: "vendors", element: <Vendors /> },
                     { path: "vendors/:id", element: <VendorDetail /> },
                     { path: "your-cart", element: <Cart /> },
+                    { path: "pick-up", element: <PickUp /> },
                     { path: "checkout", element: <CheckoutForm /> },
                     { path: "check-session", element: <CheckSession /> },
                     { path: "return", element: <Return />},

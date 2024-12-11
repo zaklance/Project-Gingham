@@ -406,7 +406,7 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                                     </div>
                                     <button className='btn btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
                                     {hotReviews.some(item => item.id === review.id) && (
-                                        <img className='img-hot margin-l-12' src="/site-images/chili-pepper-4.svg" alt="Notification" title='Hot review!!!' />
+                                        <img className='img-hot margin-l-12' src="/site-images/chili-pepper-3.svg" alt="Notification" title='Hot review!!!' />
                                     )}
                                 </div>
                             ) : (

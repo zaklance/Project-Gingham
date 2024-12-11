@@ -561,6 +561,7 @@ class Basket(db.Model, SerializerMixin):
         return {
             "id": self.id,
             "vendor_id": self.vendor_id,
+            "vendor_name": self.vendor.name if self.vendor else None,
             "market_day_id": self.market_day_id,
             "market_name": self.market_day.markets.name if self.market_day and self.market_day.markets else "Unknown Market",
             "sale_date": self.sale_date.isoformat() if self.sale_date else None,
@@ -570,7 +571,7 @@ class Basket(db.Model, SerializerMixin):
             "basket_value": self.basket_value,
             "is_sold": self.is_sold,
             "is_grabbed": self.is_grabbed,
-            "user_id": self.user_id
+            "user_id": self.user_id,
         }
 
     def __repr__(self):
