@@ -26,6 +26,7 @@ app = Flask(__name__)
 
 VENDOR_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/vendor-images')
 MARKET_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/market-images')
+USER_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/user-images')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'svg'}
 MAX_SIZE = 1.5 * 1024 * 1024
 MAX_RES = (1800, 1800)
@@ -47,8 +48,8 @@ avatars = [
         "avatar-apricot.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage.jpg",
         "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime.jpg", "avatar-melon.jpg",
         "avatar-nectarine.jpg", "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg",
-        "avatar-orange", "avatar-peach.jpg", "avatar-pomegranate.jpg", "avatar-radish.jpg",
-        "avatar-tomato.jpg", "avatar-watermelon.jpg"
+        "avatar-peach.jpg", "avatar-pomegranate.jpg", "avatar-radish.jpg", "avatar-tomato.jpg",
+        "avatar-watermelon.jpg"
     ]
 
 def allowed_file(filename):
@@ -154,6 +155,50 @@ def upload_file():
             return {'error': f'Failed to upload image: {str(e)}'}, 500
 
     return {'error': 'File type not allowed'}, 400
+
+@app.route('/api/delete-image', methods=['POST'])
+@jwt_required()
+def delete_image():
+    if not check_role('admin'):
+        return {'error': "Access forbidden: Admin only"}, 403
+
+    data = request.get_json()
+    filename = data.get('filename')
+    file_type = data.get('type')
+
+    if not filename or not file_type:
+        return {'error': 'Filename and type are required'}, 400
+
+    # Determine the folder based on type
+    if file_type == 'vendor':
+        folder = VENDOR_UPLOAD_FOLDER
+    elif file_type == 'market':
+        folder = MARKET_UPLOAD_FOLDER
+    else:
+        return {'error': 'Invalid type. Must be "vendor" or "market"'}, 400
+
+    try:
+        file_path = os.path.join(folder, filename)
+
+        # Delete the file from the file system
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        if file_type == 'vendor':
+            vendor = Vendor.query.filter_by(image=filename).first()
+            if vendor:
+                vendor.image = None
+                db.session.commit()
+        elif file_type == 'market':
+            market = Market.query.filter_by(image=filename).first()
+            if market:
+                market.image = None
+                db.session.commit()
+
+        return {'message': 'Image deleted successfully'}, 200
+    except Exception as e:
+        db.session.rollback()
+        return {'error': f'Failed to delete image: {str(e)}'}, 500
 
 @app.route('/api/images/<filename>', methods=['GET'])
 def serve_image(filename):
@@ -472,12 +517,7 @@ def market_by_id(id):
             return {'error': str(e)}, 500
 
 @app.route('/api/market-days', methods=['GET', 'POST', 'DELETE'])
-# @jwt_required()
 def all_market_days():
-    
-    # if not check_role('admin'):
-    #     return {'error': "Access forbidden: Admin only"}, 403
-    
     if request.method == 'GET':
         market_id = request.args.get('market_id')
         if market_id:
@@ -503,12 +543,7 @@ def all_market_days():
         return jsonify(new_market_day.to_dict()), 201
 
 @app.route('/api/market-days/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
-# @jwt_required()
-def market_day_by_id(id):
-    
-    # if not check_role('admin'):
-    #     return {'error': 'Access forbidden: Admin only'}
-    
+def market_day_by_id(id):    
     market_day = MarketDay.query.filter(MarketDay.id == id).first()
     if not market_day:
         return {'error': 'market not found'}, 404
