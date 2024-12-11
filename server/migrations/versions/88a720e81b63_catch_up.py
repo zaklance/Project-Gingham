@@ -1,8 +1,8 @@
-"""reinit db
+"""catch up
 
-Revision ID: 666564640a5e
+Revision ID: 88a720e81b63
 Revises: 
-Create Date: 2024-12-05 18:04:09.886234
+Create Date: 2024-12-11 12:08:40.291498
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '666564640a5e'
+revision = '88a720e81b63'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -41,6 +41,11 @@ def upgrade():
     sa.Column('season_end', sa.Date(), nullable=True),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_markets'))
     )
+    op.create_table('products',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('product', sa.String(), nullable=False),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_products'))
+    )
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),
@@ -53,30 +58,9 @@ def upgrade():
     sa.Column('city', sa.String(), nullable=False),
     sa.Column('state', sa.String(length=2), nullable=False),
     sa.Column('zipcode', sa.String(length=10), nullable=False),
+    sa.Column('avatar', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_users')),
     sa.UniqueConstraint('email', name=op.f('uq_users_email'))
-    )
-    op.create_table('vendors',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(), nullable=False),
-    sa.Column('city', sa.String(), nullable=True),
-    sa.Column('state', sa.String(length=2), nullable=True),
-    sa.Column('product', sa.String(), nullable=False),
-    sa.Column('bio', sa.String(), nullable=True),
-    sa.Column('image', sa.String(), nullable=True),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_vendors'))
-    )
-    op.create_table('events',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('title', sa.String(length=24), nullable=False),
-    sa.Column('message', sa.String(), nullable=False),
-    sa.Column('market_id', sa.Integer(), nullable=True),
-    sa.Column('vendor_id', sa.Integer(), nullable=True),
-    sa.Column('start_date', sa.Date(), nullable=False),
-    sa.Column('end_date', sa.Date(), nullable=False),
-    sa.ForeignKeyConstraint(['market_id'], ['markets.id'], name=op.f('fk_events_market_id_markets')),
-    sa.ForeignKeyConstraint(['vendor_id'], ['vendors.id'], name=op.f('fk_events_vendor_id_vendors')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_events'))
     )
     op.create_table('market_days',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -102,6 +86,7 @@ def upgrade():
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('post_date', sa.Date(), nullable=False),
     sa.Column('is_reported', sa.Boolean(), nullable=True),
+    sa.Column('is_approved', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['market_id'], ['markets.id'], name=op.f('fk_market_reviews_market_id_markets')),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_market_reviews_user_id_users')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_market_reviews'))
@@ -111,6 +96,56 @@ def upgrade():
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_reported_reviews_user_id_users')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_reported_reviews'))
+    )
+    op.create_table('vendors',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(), nullable=False),
+    sa.Column('city', sa.String(), nullable=True),
+    sa.Column('state', sa.String(length=2), nullable=True),
+    sa.Column('product', sa.Integer(), nullable=False),
+    sa.Column('bio', sa.String(), nullable=True),
+    sa.Column('image', sa.String(), nullable=True),
+    sa.ForeignKeyConstraint(['product'], ['products.id'], name=op.f('fk_vendors_product_products')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_vendors'))
+    )
+    op.create_table('baskets',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('vendor_id', sa.Integer(), nullable=False),
+    sa.Column('market_day_id', sa.Integer(), nullable=True),
+    sa.Column('sale_date', sa.Date(), nullable=True),
+    sa.Column('pickup_start', sa.Time(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('is_sold', sa.Boolean(), nullable=True),
+    sa.Column('is_grabbed', sa.Boolean(), nullable=True),
+    sa.Column('price', sa.Float(), nullable=False),
+    sa.Column('basket_value', sa.Float(), nullable=True),
+    sa.Column('pickup_end', sa.Time(), nullable=False),
+    sa.ForeignKeyConstraint(['market_day_id'], ['market_days.id'], name=op.f('fk_baskets_market_day_id_market_days')),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_baskets_user_id_users')),
+    sa.ForeignKeyConstraint(['vendor_id'], ['vendors.id'], name=op.f('fk_baskets_vendor_id_vendors')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_baskets'))
+    )
+    op.create_table('events',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(length=24), nullable=False),
+    sa.Column('message', sa.String(), nullable=False),
+    sa.Column('market_id', sa.Integer(), nullable=True),
+    sa.Column('vendor_id', sa.Integer(), nullable=True),
+    sa.Column('start_date', sa.Date(), nullable=False),
+    sa.Column('end_date', sa.Date(), nullable=False),
+    sa.ForeignKeyConstraint(['market_id'], ['markets.id'], name=op.f('fk_events_market_id_markets')),
+    sa.ForeignKeyConstraint(['vendor_id'], ['vendors.id'], name=op.f('fk_events_vendor_id_vendors')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_events'))
+    )
+    op.create_table('market_review_ratings',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('review_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('vote_down', sa.Boolean(), nullable=True),
+    sa.Column('vote_up', sa.Boolean(), nullable=True),
+    sa.ForeignKeyConstraint(['review_id'], ['market_reviews.id'], name=op.f('fk_market_review_ratings_review_id_market_reviews')),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_market_review_ratings_user_id_users')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_market_review_ratings'))
     )
     op.create_table('user_notifications',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -133,6 +168,14 @@ def upgrade():
     sa.ForeignKeyConstraint(['vendor_id'], ['vendors.id'], name=op.f('fk_vendor_favorites_vendor_id_vendors')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_vendor_favorites'))
     )
+    op.create_table('vendor_markets',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('vendor_id', sa.Integer(), nullable=True),
+    sa.Column('market_day_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['market_day_id'], ['market_days.id'], name=op.f('fk_vendor_markets_market_day_id_market_days')),
+    sa.ForeignKeyConstraint(['vendor_id'], ['vendors.id'], name=op.f('fk_vendor_markets_vendor_id_vendors')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_vendor_markets'))
+    )
     op.create_table('vendor_reviews',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('review_text', sa.String(), nullable=False),
@@ -140,6 +183,7 @@ def upgrade():
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('post_date', sa.Date(), nullable=False),
     sa.Column('is_reported', sa.Boolean(), nullable=True),
+    sa.Column('is_approved', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_vendor_reviews_user_id_users')),
     sa.ForeignKeyConstraint(['vendor_id'], ['vendors.id'], name=op.f('fk_vendor_reviews_vendor_id_vendors')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_vendor_reviews'))
@@ -160,48 +204,13 @@ def upgrade():
     op.create_table('admin_notifications',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('message', sa.String(), nullable=False),
-    sa.Column('market_reviews_id', sa.Integer(), nullable=True),
-    sa.Column('vendor_reviews_id', sa.Integer(), nullable=True),
+    sa.Column('vendor_user_id', sa.Integer(), nullable=True),
+    sa.Column('vendor_id', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('is_read', sa.Boolean(), nullable=False),
-    sa.ForeignKeyConstraint(['market_reviews_id'], ['market_reviews.id'], name=op.f('fk_admin_notifications_market_reviews_id_market_reviews')),
-    sa.ForeignKeyConstraint(['vendor_reviews_id'], ['vendor_reviews.id'], name=op.f('fk_admin_notifications_vendor_reviews_id_vendor_reviews')),
+    sa.ForeignKeyConstraint(['vendor_id'], ['vendors.id'], name=op.f('fk_admin_notifications_vendor_id_vendors')),
+    sa.ForeignKeyConstraint(['vendor_user_id'], ['vendor_users.id'], name=op.f('fk_admin_notifications_vendor_user_id_vendor_users')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_admin_notifications'))
-    )
-    op.create_table('baskets',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('vendor_id', sa.Integer(), nullable=False),
-    sa.Column('market_day_id', sa.Integer(), nullable=True),
-    sa.Column('sale_date', sa.Date(), nullable=True),
-    sa.Column('pickup_start', sa.Time(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=True),
-    sa.Column('is_sold', sa.Boolean(), nullable=True),
-    sa.Column('is_grabbed', sa.Boolean(), nullable=True),
-    sa.Column('price', sa.Float(), nullable=False),
-    sa.Column('basket_value', sa.Float(), nullable=True),
-    sa.Column('pickup_end', sa.Time(), nullable=False),
-    sa.ForeignKeyConstraint(['market_day_id'], ['market_days.id'], name=op.f('fk_baskets_market_day_id_market_days')),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_baskets_user_id_users')),
-    sa.ForeignKeyConstraint(['vendor_id'], ['vendors.id'], name=op.f('fk_baskets_vendor_id_vendors')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_baskets'))
-    )
-    op.create_table('market_review_ratings',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('review_id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('vote_down', sa.Boolean(), nullable=True),
-    sa.Column('vote_up', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['review_id'], ['market_reviews.id'], name=op.f('fk_market_review_ratings_review_id_market_reviews')),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_market_review_ratings_user_id_users')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_market_review_ratings'))
-    )
-    op.create_table('vendor_markets',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('vendor_id', sa.Integer(), nullable=True),
-    sa.Column('market_day_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['market_day_id'], ['market_days.id'], name=op.f('fk_vendor_markets_market_day_id_market_days')),
-    sa.ForeignKeyConstraint(['vendor_id'], ['vendors.id'], name=op.f('fk_vendor_markets_vendor_id_vendors')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_vendor_markets'))
     )
     op.create_table('vendor_notifications',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -240,21 +249,22 @@ def downgrade():
     op.drop_table('vendor_vendor_users')
     op.drop_table('vendor_review_ratings')
     op.drop_table('vendor_notifications')
-    op.drop_table('vendor_markets')
-    op.drop_table('market_review_ratings')
-    op.drop_table('baskets')
     op.drop_table('admin_notifications')
     op.drop_table('vendor_users')
     op.drop_table('vendor_reviews')
+    op.drop_table('vendor_markets')
     op.drop_table('vendor_favorites')
     op.drop_table('user_notifications')
+    op.drop_table('market_review_ratings')
+    op.drop_table('events')
+    op.drop_table('baskets')
+    op.drop_table('vendors')
     op.drop_table('reported_reviews')
     op.drop_table('market_reviews')
     op.drop_table('market_favorites')
     op.drop_table('market_days')
-    op.drop_table('events')
-    op.drop_table('vendors')
     op.drop_table('users')
+    op.drop_table('products')
     op.drop_table('markets')
     op.drop_table('admin_users')
     # ### end Alembic commands ###

@@ -48,8 +48,8 @@ avatars = [
         "avatar-apricot.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage.jpg",
         "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime.jpg", "avatar-melon.jpg",
         "avatar-nectarine.jpg", "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg",
-        "avatar-orange", "avatar-peach.jpg", "avatar-pomegranate.jpg", "avatar-radish.jpg",
-        "avatar-tomato.jpg", "avatar-watermelon.jpg"
+        "avatar-peach.jpg", "avatar-pomegranate.jpg", "avatar-radish.jpg", "avatar-tomato.jpg",
+        "avatar-watermelon.jpg"
     ]
 
 def allowed_file(filename):
@@ -184,7 +184,6 @@ def delete_image():
         if os.path.exists(file_path):
             os.remove(file_path)
 
-        # Update database
         if file_type == 'vendor':
             vendor = Vendor.query.filter_by(image=filename).first()
             if vendor:
@@ -544,7 +543,7 @@ def all_market_days():
         return jsonify(new_market_day.to_dict()), 201
 
 @app.route('/api/market-days/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
-def market_day_by_id(id):
+def market_day_by_id(id):    
     market_day = MarketDay.query.filter(MarketDay.id == id).first()
     if not market_day:
         return {'error': 'market not found'}, 404
