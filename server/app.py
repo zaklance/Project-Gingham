@@ -652,8 +652,11 @@ def get_vendor_image(vendor_id):
 def all_market_reviews():
     if request.method == 'GET':
         market_id = request.args.get('market_id')
+        is_reported = request.args.get('is_reported')
         if market_id:
             reviews = MarketReview.query.filter_by(market_id=market_id).options(db.joinedload(MarketReview.user)).all()
+        if is_reported:
+            reviews = MarketReview.query.filter_by(is_reported=bool(is_reported)).all()
         else:
             reviews = MarketReview.query.all()
         return jsonify([review.to_dict() for review in reviews]), 200
@@ -691,8 +694,11 @@ def market_review_by_id(id):
 def all_vendor_reviews():
     if request.method == 'GET':
         vendor_id = request.args.get('vendor_id')
+        is_reported = request.args.get('is_reported')
         if vendor_id:
             reviews = VendorReview.query.filter_by(vendor_id=vendor_id).options(db.joinedload(VendorReview.user)).all()
+        if is_reported:
+            reviews = VendorReview.query.filter_by(is_reported=bool(is_reported)).all()
         else:
             reviews = VendorReview.query.options(db.joinedload(VendorReview.user)).all()
         return jsonify([review.to_dict() for review in reviews]), 200
