@@ -56,7 +56,7 @@ const AdminRoute = ({ children }) => {
     const { id: routeId } = useParams();
 
     if (!token || !storedId) {
-        return <Navigate to="/admin/home" />;
+        return <Navigate to="/admin" />;
     }
 
     if (storedId !== routeId) {
@@ -100,7 +100,7 @@ const VendorRoute = ({ children }) => {
     const { id: routeId } = useParams();
 
     if ( !token || !storedId) {
-        return <Navigate to="/vendor/home" />;
+        return <Navigate to="/vendor" />;
     }
 
     if (storedId !== routeId) {
@@ -197,8 +197,8 @@ const router = createBrowserRouter([
             },
             {
                 path: "vendor",
+                element: <VendorHome />,
                 children: [
-                    { path: "home", element: <VendorHome /> },
                     { path: "dashboard/:id", element: <VendorRoute><VendorDashboard /></VendorRoute> },
                     { path: "sales/:id", element: <VendorRoute><VendorSales /></VendorRoute> },
                     { path: "signup", element: <VendorLoginPopup /> },
@@ -211,8 +211,8 @@ const router = createBrowserRouter([
             },
             {
                 path: "admin",
+                element: <AdminHome />,
                 children: [
-                    { path: "home", element: <AdminHome /> },
                     { path: "markets/:id",element:<AdminRoute><AdminMarkets /></AdminRoute>},
                     { path: "vendors/:id",element:<AdminRoute><AdminVendors /></AdminRoute>},
                     { path: "users/:id",element:<AdminRoute><AdminUsers /></AdminRoute>},

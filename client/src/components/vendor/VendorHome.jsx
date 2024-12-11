@@ -35,7 +35,7 @@ function Home() {
                     <p>
                         <strong>
                             Build mystery baskets of bundled surplus products you'd like to sell quickly. With Gingham, 
-                            you can easily list discount bundles of your unsold items for consumers to preorder then pick-up.
+                            you can easily list discount bundles of your unsold items for consumers to pre-order then pick-up.
                         </strong>
                     </p>
                     <br/>

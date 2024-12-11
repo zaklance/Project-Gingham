@@ -15,10 +15,10 @@ function Footer() {
                             <NavLink to="/"><strong>Gingham Home</strong></NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink to="/vendor/home"><strong>Vendor Portal</strong></NavLink>
+                            <NavLink to="/vendor"><strong>Vendor Portal</strong></NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink to="/admin/home"><strong>Admin Portal</strong></NavLink>
+                            <NavLink to="/admin"><strong>Admin Portal</strong></NavLink>
                         </li>
                     </ul>
                     <ul className='ul-footer'>
