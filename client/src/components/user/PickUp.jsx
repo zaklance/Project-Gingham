@@ -111,22 +111,21 @@ function PickUp() {
                                         </>
                                     ) : (
                                         <>
-                                            <div className='flex-column flex-center-align'>
+                                            <div>
                                                 <div className='box-qr'>
                                                     <QRCodeSVG 
                                                         className='img-qr'
                                                         value={basket.qr_code} 
                                                         minVersion={3}
-                                                        imageSettings={{
-                                                            src: `/site-images/gingham-logo-3.svg`,
-                                                            height: 32,
-                                                            width: 32,
-                                                            excavate: true
-                                                            }}
+                                                        // imageSettings={{
+                                                        //     src: `/site-images/gingham-logo-3.svg`,
+                                                        //     height: 32,
+                                                        //     width: 32,
+                                                        //     excavate: true
+                                                        //     }}
                                                     />
                                                 </div>
-                                                <br/>
-                                                <div className='flex-center'>
+                                                <div className='text-center margin-t-16'>
                                                     <button onClick={handlePickUp} className="btn-basket-save">Cancel</button>
                                                 </div>
                                             </div>
