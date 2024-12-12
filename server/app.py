@@ -2,7 +2,7 @@ import os
 import json
 import smtplib
 from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
-from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, ReportedReview, VendorReviewRating, MarketReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, Product, UserNotification, VendorNotification, AdminNotification, bcrypt
+from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, ReportedReview, VendorReviewRating, MarketReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, Product, UserNotification, VendorNotification, AdminNotification, QRCode, bcrypt
 from dotenv import load_dotenv
 from sqlalchemy import func, desc
 from sqlalchemy.exc import IntegrityError
@@ -263,6 +263,11 @@ def login():
     
     return jsonify(access_token=access_token, user_id=user.id), 200
 
+@app.route('/api/logout', methods=['DELETE'])
+def logout():
+    session.pop('user_id', None)
+    return {}, 204
+
 @app.route('/api/signup', methods=['POST'])
 def signup():
     data = request.get_json()
@@ -302,6 +307,154 @@ def signup():
 
     except Exception as e:
         return {'error': f'Exception: {str(e)}'}, 500
+
+# VENDOR PORTAL
+@app.route('/api/vendor/login', methods=['POST'])
+def vendorLogin():
+
+    data = request.get_json()
+    vendorUser = VendorUser.query.filter(VendorUser.email == data['email']).first()
+    if not vendorUser:
+        return {'error': 'Login failed'}, 401
+    
+    if not vendorUser.authenticate(data['password']):
+        return {'error': 'Login failed'}, 401
+    
+    access_token = create_access_token(identity=vendorUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "vendor"})
+
+    return jsonify(access_token=access_token, vendor_user_id=vendorUser.id), 200
+
+@app.route('/api/vendor-signup', methods=['POST'])
+def vendorSignup():
+    data = request.get_json()
+
+    try:
+        vendor_user = VendorUser.query.filter(VendorUser.email == data['email']).first()
+        if vendor_user:
+            return {'error': 'Email already exists'}, 400
+        
+        new_vendor_user = VendorUser(
+            email=data['email'],
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            phone=data['phone']
+        )
+        new_vendor_user.password = data['password']
+
+        db.session.add(new_vendor_user)
+        db.session.commit()
+
+        return new_vendor_user.to_dict(), 201
+
+    except IntegrityError as e:
+        db.session.rollback()
+        return {'error': f'IntegrityError: {str(e)}'}, 400
+
+    except ValueError as e:
+        return {'error': f'ValueError: {str(e)}'}, 400
+
+    except Exception as e:
+        return {'error': f'Exception: {str(e)}'}, 500
+    
+@app.route('/api/vendor/logout', methods=['DELETE'])
+def vendorLogout():
+    session.pop('vendor_user_id', None)
+    return {}, 204
+    
+    # ADMIN PORTAL
+@app.route('/api/admin/login', methods=['POST'])
+def adminLogin():
+
+    data = request.get_json()
+    adminUser = AdminUser.query.filter(AdminUser.email == data['email']).first()
+    if not adminUser:
+        return {'error': 'Login failed'}, 401
+    
+    if not adminUser.authenticate(data['password']):
+        return {'error': 'Login failed'}, 401
+    
+    access_token = create_access_token(identity=adminUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "admin"})
+
+    return jsonify(access_token=access_token, admin_user_id=adminUser.id), 200
+
+@app.route('/api/admin-signup', methods=['POST'])
+def adminSignup():
+    data = request.get_json()
+
+    try:
+        admin_user = AdminUser.query.filter(AdminUser.email == data['email']).first()
+        if admin_user:
+            return {'error': 'email already exists'}, 400
+        
+        new_admin_user = AdminUser(
+            email=data['email'],
+            password=data['password'],
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            phone=data.get('phone'),
+        )
+
+        db.session.add(new_admin_user)
+        db.session.commit()
+
+        return new_admin_user.to_dict(), 201
+
+    except IntegrityError as e:
+        db.session.rollback()
+        return {'error': f'IntegrityError: {str(e)}'}, 400
+
+    except ValueError as e:
+        return {'error': f'ValueError: {str(e)}'}, 400
+
+    except Exception as e:
+        return {'error': f'Exception: {str(e)}'}, 500
+    
+@app.route('/api/admin/logout', methods=['DELETE'])
+def adminLogout():
+    session.pop('admin_user_id', None)
+    return {}, 204
+
+@app.route('/api/check_user_session', methods=['GET'])
+@jwt_required()
+def check_user_session():
+    if not check_role('user'):
+        return {'error': 'Access forbidden: User only'}, 403
+
+    user_id = get_jwt_identity()
+    user = User.query.filter_by(id=user_id).first()
+    
+    if not user:
+        return {'error': 'authorization failed'}, 401
+
+    return user.to_dict(), 200
+
+@app.route('/api/check-vendor-session', methods=['GET'])
+@jwt_required()
+def check_vendor_session():
+    if not check_role('vendor'):
+        return {'error': 'Access forbidden: Vendor only'}, 403
+
+    vendor_user_id = get_jwt_identity()
+    vendor_user = VendorUser.query.filter_by(id=vendor_user_id).first()
+    
+    if not vendor_user:
+        return {'error': 'authorization failed'}, 401
+
+    return vendor_user.to_dict(), 200
+
+@app.route('/api/check_admin_session', methods=['GET'])
+@jwt_required()
+def check_admin_session():
+    if not check_role('admin'):
+        return {'error': 'Access forbidden: Admin only'}, 403
+
+    admin_user_id = get_jwt_identity()
+    admin_user = AdminUser.query.filter_by(id=admin_user_id).first()
+
+    if not admin_user:
+        return {'error': 'Authorization failed'}, 401
+
+    return admin_user.to_dict(), 200
     
 @app.route('/api/users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
 @jwt_required()
@@ -379,52 +532,266 @@ def profile(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route('/api/logout', methods=['DELETE'])
-def logout():
-    session.pop('user_id', None)
-    return {}, 204
+@app.route('/api/vendor-users', methods=['GET'])
+def get_vendor_users():
+    try:
+        vendor_id = request.args.get('vendor_id', type=int)
 
-@app.route('/api/check_user_session', methods=['GET'])
-@jwt_required()
-def check_user_session():
-    if not check_role('user'):
-        return {'error': 'Access forbidden: User only'}, 403
+        if not vendor_id:
+            return jsonify({'error': 'Vendor ID is required'}), 400
 
-    user_id = get_jwt_identity()
-    user = User.query.filter_by(id=user_id).first()
+        vendor_users = VendorUser.query.filter_by(vendor_id=vendor_id).all()
+
+        if not vendor_users:
+            return jsonify({'message': 'No team members found for this vendor'}), 404
+
+        return jsonify([{
+            'id': vendor_user.id,
+            'first_name': vendor_user.first_name,
+            'last_name': vendor_user.last_name,
+            'email': vendor_user.email,
+            'phone': vendor_user.phone,
+            'role': 'Admin' if vendor_user.is_admin else 'Employee'
+        } for vendor_user in vendor_users]), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
     
-    if not user:
-        return {'error': 'authorization failed'}, 401
-
-    return user.to_dict(), 200
-
-@app.route('/api/check-vendor-session', methods=['GET'])
+@app.route('/api/vendor-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 @jwt_required()
-def check_vendor_session():
+def get_vendor_user(id):
     if not check_role('vendor'):
-        return {'error': 'Access forbidden: Vendor only'}, 403
-
-    vendor_user_id = get_jwt_identity()
-    vendor_user = VendorUser.query.filter_by(id=vendor_user_id).first()
+        return {'error': "Access forbidden: Vendor only"}, 403
     
-    if not vendor_user:
-        return {'error': 'authorization failed'}, 401
+    if request.method == 'GET':
+        vendor_user = VendorUser.query.get(id)
+        if not vendor_user:
+            return jsonify({'error': 'User not found'}), 404
+        profile_data = vendor_user.to_dict()
+        return jsonify(profile_data), 200
+    
+    elif request.method == 'PATCH':
+        vendor_user = VendorUser.query.get(id)
+        if not vendor_user:
+            return jsonify({'error': 'User not found'}), 404
 
-    return vendor_user.to_dict(), 200
+        try:
+            data = request.get_json()
+            # for key, value in data.items():
+            #     setattr(user, key, value)
+            vendor_user.first_name = data.get('first_name')
+            vendor_user.last_name = data.get('last_name')
+            vendor_user.email = data.get('email')
+            vendor_user.phone = data.get('phone')
 
-@app.route('/api/check_admin_session', methods=['GET'])
+            if 'is_admin' in data:
+                if not isinstance(data['is_admin'], bool):
+                    return jsonify({'error': 'Invalid value for is_admin, must be true or false'}), 400
+                vendor_user.is_admin = data['is_admin']
+
+            if 'vendor_id' in data:
+                new_vendor_id = data['vendor_id']
+                if new_vendor_id is None:
+                    vendor_user.vendor_id = None
+                else:
+                    vendor = Vendor.query.get(new_vendor_id)
+                    if not vendor:
+                        return jsonify({'error': 'Invalid vendor_id'}), 400
+                    vendor_user.vendor_id = new_vendor_id
+
+            db.session.commit()
+            return jsonify(vendor_user.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"Error updating VendorUser: {str(e)}")
+            return jsonify({'error': str(e)}), 500
+
+    elif request.method == 'DELETE':
+        vendor_user = VendorUser.query.get(id)
+        if not vendor_user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        try:
+            db.session.delete(vendor_user)
+            db.session.commit()
+            return {}, 204
+        
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"Error deleting VendorUser: {str(e)}")
+            return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/vendor-vendor-users', methods=['GET', 'POST', 'PATCH', 'DELETE'])
+def handle_vendor_vendor_users():
+    if request.method == "GET":
+        try:
+            vendor_vendor_users = VendorVendorUser.query.all()
+            return jsonify([vvu.to_dict() for vvu in vendor_vendor_users]), 200
+        except Exception as e:
+            return {'error': f'Exception: {str(e)}'}, 500
+
+    elif request.method == "POST":
+        data = request.get_json()
+        
+        try:
+            if not data.get('vendor_id') or not data.get('vendor_user_id'):
+                return {'error': 'vendor_id and vendor_user_id are required'}, 400
+
+            new_vendor_vendor_user = VendorVendorUser(
+                vendor_id=data['vendor_id'],
+                vendor_user_id=data['vendor_user_id'],
+                role=data.get('role')
+            )
+
+            db.session.add(new_vendor_vendor_user)
+            db.session.commit()
+
+            return new_vendor_vendor_user.to_dict(), 201
+
+        except IntegrityError as e:
+            db.session.rollback()
+            return {'error': f'IntegrityError: {str(e)}'}, 400
+        
+        except ValueError as e:
+            return {'error': f'ValueError: {str(e)}'}, 400
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Exception: {str(e)}'}, 500
+
+    elif request.method == "PATCH":
+        data = request.get_json()
+
+        try:
+            if not data.get('id'):
+                return {'error': 'vendor_vendor_user ID is required for patching'}, 400
+
+            vendor_vendor_user = VendorVendorUser.query.filter_by(id=data['id']).first()
+
+            if not vendor_vendor_user:
+                return {'error': 'VendorVendorUser not found'}, 404
+
+            if 'vendor_id' in data:
+                vendor_vendor_user.vendor_id = data['vendor_id']
+            if 'vendor_user_id' in data:
+                vendor_vendor_user.vendor_user_id = data['vendor_user_id']
+            if 'role' in data:
+                vendor_vendor_user.role = data['role']
+
+            db.session.commit()
+            return jsonify(vendor_vendor_user.to_dict()), 200
+
+        except IntegrityError as e:
+            db.session.rollback()
+            return {'error': f'IntegrityError: {str(e)}'}, 400
+        
+        except ValueError as e:
+            return {'error': f'ValueError: {str(e)}'}, 400
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Exception: {str(e)}'}, 500
+
+    elif request.method == "DELETE":
+        data = request.get_json()
+
+        try:
+            if not data.get('id'):
+                return {'error': 'vendor_vendor_user ID is required for deletion'}, 400
+
+            vendor_vendor_user = VendorVendorUser.query.filter_by(id=data['id']).first()
+
+            if not vendor_vendor_user:
+                return {'error': 'VendorVendorUser not found'}, 404
+
+            db.session.delete(vendor_vendor_user)
+            db.session.commit()
+
+            return {}, 204
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Exception: {str(e)}'}, 500
+
+@app.route('/api/admin-users', methods=['GET', 'POST'])
 @jwt_required()
-def check_admin_session():
+def handle_admin_users():
+    
     if not check_role('admin'):
-        return {'error': 'Access forbidden: Admin only'}, 403
+        return {'error': "Access forbidden: Admin only"}, 403
+    
+    if request.method == 'GET':
+        try:
+            admin_users = AdminUser.query.all()
+            return jsonify([admin_user.to_dict() for admin_user in admin_users]), 200
+        except Exception as e:
+            return {'error': f'Exception: {str(e)}'}, 500
 
-    admin_user_id = get_jwt_identity()
-    admin_user = AdminUser.query.filter_by(id=admin_user_id).first()
+    elif request.method == 'POST':
+        data = request.get_json()
+
+        # Check if the email already exists
+        existing_user = AdminUser.query.filter_by(email=data['email']).first()
+        if existing_user:
+            return {'error': 'Email already in use'}, 400
+
+        try:
+            new_admin_user = AdminUser(
+                email=data['email'],
+                password=data['password'],
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                phone=data.get('phone')
+            )
+            db.session.add(new_admin_user)
+            db.session.commit()
+            return jsonify(new_admin_user.to_dict()), 201
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Exception: {str(e)}'}, 500
+    
+@app.route('/api/admin-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+@jwt_required()
+def handle_admin_user_by_id(id):
+    
+    if not check_role('admin'):
+        return {'error': "Access forbidden: Admin only"}, 403
+    
+    admin_user = AdminUser.query.filter_by(id=id).first()
 
     if not admin_user:
-        return {'error': 'Authorization failed'}, 401
+        return {'error': 'User not found'}, 404
 
-    return admin_user.to_dict(), 200
+    if request.method == 'GET':
+        try:
+            return jsonify(admin_user.to_dict()), 200
+        except Exception as e:
+            return {'error': f'Exception: {str(e)}'}, 500
+
+    elif request.method == 'PATCH':
+        try:
+            data = request.get_json()
+            for key, value in data.items():
+                setattr(admin_user, key, value)
+            db.session.commit()
+            return jsonify(admin_user.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Exception: {str(e)}'}, 500
+
+    elif request.method == 'DELETE':
+        try:
+            db.session.delete(admin_user)
+            db.session.commit()
+            return {}, 204
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Exception: {str(e)}'}, 500
 
 @app.route('/api/markets', methods=['GET', 'POST'])
 def all_markets():
@@ -1043,242 +1410,6 @@ def delete_vendor_market(id):
         db.session.commit()
         return {}, 204
 
-# VENDOR PORTAL
-@app.route('/api/vendor/login', methods=['POST'])
-def vendorLogin():
-
-    data = request.get_json()
-    vendorUser = VendorUser.query.filter(VendorUser.email == data['email']).first()
-    if not vendorUser:
-        return {'error': 'Login failed'}, 401
-    
-    if not vendorUser.authenticate(data['password']):
-        return {'error': 'Login failed'}, 401
-    
-    access_token = create_access_token(identity=vendorUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "vendor"})
-
-    return jsonify(access_token=access_token, vendor_user_id=vendorUser.id), 200
-
-@app.route('/api/vendor-signup', methods=['POST'])
-def vendorSignup():
-    data = request.get_json()
-
-    try:
-        vendor_user = VendorUser.query.filter(VendorUser.email == data['email']).first()
-        if vendor_user:
-            return {'error': 'Email already exists'}, 400
-        
-        new_vendor_user = VendorUser(
-            email=data['email'],
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            phone=data['phone']
-        )
-        new_vendor_user.password = data['password']
-
-        db.session.add(new_vendor_user)
-        db.session.commit()
-
-        return new_vendor_user.to_dict(), 201
-
-    except IntegrityError as e:
-        db.session.rollback()
-        return {'error': f'IntegrityError: {str(e)}'}, 400
-
-    except ValueError as e:
-        return {'error': f'ValueError: {str(e)}'}, 400
-
-    except Exception as e:
-        return {'error': f'Exception: {str(e)}'}, 500
-    
-@app.route('/api/vendor/logout', methods=['DELETE'])
-def vendorLogout():
-    session.pop('vendor_user_id', None)
-    return {}, 204
-
-@app.route('/api/vendor-users', methods=['GET'])
-def get_vendor_users():
-    try:
-        vendor_id = request.args.get('vendor_id', type=int)
-
-        if not vendor_id:
-            return jsonify({'error': 'Vendor ID is required'}), 400
-
-        vendor_users = VendorUser.query.filter_by(vendor_id=vendor_id).all()
-
-        if not vendor_users:
-            return jsonify({'message': 'No team members found for this vendor'}), 404
-
-        return jsonify([{
-            'id': vendor_user.id,
-            'first_name': vendor_user.first_name,
-            'last_name': vendor_user.last_name,
-            'email': vendor_user.email,
-            'phone': vendor_user.phone,
-            'role': 'Admin' if vendor_user.is_admin else 'Employee'
-        } for vendor_user in vendor_users]), 200
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    
-@app.route('/api/vendor-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
-@jwt_required()
-def get_vendor_user(id):
-    if not check_role('vendor'):
-        return {'error': "Access forbidden: Vendor only"}, 403
-    
-    if request.method == 'GET':
-        vendor_user = VendorUser.query.get(id)
-        if not vendor_user:
-            return jsonify({'error': 'User not found'}), 404
-        profile_data = vendor_user.to_dict()
-        return jsonify(profile_data), 200
-    
-    elif request.method == 'PATCH':
-        vendor_user = VendorUser.query.get(id)
-        if not vendor_user:
-            return jsonify({'error': 'User not found'}), 404
-
-        try:
-            data = request.get_json()
-            # for key, value in data.items():
-            #     setattr(user, key, value)
-            vendor_user.first_name = data.get('first_name')
-            vendor_user.last_name = data.get('last_name')
-            vendor_user.email = data.get('email')
-            vendor_user.phone = data.get('phone')
-
-            if 'is_admin' in data:
-                if not isinstance(data['is_admin'], bool):
-                    return jsonify({'error': 'Invalid value for is_admin, must be true or false'}), 400
-                vendor_user.is_admin = data['is_admin']
-
-            if 'vendor_id' in data:
-                new_vendor_id = data['vendor_id']
-                if new_vendor_id is None:
-                    vendor_user.vendor_id = None
-                else:
-                    vendor = Vendor.query.get(new_vendor_id)
-                    if not vendor:
-                        return jsonify({'error': 'Invalid vendor_id'}), 400
-                    vendor_user.vendor_id = new_vendor_id
-
-            db.session.commit()
-            return jsonify(vendor_user.to_dict()), 200
-
-        except Exception as e:
-            db.session.rollback()
-            app.logger.error(f"Error updating VendorUser: {str(e)}")
-            return jsonify({'error': str(e)}), 500
-
-    elif request.method == 'DELETE':
-        vendor_user = VendorUser.query.get(id)
-        if not vendor_user:
-            return jsonify({'error': 'User not found'}), 404
-        
-        try:
-            db.session.delete(vendor_user)
-            db.session.commit()
-            return {}, 204
-        
-        except Exception as e:
-            db.session.rollback()
-            app.logger.error(f"Error deleting VendorUser: {str(e)}")
-            return jsonify({'error': str(e)}), 500
-
-
-@app.route('/api/vendor-vendor-users', methods=['GET', 'POST', 'PATCH', 'DELETE'])
-def handle_vendor_vendor_users():
-    if request.method == "GET":
-        try:
-            vendor_vendor_users = VendorVendorUser.query.all()
-            return jsonify([vvu.to_dict() for vvu in vendor_vendor_users]), 200
-        except Exception as e:
-            return {'error': f'Exception: {str(e)}'}, 500
-
-    elif request.method == "POST":
-        data = request.get_json()
-        
-        try:
-            if not data.get('vendor_id') or not data.get('vendor_user_id'):
-                return {'error': 'vendor_id and vendor_user_id are required'}, 400
-
-            new_vendor_vendor_user = VendorVendorUser(
-                vendor_id=data['vendor_id'],
-                vendor_user_id=data['vendor_user_id'],
-                role=data.get('role')
-            )
-
-            db.session.add(new_vendor_vendor_user)
-            db.session.commit()
-
-            return new_vendor_vendor_user.to_dict(), 201
-
-        except IntegrityError as e:
-            db.session.rollback()
-            return {'error': f'IntegrityError: {str(e)}'}, 400
-        
-        except ValueError as e:
-            return {'error': f'ValueError: {str(e)}'}, 400
-
-        except Exception as e:
-            db.session.rollback()
-            return {'error': f'Exception: {str(e)}'}, 500
-
-    elif request.method == "PATCH":
-        data = request.get_json()
-
-        try:
-            if not data.get('id'):
-                return {'error': 'vendor_vendor_user ID is required for patching'}, 400
-
-            vendor_vendor_user = VendorVendorUser.query.filter_by(id=data['id']).first()
-
-            if not vendor_vendor_user:
-                return {'error': 'VendorVendorUser not found'}, 404
-
-            if 'vendor_id' in data:
-                vendor_vendor_user.vendor_id = data['vendor_id']
-            if 'vendor_user_id' in data:
-                vendor_vendor_user.vendor_user_id = data['vendor_user_id']
-            if 'role' in data:
-                vendor_vendor_user.role = data['role']
-
-            db.session.commit()
-            return jsonify(vendor_vendor_user.to_dict()), 200
-
-        except IntegrityError as e:
-            db.session.rollback()
-            return {'error': f'IntegrityError: {str(e)}'}, 400
-        
-        except ValueError as e:
-            return {'error': f'ValueError: {str(e)}'}, 400
-
-        except Exception as e:
-            db.session.rollback()
-            return {'error': f'Exception: {str(e)}'}, 500
-
-    elif request.method == "DELETE":
-        data = request.get_json()
-
-        try:
-            if not data.get('id'):
-                return {'error': 'vendor_vendor_user ID is required for deletion'}, 400
-
-            vendor_vendor_user = VendorVendorUser.query.filter_by(id=data['id']).first()
-
-            if not vendor_vendor_user:
-                return {'error': 'VendorVendorUser not found'}, 404
-
-            db.session.delete(vendor_vendor_user)
-            db.session.commit()
-
-            return {}, 204
-
-        except Exception as e:
-            db.session.rollback()
-            return {'error': f'Exception: {str(e)}'}, 500
-
 @app.route('/api/events', methods=['GET', 'POST'])
 def all_events():
     if request.method == 'GET':
@@ -1719,136 +1850,30 @@ def product(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-# ADMIN PORTAL
-@app.route('/api/admin/login', methods=['POST'])
-def adminLogin():
-
-    data = request.get_json()
-    adminUser = AdminUser.query.filter(AdminUser.email == data['email']).first()
-    if not adminUser:
-        return {'error': 'Login failed'}, 401
-    
-    if not adminUser.authenticate(data['password']):
-        return {'error': 'Login failed'}, 401
-    
-    access_token = create_access_token(identity=adminUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "admin"})
-
-    return jsonify(access_token=access_token, admin_user_id=adminUser.id), 200
-
-@app.route('/api/admin-signup', methods=['POST'])
-def adminSignup():
-    data = request.get_json()
-
-    try:
-        admin_user = AdminUser.query.filter(AdminUser.email == data['email']).first()
-        if admin_user:
-            return {'error': 'email already exists'}, 400
-        
-        new_admin_user = AdminUser(
-            email=data['email'],
-            password=data['password'],
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            phone=data.get('phone'),
-        )
-
-        db.session.add(new_admin_user)
-        db.session.commit()
-
-        return new_admin_user.to_dict(), 201
-
-    except IntegrityError as e:
-        db.session.rollback()
-        return {'error': f'IntegrityError: {str(e)}'}, 400
-
-    except ValueError as e:
-        return {'error': f'ValueError: {str(e)}'}, 400
-
-    except Exception as e:
-        return {'error': f'Exception: {str(e)}'}, 500
-    
-@app.route('/api/admin/logout', methods=['DELETE'])
-def adminLogout():
-    session.pop('admin_user_id', None)
-    return {}, 204
-
-@app.route('/api/admin-users', methods=['GET', 'POST'])
-@jwt_required()
-def handle_admin_users():
-    
-    if not check_role('admin'):
-        return {'error': "Access forbidden: Admin only"}, 403
-    
+@app.route('/api/qr-codes', methods=['GET', 'POST'])
+def qr_codes():
     if request.method == 'GET':
-        try:
-            admin_users = AdminUser.query.all()
-            return jsonify([admin_user.to_dict() for admin_user in admin_users]), 200
-        except Exception as e:
-            return {'error': f'Exception: {str(e)}'}, 500
+        user_id = request.args.get('user_id', type=int)
+        query = QRCode.query
+        if user_id:
+            query = query.filter(QRCode.user_id == user_id)
+        qr_codes = query.all()
+        return jsonify([qr_code.to_dict() for qr_code in qr_codes]), 200
 
     elif request.method == 'POST':
         data = request.get_json()
-
-        # Check if the email already exists
-        existing_user = AdminUser.query.filter_by(email=data['email']).first()
-        if existing_user:
-            return {'error': 'Email already in use'}, 400
-
+        new_qr_code = QRCode(
+            qr_code=data.get('qr_code'),
+            user_id=data.get('user_id'),
+            basket_id=data.get('basket_id')
+        )
         try:
-            new_admin_user = AdminUser(
-                email=data['email'],
-                password=data['password'],
-                first_name=data['first_name'],
-                last_name=data['last_name'],
-                phone=data.get('phone')
-            )
-            db.session.add(new_admin_user)
+            db.session.add(new_qr_code)
             db.session.commit()
-            return jsonify(new_admin_user.to_dict()), 201
-
+            return jsonify(new_qr_code.to_dict()), 201
         except Exception as e:
             db.session.rollback()
-            return {'error': f'Exception: {str(e)}'}, 500
-    
-@app.route('/api/admin-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
-@jwt_required()
-def handle_admin_user_by_id(id):
-    
-    if not check_role('admin'):
-        return {'error': "Access forbidden: Admin only"}, 403
-    
-    admin_user = AdminUser.query.filter_by(id=id).first()
-
-    if not admin_user:
-        return {'error': 'User not found'}, 404
-
-    if request.method == 'GET':
-        try:
-            return jsonify(admin_user.to_dict()), 200
-        except Exception as e:
-            return {'error': f'Exception: {str(e)}'}, 500
-
-    elif request.method == 'PATCH':
-        try:
-            data = request.get_json()
-            for key, value in data.items():
-                setattr(admin_user, key, value)
-            db.session.commit()
-            return jsonify(admin_user.to_dict()), 200
-
-        except Exception as e:
-            db.session.rollback()
-            return {'error': f'Exception: {str(e)}'}, 500
-
-    elif request.method == 'DELETE':
-        try:
-            db.session.delete(admin_user)
-            db.session.commit()
-            return {}, 204
-
-        except Exception as e:
-            db.session.rollback()
-            return {'error': f'Exception: {str(e)}'}, 500
+            return {'error': f'Failed to create QR code: {str(e)}'}, 500
 
 
 # Email Form

@@ -111,13 +111,14 @@ function VendorDetail({ products }) {
         );
         if (basketInCart) {
             const updatedCartItems = [...cartItems, {
-                vendorName: vendor.name,
+                vendor_name: vendor.name,
                 location: marketDay.markets.name,
                 id: basketInCart.id,
                 price: basketInCart.price,
                 pickup_start: basketInCart.pickup_start,
                 pickup_end: basketInCart.pickup_end,
-                day_of_week: marketDay.day_of_week
+                day_of_week: marketDay.day_of_week,
+                sale_date: basketInCart.sale_date
             }];
             setCartItems(updatedCartItems);
             setAmountInCart(updatedCartItems.length);

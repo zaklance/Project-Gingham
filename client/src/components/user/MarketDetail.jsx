@@ -175,13 +175,14 @@ function MarketDetail ({ match }) {
         );
         if (basketInCart) {
             const updatedCartItems = [...cartItems, {
-                vendorName: vendorName,
+                vendor_name: vendorName,
                 location: market.name,
                 id: basketInCart.id,
                 price: basketInCart.price,
                 pickup_start: basketInCart.pickup_start,
                 pickup_end: basketInCart.pickup_end,
-                day_of_week: new Date(basketInCart.sale_date).getDay()
+                day_of_week: new Date(basketInCart.sale_date).getDay(),
+                sale_date: new Date(basketInCart.sale_date)
             }];
             setCartItems(updatedCartItems);
             setAmountInCart(updatedCartItems.length);
@@ -283,6 +284,8 @@ function MarketDetail ({ match }) {
         ).filter(item => !cartItems.some(cartItem => cartItem.id === item.id));
     };
     
+    console.log(marketBaskets)
+
     if (!market) {
         return <div>Loading...</div>;
     }
