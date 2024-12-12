@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
+import objectHash from 'object-hash';
 import { weekDay } from '../../utils/common';
 import { timeConverter } from '../../utils/helpers';
 
@@ -8,8 +9,11 @@ function Cart() {
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
     const [cartTimer, setCartTimer] = useState(null);
+    const [hash, setHash] = useState('');
 
     const navigate = useNavigate();
+
+    const userId = parseInt(globalThis.localStorage.getItem('user_id'));
 
     function startCartTimer() {
         if (cartTimer) {
@@ -45,7 +49,8 @@ function Cart() {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        is_sold: true
+                        is_sold: true,
+                        user_id: userId
                     })
                 });
 
@@ -53,16 +58,40 @@ function Cart() {
                     throw new Error(`Failed to update cartItem with id: ${cartItem.id}`);
                 }
             }));
-            setCartItems([]);
-            setAmountInCart(0);
-            navigate('/user/checkout');
+            if (cartItems.length > 0) {
+                const promises = cartItems.map(async (cartItem) => {
+                    const hash = objectHash(`${cartItem.vendor_name} ${cartItem.location} ${cartItem.id} ${userId}`);
+                    const response = await fetch('http://127.0.0.1:5555/api/qr-codes', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            qr_code: hash,
+                            user_id: userId,
+                            basket_id: cartItem.id
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Failed to create QR code for basket ID ${cartItem.id}: ${response.statusText}`);
+                    }
+                    return response.json();
+                });
+                try {
+                    const results = await Promise.all(promises);
+                    console.log('All QR codes created successfully:', results);
+                } catch (error) {
+                    console.error('Error creating QR codes:', error);
+                }
+                setCartItems([]);
+                setAmountInCart(0);
+                navigate('/user/checkout');
+            }
         } catch (error) {
-            console.error('Error during checkout:', error);
+        console.error('Error during checkout:', error);
         }
     }
-
-
-    console.log(cartItems)
 	
 	useEffect(() => {
 		console.log("Amount in cart:", amountInCart);
@@ -88,7 +117,7 @@ function Cart() {
                             <ul>
                                 {cartItems.map((item, index) => (
                                     <li className='cart-item' key={index}>
-                                        <span><b>{item.vendorName}</b> at <i>{item.location}</i>&ensp; {weekDay[item.day_of_week]} from {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</span>
+                                        <span><b>{item.vendor_name}</b> at <i>{item.location}</i>&ensp; {weekDay[item.day_of_week]} from {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</span>
                                         <span><b>${item.price}</b></span>
                                         <button className='btn-cart' onClick={() => removeFromCart(item)}>Remove</button>
                                     </li>
@@ -112,7 +141,7 @@ function Cart() {
                                 /> */}
                             <button 
                                 className='btn-cart' 
-                                onClick={(globalThis.localStorage.getItem('user_id') == null) ? (
+                                onClick={(userId == null) ? (
                                     handlePopup()
                                 ) : (
                                     handleCheckout)}

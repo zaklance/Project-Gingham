@@ -538,6 +538,9 @@ class Basket(db.Model, SerializerMixin):
 
     vendor = db.relationship('Vendor', lazy='joined')
     market_day = db.relationship('MarketDay', lazy='joined')
+    qr_codes = db.relationship('QRCode', back_populates='baskets')
+
+    serialize_rules = ('-vendor.baskets', '-market_day.baskets', '-qr_codes.baskets')
 
     # @validates('sale_date')
     # def validate_sale_date(self, key, value):
@@ -572,6 +575,7 @@ class Basket(db.Model, SerializerMixin):
             "is_sold": self.is_sold,
             "is_grabbed": self.is_grabbed,
             "user_id": self.user_id,
+            "qr_codes": [qr.to_dict() for qr in self.qr_codes] if self.qr_codes else None,
         }
 
     def __repr__(self):
@@ -688,3 +692,18 @@ class Product(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<Product ID: {self.id}, Product: {self.product}>"
+    
+class QRCode(db.Model, SerializerMixin):
+    __tablename__ = 'qr_codes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    qr_code = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    basket_id = db.Column(db.Integer, db.ForeignKey('baskets.id'), nullable=False)
+
+    baskets = db.relationship('Basket', back_populates='qr_codes')
+
+    serialize_rules = ('-baskets.qr_codes',)
+
+    def __repr__(self) -> str:
+        return f"<MarketFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.basket_id}>"
