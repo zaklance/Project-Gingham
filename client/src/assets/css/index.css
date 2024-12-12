@@ -633,6 +633,11 @@ ul {
   box-shadow: 0 30px 50px rgba(0, 0, 0, 0.36);
 }
 
+.box-scanner {
+  width: 400px;
+  height: 400px;
+}
+
 .market-details {
   width: fit-content;
   max-width: calc(100% - 48px); 
