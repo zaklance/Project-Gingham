@@ -1856,11 +1856,15 @@ def qr_codes():
         user_id = request.args.get('user_id', type=int)
         qr_code = request.args.get('qr_code', type=str)
         query = QRCode.query
-        if user_id:
-            query = query.filter(QRCode.user_id == user_id)
         if qr_code:
             query = query.filter(QRCode.qr_code == qr_code)
-        qr_codes = query.all()
+            qr_code_result = query.first()
+        elif user_id:
+            query = query.filter(QRCode.user_id == user_id)
+            qr_code_result = query.all()
+
+        if qr_code_result:
+            return jsonify(qr_code_result.to_dict()), 200
         return jsonify([qr_code.to_dict() for qr_code in qr_codes]), 200
 
     elif request.method == 'POST':
