@@ -33,7 +33,7 @@ function VendorScan() {
 
     return (
         <>
-            <div className="box-scanner">
+            <div className="flex-center">
                 <Scanner
                     onScan={(result) => handleScan(result)}
                     scanDelay={1000}
