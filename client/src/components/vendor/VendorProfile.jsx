@@ -288,6 +288,48 @@ function VendorProfile () {
         }
     };
 
+    const handleDeleteImage = async () => {
+        if (!vendorData || !vendorData.image) {
+            alert('No image to delete.');
+            return;
+        }
+    
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/api/delete-image`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('vendor_jwt-token')}`,
+                },
+                body: JSON.stringify({
+                    filename: vendorData.image,
+                    type: 'vendor',
+                }),
+            });
+    
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Image deleted response:', result);
+    
+                // Clear the image from local state
+                setVendorData((prevData) => ({
+                    ...prevData,
+                    image: null,
+                }));
+    
+                setVendorImageURL(null); // Clear the image URL
+                alert('Image deleted successfully.');
+            } else {
+                const errorText = await response.text();
+                console.error('Failed to delete image:', errorText);
+                alert('Failed to delete the image. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error deleting image:', error);
+            alert('An unexpected error occurred while deleting the image.');
+        }
+    };
+
     useEffect(() => {
         if (Array.isArray(locations) && locations.length > 0) {
             const fetchMarketDetails = async () => {
@@ -472,6 +514,18 @@ function VendorProfile () {
                                     </div>
                                     <div className='form-group'>
                                         <label>Vendor Image:</label>
+                                        {vendorData?.image ? (
+                                            <>
+                                                <img
+                                                    src={`/vendor-images/${vendorData.image}`}
+                                                    alt="Vendor"
+                                                    style={{ maxWidth: '100%', height: 'auto' }}
+                                                />
+                                                <button className='btn-edit' onClick={handleDeleteImage}>Delete Image</button>
+                                            </>
+                                        ) : (
+                                            <p>No image uploaded.</p>
+                                        )}
                                         <input
                                             type="file"
                                             name="file"

@@ -159,7 +159,7 @@ def upload_file():
 @app.route('/api/delete-image', methods=['POST'])
 @jwt_required()
 def delete_image():
-    if not check_role('admin'):
+    if not (check_role('admin') or check_role('vendor')):
         return {'error': "Access forbidden: Admin only"}, 403
 
     data = request.get_json()
