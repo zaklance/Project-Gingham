@@ -42,6 +42,11 @@ function Cart() {
 	
     async function handleCheckout() {
         try {
+            const userId = globalThis.localStorage.getItem('user_id');
+            if (!userId) { 
+                throw new Error("User is not logged in.");
+            }
+
             await Promise.all(cartItems.map(async (cartItem) => {
                 const response = await fetch(`http://127.0.0.1:5555/api/baskets/${cartItem.id}`, {
                     method: 'PATCH',
@@ -49,8 +54,13 @@ function Cart() {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+<<<<<<< HEAD
                         is_sold: true,
                         user_id: userId
+=======
+                        user_id: userId,
+                        is_sold: true
+>>>>>>> 278ae25f5cf770524587c6b24ddc368745592854
                     })
                 });
 
@@ -92,6 +102,11 @@ function Cart() {
         console.error('Error during checkout:', error);
         }
     }
+<<<<<<< HEAD
+=======
+
+    console.log(cartItems)
+>>>>>>> 278ae25f5cf770524587c6b24ddc368745592854
 	
 	useEffect(() => {
 		console.log("Amount in cart:", amountInCart);
@@ -139,6 +154,7 @@ function Cart() {
                                 value={address}
                                 onChange={(e) => setAddress(e.target.value)}
                                 /> */}
+<<<<<<< HEAD
                             <button 
                                 className='btn-cart' 
                                 onClick={(userId == null) ? (
@@ -146,6 +162,11 @@ function Cart() {
                                 ) : (
                                     handleCheckout)}
                                 >Checkout</button>
+=======
+                            <button className='btn-cart' onClick={() => { globalThis.localStorage.getItem('user_id') == null ? handlePopup() : handleCheckout(); }} >
+                                Checkout
+                            </button>
+>>>>>>> 278ae25f5cf770524587c6b24ddc368745592854
                         </div>
                     </div>
                 </>
