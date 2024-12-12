@@ -127,7 +127,8 @@ function VendorBasketCard({ vendorId, marketDay }) {
     const handleDecrement = () => {
         const soldBasketsCount = savedBaskets.filter(basket => basket.is_sold).length;
         setPrevNumBaskets(numBaskets);
-        setNumBaskets((prevNum) => (Number(prevNum) > soldBasketsCount ? Number(prevNum) - 1 : Number(prevNum)));
+        // setNumBaskets((prevNum) => (Number(prevNum) > soldBasketsCount ? Number(prevNum) - 1 : Number(prevNum)));
+        setNumBaskets((prevNum) => Math.max(prevNum - 1, soldBasketsCount));
     };
 
     useEffect(() => {
@@ -362,11 +363,11 @@ function VendorBasketCard({ vendorId, marketDay }) {
                                 <td>Pick-Up End:</td>
                                 <td className='text-center'>{endTime}</td>
                             </tr>
-                            <br/>
+                            <tr></tr>
                             <tr>
-                                <td>Sold Baskets:</td>
+                                <td><strong>Sold Baskets:</strong></td>
                                 <td className='text-center'>
-                                    {savedBaskets.filter(basket => basket.is_sold).length || 0}
+                                    <strong> {savedBaskets.filter(basket => basket.is_sold).length} </strong>
                                 </td>
                             </tr>
                         </tbody>
