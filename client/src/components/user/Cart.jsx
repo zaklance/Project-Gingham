@@ -55,7 +55,7 @@ function Cart() {
                     },
                     body: JSON.stringify({
                         is_sold: true,
-                        user_id: userId
+                        user_id: userId,
                     })
                 });
 
@@ -144,7 +144,7 @@ function Cart() {
                                 value={address}
                                 onChange={(e) => setAddress(e.target.value)}
                                 /> */}
-                            <button className='btn-cart' onClick={(userId == null) ? handlePopup() : handleCheckout}>
+                            <button className='btn-cart' onClick={() => {globalThis.localStorage.getItem('user_id') == null ? handlePopup() : handleCheckout();}}>
                                 Checkout
                             </button>
                         </div>
