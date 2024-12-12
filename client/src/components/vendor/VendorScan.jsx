@@ -10,9 +10,10 @@ function VendorScan() {
         fetch(`http://127.0.0.1:5555/api/qr-codes?qr_code=${result[0].rawValue}`)
             .then(response => response.json())
             .then(data => {
-                console.log(data[0].basket_id)
+                console.log(result)
+                console.log(data.basket_id)
                 try {
-                    const response = fetch(`http://127.0.0.1:5555/api/baskets/${data[0].basket_id}`, {
+                    const response = fetch(`http://127.0.0.1:5555/api/baskets/${data.basket_id}`, {
                         method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',
