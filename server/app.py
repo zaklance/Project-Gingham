@@ -1882,6 +1882,28 @@ def qr_codes():
             db.session.rollback()
             return {'error': f'Failed to create QR code: {str(e)}'}, 500
 
+@app.route('/api/qr-codes/<int:id>', methods=['GET', 'DELETE'])
+def qr_code(id):
+    if request.method == 'GET':
+        qr_code = QRCode.query.filter_by(id=id).first()
+        if not qr_code:
+            return {'error': 'QR code not found'}, 404
+        qr_code_data = qr_code.to_dict()  # Fixed variable name
+        return jsonify(qr_code_data), 200
+
+    elif request.method == 'DELETE':
+        qr_code = QRCode.query.filter_by(id=id).first()
+        if not qr_code:  # Fixed variable name
+            return {'error': 'QR code not found'}, 404
+        
+        try:
+            db.session.delete(qr_code)
+            db.session.commit()
+            return {'message': 'QR code deleted successfully'}, 200
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Failed to delete QR code: {str(e)}'}, 500
+
 
 # Email Form
 @app.route('/api/contact', methods=['POST'])
