@@ -117,12 +117,6 @@ function PickUp() {
                                                         className='img-qr'
                                                         value={basket.qr_code} 
                                                         minVersion={3}
-                                                        // imageSettings={{
-                                                        //     src: `/site-images/gingham-logo-3.svg`,
-                                                        //     height: 32,
-                                                        //     width: 32,
-                                                        //     excavate: true
-                                                        //     }}
                                                     />
                                                 </div>
                                                 <div className='text-center margin-t-16'>
