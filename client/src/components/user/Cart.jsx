@@ -38,6 +38,11 @@ function Cart() {
 	
     async function handleCheckout() {
         try {
+            const userId = globalThis.localStorage.getItem('user_id');
+            if (!userId) { 
+                throw new Error("User is not logged in.");
+            }
+
             await Promise.all(cartItems.map(async (cartItem) => {
                 const response = await fetch(`http://127.0.0.1:5555/api/baskets/${cartItem.id}`, {
                     method: 'PATCH',
@@ -45,6 +50,7 @@ function Cart() {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+                        user_id: userId,
                         is_sold: true
                     })
                 });
@@ -60,7 +66,6 @@ function Cart() {
             console.error('Error during checkout:', error);
         }
     }
-
 
     console.log(cartItems)
 	
@@ -110,13 +115,9 @@ function Cart() {
                                 value={address}
                                 onChange={(e) => setAddress(e.target.value)}
                                 /> */}
-                            <button 
-                                className='btn-cart' 
-                                onClick={(globalThis.localStorage.getItem('user_id') == null) ? (
-                                    handlePopup()
-                                ) : (
-                                    handleCheckout)}
-                                >Checkout</button>
+                            <button className='btn-cart' onClick={() => { globalThis.localStorage.getItem('user_id') == null ? handlePopup() : handleCheckout(); }} >
+                                Checkout
+                            </button>
                         </div>
                     </div>
                 </>
