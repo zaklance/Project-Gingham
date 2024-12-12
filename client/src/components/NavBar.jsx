@@ -121,10 +121,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             <NavLink className='nav-tab color-3 btn-nav' to={`/vendor/dashboard/${vendor_id}`}>Dashboard</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav' to={`/vendor/sales/${vendor_id}`}>Sales</NavLink>
+                            <NavLink className='nav-tab color-5 btn-nav' to={`/vendor/sales/${vendor_id}`}>Sales</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-5 btn-nav' to={`/vendor/profile/${vendor_id}`}>Profile</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav' to={`/vendor/profile/${vendor_id}`}>Profile</NavLink>
+                        </li>
+                        <li>
+                            <NavLink className='nav-tab color-1 btn-nav' to={`/vendor/scan`}>Scan</NavLink>
                         </li>
                     </>
                 )}

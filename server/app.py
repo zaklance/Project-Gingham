@@ -1854,9 +1854,12 @@ def product(id):
 def qr_codes():
     if request.method == 'GET':
         user_id = request.args.get('user_id', type=int)
+        qr_code = request.args.get('qr_code', type=str)
         query = QRCode.query
         if user_id:
             query = query.filter(QRCode.user_id == user_id)
+        if qr_code:
+            query = query.filter(QRCode.qr_code == qr_code)
         qr_codes = query.all()
         return jsonify([qr_code.to_dict() for qr_code in qr_codes]), 200
 
