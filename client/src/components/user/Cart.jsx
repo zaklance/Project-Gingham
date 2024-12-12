@@ -154,19 +154,9 @@ function Cart() {
                                 value={address}
                                 onChange={(e) => setAddress(e.target.value)}
                                 /> */}
-<<<<<<< HEAD
-                            <button 
-                                className='btn-cart' 
-                                onClick={(userId == null) ? (
-                                    handlePopup()
-                                ) : (
-                                    handleCheckout)}
-                                >Checkout</button>
-=======
-                            <button className='btn-cart' onClick={() => { globalThis.localStorage.getItem('user_id') == null ? handlePopup() : handleCheckout(); }} >
+                            <button className='btn-cart' onClick={(userId == null) ? handlePopup() : handleCheckout}>
                                 Checkout
                             </button>
->>>>>>> 278ae25f5cf770524587c6b24ddc368745592854
                         </div>
                     </div>
                 </>
