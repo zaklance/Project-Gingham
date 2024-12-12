@@ -54,13 +54,8 @@ function Cart() {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-<<<<<<< HEAD
                         is_sold: true,
                         user_id: userId
-=======
-                        user_id: userId,
-                        is_sold: true
->>>>>>> 278ae25f5cf770524587c6b24ddc368745592854
                     })
                 });
 
@@ -102,11 +97,6 @@ function Cart() {
         console.error('Error during checkout:', error);
         }
     }
-<<<<<<< HEAD
-=======
-
-    console.log(cartItems)
->>>>>>> 278ae25f5cf770524587c6b24ddc368745592854
 	
 	useEffect(() => {
 		console.log("Amount in cart:", amountInCart);
