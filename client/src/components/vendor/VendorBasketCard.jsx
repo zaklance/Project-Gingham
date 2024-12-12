@@ -362,6 +362,13 @@ function VendorBasketCard({ vendorId, marketDay }) {
                                 <td>Pick-Up End:</td>
                                 <td className='text-center'>{endTime}</td>
                             </tr>
+                            <br/>
+                            <tr>
+                                <td>Sold Baskets:</td>
+                                <td className='text-center'>
+                                    {savedBaskets.filter(basket => basket.is_sold).length || 0}
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                     <div className='text-center'>
