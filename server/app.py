@@ -1854,18 +1854,20 @@ def product(id):
 def qr_codes():
     if request.method == 'GET':
         user_id = request.args.get('user_id', type=int)
+        vendor_id = request.args.get('vendor_id', type=str)
         qr_code = request.args.get('qr_code', type=str)
         query = QRCode.query
         if qr_code:
             query = query.filter(QRCode.qr_code == qr_code)
-            qr_code_result = query.first()  # Single result
+            query = query.filter(QRCode.vendor_id == vendor_id)
+            qr_code_result = query.first()
             if qr_code_result:
                 return jsonify(qr_code_result.to_dict()), 200
             return jsonify({'error': 'QR code not found'}), 404
 
         elif user_id:
             query = query.filter(QRCode.user_id == user_id)
-            qr_code_result = query.all()  # Multiple results
+            qr_code_result = query.all()
             if qr_code_result:
                 return jsonify([qr.to_dict() for qr in qr_code_result]), 200
             return jsonify({'error': 'No QR codes found for the user'}), 404
@@ -1877,7 +1879,8 @@ def qr_codes():
         new_qr_code = QRCode(
             qr_code=data.get('qr_code'),
             user_id=data.get('user_id'),
-            basket_id=data.get('basket_id')
+            basket_id=data.get('basket_id'),
+            vendor_id=data.get('vendor_id')
         )
         try:
             db.session.add(new_qr_code)

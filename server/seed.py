@@ -1,7 +1,7 @@
 from app import app
 from faker import Faker
 from random import random, choice, randint
-from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketReviewRating, VendorReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, Product, bcrypt
+from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketReviewRating, VendorReviewRating, ReportedReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, AdminNotification, Product, QRCode, bcrypt
 import json
 from datetime import datetime, timedelta, timezone, time, date
 
@@ -16,6 +16,7 @@ def run():
     VendorReview.query.delete()
     MarketReviewRating.query.delete()
     VendorReviewRating.query.delete()
+    ReportedReview.query.delete()
     MarketFavorite.query.delete()
     VendorFavorite.query.delete()
     VendorMarket.query.delete()
@@ -25,7 +26,9 @@ def run():
     Event.query.delete()
     UserNotification.query.delete()
     VendorNotification.query.delete()
+    AdminNotification.query.delete()
     Product.query.delete()
+    QRCode.query.delete()
 
     db.session.commit()
 

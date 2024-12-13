@@ -700,7 +700,7 @@ class QRCode(db.Model, SerializerMixin):
     qr_code = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     basket_id = db.Column(db.Integer, db.ForeignKey('baskets.id'), nullable=False)
-    # vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
 
     baskets = db.relationship('Basket', back_populates='qr_codes')
 
