@@ -95,14 +95,16 @@ def upload_file():
         # Use the original filename
         original_filename = secure_filename(file.filename)
 
-        # Check whether the upload is for a vendor or market
+        # Check whether the upload is for a user, vendor, or market
         upload_type = request.form.get('type')
         if upload_type == 'vendor':
             upload_folder = VENDOR_UPLOAD_FOLDER
         elif upload_type == 'market':
             upload_folder = MARKET_UPLOAD_FOLDER
+        elif upload_type == 'user':
+            upload_folder = USER_UPLOAD_FOLDER
         else:
-            return {'error': 'Invalid type specified. Must be "vendor" or "market"'}, 400
+            return {'error': 'Invalid type specified. Must be "vendor", "market", or "user"'}, 400
 
         # Ensure the upload folder exists
         if not os.path.exists(upload_folder):
@@ -129,7 +131,19 @@ def upload_file():
                 image.save(file_path)
 
             # Update the database record based on upload type
-            if upload_type == 'vendor':
+            if upload_type == 'user':
+                user_id = request.form.get('user_id')
+                if not user_id:
+                    return {'error': 'User ID is required'}, 400
+
+                user = User.query.get(user_id)
+                if not user:
+                    return {'error': 'User not found'}, 404
+
+                user.avatar = os.path.basename(file_path) 
+                db.session.commit()
+
+            elif upload_type == 'vendor':
                 vendor_id = request.form.get('vendor_id')
                 if not vendor_id:
                     return {'error': 'Vendor ID is required'}, 400
@@ -161,11 +175,12 @@ def upload_file():
 
     return {'error': 'File type not allowed'}, 400
 
+
 @app.route('/api/delete-image', methods=['POST'])
 @jwt_required()
 def delete_image():
-    if not (check_role('admin') or check_role('vendor')):
-        return {'error': "Access forbidden: Admin only"}, 403
+    if not (check_role('admin') or check_role('vendor') or check_role('user')):
+        return {'error': "Access forbidden: Admin, Vendor, or User only"}, 403
 
     data = request.get_json()
     filename = data.get('filename')
@@ -174,18 +189,18 @@ def delete_image():
     if not filename or not file_type:
         return {'error': 'Filename and type are required'}, 400
 
-    # Determine the folder based on type
     if file_type == 'vendor':
         folder = VENDOR_UPLOAD_FOLDER
     elif file_type == 'market':
         folder = MARKET_UPLOAD_FOLDER
+    elif file_type == 'user':
+        folder = USER_UPLOAD_FOLDER
     else:
-        return {'error': 'Invalid type. Must be "vendor" or "market"'}, 400
+        return {'error': 'Invalid type. Must be "vendor", "market", or "user"'}, 400
 
     try:
         file_path = os.path.join(folder, filename)
 
-        # Delete the file from the file system
         if os.path.exists(file_path):
             os.remove(file_path)
 
@@ -199,11 +214,17 @@ def delete_image():
             if market:
                 market.image = None
                 db.session.commit()
+        elif file_type == 'user':
+            user = User.query.filter_by(image=filename).first()
+            if user:
+                user.image = None
+                db.session.commit()
 
         return {'message': 'Image deleted successfully'}, 200
     except Exception as e:
         db.session.rollback()
         return {'error': f'Failed to delete image: {str(e)}'}, 500
+
 
 @app.route('/api/images/<filename>', methods=['GET'])
 def serve_image(filename):
@@ -212,6 +233,8 @@ def serve_image(filename):
             return send_from_directory(VENDOR_UPLOAD_FOLDER, filename)
         elif os.path.exists(os.path.join(MARKET_UPLOAD_FOLDER, filename)):
             return send_from_directory(MARKET_UPLOAD_FOLDER, filename)
+        elif os.path.exists(os.path.join(USER_UPLOAD_FOLDER, filename)):
+            return send_from_directory(USER_UPLOAD_FOLDER, filename)
         else:
             raise FileNotFoundError
 
