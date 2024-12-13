@@ -65,13 +65,10 @@ function VendorScan() {
                                 'Content-Type': 'application/json',
                             },
                         });
-                    } else {
-                        console.error('Failed to update basket:', response.statusText);
-                        alert("Failed to pick up the basket");
                     }
-                    window.location.reload()
                 } catch (error) {
                     console.error('Error patching basket:', error);
+                    alert("Error, no QR code found!");
                 }
             })
             .catch(error => {
@@ -86,17 +83,12 @@ function VendorScan() {
     return (
         <>
             <div className='flex-center'>
-                {isScanning ? (
-                    <Scanner
-                        onScan={(result) => handleScan(result)}
-                        scanDelay={1000}
-                        format={'qr_code'}
-                    />
-                ) : (
-                    <div>
-                        <button className='btn-basket-save' onClick={handleCamera}>Scan QR Code</button>
-                    </div>
-                )}
+                <Scanner
+                    onScan={(result) => handleScan(result)}
+                    scanDelay={1000}
+                    format={'qr_code'}
+                    allowMultiple={true}
+                />
             </div>
         </>
     );
