@@ -4,10 +4,42 @@ import { Scanner } from '@yudiel/react-qr-scanner';
 
 function VendorScan() {
     const [qRCode, setQRCode] = useState(null);
+    const [vendorId, setVendorId] = useState(null);
+
+    useEffect(() => {
+        const fetchVendorId = async () => {
+            const vendorUserId = localStorage.getItem('vendor_user_id');
+            if (!vendorUserId) {
+                console.error("No vendor user ID found in local storage");
+                return;
+            }
+            try {
+                const token = localStorage.getItem('vendor_jwt-token');
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.vendor_id) {
+                        setVendorId(data.vendor_id);
+                    }
+                } else {
+                    console.error('Failed to fetch vendor user data');
+                }
+            } catch (error) {
+                console.error('Error fetching vendor user data:', error);
+            }
+        };
+        fetchVendorId();
+    }, []);
 
     const handleScan = (result) => {
         console.log(result[0].rawValue);
-        fetch(`http://127.0.0.1:5555/api/qr-codes?qr_code=${result[0].rawValue}`)
+        fetch(`http://127.0.0.1:5555/api/qr-codes?vendor_id=${vendorId}&qr_code=${result[0].rawValue}`)
             .then(response => response.json())
             .then(async (data) => {
                 console.log(result);
@@ -51,7 +83,7 @@ function VendorScan() {
             <div className="flex-center">
                 <Scanner
                     onScan={(result) => handleScan(result)}
-                    // scanDelay={100}
+                    scanDelay={1000}
                     format={'qr_code'}
                 />
             </div>
