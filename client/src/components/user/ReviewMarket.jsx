@@ -386,7 +386,7 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                                         )}
                                         
                                         <button 
-                                            className={`btn btn-emoji btn-gap ${isClickedUp[review.id] ? "btn btn-emoji-on btn-gap" : "" }`}
+                                            className={`btn btn-emoji btn-gap btn-green ${isClickedUp[review.id] ? "btn btn-emoji-on btn-gap" : "" }`}
                                             onClick={() => handleClickUpVote(review)} 
                                             >&#9786;
                                         </button>
@@ -399,7 +399,7 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                                         )}
                                         
                                         <button
-                                            className={`btn btn-emoji btn-gap ${isClickedDown[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
+                                            className={`btn btn-emoji btn-gap btn-red ${isClickedDown[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
                                             onClick={() => handleClickDownVote(review)}
                                         >&#9785;
                                         </button>

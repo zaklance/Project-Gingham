@@ -284,8 +284,6 @@ function MarketDetail ({ match }) {
             item => item.vendor_id === vendorId && item.is_sold === false
         ).filter(item => !cartItems.some(cartItem => cartItem.id === item.id));
     };
-    
-    console.log(marketBaskets)
 
     if (!market) {
         return <div>Loading...</div>;
