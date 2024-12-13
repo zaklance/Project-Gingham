@@ -176,6 +176,7 @@ function MarketDetail ({ match }) {
         if (basketInCart) {
             const updatedCartItems = [...cartItems, {
                 vendor_name: vendorName,
+                vendor_id: vendorId,
                 location: market.name,
                 id: basketInCart.id,
                 price: basketInCart.price,

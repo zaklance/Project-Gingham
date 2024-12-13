@@ -36,6 +36,7 @@ function VendorScan() {
                         console.error('Failed to update basket:', response.statusText);
                         alert("Failed to pick up the basket");
                     }
+                    window.location.reload()
                 } catch (error) {
                     console.error('Error patching basket:', error);
                 }

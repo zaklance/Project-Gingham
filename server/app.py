@@ -1858,14 +1858,19 @@ def qr_codes():
         query = QRCode.query
         if qr_code:
             query = query.filter(QRCode.qr_code == qr_code)
-            qr_code_result = query.first()
+            qr_code_result = query.first()  # Single result
+            if qr_code_result:
+                return jsonify(qr_code_result.to_dict()), 200
+            return jsonify({'error': 'QR code not found'}), 404
+
         elif user_id:
             query = query.filter(QRCode.user_id == user_id)
-            qr_code_result = query.all()
+            qr_code_result = query.all()  # Multiple results
+            if qr_code_result:
+                return jsonify([qr.to_dict() for qr in qr_code_result]), 200
+            return jsonify({'error': 'No QR codes found for the user'}), 404
 
-        if qr_code_result:
-            return jsonify(qr_code_result.to_dict()), 200
-        return jsonify([qr_code.to_dict() for qr_code in qr_codes]), 200
+        return jsonify({'error': 'Invalid query parameters'}), 400
 
     elif request.method == 'POST':
         data = request.get_json()
@@ -1881,6 +1886,9 @@ def qr_codes():
         except Exception as e:
             db.session.rollback()
             return {'error': f'Failed to create QR code: {str(e)}'}, 500
+
+
+
 
 @app.route('/api/qr-codes/<int:id>', methods=['GET', 'DELETE'])
 def qr_code(id):

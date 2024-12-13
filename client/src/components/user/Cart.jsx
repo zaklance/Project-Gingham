@@ -74,7 +74,8 @@ function Cart() {
                         body: JSON.stringify({
                             qr_code: hash,
                             user_id: userId,
-                            basket_id: cartItem.id
+                            basket_id: cartItem.id,
+                            vendor_id: cartItem.vendor_id
                         }),
                     });
 
