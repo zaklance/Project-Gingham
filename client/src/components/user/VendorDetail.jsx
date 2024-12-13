@@ -112,6 +112,7 @@ function VendorDetail({ products }) {
         if (basketInCart) {
             const updatedCartItems = [...cartItems, {
                 vendor_name: vendor.name,
+                vendor_id: vendor.id,
                 location: marketDay.markets.name,
                 id: basketInCart.id,
                 price: basketInCart.price,

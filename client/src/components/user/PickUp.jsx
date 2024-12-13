@@ -6,7 +6,7 @@ import { QRCodeSVG } from 'qrcode.react';
 function PickUp() {
     const [baskets, setBaskets] = useState([])
     const [isPickUp, setIsPickUp] = useState(false); 
-    const [qRCodes, setQRCodes] = useState({})
+    const [qRCodes, setQRCodes] = useState([])
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
 
@@ -41,7 +41,7 @@ function PickUp() {
             .catch(error => {
                 console.error('Error fetching today\'s baskets:', error);
             });
-    }, [userId]);
+    }, [userId, qRCodes]);
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/qr-codes?user_id=${userId}`, {
@@ -76,58 +76,61 @@ function PickUp() {
                 <h2 className='margin-b-24'>Baskets for Pick-Up Today</h2>
                 <div className='market-cards-container'>
                     {baskets.length > 0 ? (
-                        baskets.map((basket, index) => (
-                            <div key={index} className='basket-card'>
-                                <div className='width-100'>
-                                    {!isPickUp ? (
-                                        <>
-                                            <h4 className='text-center'>{basket.vendor_name}</h4>
-                                            <h4 className='text-center'> at {basket.market_name}</h4>
-                                            <table className='width-100'>
-                                                <tbody className='table-basket'>
-                                                    <tr className='row-blank'>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className='nowrap'>Pickup Start:</td>
-                                                        <td className='nowrap text-center'>{timeConverter(basket?.pickup_start)}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className='nowrap'>Pickup End:</td>
-                                                        <td className='nowrap text-center'>{timeConverter(basket?.pickup_end)}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className='nowrap'>Basket Value:</td>
-                                                        <td className='text-center'>${basket?.basket_value}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className='nowrap'>Basket Price:</td>
-                                                        <td className='text-center'>${basket?.price}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            <div className='flex-center'>
-                                                <button onClick={handlePickUp} className="btn-basket-save">Pick Up Basket</button>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <div>
-                                                <div className='box-qr'>
-                                                    <QRCodeSVG 
-                                                        className='img-qr'
-                                                        value={basket.qr_code} 
-                                                        minVersion={3}
-                                                    />
+                        baskets.map((basket, index) => {
+                            const matchingQRCode = qRCodes.find(qRCode => qRCode.basket_id === basket.id);
+                            console.log(matchingQRCode)
+                            return (
+                                <div key={index} className='basket-card'>
+                                    <div className='width-100'>
+                                        {!isPickUp ? (
+                                            <>
+                                                <h4 className='text-center'>{basket.vendor_name}</h4>
+                                                <h4 className='text-center'> at {basket.market_name}</h4>
+                                                <table className='width-100'>
+                                                    <tbody className='table-basket'>
+                                                        <tr className='row-blank'>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className='nowrap'>Pickup Start:</td>
+                                                            <td className='nowrap text-center'>{timeConverter(basket?.pickup_start)}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className='nowrap'>Pickup End:</td>
+                                                            <td className='nowrap text-center'>{timeConverter(basket?.pickup_end)}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className='nowrap'>Basket Value:</td>
+                                                            <td className='text-center'>${basket?.basket_value}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className='nowrap'>Basket Price:</td>
+                                                            <td className='text-center'>${basket?.price}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <div className='flex-center'>
+                                                    <button onClick={handlePickUp} className="btn-basket-save">Pick Up Basket</button>
                                                 </div>
-                                                <div className='text-center margin-t-16'>
-                                                    <button onClick={handlePickUp} className="btn-basket-save">Cancel</button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div>
+                                                    <div className='box-qr'>
+                                                        <QRCodeSVG
+                                                            className='img-qr'
+                                                            value={matchingQRCode ? matchingQRCode.qr_code : 'Invalid QR Code'}
+                                                            minVersion={3}
+                                                        />
+                                                    </div>
+                                                    <div className='text-center margin-t-16'>
+                                                        <button onClick={handlePickUp} className="btn-basket-save">Cancel</button>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </>
-                                    )}
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        ))
+                        )})
                     ) : (
                         <>
                             <p>No baskets available for today.</p>
