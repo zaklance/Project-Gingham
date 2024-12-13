@@ -124,18 +124,20 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
 
     const handleReviewReport = async (reviewId) => {
         if (globalThis.localStorage.getItem('user_id') !== null) {
-            try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ is_reported: true })
-                });
-    
-                if (response.ok) {
-                    alert("Review reported")
+            if (confirm(`Are you sure you want to report the review?`)) {
+                try {
+                    const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ is_reported: true })
+                    });
+        
+                    if (response.ok) {
+                        alert("Review reported")
+                    }
+                } catch (error) {
+                    console.error('Error updating review:', error);
                 }
-            } catch (error) {
-                console.error('Error updating review:', error);
             }
         } else {
             handlePopup()
@@ -388,7 +390,7 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                                             )}
 
                                             <button
-                                                className={`btn btn-emoji btn-gap ${isClickedUp[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
+                                                className={`btn btn-emoji btn-gap btn-green ${isClickedUp[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
                                                 onClick={() => handleClickUpVote(review)}
                                             >&#9786;
                                             </button>
@@ -401,7 +403,7 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                                             )}
 
                                             <button
-                                                className={`btn btn-emoji btn-gap ${isClickedDown[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
+                                                className={`btn btn-emoji btn-gap btn-red ${isClickedDown[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
                                                 onClick={() => handleClickDownVote(review)}
                                             >&#9785;
                                             </button>

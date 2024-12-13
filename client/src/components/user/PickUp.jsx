@@ -5,7 +5,8 @@ import { QRCodeSVG } from 'qrcode.react';
 
 function PickUp() {
     const [baskets, setBaskets] = useState([])
-    const [isPickUp, setIsPickUp] = useState(false); 
+    const [isPickUp, setIsPickUp] = useState(false);
+    const [selectedBasketId, setSelectedBasketId] = useState(null);
     const [qRCodes, setQRCodes] = useState([])
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
@@ -64,10 +65,8 @@ function PickUp() {
             });
     }, [userId]);
 
-    const handlePickUp = () => {
-        if (!isPickUp) {
-        }
-        setIsPickUp(!isPickUp);
+    const handlePickUp = (basketId) => {
+        setSelectedBasketId(prevId => (prevId === basketId ? null : basketId));
     };
 
     return (
@@ -78,11 +77,11 @@ function PickUp() {
                     {baskets.length > 0 ? (
                         baskets.map((basket, index) => {
                             const matchingQRCode = qRCodes.find(qRCode => qRCode.basket_id === basket.id);
-                            console.log(matchingQRCode)
+                            const isSelected = selectedBasketId === basket.id;
                             return (
                                 <div key={index} className='basket-card'>
                                     <div className='width-100'>
-                                        {!isPickUp ? (
+                                        {!isSelected ? (
                                             <>
                                                 <h4 className='text-center'>{basket.vendor_name}</h4>
                                                 <h4 className='text-center'> at {basket.market_name}</h4>
@@ -109,7 +108,7 @@ function PickUp() {
                                                     </tbody>
                                                 </table>
                                                 <div className='flex-center'>
-                                                    <button onClick={handlePickUp} className="btn-basket-save">Pick Up Basket</button>
+                                                    <button className="btn-basket-save" onClick={() => handlePickUp(basket.id)}>Pick Up Basket</button>
                                                 </div>
                                             </>
                                         ) : (
@@ -123,7 +122,7 @@ function PickUp() {
                                                         />
                                                     </div>
                                                     <div className='text-center margin-t-16'>
-                                                        <button onClick={handlePickUp} className="btn-basket-save">Cancel</button>
+                                                            <button className="btn-basket-save" onClick={() => handlePickUp(basket.id)}>Cancel</button>
                                                     </div>
                                                 </div>
                                             </>
