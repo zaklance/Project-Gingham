@@ -163,7 +163,7 @@ function Profile({ marketData }) {
                     setStatus('fail');
                     return;
                 }
-                // window.location.reload()
+                window.location.reload()
             }
         } catch (error) {
             console.error('Error saving changes:', error);
