@@ -90,6 +90,8 @@ function Profile({ marketData }) {
     };
 
     const handleSaveChanges = async () => {
+        let uploadedFilename = null;
+        
         try {
             const token = localStorage.getItem('user_jwt-token');
             const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
@@ -125,7 +127,7 @@ function Profile({ marketData }) {
                 setStatus('uploading');
                 const formData = new FormData();
                 formData.append('file', image);
-                formData.append('type', 'vendor');
+                formData.append('type', 'user');
                 formData.append('user_id', id);
 
                 for (const [key, value] of formData.entries()) {
@@ -145,7 +147,11 @@ function Profile({ marketData }) {
                         uploadedFilename = data.filename;
                         console.log('Image uploaded:', uploadedFilename);
                         setStatus('success');
-                        setVendorImageURL(`http://127.0.0.1:5555/api/users/${id}/image`);
+
+                        setProfileData((prevData) => ({
+                            ...prevData,
+                            avatar: uploadedFilename, // Update avatar with the new filename
+                        }));
                     } else {
                         console.log('Image upload failed');
                         console.log('Response:', await result.text());
@@ -157,7 +163,7 @@ function Profile({ marketData }) {
                     setStatus('fail');
                     return;
                 }
-                window.location.reload()
+                // window.location.reload()
             }
         } catch (error) {
             console.error('Error saving changes:', error);
@@ -302,10 +308,10 @@ function Profile({ marketData }) {
                 ) : (
                     <>
                         <div className='flex-space-evenly flex-gap-16 flex-start-align'>
-                            {profileData.avatar !== null ? (
-                                <img className='img-avatar-profile' src={`/user-images/${review.user.avatar}`} alt="Avatar" />
+                            {profileData.avatar ? (
+                                <img className='img-avatar-profile' src={`/user-images/${profileData.avatar}`} alt="Avatar" />
                             ) : (
-                                <img className='img-avatar-profile' src={`/site-images/avatar-orange.jpg`} alt="Avatar" />
+                                <img className='img-avatar-profile' src={`/site-images/avatar-orange.jpg`} alt="Default Avatar" />
                             )}
                             <div className='width-80'>
                                 <table className='table-profile'>
