@@ -374,8 +374,15 @@ function MarketDetail ({ match }) {
                 )}
             </div>
             <div className='flex-start'>
-                <h4>Season: {formatDate(market.season_start)} - {formatDate(market.season_end)}</h4>
-
+                {market.year_round === false && market.season_start && market.season_end ? (
+                        <h4>Season: {formatDate(market.season_start)} – {formatDate(market.season_end)}</h4>
+                    ) : (
+                        market.year_round === false && (!market.season_start || !market.season_end) ? (
+                            <h4>Season: Call Zak Wosewick</h4>
+                        ) : (
+                            <h4>Open Year Round</h4>
+                        )
+                    )}
             </div>
             <br/>
             <br/>
