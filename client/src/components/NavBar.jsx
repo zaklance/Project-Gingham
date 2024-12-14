@@ -146,10 +146,12 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li>
                             <NavLink className='nav-tab color-1 btn-nav' to={`/admin/users/${admin_id}`}>Users</NavLink>
                         </li>
-                        <li className='notification' onClick={handleAdminNotifPopup}>
-                            <a className='nav-tab color-2 btn-nav nav-tab-wide' to="/notifications"><img className='img-notifications' src="/site-images/notifications-1.svg" alt="Notification" /></a>
-                            {adminNotifications.length > 0 && <p className='badge'>{adminNotifications.length}</p>}
-                        </li>
+                        {adminNotifications.length > 0 &&
+                            <li className='notification' onClick={handleAdminNotifPopup}>
+                                <a className='nav-tab color-2 btn-nav nav-tab-wide' to="/notifications"><img className='img-notifications' src="/site-images/notifications-1.svg" alt="Notification" /></a>
+                                {adminNotifications.length > 0 && <p className='badge'>{adminNotifications.length}</p>}
+                            </li>
+                        }
                         <div className='notification'>
                             {adminNotifications.length > 0 &&
                                 <div className={`popup-notif ${isNotifPopup ? 'popup-notif-on' : ''}`} style={{ top: window.scrollY }}>
@@ -182,10 +184,12 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li>
                             <NavLink className='nav-tab color-4 btn-nav' to={`/user/profile/${userId}`}>Profile</NavLink>
                         </li>
-                        <li className='notification' onClick={handleNotifPopup}>
-                            <a className='nav-tab color-1 btn-nav nav-tab-wide' to="/notifications"><img className='img-notifications' src="/site-images/notifications-1.svg" alt="Notification" /></a>
-                            {notifications.length > 0 && <p className='badge'>{notifications.length}</p>}
-                        </li>
+                        {notifications.length > 0 &&
+                            <li className='notification' onClick={handleNotifPopup}>
+                                <a className='nav-tab color-1 btn-nav nav-tab-wide' to="/notifications"><img className='img-notifications' src="/site-images/notifications-1.svg" alt="Notification" /></a>
+                                {notifications.length > 0 && <p className='badge'>{notifications.length}</p>}
+                            </li>
+                        }
                         <div className='notification'>
                             {notifications.length > 0 &&
                                 <div className={`popup-notif ${isNotifPopup ? 'popup-notif-on' : ''}`} style={{ top: window.scrollY }}>
