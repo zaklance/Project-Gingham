@@ -15,6 +15,7 @@ function VendorDetail({ products }) {
     const [vendorFavs, setVendorFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
     const [alertMessage, setAlertMessage] = useState(null);
+    const [vendorAlertStates, setVendorAlertStates] = useState({});
     const [showAlert, setShowAlert] = useState(false);
     const [events, setEvents] = useState([]);
     const [marketBaskets, setMarketBaskets] = useState([]);
@@ -124,9 +125,14 @@ function VendorDetail({ products }) {
             setCartItems(updatedCartItems);
             setAmountInCart(updatedCartItems.length);
             setMarketBaskets(prevBaskets => prevBaskets.filter(item => item.id !== basketInCart.id));
+            setAlertMessage('added to cart');
         } else {
             alert("Sorry, all baskets are sold out!");
         }
+        setVendorAlertStates(prev => ({ ...prev, [marketDay.id]: true }));
+        setTimeout(() => {
+            setVendorAlertStates(prev => ({ ...prev, [marketDay.id]: false }));
+        }, 2000);
     };
 
     useEffect(() => {
@@ -283,7 +289,7 @@ function VendorDetail({ products }) {
                 </div>
             </div>
             <div className='flex-space-between margin-t-24 flex-wrap'>
-                <div>
+                <div className='width-100'>
                     <img className='img-vendor' src={`/vendor-images/${vendor.image}`} alt="Vendor Image"/>
                 </div>
                 <div className='side-basket'>
@@ -351,14 +357,19 @@ function VendorDetail({ products }) {
                                                 {firstBasket && firstBasket.pickup_start
                                                     ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
                                                     : ''}
+                                                {vendorAlertStates[market.market_day_id] && (
+                                                    <div className={`alert-favorites alert-cart-vendor`}>
+                                                        {alertMessage}
+                                                    </div>
+                                                )}
                                             </span>
                                         )}
                                         {allBaskets.length > 0 ? (
-                                            <button className="btn-add" onClick={() => handleAddToCart(marketDetail)}>
+                                            <button className="btn-add nowrap" onClick={() => handleAddToCart(marketDetail)}>
                                                 Add to Cart
                                             </button>
                                         ) : (
-                                            <button className="btn-add" onClick={() => handleAddToCart(marketDetail)}>
+                                            <button className="btn-add nowrap" onClick={() => handleAddToCart(marketDetail)}>
                                                 Sold Out
                                             </button>
                                         )}                                

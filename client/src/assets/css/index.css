@@ -1,3 +1,11 @@
+:root {
+  color-scheme: light only;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 /* Reset some default browser styles */
 * {
   margin: 0;
@@ -222,6 +230,10 @@ h2 {
 
 .margin-l-24 {
   margin-left: 24px;
+}
+
+.margin-l-40 {
+  margin-left: 40px;
 }
 
 .margin-t-4 {
@@ -803,7 +815,7 @@ ul {
   margin: 12px 0px;
   margin-right: 12px;
   margin-left: 4px;
-  width: 88px;
+  width: 96px;
 }
 
 .btn-cart {
@@ -1779,6 +1791,18 @@ select:hover {
   opacity: 0;
   transition: opacity 0.3s ease, transform 0.3s ease;
   margin-left: 24px;
+}
+
+.alert-cart-market {
+  position: absolute;
+  top: 24px;
+  right: 8px;
+}
+
+.alert-cart-vendor {
+  position: absolute;
+  top: 24px;
+  right: -6px;
 }
 
 .alert-fail {

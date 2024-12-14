@@ -704,7 +704,7 @@ class QRCode(db.Model, SerializerMixin):
 
     baskets = db.relationship('Basket', back_populates='qr_codes')
 
-    serialize_rules = ('-baskets.qr_codes',)
+    serialize_rules = ('-baskets.qr_codes', '-baskets.market_day', '-baskets.vendor.reviews', '-baskets.vendor.vendor_favorites', '-baskets.vendor.vendor_markets')
 
     def __repr__(self) -> str:
         return f"<MarketFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.basket_id}>"

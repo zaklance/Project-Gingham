@@ -1862,21 +1862,25 @@ def qr_codes():
         vendor_id = request.args.get('vendor_id', type=str)
         qr_code = request.args.get('qr_code', type=str)
         query = QRCode.query
+
         if qr_code:
-            query = query.filter(QRCode.qr_code == qr_code)
-            query = query.filter(QRCode.vendor_id == vendor_id)
+            query = query.filter(QRCode.qr_code == qr_code, QRCode.vendor_id == vendor_id)
             qr_code_result = query.first()
             if qr_code_result:
                 return jsonify(qr_code_result.to_dict()), 200
             return jsonify({'error': 'QR code not found'}), 404
-
         elif user_id:
             query = query.filter(QRCode.user_id == user_id)
             qr_code_result = query.all()
             if qr_code_result:
                 return jsonify([qr.to_dict() for qr in qr_code_result]), 200
             return jsonify({'error': 'No QR codes found for the user'}), 404
-
+        elif not user_id and not vendor_id and not qr_code:
+            # No parameters: Return all QR codes
+            qr_code_result = query.all()
+            if qr_code_result:
+                return jsonify([qr.to_dict() for qr in qr_code_result]), 200
+            return jsonify({'error': 'No QR codes found'}), 404
         return jsonify({'error': 'Invalid query parameters'}), 400
 
     elif request.method == 'POST':

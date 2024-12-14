@@ -69,8 +69,6 @@ function PickUp() {
         setSelectedBasketId(prevId => (prevId === basketId ? null : basketId));
     };
 
-    console.log(baskets)
-
     return (
         <>
             <div>
@@ -89,8 +87,6 @@ function PickUp() {
                                                 <h4 className='text-center'> at {basket.market_name}</h4>
                                                 <table className='width-100'>
                                                     <tbody className='table-basket'>
-                                                        <tr className='row-blank'>
-                                                        </tr>
                                                         <tr>
                                                             <td className='nowrap'>Pickup Start:</td>
                                                             <td className='nowrap text-center'>{timeConverter(basket?.pickup_start)}</td>
