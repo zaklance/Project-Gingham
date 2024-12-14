@@ -437,8 +437,7 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                                 </>
                             ) : (
                                 <>
-
-                                    <p>{review.review_text}</p>
+                                    <p className='margin-l-40'>{review.review_text}</p>
                                 </>
                             )}
                             {review.user_id === userId && editingReviewId !== review.id && (

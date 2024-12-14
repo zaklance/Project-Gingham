@@ -15,6 +15,7 @@ function MarketDetail ({ match }) {
     const [isClicked, setIsClicked] = useState(false);
     const [alertMessage, setAlertMessage] = useState(null);
     const [showAlert, setShowAlert] = useState(false);
+    const [vendorAlertStates, setVendorAlertStates] = useState({});
     const [selectedProduct, setSelectedProduct] = useState("");
     const [marketDays, setMarketDays] = useState([]);
     const [selectedDay, setSelectedDay] = useState(null);
@@ -189,9 +190,14 @@ function MarketDetail ({ match }) {
             setAmountInCart(updatedCartItems.length);
             setMarketBaskets(prev => prev.filter(item => item.id !== basketInCart.id)
             );
+            setAlertMessage('added to cart');
         } else {
             alert("Sorry, all baskets are sold out!");
         }
+        setVendorAlertStates(prev => ({ ...prev, [vendorId]: true }));
+        setTimeout(() => {
+            setVendorAlertStates(prev => ({ ...prev, [vendorId]: false }));
+        }, 2000);
     };
 
     useEffect(() => {
@@ -248,7 +254,6 @@ function MarketDetail ({ match }) {
         } else {
             handlePopup()
         }
-
         setShowAlert(true);
         setTimeout(() => {
             setShowAlert(false);
@@ -333,7 +338,7 @@ function MarketDetail ({ match }) {
                 </div>
             </div>
             <div className='flex-space-around flex-end margin-t-24'>
-                <div>
+                <div className='width-100'>
                     <img className='img-market' src={`/market-images/${market.image}`} alt="Market Image" />
                 </div>
                 <div id='map' className='map-market-detail'>
@@ -428,14 +433,19 @@ function MarketDetail ({ match }) {
                                     {firstBasket && firstBasket.pickup_start
                                         ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
                                         : ''}
+                                    {vendorAlertStates[vendorId] && (
+                                        <div className={`alert-favorites alert-cart-market`}>
+                                            {alertMessage}
+                                        </div>
+                                    )}
                                 </span>
                                 )}
                                 {availableBaskets.length > 0 ? (
-                                    <button className="btn-add" onClick={() => handleAddToCart(vendorId, vendorDetail, availableBaskets)}>
+                                    <button className="btn-add nowrap" onClick={() => handleAddToCart(vendorId, vendorDetail, availableBaskets)}>
                                             Add to Cart
                                         </button>
                                     ) : (
-                                        <button className="btn-add" onClick={() => handleAddToCart(vendorId, vendorDetail)}>
+                                        <button className="btn-add nowrap" onClick={() => handleAddToCart(vendorId, vendorDetail)}>
                                             Sold Out
                                         </button>
                                     )}
