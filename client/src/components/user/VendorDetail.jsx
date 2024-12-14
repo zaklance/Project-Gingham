@@ -72,10 +72,6 @@ function VendorDetail({ products }) {
                 if (Array.isArray(markets)) {
                     const marketDayIds = markets.map(market => market.market_day_id);
                     setMarkets(markets);
-
-                    // const initialBaskets = {};
-                    // marketDayIds.forEach(marketDayId => initialBaskets[marketDayId] = 5);
-                    // setMarketBaskets(initialBaskets);
                 }
             })
             .catch(error => console.error('Error fetching market locations:', error));
