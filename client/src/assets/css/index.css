@@ -14,6 +14,18 @@
   color: #3b4752;
 }
 
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 12px;
+  background-color: #ff7b8a;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+}
+
 @font-face {
   font-family: nf-le-petit-cochon;
   src: url(../fonts/nf-le-petit-cochon-regular.ttf);
@@ -474,6 +486,10 @@ ul {
   flex: 2;
 }
 
+.flex {
+  display: flex;
+}
+
 .flex-start {
   display: flex;
   justify-content: flex-start;
@@ -550,7 +566,7 @@ ul {
 }
 
 .flex-nowrap {
-  flex-wrap: nowrap;
+  flex-wrap: nowrap !important;
 }
 
 .float-left {
@@ -631,6 +647,13 @@ ul {
 .box-scroll-large {
   overflow: scroll;
   max-height: 1024px;
+}
+
+.box-scroll-x {
+  /* overflow: scroll; */
+  overflow-x: scroll;
+  /* max-height: 480px; */
+  /* max-width: 100%; */
 }
 
 .box-qr {
@@ -1690,18 +1713,12 @@ select:hover {
   border: .5px solid #ccc;
   padding: 10px;
   width: 100%;
+  min-width: 240px;
   max-width: 300px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   background-color: #fff;
   /* text-align: center; */
 }
-
-/* .market-image {
-  width: 70%;
-  max-width: 100%;
-  display: block;
-  margin: 20px 0;
-} */
 
 .market-info {
   float: left;

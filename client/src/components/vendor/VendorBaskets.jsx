@@ -209,7 +209,7 @@ function VendorBaskets({ vendorUserData }) {
                 <div className='box-bounding'>
                 <h2>Today's Baskets</h2>
                 <br />
-                <div className='market-cards-container'>
+                <div className='flex flex-gap-36 flex-nowrap box-scroll-x'>
                     {todayBaskets.length > 0 ? (
                         todayBaskets.map((entry, index) => (
                             <div key={index} className='basket-card'>
@@ -234,19 +234,19 @@ function VendorBaskets({ vendorUserData }) {
                                             <tr className='row-blank'>
                                             </tr>
                                             <tr>
-                                                <td>Pickup Start:</td>
+                                                <td className='nowrap'>Pickup Start:</td>
                                                 <td className='nowrap text-center'>{timeConverter(entry.baskets[0]?.pickup_start)}</td>
                                             </tr>
                                             <tr>
-                                                <td>Pickup End:</td>
+                                                <td className='nowrap'>Pickup End:</td>
                                                 <td className='nowrap text-center'>{timeConverter(entry.baskets[0]?.pickup_end)}</td>
                                             </tr>
                                             <tr>
-                                                <td>Basket Value:</td>
+                                                <td className='nowrap'>Basket Value:</td>
                                                 <td className='text-center'>${entry.baskets[0]?.basket_value}</td>
                                             </tr>
                                             <tr>
-                                                <td>Basket Price:</td>
+                                                <td className='nowrap'>Basket Price:</td>
                                                 <td className='text-center'>${entry.baskets[0]?.price}</td>
                                             </tr>
                                             <tr className='row-blank'>
@@ -283,16 +283,16 @@ function VendorBaskets({ vendorUserData }) {
                     ) : (
                         <p>No baskets available for today.</p>
                     )}
-                </div>            
-                <h2 className='margin-t-48 margin-b-16'>Future Markets:</h2>
-                <br />
-                <div className='market-cards-container'>
-                    {nextMarketDays ? nextMarketDays.map((marketDay, index) => (
-                        <VendorBasketCard key={index} vendorId={vendorId} marketDay={marketDay} weekDay={weekDay} />
-                    )) : <p>No upcoming market days available.</p>}
+                    </div>            
+                    <h2 className='margin-t-48 margin-b-16'>Future Markets:</h2>
+                    <br />
+                    <div className='flex flex-gap-36 flex-nowrap box-scroll-x'>
+                        {nextMarketDays ? nextMarketDays.map((marketDay, index) => (
+                            <VendorBasketCard key={index} vendorId={vendorId} marketDay={marketDay} weekDay={weekDay} />
+                        )) : <p>No upcoming market days available.</p>}
+                    </div>
                 </div>
-            </div>
-            )}
+                )}
         </div>
     );
 }    
