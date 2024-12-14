@@ -2,7 +2,12 @@ import os
 import json
 import smtplib
 from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
-from models import db, User, Market, MarketDay, Vendor, VendorUser, MarketReview, VendorReview, ReportedReview, VendorReviewRating, MarketReviewRating, MarketFavorite, VendorFavorite, VendorMarket, VendorVendorUser, AdminUser, Basket, Event, Product, UserNotification, VendorNotification, AdminNotification, QRCode, bcrypt
+from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
+                    VendorReview, ReportedReview, MarketReviewRating, 
+                    VendorReviewRating, MarketFavorite, VendorFavorite, 
+                    VendorMarket, VendorUser, VendorVendorUser, AdminUser, 
+                    Basket, Event, Product, UserNotification, VendorNotification, 
+                    AdminNotification, QRCode, bcrypt )
 from dotenv import load_dotenv
 from sqlalchemy import func, desc
 from sqlalchemy.exc import IntegrityError

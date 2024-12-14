@@ -69,6 +69,8 @@ function PickUp() {
         setSelectedBasketId(prevId => (prevId === basketId ? null : basketId));
     };
 
+    console.log(baskets)
+
     return (
         <>
             <div>

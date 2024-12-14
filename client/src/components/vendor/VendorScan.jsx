@@ -5,6 +5,7 @@ import { Scanner } from '@yudiel/react-qr-scanner';
 function VendorScan() {
     const [qRCode, setQRCode] = useState(null);
     const [vendorId, setVendorId] = useState(null);
+    const [isScanning, setIsScanning] = useState(false);
 
     useEffect(() => {
         const fetchVendorId = async () => {
@@ -78,14 +79,24 @@ function VendorScan() {
             });
     };
 
+    const handleCamera = () => {
+        setIsScanning(!isScanning);
+    };
+
     return (
         <>
-            <div className="flex-center">
-                <Scanner
-                    onScan={(result) => handleScan(result)}
-                    scanDelay={1000}
-                    format={'qr_code'}
-                />
+            <div className='flex-center'>
+                {isScanning ? (
+                    <Scanner
+                        onScan={(result) => handleScan(result)}
+                        scanDelay={1000}
+                        format={'qr_code'}
+                    />
+                ) : (
+                    <div>
+                        <button className='btn-basket-save' onClick={handleCamera}>Scan QR Code</button>
+                    </div>
+                )}
             </div>
         </>
     );
