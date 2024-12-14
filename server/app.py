@@ -1403,19 +1403,22 @@ def del_vendor_fav(id):
 @app.route('/api/vendor-markets', methods=['GET', 'POST'])
 def get_vendor_markets():
     if request.method == 'GET':
-        vendor_id = request.args.get('vendor_id')
-        market_id = request.args.get('market_id')
+        vendor_id = request.args.get('vendor_id', type=int)
+        market_id = request.args.get('market_id', type=int)
 
-        query = VendorMarket.query
+        query = VendorMarket.query.options(
+            db.joinedload(VendorMarket.vendor),
+            db.joinedload(VendorMarket.market_day).joinedload(MarketDay.markets)
+        )
 
-        if vendor_id: 
-            query = query.filter_by(vendor_id=vendor_id).options(db.joinedload(VendorMarket.vendor))
-        elif market_id: 
-            query = query.filter_by(market_id=market_id).options(db.joinedload(VendorMarket.market))
+        if vendor_id:
+            query = query.filter(VendorMarket.vendor_id == vendor_id)
+        if market_id:
+            query = query.filter(VendorMarket.market_day.has(MarketDay.market_id == market_id))
 
         vendor_markets = query.all()
-        
         return jsonify([vendor_market.to_dict() for vendor_market in vendor_markets]), 200
+    
     elif request.method == 'POST':
         data = request.get_json()
         print("Received data:", data)
@@ -1442,10 +1445,13 @@ def delete_vendor_market(id):
 def all_events():
     if request.method == 'GET':
         try:
+            market_id = request.args.get('market_id', type=int)
             vendor_id = request.args.get('vendor_id', type=int)
             query = Event.query
             if vendor_id:
                 query = query.filter_by(vendor_id=vendor_id)
+            if market_id:
+                query = query.filter_by(market_id=market_id)
             events = query.all()
             return jsonify([event.to_dict() for event in events]), 200
         except Exception as e:
