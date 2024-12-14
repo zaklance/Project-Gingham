@@ -1,7 +1,12 @@
 from app import app
 from faker import Faker
 from random import random, choice, randint
-from models import db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketReviewRating, VendorReviewRating, ReportedReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, AdminNotification, Product, QRCode, bcrypt
+from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
+                    VendorReview, ReportedReview, MarketReviewRating, 
+                    VendorReviewRating, MarketFavorite, VendorFavorite, 
+                    VendorMarket, VendorUser, VendorVendorUser, AdminUser, 
+                    Basket, Event, Product, UserNotification, VendorNotification, 
+                    AdminNotification, QRCode, bcrypt )
 import json
 from datetime import datetime, timedelta, timezone, time, date
 
@@ -14,20 +19,21 @@ def run():
     Vendor.query.delete()
     MarketReview.query.delete()
     VendorReview.query.delete()
+    ReportedReview.query.delete()
     MarketReviewRating.query.delete()
     VendorReviewRating.query.delete()
-    ReportedReview.query.delete()
     MarketFavorite.query.delete()
     VendorFavorite.query.delete()
     VendorMarket.query.delete()
     VendorUser.query.delete()
+    VendorVendorUser.query.delete()
     AdminUser.query.delete()
     Basket.query.delete()
     Event.query.delete()
+    Product.query.delete()
     UserNotification.query.delete()
     VendorNotification.query.delete()
     AdminNotification.query.delete()
-    Product.query.delete()
     QRCode.query.delete()
 
     db.session.commit()
@@ -1133,6 +1139,22 @@ def run():
 
     db.session.add_all(baskets)
     db.session.commit()
+
+    qr_codes = []
+    # Create QR codes for baskets
+    for basket in baskets:
+        if basket.is_sold and not basket.is_grabbed:
+            qr_code_value = f'{basket.vendor_id} {basket.id} {basket.user_id}'
+            qr_code = QRCode(
+                qr_code=qr_code_value,
+                user_id=basket.user_id,
+                vendor_id=basket.vendor_id,
+                basket_id=basket.id
+            )
+            qr_codes.append(qr_code)
+
+    db.session.add_all(qr_codes)
+    db.session.commit()  
 
     #  Events
     events = []

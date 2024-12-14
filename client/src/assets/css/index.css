@@ -1083,15 +1083,17 @@ ul {
   cursor: pointer;
   border-radius: 4px;
   margin-top: 10px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s ease;
 }
 
 .btn-basket-save:hover {
   background-color: #ff9e5c ;
+  transition: .2s;
 }
 
 .btn-basket-save:active {
   background-color: #ff8300;
+  transition: .1s;
 }
 
 .btn-basket-save.saved {
