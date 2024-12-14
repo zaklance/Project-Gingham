@@ -8,7 +8,10 @@ function VendorSales() {
     const [vendorId, setVendorId] = useState(null);
     const [baskets, setBaskets] = useState([]);
     const [salesHistory, setSalesHistory] = useState([]);
-    const [selectedRange, setSelectedRange] = useState(7);
+    const [marketNames, setMarketNames] = useState([]);
+    const [selectedMarket, setSelectedMarket] = useState("");
+    const [selectedRangeGraph, setSelectedRangeGraph] = useState(7);
+    const [selectedRangeTable, setSelectedRangeTable] = useState(365);
 
     const vendorUserId = localStorage.getItem('vendor_user_id');
 
@@ -61,14 +64,9 @@ function VendorSales() {
         return dates;
     }
 
-
-
-    // const datesThisYear = getDatesForYear(2024);
-
     function formatDate(dateString) {
         const date = new Date(dateString);
         const day = date.getDate();
-        // const suffix = getDaySuffix(day);
         const month = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date);
         return `${month} ${day}`;
     }
@@ -151,8 +149,12 @@ function VendorSales() {
         fetchSalesHistory();
     }, []);
 
-    const handleDateChange = (event) => {
-        setSelectedRange(event.target.value);
+    const handleDateChangeGraph = (event) => {
+        setSelectedRangeGraph(event.target.value);
+    };
+    
+    const handleDateChangeTable = (event) => {
+        setSelectedRangeTable(event.target.value);
     };
 
     useEffect(() => {
@@ -164,10 +166,10 @@ function VendorSales() {
 
         // Process baskets and filter based on the selected date range
         const processBaskets = (baskets) => {
-            const isFuture = selectedRange < 0;
+            const isFuture = selectedRangeGraph < 0;
 
             // Get the correct range of dates for the selected range, including the year
-            const allowedDates = getDatesForRange(Math.abs(selectedRange), baskets).map(
+            const allowedDates = getDatesForRange(Math.abs(selectedRangeGraph), baskets).map(
                 (date) => new Date(date).toDateString() // Ensures full date format including year
             );
 
@@ -196,11 +198,11 @@ function VendorSales() {
         const { soldData, unsoldData } = processBaskets(baskets);
         
         const data = {
-            labels: getDatesForRange(selectedRange),
+            labels: getDatesForRange(selectedRangeGraph),
             datasets: [
                 {
                     label: 'Sold Baskets',
-                    data: getDatesForRange(selectedRange).map(date => soldData[date] || 0),
+                    data: getDatesForRange(selectedRangeGraph).map(date => soldData[date] || 0),
                     borderColor: "#007BFF",
                     backgroundColor: "#6c7ae0",
                     borderWidth: 2,
@@ -209,7 +211,7 @@ function VendorSales() {
                 },
                 {
                     label: 'Unsold Baskets',
-                    data: getDatesForRange(selectedRange).map(date => unsoldData[date] || 0),
+                    data: getDatesForRange(selectedRangeGraph).map(date => unsoldData[date] || 0),
                     borderColor: "#ff6699",
                     backgroundColor: "#ff806b",
                     borderWidth: 2,
@@ -248,14 +250,29 @@ function VendorSales() {
                 chartRef.current.destroy();
             }
         };
-    }, [baskets, selectedRange]);
+    }, [baskets, selectedRangeGraph]);
+
+    useEffect(() => {
+        if (salesHistory.length > 0) {
+            const marketNames = salesHistory.map((sale) => sale.market_name);
+            const uniqueMarketNames = [...new Set(marketNames)].sort();
+
+            setMarketNames(uniqueMarketNames);
+        }
+    }, [salesHistory]);
+
+    const handleMarketChange = (event) => {
+        setSelectedMarket(event.target.value);
+    };
+
+    console.log(selectedMarket)
 
 
     return (
         <div>
             <div className='flex-space-between flex-bottom-align'>
                 <h2 className='margin-t-16'>Vendor Sales</h2>
-                <select className='' value={selectedRange} onChange={handleDateChange}>
+                <select className='' value={selectedRangeGraph} onChange={handleDateChangeGraph}>
                     <option value="">Time Frame</option>
                     {Object.entries(dateRange).map(([label, value]) => (
                         <option key={value} value={value}>
@@ -272,9 +289,33 @@ function VendorSales() {
                         <h2>Loading...</h2>
                     )}
                 </div>
-                <h3 className='margin-t-16'>Sales Breakdown:</h3>
+                <div className='flex-space-between flex-bottom-align'>
+                    <h3 className='margin-t-16'>Sales Breakdown:</h3>
+                    <div>
+                        <select className='' value={selectedRangeTable} onChange={handleDateChangeTable}>
+                            <option value="">Time Frame</option>
+                            {Object.entries(dateRange).map(([label, value]) => (
+                                <option key={value} value={value}>
+                                    {label}
+                                </option>
+                            ))}
+                        </select>
+                        <select
+                            name="market"
+                            value={selectedMarket || ''}
+                            onChange={handleMarketChange}
+                        >
+                            <option value="">Select</option>
+                            {marketNames.map((market, index) => (
+                                <option key={index} value={market}>
+                                    {market}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
                 <div className='box-scroll'>
-                    <table className='table-history'>
+                    <table className='table-history width-100'>
                         <thead>
                             <tr>
                                 <th>Sale Date</th>
@@ -290,6 +331,20 @@ function VendorSales() {
                         <tbody>
                             {salesHistory.length > 0 ? (
                                 salesHistory
+                                    .filter((history) => {
+                                        // Filter by selected market if specified
+                                        const isMarketMatch =
+                                            selectedMarket && selectedMarket !== ""
+                                                ? history.market_name === selectedMarket
+                                                : true;
+                                        // Filter by selected date range
+                                        const today = new Date();
+                                        const historyDate = new Date(history.sale_date);
+                                        const isWithinDateRange = selectedRangeTable
+                                            ? historyDate >= new Date(today.setDate(today.getDate() - selectedRangeTable))
+                                            : true;
+                                        return isMarketMatch && isWithinDateRange;
+                                    })
                                     .sort((a, b) => new Date(b.sale_date) - new Date(a.sale_date))
                                     .map((history, index) => (
                                         <tr key={index}>
