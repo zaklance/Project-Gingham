@@ -1,8 +1,8 @@
 """catch up
 
-Revision ID: 88a720e81b63
+Revision ID: 87f7a7f2a0f7
 Revises: 
-Create Date: 2024-12-11 12:08:40.291498
+Create Date: 2024-12-13 11:01:59.838902
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '88a720e81b63'
+revision = '87f7a7f2a0f7'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -212,6 +212,17 @@ def upgrade():
     sa.ForeignKeyConstraint(['vendor_user_id'], ['vendor_users.id'], name=op.f('fk_admin_notifications_vendor_user_id_vendor_users')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_admin_notifications'))
     )
+    op.create_table('qr_codes',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('qr_code', sa.String(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('basket_id', sa.Integer(), nullable=False),
+    sa.Column('vendor_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['basket_id'], ['baskets.id'], name=op.f('fk_qr_codes_basket_id_baskets')),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_qr_codes_user_id_users')),
+    sa.ForeignKeyConstraint(['vendor_id'], ['vendors.id'], name=op.f('fk_qr_codes_vendor_id_vendors')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_qr_codes'))
+    )
     op.create_table('vendor_notifications',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('message', sa.String(), nullable=False),
@@ -249,6 +260,7 @@ def downgrade():
     op.drop_table('vendor_vendor_users')
     op.drop_table('vendor_review_ratings')
     op.drop_table('vendor_notifications')
+    op.drop_table('qr_codes')
     op.drop_table('admin_notifications')
     op.drop_table('vendor_users')
     op.drop_table('vendor_reviews')
