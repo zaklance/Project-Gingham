@@ -23,9 +23,9 @@ function AdminVendors () {
 
     return(
         <>
-            <div className='flex-start flex-center-align flex-gap-48'>
+            <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
                 <h2>Vendor Management</h2>
-                <div className='tabs margin-t-20'>
+                <div className='tabs margin-t-20 m-scroll'>
                     <Link to="#" onClick={() => setActiveTab('edit')} className={activeTab === 'edit' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                         Edit
                     </Link>
