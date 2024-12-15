@@ -8,10 +8,10 @@ function Home() {
     return (
         <div className="admin-portal-background">
             {/* <img className='img-portal' src={strawberryImage} alt="Strawberries"></img> */}
-            <br />
-            <br />
-            <br />
-            <h1 className="title-big box-portal-home">Welcome</h1>
+            <br/>
+            <br/>
+            <br/>
+            <h1 className="title-big m-title-big box-portal-home">Welcome</h1>
         </div>
     )
 }

@@ -2044,6 +2044,16 @@ select:hover {
     max-width: 208px;
   }
 
+  .m-title-big {
+    font-size: 3.6em !important;
+  }
+
+  .m-scroll {
+    overflow-x: scroll;
+    padding-top: 12px;
+    height: 54px;
+  }
+
   .container {
     width: 100vw;
     padding: 0;

@@ -265,7 +265,7 @@ function AdminMarketEvents({ markets }) {
                                     </>
                                 ) : (
                                     <>
-                                        <div className='flex-start flex-center-align flex-gap-16'>
+                                        <div className='flex-start flex-center-align flex-gap-16 m-flex-wrap'>
                                             <p className='text-italic nowrap'>
                                                 {event.start_date}
                                                 {event.end_date !== event.start_date && ` - `}
