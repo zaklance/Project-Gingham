@@ -10,15 +10,15 @@ function Home() {
             <div className="vendor-portal-background">
                 {/* <img className='big-logo' src="/site-images/gingham-logo-2.svg" alt="Gingham Logo"></img> */}
                 <div className="sidebar">
-                    <br />
-                    <br />
+                    <br className="m-hidden" />
+                    <br className="m-hidden" />
                     <br />
                     <div className='box-portal-home'>
                         <h1 className="font-gingham title-big text-center">Gingham</h1>
                         <br/>
                         <p>WELCOME CURRENT AND FUTURE VENDORS!</p>
                     </div>
-                    <br/>
+                    <br className="m-hidden" />
                     <br/>
                     <h2 className="box-portal-home">Sell Surplus Product instead of putting it to waste!</h2>
                 </div>

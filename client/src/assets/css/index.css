@@ -2040,6 +2040,10 @@ select:hover {
     flex-wrap: wrap;
   }
 
+  .m-address {
+    max-width: 208px;
+  }
+
   .container {
     width: 100vw;
     padding: 0;
@@ -2146,12 +2150,12 @@ select:hover {
   }
 
   .box-portal-home {
-    margin: 12px;
-    width: calc(100% - 24px)
+    margin: 16px;
+    width: calc(100% - 32px)
   }
 
   .box-inside {
-   margin: 12px; 
+   margin: 16px; 
   }
 
   .width-80 {
@@ -2201,9 +2205,5 @@ select:hover {
 
   .form-login label {
     background-color: #eee;
-  }
-
-  .m-address {
-    max-width: 208px;
   }
 }
