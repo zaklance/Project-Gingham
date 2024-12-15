@@ -18,6 +18,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
     const [errorMessage, setErrorMessage] = useState('');
     const [savedBaskets, setSavedBaskets] = useState([]);
     const [tempSavedBaskets, setTempSavedBaskets] = useState(null);
+    const [isLive, setIsLive] = useState(false);
 
     useEffect(() => {
         if (vendorId && marketDay?.id && marketDay?.vendor_markets) {
@@ -313,126 +314,140 @@ function VendorBasketCard({ vendorId, marketDay }) {
         }
     };
 
+    useEffect(() => {
+        if (marketDay?.date) {
+            const now = new Date();
+            const marketDate = new Date(marketDay.date);
+            const diffInHours = Math.abs(now - marketDate) / (1000 * 60 * 60); // Difference in hours
+            setIsLive(diffInHours <= 48);
+        }
+    }, [marketDay]);
+    
+
     return (
-        <div className="basket-card">
-            {marketDay && marketDay.date ? (
-                <>
-                    <div className='text-center'>
+        <div className='badge-container'>
+            <div className="basket-card">
+                {isLive && <p className="badge-live">Live</p>}
+                {isSaved && !isLive && <p className="badge-saved">Pending</p>}
+                {/* {!isLive && !isSaved && <p className='badge-pending'>Pending</p>} */}
+                {marketDay && marketDay.date ? (
+                    <>
                         <div className='text-center'>
-                            <h4>{marketName ? marketName : 'Loading Market...'}</h4>
-                            <h4 className='margin-t-8'> {formatBasketDate(marketDay.date)} </h4>
+                            <div className='text-center'>
+                                <h4>{marketName ? marketName : 'Loading Market...'}</h4>
+                                <h4 className='margin-t-8'> {formatBasketDate(marketDay.date)} </h4>
+                            </div>
                         </div>
-                    </div>
-                </>
-            ) : (
-                <h3>Loading...</h3>
-            )}
-            <br />
-            <br />
-            {isSaved ? (
-                <>
-                    <table className='table-basket'>
-                        <tbody>
-                            <tr>
-                                <td>Baskets Saved:</td>
-                                <td className='text-center'>
-                                    {isEditing ? (
-                                        <div className="basket-adjustment flex-space-evenly flex-center-align">
-                                            <button onClick={handleDecrement} className="btn btn-adjust btn-red">–</button>
-                                            <span>{numBaskets}</span>
-                                            <button onClick={handleIncrement} className="btn btn-adjust btn-green">+</button>
-                                        </div>                                    
-                                    ) : (
-                                        numBaskets
-                                    )}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Estimated Value:</td>
-                                <td className='text-center'>${basketValue}</td>
-                            </tr>
-                            <tr>
-                                <td>Price:</td>
-                                <td className='text-center'>${price}</td>
-                            </tr>
-                            <tr>
-                                <td>Pick-Up Start:</td>
-                                <td className='text-center'>{startTime}</td>
-                            </tr>
-                            <tr>
-                                <td>Pick-Up End:</td>
-                                <td className='text-center'>{endTime}</td>
-                            </tr>
-                            <tr></tr>
-                            <tr>
-                                <td><strong>Sold Baskets:</strong></td>
-                                <td className='text-center'>
-                                    <strong> {savedBaskets.filter(basket => basket.is_sold).length} </strong>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    </>
+                ) : (
+                    <h3>Loading...</h3>
+                )}
+                <br />
+                {isSaved ? (
+                    <>
+                        <table className='table-basket'>
+                            <tbody>
+                                <tr>
+                                    <td>Baskets Saved:</td>
+                                    <td className='text-center'>
+                                        {isEditing ? (
+                                            <div className="basket-adjustment flex-space-evenly flex-center-align">
+                                                <button onClick={handleDecrement} className="btn btn-adjust btn-red">–</button>
+                                                <span>{numBaskets}</span>
+                                                <button onClick={handleIncrement} className="btn btn-adjust btn-green">+</button>
+                                            </div>                                    
+                                        ) : (
+                                            numBaskets
+                                        )}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Estimated Value:</td>
+                                    <td className='text-center'>${basketValue}</td>
+                                </tr>
+                                <tr>
+                                    <td>Price:</td>
+                                    <td className='text-center'>${price}</td>
+                                </tr>
+                                <tr>
+                                    <td>Pick-Up Start:</td>
+                                    <td className='text-center'>{startTime}</td>
+                                </tr>
+                                <tr>
+                                    <td>Pick-Up End:</td>
+                                    <td className='text-center'>{endTime}</td>
+                                </tr>
+                                <tr></tr>
+                                <tr>
+                                    <td><strong>Sold Baskets:</strong></td>
+                                    <td className='text-center'>
+                                        <strong> {savedBaskets.filter(basket => basket.is_sold).length} </strong>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div className='text-center'>
+                            {isEditing ? (
+                                <>
+                                    <button onClick={handleSave} className={`btn-basket-save ${isSaved ? 'Saved' : ''}`}>
+                                        Save
+                                    </button>
+                                    <button onClick={cancelBasketEdit} className="btn-basket-save">Cancel</button>
+                                </>
+                            ) : (
+                                <>
+                                    <button onClick={editSavedBaskets} className="btn-basket-save">
+                                        Add Baskets
+                                    </button>
+                                    <button onClick={handleDelete} className="btn-basket-save">Delete All Baskets</button>
+                                </>
+                            )}
+                        </div>
+                        {errorMessage && <p className="error-message">{errorMessage}</p>}
+                    </>
+                ) : isEditing ? (
+                    <>
+                        <div className='form-baskets'>
+                            <label className='margin-t-16 margin-b-8'>Baskets Available:</label>
+                            <input type="text" name="basket_input" placeholder="5" onChange={(e) => setNumBaskets(Number(e.target.value))} value={numBaskets} />
+                        </div>
+                        <div className='form-baskets'>
+                            <label className='margin-t-16 margin-b-8'>Basket Value:</label>
+                            <input type="text" name="price" placeholder="$10.00" onChange={(e) => setBasketValue(e.target.value)} value={basketValue} />
+                        </div>
+                        <div className='form-baskets'>
+                            <label className='margin-t-16 margin-b-8'>Basket Price:</label>
+                            <input type="text" step="0.01" name="price" placeholder="$5.00" onChange={(e) => setPrice(e.target.value)} value={price} />
+                        </div>
+                        <br></br>
+                        <div className='form-baskets-small'>
+                            <label className='margin-t-16 margin-b-8'>Pick Up Start:</label>
+                            <div className='flex-start'>
+                                <input placeholder="HH:MM" name="pickup_start" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+                                <select name="amPm" value={startAmPm} className='am-pm' onChange={(e) => setStartAmPm(e.target.value)} >
+                                    <option value="AM">AM</option>
+                                    <option value="PM">PM</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className='form-baskets-small'>
+                            <label className='margin-t-16 margin-b-8'>Pick Up End:</label>
+                            <div className='flex-start'>
+                                <input placeholder="HH:MM" name="pickup_end" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+                                <select name="amPm" value={endAmPm} className='am-pm' onChange={(e) => setEndAmPm(e.target.value)} >
+                                    <option value="AM">AM</option>
+                                    <option value="PM">PM</option>
+                                </select>
+                            </div>
+                        </div>
                     <div className='text-center'>
-                        {isEditing ? (
-                            <>
-                                <button onClick={handleSave} className={`btn-basket-save ${isSaved ? 'Saved' : ''}`}>
-                                    Save
-                                </button>
-                                <button onClick={cancelBasketEdit} className="btn-basket-save">Cancel</button>
-                            </>
-                        ) : (
-                            <>
-                                <button onClick={editSavedBaskets} className="btn-basket-save">
-                                    Add Baskets
-                                </button>
-                                <button onClick={handleDelete} className="btn-basket-save">Delete All Baskets</button>
-                            </>
-                        )}
+                            <button onClick={handleSave} className={`btn-basket-save ${isSaved ? 'saved' : ''}`} >
+                                {isSaved ? 'Saved' : 'Save'}
+                            </button>
                     </div>
-                    {errorMessage && <p className="error-message">{errorMessage}</p>}
-                </>
-            ) : isEditing ? (
-                <>
-                    <div className='form-baskets'>
-                        <label className='margin-t-16 margin-b-8'>Baskets Available:</label>
-                        <input type="text" name="basket_input" placeholder="5" onChange={(e) => setNumBaskets(Number(e.target.value))} value={numBaskets} />
-                    </div>
-                    <div className='form-baskets'>
-                        <label className='margin-t-16 margin-b-8'>Basket Value:</label>
-                        <input type="text" name="price" placeholder="$10.00" onChange={(e) => setBasketValue(e.target.value)} value={basketValue} />
-                    </div>
-                    <div className='form-baskets'>
-                        <label className='margin-t-16 margin-b-8'>Basket Price:</label>
-                        <input type="text" step="0.01" name="price" placeholder="$5.00" onChange={(e) => setPrice(e.target.value)} value={price} />
-                    </div>
-                    <br></br>
-                    <div className='form-baskets-small'>
-                        <label className='margin-t-16 margin-b-8'>Pick Up Start:</label>
-                        <div className='flex-start'>
-                            <input placeholder="HH:MM" name="pickup_start" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
-                            <select name="amPm" value={startAmPm} className='am-pm' onChange={(e) => setStartAmPm(e.target.value)} >
-                                <option value="AM">AM</option>
-                                <option value="PM">PM</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div className='form-baskets-small'>
-                        <label className='margin-t-16 margin-b-8'>Pick Up End:</label>
-                        <div className='flex-start'>
-                            <input placeholder="HH:MM" name="pickup_end" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
-                            <select name="amPm" value={endAmPm} className='am-pm' onChange={(e) => setEndAmPm(e.target.value)} >
-                                <option value="AM">AM</option>
-                                <option value="PM">PM</option>
-                            </select>
-                        </div>
-                    </div>
-                   <div className='text-center'>
-                        <button onClick={handleSave} className={`btn-basket-save ${isSaved ? 'saved' : ''}`} >
-                            {isSaved ? 'Saved' : 'Save'}
-                        </button>
-                   </div>
-                </>
-            ) : null}
+                    </>
+                ) : null}
+            </div>
         </div>
     );
 }

@@ -199,6 +199,7 @@ function VendorBaskets({ vendorUserData }) {
         }
     }, [filteredMarketDays]);
 
+
     return (
         <div>
             {!vendorUserData || !vendorUserData.vendor_id ? (
@@ -211,82 +212,90 @@ function VendorBaskets({ vendorUserData }) {
                 <br />
                 <div className='flex flex-gap-36 flex-nowrap box-scroll-x'>
                     {todayBaskets.length > 0 ? (
-                        todayBaskets.map((entry, index) => (
-                            <div key={index} className='basket-card'>
-                                <div className='text-center'>
-                                    <h4>{entry.marketName}</h4>
-                                    {entry.baskets.length > 0 ? (
-                                        <h4>
-                                            {entry.baskets.length > 0 ? formatBasketDate(entry.baskets[0].sale_date) : 'No sale date available'}
-                                        </h4>
-                                    ) : (
-                                        <h4>No sale date available</h4>
-                                    )}
-                                </div>
-                                <br/>          
-                                {entry.baskets.length > 0 && (
-                                    <table>
-                                        <tbody className='table-basket'>
-                                            <tr className='blue'>
-                                                <td>Total Available Baskets:</td>
-                                                <td className='text-center'>{entry.baskets.length}</td>
-                                            </tr>
-                                            <tr className='row-blank'>
-                                            </tr>
-                                            <tr>
-                                                <td className='nowrap'>Pickup Start:</td>
-                                                <td className='nowrap text-center'>{timeConverter(entry.baskets[0]?.pickup_start)}</td>
-                                            </tr>
-                                            <tr>
-                                                <td className='nowrap'>Pickup End:</td>
-                                                <td className='nowrap text-center'>{timeConverter(entry.baskets[0]?.pickup_end)}</td>
-                                            </tr>
-                                            <tr>
-                                                <td className='nowrap'>Basket Value:</td>
-                                                <td className='text-center'>${entry.baskets[0]?.basket_value}</td>
-                                            </tr>
-                                            <tr>
-                                                <td className='nowrap'>Basket Price:</td>
-                                                <td className='text-center'>${entry.baskets[0]?.price}</td>
-                                            </tr>
-                                            <tr className='row-blank'>
-                                            </tr>
-                                            <tr className='blue'>
-                                                <td>Sold Baskets:</td>
-                                                <td className='text-center'>{entry.baskets.filter(basket => basket.is_sold).length}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                )}
-                                <br/>
-                                <h4> </h4>
-                                {entry.baskets.filter(basket => basket.is_sold).length > 0 && (
-                                    <table className='table-basket'>
-                                        <thead>
-                                            <tr className='blue-bright'>
-                                                <td className='text-light' colSpan="2"> Is Grabbed?</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {entry.baskets.filter(basket => basket.is_sold).map((basket, index) => (
-                                                <tr key={basket.id || index}>
-                                                    <td>Basket ID: {basket.id}</td>
-                                                    {basket.is_grabbed ? <td className='text-center'>&#10003;</td> : <td className='text-center'>X</td>}
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                        todayBaskets.map((entry, index) => {
+                            const isLive = entry.baskets.length > 0
+                                ? new Date(entry.baskets[0].sale_date) <= new Date()
+                                : false;
+                            return (
+                                <div key={index} className='badge-container'>
+                                    <div className='basket-card'>
+                                        {isLive && <p className='badge-live'>Live</p>}
+                                        <div className='text-center'>
+                                            <h4>{entry.marketName}</h4>
+                                            {entry.baskets.length > 0 ? (
+                                                <h4>
+                                                    {entry.baskets.length > 0 ? formatBasketDate(entry.baskets[0].sale_date) : 'No sale date available'}
+                                                </h4>
+                                            ) : (
+                                                <h4>No sale date available</h4>
+                                            )}
+                                        </div>
+                                        <br/>          
+                                        {entry.baskets.length > 0 && (
+                                            <table>
+                                                <tbody className='table-basket'>
+                                                    <tr className='blue'>
+                                                        <td>Total Available Baskets:</td>
+                                                        <td className='text-center'>{entry.baskets.length}</td>
+                                                    </tr>
+                                                    <tr className='row-blank'>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className='nowrap'>Pickup Start:</td>
+                                                        <td className='nowrap text-center'>{timeConverter(entry.baskets[0]?.pickup_start)}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className='nowrap'>Pickup End:</td>
+                                                        <td className='nowrap text-center'>{timeConverter(entry.baskets[0]?.pickup_end)}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className='nowrap'>Basket Value:</td>
+                                                        <td className='text-center'>${entry.baskets[0]?.basket_value}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className='nowrap'>Basket Price:</td>
+                                                        <td className='text-center'>${entry.baskets[0]?.price}</td>
+                                                    </tr>
+                                                    <tr className='row-blank'>
+                                                    </tr>
+                                                    <tr className='blue'>
+                                                        <td>Sold Baskets:</td>
+                                                        <td className='text-center'>{entry.baskets.filter(basket => basket.is_sold).length}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        )}
+                                        <br/>
+                                        <h4> </h4>
+                                        {entry.baskets.filter(basket => basket.is_sold).length > 0 && (
+                                            <table className='table-basket'>
+                                                <thead>
+                                                    <tr className='blue-bright'>
+                                                        <td className='text-light' colSpan="2"> Is Grabbed?</td>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {entry.baskets.filter(basket => basket.is_sold).map((basket, index) => (
+                                                        <tr key={basket.id || index}>
+                                                            <td>Basket ID: {basket.id}</td>
+                                                            {basket.is_grabbed ? <td className='text-center'>&#10003;</td> : <td className='text-center'>X</td>}
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
 
-                                )}
-                            </div>
-                        ))
+                                        )}
+                                    </div>
+                                </div>
+                            )
+                        })
                     ) : (
                         <p>No baskets available for today.</p>
                     )}
                     </div>            
                     <h2 className='margin-t-48 margin-b-16'>Future Markets:</h2>
                     <br />
-                    <div className='flex flex-gap-36 flex-nowrap box-scroll-x'>
+                    <div className='flex flex-gap-24 flex-nowrap box-scroll-x'>
                         {nextMarketDays ? nextMarketDays.map((marketDay, index) => (
                             <VendorBasketCard key={index} vendorId={vendorId} marketDay={marketDay} weekDay={weekDay} />
                         )) : <p>No upcoming market days available.</p>}
