@@ -164,8 +164,8 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
 
     return (
         <>
-            <div className='box-bounding'>
-                <h2 className='margin-b-16'>Locations</h2>
+            <div>
+                <h2 className='margin-t-24 margin-b-16'>Locations</h2>
                 <ul className='ul-team'>
                     {filteredMarketDays.map((market, index) => (
                         <li key={index} value={market.id} className='li-team'>
