@@ -512,14 +512,15 @@ function VendorProfile () {
                                             ))}
                                         </select>
                                     </div>
-                                    <div className='form-group'>
+                                    <div className='form-group width-100'>
                                         <label>Vendor Image:</label>
                                         {vendorData?.image ? (
                                             <>
                                                 <img
                                                     src={`/vendor-images/${vendorData.image}`}
                                                     alt="Vendor"
-                                                    style={{ maxWidth: '100%', height: 'auto' }}
+                                                    // style={{ maxWidth: '100%', height: 'auto' }}
+                                                    className='img-vendor-edit'
                                                 />
                                                 <button className='btn-edit' onClick={handleDeleteImage}>Delete Image</button>
                                             </>

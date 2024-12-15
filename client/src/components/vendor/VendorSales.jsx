@@ -291,7 +291,7 @@ function VendorSales() {
                 </div>
                 <div className='flex-space-between flex-bottom-align'>
                     <h3 className='margin-t-16'>Sales Breakdown:</h3>
-                    <div>
+                    <div className='form-group'>
                         <select className='' value={selectedRangeTable} onChange={handleDateChangeTable}>
                             <option value="">Time Frame</option>
                             {Object.entries(dateRange).map(([label, value]) => (

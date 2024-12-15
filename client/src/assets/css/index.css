@@ -1391,7 +1391,7 @@ link {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.form-group, .form-address, .form-baskets, .form-baskets-small {
+.form-group, .form-address, .form-baskets, .form-baskets-small, .form-login {
   display: table-row;
   margin-bottom: 15px;
 }
@@ -2153,8 +2153,16 @@ select:hover {
    margin: 12px; 
   }
 
+  .width-80 {
+    width: 100%;
+  }
+
   .width-60 {
     width: 100%;
+  }
+
+  .img-vendor-edit {
+    width: 78%;
   }
 
   .form-group label {
@@ -2178,5 +2186,21 @@ select:hover {
     overflow: hidden;
     word-wrap: normal !important;
     white-space: normal;
+  }
+  .form-login label, .form-login input {
+    display: table-cell;
+    vertical-align: top;
+    margin-bottom: 5px;
+    padding: 8px;
+    font-weight: 600;
+    font-size: 10pt;
+  }
+
+  .form-login label {
+    background-color: #eee;
+  }
+
+  .m-address {
+    max-width: 208px;
   }
 }

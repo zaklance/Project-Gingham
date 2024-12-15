@@ -246,6 +246,7 @@ function Profile({ marketData }) {
                         <div className="form-address">
                             <label>Address:</label>
                             <input
+                                className='m-address'
                                 type="text"
                                 name="address_1"
                                 size="36"
@@ -253,6 +254,7 @@ function Profile({ marketData }) {
                                 value={tempProfileData ? tempProfileData.address_1 : ''}
                                 onChange={handleInputChange}
                             />
+                            <br className='m-br'/>
                             <input
                                 type="text"
                                 name="address_2"
@@ -265,6 +267,7 @@ function Profile({ marketData }) {
                         <div className='form-address'>
                             <label></label>
                             <input
+                                className='m-address'
                                 type="text"
                                 name="city"
                                 size="36"
@@ -272,6 +275,7 @@ function Profile({ marketData }) {
                                 value={tempProfileData ? tempProfileData.city : ''}
                                 onChange={handleInputChange}
                             />
+                            <br className='m-br' />
                             <select className='select-state'
                                 name="state"
                                 value={tempProfileData ? tempProfileData.state : ''}
@@ -307,7 +311,7 @@ function Profile({ marketData }) {
                     </div>
                 ) : (
                     <>
-                        <div className='flex-space-evenly flex-gap-16 flex-start-align'>
+                        <div className='flex-space-evenly flex-gap-16 flex-start-align m-flex-wrap'>
                             {profileData.avatar ? (
                                 <img className='img-avatar-profile' src={`/user-images/${profileData.avatar}`} alt="Avatar" />
                             ) : (
@@ -356,7 +360,7 @@ function Profile({ marketData }) {
                     {vendorFavs.length > 0 ? (
                         vendorFavs.map((data) => (
                             <li key={data.id}>
-                                <Link to={`/user/vendors/${data.vendor_id}`}><b>{data.vendor.name}</b> <i>of {data.vendor.city}, {data.vendor.state}</i></Link>
+                                <Link to={`/user/vendors/${data.vendor_id}`}><b>{data.vendor.name}</b></Link><i> of {data.vendor.city}, {data.vendor.state}</i>
                             </li>
                         ))
                     ) : (
@@ -369,7 +373,7 @@ function Profile({ marketData }) {
                     {marketFavs.length > 0 ? (
                         marketFavs.map((data) => (
                             <li key={data.id}>
-                                <Link to={`/user/markets/${data.market_id}`}><b>{data.market.name}</b> <i>open {data.market.schedule}</i></Link>
+                                <Link to={`/user/markets/${data.market_id}`}><b>{data.market.name}</b></Link><i> open {data.market.schedule}</i>
                             </li>
                         ))
                     ) : (

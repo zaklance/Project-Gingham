@@ -145,7 +145,7 @@ function Login({ handlePopup }) {
                 <div>
                     <form onSubmit={handleLogin} className="form">
                         <h2 className='margin-b-24'>Login</h2>
-                        <div className="form-group form-login">
+                        <div className="form-login">
                             <label className=''>Email:</label>
                             <input
                                 type="email"
@@ -155,7 +155,7 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <div className="form-group form-login">
+                        <div className="form-login">
                             <label>Password:</label>
                             <input
                                 type="password"
@@ -179,7 +179,7 @@ function Login({ handlePopup }) {
                 <div>
                     <form onSubmit={handleSignup} className="form">
                         <h2 className='margin-b-24'>Signup</h2>
-                        <div className="form-group form-login">
+                        <div className="form-login">
                             <label>Email: </label>
                             <input
                                 type="email"
@@ -189,7 +189,7 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <div className="form-group form-login">
+                        <div className="form-login">
                             <label>Confirm Email: </label>
                             <input
                                 type="email"
@@ -199,7 +199,7 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <div className="form-group form-login">
+                        <div className="form-login">
                             <label>Password: </label>
                             <input
                                 type="password"
@@ -209,7 +209,7 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <div className="form-group form-login">
+                        <div className="form-login">
                             <label>Confirm Password: </label>
                             <input
                                 type="password"
@@ -219,7 +219,7 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <div className="form-group form-login">
+                        <div className="form-login">
                             <label>First Name: </label>
                             <input
                                 type="text"
@@ -229,7 +229,7 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <div className='form-group form-login'>
+                        <div className='form-login'>
                             <label>Last Name: </label>
                             <input
                                 type="text"
@@ -239,7 +239,7 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <div className='form-group form-login'>
+                        <div className='form-login'>
                             <label>Phone: </label>
                             <input 
                                 type="tel"
@@ -249,7 +249,7 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <div className="form-group form-login">
+                        <div className="form-login">
                             <label>Address 1:</label>
                             <input 
                                 type="text"
@@ -259,7 +259,7 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        <div className="form-group form-login">
+                        <div className="form-login">
                             <label>Address 2:</label>
                             <input 
                                 type="text"
@@ -268,7 +268,7 @@ function Login({ handlePopup }) {
                                 onChange={(event => setSignupAddress2(event.target.value))}
                             />
                         </div>
-                        <div className="form-group form-login">
+                        <div className="form-login">
                             <label>City:</label>
                             <input 
                                 type="text"
@@ -279,7 +279,7 @@ function Login({ handlePopup }) {
                             />
                         </div>
                         
-                        <div className="form-group form-login">
+                        <div className="form-login">
                             <label>State:</label>
                             <select className='select-state'
                                 name="state"
@@ -294,7 +294,7 @@ function Login({ handlePopup }) {
                                 ))}
                             </select>
                         </div>
-                        <div className="form-group form-login">
+                        <div className="form-login">
                             <label>Zip Code:</label>
                             <input 
                                 type="text"
