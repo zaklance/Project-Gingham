@@ -305,7 +305,7 @@ function VendorSales() {
                             value={selectedMarket || ''}
                             onChange={handleMarketChange}
                         >
-                            <option value="">Select</option>
+                            <option value="">Select Market</option>
                             {marketNames.map((market, index) => (
                                 <option key={index} value={market}>
                                     {market}
