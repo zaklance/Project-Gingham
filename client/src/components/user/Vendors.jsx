@@ -142,7 +142,7 @@ function Vendors() {
                 <table className='table-search margin-t-16'>
                     <tbody>
                         <tr>
-                            <td className='cell-title'>Search:</td>
+                            <td className='cell-title m-hidden'>Search:</td>
                             <td className='cell-text'>
                                 <input id='search' className="search-bar" type="text" placeholder="Search vendors..." value={query} onChange={onUpdateQuery} />
                                 {showDropdown && (
@@ -162,7 +162,7 @@ function Vendors() {
                                     </div>
                                 )}
                             </td>
-                            <td className='cell-text cell-filter'>Filters: </td>
+                            <td className='cell-text cell-filter m-hidden'>Filters: </td>
                             <td>
                                 <button
                                     className={`btn-fav-filter ${isClicked ? 'btn-fav-filter-on' : ''}`}

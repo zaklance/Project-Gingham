@@ -253,7 +253,7 @@ function VendorDetail({ products }) {
                     <h2>{vendor.name}</h2>
                     
                 </div>
-                <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Vendors</button>
+                <button onClick={handleBackButtonClick} className='btn btn-small'>Back</button>
             </div>
             <div className={events.length < 1 ? 'flex-start flex-start-align flex-gap-16' : 'flex-start flex-gap-16'}>
                 {events.length > 0 ? (
@@ -266,7 +266,7 @@ function VendorDetail({ products }) {
                     {events.length > 0 ? (
                         events.map((event, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                                <div className='flex-start flex-center-align flex-gap-16'>
+                                <div className='flex-start flex-center-align flex-gap-16 m-flex-wrap'>
                                     <p className='text-italic nowrap'>
                                         {formatEventDate(event.start_date)}
                                         {event.end_date !== event.start_date && ` - `}
@@ -331,6 +331,7 @@ function VendorDetail({ products }) {
                                 </span>
                                 <span></span>
                                     <>
+                                    <br className='m-br'/>
                                     {marketBaskets.filter((item) => item.market_day_id === marketDetail.id && item.is_sold === false).length > 0 ? (
                                             <span className="market-price">Price: ${firstBasket ? firstBasket.price : ''}</span>
                                         ) : (

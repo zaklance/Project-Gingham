@@ -39,7 +39,7 @@ function Home() {
                         </strong>
                     </p>
                     <br/>
-                    <img src="/site-images/GINGHAM_VENDOR_HOWITWORKS.png" style={{ width: '100%' }} />
+                    <img className="width-100" src="/site-images/GINGHAM_VENDOR_HOWITWORKS.png"/>
                     <p><strong>Sign up:</strong> Get started quickly with an easy registration and signup process.</p>
                     <p><strong>List your Baskets:</strong> Set up bundles of items you want to sell at a discount.</p>
                     <p><strong>Consumers Buy and Pick Up:</strong> Shoppers browse and purchase bundles and pickup at a designated time before market close.</p>
@@ -51,7 +51,7 @@ function Home() {
                     <p><strong>Help the Environment:</strong> Play a crucial role in reducing food waste.</p>
                     <p><strong>Reach New Customers:</strong> Connect with a growing community focused on sustainability and local food sources.</p>
                     <div className='flex-center'>
-                        <img src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" style={{ width: '60%' }} />
+                        <img className="width-60" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png"/>
                     </div>
 
                     <h3 className="margin-b-16 margin-t-24">Support Local Communities</h3>

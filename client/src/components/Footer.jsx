@@ -8,6 +8,7 @@ function Footer() {
 
     return (
         <>
+            <br className='m-br'/>
             <div className='footer'>
                 <div className='flex-space-around flex-center-align box-blue'>
                     <ul className='ul-footer'>

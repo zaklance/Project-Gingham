@@ -210,7 +210,7 @@ function VendorBaskets({ vendorUserData }) {
                 <div className='box-bounding'>
                 <h2>Today's Baskets</h2>
                 <br />
-                <div className='flex flex-gap-36 flex-nowrap box-scroll-x'>
+                <div className='flex flex-nowrap box-scroll-x'>
                     {todayBaskets.length > 0 ? (
                         todayBaskets.map((entry, index) => {
                             const isLive = entry.baskets.length > 0
@@ -295,7 +295,7 @@ function VendorBaskets({ vendorUserData }) {
                     </div>            
                     <h2 className='margin-t-48 margin-b-16'>Future Markets:</h2>
                     <br />
-                    <div className='flex flex-gap-24 flex-nowrap box-scroll-x'>
+                    <div className='flex flex-nowrap box-scroll-x'>
                         {nextMarketDays ? nextMarketDays.map((marketDay, index) => (
                             <VendorBasketCard key={index} vendorId={vendorId} marketDay={marketDay} weekDay={weekDay} />
                         )) : <p>No upcoming market days available.</p>}

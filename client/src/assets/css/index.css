@@ -292,6 +292,10 @@ h2 {
   width: 80%;
 }
 
+.width-60 {
+  width: 60%;
+}
+
 .hidden {
   visibility: hidden;
 }
@@ -376,8 +380,7 @@ ul {
 }
 
 .badge-container {
-  padding-top: 12px;
-  padding-right: 12px;
+  padding: 12px;
 }
 
 .badge {
@@ -584,6 +587,10 @@ ul {
 
 .flex-gap-8 {
   gap: 8px;
+}
+
+.flex-gap-12 {
+  gap: 12px;
 }
 
 .flex-gap-16 {
@@ -796,10 +803,6 @@ ul {
 
 .login-bar input {
   margin: 0px 8px;
-}
-
-.btn-gap {
-  margin-left: 4px;
 }
 
 .btn-border {
@@ -1967,7 +1970,7 @@ select:hover {
 .market-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
   border-bottom: 1px solid #ccc;
   padding: 8px 0;
   position: relative;
@@ -2011,4 +2014,158 @@ select:hover {
 
 .forgot-password:hover {
   text-decoration: underline;
+}
+
+.m-br {
+  display: none;
+}
+
+/* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
+@media screen and (max-width: 600px) {
+  .m-hidden {
+    display: none;
+  }
+
+  .m-br {
+    display: block;
+  }
+
+  .m-flex-center {
+    display: flex;
+    justify-content: center;
+  }
+
+  .m-flex-wrap {
+    flex-wrap: wrap;
+  }
+
+  .container {
+    width: 100vw;
+    padding: 0;
+  }
+
+  .popup {
+    top: 0;
+    left: 0;
+    width: 100vw;
+    padding: 0;
+    margin: 0px;
+  }
+
+  .login-bar {
+    width: 90%;
+    margin: 0px;
+  }
+
+  .wrapper {
+    width: 100%;
+    padding: 2px;
+  }
+
+  .form-login label {
+    min-width: 100px;
+  }
+
+  .form-login input {
+    min-width: 186px;
+  }
+  
+  .btn-home {
+    display: none;
+  }
+
+  .nav-bar ul {
+    height: 57px;
+  }
+
+  .nav-tab {
+    padding: 21px 16px 28px 16px;
+  }
+
+  .tab-right {
+    border-radius: 0;
+  }
+
+  .header {
+    padding: 0;
+  }
+
+  .nav-bar {
+    overflow-x: scroll;
+    overflow-y: hidden;
+    height: 80px;
+    margin-bottom: -22px;
+  }
+
+  .title-big {
+    font-size: 5.5em;
+  }
+
+  .footer {
+    width: 100vw;
+  }
+
+  .img-market {
+    height: auto;
+    width: 100%;
+  }
+
+  .markets-container>* {
+    max-width: 100%;
+  }
+
+  .market-card {
+    max-width: 100%;
+  }
+
+  .market-item {
+    flex-wrap: wrap;
+  }
+
+  .cell-title {
+    min-width: 0;
+  }
+
+  .market-item>* {
+    max-width: 265px;
+  }
+
+  #map {
+    margin: 0;
+    width: 100%;
+  }
+  
+  .cart {
+    width: 100%;
+    margin-left: -8px;
+  }
+
+  .cart-sidebar {
+    width: 96%;
+  }
+
+  .box-portal-home {
+    margin: 12px;
+    width: calc(100% - 24px)
+  }
+
+  .box-inside {
+   margin: 12px; 
+  }
+
+  .width-60 {
+    width: 100%;
+  }
+
+  .form-group label {
+    min-width: 100px;
+  }
+
+  .form-group input {
+    min-width: 100px;
+  }
+
+  .form-group textarea {
+    width: max-content;
+  }
 }

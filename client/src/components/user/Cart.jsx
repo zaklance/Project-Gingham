@@ -118,7 +118,7 @@ function Cart() {
                 <p className=''>Your cart is empty.</p>
             ) : (
                 <>
-                    <div className='flex-space-between'>
+                    <div className='flex-space-between m-flex-wrap'>
                         <div className="cart">
                             <ul>
                                 {cartItems.map((item, index) => (
