@@ -119,10 +119,6 @@ function MarketDetail ({ match }) {
         fetchVendorDetails();
     }, [vendors, vendorMarkets]);
 
-
-    // console.log(allVendorDetails)
-    
-
     const handleDayChange = (event) => {
         const dayId = parseInt(event.target.value);
         const day = marketDays.find(day => day.id === dayId);

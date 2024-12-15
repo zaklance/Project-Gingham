@@ -367,93 +367,95 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
     return (
         <>
             <h2 className='margin-b-16 margin-t-24'>Reviews</h2>
-            {reviews.length > 0 ? (
-                reviews
-                    .sort((a, b) => new Date(b.post_date) - new Date(a.post_date))
-                    .map((review, index) => (
-                        <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                            {review.user_id !== userId && editingReviewId !== review.id ? (
-                                <>
+            <div className='box-scroll'>
+                {reviews.length > 0 ? (
+                    reviews
+                        .sort((a, b) => new Date(b.post_date) - new Date(a.post_date))
+                        .map((review, index) => (
+                            <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
+                                {review.user_id !== userId && editingReviewId !== review.id ? (
+                                    <>
+                                        <div className='flex-start flex-center-align'>
+                                            {review.user.avatar !== null ? (
+                                                <img className='img-avatar margin-r-8' src={`/user-images/${review.user.avatar}`} alt="Avatar" />
+                                            ) : (
+                                                <img className='img-avatar margin-r-8' src={`/site-images/avatar-orange.jpg`} alt="Avatar" />
+                                            )}
+                                            <h4 className='margin-r-8'>{review.user ? review.user.first_name : 'Anonymous'}</h4>
+                                            <p className='margin-r-8'>{review ? convertToLocalDate(review.post_date) : ''}</p>
+                                            <div className='notification margin-r-4'>
+                                                {filterRatingsUpVote(review.id).length > 0 ? (
+                                                    <p className='badge-votes'>{filterRatingsUpVote(review.id).length}</p>
+                                                ) : (
+                                                    <></>
+                                                )}
+
+                                                <button
+                                                    className={`btn btn-emoji btn-gap btn-green ${isClickedUp[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
+                                                    onClick={() => handleClickUpVote(review)}
+                                                >&#9786;
+                                                </button>
+                                            </div>
+                                            <div className='notification margin-r-4'>
+                                                {filterRatingsDownVote(review.id).length > 0 ? (
+                                                    <p className='badge-votes'>{filterRatingsDownVote(review.id).length}</p>
+                                                ) : (
+                                                    <></>
+                                                )}
+
+                                                <button
+                                                    className={`btn btn-emoji btn-gap btn-red ${isClickedDown[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
+                                                    onClick={() => handleClickDownVote(review)}
+                                                >&#9785;
+                                                </button>
+                                            </div>
+                                            <button className='btn btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
+                                            {hotReviews.some(item => item.id === review.id) && (
+                                                <img className='img-hot margin-l-12' src="/site-images/chili-pepper-3.svg" alt="Notification" title='Hot review!!!'/>
+                                            )}
+                                        </div>
+                                    </>
+                                ) : (
                                     <div className='flex-start flex-center-align'>
-                                        {review.user.avatar !== null ? (
-                                            <img className='img-avatar margin-r-8' src={`/user-images/${review.user.avatar}`} alt="Avatar" />
-                                        ) : (
-                                            <img className='img-avatar margin-r-8' src={`/site-images/avatar-orange.jpg`} alt="Avatar" />
-                                        )}
-                                        <h4 className='margin-r-8'>{review.user ? review.user.first_name : 'Anonymous'}</h4>
+                                            {review.user.avatar !== null ? (
+                                                <img className='img-avatar margin-r-8' src={`/user-images/${review.user.avatar}`} alt="Avatar" />
+                                            ) : (
+                                                <img className='img-avatar margin-r-8' src={`/site-images/avatar-orange.jpg`} alt="Avatar" />
+                                            )}
+                                        <h4 className='margin-r-8'>You</h4>
                                         <p className='margin-r-8'>{review ? convertToLocalDate(review.post_date) : ''}</p>
-                                        <div className='notification margin-r-4'>
-                                            {filterRatingsUpVote(review.id).length > 0 ? (
-                                                <p className='badge-votes'>{filterRatingsUpVote(review.id).length}</p>
-                                            ) : (
-                                                <></>
-                                            )}
-
-                                            <button
-                                                className={`btn btn-emoji btn-gap btn-green ${isClickedUp[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
-                                                onClick={() => handleClickUpVote(review)}
-                                            >&#9786;
-                                            </button>
-                                        </div>
-                                        <div className='notification margin-r-4'>
-                                            {filterRatingsDownVote(review.id).length > 0 ? (
-                                                <p className='badge-votes'>{filterRatingsDownVote(review.id).length}</p>
-                                            ) : (
-                                                <></>
-                                            )}
-
-                                            <button
-                                                className={`btn btn-emoji btn-gap btn-red ${isClickedDown[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
-                                                onClick={() => handleClickDownVote(review)}
-                                            >&#9785;
-                                            </button>
-                                        </div>
-                                        <button className='btn btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
-                                        {hotReviews.some(item => item.id === review.id) && (
-                                            <img className='img-hot margin-l-12' src="/site-images/chili-pepper-3.svg" alt="Notification" title='Hot review!!!'/>
-                                        )}
                                     </div>
-                                </>
-                            ) : (
-                                <div className='flex-start flex-center-align'>
-                                        {review.user.avatar !== null ? (
-                                            <img className='img-avatar margin-r-8' src={`/user-images/${review.user.avatar}`} alt="Avatar" />
-                                        ) : (
-                                            <img className='img-avatar margin-r-8' src={`/site-images/avatar-orange.jpg`} alt="Avatar" />
-                                        )}
-                                    <h4 className='margin-r-8'>You</h4>
-                                    <p className='margin-r-8'>{review ? convertToLocalDate(review.post_date) : ''}</p>
-                                </div>
-                            )}
-                            {review.user_id === userId && editingReviewId === review.id ? (
-                                <>
-                                    <textarea className='textarea-edit'
-                                        value={editedReviewData}
-                                        onChange={handleEditInputChange}
-                                    />
-                                    <br></br>
-                                    <button className='btn btn-small' onClick={() => handleReviewUpdate(review.id)}>Save</button>
-                                    <button className='btn btn-small btn-gap' onClick={() => setEditingReviewId(null)}>Cancel</button>
-                                </>
-                            ) : (
-                                <>
-                                    <p className='margin-l-40'>{review.review_text}</p>
-                                </>
-                            )}
-                            {review.user_id === userId && editingReviewId !== review.id && (
-                                <div className='margin-t-8'>
-                                    <button className='btn btn-small' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
-                                        Edit
-                                    </button>
-                                    <button className='btn btn-small btn-x btn-gap' onClick={() => handleReviewDelete(review.id)}>x</button>
+                                )}
+                                {review.user_id === userId && editingReviewId === review.id ? (
+                                    <>
+                                        <textarea className='textarea-edit'
+                                            value={editedReviewData}
+                                            onChange={handleEditInputChange}
+                                        />
+                                        <br></br>
+                                        <button className='btn btn-small' onClick={() => handleReviewUpdate(review.id)}>Save</button>
+                                        <button className='btn btn-small btn-gap' onClick={() => setEditingReviewId(null)}>Cancel</button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p className='margin-l-40'>{review.review_text}</p>
+                                    </>
+                                )}
+                                {review.user_id === userId && editingReviewId !== review.id && (
+                                    <div className='margin-t-8'>
+                                        <button className='btn btn-small' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
+                                            Edit
+                                        </button>
+                                        <button className='btn btn-small btn-x btn-gap' onClick={() => handleReviewDelete(review.id)}>x</button>
 
-                                </div>
-                            )}
-                        </div>
-                    ))
-            ) : (
-                <p>No reviews available.</p>
-            )}
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                ) : (
+                    <p>No reviews available.</p>
+                )}
+            </div>
             <div>
                 {reviewMode && reports.length < 6 ? (
                     <>
