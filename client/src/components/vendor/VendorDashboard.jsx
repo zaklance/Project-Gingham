@@ -93,7 +93,7 @@ function VendorDashboard({ marketId }) {
 
     return (
         <div>
-            <div className='flex-start flex-center-align flex-gap-48'>
+            <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
                 <h2 className=''>Vendor Dashboard</h2>
                 <br/>
                 {vendorUserData?.is_admin === true ? (

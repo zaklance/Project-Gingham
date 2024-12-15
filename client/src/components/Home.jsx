@@ -6,7 +6,9 @@ function Home({ isPopup, setIsPopup, handlePopup }) {
 
     return (
         <div>
-            <img className='big-logo' src="/site-images/gingham-logo-2.svg" alt="Gingham Logo"></img>
+            <div className="m-flex-center">
+                <img className='big-logo' src="/site-images/gingham-logo-2.svg" alt="Gingham Logo"></img>
+            </div>
             <div className="sidebar">
                 <h1 className="font-gingham title-big">Gingham</h1>
                 <br></br>

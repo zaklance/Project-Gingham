@@ -141,7 +141,7 @@ function Login({ handlePopup }) {
         <div className='login-bar'>
             <button className="btn btn-large x-btn" onClick={handlePopup}>X</button>
             <div className='wrapper'>
-                <h1>WELCOME TO GINGHAM!</h1>
+                {/* <h1>WELCOME TO GINGHAM!</h1> */}
                 <div>
                     <form onSubmit={handleLogin} className="form">
                         <h2 className='margin-b-24'>Login</h2>

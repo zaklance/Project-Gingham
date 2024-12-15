@@ -316,7 +316,7 @@ function MarketDetail ({ match }) {
         <div>
             <div className='flex-space-between'>
                 <h2>{market.name}</h2>
-                <button onClick={handleBackButtonClick} className='btn btn-small'>Back to Markets</button>
+                <button onClick={handleBackButtonClick} className='btn btn-small m-hidden'>Back to Markets</button>
             </div>
             <div className={events.length < 1 ? 'flex-start flex-start-align flex-gap-16' : 'flex-start flex-gap-16'}>
                 {events.length > 0 ? (
@@ -329,7 +329,7 @@ function MarketDetail ({ match }) {
                     {events.length > 0 ? (
                         events.map((event, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                                    <div className='flex-start flex-center-align flex-gap-16'>
+                                    <div className='flex-start flex-center-align flex-gap-16 m-flex-wrap'>
                                         <p className='text-italic nowrap margin-t-8'>
                                         {formatEventDate(event.start_date)}
                                             {event.end_date !== event.start_date && ` - `}
@@ -347,7 +347,7 @@ function MarketDetail ({ match }) {
                     )}
                 </div>
             </div>
-            <div className='flex-space-around flex-end margin-t-24'>
+            <div className='flex-space-around flex-end margin-t-24 m-flex-wrap'>
                 <div className='width-100'>
                     <img className='img-market' src={`/market-images/${market.image}`} alt="Market Image" />
                 </div>
@@ -375,9 +375,12 @@ function MarketDetail ({ match }) {
                     )}
                 </div>
             </div>
-            <div className='flex-start'>
+            <div className='flex-start m-flex-wrap'>
                 <label><h4>Market Day:</h4></label>
-                <select id="marketDaysSelect" name="marketDays" onChange={handleDayChange}>
+                <select id="marketDaysSelect"
+                    className='margin-r-4'
+                    name="marketDays"
+                    onChange={handleDayChange}>
                     {marketDays.map((day, index) => (
                         <option key={index} value={day.id}>
                             {weekDay[day.day_of_week]}
@@ -385,7 +388,7 @@ function MarketDetail ({ match }) {
                     ))}
                 </select>
                 {selectedDay && (
-                    <h4 className='btn-gap'>Hours: {timeConverter(selectedDay.hour_start)} - {timeConverter(selectedDay.hour_end)}</h4>
+                    <h4>Hours: {timeConverter(selectedDay.hour_start)} - {timeConverter(selectedDay.hour_end)}</h4>
                 )}
             </div>
             <div className='flex-start'>
@@ -421,11 +424,11 @@ function MarketDetail ({ match }) {
                         const firstBasket = (marketBaskets.length > 0 ? marketBaskets.find(item => item.vendor_id === vendorDetail.id) : '');
 
                         return (
-                            <div key={index} className="market-item">
+                            <div key={index} className="market-item flex-center-align">
                                 <Link to={`/user/vendors/${vendorId}`} className="market-name">
                                     {vendorDetail.name || 'Loading...'}
                                 </Link>
-                                <span className="market-name">
+                                <span className="market-name margin-l-16">
                                     {products.find(p => p.id === vendorDetail.product)?.product || 'No product listed'}
                                 </span>
                                 {availableBaskets.length > 0 ? (
@@ -462,7 +465,7 @@ function MarketDetail ({ match }) {
                                             Add to Cart
                                         </button>
                                     ) : (
-                                        <button className="btn-add nowrap" onClick={() => handleAddToCart(vendorId, vendorDetail)}>
+                                        <button className="btn-add nowrap m-hidden" onClick={() => handleAddToCart(vendorId, vendorDetail)}>
                                             Sold Out
                                         </button>
                                     )}

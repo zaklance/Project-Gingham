@@ -104,7 +104,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {!isNotUser && (
                     <>
                         <li>
-                            <NavLink className='nav-tab color-3 btn-nav' to="/user/markets" state={{ resetFilters: true }}>Markets</NavLink>
+                            <NavLink className='nav-tab m-tab-left color-3 btn-nav' to="/user/markets" state={{ resetFilters: true }}>Markets</NavLink>
                         </li>
                         <li>
                             <NavLink className='nav-tab color-4 btn-nav' to="/user/vendors" state={{ resetFilters: true }}>Vendors</NavLink>
@@ -118,7 +118,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isVendorLoggedIn && isVendorPage && (
                     <>
                         <li>
-                            <NavLink className='nav-tab color-3 btn-nav' to={`/vendor/dashboard/${vendor_id}`}>Dashboard</NavLink>
+                            <NavLink className='nav-tab m-tab-left color-3 btn-nav' to={`/vendor/dashboard/${vendor_id}`}>Dashboard</NavLink>
                         </li>
                         <li>
                             <NavLink className='nav-tab color-5 btn-nav' to={`/vendor/sales/${vendor_id}`}>Sales</NavLink>
@@ -135,7 +135,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isAdminLoggedIn && isAdminPage && (
                     <>
                         <li>
-                            <NavLink className='nav-tab color-3 btn-nav' to={`/admin/profile/${admin_id}`}>Profile</NavLink>
+                            <NavLink className='nav-tab m-tab-left color-3 btn-nav' to={`/admin/profile/${admin_id}`}>Profile</NavLink>
                         </li>
                         <li>
                             <NavLink className='nav-tab color-5 btn-nav' to={`/admin/markets/${admin_id}`}>Markets</NavLink>
