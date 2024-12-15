@@ -2162,10 +2162,21 @@ select:hover {
   }
 
   .form-group input {
-    min-width: 100px;
+    min-width: 208px;
   }
 
   .form-group textarea {
-    width: max-content;
+    width: 208px;
+  }
+  
+  .form-group select {
+    max-width: 208px;
+  }
+
+  .form-group option {
+    max-width: 100%;
+    overflow: hidden;
+    word-wrap: normal !important;
+    white-space: normal;
   }
 }

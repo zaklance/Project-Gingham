@@ -174,8 +174,8 @@ function VendorTeam({ vendors, vendorId, vendorUserData }) {
                 )}
             </div>
             <div className='box-bounding'>
-                <h2 className="title">Team Members</h2>
-                <div className="box-bounding">
+                <h2 className="title margin-b-16">Team Members</h2>
+                <div>
                     <h3 className='margin-b-16'>Invite Team Members:</h3>
                     <div className='form-group'>
                         <label>Email:</label>
@@ -217,7 +217,7 @@ function VendorTeam({ vendors, vendorId, vendorUserData }) {
                                         <>
                                             <div className='flex-end flex-center-align'>
                                                 <button className="btn btn-small btn-white margin-r-8" onClick={() => handleToggleRole(member.id, member.role)} > Switch to {member.role === 'Admin' ? 'Employee' : 'Admin'} </button>
-                                                <button className="btn btn-small btn-unreport" onClick={() => handleDeleteTeamMember(member.id)} > Remove from Vendor Team</button>
+                                                <button className="btn btn-small btn-unreport" onClick={() => handleDeleteTeamMember(member.id)} > Remove from Team</button>
                                             </div> 
                                         </>
                                     )}
