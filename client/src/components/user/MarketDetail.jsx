@@ -78,7 +78,7 @@ function MarketDetail ({ match }) {
 
                     const today = new Date();
                     const sevenDaysFromNow = new Date();
-                    sevenDaysFromNow.setDate(today.getDate() + 7);
+                    sevenDaysFromNow.setDate(today.getDate() + 2);
                     
                     today.setHours(0, 0, 0, 0);
                     sevenDaysFromNow.setHours(0, 0, 0, 0);

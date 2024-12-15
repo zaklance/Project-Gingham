@@ -370,9 +370,14 @@ ul {
   padding-right: 32px;
 } */
 
-.notification {
+.notification, .badge-container {
   position: relative;
   display: inline-block;
+}
+
+.badge-container {
+  padding-top: 12px;
+  padding-right: 12px;
 }
 
 .badge {
@@ -394,6 +399,42 @@ ul {
   padding: 2px 5px;
   border-radius: 50%;
   background: #007BFF;
+  color: white;
+}
+
+.badge-live {
+  position: absolute;
+  font-size: .8em;
+  font-weight: 500;
+  top: 1px;
+  right: 1px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: #00bda4;
+  color: white;
+}
+
+.badge-saved {
+  position: absolute;
+  font-size: .8em;
+  font-weight: 500;
+  top: 1px;
+  right: 1px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: #6c7ae0;
+  color: white;
+}
+
+.badge-pending {
+  position: absolute;
+  font-size: .8em;
+  font-weight: 500;
+  top: 1px;
+  right: 1px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: #a1a1a1;
   color: white;
 }
 
