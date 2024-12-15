@@ -519,7 +519,7 @@ function VendorProfile () {
                                                 <img
                                                     src={`/vendor-images/${vendorData.image}`}
                                                     alt="Vendor"
-                                                    // style={{ maxWidth: '100%', height: 'auto' }}
+                                                    style={{ maxWidth: '100%', height: 'auto' }}
                                                     className='img-vendor-edit'
                                                 />
                                                 <button className='btn-edit' onClick={handleDeleteImage}>Delete Image</button>

@@ -1440,7 +1440,8 @@ link {
 }
 
 .form-contact input, .form-contact textarea {
-  background: #eee;
+  background-color: white;
+  border: #dbdbdb 1px solid;
   resize: none;
   border: none;
 }
@@ -2174,6 +2175,8 @@ select:hover {
   }
 
   .form-group textarea {
+    background-color: white;
+    border: #dbdbdb 1px solid;
     width: 208px;
   }
   
