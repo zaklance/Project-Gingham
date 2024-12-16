@@ -267,7 +267,7 @@ function MarketDetail ({ match }) {
         setShowAlert(true);
         setTimeout(() => {
             setShowAlert(false);
-        }, 1000);
+        }, 1600);
     };
 
     useEffect(() => {
@@ -316,7 +316,7 @@ function MarketDetail ({ match }) {
         <div>
             <div className='flex-space-between'>
                 <h2>{market.name}</h2>
-                <button onClick={handleBackButtonClick} className='btn btn-small m-hidden'>Back to Markets</button>
+                <button onClick={handleBackButtonClick} className='btn btn-small m-hidden'>Back</button>
             </div>
             <div className={events.length < 1 ? 'flex-start flex-start-align flex-gap-16' : 'flex-start flex-gap-16'}>
                 {events.length > 0 ? (
@@ -364,7 +364,7 @@ function MarketDetail ({ match }) {
                 <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}
                 </a></h4>
-                <div className='flex-start'>
+                <div className='flex-start alert-container'>
                     <button
                         className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
                         onClick={handleClick}>&#9829;</button>

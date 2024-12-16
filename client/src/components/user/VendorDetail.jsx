@@ -204,7 +204,7 @@ function VendorDetail({ products }) {
         setShowAlert(true);
         setTimeout(() => {
             setShowAlert(false);
-        }, 3000);
+        }, 1600);
     };
 
     useEffect(() => {
@@ -292,7 +292,7 @@ function VendorDetail({ products }) {
                     <h3 className='margin-t-8'>Product: {product ? product.product : ""}</h3>
                     <div className='flex-start'>
                         <h4 className='nowrap'>Based out of: {vendor.city}, {vendor.state}</h4>
-                        <div className='button-container flex-start flex-center-align nowrap'>
+                        <div className='alert-container flex-start flex-center-align nowrap'>
                             <button 
                                 className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
                                 onClick={handleClick}>&#9829;
