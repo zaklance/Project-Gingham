@@ -16,7 +16,7 @@ function VendorNotification({ teamMembers, setTeamMembers, vendorUserData }) {
                     return;
                 }
 
-                const token = localStorage.getItem('jwt-token');
+                const token = localStorage.getItem('vendor_jwt-token');
                 if (!token) {
                     console.error("No JWT token found in local storage");
                     setError("JWT token is missing");
@@ -70,7 +70,7 @@ function VendorNotification({ teamMembers, setTeamMembers, vendorUserData }) {
 
     const handleApprove = async (notification, isAdmin) => {
         console.log(`Approval notification with ID: ${notification.id}`);
-        const token = localStorage.getItem('jwt-token');
+        const token = localStorage.getItem('vendor_jwt-token');
     
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${notification.id}/approve`, {

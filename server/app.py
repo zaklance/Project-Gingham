@@ -180,7 +180,7 @@ def upload_file():
 @jwt_required()
 def delete_image():
     if not (check_role('admin') or check_role('vendor') or check_role('user')):
-        return {'error': "Access forbidden: Admin, Vendor, or User only"}, 403
+        return {'error': "Access forbidden: Unauthorized user"}, 403
 
     data = request.get_json()
     filename = data.get('filename')
@@ -189,6 +189,7 @@ def delete_image():
     if not filename or not file_type:
         return {'error': 'Filename and type are required'}, 400
 
+    # Determine the folder based on type
     if file_type == 'vendor':
         folder = VENDOR_UPLOAD_FOLDER
     elif file_type == 'market':
@@ -201,9 +202,11 @@ def delete_image():
     try:
         file_path = os.path.join(folder, filename)
 
+        # Delete the file from the file system
         if os.path.exists(file_path):
             os.remove(file_path)
 
+        # Update the database to clear the reference
         if file_type == 'vendor':
             vendor = Vendor.query.filter_by(image=filename).first()
             if vendor:
@@ -215,9 +218,9 @@ def delete_image():
                 market.image = None
                 db.session.commit()
         elif file_type == 'user':
-            user = User.query.filter_by(image=filename).first()
+            user = User.query.filter_by(avatar=filename).first()
             if user:
-                user.image = None
+                user.avatar = None
                 db.session.commit()
 
         return {'message': 'Image deleted successfully'}, 200
@@ -590,14 +593,14 @@ def get_vendor_users():
 def get_vendor_user(id):
     if not check_role('vendor'):
         return {'error': "Access forbidden: Vendor only"}, 403
-    
+
     if request.method == 'GET':
         vendor_user = VendorUser.query.get(id)
         if not vendor_user:
             return jsonify({'error': 'User not found'}), 404
         profile_data = vendor_user.to_dict()
         return jsonify(profile_data), 200
-    
+
     elif request.method == 'PATCH':
         vendor_user = VendorUser.query.get(id)
         if not vendor_user:
@@ -605,17 +608,25 @@ def get_vendor_user(id):
 
         try:
             data = request.get_json()
-            # for key, value in data.items():
-            #     setattr(user, key, value)
-            vendor_user.first_name = data.get('first_name')
-            vendor_user.last_name = data.get('last_name')
-            vendor_user.email = data.get('email')
-            vendor_user.phone = data.get('phone')
+
+            if 'first_name' in data:
+                vendor_user.first_name = data['first_name']
+            if 'last_name' in data:
+                vendor_user.last_name = data['last_name']
+            if 'email' in data:
+                vendor_user.email = data['email']
+            if 'phone' in data:
+                vendor_user.phone = data['phone']
 
             if 'is_admin' in data:
-                if not isinstance(data['is_admin'], bool):
+                is_admin_value = data['is_admin']
+
+                if isinstance(is_admin_value, bool):
+                    vendor_user.is_admin = is_admin_value
+                elif isinstance(is_admin_value, str):
+                    vendor_user.is_admin = is_admin_value.lower() == 'true'
+                else:
                     return jsonify({'error': 'Invalid value for is_admin, must be true or false'}), 400
-                vendor_user.is_admin = data['is_admin']
 
             if 'vendor_id' in data:
                 new_vendor_id = data['vendor_id']
@@ -649,7 +660,6 @@ def get_vendor_user(id):
             db.session.rollback()
             app.logger.error(f"Error deleting VendorUser: {str(e)}")
             return jsonify({'error': str(e)}), 500
-
 
 @app.route('/api/vendor-vendor-users', methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def handle_vendor_vendor_users():

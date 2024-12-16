@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import VendorNotification from './VendorNotification';
 
-
 function VendorTeam({ vendors, vendorId, vendorUserData }) {
     const [notifications, setNotifications] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -9,7 +8,6 @@ function VendorTeam({ vendors, vendorId, vendorUserData }) {
     const [newMemberEmail, setNewMemberEmail] = useState('');
     const [confirmMemberEmail, setConfirmMemberEmail] = useState('');
     const [newMemberRole, setNewMemberRole] = useState('Employee'); 
-
 
     useEffect(() => {
         if (!vendorId) return;
@@ -140,29 +138,48 @@ function VendorTeam({ vendors, vendorId, vendorUserData }) {
 
     const handleToggleRole = async (memberId, currentRole) => {
         const isAdmin = currentRole === 'Admin' ? false : true;
+    
+        const member = teamMembers.find((member) => member.id === memberId);
+    
+        if (!member) {
+            alert("Member not found");
+            return;
+        }
+    
         try {
             const token = localStorage.getItem('vendor_jwt-token');
             const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${memberId}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ is_admin: isAdmin })
+                body: JSON.stringify({ 
+                    is_admin: isAdmin, 
+                    first_name: member.first_name,
+                    last_name: member.last_name,
+                    email: member.email, 
+                }),
             });
-
+    
             if (response.ok) {
-                setTeamMembers(teamMembers.map(member =>
-                    member.id === memberId ? { ...member, role: isAdmin ? 'Admin' : 'Employee' } : member
-                ));
+                setTeamMembers((prevTeamMembers) =>
+                    prevTeamMembers.map((member) =>
+                        member.id === memberId ? { ...member, role: isAdmin ? 'Admin' : 'Employee' } : member
+                    )
+                );
+                alert(`Successfully updated role to ${isAdmin ? 'Admin' : 'Employee'}`);
             } else {
-                console.error('Error updating role');
+                const responseData = await response.json();
+                console.error('Error updating role:', responseData.message || response.statusText);
+                alert(responseData.message || 'Failed to update the role. Please try again.');
             }
         } catch (error) {
             console.error('Error updating role:', error);
+            alert('An error occurred while updating the role. Please try again.');
         }
     };
-
+    
     return (
         <>
             <div className='box-bounding'>
