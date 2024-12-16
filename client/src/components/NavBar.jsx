@@ -127,7 +127,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             <NavLink className='nav-tab color-4 btn-nav' to={`/vendor/profile/${vendor_id}`}>Profile</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-1 btn-nav' to={`/vendor/scan`}>Scan</NavLink>
+                            <NavLink className='nav-tab color-1 btn-nav' to={`/vendor/scan/${vendor_id}`}>Scan</NavLink>
                         </li>
                     </>
                 )}
@@ -179,7 +179,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isUserLoggedIn && !isVendorPage && !isAdminPage ?  (
                     <>
                         <li>
-                            <NavLink className='nav-tab color-2 btn-nav nowrap' to={`/user/pick-up`}>Pick-Up</NavLink>
+                            <NavLink className='nav-tab color-2 btn-nav nowrap' to={`/user/pick-up/${userId}`}>Pick-Up</NavLink>
                         </li>
                         <li>
                             <NavLink className='nav-tab color-4 btn-nav' to={`/user/profile/${userId}`}>Profile</NavLink>

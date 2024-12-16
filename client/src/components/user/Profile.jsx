@@ -163,10 +163,51 @@ function Profile({ marketData }) {
                     setStatus('fail');
                     return;
                 }
-                window.location.reload()
+                // window.location.reload()
             }
         } catch (error) {
             console.error('Error saving changes:', error);
+        }
+    };
+
+    const handleDeleteImage = async () => {
+        if (!profileData || !profileData.avatar) {
+            alert('No image to delete.');
+            return;
+        }
+    
+        try {
+            const token = localStorage.getItem('user_jwt-token');
+            const response = await fetch(`http://127.0.0.1:5555/api/delete-image`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    filename: profileData.avatar,
+                    type: 'user',
+                }),
+            });
+    
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Image deleted response:', result);
+    
+                setProfileData((prevData) => ({
+                    ...prevData,
+                    avatar: null,
+                }));
+    
+                alert('Image deleted successfully.');
+            } else {
+                const errorText = await response.text();
+                console.error('Failed to delete image:', errorText);
+                alert('Failed to delete the image. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error deleting image:', error);
+            alert('An unexpected error occurred while deleting the image.');
         }
     };
 
@@ -246,7 +287,6 @@ function Profile({ marketData }) {
                         <div className="form-address">
                             <label>Address:</label>
                             <input
-                                className='m-address'
                                 type="text"
                                 name="address_1"
                                 size="36"
@@ -254,7 +294,6 @@ function Profile({ marketData }) {
                                 value={tempProfileData ? tempProfileData.address_1 : ''}
                                 onChange={handleInputChange}
                             />
-                            <br className='m-br'/>
                             <input
                                 type="text"
                                 name="address_2"
@@ -267,7 +306,6 @@ function Profile({ marketData }) {
                         <div className='form-address'>
                             <label></label>
                             <input
-                                className='m-address'
                                 type="text"
                                 name="city"
                                 size="36"
@@ -275,7 +313,6 @@ function Profile({ marketData }) {
                                 value={tempProfileData ? tempProfileData.city : ''}
                                 onChange={handleInputChange}
                             />
-                            <br className='m-br' />
                             <select className='select-state'
                                 name="state"
                                 value={tempProfileData ? tempProfileData.state : ''}
@@ -298,20 +335,33 @@ function Profile({ marketData }) {
                             />
                         </div>
                         <div className='form-group'>
-                            <label>Avatar:</label>
-                            <input
-                                type="file"
-                                name="file"
-                                accept="image/*"
-                                onChange={handleFileChange}
-                            />
-                        </div>
+                        <label>Avatar:</label>
+                        {profileData?.avatar ? (
+                            <>
+                                <img
+                                    className='img-avatar-profile'
+                                    src={`/user-images/${profileData.avatar}`}
+                                    alt="Avatar"
+                                    style={{ maxWidth: '100%', height: 'auto' }}
+                                />
+                                <button className='btn-edit' onClick={handleDeleteImage}>Delete Image</button>
+                            </>
+                        ) : (
+                            <p>No image uploaded.</p>
+                        )}
+                        <input
+                            type="file"
+                            name="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                        />
+                        </div> 
                         <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
                         <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
                     </div>
                 ) : (
                     <>
-                        <div className='flex-space-evenly flex-gap-16 flex-start-align m-flex-wrap'>
+                        <div className='flex-space-evenly flex-gap-16 flex-start-align'>
                             {profileData.avatar ? (
                                 <img className='img-avatar-profile' src={`/user-images/${profileData.avatar}`} alt="Avatar" />
                             ) : (
@@ -360,7 +410,7 @@ function Profile({ marketData }) {
                     {vendorFavs.length > 0 ? (
                         vendorFavs.map((data) => (
                             <li key={data.id}>
-                                <Link to={`/user/vendors/${data.vendor_id}`}><b>{data.vendor.name}</b></Link><i> of {data.vendor.city}, {data.vendor.state}</i>
+                                <Link to={`/user/vendors/${data.vendor_id}`}><b>{data.vendor.name}</b> <i>of {data.vendor.city}, {data.vendor.state}</i></Link>
                             </li>
                         ))
                     ) : (
@@ -373,7 +423,7 @@ function Profile({ marketData }) {
                     {marketFavs.length > 0 ? (
                         marketFavs.map((data) => (
                             <li key={data.id}>
-                                <Link to={`/user/markets/${data.market_id}`}><b>{data.market.name}</b></Link><i> open {data.market.schedule}</i>
+                                <Link to={`/user/markets/${data.market_id}`}><b>{data.market.name}</b> <i>open {data.market.schedule}</i></Link>
                             </li>
                         ))
                     ) : (
