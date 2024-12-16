@@ -2022,6 +2022,28 @@ select:hover {
 }
 
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
+@media screen and (max-width: 820px) {
+  .m-hidden {
+    display: none;
+  }
+  
+  .m-scroll {
+    overflow-x: scroll;
+    padding-top: 12px;
+    height: 54px;
+  }
+
+  .nav-bar ul {
+    height: 57px;
+  }
+
+  .nav-tab {
+    padding: 21px 16px 28px 16px;
+  }
+}
+
+
+/* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 @media screen and (max-width: 600px) {
   .m-hidden {
     display: none;
@@ -2038,6 +2060,12 @@ select:hover {
 
   .m-flex-wrap {
     flex-wrap: wrap;
+  }
+
+  .m-wrap {
+    overflow: hidden !important;
+    word-wrap: normal !important;
+    white-space: normal !important;
   }
 
   .m-address {
@@ -2099,8 +2127,8 @@ select:hover {
     min-width: 100px;
   }
 
-  .form-login input {
-    min-width: 186px;
+  .form-group input, .form-login input {
+    min-width: 172px !important;
   }
   
   .btn-home {
