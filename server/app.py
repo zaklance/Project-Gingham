@@ -1809,11 +1809,11 @@ def get_vendor_sales_history():
                     "price": basket.price,
                     "pickup_start": basket.pickup_start.strftime('%H:%M'),
                     "pickup_end": basket.pickup_end.strftime('%H:%M'),
-                    "available_baskets": 0,
+                    "total_baskets": 0,
                     "sold_baskets": 0,
                 }
 
-            sales_history[(sale_date, market_day_id)]["available_baskets"] += 1
+            sales_history[(sale_date, market_day_id)]["total_baskets"] += 1
             if basket.is_sold:
                 sales_history[(sale_date, market_day_id)]["sold_baskets"] += 1
 

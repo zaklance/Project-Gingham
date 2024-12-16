@@ -265,7 +265,8 @@ function VendorSales() {
         setSelectedMarket(event.target.value);
     };
 
-    console.log(selectedMarket)
+    console.log(baskets)
+    console.log(salesHistory)
 
 
     return (
@@ -324,7 +325,7 @@ function VendorSales() {
                                 <th>Pick Up End</th>
                                 <th>Basket Value</th>
                                 <th>Price</th>
-                                <th>Available</th>
+                                <th>Total</th>
                                 <th>Sold</th>
                             </tr>
                         </thead>
@@ -358,7 +359,7 @@ function VendorSales() {
                                             <td className='table-center'> {history.pickup_end ? timeConverter(history.pickup_end) : 'N/A'} </td>
                                             <td className='table-center'> ${history.basket_value ? history.basket_value.toFixed(2) : 'N/A'} </td>
                                             <td className='table-center'> ${history.price ? history.price.toFixed(2) : 'N/A'} </td>
-                                            <td className='table-center'> {history.available_baskets || 0} </td>
+                                            <td className='table-center'> {history.total_baskets || 0} </td>
                                             <td className='table-center'> {history.sold_baskets || 0} </td>
                                         </tr>
                                     ))
