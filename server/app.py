@@ -180,7 +180,7 @@ def upload_file():
 @jwt_required()
 def delete_image():
     if not (check_role('admin') or check_role('vendor') or check_role('user')):
-        return {'error': "Access forbidden: Admin, Vendor, or User only"}, 403
+        return {'error': "Access forbidden: Unauthorized user"}, 403
 
     data = request.get_json()
     filename = data.get('filename')
@@ -189,6 +189,7 @@ def delete_image():
     if not filename or not file_type:
         return {'error': 'Filename and type are required'}, 400
 
+    # Determine the folder based on type
     if file_type == 'vendor':
         folder = VENDOR_UPLOAD_FOLDER
     elif file_type == 'market':
@@ -201,9 +202,11 @@ def delete_image():
     try:
         file_path = os.path.join(folder, filename)
 
+        # Delete the file from the file system
         if os.path.exists(file_path):
             os.remove(file_path)
 
+        # Update the database to clear the reference
         if file_type == 'vendor':
             vendor = Vendor.query.filter_by(image=filename).first()
             if vendor:
@@ -215,9 +218,9 @@ def delete_image():
                 market.image = None
                 db.session.commit()
         elif file_type == 'user':
-            user = User.query.filter_by(image=filename).first()
+            user = User.query.filter_by(avatar=filename).first()
             if user:
-                user.image = None
+                user.avatar = None
                 db.session.commit()
 
         return {'message': 'Image deleted successfully'}, 200
