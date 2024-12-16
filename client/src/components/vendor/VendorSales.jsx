@@ -12,6 +12,10 @@ function VendorSales() {
     const [selectedMarket, setSelectedMarket] = useState("");
     const [selectedRangeGraph, setSelectedRangeGraph] = useState(7);
     const [selectedRangeTable, setSelectedRangeTable] = useState(365);
+    const [currentMonthSales, setCurrentMonthSales] = useState([]);
+    const [totalPrice, setTotalPrice] = useState(0);
+    const [totalBasketCount, setTotalBasketCount] = useState(0);
+    const [totalBasketSold, setTotalBasketSold] = useState(0);
 
     const vendorUserId = localStorage.getItem('vendor_user_id');
 
@@ -265,8 +269,34 @@ function VendorSales() {
         setSelectedMarket(event.target.value);
     };
 
-    console.log(baskets)
-    console.log(salesHistory)
+    useEffect(() => {
+        const filterSalesHistoryByCurrentMonth = () => {
+            const today = new Date();
+            const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+            const filteredSalesHistory = salesHistory.filter((history) => {
+                const saleDate = new Date(history.sale_date);
+                return saleDate >= startOfMonth && saleDate <= endOfMonth;
+            });
+
+            setCurrentMonthSales(filteredSalesHistory);
+
+            // Calculate total price
+            const total = salesHistory.reduce((acc, history) => acc + (history.price || 0), 0);
+            setTotalPrice(total);
+            // Calculate total basket sold
+            const totalSold = salesHistory.reduce((acc, history) => acc + (history.sold_baskets || 0), 0);
+            setTotalBasketSold(totalSold);
+            // Calculate total basket count
+            const totalBaskets = salesHistory.reduce((acc, history) => acc + (history.total_baskets || 0), 0);
+            setTotalBasketCount(totalBaskets);
+        };
+
+        if (salesHistory.length > 0) {
+            filterSalesHistoryByCurrentMonth();
+        }
+    }, [salesHistory]);
 
 
     return (
@@ -290,8 +320,15 @@ function VendorSales() {
                         <h2>Loading...</h2>
                     )}
                 </div>
+                <div className='box-bounding text-center'>
+                    <h1> Month's Sales: ${totalPrice}</h1>
+                    <div className='flex-space-evenly'>
+                        <h3> Total Baskets: {totalBasketCount}</h3>
+                        <h3> Baskets Sold: {totalBasketSold}</h3>
+                    </div>
+                </div>
                 <div className='flex-space-between flex-bottom-align'>
-                    <h3 className='margin-t-16'>Sales Breakdown:</h3>
+                    <h3 className='margin-t-16'>Sales History:</h3>
                     <div className='form-group'>
                         <select className='' value={selectedRangeTable} onChange={handleDateChangeTable}>
                             <option value="">Time Frame</option>
@@ -349,7 +386,7 @@ function VendorSales() {
                                     .sort((a, b) => new Date(b.sale_date) - new Date(a.sale_date))
                                     .map((history, index) => (
                                         <tr key={index}>
-                                            <td className='table-center nowrap'>{convertToLocalDate(history.sale_date) || 'N/A'}</td>
+                                            <td className='table-center nowrap m-wrap'>{convertToLocalDate(history.sale_date) || 'N/A'}</td>
                                             <td>
                                                 <Link className='btn-nav' to={`/user/markets/${history.market_id}`}>
                                                     {history.market_name || 'No Market Name'}
