@@ -590,14 +590,14 @@ def get_vendor_users():
 def get_vendor_user(id):
     if not check_role('vendor'):
         return {'error': "Access forbidden: Vendor only"}, 403
-    
+
     if request.method == 'GET':
         vendor_user = VendorUser.query.get(id)
         if not vendor_user:
             return jsonify({'error': 'User not found'}), 404
         profile_data = vendor_user.to_dict()
         return jsonify(profile_data), 200
-    
+
     elif request.method == 'PATCH':
         vendor_user = VendorUser.query.get(id)
         if not vendor_user:
@@ -605,17 +605,25 @@ def get_vendor_user(id):
 
         try:
             data = request.get_json()
-            # for key, value in data.items():
-            #     setattr(user, key, value)
-            vendor_user.first_name = data.get('first_name')
-            vendor_user.last_name = data.get('last_name')
-            vendor_user.email = data.get('email')
-            vendor_user.phone = data.get('phone')
+
+            if 'first_name' in data:
+                vendor_user.first_name = data['first_name']
+            if 'last_name' in data:
+                vendor_user.last_name = data['last_name']
+            if 'email' in data:
+                vendor_user.email = data['email']
+            if 'phone' in data:
+                vendor_user.phone = data['phone']
 
             if 'is_admin' in data:
-                if not isinstance(data['is_admin'], bool):
+                is_admin_value = data['is_admin']
+
+                if isinstance(is_admin_value, bool):
+                    vendor_user.is_admin = is_admin_value
+                elif isinstance(is_admin_value, str):
+                    vendor_user.is_admin = is_admin_value.lower() == 'true'
+                else:
                     return jsonify({'error': 'Invalid value for is_admin, must be true or false'}), 400
-                vendor_user.is_admin = data['is_admin']
 
             if 'vendor_id' in data:
                 new_vendor_id = data['vendor_id']
@@ -649,7 +657,6 @@ def get_vendor_user(id):
             db.session.rollback()
             app.logger.error(f"Error deleting VendorUser: {str(e)}")
             return jsonify({'error': str(e)}), 500
-
 
 @app.route('/api/vendor-vendor-users', methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def handle_vendor_vendor_users():
