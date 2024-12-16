@@ -190,7 +190,7 @@ const router = createBrowserRouter([
                     { path: "vendors", element: <Vendors /> },
                     { path: "vendors/:id", element: <VendorDetail /> },
                     { path: "your-cart", element: <Cart /> },
-                    { path: "pick-up", element: <PickUp /> },
+                    { path: "pick-up/:id", element: <UserRoute><PickUp /></UserRoute> },
                     { path: "checkout", element: <CheckoutForm /> },
                     { path: "check-session", element: <CheckSession /> },
                     { path: "return", element: <Return />},
@@ -204,7 +204,7 @@ const router = createBrowserRouter([
                 children: [
                     { path: "dashboard/:id", element: <VendorRoute><VendorDashboard /></VendorRoute> },
                     { path: "sales/:id", element: <VendorRoute><VendorSales /></VendorRoute> },
-                    { path: "scan", element: <VendorScan /> },
+                    { path: "scan/:id", element: <VendorRoute><VendorScan /></VendorRoute> },
                     { path: "signup", element: <VendorLoginPopup /> },
                     { path: "profile/:id", element: <VendorRoute><VendorProfile /></VendorRoute> },
                     { path: "vendor-create/:id", element: <VendorRoute><VendorCreate /></VendorRoute> },
