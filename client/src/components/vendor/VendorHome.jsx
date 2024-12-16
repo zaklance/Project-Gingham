@@ -7,7 +7,7 @@ function Home() {
 
     return (
         <div>
-            <div className="vendor-portal-background">
+            <div className="vendor-portal-background m-margin-0">
                 {/* <img className='big-logo' src="/site-images/gingham-logo-2.svg" alt="Gingham Logo"></img> */}
                 <div className="sidebar">
                     <br className="m-hidden"/>

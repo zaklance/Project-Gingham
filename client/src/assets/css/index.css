@@ -2054,6 +2054,24 @@ select:hover {
     height: 54px;
   }
 
+  .m-margin-0 {
+    margin: -20px;
+  }
+
+  .link-underline {
+    text-decoration: underline;
+  }
+  
+  .link-underline:hover {
+    background-color: #fffa9c;
+    transition: .2s;
+  }
+
+  .link-underline:active {
+    background-color: #fff669;
+    transition: .1s;
+  }
+
   .container {
     width: 100vw;
     padding: 0;
@@ -2162,6 +2180,11 @@ select:hover {
   .box-portal-home {
     margin: 16px;
     width: calc(100% - 32px)
+  }
+
+  .vendor-portal-background {
+    width: calc(100% + 40px);
+    border-radius: 0 0 20px 20px;
   }
 
   .box-inside {

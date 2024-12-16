@@ -10,16 +10,16 @@ function AdminVendorEvents({ vendors }) {
 
     const onUpdateQuery = event => setQuery(event.target.value);
     const filteredVendors = vendors.filter(market => market.name.toLowerCase().includes(query.toLowerCase()) && market.name !== query)
-    const matchinVendor = vendors.find(market => market.name.toLowerCase() === query.toLowerCase());
-    const matchinVendorId = matchinVendor ? matchinVendor.id : null;
+    const matchingVendor = vendors.find(market => market.name.toLowerCase() === query.toLowerCase());
+    const matchingVendorId = matchingVendor ? matchingVendor.id : null;
 
 
     useEffect(() => {
         setNewEvent((prevEvent) => ({
             ...prevEvent,
-            vendor_id: matchinVendorId,
+            vendor_id: matchingVendorId,
         }));
-    }, [matchinVendorId]);
+    }, [matchingVendorId]);
 
     const handleInputEventChange = (event) => {
         setNewEvent({
@@ -80,14 +80,14 @@ function AdminVendorEvents({ vendors }) {
                 const filteredData = data.filter(item => {
                     const startDate = new Date(item.start_date);
                     const endDate = new Date(item.end_date);
-                    return item.vendor_id === Number(matchinVendorId) &&
+                    return item.vendor_id === Number(matchingVendorId) &&
                         // Check if today is within range or start_date is within 7 days from now
                         (today >= startDate && today <= endDate || startDate <= sevenDaysFromNow);
                 });
                 setEvents(filteredData);
             })
             .catch(error => console.error('Error fetching events', error));
-    }, [matchinVendorId]);
+    }, [matchingVendorId]);
 
     const handleEventUpdate = async (eventId) => {
         try {
@@ -182,7 +182,7 @@ function AdminVendorEvents({ vendors }) {
                             type="text"
                             name="vendor_id"
                             placeholder='Search vendors above'
-                            value={matchinVendorId || ''}
+                            value={matchingVendorId || ''}
                             readOnly
                         />
                     </div>
