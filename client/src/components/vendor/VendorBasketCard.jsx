@@ -40,20 +40,19 @@ function VendorBasketCard({ vendorId, marketDay }) {
     
                             if (response.ok) {
                                 const data = await response.json();
+                                console.log('Fetched Saved Baskets:', data); 
                                 
                                 if (data.length === 0) {
                                     setSavedBaskets([]);
                                     setIsSaved(false);
                                     setErrorMessage('No saved baskets found for future markets');
                                 } else {
-                                    const filteredBaskets = data.filter(basket => 
-                                        basket.vendor_id === vendorId &&
-                                        basket.market_day_id === marketDayId &&
-                                        new Date(basket.sale_date).toISOString().split('T')[0] === formattedMarketDate
-                                    );    
-                                    setSavedBaskets(filteredBaskets);
-                                    setIsSaved(filteredBaskets.length > 0);
+                                    setSavedBaskets(data);
+                                    setIsSaved(true);
                                 }
+                            } else {
+                                console.error('Failed to fetch baskets:', response.statusText);
+                                setErrorMessage('Failed to fetch saved baskets.');
                             }
                         } catch (error) {
                             console.error('Error fetching saved baskets:', error);
@@ -79,38 +78,26 @@ function VendorBasketCard({ vendorId, marketDay }) {
     useEffect(() => {
         if (savedBaskets.length > 0) {
             const firstBasket = savedBaskets[0];
-            const pickupStart = firstBasket.pickup_start ? new Date(firstBasket.pickup_start) : null;
-            const pickupEnd = firstBasket.pickup_end ? new Date(firstBasket.pickup_end) : null;
-            const currentTime = new Date();
     
-            let isLive = false;
-            if (pickupStart) {
-                const liveThreshold = new Date(pickupStart.getTime() - 48 * 60 * 60 * 1000);
-                if (currentTime >= liveThreshold && currentTime < pickupStart) {
-                    isLive = true;
-                }
+            setNumBaskets(savedBaskets.length);
+            setBasketValue(firstBasket.basket_value || '');
+            setPrice(firstBasket.price || '');
+    
+            if (firstBasket.pickup_start) {
+                const start = timeConverter(firstBasket.pickup_start);
+                setStartTime(start);
+            } else {
+                setStartTime('');
             }
     
-            if (isLive) {
-                setNumBaskets(savedBaskets.length);
-                setBasketValue(firstBasket.basket_value);
-                setPrice(firstBasket.price);
-    
-                if (pickupStart) {
-                    const start = timeConverter(firstBasket.pickup_start);
-                    setStartTime(start);
-                }
-                if (pickupEnd) {
-                    const end = timeConverter(firstBasket.pickup_end);
-                    setEndTime(end);
-                }
+            if (firstBasket.pickup_end) {
+                const end = timeConverter(firstBasket.pickup_end);
+                setEndTime(end);
             } else {
-                setNumBaskets('');
-                setBasketValue('');
-                setPrice('');
-                setStartTime('');
                 setEndTime('');
             }
+    
+            console.log('Saved Basket Data:', firstBasket);
         } else {
             setNumBaskets('');
             setBasketValue('');
