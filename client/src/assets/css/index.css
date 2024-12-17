@@ -1704,6 +1704,21 @@ select:hover {
   margin-right: -12px;
 }
 
+.img-notif {
+  background-image: url('../images/icons8-notification.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.8rem auto;
+  /* font-size: 1.5em; */
+}
+
+.img-notif:hover {
+  background-image: url('../images/icons8-notification-color-3.gif');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.8rem auto;
+}
+
 .img-hot {
   width: 20px;
 }
