@@ -94,6 +94,8 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
             setIsNotifPopup(false);
         }
     };
+
+    console.log(notifications)
     
 
     return (
@@ -199,7 +201,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                                 <li key={notification.id} className='li-notif'>
                                                     <div className='flex-start'>
                                                         <button className='btn btn-unreport btn-notif' onClick={() => handleNotificationDelete(notification.id)}>x</button>
-                                                        <p className=''>{notification.message}</p>
+                                                        <NavLink to={notification.nav_link} onClick={closePopup}>{notification.message}</NavLink>
                                                     </div>
                                                 </li>
                                             ))}

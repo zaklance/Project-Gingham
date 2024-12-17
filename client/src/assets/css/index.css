@@ -1727,6 +1727,18 @@ select:hover {
   height: 100%;
 }
 
+.img-file {
+  background-image: url('../images/icons8-document-50.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 2rem auto;
+  font-size: 1.5em;
+}
+
+.img-file:hover {
+  background-image: url('../images/icons8-document.gif');
+}
+
 .favorites-list li {
   padding: 8px 0px;
   border-top: 1px solid #ccc;
@@ -2070,6 +2082,10 @@ select:hover {
     height: 54px;
   }
 
+  .m-flex-wrap {
+    flex-wrap: wrap;
+  }
+
   .nav-bar {
     overflow-x: scroll;
     overflow-y: visible !important;
@@ -2083,6 +2099,18 @@ select:hover {
 
   .nav-tab {
     padding: 21px 20px 28px 20px;
+  }
+
+  .popup-notif-on {
+    position: fixed;
+    top: 0;
+    left: 10vw;
+    width: 90vw;
+    max-height: 320px !important;
+  }
+
+  .ul-notif {
+    min-height: fit-content !important;
   }
 }
 
@@ -2100,10 +2128,6 @@ select:hover {
   .m-flex-center {
     display: flex;
     justify-content: center;
-  }
-
-  .m-flex-wrap {
-    flex-wrap: wrap;
   }
 
   .m-wrap {
@@ -2313,18 +2337,6 @@ select:hover {
     left: -160px;
   }
 
-  .popup-notif-on {
-    position: fixed;
-    top: 0;
-    left: 10vw;
-    width: 90vw;
-    max-height: 320px;
-  }
-
-  .ul-notif {
-    min-height: min-content;
-  }
-
   .alert-cart-market {
     top: 62px;
     right: 0px;
@@ -2342,5 +2354,9 @@ select:hover {
 
   .btn-file {
   max-width: 120px;
+  }
+
+  .text-error h1 {
+    font-size: 1.6em;
   }
 }

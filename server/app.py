@@ -1240,7 +1240,7 @@ def get_top_vendor_reviews():
         .order_by(desc(vote_up_counts.c.vote_up_count))
         .all()
     )
-    print("Percentile value for top reviews:", percentile_value)
+    # print("Percentile value for top reviews:", percentile_value)
     # Convert the reviews to dictionaries for JSON response
     response_data = [review.to_dict() for review in top_reviews]
     return jsonify(response_data)
@@ -2296,6 +2296,7 @@ def create_vendor_notification():
         return jsonify({
             'id': new_notification.id,
             'message': new_notification.message,
+            'nav_link': new_notification.nav_link,
             'vendor_id': new_notification.vendor_id,
             'vendor_user_id': new_notification.vendor_user_id,
             'is_read': new_notification.is_read

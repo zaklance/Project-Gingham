@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 function BasketSales() {
     const [salesHistory, setSalesHistory] = useState([]);
+
+    const userId = parseInt(globalThis.localStorage.getItem('user_id'))
 
     useEffect(() => {
         const token = localStorage.getItem('user_jwt-token');
@@ -44,7 +46,7 @@ function BasketSales() {
                             <th>Vendor</th>
                             <th>Sale Date</th>
                             <th>Price</th>
-                            {/* <th>Baskets Count</th> */}
+                            <th>Receipt</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,7 +67,7 @@ function BasketSales() {
                                         </td>                                
                                         <td className='table-center'>{history.sale_date || 'N/A'}</td>
                                         <td className='table-center'>${history.price ? history.price.toFixed(2) : 'N/A'}</td>
-                                        {/* <td className='table-center'>{history.baskets_count || '0'}</td> */}
+                                        <td className='table-center '><Link className='img-file' to={`/user/profile/${userId}`} target="_blank" rel="noopener noreferrer">&emsp;</Link></td>
                                     </tr>
                                 ))
                             ) : (
