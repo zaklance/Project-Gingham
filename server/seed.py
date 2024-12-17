@@ -1217,21 +1217,21 @@ def run():
 
     user_notifs = []
 
-    unm = UserNotification(
-            message=fake.paragraph(nb_sentences=1),
-            user_id=1,
-            market_id=1,
-            is_read=False
-        )
-    unv = UserNotification(
-            message=fake.paragraph(nb_sentences=2),
-            user_id=1,
-            vendor_id=1,
-            is_read=False
-        )
+    # unm = UserNotification(
+    #         message=fake.paragraph(nb_sentences=1),
+    #         user_id=1,
+    #         market_id=1,
+    #         is_read=False
+    #     )
+    # unv = UserNotification(
+    #         message=fake.paragraph(nb_sentences=2),
+    #         user_id=1,
+    #         vendor_id=1,
+    #         is_read=False
+    #     )
     
-    user_notifs.append(unm)
-    user_notifs.append(unv)
+    # user_notifs.append(unm)
+    # user_notifs.append(unv)
 
     for i in range(200):
         msg_len = randint(1, 2)
@@ -1243,6 +1243,7 @@ def run():
         few_days = randint(0, 14)
 
         message = fake.paragraph(nb_sentences=msg_len)
+        nav_link = choice (['/user/vendors/1', '/user/markets/1'])
         user_id = randint(1, 51)
         market_id = rand_market
         vendor_id = rand_vendor
@@ -1252,6 +1253,7 @@ def run():
         
         un = UserNotification(
             message=message,
+            nav_link=nav_link,
             user_id=user_id,
             market_id=market_id,
             vendor_id=vendor_id,
