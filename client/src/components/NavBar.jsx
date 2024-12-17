@@ -171,7 +171,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isVendorLoggedIn && isVendorPage && (
                     <>
                         <li>
-                            <NavLink className='nav-tab m-tab-left color-3 btn-nav' to={`/vendor/dashboard/${vendorUserId}`}>Dashboard</NavLink>
+                            <NavLink className='nav-tab m-tab-left color-3 btn-nav' to={`/vendor/dashboard`}>Dashboard</NavLink>
                         </li>
                         <li>
                             <NavLink className='nav-tab color-5 btn-nav' to={`/vendor/sales/${vendorUserId}`}>Sales</NavLink>
@@ -180,7 +180,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             <NavLink className='nav-tab color-4 btn-nav' to={`/vendor/profile/${vendorUserId}`}>Profile</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-1 btn-nav' to={`/vendor/scan/${vendorUserId}`}>Scan</NavLink>
+                            <NavLink className='nav-tab color-1 btn-nav' to={`/vendor/scan`}>Scan</NavLink>
                         </li>
                         {vendorNotifications.length > 0 &&
                             <li className='notification' onClick={handleVendorNotifPopup}>
@@ -259,7 +259,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isUserLoggedIn && !isVendorPage && !isAdminPage ?  (
                     <>
                         <li>
-                            <NavLink className='nav-tab color-2 btn-nav nowrap' to={`/user/pick-up/${userId}`}>Pick-Up</NavLink>
+                            <NavLink className='nav-tab color-2 btn-nav nowrap' to={`/user/pick-up`}>Pick-Up</NavLink>
                         </li>
                         <li>
                             <NavLink className='nav-tab color-4 btn-nav' to={`/user/profile/${userId}`}>Profile</NavLink>

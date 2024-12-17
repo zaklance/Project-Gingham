@@ -116,6 +116,25 @@ const VendorRoute = ({ children }) => {
     return children;
 };
 
+const AuthRoute = ({ children }) => {
+    const token = localStorage.getItem("user_jwt-token") || 
+                  localStorage.getItem("vendor_jwt-token") || 
+                  localStorage.getItem("admin_jwt-token");
+    const id = localStorage.getItem("user_id") || 
+               localStorage.getItem("vendor_user_id") || 
+               localStorage.getItem("admin_user_id");
+
+    if (!token || !id) {
+        return (
+            <div className='wrapper-error text-error margin-t-24'>
+                <h1 className='text-red'>Protected route: User not authenticated.</h1>
+            </div>
+        );
+    }
+
+    return children;
+};
+
 const CheckoutForm = () => {
     const fetchClientSecret = useCallback(() => {
         return fetch("http://127.0.0.1:5555/api/create-checkout-session", {
@@ -190,8 +209,8 @@ const router = createBrowserRouter([
                     { path: "vendors", element: <Vendors /> },
                     { path: "vendors/:id", element: <VendorDetail /> },
                     { path: "your-cart", element: <Cart /> },
-                    { path: "pick-up/:id", element: <UserRoute><PickUp /></UserRoute> },
-                    { path: "checkout", element: <CheckoutForm /> },
+                    { path: "pick-up", element: <AuthRoute><PickUp /></AuthRoute> },
+                    { path: "checkout", element: <AuthRoute><CheckoutForm /></AuthRoute> },
                     { path: "check-session", element: <CheckSession /> },
                     { path: "return", element: <Return />},
                     { path: "reset-request", element: <UserResetRequest /> },
@@ -202,12 +221,12 @@ const router = createBrowserRouter([
             {
                 path: "vendor",
                 children: [
-                    { path: "dashboard/:id", element: <VendorRoute><VendorDashboard /></VendorRoute> },
+                    { path: "dashboard", element: <AuthRoute><VendorDashboard /></AuthRoute> },
                     { path: "sales/:id", element: <VendorRoute><VendorSales /></VendorRoute> },
-                    { path: "scan/:id", element: <VendorRoute><VendorScan /></VendorRoute> },
+                    { path: "scan", element: <AuthRoute><VendorScan /></AuthRoute> },
                     { path: "signup", element: <VendorLoginPopup /> },
                     { path: "profile/:id", element: <VendorRoute><VendorProfile /></VendorRoute> },
-                    { path: "vendor-create/:id", element: <VendorRoute><VendorCreate /></VendorRoute> },
+                    { path: "vendor-create", element: <AuthRoute><VendorCreate /></AuthRoute> },
                     { path: "logout", element: <VendorLogout />},
                     { path: "password-reset", element: <VendorPasswordReset /> },
                     { path: "reset-request", element: <VendorResetRequest /> },
