@@ -20,6 +20,9 @@ function VendorBasketCard({ vendorId, marketDay }) {
     const [tempSavedBaskets, setTempSavedBaskets] = useState(null);
     const [isLive, setIsLive] = useState(false);
 
+    const isSavedCondition = savedBaskets && savedBaskets.length > 0; 
+    const isLiveCondition = isSavedCondition && new Date(marketDay?.date) <= new Date(); 
+
     useEffect(() => {
         if (vendorId && marketDay?.id && marketDay?.vendor_markets) {
             const vendorMarketEntry = marketDay.vendor_markets.find(vm => vm.vendor_id === vendorId);
@@ -75,19 +78,38 @@ function VendorBasketCard({ vendorId, marketDay }) {
     
     useEffect(() => {
         if (savedBaskets.length > 0) {
-            setNumBaskets(savedBaskets.length);
-    
             const firstBasket = savedBaskets[0];
-            setBasketValue(firstBasket.basket_value);
-            setPrice(firstBasket.price);
+            const pickupStart = firstBasket.pickup_start ? new Date(firstBasket.pickup_start) : null;
+            const pickupEnd = firstBasket.pickup_end ? new Date(firstBasket.pickup_end) : null;
+            const currentTime = new Date();
     
-            if (firstBasket.pickup_start) {
-                const start = timeConverter(firstBasket.pickup_start);
-                setStartTime(start);
+            let isLive = false;
+            if (pickupStart) {
+                const liveThreshold = new Date(pickupStart.getTime() - 48 * 60 * 60 * 1000);
+                if (currentTime >= liveThreshold && currentTime < pickupStart) {
+                    isLive = true;
+                }
             }
-            if (firstBasket.pickup_end) {
-                const end = timeConverter(firstBasket.pickup_end);
-                setEndTime(end);
+    
+            if (isLive) {
+                setNumBaskets(savedBaskets.length);
+                setBasketValue(firstBasket.basket_value);
+                setPrice(firstBasket.price);
+    
+                if (pickupStart) {
+                    const start = timeConverter(firstBasket.pickup_start);
+                    setStartTime(start);
+                }
+                if (pickupEnd) {
+                    const end = timeConverter(firstBasket.pickup_end);
+                    setEndTime(end);
+                }
+            } else {
+                setNumBaskets('');
+                setBasketValue('');
+                setPrice('');
+                setStartTime('');
+                setEndTime('');
             }
         } else {
             setNumBaskets('');
@@ -96,8 +118,8 @@ function VendorBasketCard({ vendorId, marketDay }) {
             setStartTime('');
             setEndTime('');
         }
-    }, [savedBaskets]);    
-
+    }, [savedBaskets]);
+    
     useEffect(() => {
         async function fetchMarketName(marketId) {
             if (marketId) {
@@ -322,14 +344,14 @@ function VendorBasketCard({ vendorId, marketDay }) {
             setIsLive(diffInHours <= 48);
         }
     }, [marketDay]);
-    
 
     return (
         <div className='badge-container'>
             <div className="basket-card">
-                {isLive && <p className="badge-live">Live</p>}
-                {isSaved && !isLive && <p className="badge-saved">Pending</p>}
-                {/* {!isLive && !isSaved && <p className='badge-pending'>Pending</p>} */}
+                {isLiveCondition && <p className="badge-live">Live</p>}
+                {isSavedCondition && !isLiveCondition && <p className="badge-saved">Pending</p>}
+                {/* {!isLiveCondition && !isSavedCondition && <p className='badge-pending'>Pending</p>} */}
+
                 {marketDay && marketDay.date ? (
                     <>
                         <div className='text-center'>
