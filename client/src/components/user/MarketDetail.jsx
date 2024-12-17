@@ -369,7 +369,7 @@ function MarketDetail ({ match }) {
                         className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
                         onClick={handleClick}>&#9829;</button>
                     {showAlert && (
-                        <div className={`alert-favorites ${!showAlert ? 'alert-favorites-hidden' : ''}`}>
+                        <div className={`alert alert-favorites ${!showAlert ? 'alert-favorites-hidden' : ''}`}>
                             {alertMessage}
                         </div>
                     )}
@@ -402,10 +402,8 @@ function MarketDetail ({ match }) {
                         )
                     )}
             </div>
-            <br/>
-            <br/>
-            <div className='flex-space-between'>
-                <h2>Vendors in this Market:</h2>
+            <div className='flex-space-between margin-t-24'>
+                <h2>Vendors:</h2>
                 <select value={selectedProduct} onChange={handleProductChange}>
                     <option value="">All Products</option>
                     {Array.isArray(productList) && productList.map((product) => (
@@ -454,7 +452,7 @@ function MarketDetail ({ match }) {
                                         ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
                                         : ''}
                                     {vendorAlertStates[vendorId] && (
-                                        <div className={`alert-favorites alert-cart-market`}>
+                                        <div className={`alert alert-cart-market`}>
                                             {alertMessage}
                                         </div>
                                     )}

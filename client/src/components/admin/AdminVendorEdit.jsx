@@ -276,7 +276,23 @@ function AdminVendorEdit({ vendors }) {
                             </div>
                             <div className='form-group'>
                                 <label>Vendor Image:</label>
+                                {vendorData ? (
+                                    <div>
+                                        <img
+                                            className='img-market'
+                                            src={`/vendor-images/${vendorData.image}`}
+                                            alt="Vendor Image"
+                                        />
+                                    </div>
+                                ) : ''}
+                                <div className='flex-start flex-center-align'>
+                                    <div className='margin-l-8'>
+                                        <button className='btn btn-small' onClick={handleDeleteImage} > Delete Image </button>
+                                    </div>
+                                    <label for='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
+                                </div>
                                 <input
+                                    id="file-upload"
                                     type="file"
                                     name="file"
                                     accept="image/*"
@@ -293,22 +309,6 @@ function AdminVendorEdit({ vendors }) {
                                 <tr>
                                     <td className='cell-title'>Image:</td>
                                     <td className='cell-text'>
-                                        {vendorData ? (
-                                            <div>
-                                                <img
-                                                    className='img-market'
-                                                    src={`/vendor-images/${vendorData.image}`}
-                                                    alt="Vendor Image"
-                                                />
-                                                <button
-                                                    className='btn-delete margin-t-8'
-                                                    onClick={handleDeleteImage}
-                                                    disabled={!vendorData.image}
-                                                >
-                                                    Delete Image
-                                                </button>
-                                            </div>
-                                        ) : ''}
                                     </td>
                                 </tr>
                                     <tr>

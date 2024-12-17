@@ -167,12 +167,16 @@ function AdminVendorEdit({ vendors }) {
                     </div>
                     <div className='form-group'>
                         <label>Vendor Image:</label>
-                        <input
-                            type="file"
-                            name="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                        />
+                        <div className='flex-start flex-center-align'>
+                            <label for='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
+                            <input
+                                id="file-upload"
+                                type="file"
+                                name="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                            />
+                        </div>
                     </div>
                     <button className='btn-edit' onClick={handleSaveVendor}>Save Changes</button>
                 </div>

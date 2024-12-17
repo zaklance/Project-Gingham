@@ -228,6 +228,8 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
             setStatus('initial');
         }
     };
+
+    console.log(adminMarketData)
     
     return(
         <>
@@ -340,17 +342,27 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 <label>Vendor Image:</label>
                                 {adminMarketData?.image ? (
                                     <>
-                                        <img className='img-market' src={`/market-images/${adminMarketData.image}`} alt="Market Image" />
-                                        <button className='btn-delete' onClick={handleImageDelete}>Delete Image</button>
+                                        <img 
+                                            className='img-market' 
+                                            src={`/market-images/${adminMarketData.image}`} 
+                                            alt="Market Image" />
                                     </>
                                 ) : (
+                                    <>No uploaded Image</>
+                                )}
+                                <div className='flex-start flex-center-align'>
+                                    <div className='margin-l-8'>
+                                        <button className='btn btn-small' onClick={handleImageDelete}>Delete Image</button>
+                                    </div>
+                                    <label for='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
                                     <input
+                                        id="file-upload"
                                         type="file"
                                         name="file"
                                         accept="image/*"
                                         onChange={handleFileChange}
                                     />
-                                )}
+                                </div>
                             </div>
                             <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
                             <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>

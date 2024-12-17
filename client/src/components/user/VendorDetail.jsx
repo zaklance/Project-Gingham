@@ -298,7 +298,7 @@ function VendorDetail({ products }) {
                                 onClick={handleClick}>&#9829;
                             </button>
                             {showAlert && (
-                                <div className='alert-favorites nowrap'>
+                                <div className='alert alert-favorites nowrap'>
                                     {alertMessage}
                                 </div>
                             )}
@@ -355,7 +355,7 @@ function VendorDetail({ products }) {
                                                     ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
                                                     : ''}
                                                 {vendorAlertStates[market.market_day_id] && (
-                                                    <div className={`alert-favorites alert-cart-vendor`}>
+                                                    <div className={`alert alert-cart-vendor`}>
                                                         {alertMessage}
                                                     </div>
                                                 )}
