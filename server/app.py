@@ -1552,7 +1552,7 @@ def handle_baskets():
             if not saved_baskets:
                 return jsonify([]), 200
 
-            app.logger.debug(f"Found {len(saved_baskets)} baskets.")
+            # app.logger.debug(f"Found {len(saved_baskets)} baskets.")
             return jsonify([basket.to_dict() for basket in saved_baskets]), 200
 
         except Exception as e:
@@ -2258,7 +2258,15 @@ def admin_password_reset(token):
 @app.route('/api/user-notifications', methods=['GET'])
 def get_user_notifications():
     if request.method == 'GET':
-        notifications = UserNotification.query.all()
+        user_id = request.args.get('user_id')
+
+        query = UserNotification.query
+        if user_id:
+            query = query.filter_by(user_id=user_id)
+
+        notifications = query.order_by(UserNotification.created_at.desc()).all()
+        
+        # notifications = UserNotification.query.all()
         return jsonify([notif.to_dict() for notif in notifications]), 200
     
 @app.route('/api/user-notifications/<int:id>', methods=['DELETE'])
@@ -2285,6 +2293,7 @@ def create_vendor_notification():
     try:
         new_notification = VendorNotification(
             message=data['message'],
+            nav_link=data['nav_link'],
             vendor_id=data['vendor_id'],
             vendor_user_id=data['vendor_user_id'],
             created_at=datetime.utcnow(),
