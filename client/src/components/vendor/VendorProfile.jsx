@@ -293,7 +293,6 @@ function VendorProfile () {
             alert('No image to delete.');
             return;
         }
-    
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/delete-image`, {
                 method: 'POST',
@@ -499,6 +498,7 @@ function VendorProfile () {
                                             value={tempVendorData ? tempVendorData.city : ''}
                                             onChange={handleVendorInputChange}
                                         />
+                                        <br className='m-br'/>
                                         <select className='select-state'
                                             name="state"
                                             value={tempVendorData ? tempVendorData.state : ''} 
@@ -522,20 +522,36 @@ function VendorProfile () {
                                                     alt="Vendor"
                                                     style={{ maxWidth: '100%', height: 'auto' }}
                                                 />
-                                                <button className='btn-edit' onClick={handleDeleteImage}>Delete Image</button>
                                             </>
                                         ) : (
                                             <p>No image uploaded.</p>
                                         )}
-                                        <input
-                                            type="file"
-                                            name="file"
-                                            accept="image/*"
-                                            onChange={handleFileChange}
-                                        />
+                                        <div className='flex-start flex-center-align'>
+                                            <div className='margin-l-8'>
+                                                <button className='btn btn-small' onClick={handleDeleteImage}>Delete Image</button>
+                                            </div>
+                                            <label for='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
+                                            <input
+                                                id="file-upload"
+                                                type="file"
+                                                name="file"
+                                                accept="image/*"
+                                                onChange={handleFileChange}
+                                            />
+                                        </div>
                                     </div>
-                                    <button className='btn-edit' onClick={handleSaveVendorChanges}>Save Changes</button>
-                                    <button className='btn-edit' onClick={handleVendorEditToggle}>Cancel</button>
+                                    <dix className='flex-start flex-gap-8'>
+                                        <button className='btn-edit nowrap' onClick={handleSaveVendorChanges}>Save Changes</button>
+                                        <button className='btn-edit' onClick={handleVendorEditToggle}>Cancel</button>
+                                        <div className='alert-container'>
+                                            <div className={status === 'fail' ? 'alert alert-favorites alert-fail' : 'alert-favorites-hidden'}>
+                                                Uploading Image Failed
+                                            </div>
+                                            <div className={status === 'Uploading' ? 'alert alert-favorites alert-uploading' : 'alert-favorites-hidden'}>
+                                                Uploading Image
+                                            </div>
+                                        </div>
+                                    </dix>
                                 </>
                             ) : (
                                     <>
@@ -576,15 +592,9 @@ function VendorProfile () {
                                         {vendorUserData?.is_admin && (    
                                             <div className='flex-start'>
                                                 <button className='btn-edit' onClick={handleVendorEditToggle}>Edit</button>
-                                            <div>
-                                                <div className={status === 'success' ? 'alert-favorites' : 'alert-favorites-hidden'}>
+                                            <div className='alert-container'>
+                                                <div className={status === 'success' ? 'alert alert-favorites' : 'alert-favorites-hidden'}>
                                                     Success Uploading Image
-                                                </div>
-                                                <div className={status === 'fail' ? 'alert-favorites alert-fail' : 'alert-favorites-hidden'}>
-                                                    Uploading Image Failed
-                                                </div>
-                                                <div className={status === 'Uploading' ? 'alert-favorites' : 'alert-favorites-hidden'}>
-                                                    Uploading Image
                                                 </div>
                                             </div>
                                         </div>

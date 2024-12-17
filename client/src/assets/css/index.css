@@ -200,6 +200,10 @@ h2 {
   text-align: center;
 }
 
+.text-white-background {
+  background-color: white;
+}
+
 .nowrap {
   white-space: nowrap;
 }
@@ -282,6 +286,10 @@ h2 {
 
 .margin-b-24 {
   margin-bottom: 24px;
+}
+
+.padding-8 {
+  padding: 8px;
 }
 
 .width-100 {
@@ -1096,6 +1104,22 @@ button:active {
   transition: .1s;
 }
 
+.btn-file {
+  font-weight: 200 !important;
+  padding: .4em .8em !important;
+  font-size: .75em !important;
+  margin-top: 4px;
+  margin-left: 12px;
+  min-width: 80px !important;
+  max-width: 200px !important;
+  overflow-x: hidden;
+}
+
+#file-upload {
+  display: none;
+  opacity: 0;
+}
+
 link {
   padding: 0;
 }
@@ -1713,24 +1737,27 @@ select:hover {
   display: inline-block;
 }
 
-.alert-favorites {
+.alert {
   position: absolute;
-  /* margin-left: 24px; */
-  /* margin-top: -5px; */
-  top: -4px;
-  left: 72px;
-  padding: 10px 20px;
   width: max-content;
   background-color: #00bda4;
   color: white;
   font-size: 12px;
   border-radius: 5px;
+  padding: 10px 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: opacity 0.3s ease, transform 0.3s ease;
   opacity: 1;
   animation-name: favAnimation;
   animation-duration: 3333ms;
   animation-fill-mode: forwards;
+}
+
+.alert-favorites {
+  /* margin-left: 24px; */
+  /* margin-top: -5px; */
+  top: -4px;
+  left: 72px;
 }
 
 .alert-favorites-hidden {
@@ -1741,29 +1768,31 @@ select:hover {
 
 .alert-cart-market {
   position: absolute;
-  top: 24px;
-  right: 8px;
+  top: 20px;
+  right: 2px;
 }
 
 .alert-cart-vendor {
   position: absolute;
-  top: 24px;
-  right: -6px;
+  top: 20px;
+  right: 2px;
 }
 
 .alert-fail {
-  position: fixed;
   background-color: #ff4b5a;
+  top: 12px;
+  left: 0px;
 }
 
 .alert-uploading {
-  position: fixed;
   background-color: #8f96eb;
+  top: 12px;
+  left: 0px;
 }
 
 .alert-reviews {
-  margin-left: 24px;
-  margin-top: -5px;
+  /* left: 240px; */
+  /* top: -5px; */
   padding: 10px 20px;
   max-width: max-content;
   background-color: #00bda4;
@@ -2041,12 +2070,19 @@ select:hover {
     height: 54px;
   }
 
+  .nav-bar {
+    overflow-x: scroll;
+    overflow-y: visible !important;
+    height: 80px;
+    margin-bottom: -22px;
+  }
+
   .nav-bar ul {
     height: 57px;
   }
 
   .nav-tab {
-    padding: 21px 16px 28px 16px;
+    padding: 21px 20px 28px 20px;
   }
 }
 
@@ -2130,14 +2166,6 @@ select:hover {
     width: 100%;
     padding: 2px;
   }
-
-  .form-login label {
-    min-width: 100px;
-  }
-
-  .form-group input, .form-login input {
-    min-width: 172px !important;
-  }
   
   .btn-home {
     display: none;
@@ -2157,13 +2185,6 @@ select:hover {
 
   .header {
     padding: 0;
-  }
-
-  .nav-bar {
-    overflow-x: scroll;
-    overflow-y: visible !important;
-    height: 80px;
-    margin-bottom: -22px;
   }
 
   .title-big {
@@ -2239,13 +2260,25 @@ select:hover {
     width: 78%;
   }
 
-  .form-group label {
+  .form-login label, .form-group label {
     min-width: 100px;
   }
 
-  .form-group input {
-    min-width: 208px;
+  .form-group input,
+  .form-login input {
+    min-width: 172px !important;
   }
+
+  .form-address input {
+    display: table-cell;
+    padding: 8px;
+    box-sizing: border-box;
+    max-width: 172px;
+  }
+
+  /* .form-group input {
+    min-width: 208px;
+  } */
 
   .form-group textarea {
     background-color: white;
@@ -2282,7 +2315,7 @@ select:hover {
 
   .popup-notif-on {
     position: fixed;
-    top: -200px;
+    top: 0;
     left: 10vw;
     width: 90vw;
     max-height: 320px;
@@ -2290,5 +2323,24 @@ select:hover {
 
   .ul-notif {
     min-height: min-content;
+  }
+
+  .alert-cart-market {
+    top: 62px;
+    right: 0px;
+  }
+  
+  .alert-cart-vendor {
+    top: 102px;
+    right: 0px;
+  }
+
+  .alert-fail {
+    top: 14px;
+    left: -20px;
+  }
+
+  .btn-file {
+  max-width: 120px;
   }
 }

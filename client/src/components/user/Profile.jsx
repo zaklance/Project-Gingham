@@ -335,33 +335,40 @@ function Profile({ marketData }) {
                             />
                         </div>
                         <div className='form-group'>
-                        <label>Avatar:</label>
-                        {profileData?.avatar ? (
-                            <>
-                                <img
-                                    className='img-avatar-profile'
-                                    src={`/user-images/${profileData.avatar}`}
-                                    alt="Avatar"
-                                    style={{ maxWidth: '100%', height: 'auto' }}
+                            <label>Avatar:</label>
+                            {profileData?.avatar ? (
+                                <>
+                                    <img
+                                        className='img-avatar-profile'
+                                        src={`/user-images/${profileData.avatar}`}
+                                        alt="Avatar"
+                                        style={{ maxWidth: '100%', height: 'auto' }}
+                                    />
+                                    <button className='btn-edit' onClick={handleDeleteImage}>Delete Image</button>
+                                </>
+                            ) : (
+                                <p>No image uploaded.</p>
+                            )}
+                            <div className='flex-start flex-center-align'>
+                                <div className='margin-l-8'>
+                                    <button className='btn btn-small' onClick={handleDeleteImage}>Delete Image</button>
+                                </div>
+                                <label for='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
+                                <input
+                                    id="file-upload"
+                                    type="file"
+                                    name="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
                                 />
-                                <button className='btn-edit' onClick={handleDeleteImage}>Delete Image</button>
-                            </>
-                        ) : (
-                            <p>No image uploaded.</p>
-                        )}
-                        <input
-                            type="file"
-                            name="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                        />
-                        </div> 
+                            </div>
+                        </div>
                         <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
                         <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
                     </div>
                 ) : (
                     <>
-                        <div className='flex-space-evenly flex-gap-16 flex-start-align'>
+                            <div className='flex-space-evenly flex-gap-16 flex-start-align m-flex-wrap'>
                             {profileData.avatar ? (
                                 <img className='img-avatar-profile' src={`/user-images/${profileData.avatar}`} alt="Avatar" />
                             ) : (
