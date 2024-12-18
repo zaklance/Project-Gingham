@@ -37,10 +37,9 @@ function Contact() {
 
     return(
         <div className=''>
-            <div className='vendor-wrapper'>
-                <h1 className='margin-t-16'>Contact Us!</h1>
-                <p>Have a question for us? Feel Free to send us an inquiry using the form below:</p>
-                <br></br>
+            <div>
+                <h2 className='margin-t-16 margin-b-16'>Contact Us!</h2>
+                <p>Is there something you love, dislike, or have a question for us? Feel Free to send us an message using the form below:</p>
                 <div>
                     <p>Prefer to email us directly? Click here: &ensp;<strong>
                         <a href={`mailto:hello@mufo.nyc`} target="_blank" rel="noopener noreferrer">

@@ -4,6 +4,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 /* Reset some default browser styles */
@@ -167,6 +168,10 @@ h2 {
   font-size: 6em;
 }
 
+.title-med {
+  font-size: 3em;
+}
+
 .title {
   margin-top:16px;
 }
@@ -176,9 +181,12 @@ h2 {
   margin-bottom: -24px;
 }
 
-
 .text-light {
-  color: white;
+  color: white !important;
+}
+
+.text-500 {
+  font-weight: 500;
 }
 
 .text-italic {
@@ -329,7 +337,8 @@ ul {
 .footer-li {
   color: #3b4752;
   margin: 4px;
-  padding: 4px;
+  padding: 2px;
+  font-weight: 600;
 }
 
 .footer-li:hover {
@@ -393,13 +402,17 @@ ul {
   text-align: left;;
 }
 
+.ul-team .li-team, .li-team strong, .li-team i {
+  color: #006FE6;
+}
+
 .ul-team .li-team:nth-child(even){
-  background-color: #eee;
+  background-color: #eff;
   padding: 4px;
 }
 
 .ul-team .li-team:nth-child(odd){
-  background-color: #dbdbdb;
+  background-color: #d8f4fe;
   padding: 4px;
 }
 
@@ -719,6 +732,7 @@ ul {
   cursor: pointer;
   transition: border-color 0.25s;
   font-family: "Quicksand", sans-serif;
+  /* font-family: "Lexend Deca", sans-serif; */
   font-optical-sizing: auto;
   font-style: normal;
 }
@@ -850,6 +864,18 @@ ul {
   border: none;
   background-color: #ff7b8a;
   color: #ff4b5a;
+}
+
+.btn-filter {
+  height: 48px;
+  padding: 4px 12px;
+  font-size: 1em;
+  font-family: "Lexend Deca", sans-serif;
+  font-weight: 600;
+  border-radius: 12px;
+  border: none;
+  background-color: #eee;
+  color:#3b4752
 }
 
 .x-btn {
@@ -1115,6 +1141,16 @@ button:active {
   overflow-x: hidden;
 }
 
+.btn-blue {
+  background-color: #eef !important;
+  color: #006FE6 !important;
+}
+
+.btn-grey {
+  background-color: #eee !important;
+  color: #3b4752 !important;
+}
+
 #file-upload {
   display: none;
   opacity: 0;
@@ -1306,7 +1342,8 @@ link {
   min-width: 120px;
   font-weight: 600;
   font-size: 10pt;
-  background-color: #eee;
+  background-color: #eef;
+  color: #006FE6;
 }
 
 .form-group input {
@@ -1338,10 +1375,11 @@ link {
 
 .form-contact label{
   background-color: white;
+  color: #3b4752;
 }
 
 .form-contact input, .form-contact textarea {
-  background-color: white;
+  background-color: #eee;
   border: #dbdbdb 1px solid;
   resize: none;
   border: none;
@@ -1356,7 +1394,8 @@ link {
   vertical-align: top;
   margin-bottom: 5px;
   padding: 8px;
-  background-color: #eee;
+  background-color: #eff;
+  color: #006FE6;
   text-align: left;
   font-size: .88em;
   white-space: nowrap;
@@ -1405,7 +1444,8 @@ link {
   border-radius: 12px;
   font-weight: 600;
   min-width: 124px;
-  background-color: #eee;
+  background-color: #eef;
+  color: #006FE6
 }
 
 .cell-text {
@@ -1490,14 +1530,15 @@ link {
 
 .table-basket td {
   padding: 2px;
+  color: #006FE6;
 }
 
 .table-basket tr:nth-child(odd) {
-  background-color: #eee;
+  background-color: #d8f4fe;
 }
 
 .table-basket tr:nth-child(even) {
-  background-color: #dbdbdb;
+  background-color: #eff
 }
 
 .table-center {
@@ -1707,16 +1748,16 @@ select:hover {
 .img-notif {
   background-image: url('../images/icons8-notification.svg');
   background-repeat: no-repeat;
-  background-position: right 50% top 50%;
-  background-size: 1.8rem auto;
+  background-position: right 50% top 48%;
+  background-size: 1.5rem auto;
   /* font-size: 1.5em; */
 }
 
 .img-notif:hover {
   background-image: url('../images/icons8-notification-color-3.gif');
   background-repeat: no-repeat;
-  background-position: right 50% top 50%;
-  background-size: 1.8rem auto;
+  background-position: right 50% top 48%;
+  background-size: 1.5rem auto;
 }
 
 .img-hot {
@@ -2081,6 +2122,22 @@ select:hover {
   text-decoration: underline;
 }
 
+.faqs summary {
+  background-color: #eef;
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #007BFF;
+  padding: 8px
+}
+
+.faqs p {
+  background-color: #eff;
+  color: #007BFF;
+  font-size: 1.2em;
+  font-weight: 200;
+  padding: 8px 8px 16px 28px;
+}
+
 .m-br {
   display: none;
 }
@@ -2126,6 +2183,27 @@ select:hover {
 
   .ul-notif {
     min-height: fit-content !important;
+  }
+
+  .popup {
+    top: 0;
+    left: 0;
+    width: 100vw;
+    padding: 0;
+    margin: 0px;
+  }
+
+  .login-bar {
+    width: 90%;
+    margin: 0px;
+  }
+
+  .form {
+    max-width: 100%;
+  }
+
+  .form-contact textarea {
+    max-width: 48vw;
   }
 }
 
@@ -2186,19 +2264,6 @@ select:hover {
   .container {
     width: 100vw;
     padding: 0;
-  }
-
-  .popup {
-    top: 0;
-    left: 0;
-    width: 100vw;
-    padding: 0;
-    margin: 0px;
-  }
-
-  .login-bar {
-    width: 90%;
-    margin: 0px;
   }
 
   .wrapper {

@@ -5,8 +5,8 @@ import './assets/css/index.css';
 
 // main routes
 import App from './App.jsx';
-import Contact from './components/Contact.jsx';
 import Home from './components/Home.jsx';
+import Contact from './components/Contact.jsx';
 import ErrorPage from './components/ErrorPage.jsx';
 
 // user routes
@@ -20,6 +20,7 @@ import PickUp from './components/user/PickUp.jsx';
 import Profile from './components/user/Profile.jsx';
 import Vendors from './components/user/Vendors.jsx';
 import VendorDetail from './components/user/VendorDetail.jsx';
+import UserFAQs from './components/UserFAQs.jsx';
 import Logout from './components/user/Logout.jsx';
 import UserResetRequest from './components/user/UserResetRequest.jsx';
 import UserPasswordReset from './components/user/UserPasswordReset.jsx';
@@ -210,6 +211,7 @@ const router = createBrowserRouter([
                     { path: "vendors/:id", element: <VendorDetail /> },
                     { path: "your-cart", element: <Cart /> },
                     { path: "pick-up", element: <AuthRoute><PickUp /></AuthRoute> },
+                    { path: "faqs", element: <UserFAQs /> },
                     { path: "checkout", element: <AuthRoute><CheckoutForm /></AuthRoute> },
                     { path: "check-session", element: <CheckSession /> },
                     { path: "return", element: <Return />},
