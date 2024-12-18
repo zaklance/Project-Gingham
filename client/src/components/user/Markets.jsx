@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useOutletContext } from 'react-router-dom';
+import { weekDay } from '../../utils/common';
 import MarketCard from './MarketCard';
 // import AdvancedMarkerCard from './AdvancedMarkerCard';
 import '../../assets/css/index.css';
@@ -8,10 +9,15 @@ import { APIProvider, Map, Marker, AdvancedMarker, Pin } from '@vis.gl/react-goo
 
 function Markets() {
     const [markets, setMarkets] = useState([]);
+    const [marketDays, setMarketDays] = useState([]);
     const [query, setQuery] = useState("");
     const [marketFavs, setMarketFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
+    const [selectedDay, setSelectedDay] = useState('');
+    const [isInSeason, setIsInSeason] = useState(false);
+
     
     const dropdownRef = useRef(null);
     const location = useLocation();
@@ -31,35 +37,47 @@ function Markets() {
         (!isClicked || marketFavs.some(marketFavs => marketFavs.market_id === market.id))
     );
 
-    const filteredMarketsResults = markets.filter(market =>
-        market.name.toLowerCase().includes(query.toLowerCase()) &&
-        (!isClicked || marketFavs.some(marketFavs => marketFavs.market_id === market.id))
-    );
+    const filteredMarketsResults = markets.filter(market => {
+        const today = new Date();
+        const seasonStart = new Date(market.season_start);
+        const seasonEnd = new Date(market.season_end);
+        const inSeason = market.year_round || (today >= seasonStart && today <= seasonEnd);
+
+        const matchesSelectedDay = marketDays.some(marketDay =>
+            marketDay.market_id === market.id &&
+            marketDay.day_of_week === parseInt(selectedDay)
+        );
+
+        return (
+            market.name.toLowerCase().includes(query.toLowerCase()) &&
+            (!isClicked || marketFavs.some(fav => fav.market_id === market.id)) &&
+            (!isInSeason || inSeason) &&
+            (!selectedDay || matchesSelectedDay)
+        );
+    });
+
     
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/markets")
-            .then(response => response.json())
-            .then(markets => setMarkets(markets))
-            .catch(error => console.error('Error fetching markets', error));
-    }, []);
-
-    useEffect(() => {
-        if (location.state?.isClicked !== undefined) { 
+        if (location.state?.isClicked !== undefined) {
             setIsClicked(location.state.isClicked);
         }
-        fetch("http://127.0.0.1:5555/api/markets")
-            .then(response => response.json())
-            .then(data => setMarkets(data))
-    }, [location.state]);
-
-    useEffect(() => {
         if (location.state?.resetFilters) {
             setIsClicked(false);
         }
         fetch("http://127.0.0.1:5555/api/markets")
             .then(response => response.json())
-            .then(data => setMarkets(data))
+            .then(markets => setMarkets(markets))
+            .catch(error => console.error('Error fetching markets', error));
     }, [location.state]);
+
+    useEffect(() => {
+        fetch(`http://127.0.0.1:5555/api/market-days`)
+            .then(response => response.json())
+            .then(data => {
+                setMarketDays(data);
+            })
+            .catch(error => console.error('Error fetching market data:', error));
+    }, []);
 
     const unionSquare = { lat:40.736358642578125, lng: -73.99076080322266 }
 
@@ -71,7 +89,7 @@ function Markets() {
         const map = new Map(document.getElementById("map"), {
             zoom: 13,
             center,
-            mapId: "4504f8b37365c3d0",
+            mapId: import.meta.env.VITE_GOOGLE_MAP_ID,
         });
 
         const uniqueNames = new Set();
@@ -164,6 +182,18 @@ function Markets() {
         }
     };
 
+    const handleDropDownFilters = (event) => {
+        setShowFilters(!showFilters)
+    }
+
+    const handleDayChange = (event) => {
+        setSelectedDay(event.target.value);
+    };
+
+    const handleInSeasonChange = (event) => {
+        setIsInSeason(!isInSeason)
+    }
+
     useEffect(() => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
@@ -218,6 +248,30 @@ function Markets() {
                                     onClick={handleClick}>&#9829;
                                 </button>
                             </td>
+                                <td>
+                                    <button className='btn btn-filter' onClick={handleDropDownFilters}>&#9776;</button>
+                                    {showFilters && (
+                                        <div className='dropdown-content box-filters'>
+                                            <div className='form-filters'>
+                                                <label className='margin-r-26'>In Season:</label>
+                                                <input
+                                                    type="checkbox"
+                                                    name="in_season"
+                                                    value={true}
+                                                    onChange={handleInSeasonChange}
+                                                />
+                                            </div>
+                                            <select className='select-dropdown' value={selectedDay} onChange={handleDayChange}>
+                                                <option value="">Days Open</option>
+                                                {Array.isArray(weekDay) && weekDay.map((product, index) => (
+                                                    <option key={index} value={index}>
+                                                        {product}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    )}
+                                </td>
                         </tr>
                     </tbody>
                 </table>

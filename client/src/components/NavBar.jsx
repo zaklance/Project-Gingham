@@ -23,8 +23,6 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
 
     const navigate = useNavigate();
 
-    console.log(vendorNotifications)
-
 
     useEffect(() => {
     if (isUserLoggedIn) {
@@ -145,8 +143,6 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
             setIsNotifPopup(false);
         }
     };
-
-    console.log(notifications)
     
 
     return (
@@ -174,7 +170,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             <NavLink className='nav-tab m-tab-left color-3 btn-nav' to={`/vendor/dashboard`}>Dashboard</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-5 btn-nav' to={`/vendor/sales/${vendorUserId}`}>Sales</NavLink>
+                            <NavLink className='nav-tab color-5 btn-nav' to={`/vendor/sales`}>Sales</NavLink>
                         </li>
                         <li>
                             <NavLink className='nav-tab color-4 btn-nav' to={`/vendor/profile/${vendorUserId}`}>Profile</NavLink>
@@ -218,13 +214,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             <NavLink className='nav-tab m-tab-left color-3 btn-nav' to={`/admin/profile/${admin_id}`}>Profile</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-5 btn-nav' to={`/admin/markets/${admin_id}`}>Markets</NavLink>
+                            <NavLink className='nav-tab color-5 btn-nav' to={`/admin/markets`}>Markets</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav' to={`/admin/vendors/${admin_id}`}>Vendors</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav' to={`/admin/vendors`}>Vendors</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-1 btn-nav' to={`/admin/users/${admin_id}`}>Users</NavLink>
+                            <NavLink className='nav-tab color-1 btn-nav' to={`/admin/users`}>Users</NavLink>
                         </li>
                         {adminNotifications.length > 0 &&
                             <li className='notification' onClick={handleAdminNotifPopup}>
