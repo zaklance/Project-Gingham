@@ -37,20 +37,19 @@ function VendorBasketCard({ vendorId, marketDay }) {
     
                             if (response.ok) {
                                 const data = await response.json();
+                                console.log('Fetched Saved Baskets:', data); 
                                 
                                 if (data.length === 0) {
                                     setSavedBaskets([]);
                                     setIsSaved(false);
                                     setErrorMessage('No saved baskets found for future markets');
                                 } else {
-                                    const filteredBaskets = data.filter(basket => 
-                                        basket.vendor_id === vendorId &&
-                                        basket.market_day_id === marketDayId &&
-                                        new Date(basket.sale_date).toISOString().split('T')[0] === formattedMarketDate
-                                    );    
-                                    setSavedBaskets(filteredBaskets);
-                                    setIsSaved(filteredBaskets.length > 0);
+                                    setSavedBaskets(data);
+                                    setIsSaved(true);
                                 }
+                            } else {
+                                console.error('Failed to fetch baskets:', response.statusText);
+                                setErrorMessage('Failed to fetch saved baskets.');
                             }
                         } catch (error) {
                             console.error('Error fetching saved baskets:', error);
@@ -75,29 +74,81 @@ function VendorBasketCard({ vendorId, marketDay }) {
     
     useEffect(() => {
         if (savedBaskets.length > 0) {
-            setNumBaskets(savedBaskets.length);
-    
+            console.log('Saved Baskets:', savedBaskets);
             const firstBasket = savedBaskets[0];
-            setBasketValue(firstBasket.basket_value);
-            setPrice(firstBasket.price);
+    
+            setNumBaskets(savedBaskets.length);
+            setBasketValue(firstBasket.basket_value || '');
+            setPrice(firstBasket.price || '');
     
             if (firstBasket.pickup_start) {
                 const start = timeConverter(firstBasket.pickup_start);
                 setStartTime(start);
+            } else {
+                setStartTime('');
             }
+    
             if (firstBasket.pickup_end) {
                 const end = timeConverter(firstBasket.pickup_end);
                 setEndTime(end);
+            } else {
+                setEndTime('');
             }
         } else {
+            console.log('No Saved Baskets Found');
             setNumBaskets('');
             setBasketValue('');
             setPrice('');
             setStartTime('');
             setEndTime('');
         }
-    }, [savedBaskets]);    
-
+    }, [savedBaskets]);
+    
+    useEffect(() => {
+        if (savedBaskets.length > 0) {
+            const firstBasket = savedBaskets[0];
+            const now = new Date();
+    
+            if (marketDay.date && firstBasket.pickup_start) {
+                let formattedMarketDate;
+    
+                if (typeof marketDay.date === 'string') {
+                    formattedMarketDate = marketDay.date; 
+                } else if (marketDay.date instanceof Date) {
+                    formattedMarketDate = marketDay.date.toISOString().split('T')[0];
+                } else {
+                    console.error('Invalid format for marketDay.date:', marketDay.date);
+                    setIsLive(false);
+                    return;
+                }
+    
+                const [hour, minute] = firstBasket.pickup_start.split(':');
+    
+                const [year, month, day] = formattedMarketDate.split('-');
+                const combinedDateTime = new Date(`${year}-${month}-${day}T${hour}:${minute}:00`);
+    
+                console.log('Combined DateTime:', combinedDateTime);
+    
+                if (isNaN(combinedDateTime.getTime())) {
+                    console.error('Invalid Date format for Pickup Start:', `${year}-${month}-${day}T${hour}:${minute}:00`);
+                    setIsLive(false);
+                    return;
+                }
+    
+                if (combinedDateTime.getTime() - now.getTime() <= 48 * 60 * 60 * 1000) {
+                    setIsLive(true);
+                } else {
+                    setIsLive(false);
+                }
+            } else {
+                console.error('Missing marketDay.date or firstBasket.pickup_start');
+                setIsLive(false);
+            }
+        } else {
+            setIsLive(false);
+        }
+    }, [savedBaskets, marketDay]);    
+    
     useEffect(() => {
         async function fetchMarketName(marketId) {
             if (marketId) {
@@ -322,14 +373,16 @@ function VendorBasketCard({ vendorId, marketDay }) {
             setIsLive(diffInHours <= 48);
         }
     }, [marketDay]);
-    
 
     return (
         <div className='badge-container'>
             <div className="basket-card">
-                {isLive && <p className="badge-live">Live</p>}
-                {isSaved && !isLive && <p className="badge-saved">Pending</p>}
-                {/* {!isLive && !isSaved && <p className='badge-pending'>Pending</p>} */}
+                {isLive ? (
+                    <p className="badge-live">Live</p>
+                ) : isSaved ? (
+                    <p className="badge-saved">Pending</p>
+                ) : null}
+
                 {marketDay && marketDay.date ? (
                     <>
                         <div className='text-center'>

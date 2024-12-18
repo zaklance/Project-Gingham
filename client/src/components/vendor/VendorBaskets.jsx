@@ -151,8 +151,6 @@ function VendorBaskets({ vendorUserData }) {
                 console.log('Vendor ID is not available');
             }
         }, [vendorId]);
-        
-    
 
     useEffect(() => {
         const calculateNextMarketDays = () => {
@@ -213,9 +211,9 @@ function VendorBaskets({ vendorUserData }) {
                 <div className='flex flex-nowrap box-scroll-x'>
                     {todayBaskets.length > 0 ? (
                         todayBaskets.map((entry, index) => {
-                            const isLive = entry.baskets.length > 0
-                                ? new Date(entry.baskets[0].sale_date) <= new Date()
-                                : false;
+                            const isLive = entry.baskets.length > 0 &&
+                                entry.baskets[0].is_saved &&
+                                new Date(entry.baskets[0].sale_date) <= new Date()
                             return (
                                 <div key={index} className='badge-container'>
                                     <div className='basket-card'>

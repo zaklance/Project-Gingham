@@ -1,8 +1,8 @@
-"""catch up
+"""reinitialize
 
-Revision ID: 87f7a7f2a0f7
+Revision ID: 5d7d9e4a894b
 Revises: 
-Create Date: 2024-12-13 11:01:59.838902
+Create Date: 2024-12-17 17:13:45.137244
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '87f7a7f2a0f7'
+revision = '5d7d9e4a894b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -150,6 +150,7 @@ def upgrade():
     op.create_table('user_notifications',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('message', sa.String(), nullable=False),
+    sa.Column('nav_link', sa.String(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('market_id', sa.Integer(), nullable=True),
     sa.Column('vendor_id', sa.Integer(), nullable=True),
@@ -204,6 +205,7 @@ def upgrade():
     op.create_table('admin_notifications',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('message', sa.String(), nullable=False),
+    sa.Column('nav_link', sa.String(), nullable=False),
     sa.Column('vendor_user_id', sa.Integer(), nullable=True),
     sa.Column('vendor_id', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
@@ -226,6 +228,7 @@ def upgrade():
     op.create_table('vendor_notifications',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('message', sa.String(), nullable=False),
+    sa.Column('nav_link', sa.String(), nullable=False),
     sa.Column('vendor_id', sa.Integer(), nullable=False),
     sa.Column('vendor_user_id', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
