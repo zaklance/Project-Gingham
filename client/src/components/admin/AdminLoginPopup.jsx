@@ -32,7 +32,7 @@ function Login({ handlePopup }) {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    email: loginEmail,
+                    email: loginEmail.toLowerCase(),
                     password: loginPassword
                 }),
                 credentials: 'include'

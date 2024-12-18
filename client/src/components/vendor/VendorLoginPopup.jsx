@@ -86,7 +86,7 @@ function VendorLogin({ handlePopup }) {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    email: signupEmail,
+                    email: signupEmail.toLowerCase(),
                     password: signupPassword,
                     first_name: signupFirstName,
                     last_name: signupLastName,
