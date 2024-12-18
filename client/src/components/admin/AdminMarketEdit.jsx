@@ -19,12 +19,11 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const matchingMarketId = matchingMarket ? matchingMarket.id : null;
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/market-days")
+        fetch(`http://127.0.0.1:5555/api/market-days?market_id=${matchingMarketId}`)
             .then(response => response.json())
             .then(data => {
-                const filteredData = data.filter(item => item.market_id === matchingMarketId);
-                setMarketDays(filteredData)
-                setSelectedDay(filteredData[0]);
+                setMarketDays(data)
+                setSelectedDay(data[0]);
             })
             .catch(error => console.error('Error fetching market days', error));
     }, [matchingMarketId]);

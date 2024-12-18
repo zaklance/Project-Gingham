@@ -117,13 +117,39 @@ const VendorRoute = ({ children }) => {
     return children;
 };
 
-const AuthRoute = ({ children }) => {
-    const token = localStorage.getItem("user_jwt-token") || 
-                  localStorage.getItem("vendor_jwt-token") || 
-                  localStorage.getItem("admin_jwt-token");
-    const id = localStorage.getItem("user_id") || 
-               localStorage.getItem("vendor_user_id") || 
-               localStorage.getItem("admin_user_id");
+const UserAuthRoute = ({ children }) => {
+    const token = localStorage.getItem("user_jwt-token");
+    const id = localStorage.getItem("user_id");
+
+    if (!token || !id) {
+        return (
+            <div className='wrapper-error text-error margin-t-24'>
+                <h1 className='text-red'>Protected route: User not authenticated.</h1>
+            </div>
+        );
+    }
+
+    return children;
+};
+
+const VendorAuthRoute = ({ children }) => {
+    const token = localStorage.getItem("vendor_jwt-token");
+    const id = localStorage.getItem("vendor_user_id");
+
+    if (!token || !id) {
+        return (
+            <div className='wrapper-error text-error margin-t-24'>
+                <h1 className='text-red'>Protected route: User not authenticated.</h1>
+            </div>
+        );
+    }
+
+    return children;
+};
+
+const AdminAuthRoute = ({ children }) => {
+    const token = localStorage.getItem("admin_jwt-token");
+    const id = localStorage.getItem("admin_user_id");
 
     if (!token || !id) {
         return (
@@ -210,9 +236,9 @@ const router = createBrowserRouter([
                     { path: "vendors", element: <Vendors /> },
                     { path: "vendors/:id", element: <VendorDetail /> },
                     { path: "your-cart", element: <Cart /> },
-                    { path: "pick-up", element: <AuthRoute><PickUp /></AuthRoute> },
+                    { path: "pick-up", element: <UserAuthRoute><PickUp /></UserAuthRoute> },
                     { path: "faqs", element: <UserFAQs /> },
-                    { path: "checkout", element: <AuthRoute><CheckoutForm /></AuthRoute> },
+                    { path: "checkout", element: <UserAuthRoute><CheckoutForm /></UserAuthRoute> },
                     { path: "check-session", element: <CheckSession /> },
                     { path: "return", element: <Return />},
                     { path: "reset-request", element: <UserResetRequest /> },
@@ -223,12 +249,12 @@ const router = createBrowserRouter([
             {
                 path: "vendor",
                 children: [
-                    { path: "dashboard", element: <AuthRoute><VendorDashboard /></AuthRoute> },
-                    { path: "sales/:id", element: <VendorRoute><VendorSales /></VendorRoute> },
-                    { path: "scan", element: <AuthRoute><VendorScan /></AuthRoute> },
+                    { path: "dashboard", element: <VendorAuthRoute><VendorDashboard /></VendorAuthRoute> },
+                    { path: "sales", element: <VendorAuthRoute><VendorSales /></VendorAuthRoute> },
+                    { path: "scan", element: <VendorAuthRoute><VendorScan /></VendorAuthRoute> },
                     { path: "signup", element: <VendorLoginPopup /> },
                     { path: "profile/:id", element: <VendorRoute><VendorProfile /></VendorRoute> },
-                    { path: "vendor-create", element: <AuthRoute><VendorCreate /></AuthRoute> },
+                    { path: "vendor-create", element: <VendorAuthRoute><VendorCreate /></VendorAuthRoute> },
                     { path: "logout", element: <VendorLogout />},
                     { path: "password-reset", element: <VendorPasswordReset /> },
                     { path: "reset-request", element: <VendorResetRequest /> },
@@ -238,9 +264,9 @@ const router = createBrowserRouter([
             {
                 path: "admin",
                 children: [
-                    { path: "markets/:id",element:<AdminRoute><AdminMarkets /></AdminRoute>},
-                    { path: "vendors/:id",element:<AdminRoute><AdminVendors /></AdminRoute>},
-                    { path: "users/:id",element:<AdminRoute><AdminUsers /></AdminRoute>},
+                    { path: "markets/", element: <AdminAuthRoute><AdminMarkets /></AdminAuthRoute>},
+                    { path: "vendors/", element: <AdminAuthRoute><AdminVendors /></AdminAuthRoute>},
+                    { path: "users/", element: <AdminAuthRoute><AdminUsers /></AdminAuthRoute>},
                     { path: "profile/:id",element:<AdminRoute><AdminProfile /></AdminRoute>},
                     { path: "logout", element: <AdminLogout /> },
                     { path: "password-reset", element: <AdminPasswordReset /> },

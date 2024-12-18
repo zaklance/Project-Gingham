@@ -12,6 +12,7 @@ function Vendors() {
     const [vendorFavs, setVendorFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
 
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
@@ -112,6 +113,10 @@ function Vendors() {
         }
     }
 
+    const handleDropDownFilters = (event) => {
+        setShowFilters(!showFilters)
+    }
+
     // console.log(products)
 
     // useEffect(() => {
@@ -163,9 +168,6 @@ function Vendors() {
                                 )}
                             </td>
                             {/* <td className='cell-text cell-filter m-hidden'>Filters: </td> */}
-                            <td>
-                                <button className='btn btn-filter'>Filters</button>
-                            </td>
                             <td>
                                 <button
                                     className={`btn-fav-filter ${isClicked ? 'btn-fav-filter-on' : ''}`}
