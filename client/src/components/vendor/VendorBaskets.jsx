@@ -234,9 +234,13 @@ function VendorBaskets({ vendorUserData }) {
                                         {entry.baskets.length > 0 && (
                                             <table>
                                                 <tbody className='table-basket'>
-                                                    <tr className='blue'>
+                                                    <tr className='text-500'>
                                                         <td>Total Available Baskets:</td>
                                                         <td className='text-center'>{entry.baskets.length}</td>
+                                                    </tr>
+                                                    <tr className='text-500'>
+                                                        <td>Sold Baskets:</td>
+                                                        <td className='text-center'>{entry.baskets.filter(basket => basket.is_sold).length}</td>
                                                     </tr>
                                                     <tr className='row-blank'>
                                                     </tr>
@@ -256,12 +260,8 @@ function VendorBaskets({ vendorUserData }) {
                                                         <td className='nowrap'>Basket Price:</td>
                                                         <td className='text-center'>${entry.baskets[0]?.price}</td>
                                                     </tr>
-                                                    <tr className='row-blank'>
-                                                    </tr>
-                                                    <tr className='blue'>
-                                                        <td>Sold Baskets:</td>
-                                                        <td className='text-center'>{entry.baskets.filter(basket => basket.is_sold).length}</td>
-                                                    </tr>
+                                                    {/* <tr className='row-blank'>
+                                                    </tr> */}
                                                 </tbody>
                                             </table>
                                         )}

@@ -1,10 +1,11 @@
 import React from 'react';
 import { useRouteError, NavLink } from "react-router-dom";
 import '../assets/css/index.css';
-// import NavBar from './NavBar';
 
 function Footer() {
-
+    const isNotUser = location.pathname.startsWith('/vendor') || location.pathname.startsWith('/admin');
+    const isVendorPage = location.pathname.startsWith('/vendor');
+    const isAdminPage = location.pathname.startsWith('/admin');
 
     return (
         <>
@@ -13,25 +14,35 @@ function Footer() {
                 <div className='flex-space-around flex-center-align box-blue'>
                     <ul className='ul-footer'>
                         <li className='footer-li'>
-                            <NavLink to="/"><strong>Gingham Home</strong></NavLink>
+                            <NavLink to="/">User Portal</NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink to="/vendor"><strong>Vendor Portal</strong></NavLink>
+                            <NavLink to="/vendor">Vendor Portal</NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink to="/admin"><strong>Admin Portal</strong></NavLink>
+                            <NavLink to="/admin">Admin Portal</NavLink>
                         </li>
+                        {/* <li className='footer-li'>
+                            <a href='https://www.mufo.nyc/' target='_blank' rel="noreferrer noopener">Mû.F.O. Inc</a>
+                        </li> */}
                     </ul>
                     <ul className='ul-footer'>
                         <li className='footer-li'>
-                            <NavLink to="/"><strong>About</strong></NavLink>
+                            <NavLink to="/">About</NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink to="/contact"><strong>Contact</strong></NavLink>
+                            <NavLink to="/contact">Contact</NavLink>
                         </li>
+                        {!isNotUser && (
                         <li className='footer-li'>
-                            <a href='https://www.mufo.nyc/' target='_blank' rel="noreferrer noopener"><strong>Mû.F.O. Inc</strong></a>
+                            <NavLink to="/user/faq">User FAQs</NavLink>
                         </li>
+                        )}
+                        {isVendorPage && (
+                        <li className='footer-li'>
+                            <NavLink to="/vendor/faq">Vendor FAQs</NavLink>
+                        </li>
+                        )}
                     </ul>
                     <img className='small-logo' src="/site-images/gingham-logo-3.svg" alt="Gingham Logo"></img>
                 </div>

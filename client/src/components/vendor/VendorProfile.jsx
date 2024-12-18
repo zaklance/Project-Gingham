@@ -528,7 +528,7 @@ function VendorProfile () {
                                         )}
                                         <div className='flex-start flex-center-align'>
                                             <div className='margin-l-8'>
-                                                <button className='btn btn-small' onClick={handleDeleteImage}>Delete Image</button>
+                                                <button className='btn btn-small btn-blue' onClick={handleDeleteImage}>Delete Image</button>
                                             </div>
                                             <label for='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
                                             <input
