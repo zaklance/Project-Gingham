@@ -220,7 +220,7 @@ function Markets() {
                 <table className='table-search margin-t-24'>
                     <tbody>
                         <tr>
-                            <td className='cell-title btn-grey m-hidden'>Search:</td>
+                            {/* <td className='cell-title btn-grey m-hidden'>Search:</td> */}
                             <td className='cell-text'>
                                 <input id='search' className="search-bar" type="text" placeholder="Search markets..." value={query} onChange={onUpdateQuery} />
                                 {showDropdown && (
@@ -240,7 +240,7 @@ function Markets() {
                                     </div>
                                 )}
                             </td>
-                            <td className='cell-text cell-filter m-hidden'>Filters: </td>
+                            {/* <td className='cell-text cell-filter m-hidden'>Filters: </td> */}
                             <td>
                                 <button
                                     className={`btn-fav-filter ${isClicked ? 'btn-fav-filter-on' : ''}`}
