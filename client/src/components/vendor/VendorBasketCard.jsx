@@ -20,9 +20,6 @@ function VendorBasketCard({ vendorId, marketDay }) {
     const [tempSavedBaskets, setTempSavedBaskets] = useState(null);
     const [isLive, setIsLive] = useState(false);
 
-    const isSavedCondition = savedBaskets && savedBaskets.length > 0; 
-    const isLiveCondition = isSavedCondition && new Date(marketDay?.date) <= new Date(); 
-
     useEffect(() => {
         if (vendorId && marketDay?.id && marketDay?.vendor_markets) {
             const vendorMarketEntry = marketDay.vendor_markets.find(vm => vm.vendor_id === vendorId);
@@ -77,6 +74,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
     
     useEffect(() => {
         if (savedBaskets.length > 0) {
+            console.log('Saved Baskets:', savedBaskets);
             const firstBasket = savedBaskets[0];
     
             setNumBaskets(savedBaskets.length);
@@ -96,9 +94,8 @@ function VendorBasketCard({ vendorId, marketDay }) {
             } else {
                 setEndTime('');
             }
-    
-            console.log('Saved Basket Data:', firstBasket);
         } else {
+            console.log('No Saved Baskets Found');
             setNumBaskets('');
             setBasketValue('');
             setPrice('');
@@ -106,6 +103,51 @@ function VendorBasketCard({ vendorId, marketDay }) {
             setEndTime('');
         }
     }, [savedBaskets]);
+    
+    useEffect(() => {
+        if (savedBaskets.length > 0) {
+            const firstBasket = savedBaskets[0];
+            const now = new Date();
+    
+            if (marketDay.date && firstBasket.pickup_start) {
+                let formattedMarketDate;
+    
+                if (typeof marketDay.date === 'string') {
+                    formattedMarketDate = marketDay.date; 
+                } else if (marketDay.date instanceof Date) {
+                    formattedMarketDate = marketDay.date.toISOString().split('T')[0];
+                } else {
+                    console.error('Invalid format for marketDay.date:', marketDay.date);
+                    setIsLive(false);
+                    return;
+                }
+    
+                const [hour, minute] = firstBasket.pickup_start.split(':');
+    
+                const [year, month, day] = formattedMarketDate.split('-');
+                const combinedDateTime = new Date(`${year}-${month}-${day}T${hour}:${minute}:00`);
+    
+                console.log('Combined DateTime:', combinedDateTime);
+    
+                if (isNaN(combinedDateTime.getTime())) {
+                    console.error('Invalid Date format for Pickup Start:', `${year}-${month}-${day}T${hour}:${minute}:00`);
+                    setIsLive(false);
+                    return;
+                }
+    
+                if (combinedDateTime.getTime() - now.getTime() <= 48 * 60 * 60 * 1000) {
+                    setIsLive(true);
+                } else {
+                    setIsLive(false);
+                }
+            } else {
+                console.error('Missing marketDay.date or firstBasket.pickup_start');
+                setIsLive(false);
+            }
+        } else {
+            setIsLive(false);
+        }
+    }, [savedBaskets, marketDay]);    
     
     useEffect(() => {
         async function fetchMarketName(marketId) {
@@ -335,9 +377,11 @@ function VendorBasketCard({ vendorId, marketDay }) {
     return (
         <div className='badge-container'>
             <div className="basket-card">
-                {isLiveCondition && <p className="badge-live">Live</p>}
-                {isSavedCondition && !isLiveCondition && <p className="badge-saved">Pending</p>}
-                {/* {!isLiveCondition && !isSavedCondition && <p className='badge-pending'>Pending</p>} */}
+                {isLive ? (
+                    <p className="badge-live">Live</p>
+                ) : isSaved ? (
+                    <p className="badge-saved">Pending</p>
+                ) : null}
 
                 {marketDay && marketDay.date ? (
                     <>
