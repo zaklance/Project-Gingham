@@ -53,26 +53,6 @@ import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_JS_KEY);
 
-const AdminRoute = ({ children }) => {
-    const token = localStorage.getItem("admin_jwt-token");
-    const storedId = localStorage.getItem("admin_user_id");
-    const { id: routeId } = useParams();
-
-    if (!token || !storedId) {
-        return <Navigate to="/admin" />;
-    }
-
-    if (storedId !== routeId) {
-        return (
-            <div className='wrapper-error text-error margin-t-24'>
-                <h1>Access denied: You can only access your own account.</h1>
-            </div>
-        );
-    }
-
-    return children;
-};
-
 const UserRoute = ({ children }) => {
     const token = localStorage.getItem("user_jwt-token");
     const storedId = localStorage.getItem("user_id");
@@ -109,7 +89,27 @@ const VendorRoute = ({ children }) => {
     if (storedId !== routeId) {
         return (
             <div className='wrapper-error text-error margin-t-24'>
-                <h1>Access denied: You can only access your own account.</h1>
+                <h1 className='text-red'>Access denied: You can only access your own account.</h1>
+            </div>
+        );
+    }
+
+    return children;
+};
+
+const AdminRoute = ({ children }) => {
+    const token = localStorage.getItem("admin_jwt-token");
+    const storedId = localStorage.getItem("admin_user_id");
+    const { id: routeId } = useParams();
+
+    if (!token || !storedId) {
+        return <Navigate to="/admin" />;
+    }
+
+    if (storedId !== routeId) {
+        return (
+            <div className='wrapper-error text-error margin-t-24'>
+                <h1 className='text-red'>Access denied: You can only access your own account.</h1>
             </div>
         );
     }
@@ -139,7 +139,7 @@ const VendorAuthRoute = ({ children }) => {
     if (!token || !id) {
         return (
             <div className='wrapper-error text-error margin-t-24'>
-                <h1 className='text-red'>Protected route: User not authenticated.</h1>
+                <h1 className='text-red'>Protected route: Vendor User not authenticated.</h1>
             </div>
         );
     }
@@ -154,7 +154,7 @@ const AdminAuthRoute = ({ children }) => {
     if (!token || !id) {
         return (
             <div className='wrapper-error text-error margin-t-24'>
-                <h1 className='text-red'>Protected route: User not authenticated.</h1>
+                <h1 className='text-red'>Protected route: Admin User not authenticated.</h1>
             </div>
         );
     }

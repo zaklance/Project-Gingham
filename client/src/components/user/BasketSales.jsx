@@ -1,38 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
-function BasketSales() {
-    const [salesHistory, setSalesHistory] = useState([]);
+function BasketSales({ salesHistory }) {
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'))
-
-    useEffect(() => {
-        const token = localStorage.getItem('user_jwt-token');
-
-        if (!token) {
-            console.error('JWT token not found in localStorage');
-            return;
-        }
-
-        fetch('http://127.0.0.1:5555/api/baskets/user-sales-history', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                // console.log("Fetched sales history:", data);
-                setSalesHistory(data);
-            })
-            .catch(error => console.error('Error fetching sales history:', error.message));
-    }, []);
     
     return (
         <div>
