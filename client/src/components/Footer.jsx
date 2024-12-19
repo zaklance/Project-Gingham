@@ -35,12 +35,12 @@ function Footer() {
                         </li>
                         {!isNotUser && (
                         <li className='footer-li'>
-                            <NavLink to="/user/faq">User FAQs</NavLink>
+                            <NavLink to="/user/faqs">User FAQs</NavLink>
                         </li>
                         )}
                         {isVendorPage && (
                         <li className='footer-li'>
-                            <NavLink to="/vendor/faq">Vendor FAQs</NavLink>
+                            <NavLink to="/vendor/faqs">Vendor FAQs</NavLink>
                         </li>
                         )}
                     </ul>
