@@ -20,13 +20,6 @@ function Login({ handlePopup }) {
     const [signupZipCode, setSignupZipCode] = useState('');
 
     const navigate = useNavigate();
-    
-    const startLogoutTimer = (timeout) => {
-        setTimeout(() => {
-            navigate('/user/logout');
-            alert('You have been logged out due to session expiration.')
-        }, timeout);
-    };
 
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -56,9 +49,6 @@ function Login({ handlePopup }) {
                 // Store token and user info in localStorage
                 globalThis.localStorage.setItem('user_jwt-token', data.access_token);
                 globalThis.localStorage.setItem('user_id', data.user_id);
-    
-                // Start the logout timer
-                startLogoutTimer(12 * 60 * 60 * 1000);
     
                 console.log('Login successful:', data);
     
