@@ -15,13 +15,6 @@ function Login({ handlePopup }) {
 
     const navigate = useNavigate();
 
-    const startLogoutTimer = (timeout) => {
-        setTimeout(() => {
-            navigate('/user/logout');
-            alert('You have been logged out due to session expiration.')
-        }, timeout);
-    };
-
     const handleLogin = async (event) => {
         event.preventDefault();
     
@@ -50,9 +43,6 @@ function Login({ handlePopup }) {
                 globalThis.localStorage.setItem('admin_user_id', data.admin_user_id);
     
                 console.log('Login successful:', data);
-
-                // Start the logout timer
-                startLogoutTimer(12 * 60 * 60 * 1000);
     
                 // Navigate to the user's profile or refresh the page
                 handlePopup();

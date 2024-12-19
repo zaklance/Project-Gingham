@@ -15,13 +15,6 @@ function VendorLogin({ handlePopup }) {
 
     const navigate = useNavigate();
 
-    const startLogoutTimer = (timeout) => {
-        setTimeout(() => {
-            navigate('/vendor/logout');
-            alert('You have been logged out due to session expiration.')
-        }, timeout);
-    };
-
     const handleLogin = async (event) => {
         event.preventDefault();
         const lowercaseEmail = loginEmail.toLowerCase();
@@ -52,8 +45,6 @@ function VendorLogin({ handlePopup }) {
                 console.log('Login successful:', data);
 
                 // const vendor_id = globalThis.localStorage.getItem('vendor_user_id');
-
-                startLogoutTimer(12 * 60 * 60 * 1000);
     
                 handlePopup();
                 navigate(`/vendor/dashboard`);
