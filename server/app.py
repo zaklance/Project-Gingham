@@ -1201,7 +1201,7 @@ def get_top_market_reviews():
     top_reviews = (
         db.session.query(MarketReview)
         .join(vote_up_counts, MarketReview.id == vote_up_counts.c.review_id)
-        .filter(vote_up_counts.c.vote_up_count >= percentile_value)
+        .filter(vote_up_counts.c.vote_up_count >= max(percentile_value, 3))
         .order_by(desc(vote_up_counts.c.vote_up_count))
         .all()
     )
@@ -1236,7 +1236,7 @@ def get_top_vendor_reviews():
     top_reviews = (
         db.session.query(VendorReview)
         .join(vote_up_counts, VendorReview.id == vote_up_counts.c.review_id)
-        .filter(vote_up_counts.c.vote_up_count >= percentile_value)
+        .filter(vote_up_counts.c.vote_up_count >= max(percentile_value, 3))
         .order_by(desc(vote_up_counts.c.vote_up_count))
         .all()
     )
@@ -1783,6 +1783,7 @@ def get_user_sales_history():
                 "market_name": basket.market_day.markets.name,
                 "market_id": basket.market_day.markets.id,
                 "price": basket.price,
+                "basket_value": basket.basket_value,
                 "baskets_count": 1
             }
             for basket in baskets or []

@@ -14,6 +14,7 @@ function Profile({ marketData }) {
     const [marketFavs, setMarketFavs] = useState([]);
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
+    const [salesHistory, setSalesHistory] = useState([]);
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'))
 
@@ -236,6 +237,34 @@ function Profile({ marketData }) {
         }
     }
 
+    useEffect(() => {
+        const token = localStorage.getItem('user_jwt-token');
+
+        if (!token) {
+            console.error('JWT token not found in localStorage');
+            return;
+        }
+
+        fetch('http://127.0.0.1:5555/api/baskets/user-sales-history', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // console.log("Fetched sales history:", data);
+                setSalesHistory(data);
+            })
+            .catch(error => console.error('Error fetching sales history:', error.message));
+    }, []);
+
     if (!profileData) {
         return <div>Loading...</div>;
     }
@@ -405,9 +434,22 @@ function Profile({ marketData }) {
                     </>
                 )}
             </div>
-
+            <div className='box-bounding text-center'>
+                <h1>Bakets Purchased: {salesHistory.length}</h1>
+                <div className='flex-space-evenly'>
+                    <h3>
+                        Total Paid: ${salesHistory.reduce((total, sale) => total + sale.price, 0)}
+                    </h3>
+                    <h3>
+                        Amount Saved: ${(
+                            salesHistory.reduce((totalBasket, sale) => totalBasket + sale.basket_value, 0) -
+                            salesHistory.reduce((totalPrice, sale) => totalPrice + sale.price, 0)
+                        )}
+                    </h3>
+                </div>
+            </div>
             <div className='box-bounding'>
-                <BasketSales />
+                <BasketSales salesHistory={salesHistory} />
             </div>
             <div className='box-bounding'>
                 <h2>Favorites</h2>

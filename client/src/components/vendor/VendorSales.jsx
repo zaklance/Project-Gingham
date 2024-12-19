@@ -32,39 +32,24 @@ function VendorSales() {
     function getDatesForRange(range = 31, baskets = []) {
         const dates = [];
         const today = new Date();
-        // Extract years from baskets for proper date comparison
-        const basketYears = new Set(baskets.map((basket) => new Date(basket.sale_date).getFullYear()));
-        // If basket years are available, use them for date generation
-        const yearsToConsider = basketYears.size ? [...basketYears] : [today.getFullYear()];
+
         if (range < 0) {
             // Future range (moving forward in time)
             for (let i = 0; i < Math.abs(range); i++) {
-                yearsToConsider.forEach((year) => {
-                    const currentDate = new Date(today);
-                    currentDate.setDate(today.getDate() + i);
-                    // Set the year as the current year, since we are moving into future dates
-                    currentDate.setFullYear(today.getFullYear());
-                    dates.push(`${months[currentDate.getMonth()]} ${currentDate.getDate()}, ${currentDate.getFullYear()}`);
-                });
+                const currentDate = new Date(today);
+                currentDate.setDate(today.getDate() + i);
+                dates.push(currentDate.toDateString()); // Use full date format
             }
         } else {
             // Past range (moving backward in time)
             for (let i = 0; i < range; i++) {
-                yearsToConsider.forEach((year) => {
-                    const currentDate = new Date(today);
-                    currentDate.setDate(today.getDate() - i);
-                    // When moving backward and it goes past December, update the year to last year
-                    if (currentDate.getMonth() === 11 && currentDate.getDate() > today.getDate()) {
-                        currentDate.setFullYear(today.getFullYear() - 1);
-                    } else {
-                        currentDate.setFullYear(today.getFullYear());
-                    }
-
-                    dates.push(`${months[currentDate.getMonth()]} ${currentDate.getDate()}, ${currentDate.getFullYear()}`);
-                });
+                const currentDate = new Date(today);
+                currentDate.setDate(today.getDate() - i);
+                dates.push(currentDate.toDateString()); // Use full date format
             }
-            dates.reverse();
+            dates.reverse(); // Reverse to keep chronological order
         }
+
         return dates;
     }
 
@@ -169,16 +154,17 @@ function VendorSales() {
         }
 
         // Process baskets and filter based on the selected date range
-        const processBaskets = (baskets) => {
+        function processBaskets(baskets) {
             const isFuture = selectedRangeGraph < 0;
 
-            // Get the correct range of dates for the selected range, including the year
-            const allowedDates = getDatesForRange(Math.abs(selectedRangeGraph), baskets).map(
-                (date) => new Date(date).toDateString() // Ensures full date format including year
+            // Get allowed dates based on the range
+            const allowedDates = getDatesForRange(selectedRangeGraph).map((date) =>
+                new Date(date).toDateString()
             );
 
+            // Filter baskets based on allowed dates
             const filteredBaskets = baskets.filter((basket) => {
-                const basketDate = new Date(basket.sale_date).toDateString(); // Normalize the date format
+                const basketDate = new Date(basket.sale_date).toDateString();
                 return allowedDates.includes(basketDate);
             });
 
@@ -187,17 +173,16 @@ function VendorSales() {
 
             // Group baskets by sale_date and categorize into sold/unsold
             filteredBaskets.forEach((basket) => {
-                const formattedDate = formatDate(basket.sale_date); // Ensure formatted date includes month and day
-                const fullFormattedDate = `${formattedDate}, ${new Date(basket.sale_date).getFullYear()}`; // Add the year
+                const basketDate = new Date(basket.sale_date).toDateString(); // Normalize date
                 if (basket.is_sold) {
-                    soldData[fullFormattedDate] = (soldData[fullFormattedDate] || 0) + 1;
+                    soldData[basketDate] = (soldData[basketDate] || 0) + 1;
                 } else {
-                    unsoldData[fullFormattedDate] = (unsoldData[fullFormattedDate] || 0) + 1;
+                    unsoldData[basketDate] = (unsoldData[basketDate] || 0) + 1;
                 }
             });
 
             return { soldData, unsoldData };
-        };
+        }
         
         const { soldData, unsoldData } = processBaskets(baskets);
         
