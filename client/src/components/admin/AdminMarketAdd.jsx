@@ -283,7 +283,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                         <div className='form-group'>
                             <label>Vendor Image:</label>
                             <div className='flex-start flex-center-align'>
-                                <label for='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
+                                <label htmlFor='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
                                 <input
                                     id="file-upload"
                                     type="file"

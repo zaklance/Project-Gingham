@@ -19,6 +19,7 @@
     "chart.js": "^4.4.6",
     "dotenv": "^16.4.5",
     "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
     "mapkit-react": "^1.15.2",
     "object-hash": "^3.0.0",
     "qrcode.react": "^4.2.0",
