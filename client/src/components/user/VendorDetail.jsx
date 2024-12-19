@@ -226,7 +226,7 @@ function VendorDetail({ products }) {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0); // Start of today
                 const sixDaysFromNow = new Date();
-                sixDaysFromNow.setDate(today.getDate() + 6);
+                sixDaysFromNow.setDate(today.getDate() + 1); // Formerly 6
                 sixDaysFromNow.setHours(23, 59, 59, 999); // End of the sixth day
 
                 const filteredBaskets = data.filter((basket) => {

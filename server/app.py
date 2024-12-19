@@ -29,9 +29,9 @@ load_dotenv()
 
 app = Flask(__name__)
 
+USER_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/user-images')
 VENDOR_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/vendor-images')
 MARKET_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/market-images')
-USER_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/user-images')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'svg', 'heic'}
 MAX_SIZE = 1.5 * 1024 * 1024
 MAX_RES = (1800, 1800)
@@ -96,13 +96,16 @@ def upload_file():
         original_filename = secure_filename(file.filename)
 
         # Check whether the upload is for a user, vendor, or market
+        user_id = request.form.get('user_id')
+        vendor_id = request.form.get('vendor_id')
+        market_id = request.form.get('vendor_id')
         upload_type = request.form.get('type')
         if upload_type == 'vendor':
-            upload_folder = VENDOR_UPLOAD_FOLDER
+            upload_folder = os.path.join(os.getcwd(), f'../client/public/vendor-images/{vendor_id}')
         elif upload_type == 'market':
-            upload_folder = MARKET_UPLOAD_FOLDER
+            upload_folder = os.path.join(os.getcwd(), f'../client/public/market-images{market_id}')
         elif upload_type == 'user':
-            upload_folder = USER_UPLOAD_FOLDER
+            upload_folder = os.path.join(os.getcwd(), f'../client/public/user-images/{user_id}')
         else:
             return {'error': 'Invalid type specified. Must be "vendor", "market", or "user"'}, 400
 
