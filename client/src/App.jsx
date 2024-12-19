@@ -45,37 +45,9 @@ function App() {
     useEffect(() => {
         setIsLoggedIn(checkAuth());
     }, []);
-
-    function checkTokenExpirationUser() {
-        const token = localStorage.getItem('user_jwt-token');
-        if (!token) {
-            // No token, user is already logged out
-            return false;
-        }
-        try {
-            const decoded = jwtDecode(token);
-            const currentTime = Date.now() / 1000;
-            if (decoded.exp < currentTime) {
-                // Token has expired, log the user out
-                localStorage.removeItem('user_id');
-                localStorage.removeItem('user_jwt-token');
-                // Redirect to login page or perform other logout actions
-                window.location.href = '/';
-                // handlePopup()
-                return true;
-            }
-        } catch (error) {
-            console.error("Error decoding token:", error);
-            // Handle error, maybe log the user out for security
-            localStorage.removeItem('user_id');
-            localStorage.removeItem('user_jwt-token');
-            return true;
-        }
-        return false; // Token is valid
-    }
     
-    function checkTokenExpirationVendor() {
-        const token = localStorage.getItem('vendor_jwt-token');
+    function checkTokenExpiration(userToken, id, path) {
+        const token = localStorage.getItem(`${userToken}_jwt-token`);
         if (!token) {
             // No token, user is already logged out
             return false;
@@ -85,54 +57,26 @@ function App() {
             const currentTime = Date.now() / 1000;
             if (decoded.exp < currentTime) {
                 // Token has expired, log the user out
-                localStorage.removeItem('vendor_user_id');
-                localStorage.removeItem('vendor_jwt-token');
+                localStorage.removeItem(`${id}_id`);
+                localStorage.removeItem(`${userToken}_jwt-token`);
                 // Redirect to login page or perform other logout actions
-                window.location.href = '/vendor/';
+                window.location.href = path;
                 // handlePopup()
                 return true;
             }
         } catch (error) {
             console.error("Error decoding token:", error);
             // Handle error, maybe log the user out for security
-            localStorage.removeItem('vendor_user_id');
-            localStorage.removeItem('vendor_jwt-token');
-            return true;
-        }
-        return false; // Token is valid
-    }
-    
-    function checkTokenExpirationAdmin() {
-        const token = localStorage.getItem('admin_jwt-token');
-        if (!token) {
-            // No token, user is already logged out
-            return false;
-        }
-        try {
-            const decoded = jwtDecode(token);
-            const currentTime = Date.now() / 1000;
-            if (decoded.exp < currentTime) {
-                // Token has expired, log the user out
-                localStorage.removeItem('admin_user_id');
-                localStorage.removeItem('admin_jwt-token');
-                // Redirect to login page or perform other logout actions
-                window.location.href = '/admin/';
-                // handlePopup()
-                return true;
-            }
-        } catch (error) {
-            console.error("Error decoding token:", error);
-            // Handle error, maybe log the user out for security
-            localStorage.removeItem('admin_user_id');
-            localStorage.removeItem('admin_jwt-token');
+            localStorage.removeItem(`${id}_id`);
+            localStorage.removeItem(`${userToken}_jwt-token`);
             return true;
         }
         return false; // Token is valid
     }
 
-    checkTokenExpirationUser()
-    checkTokenExpirationVendor()
-    checkTokenExpirationAdmin()
+    checkTokenExpiration("user", "user", "/")
+    checkTokenExpiration("vendor", "vendor_user", "/vendor/")
+    checkTokenExpiration("admin", "admin_user", "/admin/")
 
 
     return (
