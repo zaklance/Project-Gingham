@@ -18,6 +18,11 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
     const [downVoteRatings, setDownVoteRatings] = useState([]);
     const [reports, setReports] = useState([]);
     const [hotReviews, setHotReviews] = useState([]);
+    const [showFilters, setShowFilters] = useState(false);
+    const [filterNew, setFilterNew] = useState(false);
+    const [filterOld, setFilterOld] = useState(false);
+    const [filterUp, setFilterUp] = useState(false);
+    const [filterDown, setFilterDown] = useState(false);
 
     const { handlePopup } = useOutletContext();
 
@@ -141,6 +146,11 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
             handlePopup()
         }
     };
+
+    const handleNewToggle = () => {
+        set(!reviewMode);
+    };
+
 
     // Ratings
     useEffect(() => {
@@ -360,14 +370,124 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
         fetchTopReviews();
     }, []);
 
+    const handleDropDownFilters = (event) => {
+        setShowFilters(!showFilters)
+    }
+
+    const handleFilterNew = (event) => {
+        if (!filterNew) {
+            setFilterNew(!filterNew)
+            setFilterOld(false)
+            setFilterUp(false)
+            setFilterDown(false)
+        }
+    }
+
+    const handleFilterOld = (event) => {
+        if (!filterOld) {
+            setFilterNew(false)
+            setFilterOld(!filterOld)
+            setFilterUp(false)
+            setFilterDown(false)
+        }
+    }
+
+    const handleFilterUp = (event) => {
+        if (!filterUp) {
+            setFilterNew(false)
+            setFilterOld(false)
+            setFilterUp(!filterUp)
+            setFilterDown(false)
+        }
+    }
+    
+    const handleFilterDown = (event) => {
+        if (!filterDown) {
+            setFilterNew(false)
+            setFilterOld(false)
+            setFilterUp(false)
+            setFilterDown(!filterDown)
+        }
+    }
+
 
     return (
         <>
-            <h2 className='margin-b-16 margin-t-24'>Reviews</h2>
+            <div className='flex-space-between flex-center-align margin-b-16 margin-t-24'>
+                <h2>Reviews</h2>
+                <div>
+                    <button className='btn btn-filter' onClick={handleDropDownFilters}>&#9776;</button>
+                    {showFilters && (
+                        <div className='dropdown-content box-filters'>
+                            <div className='form-filters'>
+                                <input
+                                    id="new"
+                                    type="radio"
+                                    name="filters"
+                                    value={true}
+                                    onChange={handleFilterNew}
+                                />
+                                <label htmlFor='new'>Newest</label>
+                                <br/>
+                                <input
+                                    id="old"
+                                    type="radio"
+                                    name="filters"
+                                    value={true}
+                                    onChange={handleFilterOld}
+                                />
+                                <label htmlFor='old'>Oldest</label>
+                                <br/>
+                                <input
+                                    id="upVotes"
+                                    type="radio"
+                                    name="filters"
+                                    value={true}
+                                    onChange={handleFilterUp}
+                                />
+                                <label htmlFor='upVotes'>Up Votes</label>
+                                <br/>
+                                <input
+                                    id="downVotes"
+                                    type="radio"
+                                    name="filters"
+                                    value={true}
+                                    onChange={handleFilterDown}
+                                />
+                                <label htmlFor='downVotes'>Down Votes</label>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
             <div className='box-scroll'>
                 {reviews.length > 0 ? (
                     reviews
-                        .sort((a, b) => new Date(b.post_date) - new Date(a.post_date))
+                        .slice()
+                        .sort((a, b) => {
+                            // Default to sorting by newest to oldest
+                            if (!filterNew && !filterOld && !filterUp && !filterDown) {
+                                return new Date(b.post_date) - new Date(a.post_date);
+                            }
+                            // Sort by newest to oldest if filterNew is true
+                            if (filterNew) {
+                                return new Date(b.post_date) - new Date(a.post_date);
+                            }
+                            // Sort by oldest to newest if filterOld is true
+                            if (filterOld) {
+                                return new Date(a.post_date) - new Date(b.post_date);
+                            }
+                            // Sort by upvotes (greater number of upvotes first) if filterUp is true
+                            if (filterUp) {
+                                return filterRatingsUpVote(b.id).length - filterRatingsUpVote(a.id).length;
+                            }
+                            // Sort by downvotes (greater number of downvotes first) if filterDown is true
+                            if (filterDown) {
+                                return filterRatingsDownVote(b.id).length - filterRatingsDownVote(a.id).length;
+                            }
+                            // Fallback to sorting by newest to oldest (default case)
+                            return new Date(b.post_date) - new Date(a.post_date);
+                        })
                         .map((review, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                 {review.user_id !== userId && editingReviewId !== review.id ? (
@@ -438,7 +558,7 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                                 )}
                                 {review.user_id === userId && editingReviewId !== review.id && (
                                     <div className='margin-t-8'>
-                                        <button className='btn btn-small' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
+                                        <button className='btn btn-small margin-r-8' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
                                             Edit
                                         </button>
                                         <button className='btn btn-small btn-x btn-gap' onClick={() => handleReviewDelete(review.id)}>x</button>
