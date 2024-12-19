@@ -32,7 +32,7 @@ app = Flask(__name__)
 VENDOR_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/vendor-images')
 MARKET_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/market-images')
 USER_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/user-images')
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'svg'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'svg', 'heic'}
 MAX_SIZE = 1.5 * 1024 * 1024
 MAX_RES = (1800, 1800)
 
