@@ -145,9 +145,10 @@ function Profile({ marketData }) {
 
                     if (result.ok) {
                         const data = await result.json();
-                        uploadedFilename = data.filename;
+                        uploadedFilename = `${userId}/${data.filename}`;
                         console.log('Image uploaded:', uploadedFilename);
                         setStatus('success');
+                        console.log(uploadedFilename)
 
                         setProfileData((prevData) => ({
                             ...prevData,
@@ -373,7 +374,6 @@ function Profile({ marketData }) {
                                         alt="Avatar"
                                         style={{ maxWidth: '100%', height: 'auto' }}
                                     />
-                                    <button className='btn-edit' onClick={handleDeleteImage}>Delete Image</button>
                                 </>
                             ) : (
                                 <p>No image uploaded.</p>

@@ -98,7 +98,7 @@ def upload_file():
         # Check whether the upload is for a user, vendor, or market
         user_id = request.form.get('user_id')
         vendor_id = request.form.get('vendor_id')
-        market_id = request.form.get('vendor_id')
+        market_id = request.form.get('market_id')
         upload_type = request.form.get('type')
         if upload_type == 'vendor':
             upload_folder = os.path.join(os.getcwd(), f'../client/public/vendor-images/{vendor_id}')
@@ -143,7 +143,7 @@ def upload_file():
                 if not user:
                     return {'error': 'User not found'}, 404
 
-                user.avatar = os.path.basename(file_path) 
+                user.avatar = f'{user_id}/{os.path.basename(file_path)}' 
                 db.session.commit()
 
             elif upload_type == 'vendor':
@@ -155,7 +155,9 @@ def upload_file():
                 if not vendor:
                     return {'error': 'Vendor not found'}, 404
 
-                vendor.image = os.path.basename(file_path)
+                print(f'{vendor.image}')
+                print(f'{vendor_id}/{os.path.basename(file_path)}')
+                vendor.image = f'{vendor_id}/{os.path.basename(file_path)}'
                 db.session.commit()
 
             elif upload_type == 'market':
@@ -169,6 +171,9 @@ def upload_file():
 
                 market.image = os.path.basename(file_path)
                 db.session.commit()
+            
+            vendor = Vendor.query.get(vendor_id)
+            print(f'{vendor.image}')
 
             return {'message': 'File successfully uploaded', 'filename': os.path.basename(file_path)}, 201
 

@@ -22,6 +22,7 @@ function VendorProfile () {
     const [products, setProducts] = useState([])
     const [productRequest, setProductRequest] = useState('')
 
+    const vendorUserId = parseInt(globalThis.localStorage.getItem('vendor_user_id'))
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/products")
@@ -216,7 +217,7 @@ function VendorProfile () {
                     uploadedFilename = data.filename;
                     console.log('Image uploaded:', uploadedFilename);
                     setStatus('success');
-                    setVendorImageURL(`http://127.0.0.1:5555/api/vendors/${vendorId}/image`);
+                    setVendorImageURL(`${vendorUserId}/${uploadedFilename}`);
                 } else {
                     console.log('Image upload failed');
                     console.log('Response:', await result.text());
@@ -229,12 +230,13 @@ function VendorProfile () {
                 return;
             }
         }
-    
+        
         const updatedVendorData = { ...tempVendorData };
         if (uploadedFilename) {
-            updatedVendorData.image = uploadedFilename;
+            updatedVendorData.image = `${vendorUserId}/${uploadedFilename}`;
+            tempVendorData.image = `${vendorUserId}/${uploadedFilename}`;
         }
-    
+        
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/vendors/${vendorId}`, {
                 method: 'PATCH',
@@ -244,15 +246,15 @@ function VendorProfile () {
                 },
                 body: JSON.stringify(updatedVendorData),
             });
-    
+            
             console.log('Request body:', JSON.stringify(updatedVendorData));
-    
+            
             if (response.ok) {
                 const updatedData = await response.json();
                 setVendorData(updatedData);
                 setVendorEditMode(false);
                 console.log('Vendor data updated successfully:', updatedData);
-                window.location.reload()
+                // window.location.reload()
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status:', response.status);
@@ -287,9 +289,10 @@ function VendorProfile () {
             console.error('Error saving changes:', error);
         }
     };
-
+    
     const handleDeleteImage = async () => {
         if (!vendorData || !vendorData.image) {
+            console.log(vendorImageURL)
             alert('No image to delete.');
             return;
         }
