@@ -715,3 +715,16 @@ class QRCode(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<MarketFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.basket_id}>"
+
+class FAQ(db.Model, SerializerMixin):
+    __tablename__ = 'faqs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    question = db.Column(db.String, nullable=False)
+    answer = db.Column(db.String, nullable=False)
+    for_user = db.Column(db.Boolean, default=False, nullable=False)
+    for_vendor = db.Column(db.Boolean, default=False, nullable=False)
+    for_admin = db.Column(db.Boolean, default=False, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"<MarketFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.basket_id}>"

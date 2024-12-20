@@ -6,7 +6,7 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
                     VendorMarket, VendorUser, VendorVendorUser, AdminUser, 
                     Basket, Event, Product, UserNotification, VendorNotification, 
-                    AdminNotification, QRCode, bcrypt )
+                    AdminNotification, QRCode, FAQ, bcrypt )
 import json
 from datetime import datetime, timedelta, timezone, time, date
 
@@ -35,6 +35,7 @@ def run():
     VendorNotification.query.delete()
     AdminNotification.query.delete()
     QRCode.query.delete()
+    FAQ.query.delete()
 
     db.session.commit()
 
@@ -1330,6 +1331,91 @@ def run():
         products.append(product)
 
     db.session.add_all(products)
+    db.session.commit()
+
+
+    user_faqs = [
+        FAQ(
+            question="How does Gingham work for customers?",
+            answer="Browse available baskets from local farmers market vendors, purchase discounted items, and pick them up at a designated time.",
+            for_user=True
+        ),
+        FAQ(
+            question="What types of baskets can I purchase?",
+            answer="Vendors offer “mystery baskets” of surplus or imperfect goods, including produce, baked items, or packaged foods, often at a discounted price.",
+            for_user=True
+        ),
+        FAQ(
+            question="How do I know where to pick up my basket?",
+            answer="After purchasing, you’ll receive the pickup location, vendor details, and a specific time to collect your basket.",
+            for_user=True
+        ),
+        FAQ(
+            question="Can I choose what’s in my basket?",
+            answer="Gingham baskets are pre-bundled by vendors to simplify the process, but they often include a variety of products.",
+            for_user=True
+        ),
+        FAQ(
+            question="Is Gingham available at all farmers markets?",
+            answer="Gingham is currently launching in select markets, but we’re expanding quickly! Sign up to stay tuned for updates in your area.",
+            for_user=True
+        ),
+        FAQ(
+            question="How do I pay for my basket?",
+            answer="Payments are made securely through Gingham at the time of purchase, so pick-up is fast and easy.",
+            for_user=True
+        )
+    ]
+    vendor_faqs = [
+        FAQ(
+            question="How do I sign up as a vendor on Gingham?",
+            answer="Signing up is quick and easy! Create your vendor profile, choose the farmers markets you participate in, and start listing your surplus baskets.",
+            for_vendor=True
+        ),
+        FAQ(
+            question="What types of products can I sell on Gingham?",
+            answer="You can sell surplus or produce, baked goods, packaged foods, or other items you would typically sell at farmers markets.",
+            for_vendor=True
+        ),
+        FAQ(
+            question="How do I create and manage baskets?",
+            answer="Through the Gingham Vendor Dashboard, you can create baskets, set discounted pricing, and schedule pickup times for customers.",
+            for_vendor=True
+        ),
+        FAQ(
+            question="How and when do customers pick up their baskets?",
+            answer="Customers pick up their pre-ordered baskets at your stall during the time window you choose, typically at the end of the market day.",
+            for_vendor=True
+        ),
+        FAQ(
+            question="How does Gingham help me reduce food waste?",
+            answer="Gingham helps you sell surplus items that might otherwise go unsold, connecting you directly with customers looking for discounted local goods.",
+            for_vendor=True
+        ),
+        FAQ(
+            question="Is there a fee for selling baskets on Gingham?",
+            answer="Gingham charges a small service fee on each sale and offers a transparent pricing structure with no hidden costs.",
+            for_vendor=True
+        ),
+        FAQ(
+            question="When do I get paid for my sales?",
+            answer="Payments are processed securely, and funds for the previous month's sales are typically transferred to your account within the first week of the following month.",
+            for_vendor=True
+        ),
+        FAQ(
+            question="Can I edit or cancel my baskets after they are listed? ",
+            answer="Yes, you can edit or cancel unsold baskets through the Vendor Dashboard up until 9:00 AM on the day of the market.",
+            for_vendor=True
+        ),
+        FAQ(
+            question="What happens if the customer doesn't pick up their basket?",
+            answer="In case of no-shows, vendors keep the product, and the customer will be charged per Gingham’s policy.",
+            for_vendor=True
+        )
+    ]
+
+    db.session.add_all(user_faqs)
+    db.session.add_all(vendor_faqs)
     db.session.commit()
 
     
