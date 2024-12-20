@@ -20,7 +20,7 @@ import PickUp from './components/user/PickUp.jsx';
 import Profile from './components/user/Profile.jsx';
 import Vendors from './components/user/Vendors.jsx';
 import VendorDetail from './components/user/VendorDetail.jsx';
-import UserFAQs from './components/UserFAQs.jsx';
+import UserFAQs from './components/user/UserFAQs.jsx';
 import Logout from './components/user/Logout.jsx';
 import UserResetRequest from './components/user/UserResetRequest.jsx';
 import UserPasswordReset from './components/user/UserPasswordReset.jsx';
@@ -31,10 +31,11 @@ import VendorLogout from './components/vendor/VendorLogout.jsx';
 import VendorCreate from './components/vendor/VendorCreate.jsx';
 import VendorDashboard from './components/vendor/VendorDashboard.jsx';
 import VendorNotification from './components/vendor/VendorNotification.jsx';
-import VendorLoginPopup from './components/vendor/VendorLoginPopup.jsx';
 import VendorSales from './components/vendor/VendorSales.jsx';
 import VendorScan from './components/vendor/VendorScan.jsx';
 import VendorProfile from './components/vendor/VendorProfile.jsx';
+import VendorFAQs from './components/vendor/VendorFAQs.jsx';
+import VendorLoginPopup from './components/vendor/VendorLoginPopup.jsx';
 import VendorResetRequest from './components/vendor/VendorResetRequest.jsx';
 import VendorPasswordReset from './components/vendor/VendorPasswordReset.jsx';
 
@@ -254,6 +255,7 @@ const router = createBrowserRouter([
                     { path: "scan", element: <VendorAuthRoute><VendorScan /></VendorAuthRoute> },
                     { path: "signup", element: <VendorLoginPopup /> },
                     { path: "profile/:id", element: <VendorRoute><VendorProfile /></VendorRoute> },
+                    { path: "faqs", element: <VendorFAQs /> },
                     { path: "vendor-create", element: <VendorAuthRoute><VendorCreate /></VendorAuthRoute> },
                     { path: "logout", element: <VendorLogout />},
                     { path: "password-reset", element: <VendorPasswordReset /> },
