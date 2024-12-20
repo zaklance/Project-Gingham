@@ -197,45 +197,57 @@ def delete_image():
     if not filename or not file_type:
         return {'error': 'Filename and type are required'}, 400
 
-    # Determine the folder based on type
-    if file_type == 'vendor':
-        folder = VENDOR_UPLOAD_FOLDER
-    elif file_type == 'market':
-        folder = MARKET_UPLOAD_FOLDER
-    elif file_type == 'user':
-        folder = USER_UPLOAD_FOLDER
+    # Get relevant ID based on the type
+    user_id = data.get('user_id')
+    vendor_id = data.get('vendor_id')
+    market_id = data.get('market_id')
+
+    # Base directory for your project
+    base_dir = os.path.abspath(os.path.join(os.getcwd(), "../client/public"))
+
+    # Determine the upload folder based on the type
+    if file_type == 'vendor' and vendor_id:
+        upload_folder = os.path.join(base_dir, f'vendor-images/{vendor_id}')
+    elif file_type == 'market' and market_id:
+        upload_folder = os.path.join(base_dir, f'market-images/{market_id}')
+    elif file_type == 'user' and user_id:
+        upload_folder = os.path.join(base_dir, f'user-images/{user_id}')
     else:
-        return {'error': 'Invalid type. Must be "vendor", "market", or "user"'}, 400
+        return {'error': 'Invalid type or missing ID. Ensure "type" and respective ID are provided.'}, 400
+
+    # Ensure filename doesn't include the folder path again
+    file_path = os.path.join(upload_folder, os.path.basename(filename))
 
     try:
-        file_path = os.path.join(folder, filename)
+        print(f"Attempting to delete: {file_path}")  # Log the constructed file path
 
-        # Delete the file from the file system
         if os.path.exists(file_path):
             os.remove(file_path)
 
-        # Update the database to clear the reference
-        if file_type == 'vendor':
-            vendor = Vendor.query.filter_by(image=filename).first()
-            if vendor:
-                vendor.image = None
-                db.session.commit()
-        elif file_type == 'market':
-            market = Market.query.filter_by(image=filename).first()
-            if market:
-                market.image = None
-                db.session.commit()
-        elif file_type == 'user':
-            user = User.query.filter_by(avatar=filename).first()
-            if user:
-                user.avatar = None
-                db.session.commit()
+            # Update the database to clear the reference
+            if file_type == 'vendor':
+                vendor = Vendor.query.filter_by(image=filename).first()
+                if vendor:
+                    vendor.image = None
+                    db.session.commit()
+            elif file_type == 'market':
+                market = Market.query.filter_by(image=filename).first()
+                if market:
+                    market.image = None
+                    db.session.commit()
+            elif file_type == 'user':
+                user = User.query.filter_by(avatar=filename).first()
+                if user:
+                    user.avatar = None
+                    db.session.commit()
 
-        return {'message': 'Image deleted successfully'}, 200
+            return {'message': 'Image deleted successfully'}, 200
+        else:
+            return {'error': f'File not found at path: {file_path}'}, 404
+
     except Exception as e:
         db.session.rollback()
         return {'error': f'Failed to delete image: {str(e)}'}, 500
-
 
 @app.route('/api/images/<filename>', methods=['GET'])
 def serve_image(filename):
