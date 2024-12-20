@@ -24,6 +24,8 @@ from io import BytesIO
 from random import choice
 import stripe
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+import shutil
+import random
 
 load_dotenv()
 
@@ -48,6 +50,77 @@ Migrate(app, db)
 CORS(app, supports_credentials=True)
 
 jwt = JWTManager(app)
+
+def create_user_folder(user_id):
+    folder_name = os.path.join(USER_UPLOAD_FOLDER, f"user_{user_id}")
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+    return folder_name
+
+def create_vendor_folder(vendor_id):
+    folder_name = os.path.join(VENDOR_UPLOAD_FOLDER, f"vendor_{vendor_id}")
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+    return folder_name
+
+def create_admin_folder(admin_id):
+    folder_name = os.path.join(USER_UPLOAD_FOLDER, f"user_{admin_id}")
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+    return folder_name
+
+def set_default_avatar(account_type, account_id):
+    # Map account types to their folder names
+    base_folder_map = {
+        "user": "../client/public/user-images",
+        "vendor": "../client/public/vendor-images",
+        "admin": "../client/public/admin-images",
+    }
+
+    # Validate account type
+    if account_type not in base_folder_map:
+        raise ValueError(f"Invalid account type: {account_type}")
+
+    # Define the default images folder
+    default_images_folder = os.path.join(
+        base_folder_map[account_type], "_default-images"
+    )
+
+    # Get all valid avatar files in the default folder
+    default_avatars = [
+        file
+        for file in os.listdir(default_images_folder)
+        if os.path.isfile(os.path.join(default_images_folder, file))
+    ]
+
+    if not os.path.exists(default_images_folder):
+        raise FileNotFoundError(f"The folder {default_images_folder} does not exist.")
+    
+    if not default_avatars:
+        raise ValueError(f"No default avatars found in {default_images_folder}.")
+
+    # Randomly select a default avatar
+    selected_avatar = random.choice(default_avatars)
+
+    # Define the destination folder based on account type and ID
+    destination_folder = os.path.join(base_folder_map[account_type], f"{account_type}_{account_id}")
+    if not os.path.exists(destination_folder):
+        os.makedirs(destination_folder)
+
+    destination_path = os.path.join(destination_folder, selected_avatar)
+
+    # Remove existing files in the destination folder (if needed)
+    for file in os.listdir(destination_folder):
+        file_path = os.path.join(destination_folder, file)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+
+    # Copy the selected avatar to the destination folder
+    shutil.copy(os.path.join(default_images_folder, selected_avatar), destination_path)
+
+    print(f"Random default avatar '{selected_avatar}' has been set in {destination_folder}.")
+
+    return selected_avatar
 
 avatars = [
         "avatar-apricot.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage.jpg",
@@ -304,12 +377,12 @@ def signup():
     data = request.get_json()
 
     try:
+        # Check if the email already exists
         user = User.query.filter(User.email == data['email']).first()
         if user:
-            return {'error': 'email already exists'}, 400
-        
-        avatar = data.get('avatar') or choice(avatars)
+            return {'error': 'Email already exists'}, 400
 
+        # Create a new user record
         new_user = User(
             email=data['email'],
             password=data['password'],
@@ -320,25 +393,37 @@ def signup():
             address_2=data.get('address2', ''),
             city=data['city'],
             state=data['state'],
-            zipcode=data['zipcode'],
-            avatar=avatar
+            zipcode=data['zipcode']
         )
 
         db.session.add(new_user)
+        db.session.commit()
+
+        # Create the user folder
+        create_user_folder(new_user.id)
+
+        # Set the default avatar or use the provided one
+        avatar = data.get('avatar')
+        if not avatar:
+            avatar = set_default_avatar('user', new_user.id)
+
+        # Update the avatar path in the user record
+        new_user.avatar = os.path.join(f"user_{new_user.id}", avatar)
         db.session.commit()
 
         return new_user.to_dict(), 201
 
     except IntegrityError as e:
         db.session.rollback()
-        return {'error': f'IntegrityError: {str(e)}'}, 400 
+        return {'error': f'IntegrityError: {str(e)}'}, 400
 
     except ValueError as e:
         return {'error': f'ValueError: {str(e)}'}, 400
 
     except Exception as e:
+        db.session.rollback()
         return {'error': f'Exception: {str(e)}'}, 500
-
+    
 # VENDOR PORTAL
 @app.route('/api/vendor/login', methods=['POST'])
 def vendorLogin():
