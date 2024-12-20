@@ -7,7 +7,7 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
                     VendorMarket, VendorUser, VendorVendorUser, AdminUser, 
                     Basket, Event, Product, UserNotification, VendorNotification, 
-                    AdminNotification, QRCode, bcrypt )
+                    AdminNotification, QRCode, FAQ, bcrypt )
 from dotenv import load_dotenv
 from sqlalchemy import func, desc
 from sqlalchemy.exc import IntegrityError
@@ -1966,9 +1966,6 @@ def qr_codes():
             db.session.rollback()
             return {'error': f'Failed to create QR code: {str(e)}'}, 500
 
-
-
-
 @app.route('/api/qr-codes/<int:id>', methods=['GET', 'DELETE'])
 def qr_code(id):
     if request.method == 'GET':
@@ -2530,6 +2527,56 @@ def delete_admin_notifications(id):
         db.session.delete(notification)
         db.session.commit()
         return jsonify({'notifications': notification_data})
+
+@app.route('/api/faqs', methods=['GET', 'POST'])
+def faqs():
+    if request.method == 'GET':
+        query = FAQ.query
+        return jsonify(query.to_dict()), 200
+
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_faq = FAQ(
+            question=data.get('question'),
+            answer=data.get('answer'),
+            for_user=data.get('for_user'),
+            for_vendor=data.get('for_vendor'),
+            for_admin=data.get('for_admin')
+        )
+        try:
+            db.session.add(new_faq)
+            db.session.commit()
+            return jsonify(new_faq.to_dict()), 201
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Failed to create FAQ: {str(e)}'}, 500
+
+@app.route('/api/faqs/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def faq(id):
+    faq = FAQ.query.filter_by(id=id).first()
+    if request.method == 'GET':
+        if not faq:
+            return {'error': 'FAQ not found'}, 404
+        faq_data = faq.to_dict()
+        return jsonify(faq_data), 200
+    
+    elif request.method == 'PATCH':
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(faq, key, value)
+        db.session.commit()
+        return faq.to_dict(), 200
+
+    elif request.method == 'DELETE':
+        if not faq: 
+            return {'error': 'FAQ not found'}, 404
+        try:
+            db.session.delete(faq)
+            db.session.commit()
+            return {'message': 'FAQ deleted successfully'}, 200
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Failed to delete FAQ: {str(e)}'}, 500
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
