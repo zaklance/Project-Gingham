@@ -83,7 +83,11 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                 const data = await response.json();
                 setAdminMarketData((prevData) => ({
                     ...prevData,
-                    image: data.filename, // Update the image in the state
+                    image: `${matchingMarketId}/${data.filename}`, // Update the image in the state
+                }));
+                setTempMarketData((prevData) => ({
+                    ...prevData,
+                    image: `${matchingMarketId}/${data.filename}`,
                 }));
                 setStatus('success');
             } else {
@@ -337,11 +341,11 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 />
                             </div>
                             <div className='form-group'>
-                                <label>Vendor Image:</label>
+                                <label>Market Image:</label>
                                 {adminMarketData?.image ? (
                                     <>
                                         <img 
-                                            className='img-market' 
+                                            style={{ maxWidth: '100%', height: 'auto' }} 
                                             src={`/market-images/${adminMarketData.image}`} 
                                             alt="Market Image" />
                                     </>
@@ -350,9 +354,9 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 )}
                                 <div className='flex-start flex-center-align'>
                                     <div className='margin-l-8'>
-                                        <button className='btn btn-small' onClick={handleImageDelete}>Delete Image</button>
+                                        <button className='btn btn-small btn-blue' onClick={handleImageDelete}>Delete Image</button>
                                     </div>
-                                    <label for='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
+                                    <label htmlFor='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
                                     <input
                                         id="file-upload"
                                         type="file"

@@ -1773,13 +1773,13 @@ select:hover {
   border-radius: 12px;
 }
 
-.img-notifications {
+/* .img-notifications {
   margin-top: -16px;
   width: 24px;
   margin-bottom: -6px;
   margin-left: -12px;
   margin-right: -12px;
-}
+} */
 
 .img-notif {
   background-image: url('../images/icons8-notification.svg');
@@ -2469,7 +2469,7 @@ select:hover {
   }
 
   .btn-file {
-  max-width: 120px;
+    max-width: 120px !important;
   }
 
   .text-error h1 {

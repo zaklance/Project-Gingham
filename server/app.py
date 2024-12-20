@@ -103,7 +103,7 @@ def upload_file():
         if upload_type == 'vendor':
             upload_folder = os.path.join(os.getcwd(), f'../client/public/vendor-images/{vendor_id}')
         elif upload_type == 'market':
-            upload_folder = os.path.join(os.getcwd(), f'../client/public/market-images{market_id}')
+            upload_folder = os.path.join(os.getcwd(), f'../client/public/market-images/{market_id}')
         elif upload_type == 'user':
             upload_folder = os.path.join(os.getcwd(), f'../client/public/user-images/{user_id}')
         else:
@@ -155,8 +155,6 @@ def upload_file():
                 if not vendor:
                     return {'error': 'Vendor not found'}, 404
 
-                print(f'{vendor.image}')
-                print(f'{vendor_id}/{os.path.basename(file_path)}')
                 vendor.image = f'{vendor_id}/{os.path.basename(file_path)}'
                 db.session.commit()
 
@@ -169,11 +167,8 @@ def upload_file():
                 if not market:
                     return {'error': 'Market not found'}, 404
 
-                market.image = os.path.basename(file_path)
+                market.image = f'{market_id}/{os.path.basename(file_path)}'
                 db.session.commit()
-            
-            vendor = Vendor.query.get(vendor_id)
-            print(f'{vendor.image}')
 
             return {'message': 'File successfully uploaded', 'filename': os.path.basename(file_path)}, 201
 
@@ -910,9 +905,21 @@ def market_by_id(id):
             if 'year_round' in data:
                 market.year_round = data['year_round']
             if 'season_start' in data:
-                market.season_start = datetime.strptime(data['season_start'], '%Y-%m-%d').date()
+                if data['season_start'] is None:
+                    market.season_start = None
+                else:
+                    try:
+                        market.season_start = datetime.strptime(data['season_start'], '%Y-%m-%d').date()
+                    except ValueError:
+                        return {'error': 'Invalid date format for season_start. Use YYYY-MM-DD or null.'}, 400
             if 'season_end' in data:
-                market.season_end = datetime.strptime(data['season_end'], '%Y-%m-%d').date()
+                if data['season_end'] is None:
+                    market.season_end = None
+                else:
+                    try:
+                        market.season_end = datetime.strptime(data['season_end'], '%Y-%m-%d').date()
+                    except ValueError:
+                        return {'error': 'Invalid date format for season_end. Use YYYY-MM-DD or null.'}, 400
             
             db.session.commit()
             return market.to_dict(), 200
