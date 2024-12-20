@@ -2531,8 +2531,35 @@ def delete_admin_notifications(id):
 @app.route('/api/faqs', methods=['GET', 'POST'])
 def faqs():
     if request.method == 'GET':
+        for_user = request.args.get('for_user', type=int)
+        for_vendor = request.args.get('for_vendor', type=str)
+        for_admin = request.args.get('for_admin', type=str)
         query = FAQ.query
-        return jsonify(query.to_dict()), 200
+
+        if for_user:
+            query = query.filter(FAQ.for_user == True)
+            user_result = query.first()
+            if qr_code_result:
+                return jsonify(user_result.to_dict()), 200
+            return jsonify({'error': 'User FAQs not found'}), 404
+        elif for_vendor:
+            query = query.filter(QRCode.for_vendor == True)
+            vendor_result = query.all()
+            if qr_code_result:
+                return jsonify([qr.to_dict() for qr in vendor_result]), 200
+            return jsonify({'error': 'Vendor FAQs not found'}), 404
+        elif for_vendor:
+            query = query.filter(QRCode.for_vendor == True)
+            vendor_result = query.all()
+            if qr_code_result:
+                return jsonify([qr.to_dict() for qr in vendor_result]), 200
+            return jsonify({'error': 'Admin FAQs not found'}), 404
+        elif not for_user and not for_vendor and not for_admin:
+            result = query.all()
+            if result:
+                return jsonify([qr.to_dict() for qr in result]), 200
+            return jsonify({'error': 'No FAQs found'}), 404
+        return jsonify({'error': 'Invalid query parameters'}), 400
 
     elif request.method == 'POST':
         data = request.get_json()
