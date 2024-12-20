@@ -84,7 +84,7 @@ function AdminVendorEdit({ vendors }) {
                 const data = await response.json();
                 setVendorData((prevData) => ({
                     ...prevData,
-                    image: data.filename,
+                    image: `${matchingVendorId}/${data.filename}`,
                 }));
                 setStatus('success');
             } else {
@@ -189,7 +189,7 @@ function AdminVendorEdit({ vendors }) {
             setStatus('initial');
         }
     };
-;
+
 
     return (
         <>
@@ -280,6 +280,7 @@ function AdminVendorEdit({ vendors }) {
                                     <div>
                                         <img
                                             className='img-market'
+                                            style={{ maxWidth: '100%', height: 'auto' }}
                                             src={`/vendor-images/${vendorData.image}`}
                                             alt="Vendor Image"
                                         />
@@ -287,9 +288,9 @@ function AdminVendorEdit({ vendors }) {
                                 ) : ''}
                                 <div className='flex-start flex-center-align'>
                                     <div className='margin-l-8'>
-                                        <button className='btn btn-small' onClick={handleDeleteImage} > Delete Image </button>
+                                        <button className='btn btn-small btn-blue' onClick={handleDeleteImage} > Delete Image </button>
                                     </div>
-                                    <label for='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
+                                    <label htmlFor='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
                                 </div>
                                 <input
                                     id="file-upload"
@@ -306,11 +307,12 @@ function AdminVendorEdit({ vendors }) {
                         <>
                             <table>
                                 <tbody>
-                                <tr>
-                                    <td className='cell-title'>Image:</td>
-                                    <td className='cell-text'>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td className='cell-title'>Image:</td>
+                                        <td className='cell-text'>
+                                            {vendorData ? <img style={{ maxWidth: '100%', height: 'auto' }} src={`/vendor-images/${vendorData.image}`} alt="Vendor Image" /> : ''}
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td className='cell-title'>Name:</td>
                                         <td className='cell-text'>{vendorData ? `${vendorData.name}` : ''}</td>

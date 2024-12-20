@@ -533,7 +533,7 @@ function VendorProfile () {
                                             <div className='margin-l-8'>
                                                 <button className='btn btn-small btn-blue' onClick={handleDeleteImage}>Delete Image</button>
                                             </div>
-                                            <label for='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
+                                            <label htmlFor='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
                                             <input
                                                 id="file-upload"
                                                 type="file"
