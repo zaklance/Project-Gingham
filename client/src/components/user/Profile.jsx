@@ -178,8 +178,21 @@ function Profile({ marketData }) {
             return;
         }
     
+        if (!userId) {
+            alert('User ID is not defined.');
+            return;
+        }
+    
+        const token = localStorage.getItem('user_jwt-token');
+        if (!token) {
+            alert('User is not authenticated. Please log in again.');
+            return;
+        }
+    
         try {
-            const token = localStorage.getItem('user_jwt-token');
+            console.log('Deleting image with filename:', profileData.avatar);
+            console.log('User ID:', userId);
+    
             const response = await fetch(`http://127.0.0.1:5555/api/delete-image`, {
                 method: 'POST',
                 headers: {
@@ -188,6 +201,7 @@ function Profile({ marketData }) {
                 },
                 body: JSON.stringify({
                     filename: profileData.avatar,
+                    user_id: userId,
                     type: 'user',
                 }),
             });
@@ -205,7 +219,7 @@ function Profile({ marketData }) {
             } else {
                 const errorText = await response.text();
                 console.error('Failed to delete image:', errorText);
-                alert('Failed to delete the image. Please try again.');
+                alert(`Failed to delete the image: ${JSON.parse(errorText).error}`);
             }
         } catch (error) {
             console.error('Error deleting image:', error);
