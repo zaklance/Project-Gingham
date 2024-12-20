@@ -896,6 +896,7 @@ def run():
         state = choice(states)
         zipcode = fake.postcode()
         avatar = choice(avatars)
+        # avatar = f'_default-images/{choice(avatars)}'
 
         u = User(
             email=email,
