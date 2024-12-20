@@ -1418,6 +1418,7 @@ def run():
     db.session.add_all(vendor_faqs)
     db.session.commit()
 
+
     
 if __name__ == '__main__':
     with app.app_context():
