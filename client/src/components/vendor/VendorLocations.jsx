@@ -83,7 +83,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
             }
         };
         fetchData();
-    }, [filteredMarketDays]);
+    }, [filteredMarketDays, allMarketDays]);
 
     useEffect(() => {
         if (allVendorMarkets.length > 0 && markets?.id) {
@@ -146,16 +146,17 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
         }
     };
 
-    const handleMarketDayDelete = async () => {
+    const handleMarketDayDelete = async (event) => {
         if (confirm(`Are you sure you want to delete the chosen Market?`)) {
+            // event.preventDefault()
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-markets/${selectedMarketDay}`, {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-markets/${Number(selectedMarketDay)}`, {
                     method: "DELETE",
                 });
                 if (!response.ok) {
                     throw new Error("Failed to delete notification");
                 }
-                setFilteredMarketDays((prevMarketDays) => prevMarketDays.filter((md) => md.id !== selectedMarketDay));
+                setFilteredMarketDays((prevMarketDays) => prevMarketDays.filter((md) => md.id !== Number(selectedMarketDay)));
             } catch (error) {
                 console.error("Error deleting notification", error);
             }
@@ -217,6 +218,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
                                 <label>Market:</label>
                                 {filteredMarketDays.length > 0 ? (
                                     <select id="marketSelect" name="market" onChange={(e) => handleMarketDaySelect(e)}>
+                                        <option value="">Select Market</option>
                                         {filteredMarketDays.map((market, index) => (
                                             <option key={index} value={market.id}>
                                                 {market.markets.name} on {weekDay[market.day_of_week]}s
@@ -227,7 +229,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
                                     <p>Loading markets...</p> // Optional: Placeholder or spinner while loading
                                 )}
                             </div>
-                            <button className='btn btn-small btn-x btn-gap margin-t-16' onClick={() => handleMarketDayDelete()}>
+                            <button className='btn btn-small btn-x btn-gap margin-t-16' onClick={() => handleMarketDayDelete(event)}>
                                 Delete
                             </button>
                         </form>
