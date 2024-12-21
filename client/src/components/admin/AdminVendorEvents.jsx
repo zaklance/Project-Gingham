@@ -260,7 +260,7 @@ function AdminVendorEvents({ vendors }) {
                                                 />
                                             </div>
                                             <button className='btn btn-small margin-t-24' onClick={() => handleEventUpdate(event.id)}>Save</button>
-                                            <button className='btn btn-small btn-gap' onClick={() => setEditingEventId(null)}>Cancel</button>
+                                            <button className='btn btn-small btn-gap margin-l-8' onClick={() => setEditingEventId(null)}>Cancel</button>
 
                                         </div>
                                     </>
@@ -279,7 +279,7 @@ function AdminVendorEvents({ vendors }) {
                                         <button className='btn btn-small' onClick={() => handleEventEditToggle(event.id, event.title, event.message, event.start_date, event.end_date)}>
                                             Edit
                                         </button>
-                                        <button className='btn btn-small btn-x btn-gap' onClick={() => handleEventDelete(event.id)}>
+                                        <button className='btn btn-small btn-x btn-gap margin-l-8' onClick={() => handleEventDelete(event.id)}>
                                             Delete
                                         </button>
                                     </>
