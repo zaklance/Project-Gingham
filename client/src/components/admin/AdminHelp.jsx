@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import AdminHelpFAQ from './AdminHelpFAQ'
+import AdminHelpTab from './AdminHelpTab'
 
 const AdminHelp = () => {
     const [activeTab, setActiveTab] = useState('user');
@@ -41,9 +41,9 @@ const AdminHelp = () => {
                     </Link>
                 </div>
             </div>
-            {activeTab === 'user' && <AdminHelpFAQ fAQs={userFAQs} setFAQs={setUserFAQs} forUser={true} forVendor={false} forAdmin={false} userType={"User"} />}
-            {activeTab === 'vendor' && <AdminHelpFAQ fAQs={vendorFAQs} setFAQs={setVendorFAQs} forUser={false} forVendor={true} forAdmin={false} userType={"Vendor"} />}
-            {activeTab === 'admin' && <AdminHelpFAQ fAQs={adminFAQs} setFAQs={setAdminFAQs} forUser={false} forVendor={false} forAdmin={true} userType={"Admin"} />}
+            {activeTab === 'user' && <AdminHelpTab fAQs={userFAQs} setFAQs={setUserFAQs} forUser={true} forVendor={false} forAdmin={false} userType={"User"} />}
+            {activeTab === 'vendor' && <AdminHelpTab fAQs={vendorFAQs} setFAQs={setVendorFAQs} forUser={false} forVendor={true} forAdmin={false} userType={"Vendor"} />}
+            {activeTab === 'admin' && <AdminHelpTab fAQs={adminFAQs} setFAQs={setAdminFAQs} forUser={false} forVendor={false} forAdmin={true} userType={"Admin"} />}
         </>
     );
 };

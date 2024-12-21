@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const AdminHelpFAQ = ({ fAQs, setFAQs, forUser, forVendor, forAdmin, userType }) => {
+const AdminHelpTab = ({ fAQs, setFAQs, forUser, forVendor, forAdmin, userType }) => {
     const [newFAQ, setNewFAQ] = useState({});
     const [query, setQuery] = useState("");
     const [tempFAQData, setTempFAQData] = useState(null);
@@ -209,4 +209,4 @@ const AdminHelpFAQ = ({ fAQs, setFAQs, forUser, forVendor, forAdmin, userType })
     );
 };
 
-export default AdminHelpFAQ;
+export default AdminHelpTab;
