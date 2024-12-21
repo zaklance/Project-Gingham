@@ -61,8 +61,8 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
-    if image.mode != 'RGBA':
-        image = image.convert('RGBA')
+    if image.mode != 'RGB':
+        image = image.convert('RGB')
         
     image.thumbnail(resolution, Image.LANCZOS)
     
@@ -179,7 +179,7 @@ def upload_file():
     return {'error': 'File type not allowed'}, 400
 
 
-@app.route('/api/delete-image', methods=['POST'])
+@app.route('/api/delete-image', methods=['DELETE'])
 @jwt_required()
 def delete_image():
     if not (check_role('admin') or check_role('vendor') or check_role('user')):
@@ -236,7 +236,7 @@ def delete_image():
                     user.avatar = None
                     db.session.commit()
 
-            return {'message': 'Image deleted successfully'}, 200
+            return {'message': 'Image deleted successfully'}, 204
         else:
             return {'error': f'File not found at path: {file_path}'}, 404
 
