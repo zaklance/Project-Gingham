@@ -175,8 +175,8 @@ function Markets() {
         }
     }
 
-    const handleClickOutside = (event) => {
-        // Close dropdown if clicked outside
+    // Close dropdown if clicked outside
+    const handleClickOutsideDropdown = (event) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
             setShowDropdown(false);
         }
@@ -195,11 +195,18 @@ function Markets() {
     }
 
     useEffect(() => {
-        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutsideDropdown);
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("mousedown", handleClickOutsideDropdown);
         };
-    }, []);
+    }, [showDropdown]);
+
+    const closePopup = () => {
+        if (showFilters) {
+            setShowFilters(false);
+        }
+    };
+
 
     return (
         <>
@@ -270,6 +277,9 @@ function Markets() {
                                                 ))}
                                             </select>
                                         </div>
+                                    )}
+                                    {showFilters && (
+                                        <div className="popup-overlay-clear" onClick={closePopup}></div>
                                     )}
                                 </td>
                         </tr>

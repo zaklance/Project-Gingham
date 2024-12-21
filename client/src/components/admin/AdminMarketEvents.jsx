@@ -258,7 +258,7 @@ function AdminMarketEvents({ markets }) {
                                                     onChange={handleEditInputChange}
                                                 />
                                             </div>
-                                            <button className='btn btn-small margin-t-24' onClick={() => handleEventUpdate(event.id)}>Save</button>
+                                            <button className='btn btn-small margin-t-24 margin-r-8' onClick={() => handleEventUpdate(event.id)}>Save</button>
                                             <button className='btn btn-small btn-gap' onClick={() => setEditingEventId(null)}>Cancel</button>
 
                                         </div>
@@ -275,7 +275,7 @@ function AdminMarketEvents({ markets }) {
                                             <h3 className='nowrap'>{event.title ? event.title : 'Loading...'}:</h3>
                                             <p>{event.message}</p>
                                         </div>
-                                        <button className='btn btn-small' onClick={() => handleEventEditToggle(event.id, event.title, event.message, event.start_date, event.end_date)}>
+                                        <button className='btn btn-small margin-b-16 margin-r-8' onClick={() => handleEventEditToggle(event.id, event.title, event.message, event.start_date, event.end_date)}>
                                             Edit
                                         </button>
                                         <button className='btn btn-small btn-x btn-gap' onClick={() => handleEventDelete(event.id)}>

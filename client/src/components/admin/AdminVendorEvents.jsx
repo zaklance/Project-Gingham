@@ -276,7 +276,7 @@ function AdminVendorEvents({ vendors }) {
                                             <h3 className='nowrap'>{event.title ? event.title : 'Loading...'}:</h3>
                                             <p>{event.message}</p>
                                         </div>
-                                        <button className='btn btn-small' onClick={() => handleEventEditToggle(event.id, event.title, event.message, event.start_date, event.end_date)}>
+                                            <button className='btn btn-small margin-t-8' onClick={() => handleEventEditToggle(event.id, event.title, event.message, event.start_date, event.end_date)}>
                                             Edit
                                         </button>
                                         <button className='btn btn-small btn-x btn-gap margin-l-8' onClick={() => handleEventDelete(event.id)}>

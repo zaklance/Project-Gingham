@@ -408,6 +408,12 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
         }
     }
 
+    const closePopup = () => {
+        if (showFilters) {
+            setShowFilters(false);
+        }
+    };
+
 
     return (
         <>
@@ -417,7 +423,7 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                     <button className='btn btn-filter' onClick={handleDropDownFilters}>&#9776;</button>
                     {showFilters && (
                         <div className='dropdown-content box-filters'>
-                            <div className='form-filters'>
+                            <div className='form-filters-reviews'>
                                 <input
                                     id="new"
                                     type="radio"
@@ -455,6 +461,9 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                                 <label htmlFor='downVotes'>Down Votes</label>
                             </div>
                         </div>
+                    )}
+                    {showFilters && (
+                        <div className="popup-overlay-clear" onClick={closePopup}></div>
                     )}
                 </div>
             </div>

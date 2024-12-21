@@ -24,6 +24,7 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
     const [filterUp, setFilterUp] = useState(false);
     const [filterDown, setFilterDown] = useState(false);
 
+
     const { handlePopup } = useOutletContext();
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
@@ -410,6 +411,12 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
         }
     }
 
+    const closePopup = () => {
+        if (showFilters) {
+            setShowFilters(false);
+        }
+    };
+
 
     return (
         <>
@@ -419,7 +426,7 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                     <button className='btn btn-filter' onClick={handleDropDownFilters}>&#9776;</button>
                     {showFilters && (
                         <div className='dropdown-content box-filters'>
-                            <div className='form-filters'>
+                            <div className='form-filters-reviews'>
                                 <input
                                     id="new"
                                     type="radio"
@@ -457,6 +464,9 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                                 <label htmlFor='downVotes'>Down Votes</label>
                             </div>
                         </div>
+                    )}
+                    {showFilters && (
+                        <div className="popup-overlay-clear" onClick={closePopup}></div>
                     )}
                 </div>
             </div>
