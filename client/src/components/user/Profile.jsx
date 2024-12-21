@@ -163,7 +163,7 @@ function Profile({ marketData }) {
                     setStatus('fail');
                     return;
                 }
-                // window.location.reload()
+                window.location.reload()
             }
         } catch (error) {
             console.error('Error saving changes:', error);
@@ -192,7 +192,7 @@ function Profile({ marketData }) {
             console.log('User ID:', userId);
     
             const response = await fetch(`http://127.0.0.1:5555/api/delete-image`, {
-                method: 'POST',
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
@@ -277,6 +277,7 @@ function Profile({ marketData }) {
             })
             .catch(error => console.error('Error fetching sales history:', error.message));
     }, []);
+    
 
     if (!profileData) {
         return <div>Loading...</div>;
@@ -410,11 +411,7 @@ function Profile({ marketData }) {
                 ) : (
                     <>
                             <div className='flex-space-evenly flex-gap-16 flex-start-align m-flex-wrap'>
-                            {profileData.avatar ? (
-                                <img className='img-avatar-profile' src={`/user-images/${profileData.avatar}`} alt="Avatar" />
-                            ) : (
-                                <img className='img-avatar-profile' src={`/user-images/_default-images/${profileData.avatar_default}`} alt="Default Avatar" />
-                            )}
+                                <img className='img-avatar-profile' src={`/user-images/${profileData.avatar || profileData.avatar_default}`} alt="Avatar" />
                             <div className='width-80'>
                                 <table className='table-profile'>
                                     <tbody>
