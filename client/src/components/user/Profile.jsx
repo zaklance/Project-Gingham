@@ -413,7 +413,7 @@ function Profile({ marketData }) {
                             {profileData.avatar ? (
                                 <img className='img-avatar-profile' src={`/user-images/${profileData.avatar}`} alt="Avatar" />
                             ) : (
-                                <img className='img-avatar-profile' src={`/site-images/avatar-orange.jpg`} alt="Default Avatar" />
+                                <img className='img-avatar-profile' src={`/user-images/_default-images/${profileData.avatar_default}`} alt="Default Avatar" />
                             )}
                             <div className='width-80'>
                                 <table className='table-profile'>

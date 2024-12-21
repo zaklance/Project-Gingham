@@ -6,6 +6,7 @@ from flask_bcrypt import Bcrypt
 from sqlalchemy_serializer import SerializerMixin
 from datetime import date, time, datetime, timezone
 import re
+import random
 
 convention = {
     "ix": "ix_%(column_0_label)s",
@@ -19,6 +20,17 @@ metadata = MetaData(naming_convention=convention)
 
 db = SQLAlchemy(metadata=metadata)
 bcrypt = Bcrypt()
+
+avatars = [
+        "avatar-apricot.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage.jpg",
+        "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime.jpg", "avatar-melon.jpg",
+        "avatar-nectarine.jpg", "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg",
+        "avatar-peach.jpg", "avatar-pomegranate.jpg", "avatar-radish.jpg", "avatar-tomato.jpg",
+        "avatar-watermelon.jpg"
+    ]
+
+def random_avatar():
+    return random.choice(avatars)
 
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
@@ -35,6 +47,7 @@ class User(db.Model, SerializerMixin):
     state = db.Column(db.String(2), nullable=False)
     zipcode = db.Column(db.String(10), nullable=False)
     avatar = db.Column(db.String)
+    avatar_default = db.Column(db.String, nullable=False, default=random_avatar)
 
     # Relationships
     market_reviews = db.relationship('MarketReview', back_populates='user')
@@ -727,4 +740,4 @@ class FAQ(db.Model, SerializerMixin):
     for_admin = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self) -> str:
-        return f"<MarketFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.basket_id}>"
+        return f"<FAQ ID: {self.id}, Question: {self.question}, Answer: {self.answer}>"
