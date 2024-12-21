@@ -30,18 +30,25 @@ function Footer() {
                         <li className='footer-li'>
                             <NavLink to="/">About</NavLink>
                         </li>
-                        <li className='footer-li'>
-                            <NavLink to="/contact">Contact</NavLink>
-                        </li>
                         {!isNotUser && (
-                        <li className='footer-li'>
-                            <NavLink to="/user/faqs">User FAQs</NavLink>
-                        </li>
+                            <li className='footer-li'>
+                                <NavLink to="/contact">Contact</NavLink>
+                            </li>
                         )}
                         {isVendorPage && (
-                        <li className='footer-li'>
-                            <NavLink to="/vendor/faqs">Vendor FAQs</NavLink>
-                        </li>
+                            <li className='footer-li'>
+                                <NavLink to="/vendor/contact">Contact</NavLink>
+                            </li>
+                        )}
+                        {!isNotUser && (
+                            <li className='footer-li'>
+                                <NavLink to="/user/faqs">User FAQs</NavLink>
+                            </li>
+                        )}
+                        {isVendorPage && (
+                            <li className='footer-li'>
+                                <NavLink to="/vendor/faqs">Vendor FAQs</NavLink>
+                            </li>
                         )}
                     </ul>
                     <img className='small-logo' src="/site-images/gingham-logo-3.svg" alt="Gingham Logo"></img>

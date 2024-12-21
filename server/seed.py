@@ -896,7 +896,7 @@ def run():
         city = fake.city()
         state = choice(states)
         zipcode = fake.postcode()
-        avatar = choice(avatars)
+        # avatar = choice(avatars)
         # avatar = f'_default-images/{choice(avatars)}'
 
         u = User(
@@ -910,7 +910,7 @@ def run():
             city=city,
             state=state,
             zipcode=zipcode,
-            avatar=avatar
+            # avatar=avatar
         )
         users.append(u)
 

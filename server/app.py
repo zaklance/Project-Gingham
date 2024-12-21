@@ -61,8 +61,8 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
-    if image.mode != 'RGB':
-        image = image.convert('RGB')
+    if image.mode != 'RGBA':
+        image = image.convert('RGBA')
         
     image.thumbnail(resolution, Image.LANCZOS)
     
@@ -323,7 +323,7 @@ def signup():
         if user:
             return {'error': 'email already exists'}, 400
         
-        avatar = data.get('avatar') or choice(avatars)
+        # avatar = data.get('avatar') or choice(avatars)
 
         new_user = User(
             email=data['email'],
@@ -336,7 +336,7 @@ def signup():
             city=data['city'],
             state=data['state'],
             zipcode=data['zipcode'],
-            avatar=avatar
+            # avatar_default=avatar
         )
 
         db.session.add(new_user)
