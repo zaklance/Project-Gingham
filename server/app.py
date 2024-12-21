@@ -24,6 +24,7 @@ from io import BytesIO
 from random import choice
 import stripe
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+import events
 
 load_dotenv()
 
