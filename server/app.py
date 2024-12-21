@@ -2592,7 +2592,7 @@ def faq(id):
         for key, value in data.items():
             setattr(faq, key, value)
         db.session.commit()
-        return faq.to_dict(), 200
+        return faq.to_dict(), 202
 
     elif request.method == 'DELETE':
         if not faq: 
@@ -2600,7 +2600,7 @@ def faq(id):
         try:
             db.session.delete(faq)
             db.session.commit()
-            return {'message': 'FAQ deleted successfully'}, 200
+            return {'message': 'FAQ deleted successfully'}, 204
         except Exception as e:
             db.session.rollback()
             return {'error': f'Failed to delete FAQ: {str(e)}'}, 500
