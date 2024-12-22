@@ -43,9 +43,11 @@ function UserResetRequest() {
                         required
                     />
                 </div>
-                <button className="btn btn-reset" type="submit">Send Reset Link</button>
+                <div className='flex-center'>
+                    <button className="btn btn-login nowrap margin-t-8" type="submit" onClick={handlePasswordResetRequest}>Send Reset Link</button>
+                </div>
             </div>
-            {status && <p className="status-message">{status}</p>}
+            {status && <p className="status-message margin-t-8 text-500">{status}</p>}
         </div>
     );
 }

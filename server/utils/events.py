@@ -6,7 +6,7 @@ from models import (
     VendorReviewRating, MarketFavorite, VendorFavorite,
     VendorMarket, VendorUser, VendorVendorUser, AdminUser,
     Basket, Event, Product, UserNotification, VendorNotification,
-    AdminNotification, QRCode, bcrypt
+    AdminNotification, QRCode, FAQ, bcrypt
 )
 
 
