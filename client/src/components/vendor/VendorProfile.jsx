@@ -603,17 +603,6 @@ function VendorProfile () {
                                         </div>
                                         )}
                                         <VendorLocations vendorId={vendorId} vendorUserData={vendorUserData} />
-
-                                        {/* <p><strong>Locations:&emsp;</strong></p>
-                                        {Array.isArray(locations) && locations.length > 0 ? (
-                                            locations.map((marketId, index) => (
-                                                <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                                                    <Link to={`/user/markets/${marketId}`}> {marketDetails[marketId] || 'Loading...'} </Link>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <p>No market locations at this time</p>
-                                        )} */}
                                     </>
                                 )
                             ) : (

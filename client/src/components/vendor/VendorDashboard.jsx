@@ -10,6 +10,8 @@ function VendorDashboard({ marketId }) {
     const [activeTab, setActiveTab] = useState('baskets');
     const [vendorUserData, setVendorUserData] = useState(null);
     const [newVendor, setNewVendor] = useState(false);
+    const [notifications, setNotifications] = useState([]);
+
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/vendors")
@@ -95,6 +97,48 @@ function VendorDashboard({ marketId }) {
         fetchVendorId();
     }, []);
 
+    useEffect(() => {
+        if (!vendorId) return;
+
+        const fetchNotifications = async () => {
+            const token = localStorage.getItem('vendor_jwt-token');
+            // setIsLoading(true);
+            if (!token) {
+                console.error("Token missing");
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/vendor/${vendorId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Notifications fetched:', data);
+                    setNotifications(data.notifications || []);
+                } else {
+                    console.error('Failed to fetch notifications');
+                    setNotifications([]);
+                }
+            } catch (error) {
+                console.error('Error fetching notifications:', error);
+                setNotifications([]);
+            } finally {
+                // setIsLoading(false);
+            }
+        };
+
+        fetchNotifications();
+    }, [vendorId]); 
+
+    console.log(notifications)
+
     return (
         <div>
             <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
@@ -109,8 +153,9 @@ function VendorDashboard({ marketId }) {
                             Events
                         </Link>
                         {vendorUserData?.is_admin && (
-                            <Link to="#" onClick={() => setActiveTab('team')} className={activeTab === 'team' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                            <Link to="#" onClick={() => setActiveTab('team')} className={activeTab === 'team' ? 'notification active-tab btn btn-reset btn-tab' : 'notification btn btn-reset btn-tab'}>
                                 Team
+                                {notifications.length > 0 && <p className='badge'>{notifications.length}</p>}
                             </Link>
                         )}
                     </div>
@@ -121,7 +166,7 @@ function VendorDashboard({ marketId }) {
             <br />            
             {activeTab === 'baskets' && <VendorBaskets marketId={marketId} vendorId={vendorId} vendorUserData={vendorUserData} newVendor={newVendor} setNewVendor={setNewVendor} />}
             {activeTab === 'events' && <VendorEvents vendors={vendors} vendorId={vendorId} vendorUserData={vendorUserData} />}
-            {activeTab === 'team' && <VendorTeam vendors={vendors} vendorId={vendorId} vendorUserData={vendorUserData} />}
+            {activeTab === 'team' && <VendorTeam vendors={vendors} vendorId={vendorId} vendorUserData={vendorUserData} notifications={notifications} />}
         </div>
     );
 }
