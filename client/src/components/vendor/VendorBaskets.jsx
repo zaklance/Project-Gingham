@@ -212,7 +212,6 @@ function VendorBaskets({ vendorUserData }) {
                     {todayBaskets.length > 0 ? (
                         todayBaskets.map((entry, index) => {
                             const isLive = entry.baskets.length > 0 &&
-                                entry.baskets[0].is_saved &&
                                 new Date(entry.baskets[0].sale_date) <= new Date()
                             return (
                                 <div key={index} className='badge-container'>
