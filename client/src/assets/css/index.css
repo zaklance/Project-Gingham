@@ -212,6 +212,14 @@ h2 {
   background-color: white;
 }
 
+.kern-2 {
+  letter-spacing: -2pt;
+}
+
+.kern-8 {
+  letter-spacing: -8pt;
+}
+
 .nowrap {
   white-space: nowrap;
 }
@@ -984,7 +992,7 @@ ul {
 
 
 .btn-reset {
-  background-color: #dbdbdb;
+  background-color: #eee;
   margin-top: 8px;
   padding: 6px 8px;
   font-size: 1em;
@@ -1926,7 +1934,7 @@ select:hover {
   font-size: .5em;
   top: -8px;
   right: -6px;
-  padding: 5px 9px;
+  padding: 5px 8.5px;
   border-radius: 50%;
   background: #007BFF;
   color: white;
@@ -1954,7 +1962,7 @@ select:hover {
   background: #00bda4;
   color: white;
 }
-
+/* 
 .badge-saved {
   position: absolute;
   font-size: .8em;
@@ -1965,7 +1973,7 @@ select:hover {
   border-radius: 6px;
   background: #6c7ae0;
   color: white;
-}
+} */
 
 .badge-pending {
   position: absolute;

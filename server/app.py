@@ -24,7 +24,8 @@ from io import BytesIO
 from random import choice
 import stripe
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
-import events
+import utils.events as events
+from utils.emails import send_contact_email, send_password_reset_email
 
 load_dotenv()
 
@@ -1989,8 +1990,6 @@ def qr_code(id):
             db.session.rollback()
             return {'error': f'Failed to delete QR code: {str(e)}'}, 500
 
-
-# Email Form
 @app.route('/api/contact', methods=['POST'])
 def contact(): 
     data = request.get_json()
@@ -2002,35 +2001,11 @@ def contact():
 
     print(f"Name: {name}, Email: {email}, Subject: {subject}, Message: {message}")
 
-    try: 
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        recipient_email = "hello@gingham.nyc"
-
-        msg = MIMEMultipart()
-        msg['From'] = sender_email
-        msg['To'] = recipient_email
-        msg['Subject'] = f"GINGHAM.NYC Contact Form Submission: {subject}"
-
-        # print("Sender email:", os.getenv('EMAIL_USER'))
-        # print("Email password:", os.getenv('EMAIL_PASS'))
-
-        body = f"Name: {name}\nEmail: {email}\n\n Message: \n{message}"
-        msg.attach(MIMEText(body, 'plain'))
-
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
-        server.starttls()
-        server.login(sender_email, password)
-        # print("SMTP Server is unreachable")
-
-        server.sendmail(sender_email, recipient_email, msg.as_string())
-        server.quit()
-        
-        return jsonify({"message": "Email sent successfully!"}), 200
-
-    except Exception as e: 
-        print("Error occured:", str(e))
-        return jsonify({"error": str(e)}), 500
+    result = send_contact_email(name, email, subject, message)
+    
+    if "error" in result:
+        return jsonify({"error": result["error"]}), 500
+    return jsonify({"message": result["message"]}), 200
     
 # Stripe
 stripe.api_key = os.getenv('STRIPE_PY_KEY')
@@ -2064,42 +2039,15 @@ def session_status():
 def password_reset_request():
     data = request.get_json()
     email = data.get('email')
-    user = User.query.filter_by(email=email).first()
+    
+    if not email:
+        return {'error': 'Email is required'}, 400
 
-    if not user:
-        return {'error': 'User not found'}, 404
-
-    # Generate token for the password reset
-    token = serializer.dumps(email, salt='password-reset-salt')
-
-    # Generate the reset link
-    reset_link = url_for('password_reset', token=token, _external=True)
-
-    try:
-        # Email configuration
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        recipient_email = email
-
-        msg = MIMEMultipart()
-        msg['From'] = sender_email
-        msg['To'] = recipient_email
-        msg['Subject'] = 'Password Reset Request'
-
-        body = f"Please click the link to reset your password: {reset_link}"
-        msg.attach(MIMEText(body, 'plain'))
-
-        # Connect to the SMTP server and send the email
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, recipient_email, msg.as_string())
-        server.quit()
-
-        return {'message': 'Password reset link sent'}, 200
-
-    except Exception as e:
-        return {'error': f'Failed to send email: {str(e)}'}, 500
+    result = send_password_reset_email(email)
+    
+    if "error" in result:
+        return jsonify({"error": result["error"]}), 500
+    return jsonify({"message": result["message"]}), 200
 
 @app.route('/api/user/password-reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
@@ -2117,7 +2065,6 @@ def password_reset(token):
             # Get new password from the request
             data = request.get_json()
             new_password = data.get('new_password')
-            print(f"POST request: New password: {new_password}")
 
             # Check if the new password is provided
             if not new_password:
@@ -2129,9 +2076,6 @@ def password_reset(token):
             if not user:
                 print(f"POST request: User not found for email: {email}")
                 return {'error': 'User not found'}, 404
-
-            # Log the user's first name
-            print(f"POST request: User First name: {user.first_name}")
 
             # Send to password setter in the User model
             user.password = new_password

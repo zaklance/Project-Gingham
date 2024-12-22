@@ -155,7 +155,7 @@ function VendorDashboard({ marketId }) {
                         {vendorUserData?.is_admin && (
                             <Link to="#" onClick={() => setActiveTab('team')} className={activeTab === 'team' ? 'notification active-tab btn btn-reset btn-tab' : 'notification btn btn-reset btn-tab'}>
                                 Team
-                                {notifications.length > 0 && <p className='badge'>{notifications.length}</p>}
+                                {notifications.length > 0 && <p className='badge'>1</p>}
                             </Link>
                         )}
                     </div>
