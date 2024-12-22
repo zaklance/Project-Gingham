@@ -599,7 +599,7 @@ class UserNotification(db.Model):
     __tablename__ = 'user_notifications'
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String, nullable=False)
-    nav_link = db.Column(db.String, nullable=False)
+    link = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
@@ -610,7 +610,7 @@ class UserNotification(db.Model):
         return {
             'id': self.id,
             'message': self.message,
-            "nav_link": self.nav_link,
+            "link": self.link,
             'user_id': self.user_id,
             'vendor_id': self.vendor_id,
             'market_id': self.market_id,
@@ -624,7 +624,7 @@ class VendorNotification(db.Model, SerializerMixin):
     __tablename__ = 'vendor_notifications'
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String, nullable=False)
-    nav_link = db.Column(db.String, nullable=False)
+    link = db.Column(db.String, nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -645,7 +645,7 @@ class AdminNotification(db.Model):
     __tablename__ = 'admin_notifications'
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String, nullable=False)
-    nav_link = db.Column(db.String, nullable=False)
+    link = db.Column(db.String, nullable=False)
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -655,7 +655,7 @@ class AdminNotification(db.Model):
         return {
             "id": self.id,
             "message": self.message,
-            "nav_link": self.nav_link,
+            "link": self.link,
             "vendor_id": self.vendor_id,
             "vendor_user_id": self.vendor_user_id,
             "created_at": self.created_at.isoformat() if self.created_at else None,

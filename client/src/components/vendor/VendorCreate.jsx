@@ -265,7 +265,7 @@ function VendorCreate () {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    nav_link: "/vendor/dashboard?tab=team",
+                    link: "/vendor/dashboard?tab=team",
                     vendor_id: selectedVendor.id,
                     vendor_user_id: vendorUserId,
                     message: `${vendorUserData.first_name} ${vendorUserData.last_name} has requested to join your vendor team.`,

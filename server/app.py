@@ -2318,7 +2318,7 @@ def create_vendor_notification():
     try:
         new_notification = VendorNotification(
             message=data['message'],
-            nav_link=data['nav_link'],
+            link=data['link'],
             vendor_id=data['vendor_id'],
             vendor_user_id=data['vendor_user_id'],
             created_at=datetime.utcnow(),
@@ -2330,7 +2330,7 @@ def create_vendor_notification():
         return jsonify({
             'id': new_notification.id,
             'message': new_notification.message,
-            'nav_link': new_notification.nav_link,
+            'link': new_notification.link,
             'vendor_id': new_notification.vendor_id,
             'vendor_user_id': new_notification.vendor_user_id,
             'is_read': new_notification.is_read

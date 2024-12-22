@@ -1245,7 +1245,7 @@ def run():
         few_days = randint(0, 14)
 
         message = fake.paragraph(nb_sentences=msg_len)
-        nav_link = choice (['/user/vendors/1', '/user/markets/1'])
+        link = choice (['/user/vendors/1', '/user/markets/1'])
         user_id = randint(1, 51)
         market_id = rand_market
         vendor_id = rand_vendor
@@ -1255,7 +1255,7 @@ def run():
         
         un = UserNotification(
             message=message,
-            nav_link=nav_link,
+            link=link,
             user_id=user_id,
             market_id=market_id,
             vendor_id=vendor_id,

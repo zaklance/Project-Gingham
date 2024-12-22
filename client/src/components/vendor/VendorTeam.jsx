@@ -1,53 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import VendorNotification from './VendorNotification';
 
-function VendorTeam({ vendors, vendorId, vendorUserData }) {
-    const [notifications, setNotifications] = useState([]);
+function VendorTeam({ vendors, vendorId, vendorUserData, notifications }) {
     const [isLoading, setIsLoading] = useState(true);
     const [teamMembers, setTeamMembers] = useState([]);
     const [newMemberEmail, setNewMemberEmail] = useState('');
     const [confirmMemberEmail, setConfirmMemberEmail] = useState('');
     const [newMemberRole, setNewMemberRole] = useState('Employee'); 
 
-    useEffect(() => {
-        if (!vendorId) return;
-
-        const fetchNotifications = async () => {
-            const token = localStorage.getItem('vendor_jwt-token');
-            setIsLoading(true);
-            if (!token) {
-                console.error("Token missing");
-                setIsLoading(false);
-                return;
-            }
-
-            try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/vendor/${vendorId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('Notifications fetched:', data);
-                    setNotifications(data.notifications || []);
-                } else {
-                    console.error('Failed to fetch notifications');
-                    setNotifications([]);
-                }
-            } catch (error) {
-                console.error('Error fetching notifications:', error);
-                setNotifications([]);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchNotifications();
-    }, [vendorId]); 
 
     useEffect(() => {
         const fetchTeamMembers = async () => {
