@@ -186,20 +186,19 @@ function VendorProfile () {
         let uploadedFilename = null;
     
         if (image) {
-
-            const maxFileSize = 25 * 1024 * 1024
+            const maxFileSize = 25 * 1024 * 1024;
             if (image.size > maxFileSize) {
-                alert ("File size exceeds 25 MB. Please upload a smaller file.");
+                alert("File size exceeds 25 MB. Please upload a smaller file.");
                 return;
             }
-
+    
             console.log('Uploading file...');
             setStatus('uploading');
             const formData = new FormData();
             formData.append('file', image);
             formData.append('type', 'vendor');
             formData.append('vendor_id', id);
-
+    
             for (const [key, value] of formData.entries()) {
                 console.log(`${key}:`, value);
             }
@@ -218,6 +217,8 @@ function VendorProfile () {
                     console.log('Image uploaded:', uploadedFilename);
                     setStatus('success');
                     setVendorImageURL(`${vendorUserId}/${uploadedFilename}`);
+    
+                    window.location.reload();
                 } else {
                     console.log('Image upload failed');
                     console.log('Response:', await result.text());
@@ -292,20 +293,24 @@ function VendorProfile () {
     
     const handleDeleteImage = async () => {
         if (!vendorData || !vendorData.image) {
-            console.log(vendorImageURL)
+            console.log("Vendor Image URL:", vendorImageURL);
             alert('No image to delete.');
             return;
         }
+    
         try {
+            console.log('Attempting to delete image:', vendorData.image);
+    
             const response = await fetch(`http://127.0.0.1:5555/api/delete-image`, {
-                method: 'POST',
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('vendor_jwt-token')}`,
                 },
                 body: JSON.stringify({
-                    filename: vendorData.image,
+                    filename: vendorData.image, 
                     type: 'vendor',
+                    vendor_id: vendorData.id,
                 }),
             });
     
@@ -313,18 +318,17 @@ function VendorProfile () {
                 const result = await response.json();
                 console.log('Image deleted response:', result);
     
-                // Clear the image from local state
                 setVendorData((prevData) => ({
                     ...prevData,
                     image: null,
                 }));
     
-                setVendorImageURL(null); // Clear the image URL
+                setVendorImageURL(null);
                 alert('Image deleted successfully.');
             } else {
                 const errorText = await response.text();
                 console.error('Failed to delete image:', errorText);
-                alert('Failed to delete the image. Please try again.');
+                alert(`Failed to delete the image`);
             }
         } catch (error) {
             console.error('Error deleting image:', error);
