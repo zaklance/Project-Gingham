@@ -238,7 +238,7 @@ def delete_image():
                     user.avatar = None
                     db.session.commit()
 
-            return {'message': 'Image deleted successfully'}, 204
+            return {'message': 'Image deleted successfully'}, 200
         else:
             return {'error': f'File not found at path: {file_path}'}, 404
 
