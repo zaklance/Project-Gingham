@@ -205,15 +205,25 @@ function Profile({ marketData }) {
             });
     
             if (response.ok) {
-                const result = await response.json();
-                console.log('Image deleted response:', result);
-    
-                setProfileData((prevData) => ({
-                    ...prevData,
-                    avatar: null,
-                }));
-    
-                alert('Image deleted successfully.');
+                if (response.status === 204) {
+                    console.log('Image deleted successfully.');
+                    alert('Image deleted successfully.');
+            
+                    setProfileData((prevData) => ({
+                        ...prevData,
+                        avatar: null,
+                    }));
+                } else {
+                    const result = await response.json();
+                    console.log('Image deleted response:', result);
+            
+                    setProfileData((prevData) => ({
+                        ...prevData,
+                        avatar: null,
+                    }));
+            
+                    alert('Image deleted successfully.');
+                }
             } else {
                 const errorText = await response.text();
                 console.error('Failed to delete image:', errorText);
