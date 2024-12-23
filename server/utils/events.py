@@ -30,13 +30,13 @@ def track_vendor_favorite(mapper, connection, target):
 
         # Create the notification
         message = f"{user.first_name} has added {vendor.name} to their favorites!"
-        nav_link = f"/vendor/{vendor.id}/dashboard"  # Adjust link as needed.
+        link = f"/vendor/{vendor.id}/dashboard"  # Adjust link as needed.
 
-        print(f"Creating notification with message: '{message}' and nav_link: '{nav_link}'")
+        print(f"Creating notification with message: '{message}' and link: '{link}'")
 
         notification = VendorNotification(
             message=message,
-            nav_link=nav_link,
+            link=link,
             vendor_id=vendor.id,
             created_at=db.func.now(),  
             is_read=False
@@ -45,7 +45,7 @@ def track_vendor_favorite(mapper, connection, target):
         connection.execute(
             VendorNotification.__table__.insert().values(
                 message=notification.message,
-                nav_link=notification.nav_link,
+                link=notification.link,
                 vendor_id=notification.vendor_id,
                 created_at=notification.created_at,
                 is_read=notification.is_read

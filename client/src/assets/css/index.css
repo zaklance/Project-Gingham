@@ -1660,7 +1660,7 @@ select:hover {
 .dropdown-content {
   display: block;
   position: absolute;
-  z-index: 1;
+  z-index: 6;
 }
 
 .search-results {
@@ -1962,18 +1962,6 @@ select:hover {
   background: #00bda4;
   color: white;
 }
-/* 
-.badge-saved {
-  position: absolute;
-  font-size: .8em;
-  font-weight: 500;
-  top: 1px;
-  right: 1px;
-  padding: 4px 6px;
-  border-radius: 6px;
-  background: #6c7ae0;
-  color: white;
-} */
 
 .badge-pending {
   position: absolute;
@@ -1983,9 +1971,21 @@ select:hover {
   right: 1px;
   padding: 4px 6px;
   border-radius: 6px;
-  background: #a1a1a1;
+  background: #6c7ae0;
   color: white;
 }
+
+/* .badge-saved {
+  position: absolute;
+  font-size: .8em;
+  font-weight: 500;
+  top: 1px;
+  right: 1px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: #a1a1a1;
+  color: white;
+} */
 
 .login-bar {
   /* width: 70%; */

@@ -380,7 +380,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                 {isLive ? (
                     <p className="badge-live">Live</p>
                 ) : isSaved ? (
-                    <p className="badge-saved">Pending</p>
+                    <p className="badge-pending">Pending</p>
                 ) : null}
 
                 {marketDay && marketDay.date ? (
