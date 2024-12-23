@@ -35,7 +35,6 @@ import VendorSales from './components/vendor/VendorSales.jsx';
 import VendorScan from './components/vendor/VendorScan.jsx';
 import VendorProfile from './components/vendor/VendorProfile.jsx';
 import VendorFAQs from './components/vendor/VendorFAQs.jsx';
-import VendorContact from './components/vendor/VendorContact.jsx';
 import VendorLoginPopup from './components/vendor/VendorLoginPopup.jsx';
 import VendorResetRequest from './components/vendor/VendorResetRequest.jsx';
 import VendorPasswordReset from './components/vendor/VendorPasswordReset.jsx';
@@ -258,7 +257,7 @@ const router = createBrowserRouter([
                     { path: "signup", element: <VendorLoginPopup /> },
                     { path: "profile/:id", element: <VendorRoute><VendorProfile /></VendorRoute> },
                     { path: "faqs", element: <VendorFAQs /> },
-                    { path: "contact", element: <VendorContact /> },
+                    { path: "contact", element: <Contact /> },
                     { path: "vendor-create", element: <VendorAuthRoute><VendorCreate /></VendorAuthRoute> },
                     { path: "logout", element: <VendorLogout />},
                     { path: "reset-request", element: <VendorResetRequest /> },
