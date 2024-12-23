@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 function VendorPasswordReset() {
     const { token } = useParams(); // Get the token from the URL
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [status, setStatus] = useState('');
+
+    const navigate = useNavigate();
 
     const handlePasswordReset = async (event) => {
         event.preventDefault();
@@ -26,6 +28,10 @@ function VendorPasswordReset() {
 
             if (response.ok) {
                 setStatus('Password successfully reset');
+                setTimeout(() => {
+                    setStatus();
+                }, 4000);
+                navigate(`/vendor`);
             } else {
                 const errorData = await response.json();
                 setStatus(errorData.error || 'Failed to res et password. Please try again.');
@@ -60,7 +66,7 @@ function VendorPasswordReset() {
                         required
                     />
                 </div>
-                <button className="btn-reset" type="submit">Reset Password</button>
+                <button className="btn btn-login nowrap margin-t-8" type="submit">Reset Password</button>
             </form>
             {status && <p className="status-message">{status}</p>}
         </div>

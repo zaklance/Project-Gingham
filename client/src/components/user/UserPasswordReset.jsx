@@ -28,6 +28,9 @@ function UserPasswordReset() {
 
             if (response.ok) {
                 setStatus('Password successfully reset');
+                setTimeout(() => {
+                    setStatus();
+                }, 4000);
                 navigate(`/`);
             } else {
                 const errorData = await response.json();
