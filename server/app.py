@@ -63,20 +63,31 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
-    if image.mode != 'RGB':
-        image = image.convert('RGB')
-        
+    if image.format == 'PNG':
+        if image.mode != 'RGBA':
+            image = image.convert('RGBA')
+    else:
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
+
     image.thumbnail(resolution, Image.LANCZOS)
-    
+
     temp_output = BytesIO()
-    image.save(temp_output, format='JPEG', quality=50)
+
+    if image.format == 'PNG':
+        image.save(temp_output, format='PNG', optimize=True)
+    else:
+        image.save(temp_output, format='JPEG', quality=50)
+
     file_size = temp_output.tell()
-    
+
     while file_size > max_size:
         temp_output = BytesIO()
-        quality = max(10, int(85 * step))
-        image.save(temp_output, format='JPEG', quality=quality)
-        
+        if image.format == 'PNG':
+            image.save(temp_output, format='PNG', optimize=True)
+        else:
+            quality = max(10, int(85 * step))
+            image.save(temp_output, format='JPEG', quality=quality)
         file_size = temp_output.tell()
         step -= 0.05
 
