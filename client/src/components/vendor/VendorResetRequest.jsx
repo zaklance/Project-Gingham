@@ -18,6 +18,9 @@ function VendorResetRequest() {
 
             if (response.ok) {
                 setStatus('Password reset link has been sent to your email.');
+                setTimeout(() => {
+                    setStatus();
+                }, 4000);
             } else {
                 const errorData = await response.json();
                 setStatus(errorData.error || 'Failed to send reset link. Please try again.');
@@ -43,7 +46,9 @@ function VendorResetRequest() {
                         required
                     />
                 </div>
-                <button className="btn btn-reset" type="submit">Send Reset Link</button>
+                <div className='flex-center'>
+                    <button className="btn btn-reset margin-t-12" type="submit" onClick={handlePasswordResetRequest}>Send Reset Link</button>
+                </div>
             </div>
             {status && <p className="status-message">{status}</p>}
         </div>

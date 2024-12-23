@@ -25,7 +25,7 @@ from random import choice
 import stripe
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import utils.events as events
-from utils.emails import send_contact_email, send_password_reset_email
+from utils.emails import send_contact_email, send_user_password_reset_email, send_vendor_password_reset_email, send_admin_password_reset_email
 
 load_dotenv()
 
@@ -2043,7 +2043,7 @@ def password_reset_request():
     if not email:
         return {'error': 'Email is required'}, 400
 
-    result = send_password_reset_email(email)
+    result = send_user_password_reset_email(email)
     
     if "error" in result:
         return jsonify({"error": result["error"]}), 500
@@ -2097,37 +2097,15 @@ def password_reset(token):
 def vendor_password_reset_request():
     data = request.get_json()
     email = data.get('email')
-    vendor_user = VendorUser.query.filter_by(email=email).first()
 
-    if not vendor_user:
-        return {'error': 'Vendor user not found'}, 404
+    if not email:
+        return {'error': 'Email is required'}, 400
 
-    token = serializer.dumps(email, salt='vendor-password-reset-salt')
-    reset_link = url_for('vendor_password_reset', token=token, _external=True)
-
-    try:
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        recipient_email = email
-
-        msg = MIMEMultipart()
-        msg['From'] = sender_email
-        msg['To'] = recipient_email
-        msg['Subject'] = 'Vendor Password Reset Request'
-
-        body = f"Please click the link to reset your password: {reset_link}"
-        msg.attach(MIMEText(body, 'plain'))
-
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, recipient_email, msg.as_string())
-        server.quit()
-
-        return {'message': 'Password reset link sent'}, 200
-
-    except Exception as e:
-        return {'error': f'Failed to send email: {str(e)}'}, 500
+    result = send_vendor_password_reset_email(email)
+    
+    if "error" in result:
+        return jsonify({"error": result["error"]}), 500
+    return jsonify({"message": result["message"]}), 200
 
 @app.route('/api/vendor/password-reset/<token>', methods=['GET', 'POST'])
 def vendor_password_reset(token):
@@ -2163,37 +2141,16 @@ def vendor_password_reset(token):
 def admin_password_reset_request():
     data = request.get_json()
     email = data.get('email')
-    admin_user = AdminUser.query.filter_by(email=email).first()
 
-    if not admin_user:
-        return {'error': 'Admin user not found'}, 404
+    if not email:
+        return {'error': 'Email is required'}, 400
 
-    token = serializer.dumps(email, salt='admin-password-reset-salt')
-    reset_link = url_for('admin_password_reset', token=token, _external=True)
-
-    try:
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        recipient_email = email
-
-        msg = MIMEMultipart()
-        msg['From'] = sender_email
-        msg['To'] = recipient_email
-        msg['Subject'] = 'Admin Password Reset Request'
-
-        body = f"Please click the link to reset your password: {reset_link}"
-        msg.attach(MIMEText(body, 'plain'))
-
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, recipient_email, msg.as_string())
-        server.quit()
-
-        return {'message': 'Password reset link sent'}, 200
-
-    except Exception as e:
-        return {'error': f'Failed to send email: {str(e)}'}, 500
+    result = send_admin_password_reset_email(email)
+    
+    if "error" in result:
+        return jsonify({"error": result["error"]}), 500
+    return jsonify({"message": result["message"]}), 200
+    
 
 
 @app.route('/api/admin/password-reset/<token>', methods=['GET', 'POST'])
