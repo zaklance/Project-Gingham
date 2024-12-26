@@ -2225,15 +2225,18 @@ def delete_user_notifications(id):
 def create_vendor_notification():
     data = request.get_json()
 
-    if not data or 'message' not in data or 'vendor_id' not in data or 'vendor_user_id' not in data:
+    if not data or 'message' not in data or 'vendor_id' not in data:
         return jsonify({'message': 'Invalid request data.'}), 400
 
     try:
         new_notification = VendorNotification(
+            subject=data['subject'],
             message=data['message'],
             link=data['link'],
+            user_id=data.get('user_id'),
+            market_id=data.get('market_id'),
             vendor_id=data['vendor_id'],
-            vendor_user_id=data['vendor_user_id'],
+            vendor_user_id=data.get('vendor_user_id'),
             created_at=datetime.utcnow(),
             is_read=False
         )
@@ -2242,8 +2245,11 @@ def create_vendor_notification():
 
         return jsonify({
             'id': new_notification.id,
+            'subject': new_notification.subject,
             'message': new_notification.message,
             'link': new_notification.link,
+            'user_id': new_notification.user_id,
+            'market_id': new_notification.market_id,
             'vendor_id': new_notification.vendor_id,
             'vendor_user_id': new_notification.vendor_user_id,
             'is_read': new_notification.is_read
@@ -2283,6 +2289,7 @@ def fetch_vendor_notifications():
     vendor_id = request.args.get('vendor_id')
     vendor_user_id = request.args.get('vendor_user_id')
     is_read = request.args.get('is_read', None)
+    subject = request.args.get('subject')
 
     query = VendorNotification.query
 
@@ -2293,17 +2300,42 @@ def fetch_vendor_notifications():
     if is_read is not None:
         is_read_bool = is_read.lower() == 'true'
         query = query.filter_by(is_read=is_read_bool)
+    if subject:
+        query = query.filter_by(subject=subject)
+
 
     notifications = query.order_by(VendorNotification.created_at.desc()).all()
 
-    notifications_data = [ { 'id': n.id, 'message': n.message, 'is_read': n.is_read, 'vendor_id': n.vendor_id, 'vendor_user_id': n.vendor_user_id, 
-        'created_at': n.created_at, 'vendor_name': Vendor.query.get(n.vendor_id).name if Vendor.query.get(n.vendor_id) else 'Unknown Vendor', } for n in notifications ]
+    notifications_data = [ {
+        'id': n.id,
+        'subject': n.subject,
+        'message': n.message,
+        'link': n.link,
+        'is_read': n.is_read,
+        'user_id': n.user_id,
+        'market_id': n.market_id,
+        'vendor_id': n.vendor_id,
+        'vendor_user_id': n.vendor_user_id, 
+        'created_at': n.created_at,
+        'vendor_name': Vendor.query.get(n.vendor_id).name if Vendor.query.get(n.vendor_id) else 'Unknown Vendor',
+        } for n in notifications ]
     
     return jsonify({'notifications': notifications_data}), 200
 
-@app.route('/api/vendor-notification/<int:id>', methods=['DELETE'])
+@app.route('/api/vendor-notifications/<int:id>', methods=['PATCH', 'DELETE'])
 def delete_notification(id):
-    if request.method == 'DELETE':
+    if request.method == 'PATCH':
+        notification = VendorNotification.query.get(id)
+        if not notification:
+            return jsonify({'message': 'Notification not found'}), 404
+        
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(notification, key, value)
+        db.session.commit()
+        return notification.to_dict(), 202
+
+    elif request.method == 'DELETE':
         notification = VendorNotification.query.filter_by(id=id).first()
 
         if not notification:

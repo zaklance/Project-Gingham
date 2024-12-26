@@ -300,17 +300,58 @@ function MarketDetail ({ match }) {
         ).filter(item => !cartItems.some(cartItem => cartItem.id === item.id));
     };
 
+    const handleNotifyMe = async (vendor) => {
+
+        if (!userId) {
+            alert('Please ensure you are logged in.');
+            return;
+        }
+        const token = localStorage.getItem('user_jwt-token');
+        if (!token) {
+            alert('Authorization token is missing. Please log in.');
+            return;
+        }
+
+        try {
+            const response = await fetch('http://127.0.0.1:5555/api/create-vendor-notification', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    link: "/vendor/dashboard?tab=baskets",
+                    user_id: userId,
+                    vendor_id: vendor.id,
+                    message: `A user is interested in buying a basket, consider adding more for sale.`,
+                }),
+            });
+
+            if (response.ok) {
+                const responseData = await response.json();
+                alert(`Your request has been sent to ${vendor.name}!`);
+            } else {
+                const errorData = await response.json();
+                alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('Error sending request:', error);
+            alert('An error occurred while sending the request. Please try again later.');
+        }
+    };
+    
     if (!market) {
         return <div>Loading...</div>;
     }
 
-    const { coordinates } = market;
-    
+    // const { coordinates } = market;
+
     const googleMapsLink = market?.coordinates
-    ? `https://www.google.com/maps?q=${market.coordinates.lat},${market.coordinates.lng}`
-    : '#';
-    
+        ? `https://www.google.com/maps?q=${market.coordinates.lat},${market.coordinates.lng}`
+        : '#';
+
     const marketLocation = { 'lat': parseFloat(market.coordinates.lat), 'lng': parseFloat(market.coordinates.lng) }
+
 
     return (
         <div>
@@ -396,7 +437,7 @@ function MarketDetail ({ match }) {
                         <h4>Season: {formatDate(market.season_start)} – {formatDate(market.season_end)}</h4>
                     ) : (
                         market.year_round === false && (!market.season_start || !market.season_end) ? (
-                            <h4>Season: Call Zak Wosewick</h4>
+                            <h4>No Dates Available</h4>
                         ) : (
                             <h4>Open Year Round</h4>
                         )
@@ -446,7 +487,11 @@ function MarketDetail ({ match }) {
                                     </span>
                                 ) : (
                                 <span className="market-baskets nowrap margin-r-8">
-                                    {availableBaskets.length === 0 ? 'None Available' : `Available Baskets: ${availableBaskets.length}`}
+                                    {availableBaskets.length > 0
+                                        ? `Available Baskets: ${availableBaskets.length}`
+                                        // : !firstBasket
+                                        //     ? 'None Available'
+                                            : <a className='link-edit' onClick={() => handleNotifyMe(vendorDetail)}>Notify Me</a>}
                                     <br />
                                     {firstBasket && firstBasket.pickup_start
                                         ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`

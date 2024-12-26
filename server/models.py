@@ -598,8 +598,9 @@ class Basket(db.Model, SerializerMixin):
 class UserNotification(db.Model):
     __tablename__ = 'user_notifications'
     id = db.Column(db.Integer, primary_key=True)
+    subject = db.Column(db.String, nullable=False)
     message = db.Column(db.String, nullable=False)
-    link = db.Column(db.String, nullable=False)
+    link = db.Column(db.String, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
@@ -609,6 +610,7 @@ class UserNotification(db.Model):
     def to_dict(self):
         return {
             'id': self.id,
+            'subject': self.subject,
             'message': self.message,
             "link": self.link,
             'user_id': self.user_id,
@@ -623,8 +625,11 @@ class UserNotification(db.Model):
 class VendorNotification(db.Model, SerializerMixin):
     __tablename__ = 'vendor_notifications'
     id = db.Column(db.Integer, primary_key=True)
+    subject = db.Column(db.String, nullable=False)
     message = db.Column(db.String, nullable=False)
-    link = db.Column(db.String, nullable=False)
+    link = db.Column(db.String, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -635,6 +640,20 @@ class VendorNotification(db.Model, SerializerMixin):
 
     serialize_rules = ('vendor_user.first_name', 'vendor_user.last_name')
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "subject": self.subject,
+            "message": self.message,
+            "link": self.link,
+            "user_id": self.user_id,
+            "market_id": self.market_id,
+            "vendor_id": self.vendor_id,
+            "vendor_user_id": self.vendor_user_id,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "is_read": self.is_read
+        }
+
     def get_vendor_name(self):
         return Vendor.query.filter_by(id=self.vendor_id).first().name
 
@@ -644,8 +663,9 @@ class VendorNotification(db.Model, SerializerMixin):
 class AdminNotification(db.Model):
     __tablename__ = 'admin_notifications'
     id = db.Column(db.Integer, primary_key=True)
+    subject = db.Column(db.String, nullable=False)
     message = db.Column(db.String, nullable=False)
-    link = db.Column(db.String, nullable=False)
+    link = db.Column(db.String, nullable=True)
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -654,6 +674,7 @@ class AdminNotification(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
+            "subject": self.subject,
             "message": self.message,
             "link": self.link,
             "vendor_id": self.vendor_id,

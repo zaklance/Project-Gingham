@@ -1,8 +1,8 @@
-"""reinitalize database
+"""vendorNotification add user and market
 
-Revision ID: b2cce7ca05b6
+Revision ID: 45d7da10de4b
 Revises: 
-Create Date: 2024-12-22 09:59:34.918409
+Create Date: 2024-12-26 10:53:31.399287
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'b2cce7ca05b6'
+revision = '45d7da10de4b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -160,7 +160,7 @@ def upgrade():
     op.create_table('user_notifications',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('message', sa.String(), nullable=False),
-    sa.Column('nav_link', sa.String(), nullable=False),
+    sa.Column('link', sa.String(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('market_id', sa.Integer(), nullable=True),
     sa.Column('vendor_id', sa.Integer(), nullable=True),
@@ -215,7 +215,7 @@ def upgrade():
     op.create_table('admin_notifications',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('message', sa.String(), nullable=False),
-    sa.Column('nav_link', sa.String(), nullable=False),
+    sa.Column('link', sa.String(), nullable=False),
     sa.Column('vendor_user_id', sa.Integer(), nullable=True),
     sa.Column('vendor_id', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
@@ -238,11 +238,15 @@ def upgrade():
     op.create_table('vendor_notifications',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('message', sa.String(), nullable=False),
-    sa.Column('nav_link', sa.String(), nullable=False),
+    sa.Column('link', sa.String(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('market_id', sa.Integer(), nullable=True),
     sa.Column('vendor_id', sa.Integer(), nullable=False),
     sa.Column('vendor_user_id', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('is_read', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['market_id'], ['markets.id'], name=op.f('fk_vendor_notifications_market_id_markets')),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_vendor_notifications_user_id_users')),
     sa.ForeignKeyConstraint(['vendor_id'], ['vendors.id'], name=op.f('fk_vendor_notifications_vendor_id_vendors')),
     sa.ForeignKeyConstraint(['vendor_user_id'], ['vendor_users.id'], name=op.f('fk_vendor_notifications_vendor_user_id_vendor_users')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_vendor_notifications'))
