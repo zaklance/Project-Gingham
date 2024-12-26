@@ -37,7 +37,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
     
                             if (response.ok) {
                                 const data = await response.json();
-                                console.log('Fetched Saved Baskets:', data); 
+                                // console.log('Fetched Saved Baskets:', data); 
                                 
                                 if (data.length === 0) {
                                     setSavedBaskets([]);
@@ -95,7 +95,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                 setEndTime('');
             }
         } else {
-            console.log('No Saved Baskets Found');
+            // console.log('No Saved Baskets Found');
             setNumBaskets('');
             setBasketValue('');
             setPrice('');

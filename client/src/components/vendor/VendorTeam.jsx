@@ -140,6 +140,7 @@ function VendorTeam({ vendors, vendorId, vendorUserData, notifications }) {
         }
     };
     
+    
     return (
         <>
             <div className='box-bounding'>

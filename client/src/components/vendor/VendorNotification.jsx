@@ -1,71 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
-function VendorNotification({ teamMembers, setTeamMembers, vendorUserData }) {
-    const [notifications, setNotifications] = useState([]);
+function VendorNotification({ notifications, teamMembers, setTeamMembers, vendorUserData }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const fetchVendorNotification = async () => {
-            try {
-                const vendorUserId = localStorage.getItem('vendor_user_id');
-                if (!vendorUserId) {
-                    console.error("No vendor user ID found in local storage");
-                    setError("Vendor user ID is missing");
-                    setLoading(false);
-                    return;
-                }
-
-                const token = localStorage.getItem('vendor_jwt-token');
-                if (!token) {
-                    console.error("No JWT token found in local storage");
-                    setError("JWT token is missing");
-                    setLoading(false);
-                    return;
-                }
-
-                const vendorUserResponse = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (!vendorUserResponse.ok) {
-                    throw new Error(`Error fetching vendor_user: ${vendorUserResponse.status}`);
-                }
-
-                const vendorUserData = await vendorUserResponse.json();
-                const vendorIdFromApi = vendorUserData.vendor_id;
-                if (!vendorIdFromApi) {
-                    throw new Error("Vendor ID not found in the response");
-                }
-
-                const notificationsResponse = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/vendor/${vendorIdFromApi}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (!notificationsResponse.ok) {
-                    throw new Error(`Error fetching notifications: ${notificationsResponse.status}`);
-                }
-
-                const notificationsData = await notificationsResponse.json();
-                setNotifications(notificationsData.notifications || []);
-            } catch (error) {
-                console.error('Error fetching vendor notifications:', error);
-                setError(error.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchVendorNotification();
-    }, []);
     
 
     const handleApprove = async (notification, isAdmin) => {

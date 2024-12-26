@@ -982,7 +982,7 @@ def run():
 
     vendor_favs = []
     for i in range(400):
-        vendor_id = randint(1, 151)
+        vendor_id = randint(1, 150)
         user_id = randint(1, 50)
 
         vf = VendorFavorite(
@@ -1244,6 +1244,7 @@ def run():
             rand_vendor = None
         few_days = randint(0, 14)
 
+        subject = choice(["vendor", "market"])
         message = fake.paragraph(nb_sentences=msg_len)
         link = choice (['/user/vendors/1', '/user/markets/1'])
         user_id = randint(1, 51)
@@ -1254,6 +1255,7 @@ def run():
 
         
         un = UserNotification(
+            subject=subject,
             message=message,
             link=link,
             user_id=user_id,

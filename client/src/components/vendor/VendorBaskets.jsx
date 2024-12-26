@@ -85,7 +85,7 @@ function VendorBaskets({ vendorUserData }) {
 
         useEffect(() => {
             if (vendorId) {
-                console.log('Fetching today\'s baskets for vendor:', vendorId);
+                // console.log('Fetching today\'s baskets for vendor:', vendorId);
         
                 const today = new Date();
                 const formattedDate = today.toLocaleDateString('en-CA', { // Using en-CA as this has the correct ISO format 
@@ -108,7 +108,7 @@ function VendorBaskets({ vendorUserData }) {
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Fetched data for today\'s baskets:', data);
+                    // console.log('Fetched data for today\'s baskets:', data);
                     if (Array.isArray(data)) {
                         data.forEach(basket => {
                             // console.log('Basket date:', basket.sale_date);
