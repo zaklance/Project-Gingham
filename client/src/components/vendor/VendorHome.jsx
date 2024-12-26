@@ -14,7 +14,7 @@ function Home() {
                     <br className="m-hidden"/>
                     <br/>
                     <div className='box-portal-home text-center'>
-                        <h1 className="font-gingham title-big text-center">Gingham</h1>
+                        <h1 className="font-gingham title-big text-center">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</h1>
                         <br/>
                         <p>WELCOME CURRENT AND FUTURE VENDORS!</p>
                     </div>
