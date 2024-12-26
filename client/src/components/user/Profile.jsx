@@ -444,7 +444,7 @@ function Profile({ marketData }) {
                 )}
             </div>
             <div className='box-bounding text-center'>
-                <h1>Bakets Purchased: {salesHistory.length}</h1>
+                <h1>Baskets Purchased: {salesHistory.length}</h1>
                 <div className='flex-space-evenly'>
                     <h3>
                         Total Paid: ${salesHistory.reduce((total, sale) => total + sale.price, 0)}

@@ -835,7 +835,7 @@ def run():
         state = str(choice(states_ne))
         product = str(randint(1, 23))
         bio = str(fake.paragraph(nb_sentences=rev_len))
-        image = str(choice(images))
+        image = choice(images) if randint(1, 8) > 1 else None
 
         v = Vendor(
             name=name,
