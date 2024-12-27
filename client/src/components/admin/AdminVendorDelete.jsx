@@ -93,7 +93,7 @@ function AdminVendorDelete({ vendors }) {
                     <tbody>
                         <tr>
                             <td className='cell-title'>Image:</td>
-                            <td className='cell-text'>{vendorData ? <img className='img-market' src={`/vendor-images/${vendorData.image}`} alt="Market Image" /> : ''}</td>
+                            <td className='cell-text'>{vendorData ? <img className='img-market' style={{ maxWidth: '100%', height: 'auto' }} src={`/vendor-images/${vendorData.image}`} alt="Market Image" /> : ''}</td>
                         </tr>
                         <tr>
                             <td className='cell-title'>Name:</td>
