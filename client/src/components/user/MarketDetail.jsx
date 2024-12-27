@@ -322,6 +322,7 @@ function MarketDetail ({ match }) {
                 body: JSON.stringify({
                     link: "/vendor/dashboard?tab=baskets",
                     user_id: userId,
+                    market_id: market.id,
                     vendor_id: vendor.id,
                     message: `A user is interested in buying a basket, consider adding more for sale.`,
                 }),
@@ -344,7 +345,7 @@ function MarketDetail ({ match }) {
         return <div>Loading...</div>;
     }
 
-    // const { coordinates } = market;
+    const { coordinates } = market;
 
     const googleMapsLink = market?.coordinates
         ? `https://www.google.com/maps?q=${market.coordinates.lat},${market.coordinates.lng}`
