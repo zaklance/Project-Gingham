@@ -241,7 +241,7 @@ function VendorDetail({ products }) {
             .catch((error) => console.error('Error fetching market baskets', error));
     }, [vendor]);
 
-    const handleNotifyMe = async () => {
+    const handleNotifyMe = async (marketId) => {
 
         if (!userId) {
             alert('Please ensure you are logged in.');
@@ -263,6 +263,7 @@ function VendorDetail({ products }) {
                 body: JSON.stringify({
                     link: "/vendor/dashboard?tab=baskets",
                     user_id: userId,
+                    market_id: marketId,
                     vendor_id: vendor.id,
                     subject: 'basket notify',
                     message: `A user is interested in buying a basket, consider adding more for sale.`,
@@ -393,7 +394,7 @@ function VendorDetail({ products }) {
                                                     ? `Available Baskets: ${allBaskets.length}`
                                                     // : !firstBasket
                                                     //     ? 'None Available'
-                                                    : <a className='link-edit' onClick={() => handleNotifyMe()}>Notify Me</a>}
+                                                    : <a className='link-edit' onClick={() => handleNotifyMe(market.market_day.market_id)}>Notify Me</a>}
                                                 <br />
                                                 
                                                 {firstBasket && firstBasket.pickup_start
