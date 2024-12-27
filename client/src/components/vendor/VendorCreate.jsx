@@ -265,6 +265,7 @@ function VendorCreate () {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                    subject: 'team-request',
                     link: "/vendor/dashboard?tab=team",
                     vendor_id: selectedVendor.id,
                     vendor_user_id: vendorUserId,
@@ -298,7 +299,7 @@ function VendorCreate () {
         const notificationArray = Array.isArray(notifications) ? notifications : [notifications];
         try {
             for (const notification of notificationArray) {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-notification/${notification.id}`, {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${notification.id}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,

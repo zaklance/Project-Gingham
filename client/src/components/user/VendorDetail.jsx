@@ -241,10 +241,63 @@ function VendorDetail({ products }) {
             .catch((error) => console.error('Error fetching market baskets', error));
     }, [vendor]);
 
+    const handleNotifyMe = async (marketId) => {
+
+        if (!userId) {
+            alert('Please ensure you are logged in.');
+            return;
+        }
+        const token = localStorage.getItem('user_jwt-token');
+        if (!token) {
+            alert('Authorization token is missing. Please log in.');
+            return;
+        }
+
+        try {
+            const response = await fetch('http://127.0.0.1:5555/api/create-vendor-notification', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    link: "/vendor/dashboard?tab=baskets",
+                    user_id: userId,
+                    market_id: marketId,
+                    vendor_id: vendor.id,
+                    subject: 'basket notify',
+                    message: `A user is interested in buying a basket, consider adding more for sale.`,
+                }),
+            });
+
+            if (response.ok) {
+                const responseData = await response.json();
+                alert(`Your request has been sent to ${vendor.name}!`);
+            } else {
+                const errorData = await response.json();
+                alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('Error sending request:', error);
+            alert('An error occurred while sending the request. Please try again later.');
+        }
+    };
+
 
     if (!vendor) {
         return <div>Loading...</div>;
     }
+
+    const randomImage = [
+        "vendor-default-1_1600px.png",
+        "vendor-default-2_1600px.png",
+        "vendor-default-3_1600px.png"
+    ]
+
+    const vendorImage = vendor.image
+        ? `/vendor-images/${vendor.image}`
+        : `/vendor-images/_default-images/${randomImage[Math.floor(Math.random() * randomImage.length)]}`;
+
 
     return (
         <div>
@@ -286,7 +339,7 @@ function VendorDetail({ products }) {
             </div>
             <div className='flex-space-between margin-t-24 flex-wrap'>
                 <div className='width-100'>
-                    <img className='img-vendor' src={`/vendor-images/${vendor.image}`} alt="Vendor Image"/>
+                    <img className='img-vendor' src={vendorImage} alt="Vendor Image"/>
                 </div>
                 <div className='side-basket'>
                     <h3 className='margin-t-8'>Product: {product ? product.product : ""}</h3>
@@ -348,7 +401,11 @@ function VendorDetail({ products }) {
                                             </span>
                                         ) : (
                                             <span className="market-baskets nowrap margin-r-8">
-                                                {allBaskets.length === 0 ? 'None Available' : `Available Baskets: ${allBaskets.length}`}
+                                                {allBaskets.length > 0
+                                                    ? `Available Baskets: ${allBaskets.length}`
+                                                    // : !firstBasket
+                                                    //     ? 'None Available'
+                                                    : <a className='link-edit' onClick={() => handleNotifyMe(market.market_day.market_id)}>Notify Me</a>}
                                                 <br />
                                                 
                                                 {firstBasket && firstBasket.pickup_start

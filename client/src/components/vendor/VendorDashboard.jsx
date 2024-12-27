@@ -110,7 +110,7 @@ function VendorDashboard({ marketId }) {
             }
 
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/vendor/${vendorId}`, {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications?vendor_id=${vendorId}&subject=team-request`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -120,7 +120,7 @@ function VendorDashboard({ marketId }) {
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Notifications fetched:', data);
+                    // console.log('Notifications fetched:', data);
                     setNotifications(data.notifications || []);
                 } else {
                     console.error('Failed to fetch notifications');
@@ -135,9 +135,8 @@ function VendorDashboard({ marketId }) {
         };
 
         fetchNotifications();
-    }, [vendorId]); 
+    }, [vendorId]);
 
-    console.log(notifications)
 
     return (
         <div>
@@ -155,7 +154,7 @@ function VendorDashboard({ marketId }) {
                         {vendorUserData?.is_admin && (
                             <Link to="#" onClick={() => setActiveTab('team')} className={activeTab === 'team' ? 'notification active-tab btn btn-reset btn-tab' : 'notification btn btn-reset btn-tab'}>
                                 Team
-                                {notifications.length > 0 && <p className='badge'>1</p>}
+                                {notifications.length > 0 && <p className='badge'>{notifications.length}</p>}
                             </Link>
                         )}
                     </div>
