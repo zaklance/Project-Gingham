@@ -160,6 +160,7 @@ class Market(db.Model, SerializerMixin):
     year_round = db.Column(db.Boolean, nullable=True)
     season_start = db.Column(db.Date, nullable=True)
     season_end = db.Column(db.Date, nullable=True)
+    is_visible = db.Column(db.Boolean, nullable=True)
 
     # Relationships
     reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic', cascade="all, delete")
