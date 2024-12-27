@@ -79,6 +79,75 @@ function VendorBaskets({ vendorUserData }) {
         }
     }, [allVendorMarkets]);
 
+        useEffect(() => {
+            if (vendorId) {
+                // console.log('Fetching today\'s baskets for vendor:', vendorId);
+        
+                const today = new Date();
+                const formattedDate = today.toLocaleDateString('en-CA', { // Using en-CA as this has the correct ISO format 
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                }).split('/').reverse().join('-');
+
+                console.log('Formatted date being sent:', formattedDate);
+        
+                const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                console.log('Browser timezone:', browserTimezone);
+        
+                fetch(`http://127.0.0.1:5555/api/todays-baskets?vendor_id=${vendorId}&date=${formattedDate}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Timezone': browserTimezone
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // console.log('Fetched data for today\'s baskets:', data);
+                    if (Array.isArray(data)) {
+                        data.forEach(basket => {
+                            // console.log('Basket date:', basket.sale_date);
+                        });
+        
+                        const groupedData = data.reduce((acc, basket) => {
+                            const { market_day_id, market_name } = basket;
+        
+                            if (!acc[market_day_id]) {
+                                acc[market_day_id] = {
+                                    marketId: market_day_id,
+                                    marketName: market_name,
+                                    baskets: []
+                                };
+                            }
+                            acc[market_day_id].baskets.push(basket);
+                            return acc;
+                        }, {});
+        
+                        const groupedBasketsArray = Object.values(groupedData);
+                        setTodayBaskets(groupedBasketsArray);
+        
+                        const availableBasketsArray = groupedBasketsArray
+                            .map(entry => entry.baskets.filter(basket => !basket.is_sold))
+                            .flat();
+                        const claimedBasketsArray = groupedBasketsArray
+                            .map(entry => entry.baskets.filter(basket => basket.is_sold))
+                            .flat();
+        
+                        setAvailableBaskets(availableBasketsArray);
+                        setClaimedBaskets(claimedBasketsArray);
+                    } else {
+                        console.error('Unexpected data format:', data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching today\'s baskets:', error);
+                });
+            } else {
+                console.log('Vendor ID is not available');
+            }
+        }, [vendorId]);
+
     useEffect(() => {
         const calculateNextMarketDays = () => {
             const today = new Date();

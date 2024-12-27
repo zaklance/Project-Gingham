@@ -12,7 +12,7 @@ from models import (
 
 def track_vendor_favorite(mapper, connection, target):
     try:
-        print(f"Processing VendorFavorite insert: User ID {target.user_id}, Vendor ID {target.vendor_id}")
+        # print(f"Processing VendorFavorite insert: User ID {target.user_id}, Vendor ID {target.vendor_id}")
 
         # Retrieve the vendor
         vendor = Vendor.query.get(target.vendor_id)
@@ -25,18 +25,20 @@ def track_vendor_favorite(mapper, connection, target):
         if not user:
             print(f"User not found for User ID: {target.user_id}")
             return 
-        print(f"Vendor found: {vendor.name} (Vendor ID: {vendor.id})")
-        print(f"User found: {user.first_name} {user.last_name} (User ID: {user.id})")
+        # print(f"Vendor found: {vendor.name} (Vendor ID: {vendor.id})")
+        # print(f"User found: {user.first_name} {user.last_name} (User ID: {user.id})")
 
         # Create the notification
+        subject = "favorite"
         message = f"{user.first_name} has added {vendor.name} to their favorites!"
-        link = f"/vendor/{vendor.id}/dashboard"  # Adjust link as needed.
+        link = f"/vendor/dashboard"  # Adjust link as needed.
 
-        print(f"Creating notification with message: '{message}' and link: '{link}'")
+        # print(f"Creating notification with message: '{message}' and link: '{link}'")
 
         notification = VendorNotification(
+            subject=subject,
             message=message,
-            link=link,
+            # link=link,
             vendor_id=vendor.id,
             created_at=db.func.now(),  
             is_read=False
@@ -44,15 +46,16 @@ def track_vendor_favorite(mapper, connection, target):
 
         connection.execute(
             VendorNotification.__table__.insert().values(
+                subject=notification.subject,
                 message=notification.message,
-                link=notification.link,
+                # link=notification.link,
                 vendor_id=notification.vendor_id,
                 created_at=notification.created_at,
                 is_read=notification.is_read
             )
         )
         
-        print(f"Notification successfully added for Vendor ID {vendor.id}")
+        # print(f"Notification successfully added for Vendor ID {vendor.id}")
     except Exception as e:
         print(f"Error occurred in track_vendor_favorite: {e}")
 

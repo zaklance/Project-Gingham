@@ -43,39 +43,75 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
             if (!response.ok) {
                 throw new Error("Failed to delete notification");
             }
-            setNotifications((prevNotifs) => prevNotifs.filter((notif) => notif.id !== notifId));
+            setNotifications((prev) => prev.filter((notif) => notif.id !== notifId));
         } catch (error) {
             console.error("Error deleting notification", error);
         }
     };
 
     useEffect(() => {
-        if (vendorUserId) {
-            const token = localStorage.getItem('vendor_jwt-token');
-            const response = fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+        const fetchVendorUserData = async () => {
+            if (vendorUserId) {
+                try {
+                    const token = localStorage.getItem('vendor_jwt-token');
+                    const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (!response.ok) {
+                        console.error('Failed to fetch vendor user data:', response.statusText);
+                        return;
+                    }
+                    const data = await response.json();
+                    setVendorUserData(data);
+                    // console.log('Fetched Vendor User Data:', data);
+                    // console.log('Vendor User ID:', vendorUserId);
+
+                } catch (error) {
+                    console.error('Error fetching vendor user data:', error);
                 }
-            });
-            if (response.ok) {
-                const data = response.json();
-                setVendorUserData(data);
             }
-        }
-    }, [ vendorUserId])
+        };
+        fetchVendorUserData();
+    }, [vendorUserId]);
+
 
     useEffect(() => {
-        if (isUserLoggedIn) {
-            fetch(`http://127.0.0.1:5555/api/vendor-notifications?vendor_id=${vendorUserId}`)
+        if (isVendorLoggedIn && vendorUserData) {
+            fetch(`http://127.0.0.1:5555/api/vendor-notifications?vendor_id=${vendorUserData.vendor_id}`)
                 .then(response => response.json())
                 .then(data => {
-                    setVendorNotifications(data);
+                    setVendorNotifications(data.notifications || []);
                 })
                 .catch(error => console.error('Error fetching notifications', error));
         }
-    }, [isVendorLoggedIn, vendorUserId]);
+    }, [isVendorLoggedIn, vendorUserData]);
+
+    const handleVendorNotificationIsRead = async (notifId) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${notifId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    is_read: true
+                }),
+            });
+            if (response.ok) {
+                const updatedData = await response.json();
+                setVendorNotifications((prev) => prev.filter((item) => item.id !== notifId))
+                console.log('Notification updated successfully:', updatedData);
+            } else {
+                console.error('Failed to update notification:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error updating notification:', error);
+        }
+    };
 
     const handleVendorNotificationDelete = async (notifId) => {
         try {
@@ -110,7 +146,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
             if (!response.ok) {
                 throw new Error("Failed to delete notification");
             }
-            setNotifications((prevNotifs) => prevNotifs.filter((notif) => notif.id !== notifId));
+            setNotifications((prev) => prev.filter((notif) => notif.id !== notifId));
         } catch (error) {
             console.error("Error deleting notification", error);
         }
@@ -127,7 +163,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     }
     
     const handleVendorNotifPopup = () => {
-        if (notifications.length > 0) {
+        if (vendorNotifications.length > 0) {
             setIsNotifPopup(!isNotifPopup);
         }
     }
@@ -180,8 +216,10 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         </li>
                         {vendorNotifications.length > 0 &&
                             <li className='notification' onClick={handleVendorNotifPopup}>
-                                <a className='nav-tab color-1 btn-nav nav-tab-wide img-notif' to="/notifications">&emsp;</a>
-                                {vendorNotifications.length > 0 && <p className='badge'>{vendorNotifications.length}</p>}
+                                <a className='nav-tab color-2 btn-nav nav-tab-wide img-notif' to="/notifications">&emsp;</a>
+                                {vendorNotifications.filter(notification => !notification.is_read).length > 0 && (
+                                    <p className='badge'>{vendorNotifications.filter(notification => !notification.is_read).length}</p>
+                                )}
                             </li>
                         }
                         <div className='notification'>
@@ -189,13 +227,18 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                 <div className={`popup-notif ${isNotifPopup ? 'popup-notif-on' : ''}`} style={{ top: window.scrollY }}>
                                     <div className=''>
                                         <ul className='flex-start flex-wrap ul-notif'>
-                                            {vendorNotifications.map((notification) => (
-                                                <li key={notification.id} className='li-notif'>
-                                                    <div className='flex-start'>
-                                                        <button className='btn btn-unreport btn-notif' onClick={() => handleVendorNotificationDelete(notification.id)}>x</button>
-                                                        <p className='link-underline'>{notification.message}</p>
-                                                    </div>
-                                                </li>
+                                            {vendorNotifications
+                                                .filter(notification => !notification.is_read)
+                                                .map((notification) => (
+                                                    <li key={notification.id} className='li-notif'>
+                                                        <div className='flex-start'>
+                                                            {notification.subject == 'team-request' ?
+                                                                <button className='btn btn-unreport btn-notif' onClick={() => handleVendorNotificationIsRead(notification.id)}>o</button>
+                                                                : <button className='btn btn-unreport btn-notif' onClick={() => handleVendorNotificationDelete(notification.id)}>x</button>}
+                                                            {notification.link ? <NavLink to={notification.link} onClick={closePopup}>{notification.message}</NavLink>
+                                                            : <p>{notification.message}</p>}
+                                                        </div>
+                                                    </li>
                                             ))}
                                         </ul>
                                     </div>
@@ -225,7 +268,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li>
                             <NavLink className='nav-tab color-2 btn-nav' to={`/admin/help`}>Help</NavLink>
                         </li>
-                        {adminNotifications.length > 0 &&
+                        {adminNotifications.length === 0 &&
                             <li className='notification' onClick={handleAdminNotifPopup}>
                                 <a className='nav-tab color-4 btn-nav nav-tab-wide img-notif' to="/notifications">&emsp;</a>
                                 {adminNotifications.length > 0 && <p className='badge'>{adminNotifications.length}</p>}
