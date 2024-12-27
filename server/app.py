@@ -26,6 +26,7 @@ import stripe
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import utils.events as events
 from utils.emails import send_contact_email, send_user_password_reset_email, send_vendor_password_reset_email, send_admin_password_reset_email
+import subprocess
 
 load_dotenv()
 
@@ -301,6 +302,30 @@ def missing_token_callback(error):
         'error': 'Authorization required',
         'message': 'No token provided. Please log in to continue.'
     }), 401
+
+# MJML Backend
+@app.route('/api/preview-email', methods=['POST'])
+def preview_email():
+    data = request.json
+    mjml_template = data.get('mjmlTemplate', '')
+
+    try:
+        # Run MJML CLI to compile MJML to HTML
+        result = subprocess.run(
+            ['mjml', '--stdin'],
+            input=mjml_template.encode(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+
+        if result.returncode != 0:
+            return jsonify({'error': result.stderr.decode()}), 400
+
+        compiled_html = result.stdout.decode()
+        return compiled_html
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # User Portal
 @app.route('/api/', methods=['GET'])
