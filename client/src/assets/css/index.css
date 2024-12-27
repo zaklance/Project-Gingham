@@ -2109,7 +2109,7 @@ select:hover {
 }
 
 .vendor-portal-background {
-  background-image: url('../images/LzYeux_120719_0036_1800px.png');
+  background-image: url('../images/LzYeux_120719_0036_1800px.jpg');
   background-size:cover;
   object-fit: cover;
   width: 100%;
@@ -2117,7 +2117,7 @@ select:hover {
 }
 
 .admin-portal-background {
-  background-image: url('../images/LzYeux_120719_0033_1800px.png');
+  background-image: url('../images/LzYeux_120719_0033_1800px.jpg');
   background-size:cover;
   width: 100%;
   height: 600px;
