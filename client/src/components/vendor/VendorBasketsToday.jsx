@@ -327,17 +327,17 @@ function VendorBasketsToday({vendorId, marketDay}) {
                                         <tbody className='table-basket'>
                                             <tr className='text-500'>
                                                 <td>Total Available Baskets:</td>
-                                                {isEditing ? (
-                                                    <div className="basket-adjustment text-center flex-space-evenly flex-center-align">
-                                                        <button onClick={handleDecrement} className="btn btn-adjust btn-red">–</button>
-                                                        <span>{numBaskets}</span>
-                                                        <button onClick={handleIncrement} className="btn btn-adjust btn-green">+</button>
-                                                    </div>                                    
-                                                ) : (
-                                                    <div className='text-center'>
-                                                        <span>{entry.baskets.length}</span>
-                                                    </div>
-                                                )}
+                                                <td className='text-center'>
+                                                    {isEditing ? (
+                                                        <div className="basket-adjustment flex-space-evenly flex-center-align">
+                                                            <button onClick={handleDecrement} className="btn btn-adjust btn-red">–</button>
+                                                            <span>{numBaskets}</span>
+                                                            <button onClick={handleIncrement} className="btn btn-adjust btn-green">+</button>
+                                                        </div>                                    
+                                                    ) : (
+                                                        numBaskets
+                                                    )}
+                                                </td>
                                             </tr>
                                             <tr className='text-500'>
                                                 <td>Sold Baskets:</td>
@@ -391,18 +391,7 @@ function VendorBasketsToday({vendorId, marketDay}) {
                                     {isEditing ? (
                                         <>
                                             <button
-                                                onClick={() => {
-                                                    setTodayBaskets(prevState => {
-                                                        const updatedBaskets = [...prevState];
-                                                        updatedBaskets[index].baskets = Array(numBaskets).fill({
-                                                            is_sold: false,
-                                                            market_day_id: entry.marketId,
-                                                            sale_date: new Date().toISOString(),
-                                                        });
-                                                        return updatedBaskets;
-                                                    });
-                                                    setIsEditing(false);
-                                                }}
+                                                onClick={handleSave}
                                                 className="btn-basket-save"
                                             >
                                                 Save
@@ -418,16 +407,7 @@ function VendorBasketsToday({vendorId, marketDay}) {
                                             </button>
                                         </>
                                     ) : (
-                                        <button
-                                            onClick={() => {
-                                                setPrevNumBaskets(entry.baskets.length);
-                                                setNumBaskets(entry.baskets.length);
-                                                setIsEditing(true); // Enter edit mode
-                                            }}
-                                            className="btn-basket-save"
-                                        >
-                                            Edit
-                                        </button>
+                                        <button onClick={editSavedBaskets} className="btn-basket-save"> Edit </button>
                                     )}
                                 </div>
 

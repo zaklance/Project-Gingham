@@ -1,10 +1,3 @@
-<<<<<<<< HEAD:server/migrations/versions/fe92a8f22225_reinitialize_database.py
-"""reinitialize database
-
-Revision ID: fe92a8f22225
-Revises: 
-Create Date: 2024-12-26 11:33:01.853380
-========
 """vendorNotification add user and market
 
 Revision ID: 45d7da10de4b
@@ -18,11 +11,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-<<<<<<<< HEAD:server/migrations/versions/fe92a8f22225_reinitialize_database.py
-revision = 'fe92a8f22225'
-========
 revision = '45d7da10de4b'
->>>>>>>> refs/remotes/origin/main:server/migrations/versions/45d7da10de4b_vendornotification_add_user_and_market.py
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -251,11 +240,8 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('message', sa.String(), nullable=False),
     sa.Column('link', sa.String(), nullable=False),
-<<<<<<<< HEAD:server/migrations/versions/fe92a8f22225_reinitialize_database.py
-========
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('market_id', sa.Integer(), nullable=True),
->>>>>>>> refs/remotes/origin/main:server/migrations/versions/45d7da10de4b_vendornotification_add_user_and_market.py
     sa.Column('vendor_id', sa.Integer(), nullable=False),
     sa.Column('vendor_user_id', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
