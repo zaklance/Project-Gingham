@@ -83,7 +83,7 @@ def send_contact_email(name, email, subject, message):
                         <a href="mailto:{email}" class="button">Reply to {name}</a>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-2.svg" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.svg" alt="logo"/>
                         <p>&copy; 2024 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -185,13 +185,13 @@ def send_user_password_reset_email(email):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-3.svg" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.svg" alt="logo"/>
                     </div>
                     <div class="content">
                         <p><strong>Please click the link to reset your password <br/></strong> {reset_link}</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-2.svg" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.svg" alt="logo"/>
                         <p>&copy; 2024 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -291,13 +291,13 @@ def send_vendor_password_reset_email(email):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-3.svg" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.svg" alt="logo"/>
                     </div>
                     <div class="content">
                         <p><strong>Please click the link to reset your password <br/></strong> {reset_link}</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-2.svg" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.svg" alt="logo"/>
                         <p>&copy; 2024 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -397,13 +397,13 @@ def send_admin_password_reset_email(email):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-3.svg" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.svg" alt="logo"/>
                     </div>
                     <div class="content">
                         <p><strong>Please click the link to reset your password <br/></strong> {reset_link}</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-2.svg" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.svg" alt="logo"/>
                         <p>&copy; 2024 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>

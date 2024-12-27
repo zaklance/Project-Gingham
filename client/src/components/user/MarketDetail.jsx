@@ -345,18 +345,6 @@ function MarketDetail ({ match }) {
         return <div>Loading...</div>;
     }
 
-    const randomImage = [
-        "market-default-1_1600px.png",
-        "market-default-2_1600px.png",
-        "market-default-3_1600px.png",
-        "market-default-4_1600px.png"
-    ]
-
-    const marketImage = market.image
-        ? `/market-images/${market.image}`
-        : `/market-images/_default-images/${randomImage[Math.floor(Math.random() * randomImage.length)]}`;
-
-
     const { coordinates } = market;
 
     const googleMapsLink = market?.coordinates
@@ -403,7 +391,11 @@ function MarketDetail ({ match }) {
             </div>
             <div className='flex-space-around flex-end margin-t-24 m-flex-wrap'>
                 <div className='width-100'>
-                    <img className='img-market' src={marketImage} alt="Market Image" />
+                    {market.image !== null ? (
+                        <img className="img-market" src={`/market-images/${market.image}`} alt="Market Image" />
+                    ) : (
+                        <img className="img-market" src={`/market-images/_default-images/${market.image_default}`} alt="Market Image" />
+                    )}
                 </div>
                 <div id='map' className='map-market-detail'>
                     <APIProvider apiKey={import.meta.env.VITE_GOOGLE_KEY} onLoad={() => console.log('Maps API has loaded.')}>
