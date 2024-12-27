@@ -423,7 +423,7 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
             <div className='flex-space-between flex-center-align margin-b-16 margin-t-24'>
                 <h2>Reviews</h2>
                 <div>
-                    <button className='btn btn-filter' onClick={handleDropDownFilters}>&#9776;</button>
+                    <button className='btn btn-filter-small' onClick={handleDropDownFilters}>&#9776;</button>
                     {showFilters && (
                         <div className='dropdown-content box-filters'>
                             <div className='form-filters-reviews'>

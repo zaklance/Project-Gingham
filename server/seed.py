@@ -175,7 +175,7 @@ def run():
         ),
         Market(
             name='Dag Hammarskjold Greenmarket',
-            image='c.-Martin-Seck-GAP-1-768x531.jpg',
+            # image='c.-Martin-Seck-GAP-1-768x531.jpg',
             location='E. 47th St. & 2nd Ave.',
             zipcode='10017',
             coordinates={"lat": "40.752106980482026", "lng": "-73.96813449641382"},
@@ -246,7 +246,7 @@ def run():
         ),
         Market(
             name='Harvest Home East Harlem Farmers Market',
-            image='10292023_Broadway_farmers_market_Columbia_NYC.jpg',
+            # image='10292023_Broadway_farmers_market_Columbia_NYC.jpg',
             location='E. 104th St. & 3rd Ave.',
             zipcode='10029',
             coordinates={"lat": "40.79001677902627", "lng": "-73.94559282721028"},
@@ -330,7 +330,7 @@ def run():
         ),
         Market(
             name='NYP Youth Market - Audoban',
-            image='image.jpeg',
+            # image='image.jpeg',
             location='21 Audoban Ave.',
             zipcode='10032',
             coordinates={"lat": "40.839630140355446", "lng": "-73.93889062898364"},
@@ -377,7 +377,7 @@ def run():
         ),
         Market(
             name='Stuyvesant Town Greenmarket',
-            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
+            # image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='South end of Stuyvesant Town Oval',
             zipcode='10009',
             coordinates={"lat": "40.73200566470982", "lng": "-73.97761240821589"},
@@ -408,7 +408,7 @@ def run():
         ),
         Market(
             name='Tucker Square Greenmarket',
-            image='farmers-market.jpg',
+            # image='farmers-market.jpg',
             location='Columbus Ave. & 66th St.',
             zipcode='10023',
             coordinates={"lat": "40.77367979894632", "lng": "-73.9819555713842"},

@@ -10,10 +10,22 @@ function MarketCard({ marketData }) {
         navigate(`/user/markets/${marketData.id}`);
     };
 
+    const randomImage = [
+        "market-default-1_1600px.png",
+        "market-default-2_1600px.png",
+        "market-default-3_1600px.png",
+        "market-default-4_1600px.png"
+    ]
+
+    const marketImage = marketData.image
+        ? `/market-images/${marketData.image}`
+        : `/market-images/_default-images/${randomImage[Math.floor(Math.random() * randomImage.length)]}`;
+
+
     return (
         <div className="market-card flex-space-between flex-column">
             <div>
-                <img src={`/market-images/${marketData.image}`} alt="Market Image" className="img-market-card" />
+                <img src={marketImage} alt="Market Image" className="img-market-card" />
                 <h3 className="margin-b-16">{marketData.name}</h3>
                 <p><strong>Location:</strong> {marketData.location}</p>
                 <p><strong>Schedule:</strong> {marketData.schedule}</p>
