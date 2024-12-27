@@ -32,7 +32,7 @@ def send_contact_email(name, email, subject, message):
                     .email-container {{
                         font-family: Arial, sans-serif;
                         line-height: 1.6;
-                        color: #333;
+                        color: #3b4752;
                         background-color: #f9f9f9;
                         padding: 20px;
                         border: 1px solid #ddd;
@@ -47,6 +47,7 @@ def send_contact_email(name, email, subject, message):
                     }}
                     .content {{
                         padding: 20px;
+                        color: #3b4752;
                     }}
                     .footer {{
                         font-size: 12px;
@@ -64,7 +65,7 @@ def send_contact_email(name, email, subject, message):
                         margin-top: 10px;
                     }}
                     .img-logo-small {{
-                        height: 32x;
+                        height: 32px;
                         width: 32px;
                     }}
                 </style>
@@ -156,6 +157,7 @@ def send_user_password_reset_email(email):
                     }}
                     .content {{
                         padding: 20px;
+                        color: #3b4752;
                     }}
                     .footer {{
                         font-size: 12px;
@@ -177,7 +179,7 @@ def send_user_password_reset_email(email):
                         width: 120px;
                     }}
                     .img-logo-small {{
-                        height: 32x;
+                        height: 32px;
                         width: 32px;
                     }}
                 </style>
@@ -247,7 +249,7 @@ def send_vendor_password_reset_email(email):
                     .email-container {{
                         font-family: Arial, sans-serif;
                         line-height: 1.6;
-                        color: #333;
+                        color: #3b4752;
                         background-color: #f9f9f9;
                         padding: 20px;
                         border: 1px solid #ddd;
@@ -262,6 +264,7 @@ def send_vendor_password_reset_email(email):
                     }}
                     .content {{
                         padding: 20px;
+                        color: #3b4752;
                     }}
                     .footer {{
                         font-size: 12px;
@@ -283,7 +286,7 @@ def send_vendor_password_reset_email(email):
                         width: 120px;
                     }}
                     .img-logo-small {{
-                        height: 32x;
+                        height: 32px;
                         width: 32px;
                     }}
                 </style>
@@ -353,7 +356,7 @@ def send_admin_password_reset_email(email):
                     .email-container {{
                         font-family: Arial, sans-serif;
                         line-height: 1.6;
-                        color: #333;
+                        color: #3b4752;
                         background-color: #f9f9f9;
                         padding: 20px;
                         border: 1px solid #ddd;
@@ -368,6 +371,7 @@ def send_admin_password_reset_email(email):
                     }}
                     .content {{
                         padding: 20px;
+                        color: #3b4752;
                     }}
                     .footer {{
                         font-size: 12px;
@@ -389,7 +393,7 @@ def send_admin_password_reset_email(email):
                         width: 120px;
                     }}
                     .img-logo-small {{
-                        height: 32x;
+                        height: 32px;
                         width: 32px;
                     }}
                 </style>
