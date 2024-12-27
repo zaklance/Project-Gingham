@@ -101,32 +101,46 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     };
 
     const handleImageDelete = async () => {
-        if (!adminMarketData?.image) return;
+        const token = localStorage.getItem('admin_jwt-token');
+        if (!token) {
+            alert('Admin is not authenticated. Please log in again.');
+            return;
+        }
     
         try {
+            console.log('Deleting image:', adminMarketData.image);
+    
             const response = await fetch('http://127.0.0.1:5555/api/delete-image', {
-                method: 'POST',
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('admin_jwt-token')}`,
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     filename: adminMarketData.image,
+                    market_id: adminMarketData.id,
                     type: 'market',
                 }),
             });
     
             if (response.ok) {
+                const result = await response.json();
+                console.log('Image deleted successfully:', result);
+    
                 setAdminMarketData((prevData) => ({
                     ...prevData,
-                    image: null, 
+                    image: null,
                 }));
+    
                 alert('Image deleted successfully.');
             } else {
-                console.error('Failed to delete image:', await response.text());
+                const errorText = await response.text();
+                console.error('Failed to delete image:', errorText);
+                alert(`Failed to delete the image: ${JSON.parse(errorText).error}`);
             }
         } catch (error) {
             console.error('Error deleting image:', error);
+            alert('An unexpected error occurred while deleting the image.');
         }
     };
 
