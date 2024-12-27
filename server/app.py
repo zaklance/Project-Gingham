@@ -64,7 +64,7 @@ def allowed_file(filename):
 
 def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
     if image.format == 'PNG':
-        if image.mode != 'RGBA':
+        if image.mode != 'RGBA' or 'RGB':
             image = image.convert('RGBA')
     else:
         if image.mode != 'RGB':

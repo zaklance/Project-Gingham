@@ -1799,16 +1799,16 @@ select:hover {
 .img-notif {
   background-image: url('../images/icons8-notification.svg');
   background-repeat: no-repeat;
-  background-position: right 50% top 48%;
-  background-size: 1.5rem auto;
+  background-position: right 50% top 46%;
+  background-size: 1.2rem auto;
   /* font-size: 1.5em; */
 }
 
 .img-notif:hover {
   background-image: url('../images/icons8-notification-color-3.gif');
   background-repeat: no-repeat;
-  background-position: right 50% top 48%;
-  background-size: 1.56rem auto;
+  background-position: right 50% top 46%;
+  background-size: 1.26rem auto;
 }
 
 .img-hot {

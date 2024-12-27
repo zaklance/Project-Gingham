@@ -359,7 +359,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 {adminMarketData?.image ? (
                                     <>
                                         <img 
-                                            style={{ maxWidth: '100%', height: 'auto' }} 
+                                            style={{ maxWidth: '100%', height: 'auto' }}
                                             src={`/market-images/${adminMarketData.image}`} 
                                             alt="Market Image" />
                                     </>
@@ -389,7 +389,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 <tbody>
                                     <tr>
                                         <td className='cell-title'>Image:</td>
-                                        <td className='cell-text'>{adminMarketData ? <img className='img-market' src={`/market-images/${adminMarketData.image}`} alt="Market Image" /> : ''}</td>
+                                        <td className='cell-text'>{adminMarketData ? <img className='img-market' src={`/market-images/${adminMarketData.image}`} alt="Market Image" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title'>Name:</td>
