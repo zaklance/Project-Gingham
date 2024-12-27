@@ -287,17 +287,7 @@ function VendorDetail({ products }) {
     if (!vendor) {
         return <div>Loading...</div>;
     }
-
-    const randomImage = [
-        "vendor-default-1_1600px.png",
-        "vendor-default-2_1600px.png",
-        "vendor-default-3_1600px.png"
-    ]
-
-    const vendorImage = vendor.image
-        ? `/vendor-images/${vendor.image}`
-        : `/vendor-images/_default-images/${randomImage[Math.floor(Math.random() * randomImage.length)]}`;
-
+    
 
     return (
         <div>
@@ -339,7 +329,11 @@ function VendorDetail({ products }) {
             </div>
             <div className='flex-space-between margin-t-24 flex-wrap'>
                 <div className='width-100'>
-                    <img className='img-vendor' src={vendorImage} alt="Vendor Image"/>
+                    {vendor.image !== null ? (
+                        <img className='img-vendor' src={`/vendor-images/${vendor.image}`} alt="Vendor Image"/>
+                    ) : (
+                        <img className='img-vendor' src={`/vendor-images/_default-images/${vendor.image_default}`} alt="Vendor Image"/>
+                    )}
                 </div>
                 <div className='side-basket'>
                     <h3 className='margin-t-8'>Product: {product ? product.product : ""}</h3>

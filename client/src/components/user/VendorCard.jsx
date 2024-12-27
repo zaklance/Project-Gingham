@@ -11,20 +11,14 @@ function VendorCard({ vendorData, selectedProduct, products }) {
 
     const product = products.find(p => p.id == vendorData.product);
 
-    const randomImage = [
-        "vendor-default-1_1600px.png",
-        "vendor-default-2_1600px.png",
-        "vendor-default-3_1600px.png"
-    ]
-
-    const vendorImage = vendorData.image
-        ? `/vendor-images/${vendorData.image}`
-        : `/vendor-images/_default-images/${randomImage[Math.floor(Math.random() * randomImage.length)]}`;
-
 
     return (
         <div className="market-card">
-            <img src={vendorImage} alt="Vendor Image" style={{width: '260px'}}/>
+            {vendorData.image !== null ? (
+                <img style={{ width: '260px' }} src={`/vendor-images/${vendorData.image}`} alt="Vendor Image" />
+            ) : (
+                <img style={{ width: '260px' }} src={`/vendor-images/_default-images/${vendorData.image_default}`} alt="Vendor Image" />
+            )}
             <h2>{vendorData.name}</h2>
             <h4>{vendorData.city}, {vendorData.state}</h4>
             <h4>{product ? product.product : ""}</h4>
