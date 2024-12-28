@@ -28,7 +28,7 @@ function AdminVendorDelete({ vendors }) {
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Fetched admin vendor data:', data);
+                    // console.log('Fetched admin vendor data:', data);
                     setVendorData(data);
                 } else {
                     console.error('Error fetching profile:', response.status);
