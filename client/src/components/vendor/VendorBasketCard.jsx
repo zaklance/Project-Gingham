@@ -447,12 +447,14 @@ function VendorBasketCard({ vendorId, marketDay }) {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Estimated Value:</td>
+                                    <td>Basket Value:</td>
                                     <td className='text-center'>${basketValue}</td>
                                 </tr>
                                 <tr>
-                                    <td>Price:</td>
+                                    <td>Basket Price:</td>
                                     <td className='text-center'>${price}</td>
+                                </tr>
+                                <tr className='row-blank'>
                                 </tr>
                                 <tr>
                                     <td>Pick-Up Start:</td>
@@ -503,7 +505,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                         </div>
                         <br></br>
                         <div className='form-baskets-small'>
-                            <label className='margin-t-16 margin-b-8'>Pick Up Start:</label>
+                            <label className='margin-t-16 margin-b-8'>Pick-Up Start:</label>
                             <div className='flex-start'>
                                 <input placeholder="HH:MM" name="pickup_start" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
                                 <select name="amPm" value={startAmPm} className='am-pm' onChange={(e) => setStartAmPm(e.target.value)} >
@@ -513,7 +515,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                             </div>
                         </div>
                         <div className='form-baskets-small'>
-                            <label className='margin-t-16 margin-b-8'>Pick Up End:</label>
+                            <label className='margin-t-16 margin-b-8'>Pick-Up End:</label>
                             <div className='flex-start'>
                                 <input placeholder="HH:MM" name="pickup_end" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
                                 <select name="amPm" value={endAmPm} className='am-pm' onChange={(e) => setEndAmPm(e.target.value)} >

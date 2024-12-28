@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { timeConverter, formatBasketDate } from '../../utils/helpers';
 
-function VendorBasketsToday({vendorId, marketDay}) {
+function VendorBasketsToday({vendorId, marketDay, entry}) {
     const [todayBaskets, setTodayBaskets] = useState([]);
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
     const [startAmPm, setStartAmPm] = useState('PM');
     const [endAmPm, setEndAmPm] = useState('PM');
-    const [isEditing, setIsEditing] = useState(false);
-    const [editingBaskets, setEditingBaskets] = useState({});
+    const [isEditing, setIsEditing] = useState(null);
     const [basketCounts, setBasketCounts] = useState({});
     const [numBaskets, setNumBaskets] = useState(0);
     const [prevNumBaskets, setPrevNumBaskets] = useState(numBaskets);
     const [savedBaskets, setSavedBaskets] = useState([]);
     const [price, setPrice] = useState('');
     const [basketValue, setBasketValue] = useState('');
-    // const [tempSavedBaskets, setTempSavedBaskets] = useState(null);
+    const [tempSavedBaskets, setTempSavedBaskets] = useState(null);
     // const [availableBaskets, setAvailableBaskets] = useState([]);
     // const [claimedBaskets, setClaimedBaskets] = useState([]);
     const [errorMessage, setErrorMessage] = useState([]);
@@ -84,12 +83,16 @@ function VendorBasketsToday({vendorId, marketDay}) {
     }, [vendorId]);  
 
     const toggleEditMode = (basketId) => {
-        setEditingBaskets(prevState => ({
-            ...prevState,
-            [basketId]: !prevState[basketId]
-        }));
-        setIsEditing(true);
-    };
+        if (isEditing !== basketId) {
+            setTempSavedBaskets(prevState => ({
+                ...prevState,
+                [basketId]: basketCounts[basketId] || 0
+            }));
+        }
+    
+        setIsEditing(basketId);
+    }; 
+    
     const handleIncrement = (basketId) => {
         setBasketCounts(prevState => ({
             ...prevState,
@@ -107,7 +110,6 @@ function VendorBasketsToday({vendorId, marketDay}) {
     const handleSave = async () => {
         const parsedNumBaskets = numBaskets;
         const parsedPrice = parseFloat(price);
-    
         const soldBasketsCount = savedBaskets.filter(basket => basket.is_sold).length;
     
         if (parsedNumBaskets < soldBasketsCount) {
@@ -115,26 +117,46 @@ function VendorBasketsToday({vendorId, marketDay}) {
             return;
         }
     
+        // Check if startTime and endTime are valid before splitting and parsing
+        if (!startTime || !endTime) {
+            console.error('Start time or end time is not set.');
+            setErrorMessage('Start time or end time is missing.');
+            return;
+        }
+    
+        console.log("startTime:", startTime);
+        console.log("endTime:", endTime);
+    
+        // Split and parse the times, ensuring they are valid
         const [startHour, startMinute] = startTime.split(':').map(num => parseInt(num, 10));
         const [endHour, endMinute] = endTime.split(':').map(num => parseInt(num, 10));
     
+        console.log("Parsed start hour:", startHour);
+        console.log("Parsed start minute:", startMinute);
+        console.log("Parsed end hour:", endHour);
+        console.log("Parsed end minute:", endMinute);
+    
+        // Validate the parsed values
         if (isNaN(startHour) || isNaN(startMinute) || isNaN(endHour) || isNaN(endMinute)) {
             console.error('Invalid hour or minute values for pickup start or end.');
             setErrorMessage('Invalid time values for pickup start or end.');
             return;
         }
     
+        // Continue with formatting and logic
         const formattedStartHour = startAmPm === 'PM' && startHour !== 12
             ? startHour + 12
             : startAmPm === 'AM' && startHour === 12
             ? 0
             : startHour;
-    
         const formattedEndHour = endAmPm === 'PM' && endHour !== 12
             ? endHour + 12
             : startAmPm === 'AM' && endHour === 12
             ? 0
             : endHour;
+    
+        console.log("Formatted start hour:", formattedStartHour);
+        console.log("Formatted end hour:", formattedEndHour);
     
         const localDate = new Date(marketDay.date);
         const formattedSaleDate = localDate.toISOString().split('T')[0];
@@ -145,15 +167,23 @@ function VendorBasketsToday({vendorId, marketDay}) {
         const endTimeDate = new Date();
         endTimeDate.setHours(formattedEndHour, endMinute, 0, 0);
     
+        console.log("Final start time:", startTimeDate);
+        console.log("Final end time:", endTimeDate);
+    
         const formattedPickupStart = `${startTimeDate.getHours().toString().padStart(2, '0')}:${startTimeDate.getMinutes().toString().padStart(2, '0')} ${startAmPm}`;
         const formattedPickupEnd = `${endTimeDate.getHours().toString().padStart(2, '0')}:${endTimeDate.getMinutes().toString().padStart(2, '0')} ${endAmPm}`;
     
+        console.log("Formatted pickup start time:", formattedPickupStart);
+        console.log("Formatted pickup end time:", formattedPickupEnd);
+    
+        // Ensure the necessary data is present
         if (parsedNumBaskets > 0 && vendorId && marketDay && marketDay.id && !isNaN(parsedPrice) && parsedPrice > 0) {
             const promises = [];
             const additionalBaskets = parsedNumBaskets - prevNumBaskets;
-
+    
             const basketsToDelete = savedBaskets.filter(basket => basket.shouldDelete);
     
+            // Add new baskets (POST)
             if (additionalBaskets > 0) {
                 for (let i = 0; i < additionalBaskets; i++) {
                     promises.push(fetch('http://127.0.0.1:5555/api/baskets', {
@@ -175,6 +205,7 @@ function VendorBasketsToday({vendorId, marketDay}) {
                     }));
                 }
             } 
+            // Delete unsold baskets (DELETE)
             else if (additionalBaskets < 0) {
                 const numberOfBasketsToDelete = Math.abs(additionalBaskets);
                 const unsoldBaskets = savedBaskets.filter(basket => !basket.is_sold);
@@ -217,8 +248,10 @@ function VendorBasketsToday({vendorId, marketDay}) {
                 }
             }
     
+            // Wait for POST requests to complete
             await Promise.all(promises);
-
+    
+            // Fetch the updated basket list after addition/deletion
             try {
                 const fetchResponse = await fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.id}&sale_date=${formattedSaleDate}`);
                 const updatedBaskets = await fetchResponse.json();
@@ -235,23 +268,23 @@ function VendorBasketsToday({vendorId, marketDay}) {
         } else {
             setErrorMessage('Please enter valid data for all fields.');
         }
-    };
+    };    
 
     const cancelBasketEdit = (basketId) => {
-        setEditingBaskets(prevState => {
-            const newState = { ...prevState };
-            delete newState[basketId];
-            return newState;
-        });
+        setBasketCounts(prevState => ({
+            ...prevState,
+            [basketId]: tempSavedBaskets[basketId] || 0
+        }));
+    
+        setIsEditing(null);
     };
-
+    
     return (
         <div>
             <div className='flex flex-nowrap box-scroll-x'>
             {Array.isArray(todayBaskets) && todayBaskets.length > 0 ? (
             todayBaskets.map((entry, index) => {
-                    const isLive = entry.baskets.length > 0 &&
-                        new Date(entry.baskets[0].sale_date) <= new Date()
+                    const isLive = entry.baskets.length > 0 && new Date(entry.baskets[0].sale_date) <= new Date()
 
                     return (
                         <div key={index} className='badge-container'>
@@ -260,29 +293,27 @@ function VendorBasketsToday({vendorId, marketDay}) {
                                 <div className='text-center'>
                                     <h4>{entry.marketName}</h4>
                                     {entry.baskets.length > 0 ? (
-                                        <h4>
-                                            {entry.baskets.length > 0 ? formatBasketDate(entry.baskets[0].sale_date) : 'No sale date available'}
-                                        </h4>
+                                        <h4> {entry.baskets.length > 0 ? formatBasketDate(entry.baskets[0].sale_date) : 'No sale date available'} </h4>
                                     ) : (
-                                        <h4>No sale date available</h4>
+                                        <h4> No sale date available </h4>
                                     )}
                                 </div>
                                 <br/>          
                                 <table>
                                     <tbody className="table-basket">
                                         <tr className="text-500">
-                                            <td>Total Sellable Baskets:</td>
+                                            <td>Total Baskets Available:</td>
                                             <td className='text-center'>
-                                                {isEditing ? (
+                                                {isEditing === entry.baskets[0].id ? (
                                                     <div className="basket-adjustment flex-space-evenly flex-center-align">
-                                                        <button 
-                                                            onClick={() => handleDecrement(entry.baskets[0].id)} 
+                                                        <button
+                                                            onClick={() => handleDecrement(entry.baskets[0].id)}
                                                             className="btn btn-adjust btn-red">–</button>
-                                                        <span>{basketCounts[entry.baskets[1].id] || 0}</span> 
-                                                        <button 
-                                                            onClick={() => handleIncrement(entry.baskets[0].id)} 
+                                                        <span>{tempSavedBaskets[entry.baskets[0].id] || basketCounts[entry.baskets[0].id] || 0}</span>
+                                                        <button
+                                                            onClick={() => handleIncrement(entry.baskets[0].id)}
                                                             className="btn btn-adjust btn-green">+</button>
-                                                    </div>                                    
+                                                    </div>
                                                 ) : (
                                                     basketCounts[entry.baskets[0].id] || 0
                                                 )}
@@ -295,12 +326,16 @@ function VendorBasketsToday({vendorId, marketDay}) {
                                         <tr className='row-blank'>
                                         </tr>
                                         <tr>
-                                            <td className='nowrap'>Pickup Start:</td>
-                                            <td className='nowrap text-center'>{timeConverter(entry.baskets[0]?.pickup_start)}</td>
+                                            <td className="nowrap">Pick-Up Start:</td>
+                                            <td className="nowrap text-center">
+                                                {entry.baskets[0]?.pickup_start ? timeConverter(entry.baskets[0]?.pickup_start) : "N/A"}
+                                            </td>
                                         </tr>
                                         <tr>
-                                            <td className='nowrap'>Pickup End:</td>
-                                            <td className='nowrap text-center'>{timeConverter(entry.baskets[0]?.pickup_end)}</td>
+                                            <td className="nowrap">Pick-Up End:</td>
+                                            <td className="nowrap text-center">
+                                                {entry.baskets[0]?.pickup_end ? timeConverter(entry.baskets[0]?.pickup_end) : "N/A"}
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td className='nowrap'>Basket Value:</td>
@@ -334,26 +369,22 @@ function VendorBasketsToday({vendorId, marketDay}) {
                             )}
                             <br/>
                             <div className="text-center basket-actions">
-                            {entry.baskets.map((basket) => {
-                                    const isEditing = editingBaskets[basket.id];
-
-                                    return (
-                                        <div key={basket.id}>
-                                            {isEditing ? (
-                                                <>
-                                                    <button onClick={handleSave} className="btn-basket-save"> Save </button>
-                                                    <button onClick={() => cancelBasketEdit(basket.id)} className="btn-basket-save">Cancel</button>
-                                                </>
-                                            ) : (
-                                                <button onClick={() => toggleEditMode(basket.id)} className="btn-basket-save"> Edit </button>
-                                            )}
-                                        </div>
-                                    );
-                                })}
+                                {entry.baskets.map((basket) => (
+                                    <div key={basket.id}>
+                                        {isEditing === basket.id ? (
+                                            <>
+                                                <button onClick={handleSave} className="btn-basket-save"> Save </button>
+                                                <button onClick={() => cancelBasketEdit(basket.id)} className="btn-basket-save">Cancel</button>
+                                            </>
+                                        ) : (
+                                            <button onClick={() => toggleEditMode(basket.id)} className="btn-basket-save"> Edit </button>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
-                    )
+                    );
                 })
             ) : (
                 <p>No baskets available for today.</p>
