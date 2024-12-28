@@ -51,7 +51,7 @@ function Footer() {
                             </li>
                         )}
                     </ul>
-                    <img className='small-logo' src="/site-images/gingham-logo-3.svg" alt="Gingham Logo"></img>
+                    <img className='small-logo' src="/site-images/gingham-logo-A_3.svg" alt="Gingham Logo"></img>
                 </div>
             </div>
         </>

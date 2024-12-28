@@ -32,6 +32,25 @@ avatars = [
 def random_avatar():
     return random.choice(avatars)
 
+markets = [
+    "market-default-1_1600px.png",
+    "market-default-2_1600px.png",
+    "market-default-3_1600px.png",
+    "market-default-4_1600px.png"
+]
+
+def random_market():
+    return random.choice(markets)
+
+vendors = [
+    "vendor-default-1_1600px.png",
+    "vendor-default-2_1600px.png",
+    "vendor-default-3_1600px.png"
+]
+
+def random_vendor():
+    return random.choice(vendors)
+
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
@@ -153,6 +172,7 @@ class Market(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     image = db.Column(db.String, nullable=True)
+    image_default = db.Column(db.String, nullable=False, default=random_market)
     location = db.Column(db.String, nullable=False)
     zipcode = db.Column(db.String, nullable=True)
     coordinates = db.Column(db.JSON, nullable=True)
@@ -160,6 +180,7 @@ class Market(db.Model, SerializerMixin):
     year_round = db.Column(db.Boolean, nullable=True)
     season_start = db.Column(db.Date, nullable=True)
     season_end = db.Column(db.Date, nullable=True)
+    is_visible = db.Column(db.Boolean, nullable=True)
 
     # Relationships
     reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic', cascade="all, delete")
@@ -219,6 +240,7 @@ class Vendor(db.Model, SerializerMixin):
     product = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     bio = db.Column(db.String, nullable=True)
     image = db.Column(db.String)
+    image_default = db.Column(db.String, nullable=False, default=random_vendor)
 
     # Relationships
     reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic', cascade="all, delete")
@@ -241,6 +263,7 @@ class Vendor(db.Model, SerializerMixin):
             'product': self.product,
             'bio': self.bio,
             'image': self.image,
+            'image_default': self.image_default,
         }
 
     # Validations

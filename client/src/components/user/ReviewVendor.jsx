@@ -516,6 +516,7 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                                                 <button
                                                     className={`btn btn-emoji btn-gap btn-green ${isClickedUp[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
                                                     onClick={() => handleClickUpVote(review)}
+                                                    title="Up Vote"
                                                 >&#9786;
                                                 </button>
                                             </div>
@@ -529,10 +530,16 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                                                 <button
                                                     className={`btn btn-emoji btn-gap btn-red ${isClickedDown[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
                                                     onClick={() => handleClickDownVote(review)}
+                                                    title="Down Vote"
                                                 >&#9785;
                                                 </button>
                                             </div>
-                                            <button className='btn btn-report btn-gap' onClick={() => handleReviewReport(review.id)}>&#9873;</button>
+                                            <button 
+                                                className='btn btn-report btn-gap' 
+                                                onClick={() => handleReviewReport(review.id)}
+                                                title="Report Review"
+                                                >&#9873;
+                                            </button>
                                             {hotReviews.some(item => item.id === review.id) && (
                                                 <img className='img-hot margin-l-12' src="/site-images/chili-pepper-3.svg" alt="Notification" title='Hot review!!!'/>
                                             )}
