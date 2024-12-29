@@ -17,7 +17,7 @@ def send_contact_email(name, email, subject, message):
         msg = MIMEMultipart()
         msg['From'] = sender_email
         msg['To'] = recipient_email
-        msg['Subject'] = f"GINGHAM.NYC Contact Form Submission: {subject}"
+        msg['Subject'] = f"Gingham.nyc Contact Form Submission: {subject}"
 
         body = f"""
             <!DOCTYPE html>
@@ -26,23 +26,17 @@ def send_contact_email(name, email, subject, message):
                 <meta charset="UTF-8">
                 <title>Contact Form Submission</title>
                 <style>
-                    p, h1, h2, h3, h4, h5, h6, strong {{
-                        color: #3b4752;
-                    }}
                     .email-container {{
-                        font-family: Arial, sans-serif;
+                        font-family: helvetica, sans-serif;
                         line-height: 1.6;
                         color: #3b4752;
-                        background-color: #f9f9f9;
+                        background-color: #fbf7eb;
                         padding: 20px;
-                        border: 1px solid #ddd;
                         border-radius: 24px;
                     }}
                     .header {{
-                        background-color: #ff7b8a;
                         color: white;
                         text-align: center;
-                        padding: 10px 0;
                         border-radius: 16px;
                     }}
                     .content {{
@@ -53,20 +47,39 @@ def send_contact_email(name, email, subject, message):
                         font-size: 12px;
                         text-align: center;
                         margin-top: 20px;
+                        margin-bottom: -10px;
                         color: #777;
                     }}
                     .button {{
                         display: inline-block;
-                        background-color: #ff7b8a;
-                        color: white;
+                        background-color: #ff806b;
+                        color: #ffffff !important;
                         text-decoration: none;
                         padding: 8px 12px;
                         border-radius: 5px;
                         margin-top: 10px;
                     }}
+                    .img-logo {{
+                        height: 120px;
+                        width: 120px;
+                    }}
                     .img-logo-small {{
                         height: 32px;
                         width: 32px;
+                    }}
+                    .divider {{
+                        border: 0;
+                        border-top: 4px solid #ff806b;
+                    }}
+                    p, h1, h2, h3, h4, h5, h6 {{
+                        color: #ff806b;
+                    }}
+                    .img-hero {{
+                        width: 100%;
+                        height: auto;
+                    }}
+                    .center {{
+                        text-align: center;
                     }}
                 </style>
             </head>
@@ -75,6 +88,7 @@ def send_contact_email(name, email, subject, message):
                     <div class="header">
                         <h2>New Contact Form Submission</h2>
                     </div>
+                    <hr class="divider"/>
                     <div class="content">
                         <p><strong>Name:</strong> {name}</p>
                         <p><strong>Email:</strong> {email}</p>
@@ -84,7 +98,7 @@ def send_contact_email(name, email, subject, message):
                         <a href="mailto:{email}" class="button">Reply to {name}</a>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.svg" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
                         <p>&copy; 2024 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -140,19 +154,16 @@ def send_user_password_reset_email(email):
                 <title>Contact Form Submission</title>
                 <style>
                     .email-container {{
-                        font-family: Arial, sans-serif;
+                        font-family: helvetica, sans-serif;
                         line-height: 1.6;
-                        color: #333;
-                        background-color: #f9f9f9;
+                        color: #3b4752;
+                        background-color: #fbf7eb;
                         padding: 20px;
-                        border: 1px solid #ddd;
                         border-radius: 24px;
                     }}
                     .header {{
-                        background-color: #ff7b8a;
                         color: white;
                         text-align: center;
-                        padding: 10px 0;
                         border-radius: 16px;
                     }}
                     .content {{
@@ -163,12 +174,13 @@ def send_user_password_reset_email(email):
                         font-size: 12px;
                         text-align: center;
                         margin-top: 20px;
+                        margin-bottom: -10px;
                         color: #777;
                     }}
                     .button {{
                         display: inline-block;
-                        background-color: #ff7b8a;
-                        color: white;
+                        background-color: #ff806b;
+                        color: #ffffff !important;
                         text-decoration: none;
                         padding: 8px 12px;
                         border-radius: 5px;
@@ -182,24 +194,39 @@ def send_user_password_reset_email(email):
                         height: 32px;
                         width: 32px;
                     }}
+                    .divider {{
+                        border: 0;
+                        border-top: 4px solid #ff806b;
+                    }}
+                    p, h1, h2, h3, h4, h5, h6 {{
+                        color: #ff806b;
+                    }}
+                    .img-hero {{
+                        width: 100%;
+                        height: auto;
+                    }}
+                    .center {{
+                        text-align: center;
+                    }}
                 </style>
             </head>
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.svg" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
                     </div>
-                    <div class="content">
-                        <p><strong>Please click the link to reset your password <br/></strong> {reset_link}</p>
+                    <hr class="divider"/>
+                    <div class="content center">
+                        <p><strong>Please click the link to reset your password <br/></strong> <a class="button" href={reset_link}>Password Reset<a/></p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.svg" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
                         <p>&copy; 2024 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
             </body>
             </html>
-             """
+            """
         msg.attach(MIMEText(body, 'html'))
 
         # Send email
@@ -247,19 +274,16 @@ def send_vendor_password_reset_email(email):
                 <title>Contact Form Submission</title>
                 <style>
                     .email-container {{
-                        font-family: Arial, sans-serif;
+                        font-family: helvetica, sans-serif;
                         line-height: 1.6;
                         color: #3b4752;
-                        background-color: #f9f9f9;
+                        background-color: #fbf7eb;
                         padding: 20px;
-                        border: 1px solid #ddd;
                         border-radius: 24px;
                     }}
                     .header {{
-                        background-color: #ff7b8a;
                         color: white;
                         text-align: center;
-                        padding: 10px 0;
                         border-radius: 16px;
                     }}
                     .content {{
@@ -270,12 +294,13 @@ def send_vendor_password_reset_email(email):
                         font-size: 12px;
                         text-align: center;
                         margin-top: 20px;
+                        margin-bottom: -10px;
                         color: #777;
                     }}
                     .button {{
                         display: inline-block;
-                        background-color: #ff7b8a;
-                        color: white;
+                        background-color: #ff806b;
+                        color: #ffffff !important;
                         text-decoration: none;
                         padding: 8px 12px;
                         border-radius: 5px;
@@ -289,24 +314,39 @@ def send_vendor_password_reset_email(email):
                         height: 32px;
                         width: 32px;
                     }}
+                    .divider {{
+                        border: 0;
+                        border-top: 4px solid #ff806b;
+                    }}
+                    p, h1, h2, h3, h4, h5, h6 {{
+                        color: #ff806b;
+                    }}
+                    .img-hero {{
+                        width: 100%;
+                        height: auto;
+                    }}
+                    .center {{
+                        text-align: center;
+                    }}
                 </style>
             </head>
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.svg" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
                     </div>
-                    <div class="content">
-                        <p><strong>Please click the link to reset your password <br/></strong> {reset_link}</p>
+                    <hr class="divider"/>
+                    <div class="content center">
+                        <p><strong>Please click the link to reset your password <br/></strong> <a class="button" href={reset_link}>Password Reset<a/></p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.svg" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
                         <p>&copy; 2024 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
             </body>
             </html>
-             """
+            """
         msg.attach(MIMEText(body, 'html'))
 
         # Send email
@@ -354,19 +394,16 @@ def send_admin_password_reset_email(email):
                 <title>Contact Form Submission</title>
                 <style>
                     .email-container {{
-                        font-family: Arial, sans-serif;
+                        font-family: helvetica, sans-serif;
                         line-height: 1.6;
                         color: #3b4752;
-                        background-color: #f9f9f9;
+                        background-color: #fbf7eb;
                         padding: 20px;
-                        border: 1px solid #ddd;
                         border-radius: 24px;
                     }}
                     .header {{
-                        background-color: #ff7b8a;
                         color: white;
                         text-align: center;
-                        padding: 10px 0;
                         border-radius: 16px;
                     }}
                     .content {{
@@ -377,12 +414,13 @@ def send_admin_password_reset_email(email):
                         font-size: 12px;
                         text-align: center;
                         margin-top: 20px;
+                        margin-bottom: -10px;
                         color: #777;
                     }}
                     .button {{
                         display: inline-block;
-                        background-color: #ff7b8a;
-                        color: white;
+                        background-color: #ff806b;
+                        color: #ffffff !important;
                         text-decoration: none;
                         padding: 8px 12px;
                         border-radius: 5px;
@@ -396,24 +434,39 @@ def send_admin_password_reset_email(email):
                         height: 32px;
                         width: 32px;
                     }}
+                    .divider {{
+                        border: 0;
+                        border-top: 4px solid #ff806b;
+                    }}
+                    p, h1, h2, h3, h4, h5, h6 {{
+                        color: #ff806b;
+                    }}
+                    .img-hero {{
+                        width: 100%;
+                        height: auto;
+                    }}
+                    .center {{
+                        text-align: center;
+                    }}
                 </style>
             </head>
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.svg" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
                     </div>
-                    <div class="content">
-                        <p><strong>Please click the link to reset your password <br/></strong> {reset_link}</p>
+                    <hr class="divider"/>
+                    <div class="content center">
+                        <p><strong>Please click the link to reset your password <br/></strong> <a class="button" href={reset_link}>Password Reset<a/></p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.svg" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
                         <p>&copy; 2024 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
             </body>
             </html>
-             """
+            """
         msg.attach(MIMEText(body, 'html'))
 
         # Send email

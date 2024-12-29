@@ -303,30 +303,6 @@ def missing_token_callback(error):
         'message': 'No token provided. Please log in to continue.'
     }), 401
 
-# MJML Backend
-@app.route('/api/preview-email', methods=['POST'])
-def preview_email():
-    data = request.json
-    mjml_template = data.get('mjmlTemplate', '')
-
-    try:
-        # Run MJML CLI to compile MJML to HTML
-        result = subprocess.run(
-            ['mjml', '--stdin'],
-            input=mjml_template.encode(),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-
-        if result.returncode != 0:
-            return jsonify({'error': result.stderr.decode()}), 400
-
-        compiled_html = result.stdout.decode()
-        return compiled_html
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 # User Portal
 @app.route('/api/', methods=['GET'])
 def homepage():
@@ -2084,6 +2060,137 @@ def contact():
     if "error" in result:
         return jsonify({"error": result["error"]}), 500
     return jsonify({"message": result["message"]}), 200
+
+# MJML Backend
+@app.route('/api/preview-email', methods=['POST'])
+def preview_email():
+    data = request.json
+    mjml_template = data.get('mjmlTemplate', '')
+
+    try:
+        # Run MJML CLI to compile MJML to HTML
+        result = subprocess.run(
+            ['mjml', '--stdin'],
+            input=mjml_template.encode(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+
+        if result.returncode != 0:
+            return jsonify({'error': result.stderr.decode()}), 400
+
+        compiled_html = result.stdout.decode()
+        return compiled_html
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/send-mjml-email', methods=['POST'])
+def send_mjml_email():
+    data = request.json
+    mjml_template = data.get('mjmlTemplate', '')
+    subject = data.get('subject', '')
+    email_address = data.get('emailAddress', '')
+
+    try:
+        # Run MJML CLI to compile MJML to HTML
+        result = subprocess.run(
+            ['mjml', '--stdin'],
+            input=mjml_template.encode(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+
+        if result.returncode != 0:
+            return jsonify({'error': result.stderr.decode()}), 400
+
+        compiled_html = result.stdout.decode()
+
+        try: 
+            sender_email = os.getenv('EMAIL_USER')
+            password = os.getenv('EMAIL_PASS')
+            recipient_email = email_address
+
+            msg = MIMEMultipart()
+            msg['From'] = sender_email
+            msg['To'] = recipient_email
+            msg['Subject'] = subject
+
+            body = compiled_html
+            msg.attach(MIMEText(body, 'html'))
+
+            server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+            # server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.starttls()
+            server.login(sender_email, password)
+            # server.login("wosewick@gmail.com", "A1@s10*77#6O06L3")
+            # print("SMTP Server is unreachable")
+
+            try:
+                server.sendmail(sender_email, recipient_email, msg.as_string())
+                # server.sendmail("wosewick@gmail.com", recipient_email, msg.as_string())
+                server.quit()
+                return {"message": "Email sent successfully!"}, 201 
+            except smtplib.SMTPException as e:
+                print("SMTP Error:", e)
+                return jsonify({"error": f"SMTP Error: {str(e)}"}), 500
+            except Exception as e:
+                print("General Error:", e)
+                return jsonify({"error": f"General Error: {str(e)}"}), 500
+
+            return {"message": "Email sent successfully!"}, 201 
+        
+        except Exception as e: 
+            print("Error occured:", str(e))
+            return jsonify({"error": str(e)}), 500
+
+    except Exception as e: 
+        print("Error occured:", str(e))
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/send-html-email', methods=['POST'])
+def send_html_email():
+    data = request.json
+    html_template = data.get('htmlTemplate', '')
+    subject = data.get('subject', '')
+    email_address = data.get('emailAddress', '')
+
+    try: 
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+        recipient_email = email_address
+
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = recipient_email
+        msg['Subject'] = subject
+
+        body = html_template
+        msg.attach(MIMEText(body, 'html'))
+
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        # server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        # server.login("wosewick@gmail.com", "A1@s10*77#6O06L3")
+        # print("SMTP Server is unreachable")
+
+        try:
+            server.sendmail(sender_email, recipient_email, msg.as_string())
+            # server.sendmail("wosewick@gmail.com", recipient_email, msg.as_string())
+            server.quit()
+            return {"message": "Email sent successfully!"}, 201 
+        except smtplib.SMTPException as e:
+            print("SMTP Error:", e)
+            return jsonify({"error": f"SMTP Error: {str(e)}"}), 500
+        except Exception as e:
+            print("General Error:", e)
+            return jsonify({"error": f"General Error: {str(e)}"}), 500
+    
+    except Exception as e: 
+        print("Error occured:", str(e))
+        return jsonify({"error": str(e)}), 500
+
     
 # Stripe
 stripe.api_key = os.getenv('STRIPE_PY_KEY')
