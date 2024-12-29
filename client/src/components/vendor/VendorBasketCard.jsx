@@ -74,7 +74,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
     
     useEffect(() => {
         if (savedBaskets.length > 0) {
-            console.log('Saved Baskets:', savedBaskets);
+            // console.log('Saved Baskets:', savedBaskets);
             const firstBasket = savedBaskets[0];
     
             setNumBaskets(savedBaskets.length);
@@ -127,7 +127,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                 const [year, month, day] = formattedMarketDate.split('-');
                 const combinedDateTime = new Date(`${year}-${month}-${day}T${hour}:${minute}:00`);
     
-                console.log('Combined DateTime:', combinedDateTime);
+                // console.log('Combined DateTime:', combinedDateTime);
     
                 if (isNaN(combinedDateTime.getTime())) {
                     console.error('Invalid Date format for Pickup Start:', `${year}-${month}-${day}T${hour}:${minute}:00`);
@@ -177,10 +177,10 @@ function VendorBasketCard({ vendorId, marketDay }) {
     };
      
     const handleDecrement = () => {
-        const soldBasketsCount = savedBaskets.filter(basket => basket.is_sold).length;
-        setPrevNumBaskets(numBaskets);
-        // setNumBaskets((prevNum) => (Number(prevNum) > soldBasketsCount ? Number(prevNum) - 1 : Number(prevNum)));
-        setNumBaskets((prevNum) => Math.max(prevNum - 1, soldBasketsCount));
+        setNumBaskets(prevNum => {
+            const newNum = prevNum > 0 ? prevNum - 1 : prevNum;
+            return newNum;
+        });
     };
 
     useEffect(() => {
@@ -235,6 +235,8 @@ function VendorBasketCard({ vendorId, marketDay }) {
         if (parsedNumBaskets > 0 && vendorId && marketDay && marketDay.id && !isNaN(parsedPrice) && parsedPrice > 0) {
             const promises = [];
             const additionalBaskets = parsedNumBaskets - prevNumBaskets;
+
+            const basketsToDelete = savedBaskets.filter(basket => basket.shouldDelete);
     
             if (additionalBaskets > 0) {
                 for (let i = 0; i < additionalBaskets; i++) {
@@ -258,43 +260,67 @@ function VendorBasketCard({ vendorId, marketDay }) {
                 }
             } 
             else if (additionalBaskets < 0) {
-                const basketsToDelete = savedBaskets.slice(0, Math.abs(additionalBaskets));
-                const unsoldBasketsToDelete = basketsToDelete.filter(basket => !basket.is_sold);
+                const numberOfBasketsToDelete = Math.abs(additionalBaskets);
+                const unsoldBaskets = savedBaskets.filter(basket => !basket.is_sold);
     
-                if (unsoldBasketsToDelete.length < Math.abs(additionalBaskets)) {
-                    setErrorMessage('You cannot delete sold baskets.');
+                if (unsoldBaskets.length < numberOfBasketsToDelete) {
+                    console.error(`Not enough unsold baskets available for deletion. Expected to delete ${numberOfBasketsToDelete}, but only found ${unsoldBaskets.length}.`);
+                    setErrorMessage('Not enough unsold baskets available for deletion.');
                     return;
                 }
     
-                for (const basket of unsoldBasketsToDelete) {
-                    promises.push(fetch(`http://127.0.0.1:5555/api/baskets/${basket.id}`, {
+                const availableBasketsToDelete = unsoldBaskets.slice(0, numberOfBasketsToDelete);
+                const basketIdsToDelete = availableBasketsToDelete.map(basket => basket.id);
+    
+                try {
+                    const response = await fetch('http://127.0.0.1:5555/api/baskets', {
                         method: 'DELETE',
-                    }));
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ basket_ids: basketIdsToDelete }),
+                    });
+    
+                    if (response.ok) {
+                        console.log('Baskets successfully deleted.');
+    
+                        const updatedBaskets = savedBaskets.filter(basket => !basketIdsToDelete.includes(basket.id));
+                        setSavedBaskets(updatedBaskets); 
+    
+                        setPrevNumBaskets(numBaskets);
+                        setIsEditing(false);
+                        setIsSaved(true);
+                        setErrorMessage('');
+                    } else {
+                        console.error('Failed to delete some baskets.');
+                        setErrorMessage('Failed to delete some baskets. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error during deletion process:', error);
+                    setErrorMessage('Failed to delete baskets. Please try again.');
                 }
             }
     
+            await Promise.all(promises);
+
             try {
-                const responses = await Promise.all(promises);
-                for (const response of responses) {
-                    if (!response.ok) {
-                        throw new Error(`Error creating/deleting basket: ${response.statusText}`);
-                    }
-                    await response.json();
-                }
-                setPrevNumBaskets(numBaskets);
-                setIsEditing(false);
-                setIsSaved(true);
-                setErrorMessage('');
+                const fetchResponse = await fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.id}&sale_date=${formattedSaleDate}`);
+                const updatedBaskets = await fetchResponse.json();
+                setSavedBaskets(updatedBaskets);
             } catch (error) {
-                console.error('Error creating or deleting baskets:', error);
-                setErrorMessage('Failed to update baskets. Please try again.');
+                console.error('Error fetching updated baskets:', error);
+                setErrorMessage('An error occurred while fetching updated baskets.');
             }
+    
+            setPrevNumBaskets(numBaskets);
+            setIsEditing(false);
+            setIsSaved(true);
+            setErrorMessage('');
         } else {
-            console.error('Invalid data or missing vendor/market ID');
             setErrorMessage('Please enter valid data for all fields.');
         }
     };
-
+    
     const editSavedBaskets = () => {
         if (!isEditing) {
             setTempSavedBaskets({
@@ -332,17 +358,23 @@ function VendorBasketCard({ vendorId, marketDay }) {
                     `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.id}&sale_date=${formattedSaleDate}`,
                     {
                         method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            baskets: unsoldBaskets.map(basket => basket.id),
+                            basket_ids: unsoldBaskets.map(basket => basket.id),
                         }),
                     }
                 );
     
-                if (response.ok) {
-                    console.log('Unsold baskets deleted successfully');
+                if (!response.ok) {
+                    const errorBody = await response.json();
+                    console.error('Failed to delete baskets:', errorBody);
+                    setErrorMessage(`Failed to delete baskets: ${errorBody.error || response.statusText}`);
+                    return;
+                }
+    
+                const responseBody = await response.json().catch(() => null);
+                if (responseBody) {
+                    console.log('Unsold baskets deleted successfully:', responseBody);
                     setSavedBaskets(savedBaskets.filter(basket => basket.is_sold));
                     setIsSaved(false);
                     setIsEditing(true);
@@ -352,8 +384,8 @@ function VendorBasketCard({ vendorId, marketDay }) {
                     setStartTime('');
                     setEndTime('');
                 } else {
-                    console.error('Failed to delete baskets:', response.statusText);
-                    setErrorMessage('Failed to delete baskets. Please try again.');
+                    console.error('Unexpected response format');
+                    setErrorMessage('Unexpected response from the server.');
                 }
             } catch (error) {
                 console.error('Error deleting baskets:', error);
@@ -364,7 +396,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
             setErrorMessage('Missing vendor ID, market day ID, or sale date.');
         }
     };
-
+ 
     useEffect(() => {
         if (marketDay?.date) {
             const now = new Date();
@@ -415,12 +447,14 @@ function VendorBasketCard({ vendorId, marketDay }) {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Estimated Value:</td>
+                                    <td>Basket Value:</td>
                                     <td className='text-center'>${basketValue}</td>
                                 </tr>
                                 <tr>
-                                    <td>Price:</td>
+                                    <td>Basket Price:</td>
                                     <td className='text-center'>${price}</td>
+                                </tr>
+                                <tr className='row-blank'>
                                 </tr>
                                 <tr>
                                     <td>Pick-Up Start:</td>
@@ -443,17 +477,13 @@ function VendorBasketCard({ vendorId, marketDay }) {
                         <div className='text-center'>
                             {isEditing ? (
                                 <>
-                                    <button onClick={handleSave} className={`btn-basket-save ${isSaved ? 'Saved' : ''}`}>
-                                        Save
-                                    </button>
+                                    <button onClick={handleSave} className="btn-basket-save"> Save </button>
                                     <button onClick={cancelBasketEdit} className="btn-basket-save">Cancel</button>
                                 </>
                             ) : (
                                 <>
-                                    <button onClick={editSavedBaskets} className="btn-basket-save">
-                                        Add Baskets
-                                    </button>
-                                    <button onClick={handleDelete} className="btn-basket-save">Delete All Baskets</button>
+                                    <button onClick={editSavedBaskets} className="btn-basket-save"> Edit </button>
+                                    <button onClick={handleDelete} className="btn-basket-save"> Delete Unsold </button>
                                 </>
                             )}
                         </div>
@@ -475,7 +505,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                         </div>
                         <br></br>
                         <div className='form-baskets-small'>
-                            <label className='margin-t-16 margin-b-8'>Pick Up Start:</label>
+                            <label className='margin-t-16 margin-b-8'>Pick-Up Start:</label>
                             <div className='flex-start'>
                                 <input placeholder="HH:MM" name="pickup_start" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
                                 <select name="amPm" value={startAmPm} className='am-pm' onChange={(e) => setStartAmPm(e.target.value)} >
@@ -485,7 +515,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                             </div>
                         </div>
                         <div className='form-baskets-small'>
-                            <label className='margin-t-16 margin-b-8'>Pick Up End:</label>
+                            <label className='margin-t-16 margin-b-8'>Pick-Up End:</label>
                             <div className='flex-start'>
                                 <input placeholder="HH:MM" name="pickup_end" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
                                 <select name="amPm" value={endAmPm} className='am-pm' onChange={(e) => setEndAmPm(e.target.value)} >
@@ -495,9 +525,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                             </div>
                         </div>
                     <div className='text-center'>
-                            <button onClick={handleSave} className={`btn-basket-save ${isSaved ? 'saved' : ''}`} >
-                                {isSaved ? 'Saved' : 'Save'}
-                            </button>
+                        <button onClick={handleSave} className="btn-basket-save"> Save </button>
                     </div>
                     </>
                 ) : null}
