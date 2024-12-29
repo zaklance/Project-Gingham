@@ -1708,29 +1708,37 @@ def handle_baskets():
         vendor_id = request.args.get('vendor_id', type=int)
         market_day_id = request.args.get('market_day_id', type=int)
         sale_date = request.args.get('sale_date', type=str)
+        
+        basket_ids = request.get_json().get('basket_ids', [])
+        
+        if not basket_ids:
+            return jsonify({"error": "No basket IDs provided"}), 400
 
-        if not vendor_id or not market_day_id or not sale_date:
-            return jsonify({"error": "Missing query parameters"}), 400
+        try:
+            query = Basket.query.filter(Basket.id.in_(basket_ids))
 
-    try:
-        from datetime import datetime
-        sale_date = datetime.strptime(sale_date, '%Y-%m-%d').date()
+            if vendor_id:
+                query = query.filter_by(vendor_id=vendor_id)
+            if market_day_id:
+                query = query.filter_by(market_day_id=market_day_id)
+            if sale_date:
+                try:
+                    from datetime import datetime
+                    sale_date_obj = datetime.strptime(sale_date, '%Y-%m-%d').date()
+                    query = query.filter_by(sale_date=sale_date_obj)
+                except ValueError:
+                    return jsonify({'error': 'Invalid sale_date format. Expected format: YYYY-MM-DD'}), 400
 
-        deleted_count = Basket.query.filter(
-            Basket.vendor_id == vendor_id,
-            Basket.market_day_id == market_day_id,
-            Basket.sale_date == sale_date
-        ).delete()
+            deleted_count = query.delete(synchronize_session=False)
+            db.session.commit()
 
-        db.session.commit()
-
-        if deleted_count > 0:
-            return jsonify({"message": "Baskets deleted successfully"}), 200
-        else:
-            return jsonify({"message": "No baskets found matching criteria"}), 404
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+            if deleted_count > 0:
+                return jsonify({"message": f"{deleted_count} baskets deleted successfully"}), 200
+            else:
+                return jsonify({"message": "No baskets found with the provided IDs"}), 404
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": str(e)}), 500
         
 @app.route('/api/baskets/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def handle_basket_by_id(id):
@@ -1767,7 +1775,7 @@ def handle_basket_by_id(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route('/api/todays-baskets', methods=['GET', 'PATCH'])
+@app.route('/api/todays-baskets', methods=['GET'])
 def handle_todays_baskets():
     try:
         if request.method == 'GET':
@@ -1794,57 +1802,24 @@ def handle_todays_baskets():
             if not baskets:
                 return jsonify({'message': 'No baskets found for today'}), 404
 
-            return jsonify([basket.to_dict() for basket in baskets]), 200
-    
-        elif request.method == 'PATCH':
-            data = request.get_json()
-            app.logger.debug(f'Received data for updating today\'s basket: {data}')
-            basket_id = data.get('id')
-
-            if not basket_id: 
-                return jsonify({'error': 'Basket ID is required for updating'}), 400
-            
-            basket = Basket.query.filter_by(id=basket_id).first()
-            if not basket:
-                return jsonify({'error': 'Basket not found'}), 404
-
-            try:
-                if 'vendor_id' in data:
-                    basket.vendor_id = data['vendor_id']
-                if 'user_id' in data:
-                    basket.user_id = data['user_id']
-                if 'market_day_id' in data:
-                    basket.market_day_id = data['market_day_id']
-                if 'sale_date' in data:
-                    basket.sale_date = datetime.strptime(data['sale_date'], '%Y-%m-%d').date()
-                if 'pickup_start' in data:
-                    basket.pickup_start = datetime.strptime(data['pickup_start'], '%I:%M %p').time()
-                if 'pickup_end' in data:
-                    basket.pickup_end = datetime.strptime(data['pickup_end'], '%I:%M %p').time()
-                if 'is_sold' in data:
-                    basket.is_sold = data['is_sold']
-                if 'is_grabbed' in data:
-                    basket.is_grabbed = data['is_grabbed']
-                if 'price' in data:
-                    basket.price = data['price']
-                if 'basket_value' in data:
-                    basket.basket_value = data['basket_value']
-
-                db.session.commit()
-                return jsonify(basket.to_dict()), 200
-
-            except Exception as e:
-                db.session.rollback()
-                app.logger.error(f'Error updating today\'s basket: {e}')
-                return jsonify({'error': f'An error occurred: {str(e)}'}), 500
-
-    except ValueError as ve:
-        app.logger.error(f"Value error in fetching today's baskets: {ve}")
-        return jsonify({'error': f'Value error: {str(ve)}'}), 400
-    
+            return jsonify([
+                {
+                    'id': basket.id,
+                    'vendor_id': basket.vendor_id,
+                    'market_day_id': basket.market_day_id,
+                    'market_name': basket.market_day.markets.name,
+                    'sale_date': basket.sale_date.strftime('%Y-%m-%d'),
+                    'pickup_start': basket.pickup_start.strftime('%H:%M') if basket.pickup_start else None,
+                    'pickup_end': basket.pickup_end.strftime('%H:%M') if basket.pickup_end else None,
+                    'price': basket.price,
+                    'basket_value': basket.basket_value,
+                    'is_sold': basket.is_sold,
+                    'is_grabbed': basket.is_grabbed
+                } for basket in baskets
+            ]), 200
     except Exception as e:
-        app.logger.error(f"Error fetching today's baskets: {e}")
-        return jsonify({'error': f'An error occurred: {str(e)}'}), 500
+        return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api/baskets/user-sales-history', methods=['GET'])
 @jwt_required()
