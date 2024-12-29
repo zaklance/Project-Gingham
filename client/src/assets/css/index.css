@@ -45,7 +45,6 @@ html {
   height: 100%;
 }
 
-
 /* Basic typography */
 body {
   margin: 0;
@@ -1654,6 +1653,11 @@ select:hover {
   margin-bottom: -4px;
 }
 
+#htmlinput {
+  width: 600px;
+  height: 300px;
+}
+
 .search-bar {
   padding: 4px;
   width: 360px;
@@ -1809,6 +1813,21 @@ select:hover {
   background-repeat: no-repeat;
   background-position: right 50% top 46%;
   background-size: 1.26rem auto;
+}
+
+.img-email {
+  background-image: url('../images/email-unread-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 46%;
+  background-size: 1.2rem auto;
+  /* font-size: 1.5em; */
+}
+
+.img-email:hover {
+  background-image: url('../images/icons8-email-yellow.gif');
+  background-repeat: no-repeat;
+  background-position: right 50% top 40%;
+  background-size: 1.2rem auto;
 }
 
 .img-hot {

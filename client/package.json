@@ -21,6 +21,7 @@
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "mapkit-react": "^1.15.2",
+    "mjml": "^4.15.3",
     "object-hash": "^3.0.0",
     "qrcode.react": "^4.2.0",
     "react": "^18.3.1",

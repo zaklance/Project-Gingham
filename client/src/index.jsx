@@ -47,6 +47,7 @@ import AdminMarkets from './components/admin/AdminMarkets.jsx';
 import AdminVendors from './components/admin/AdminVendors.jsx';
 import AdminUsers from './components/admin/AdminUsers.jsx';
 import AdminHelp from './components/admin/AdminHelp.jsx';
+import AdminEmail from './components/admin/AdminEmail.jsx';
 import AdminResetRequest from './components/admin/AdminResetRequest.jsx';
 import AdminPasswordReset from './components/admin/AdminPasswordReset.jsx';
 
@@ -272,6 +273,7 @@ const router = createBrowserRouter([
                     { path: "vendors", element: <AdminAuthRoute><AdminVendors /></AdminAuthRoute>},
                     { path: "users", element: <AdminAuthRoute><AdminUsers /></AdminAuthRoute>},
                     { path: "help", element: <AdminAuthRoute><AdminHelp /></AdminAuthRoute>},
+                    { path: "email", element: <AdminAuthRoute><AdminEmail /></AdminAuthRoute>},
                     { path: "profile/:id",element:<AdminRoute><AdminProfile /></AdminRoute>},
                     { path: "logout", element: <AdminLogout /> },
                     { path: "reset-request", element: <AdminResetRequest /> },
