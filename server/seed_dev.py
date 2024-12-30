@@ -451,342 +451,399 @@ def run():
     db.session.commit()
 
     market_day_list = [
+        # 175th Street Greenmarket
         MarketDay(
             market_id=1,
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
             day_of_week=4,
         ),
+        # 57th Street Greenmarket
         MarketDay(
             market_id=2,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
             day_of_week=6,
         ),
+        # 79th Street Greenmarket
         MarketDay(
             market_id=3,
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
             day_of_week=0,
         ),
+        # 82nd Street Greenmarket
         MarketDay(
             market_id=4,
             hour_start=time(9, 0, 0),
             hour_end=time(14, 30, 0),
             day_of_week=6,
         ),
+        # 94th Street Greenmarket
         MarketDay(
             market_id=5,
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
             day_of_week=0
         ),
+        # 97th Street Greenmarket
         MarketDay(
             market_id=6,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
             day_of_week=5,
         ),
+        # Abingdon Square Greenmarket
         MarketDay(
             market_id=7,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
             day_of_week=6,
         ),
+        # Astor Place Greenmarket
         MarketDay(
             market_id=8,
             hour_start=time(8, 0, 0),
             hour_end=time(17, 0, 0),
             day_of_week=2,
         ),
+        # Bowling Green Greenmarket
         MarketDay(
             market_id=9,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
             day_of_week=2,
         ),
+        # Bowling Green Greenmarket
         MarketDay(
             market_id=9,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
             day_of_week=4,
         ),
+        # Bro Sis Green Youth Market
         MarketDay(
             market_id=10,
             hour_start=time(10, 30, 0),
             hour_end=time(18, 0, 0),
             day_of_week=3,
         ),
+        # Chelsea’s Down to Earth Farmers Market
         MarketDay(
             market_id=11,
             hour_start=time(9, 0, 0),
             hour_end=time(14, 0, 0),
             day_of_week=6,
         ),
+        # Children’s Aid Go!Healthy Food Box + Farmstand - Milbank Center
         MarketDay(
             market_id=12,
             hour_start=time(14, 0, 0),
             hour_end=time(16, 30, 0),
             day_of_week=3,
         ),
+        # Columbia Greenmarket
         MarketDay(
             market_id=13,
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
             day_of_week=4,
         ),
+        # Columbia Greenmarket
         MarketDay(
             market_id=13,
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
             day_of_week=0,
         ),
+        # Dag Hammarskjold Greenmarket
         MarketDay(
             market_id=14,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
             day_of_week=3,
         ),
+        # Fort Washington Greenmarket
         MarketDay(
             market_id=15,
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
             day_of_week=2,
         ),
+        # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
             day_of_week=1,
         ),
+        # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
             day_of_week=2,
         ),
+        # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
             day_of_week=3,
         ),
+        # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
             day_of_week=4,
         ),
+        # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
             day_of_week=5,
         ),
+        # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
             day_of_week=6,
         ),
+        # Gouverneur Health Farmstand
         MarketDay(
             market_id=17,
             hour_start=time(9, 0, 0),
             hour_end=time(14, 0, 0),
             day_of_week=4,
         ),
+        # Grass Roots Farmers Market
         MarketDay(
             market_id=18,
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
             day_of_week=2,
         ),
+        # Grass Roots Farmers Market
         MarketDay(
             market_id=18,
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
             day_of_week=6,
         ),
+        # Greenmarket at the Oculus
         MarketDay(
             market_id=19,
             hour_start=time(8, 0, 0),
             hour_end=time(17, 0, 0),
             day_of_week=2,
         ),
+        # Harlem Meer Farmstand
         MarketDay(
             market_id=20,
             hour_start=time(10, 00, 0),
             hour_end=time(14, 0, 0),
             day_of_week=6,
         ),
+        # Harvest Home East Harlem Farmers Market
         MarketDay(
             market_id=21,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
             day_of_week=4,
         ),
+        # Harvest Home Harlem Hospital Farmers Market
         MarketDay(
             market_id=22,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
             day_of_week=5,
         ),
+        # Harvest Home Lenox Avenue Farm Stand
         MarketDay(
             market_id=23,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
             day_of_week=6,
         ),
+        # Harvest Home Metropolitan Hospital Farmers Market
         MarketDay(
             market_id=24,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
             day_of_week=5,
         ),
+        # Inwood Park Greenmarket
         MarketDay(
             market_id=25,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
             day_of_week=6,
         ),
+        # Lower East Side Farmstand
         MarketDay(
             market_id=26,
             hour_start=time(8, 30, 0),
             hour_end=time(15, 0, 0),
             day_of_week=4,
         ),
+        # Morningside Park’s Down to Earth Farmers Market
         MarketDay(
             market_id=27,
             hour_start=time(9, 0, 0),
             hour_end=time(14, 0, 0),
             day_of_week=6,
         ),
+        # Mount Sinai Greenmarket
         MarketDay(
             market_id=28,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
             day_of_week=3,
         ),
+        # NYP Youth Market - Audoban
         MarketDay(
             market_id=29,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
             day_of_week=4,
         ),
+        # NYP Youth Market - Broadway
         MarketDay(
             market_id=30,
             hour_start=time(9, 0, 0),
             hour_end=time(15, 0, 0),
             day_of_week=3,
         ),
+        # Project EATS Farm Stand at Essex Crossing
         MarketDay(
             market_id=31,
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
             day_of_week=3,
         ),
+        # Project EATS Farm Stand at Essex Crossing
         MarketDay(
             market_id=31,
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
             day_of_week=4,
         ),
+        # Project EATS Farm Stand at Essex Crossing
         MarketDay(
             market_id=31,
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
             day_of_week=5,
         ),
+        # Project EATS Farm Stand at Essex Crossing
         MarketDay(
             market_id=31,
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
             day_of_week=6,
         ),
+        # Project EATS Farm Stand at Essex Crossing
         MarketDay(
             market_id=31,
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
             day_of_week=0,
         ),
+        # P.S. 11 Farm Market
         MarketDay(
             market_id=32,
             hour_start=time(8, 0, 0),
             hour_end=time(10, 00, 0),
             day_of_week=3,
         ),
+        # P.S. 57 Farmstand
         MarketDay(
             market_id=33,
             hour_start=time(9, 30, 0),
             hour_end=time(15, 0, 0),
             day_of_week=3,
         ),
+        # Stuyvesant Town Greenmarket
         MarketDay(
             market_id=34,
             hour_start=time(9, 30, 0),
             hour_end=time(16, 0, 0),
             day_of_week=0,
         ),
+        # Tompkins Square Greenmarket
         MarketDay(
             market_id=35,
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
             day_of_week=0,
         ),
+        # Tribeca Greenmarket
         MarketDay(
             market_id=36,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
             day_of_week=3,
         ),
+        # Tribeca Greenmarket
         MarketDay(
             market_id=36,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
             day_of_week=6,
         ),
+        # Tucker Square Greenmarket
         MarketDay(
             market_id=37,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
             day_of_week=4,
         ),
+        # Tucker Square Greenmarket
         MarketDay(
             market_id=37,
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
             day_of_week=6,
         ),
+        # Two Bridges Youth Market
         MarketDay(
             market_id=38,
             hour_start=time(10, 30, 0),
             hour_end=time(15, 30, 0),
             day_of_week=0,
         ),
+        # Union Square Greenmarket
         MarketDay(
             market_id=39,
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
             day_of_week=1,
         ),
+        # Union Square Greenmarket
         MarketDay(
             market_id=39,
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
             day_of_week=3,
         ),
+        # Union Square Greenmarket
         MarketDay(
             market_id=39,
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
             day_of_week=5,
         ),
+        # Union Square Greenmarket
         MarketDay(
             market_id=39,
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
             day_of_week=6,
         ),
+        # Uptown Good Food Farm Stand
         MarketDay(
             market_id=40,
             hour_start=time(16, 0, 0),

@@ -25,7 +25,7 @@ function AdminMarkets () {
     return(
         <div>
             <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
-                <h2>Markets Management:</h2>
+                <h1>Markets Management:</h1>
                 <div className='tabs margin-t-20'>                
                     <Link to="#" onClick={() => setActiveTab('edit')} className={activeTab === 'edit' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                         Edit

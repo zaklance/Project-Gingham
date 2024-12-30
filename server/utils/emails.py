@@ -54,7 +54,7 @@ def send_contact_email(name, email, subject, message):
                         display: inline-block;
                         background-color: #ff806b;
                         color: #ffffff !important;
-                        text-decoration: none;
+                        text-decoration: none !important;
                         padding: 8px 12px;
                         border-radius: 5px;
                         margin-top: 10px;
@@ -181,7 +181,7 @@ def send_user_password_reset_email(email):
                         display: inline-block;
                         background-color: #ff806b;
                         color: #ffffff !important;
-                        text-decoration: none;
+                        text-decoration: none !important;
                         padding: 8px 12px;
                         border-radius: 5px;
                         margin-top: 10px;
@@ -301,7 +301,7 @@ def send_vendor_password_reset_email(email):
                         display: inline-block;
                         background-color: #ff806b;
                         color: #ffffff !important;
-                        text-decoration: none;
+                        text-decoration: none !important;
                         padding: 8px 12px;
                         border-radius: 5px;
                         margin-top: 10px;
@@ -421,7 +421,7 @@ def send_admin_password_reset_email(email):
                         display: inline-block;
                         background-color: #ff806b;
                         color: #ffffff !important;
-                        text-decoration: none;
+                        text-decoration: none !important;
                         padding: 8px 12px;
                         border-radius: 5px;
                         margin-top: 10px;

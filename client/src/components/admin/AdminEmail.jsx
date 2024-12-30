@@ -38,7 +38,7 @@ const AdminEmail = () => {
                         display: inline-block;
                         background-color: #ff806b;
                         color: #ffffff !important;
-                        text-decoration: none;
+                        text-decoration: none !important;
                         padding: 8px 12px;
                         border-radius: 5px;
                         margin-top: 10px;
