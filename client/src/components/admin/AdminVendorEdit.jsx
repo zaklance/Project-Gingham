@@ -297,7 +297,7 @@ function AdminVendorEdit({ vendors }) {
                                         <img
                                             className='img-market'
                                             style={{ maxWidth: '100%', height: 'auto' }}
-                                            src={vendorData.image ? `/vendor-images/${vendorData.image}` : `/vendor-images/_default-images/${vendorData.image_default}`}
+                                            src={tempVendorData.image ? `/vendor-images/${tempVendorData.image}` : `/vendor-images/_default-images/${tempVendorData.image_default}`}
                                             alt="Vendor Image"
                                         />
                                     </div>
