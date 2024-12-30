@@ -1082,6 +1082,8 @@ def all_vendors():
             vendor.bio = data['bio']
         if 'image' in data: 
             vendor.image = data['image']
+        if 'image_default' in data: 
+            vendor.image_default = data['image_default']
 
         try:
             db.session.commit()
@@ -1117,6 +1119,8 @@ def vendor_by_id(id):
                 vendor.bio = data['bio']
             if 'image' in data:
                 vendor.image = data['image']
+            if 'image_default' in data: 
+                vendor.image_default = data['image_default']
 
             db.session.commit()
             return jsonify(vendor.to_dict()), 200

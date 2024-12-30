@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { states } from '../../utils/common';
+import { states, vendors_default } from '../../utils/common';
 
 function AdminVendorEdit({ vendors }) {
     const [query, setQuery] = useState("");
@@ -105,7 +105,7 @@ function AdminVendorEdit({ vendors }) {
     
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/delete-image`, {
-                method: 'POST',
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('admin_jwt-token')}`,
@@ -113,6 +113,7 @@ function AdminVendorEdit({ vendors }) {
                 body: JSON.stringify({
                     filename: vendorData.image,
                     type: 'vendor',
+                    vendor_id: matchingVendorId
                 }),
             });
     
@@ -274,6 +275,21 @@ function AdminVendorEdit({ vendors }) {
                                     onChange={handleInputChange}
                                 />
                             </div>
+                            <div className="form-group">
+                                <label>Default Image:</label>
+                                <select className='select'
+                                    name="image_default"
+                                    value={tempVendorData ? tempVendorData.image_default : ''}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="">Select</option>
+                                    {vendors_default.map((item, index) => (
+                                        <option key={index} value={item}>
+                                            {item}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                             <div className='form-group'>
                                 <label>Vendor Image:</label>
                                 {vendorData ? (
@@ -281,7 +297,7 @@ function AdminVendorEdit({ vendors }) {
                                         <img
                                             className='img-market'
                                             style={{ maxWidth: '100%', height: 'auto' }}
-                                            src={`/vendor-images/${vendorData.image}`}
+                                            src={vendorData.image ? `/vendor-images/${vendorData.image}` : `/vendor-images/_default-images/${vendorData.image_default}`}
                                             alt="Vendor Image"
                                         />
                                     </div>
@@ -310,7 +326,7 @@ function AdminVendorEdit({ vendors }) {
                                     <tr>
                                         <td className='cell-title'>Image:</td>
                                         <td className='cell-text'>
-                                            {vendorData ? <img style={{ maxWidth: '100%', height: 'auto' }} src={`/vendor-images/${vendorData.image}`} alt="Vendor Image" /> : ''}
+                                            {vendorData ? <img style={{ maxWidth: '100%', height: 'auto' }} src={vendorData.image ? `/vendor-images/${vendorData.image}` : `/vendor-images/_default-images/${vendorData.image_default}`} alt="Vendor Image" /> : ''}
                                         </td>
                                     </tr>
                                     <tr>
