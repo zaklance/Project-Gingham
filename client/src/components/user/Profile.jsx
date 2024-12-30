@@ -379,7 +379,7 @@ function Profile({ marketData }) {
                         </div>
                         <div className='form-group'>
                             <label>Avatar:</label>
-                            {profileData?.avatar ? (
+                            {profileData ? (
                                 <>
                                     <img
                                         className='img-avatar-profile'

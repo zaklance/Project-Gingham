@@ -2064,9 +2064,9 @@ select:hover {
   top: auto;
   left: 20vw;
   width: 90%;
-  max-width: 600px;
+  max-width: 580px;
   /* height: fit-content; */
-  background-color: #d8f4fe;
+  background-color: #fbf7eb;
   padding: 0px 0px 0px 0px;
   margin-top: 40px;
   z-index: 1002;

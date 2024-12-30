@@ -161,7 +161,7 @@ function Login({ handlePopup }) {
                             />
                         </div>
                         <div className="form-group form-login">
-                            <label>Confirm Email: </label>
+                            <label></label>
                             <input
                                 type="email"
                                 value={signupConfirmEmail}
@@ -181,7 +181,7 @@ function Login({ handlePopup }) {
                             />
                         </div>
                         <div className="form-group form-login">
-                            <label>Confirm Password: </label>
+                            <label></label>
                             <input
                                 type="password"
                                 value={signupConfirmPassword}

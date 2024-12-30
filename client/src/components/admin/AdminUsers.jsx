@@ -344,7 +344,7 @@ const AdminUsers = () => {
                                 <label>Avatar:</label>
                                     <img
                                         className='img-avatar-profile'
-                                        src={userData.avatar ? `/user-images/${userData.avatar}` : `/user-images/_default-images/${userData.avatar_default}`}
+                                        src={tempUserData.avatar ? `/user-images/${tempUserData.avatar}` : `/user-images/_default-images/${tempUserData.avatar_default}`}
                                         alt="Avatar"
                                         style={{ maxWidth: '100%', height: 'auto' }}
                                     />
@@ -367,7 +367,7 @@ const AdminUsers = () => {
                         </div>
                     ) : (
                         <>
-                            <div className='flex-space-evenly flex-gap-16 flex-start-align m-flex-wrap'>
+                            <div className='flex-start flex-gap-16 flex-start-align m-flex-wrap'>
                                 <div className='width-80'>
                                     <table className='table-profile'>
                                         <tbody>
