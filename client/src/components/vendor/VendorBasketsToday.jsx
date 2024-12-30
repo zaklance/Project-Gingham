@@ -9,7 +9,7 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
     const [endAmPm, setEndAmPm] = useState('PM');
     const [isEditing, setIsEditing] = useState({});
     const [basketCounts, setBasketCounts] = useState({});
-    const [numBaskets, setNumBaskets] = useState(0);
+    const [numBaskets, setNumBaskets] = useState(() => entry?.baskets?.length || 0);
     const [prevNumBaskets, setPrevNumBaskets] = useState(numBaskets);
     const [savedBaskets, setSavedBaskets] = useState([]);
     const [price, setPrice] = useState('');
@@ -20,267 +20,188 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
     useEffect(() => {
         if (vendorId) {
             console.log('Fetching today\'s baskets for vendor:', vendorId);
-        
+    
             const today = new Date();
-            const formattedDate = today.toLocaleDateString('en-CA', { 
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-            }).split('/').reverse().join('-');
-        
+            const formattedDate = today.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', }).split('/').reverse().join('-');
             console.log('Formatted date being sent:', formattedDate);
-        
+    
             const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             console.log('Browser timezone:', browserTimezone);
-        
-            fetch(`http://127.0.0.1:5555/api/todays-baskets?vendor_id=${vendorId}&date=${formattedDate}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Timezone': browserTimezone
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Fetched data for today\'s baskets:', data);
-                if (Array.isArray(data)) {
-                    const groupedData = data.reduce((acc, basket) => {
-                        const { market_day_id, market_name } = basket;
-        
-                        if (!acc[market_day_id]) {
-                            acc[market_day_id] = {
-                                marketId: market_day_id,
-                                marketName: market_name,
-                                baskets: []
-                            };
+    
+            async function fetchTodaysBaskets() {
+                try {
+                    const response = await fetch(
+                        `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&date=${formattedDate}`
+                    );
+    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('Fetched Data:', data);
+    
+                        if (Array.isArray(data)) {
+                            const todayBaskets = data.filter(basket => {
+                                const basketDate = new Date(basket.sale_date).toISOString().split('T')[0];
+                                return basketDate === formattedDate;
+                            });
+
+                            const groupedData = todayBaskets.reduce((acc, basket) => {
+                                const { market_day_id, market_name, pickup_start, pickup_end, price, basket_value } = basket;
+    
+                                if (!acc[market_day_id]) {
+                                    acc[market_day_id] = { marketId: market_day_id, marketName: market_name, baskets: [], };
+                                }
+                                acc[market_day_id].baskets.push({ ...basket, pickup_start, pickup_end, price, basket_value, });
+                                return acc;
+                            }, {});
+    
+                            const groupedBasketsArray = Object.values(groupedData);
+                            setTodayBaskets(groupedBasketsArray);
+
+                            const initialBasketCounts = {};
+                            groupedBasketsArray.forEach((entry) => {
+                                entry.baskets.forEach((basket) => {
+                                    initialBasketCounts[basket.id] = entry.baskets.length;
+                                });
+                            });
+                            setBasketCounts(initialBasketCounts);
+                            setNumBaskets(groupedBasketsArray[0]?.baskets.length || 0);
+                            setPrevNumBaskets(groupedBasketsArray[0]?.baskets.length || 0);
                         }
-                        acc[market_day_id].baskets.push(basket);
-                        return acc;
-                    }, {});
-        
-                    const groupedBasketsArray = Object.values(groupedData);
-                    setTodayBaskets(groupedBasketsArray);
-        
-                    const initialBasketCounts = {};
-                    groupedBasketsArray.forEach(entry => {
-                        entry.baskets.forEach(basket => {
-                            initialBasketCounts[basket.id] = entry.baskets.length;
-                        });
-                    });
-        
-                    setBasketCounts(initialBasketCounts);
-                } else {
-                    console.error('Unexpected data format:', data);
+                        
+                    } else {
+                        console.error('Failed to fetch baskets:', response.statusText);
+                        setErrorMessage('Failed to fetch today\'s baskets.');
+                    }
+                } catch (error) {
+                    console.error('Error fetching today\'s baskets:', error);
+                    setErrorMessage('An error occurred while fetching today\'s baskets.');
                 }
-            })
-            .catch(error => {
-                console.error('Error fetching today\'s baskets:', error);
-            });
-        } else {
-            console.log('Vendor ID is not available');
+            }    
+            fetchTodaysBaskets();
         }
     }, [vendorId]);
     
-    const toggleEditMode = (basketId, basketCount) => {
-        setIsEditing((prevState) => ({
-            ...prevState,
-            [basketId]: !prevState[basketId],
-        }));
-
-        if (!isEditing[basketId]) {
-            setTempSavedBaskets((prevState) => ({
-                ...prevState,
-                [basketId]: basketCount || 0,
-            }));
-        } else {
-            setBasketCounts((prevState) => ({
-                ...prevState,
-                [basketId]: tempSavedBaskets[basketId],
-            }));
-        }
+    const toggleEditMode = (basketId) => {
+        setIsEditing((prevState) => {
+            const newEditingState = { ...prevState, [basketId]: !prevState[basketId] };
+            if (!prevState[basketId]) {
+                const entry = todayBaskets.find(e => e.baskets && e.baskets[0] && e.baskets[0].id === basketId);
+                if (entry && entry.baskets) {
+                    setNumBaskets(entry.baskets.length);
+                    setTempSavedBaskets((prev) => ({
+                        ...prev,
+                        [basketId]: entry.baskets.length,
+                    }));
+                } else {
+                console.error('Entry or baskets not found for basketId:', basketId);
+                setNumBaskets(0);
+                }
+            }
+            return newEditingState;
+        });
     };
-    
-    const handleIncrement = (basketId) => {
-        const currentCount = basketCounts[basketId] || tempSavedBaskets[basketId] || 0;
-    
-        setBasketCounts((prevState) => ({
-            ...prevState,
-            [basketId]: currentCount + 1,
-        }));
+      
+    const handleIncrement = () => {
+        setNumBaskets((prevNum) => prevNum + 1);
     };
     
     const handleDecrement = (basketId, entry) => {
-        const totalAvailableBaskets = entry.baskets.length;
         const soldBaskets = entry.baskets.filter(basket => basket.is_sold).length;
-    
-        const currentCount = basketCounts[basketId] || tempSavedBaskets[basketId] || totalAvailableBaskets;
-    
-        if (currentCount > soldBaskets) {
-            setBasketCounts((prevState) => ({
-                ...prevState,
-                [basketId]: currentCount - 1,
-            }));
-        }
+        setNumBaskets(prevNum => {
+            const newNum = prevNum > soldBaskets ? prevNum - 1 : prevNum;
+            return newNum;
+        });
     };
-    
-    const handleSave = async () => {
-        const parsedNumBaskets = numBaskets;
-        const parsedPrice = parseFloat(price);
-        const soldBasketsCount = savedBaskets.filter(basket => basket.is_sold).length;
-    
-        if (parsedNumBaskets < soldBasketsCount) {
-            setErrorMessage(`You cannot reduce the number of baskets below the sold count (${soldBasketsCount}).`);
+      
+    const handleSave = async (basketId) => {
+        const entry = todayBaskets.find(e => e.baskets[0]?.id === basketId);
+        if (!entry) {
+            console.error('No entry found for basketId:', basketId);
+            setErrorMessage('Error: No entry found for this basket.');
             return;
         }
-    
-        if (!startTime || !endTime) {
-            console.error('Start time or end time is not set.');
-            setErrorMessage('Start time or end time is missing.');
+      
+        const formatTime = (time, amPm) => {
+            if (!time || typeof time !== 'string') {
+                console.error('Invalid time format:', time);
+                return null;
+            }
+            let [hours, minutes] = time.split(':').map(num => parseInt(num, 10));
+            if (isNaN(hours) || isNaN(minutes)) {
+                console.error('Invalid hour or minute:', hours, minutes);
+                return null;
+            }
+            if (amPm === 'PM' && hours !== 12) hours += 12;
+            if (amPm === 'AM' && hours === 12) hours = 0;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+        };
+      
+        const formattedPickupStart = formatTime(startTime, startAmPm);
+        const formattedPickupEnd = formatTime(endTime, endAmPm);
+      
+        if (!formattedPickupStart || !formattedPickupEnd) {
+            setErrorMessage('Invalid start or end time format.');
             return;
         }
-    
-        console.log("startTime:", startTime);
-        console.log("endTime:", endTime);
-    
-        const [startHour, startMinute] = startTime.split(':').map(num => parseInt(num, 10));
-        const [endHour, endMinute] = endTime.split(':').map(num => parseInt(num, 10));
-    
-        console.log("Parsed start hour:", startHour);
-        console.log("Parsed start minute:", startMinute);
-        console.log("Parsed end hour:", endHour);
-        console.log("Parsed end minute:", endMinute);
-    
-        if (isNaN(startHour) || isNaN(startMinute) || isNaN(endHour) || isNaN(endMinute)) {
-            console.error('Invalid hour or minute values for pickup start or end.');
-            setErrorMessage('Invalid time values for pickup start or end.');
-            return;
-        }
-    
-        const formattedStartHour = startAmPm === 'PM' && startHour !== 12
-            ? startHour + 12
-            : startAmPm === 'AM' && startHour === 12
-            ? 0
-            : startHour;
-        const formattedEndHour = endAmPm === 'PM' && endHour !== 12
-            ? endHour + 12
-            : startAmPm === 'AM' && endHour === 12
-            ? 0
-            : endHour;
-    
-        console.log("Formatted start hour:", formattedStartHour);
-        console.log("Formatted end hour:", formattedEndHour);
-    
-        const localDate = new Date(marketDay.date);
-        const formattedSaleDate = localDate.toISOString().split('T')[0];
-    
-        const startTimeDate = new Date();
-        startTimeDate.setHours(formattedStartHour, startMinute, 0, 0);
-    
-        const endTimeDate = new Date();
-        endTimeDate.setHours(formattedEndHour, endMinute, 0, 0);
-    
-        console.log("Final start time:", startTimeDate);
-        console.log("Final end time:", endTimeDate);
-    
-        const formattedPickupStart = `${startTimeDate.getHours().toString().padStart(2, '0')}:${startTimeDate.getMinutes().toString().padStart(2, '0')} ${startAmPm}`;
-        const formattedPickupEnd = `${endTimeDate.getHours().toString().padStart(2, '0')}:${endTimeDate.getMinutes().toString().padStart(2, '0')} ${endAmPm}`;
-    
-        console.log("Formatted pickup start time:", formattedPickupStart);
-        console.log("Formatted pickup end time:", formattedPickupEnd);
-    
-        if (parsedNumBaskets > 0 && vendorId && marketDay && marketDay.id && !isNaN(parsedPrice) && parsedPrice > 0) {
+      
+        const additionalBaskets = parsedNumBaskets - prevNumBaskets;
+      
+        if (additionalBaskets > 0) {
             const promises = [];
-            const additionalBaskets = parsedNumBaskets - prevNumBaskets;
-    
-            const basketsToDelete = savedBaskets.filter(basket => basket.shouldDelete);
-    
-            if (additionalBaskets > 0) {
-                for (let i = 0; i < additionalBaskets; i++) {
-                    promises.push(fetch('http://127.0.0.1:5555/api/baskets', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            vendor_id: vendorId,
-                            market_day_id: marketDay.id,
-                            sale_date: formattedSaleDate,
-                            pickup_start: formattedPickupStart,
-                            pickup_end: formattedPickupEnd,
-                            is_sold: false,
-                            is_grabbed: false,
-                            price: parsedPrice,
-                            basket_value: basketValue,
-                        }),
-                    }));
-                }
-            } 
-            else if (additionalBaskets < 0) {
-                const numberOfBasketsToDelete = Math.abs(additionalBaskets);
-                const unsoldBaskets = savedBaskets.filter(basket => !basket.is_sold);
-    
-                if (unsoldBaskets.length < numberOfBasketsToDelete) {
-                    console.error(`Not enough unsold baskets available for deletion. Expected to delete ${numberOfBasketsToDelete}, but only found ${unsoldBaskets.length}.`);
-                    setErrorMessage('Not enough unsold baskets available for deletion.');
-                    return;
-                }
-    
-                const availableBasketsToDelete = unsoldBaskets.slice(0, numberOfBasketsToDelete);
-                const basketIdsToDelete = availableBasketsToDelete.map(basket => basket.id);
-    
-                try {
-                    const response = await fetch('http://127.0.0.1:5555/api/baskets', {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ basket_ids: basketIdsToDelete }),
-                    });
-    
-                    if (response.ok) {
-                        console.log('Baskets successfully deleted.');
-    
-                        const updatedBaskets = savedBaskets.filter(basket => !basketIdsToDelete.includes(basket.id));
-                        setSavedBaskets(updatedBaskets); 
-    
-                        setPrevNumBaskets(numBaskets);
-                        setIsEditing(false);
-                        setIsSaved(true);
-                        setErrorMessage('');
-                    } else {
-                        console.error('Failed to delete some baskets.');
-                        setErrorMessage('Failed to delete some baskets. Please try again.');
-                    }
-                } catch (error) {
-                    console.error('Error during deletion process:', error);
-                    setErrorMessage('Failed to delete baskets. Please try again.');
-                }
+            for (let i = 0; i < additionalBaskets; i++) {
+                promises.push(fetch('http://127.0.0.1:5555/api/baskets', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    vendor_id: vendorId,
+                    market_day_id: entry.marketId,
+                    sale_date: formattedSaleDate,
+                    pickup_start: formattedPickupStart,
+                    pickup_end: formattedPickupEnd,
+                    is_sold: false,
+                    is_grabbed: false,
+                    price: parsedPrice,
+                    basket_value: entry.baskets[0]?.basket_value,
+                }),
+                }));
             }
-    
             await Promise.all(promises);
-    
-            try {
-                const fetchResponse = await fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.id}&sale_date=${formattedSaleDate}`);
-                const updatedBaskets = await fetchResponse.json();
-                setSavedBaskets(updatedBaskets);
-            } catch (error) {
-                console.error('Error fetching updated baskets:', error);
-                setErrorMessage('An error occurred while fetching updated baskets.');
+        } else if (additionalBaskets < 0) {
+            const numberOfBasketsToDelete = Math.abs(additionalBaskets);
+            const unsoldBaskets = entry.baskets.filter(basket => !basket.is_sold);
+            if (unsoldBaskets.length < numberOfBasketsToDelete) {
+                setErrorMessage('Not enough unsold baskets available for deletion.');
+                return;
             }
-    
-            setPrevNumBaskets(numBaskets);
-            setIsEditing(false);
-            setIsSaved(true);
-            setErrorMessage('');
-        } else {
-            setErrorMessage('Please enter valid data for all fields.');
+            const basketIdsToDelete = unsoldBaskets.slice(0, numberOfBasketsToDelete).map(basket => basket.id);
+            await fetch('http://127.0.0.1:5555/api/baskets', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ basket_ids: basketIdsToDelete }),
+            });
         }
-    };    
-
-    const cancelBasketEdit = (basketId) => {
-        setBasketCounts((prevState) => ({ ...prevState, [basketId]: tempSavedBaskets[basketId] || 0, }));
-        setIsEditing((prevState) => ({ ...prevState, [basketId]: false, }));
+      
+        const response = await fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${entry.marketId}&sale_date=${formattedSaleDate}`);
+        const updatedBaskets = await response.json();
+      
+        setTodayBaskets(prevBaskets => {
+          return prevBaskets.map(b => {
+            if (b.marketId === entry.marketId) { return { ...b, baskets: updatedBaskets }; }
+            return b;
+          });
+        });
+      
+        setPrevNumBaskets(parsedNumBaskets);
+        setIsEditing(prev => ({ ...prev, [basketId]: false }));
+        setErrorMessage('');
     };
+      
+    const cancelBasketEdit = (basketId) => {
+        setIsEditing((prevState) => ({ ...prevState, [basketId]: false }));
+        setNumBaskets(tempSavedBaskets[basketId] || entry.baskets.length);
+        setErrorMessage('');
+    };
+      
     
     return (
         <div>
@@ -302,28 +223,26 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
                                     <table>
                                         <tbody className="table-basket">
                                             <tr className="text-500">
-                                                <td>Total Baskets Available:</td>
+                                                <td>Total Baskets:</td>
                                                 <td className="text-center">
-                                                    {isEditing[entry.baskets[0]?.id] ? (
-                                                        <>
-                                                            {entry.baskets.length > 0 && entry.baskets[0]?.id ? (
-                                                                <>
-                                                                    <button onClick={() => handleDecrement(entry.baskets[0]?.id, entry)} className="btn btn-adjust btn-red">-</button>
-                                                                    <span>{basketCounts[entry.baskets[0]?.id] || entry.baskets.length}</span>
-                                                                    <button onClick={() => handleIncrement(entry.baskets[0]?.id)} className="btn btn-adjust btn-green">+</button>
-                                                                </>
-                                                            ) : (
-                                                                <span>No baskets available</span>
-                                                            )}
-                                                        </>
-                                                    ) : (
-                                                        entry.baskets.length
-                                                    )}
+                                                {isEditing[entry.baskets[0]?.id] ? (
+                                                    <>
+                                                        <button onClick={() => handleDecrement(entry.baskets[0]?.id, entry)} className="btn btn-adjust btn-red">-</button>
+                                                        <span>{numBaskets}</span>
+                                                        <button onClick={() => handleIncrement(entry.baskets[0]?.id)} className="btn btn-adjust btn-green">+</button>
+                                                    </>
+                                                ) : (
+                                                    entry.baskets.length
+                                                )}
                                                 </td>
                                             </tr>
                                             <tr className="text-500">
                                                 <td>Sold Baskets:</td>
                                                 <td className="text-center"> {entry.baskets.filter((basket) => basket.is_sold).length} </td>
+                                            </tr>
+                                            <tr className="text-500">
+                                                <td>Available Baskets:</td>
+                                                <td className="text-center"> {entry.baskets.length - entry.baskets.filter((basket) => basket.is_sold).length} </td>
                                             </tr>
                                             <tr className='row-blank'>
                                             </tr>
