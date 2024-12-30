@@ -1802,24 +1802,22 @@ def handle_todays_baskets():
             if not baskets:
                 return jsonify({'message': 'No baskets found for today'}), 404
 
-            return jsonify([
-                {
-                    'id': basket.id,
-                    'vendor_id': basket.vendor_id,
-                    'market_day_id': basket.market_day_id,
-                    'market_name': basket.market_day.markets.name,
-                    'sale_date': basket.sale_date.strftime('%Y-%m-%d'),
-                    'pickup_start': basket.pickup_start.strftime('%H:%M') if basket.pickup_start else None,
-                    'pickup_end': basket.pickup_end.strftime('%H:%M') if basket.pickup_end else None,
-                    'price': basket.price,
-                    'basket_value': basket.basket_value,
-                    'is_sold': basket.is_sold,
-                    'is_grabbed': basket.is_grabbed
-                } for basket in baskets
-            ]), 200
+            return jsonify([{
+                'id': basket.id,
+                'vendor_id': basket.vendor_id,
+                'market_day_id': basket.market_day_id,
+                'market_name': basket.market_day.markets.name,
+                'sale_date': basket.sale_date.strftime('%Y-%m-%d'),
+                'pickup_start': basket.pickup_start.strftime('%H:%M') if basket.pickup_start else None,
+                'pickup_end': basket.pickup_end.strftime('%H:%M') if basket.pickup_end else None,
+                'price': basket.price,
+                'basket_value': basket.basket_value,
+                'is_sold': basket.is_sold,
+                'is_grabbed': basket.is_grabbed
+            } for basket in baskets]), 200
+        
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 
 @app.route('/api/baskets/user-sales-history', methods=['GET'])
 @jwt_required()
