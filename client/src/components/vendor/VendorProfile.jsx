@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, NavLink, Link, Route, Routes, BrowserRouter as Router} from 'react-router-dom';
-import { states } from '../../utils/common';
+import { vendors_default, states } from '../../utils/common';
 import { formatPhoneNumber } from '../../utils/helpers';
 import VendorCreate from './VendorCreate';
 import VendorLocations from './VendorLocations';
@@ -177,7 +177,8 @@ function VendorProfile () {
                 bio: vendorData.bio,
                 city: vendorData.city,
                 state: vendorData.state,
-                image: vendorData.image
+                image: vendorData.image,
+                image_default: vendorData.image_default
             });
         }
     };
@@ -519,13 +520,28 @@ function VendorProfile () {
                                             ))}
                                         </select>
                                     </div>
+                                    <div className="form-group">
+                                        <label>Default Image:</label>
+                                        <select className='select'
+                                            name="image_default"
+                                            value={tempVendorData ? tempVendorData.image_default : ''}
+                                            onChange={handleVendorInputChange}
+                                        >
+                                            <option value="">Select</option>
+                                            {vendors_default.map((item, index) => (
+                                                <option key={index} value={item}>
+                                                    {item}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
                                     <div className='form-group width-100'>
                                         <label>Vendor Image:</label>
-                                        {vendorData?.image ? (
+                                        {tempVendorData ? (
                                             <>
                                                 <img
                                                     className='img-vendor-edit'
-                                                    src={`/vendor-images/${vendorData.image}`}
+                                                    src={tempVendorData.image ? `/vendor-images/${tempVendorData.image}` : `/vendor-images/_default-images/${tempVendorData.image_default}`}
                                                     alt="Vendor"
                                                     style={{ maxWidth: '100%', height: 'auto' }}
                                                 />
@@ -591,7 +607,7 @@ function VendorProfile () {
                                                     </tr>
                                                     <tr>
                                                         <td className='cell-title'>Image:</td>
-                                                        <td className='cell-text'>{vendorData ? <img src={`/vendor-images/${vendorData.image}`} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
+                                                        <td className='cell-text'>{vendorData ? <img src={vendorData.image ? `/vendor-images/${vendorData.image}` : `/vendor-images/_default-images/${vendorData.image_default}`} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
