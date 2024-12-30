@@ -107,7 +107,7 @@ function AdminProfile () {
         <div>
             <div className="tab-content">
                 <div>
-                    <h2>Profile Information</h2>
+                    <h1>Profile Information</h1>
                     <div className='box-bounding'>
                         {editMode ? (
                             <>

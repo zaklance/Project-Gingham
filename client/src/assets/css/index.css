@@ -1754,9 +1754,10 @@ select:hover {
 .basket-card {
   border: .5px solid #ccc;
   padding: 10px;
-  width: 100%;
-  min-width: 240px;
-  max-width: 300px;
+  width: 280px;
+  /* width: 100%; */
+  /* min-width: 240px; */
+  /* max-width: 300px; */
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   background-color: #fff;
   /* text-align: center; */
@@ -1863,6 +1864,14 @@ select:hover {
 
 .img-file:hover {
   background-image: url('../images/icons8-document.gif');
+}
+
+.img-report, .img-report:hover {
+  background-image: url('../images/flag-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 47%;
+  background-size: 1.7rem auto;
+  
 }
 
 .favorites-list li {
