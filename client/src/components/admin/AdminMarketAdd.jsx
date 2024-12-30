@@ -250,38 +250,44 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                         </div>
                         <div className='form-group'>
                             <label title="true or false">Year Round:</label>
-                            <input
-                                type="text"
+                            <select
                                 name="year_round"
-                                placeholder='true or false'
                                 value={newMarket ? newMarket.year_round : ''}
                                 onChange={handleInputMarketChange}
-                            />
+                            >
+                                <option value="">Select</option>
+                                <option value={true}>true</option>
+                                <option value={false}>false</option>
+                            </select>
                         </div>
+                        {newMarket?.year_round === 'false' && (
+                            <>
+                                <div className='form-group'>
+                                    <label title="yyyy-mm-dd">Season Start:</label>
+                                    <input
+                                        type="date"
+                                        name="season_start"
+                                        placeholder='yyyy-mm-dd'
+                                        value={newMarket ? newMarket.season_start : ''}
+                                        onChange={handleInputMarketChange}
+                                        required
+                                    />
+                                </div>
+                                <div className='form-group'>
+                                    <label title="yyyy-mm-dd">Season End:</label>
+                                    <input
+                                        type="date"  // Changed to 'date' to enforce the format
+                                        name="season_end"
+                                        placeholder='yyyy-mm-dd'
+                                        value={newMarket ? newMarket.season_end : ''}
+                                        onChange={handleInputMarketChange}
+                                        required
+                                    />
+                                </div>
+                            </>
+                        )}
                         <div className='form-group'>
-                            <label title="yyyy-mm-dd">Season Start:</label>
-                            <input
-                                type="date"  // Changed to 'date' to enforce the format
-                                name="season_start"
-                                placeholder='yyyy-mm-dd'
-                                value={newMarket ? newMarket.season_start : ''}
-                                onChange={handleInputMarketChange}
-                                required // Ensure the field is required
-                            />
-                        </div>
-                        <div className='form-group'>
-                            <label title="yyyy-mm-dd">Season End:</label>
-                            <input
-                                type="date"  // Changed to 'date' to enforce the format
-                                name="season_end"
-                                placeholder='yyyy-mm-dd'
-                                value={newMarket ? newMarket.season_end : ''}
-                                onChange={handleInputMarketChange}
-                                required // Ensure the field is required
-                            />
-                        </div>
-                        <div className='form-group'>
-                            <label>Vendor Image:</label>
+                            <label>Market Image:</label>
                             <div className='flex-start flex-center-align'>
                                 <label htmlFor='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
                                 <input

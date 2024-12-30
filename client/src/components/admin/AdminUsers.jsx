@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { formatPhoneNumber } from '../../utils/helpers';
-import { avatars, states } from '../../utils/common';
+import { avatars_default, states } from '../../utils/common';
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
@@ -125,13 +125,13 @@ const AdminUsers = () => {
                 body: JSON.stringify(tempUserData)
             });
 
-            console.log('Request body:', JSON.stringify(tempUserData));
+            // console.log('Request body:', JSON.stringify(tempUserData));
 
             if (response.ok) {
                 const updatedData = await response.json();
                 setUserData(updatedData);
                 setEditMode(false);
-                console.log('Profile data updated successfully:', updatedData);
+                // console.log('Profile data updated successfully:', updatedData);
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status:', response.status);
@@ -212,7 +212,6 @@ const AdminUsers = () => {
         setEditMode(!editMode);
     };
 
-    console.log(tempUserData)
 
     return (
         <div>
@@ -334,7 +333,7 @@ const AdminUsers = () => {
                                     onChange={handleInputChange}
                                 >
                                     <option value="">Select</option>
-                                    {avatars.map((item, index) => (
+                                    {avatars_default.map((item, index) => (
                                         <option key={index} value={item}>
                                             {item}
                                         </option>
@@ -345,7 +344,7 @@ const AdminUsers = () => {
                                 <label>Avatar:</label>
                                     <img
                                         className='img-avatar-profile'
-                                        src={`/user-images/${userData.avatar || userData.avatar_default}`}
+                                        src={userData.avatar ? `/user-images/${userData.avatar}` : `/user-images/_default-images/${userData.avatar_default}`}
                                         alt="Avatar"
                                         style={{ maxWidth: '100%', height: 'auto' }}
                                     />
@@ -400,7 +399,7 @@ const AdminUsers = () => {
                                     </table>
                                     <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                                 </div>
-                                {userData ? <img className='img-avatar-profile' src={`/user-images/${userData.avatar || userData.avatar_default}`} alt="Avatar" /> : ""}
+                                {userData ? <img className='img-avatar-profile' src={userData.avatar ? `/user-images/${userData.avatar}` : `/user-images/_default-images/${userData.avatar_default}`} alt="Avatar" /> : ""}
                             </div>
                         </>
                     )}

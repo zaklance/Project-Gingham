@@ -1,4 +1,7 @@
-export const weekDay = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+export const weekDay = [
+    "Sunday", "Monday", "Tuesday", "Wednesday",
+     "Thursday", "Friday", "Saturday"
+    ]
 
 export const weekDayReverse = {
     "Sunday": 0,
@@ -25,10 +28,23 @@ export const states = [
     "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
 ];
 
-export const avatars = [
+export const avatars_default = [
     "avatar-apricot.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage.jpg",
     "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime.jpg", "avatar-melon.jpg",
     "avatar-nectarine.jpg", "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg",
     "avatar-peach.jpg", "avatar-pomegranate.jpg", "avatar-radish.jpg", "avatar-tomato.jpg",
     "avatar-watermelon.jpg"
+]
+
+export const markets_default = [
+    "market-default-1_1600px.png",
+    "market-default-2_1600px.png",
+    "market-default-3_1600px.png",
+    "market-default-4_1600px.png"
+]
+
+export const vendors_default = [
+    "vendor-default-1_1600px.png",
+    "vendor-default-2_1600px.png",
+    "vendor-default-3_1600px.png"
 ]

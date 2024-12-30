@@ -305,7 +305,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 <input
                                     type="text"
                                     name="coordinates_lat"
-                                    value={tempMarketData ? tempMarketData.coordinates.lat : ''}
+                                    value={tempMarketData?.coordinates?.lat || ''} 
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -314,7 +314,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 <input
                                     type="text"
                                     name="coordinates_lng"
-                                    value={tempMarketData ? tempMarketData.coordinates.lng : ''}
+                                    value={tempMarketData?.coordinates?.lng || ''} 
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -329,31 +329,42 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                             </div>
                             <div className='form-group'>
                                 <label title="true or false">Year Round:</label>
-                                <input
-                                    type="text"
+                                <select
                                     name="year_round"
                                     value={tempMarketData ? tempMarketData.year_round : ''}
                                     onChange={handleInputChange}
-                                />
+                                >
+                                    <option value="">Select</option>
+                                    <option value={true}>true</option>
+                                    <option value={false}>false</option>
+                                </select>
                             </div>
-                            <div className='form-group'>
-                                <label>Season Start:</label>
-                                <input
-                                    type="date"
-                                    name="season_start"
-                                    value={tempMarketData?.season_start || ''}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <div className='form-group'>
-                                <label>Season End:</label>
-                                <input
-                                    type="date"
-                                    name="season_end"
-                                    value={tempMarketData?.season_end || ''}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
+                            {tempMarketData?.year_round === 'false' && (
+                                <>
+                                    <div className='form-group'>
+                                        <label title="yyyy-mm-dd">Season Start:</label>
+                                        <input
+                                            type="date"
+                                            name="season_start"
+                                            placeholder='yyyy-mm-dd'
+                                            value={tempMarketData ? tempMarketData.season_start : ''}
+                                            onChange={handleInputChange}
+                                            required
+                                        />
+                                    </div>
+                                    <div className='form-group'>
+                                        <label title="yyyy-mm-dd">Season End:</label>
+                                        <input
+                                            type="date"  // Changed to 'date' to enforce the format
+                                            name="season_end"
+                                            placeholder='yyyy-mm-dd'
+                                            value={tempMarketData ? tempMarketData.season_end : ''}
+                                            onChange={handleInputChange}
+                                            required
+                                        />
+                                    </div>
+                                </>
+                            )}
                             <div className='form-group'>
                                 <label>Market Image:</label>
                                 {adminMarketData?.image ? (
@@ -419,14 +430,18 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                         <td className='cell-title' title="true or false">Year Round:</td>
                                         <td className='cell-text'>{adminMarketData ? `${adminMarketData.year_round}` : ''}</td>
                                     </tr>
-                                    <tr>
-                                        <td className='cell-title' title="yyyy-mm-dd">Season Start:</td>
-                                        <td className='cell-text'>{adminMarketData ? adminMarketData.season_start : ''}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className='cell-title' title="yyyy-mm-dd">Season End:</td>
-                                        <td className='cell-text'>{adminMarketData ? adminMarketData.season_end : ''}</td>
-                                    </tr>
+                                    {tempMarketData?.year_round === 'false' && (
+                                        <>
+                                            <tr>
+                                                <td className='cell-title' title="yyyy-mm-dd">Season Start:</td>
+                                                <td className='cell-text'>{adminMarketData ? adminMarketData.season_start : ''}</td>
+                                            </tr>
+                                            <tr>
+                                                <td className='cell-title' title="yyyy-mm-dd">Season End:</td>
+                                                <td className='cell-text'>{adminMarketData ? adminMarketData.season_end : ''}</td>
+                                            </tr>
+                                        </>
+                                    )}
                                 </tbody>
                             </table>
                             {matchingMarketId ? (
