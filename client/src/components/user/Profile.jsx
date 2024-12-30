@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { states } from '../../utils/common';
+import { avatars_default, states } from '../../utils/common';
 import { timeConverter, formatPhoneNumber } from '../../utils/helpers';
 import BasketSales from './BasketSales';
 
@@ -377,15 +377,30 @@ function Profile({ marketData }) {
                                 onChange={handleInputChange}
                             />
                         </div>
+                        <div className="form-group">
+                            <label>Default Avatar:</label>
+                            <select className='select'
+                                name="avatar_default"
+                                value={tempProfileData ? tempProfileData.avatar_default : ''}
+                                onChange={handleInputChange}
+                            >
+                                <option value="">Select</option>
+                                {avatars_default.map((item, index) => (
+                                    <option key={index} value={item}>
+                                        {item}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                         <div className='form-group'>
                             <label>Avatar:</label>
                             {profileData ? (
                                 <>
                                     <img
                                         className='img-avatar-profile'
-                                        src={`/user-images/${profileData.avatar}`}
+                                        src={tempProfileData.avatar ? `/user-images/${tempProfileData.avatar}` : `/user-images/_default-images/${tempProfileData.avatar_default}`}
                                         alt="Avatar"
-                                        style={{ maxWidth: '100%', height: 'auto' }}
+                                        style={{ maxWidth: '100%', height: 'auto', padding: '4px' }}
                                     />
                                 </>
                             ) : (
@@ -410,8 +425,8 @@ function Profile({ marketData }) {
                     </div>
                 ) : (
                     <>
-                            <div className='flex-space-evenly flex-gap-16 flex-start-align m-flex-wrap'>
-                                <img className='img-avatar-profile' src={`/user-images/${profileData.avatar || profileData.avatar_default}`} alt="Avatar" />
+                        <div className='flex-space-evenly flex-gap-16 flex-start-align m-flex-wrap'>
+                            <img className='img-avatar-profile' src={profileData.avatar ? `/user-images/${profileData.avatar}` : `/user-images/_default-images/${profileData.avatar_default}`} alt="Avatar" />
                             <div className='width-80'>
                                 <table className='table-profile'>
                                     <tbody>

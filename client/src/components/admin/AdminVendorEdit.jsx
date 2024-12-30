@@ -127,6 +127,7 @@ function AdminVendorEdit({ vendors }) {
                 }));
     
                 alert('Image deleted successfully.');
+                window.location.reload();
             } else {
                 const errorText = await response.text();
                 console.error('Failed to delete image:', errorText);
@@ -292,7 +293,7 @@ function AdminVendorEdit({ vendors }) {
                             </div>
                             <div className='form-group'>
                                 <label>Vendor Image:</label>
-                                {vendorData ? (
+                                {tempVendorData ? (
                                     <div>
                                         <img
                                             className='img-market'

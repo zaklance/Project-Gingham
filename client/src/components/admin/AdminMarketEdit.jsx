@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { markets_default } from '../../utils/common';
 
 function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const [marketDayDetails, setMarketDayDetails] = useState([])
@@ -365,13 +366,28 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     </div>
                                 </>
                             )}
+                            <div className="form-group">
+                                <label>Default Image:</label>
+                                <select className='select'
+                                    name="image_default"
+                                    value={tempMarketData ? tempMarketData.image_default : ''}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="">Select</option>
+                                    {markets_default.map((item, index) => (
+                                        <option key={index} value={item}>
+                                            {item}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                             <div className='form-group'>
                                 <label>Market Image:</label>
-                                {adminMarketData?.image ? (
+                                {tempMarketData ? (
                                     <>
                                         <img 
                                             style={{ maxWidth: '100%', height: 'auto' }}
-                                            src={`/market-images/${adminMarketData.image}`} 
+                                            src={tempMarketData.image ? `/market-images/${tempMarketData.image}` : `/market-images/_default-images/${tempMarketData.image_default}`}
                                             alt="Market Image" />
                                     </>
                                 ) : (
@@ -400,7 +416,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 <tbody>
                                     <tr>
                                         <td className='cell-title'>Image:</td>
-                                        <td className='cell-text'>{adminMarketData ? <img className='img-market' src={`/market-images/${adminMarketData.image}`} alt="Market Image" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
+                                            <td className='cell-text'>{adminMarketData ? <img className='img-market' src={adminMarketData.image ? `/market-images/${adminMarketData.image}` : `/market-images/_default-images/${adminMarketData.image_default}`} alt="Market Image" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title'>Name:</td>
