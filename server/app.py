@@ -515,12 +515,24 @@ def check_admin_session():
         return {'error': 'Authorization failed'}, 401
 
     return admin_user.to_dict(), 200
-    
+
+@app.route('/api/users', methods=['GET'])
+@jwt_required()
+def all_users():
+    try:
+        if request.method == 'GET':
+            users = User.query.all()
+            return jsonify([user.to_dict() for user in users]), 200
+        
+    except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
 @app.route('/api/users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
 @jwt_required()
 def profile(id):
     
-    if not check_role('user'):
+    if not check_role('user') and not check_role('admin'):
         return {'error': "Access forbidden: User only"}, 403
     
     if request.method == 'GET':
@@ -547,6 +559,8 @@ def profile(id):
             user.city = data.get('city')
             user.state = data.get('state')
             user.zipcode = data.get('zipcode')
+            user.avatar = data.get('avatar')
+            user.avatar_default = data.get('avatar_default')
 
             db.session.commit()
             return jsonify(user.to_dict()), 200
