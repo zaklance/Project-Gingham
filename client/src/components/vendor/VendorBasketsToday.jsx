@@ -113,7 +113,12 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
         });
     };
       
-    const handleSave = async (basketId) => {
+    const handleSave = async (basketId, startTime, endTime) => {
+        const parsedNumBaskets = numBaskets;
+        const today = new Date();
+        const formattedSaleDate = today.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', }).split('/').reverse().join('-');
+        const parsedPrice = parseFloat(price);
+
         const entry = todayBaskets.find(e => e.baskets[0]?.id === basketId);
         if (!entry) {
             console.error('No entry found for basketId:', basketId);
@@ -131,13 +136,16 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
                 console.error('Invalid hour or minute:', hours, minutes);
                 return null;
             }
-            if (amPm === 'PM' && hours !== 12) hours += 12;
-            if (amPm === 'AM' && hours === 12) hours = 0;
+            // if (amPm === 'PM' && hours !== 12) hours += 12;
+            // if (amPm === 'AM' && hours === 12) hours = 0;
             return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
         };
       
         const formattedPickupStart = formatTime(startTime, startAmPm);
         const formattedPickupEnd = formatTime(endTime, endAmPm);
+
+        console.log(formattedPickupStart);
+        console.log(formattedPickupEnd);
       
         if (!formattedPickupStart || !formattedPickupEnd) {
             setErrorMessage('Invalid start or end time format.');
@@ -209,6 +217,7 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
             {
                 Array.isArray(todayBaskets) && todayBaskets.length > 0 ? (
                     todayBaskets.map((entry, index) => {
+
                         return (
                             <div key={index} className="badge-container">
                                 <div className="basket-card">
@@ -293,7 +302,7 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
                                     <div className="text-center basket-actions">
                                         {isEditing[entry.baskets[0]?.id] ? (
                                             <>
-                                                <button onClick={() => handleSave(entry.baskets[0]?.id)} className="btn-basket-save" > Save </button>
+                                                <button onClick={() => handleSave(entry.baskets[0]?.id, entry.baskets[0]?.pickup_start, entry.baskets[0]?.pickup_end)} className="btn-basket-save" > Save </button>
                                                 <button onClick={() => cancelBasketEdit(entry.baskets[0]?.id)} className="btn-basket-save" > Cancel </button>
                                             </>
                                         ) : (
