@@ -229,8 +229,8 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
                                     </div>
     
                                     <br />
-                                    <table>
-                                        <tbody className="table-basket">
+                                    <table className="table-basket">
+                                        <tbody>
                                             <tr className="text-500">
                                                 <td>Total Baskets:</td>
                                                 <td className="text-center">
