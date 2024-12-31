@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { formatPhoneNumber } from '../../utils/helpers';
-import { avatars_default, states } from '../../utils/common';
+import { avatars_default, states, status } from '../../utils/common';
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
@@ -240,6 +240,21 @@ const AdminUsers = () => {
                     {editMode ? (
                         <div className='margin-t-16'>
                             <div className="form-group">
+                                <label>Status:</label>
+                                <select className='select'
+                                    name="status"
+                                    value={tempUserData ? tempUserData.status : ''}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="">Select</option>
+                                    {Object.entries(status).map(([key, value], index) => (
+                                        <option key={index} value={value}>
+                                            {key}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="form-group">
                                 <label>First Name:</label>
                                 <input
                                     type="text"
@@ -371,6 +386,10 @@ const AdminUsers = () => {
                                 <div className='width-80'>
                                     <table className='table-profile'>
                                         <tbody>
+                                            <tr>
+                                                <td className='cell-title'>Status:</td>
+                                                <td className='cell-text'>{userData?.status || ""}</td>
+                                            </tr>
                                             <tr>
                                                 <td className='cell-title'>Name:</td>
                                                 <td className='cell-text'>{userData?.first_name || ""} {userData?.last_name || ""}</td>

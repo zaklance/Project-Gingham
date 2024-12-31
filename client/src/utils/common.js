@@ -28,6 +28,11 @@ export const states = [
     "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
 ];
 
+export const status = {
+    "Active": "active",
+    "Banned": "banned"
+}
+
 export const avatars_default = {
     "Apricot": "avatar-apricot-1.jpg",
     "Avocado 1": "avatar-avocado-1.jpg",

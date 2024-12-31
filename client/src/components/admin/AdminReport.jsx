@@ -112,11 +112,16 @@ function AdminReport() {
                         marketReported.map((review, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                 <div className='flex-start'>
+                                    {review.user.avatar !== null ? (
+                                        <img className='img-avatar margin-r-8' src={`/user-images/${review.user.avatar}`} alt="Avatar" />
+                                    ) : (
+                                        <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
+                                    )}
                                     <h4 className='margin-r-8'>{review.user ? `${review.user.first_name} ${review.user.last_name}` : 'Anonymous'}</h4>
                                     <button className='btn btn-small btn-green btn-emoji-big btn-gap margin-r-8' onClick={() => handleMarketReviewUnReport(review.id, review.user_id)}>&#9786;</button>
                                     <button className='btn btn-small btn-red btn-admin btn-gap' onClick={() => handleMarketReviewDelete(review.id, review.user_id)}>Delete</button>
                                 </div>
-                                <p>{review.review_text}</p>
+                                <p className='margin-l-40'>{review.review_text}</p>
                             </div>
                             
                         ))
@@ -132,11 +137,16 @@ function AdminReport() {
                         vendorReported.map((review, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                 <div className='flex-start'>
+                                    {review.user.avatar !== null ? (
+                                        <img className='img-avatar margin-r-8' src={`/user-images/${review.user.avatar}`} alt="Avatar" />
+                                    ) : (
+                                        <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
+                                    )}
                                     <h4 className='margin-r-8'>{review.user ? `${review.user.first_name} ${review.user.last_name}` : 'Anonymous'}</h4>
                                     <button className='btn btn-small btn-green btn-emoji-big btn-gap margin-r-8' onClick={() => handleVendorReviewUnReport(review.id, review.user_id)}>&#9786;</button>
                                     <button className='btn btn-small btn-red btn-admin btn-gap' onClick={() => handleMarketVendorDelete(review.id, review.user_id)}>Delete</button>
                                 </div>
-                                <p>{review.review_text}</p>
+                                <p className='margin-l-40'>{review.review_text}</p>
                             </div>
 
                         ))

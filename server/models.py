@@ -67,6 +67,7 @@ class User(db.Model, SerializerMixin):
     zipcode = db.Column(db.String(10), nullable=False)
     avatar = db.Column(db.String)
     avatar_default = db.Column(db.String, nullable=False, default=random_avatar)
+    status = db.Column(db.String(10), nullable=False, default="active")
 
     # Relationships
     market_reviews = db.relationship('MarketReview', back_populates='user')
@@ -218,7 +219,7 @@ class MarketDay(db.Model, SerializerMixin):
     markets = db.relationship('Market', back_populates='market_days')
     vendor_markets = db.relationship( 'VendorMarket', back_populates="market_day")
 
-    serialize_rules = ('-markets.market_days', '-markets.reviews')
+    serialize_rules = ('-markets.market_days', '-markets.reviews', '-markets.market_favorites', '-vendor_markets.market_day', '-vendor_markets.vendor.reviews')
 
     # Validations
     @validates('name', 'location', 'hours')

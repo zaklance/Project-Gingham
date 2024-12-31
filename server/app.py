@@ -318,6 +318,9 @@ def login():
     if not user:
         return {'error': 'Login failed'}, 401
     
+    if user.status == "banned":
+        return {'error': 'Account is banned. Please contact support.'}, 403
+    
     if not user.authenticate(data['password']):
         return {'error': 'Login failed'}, 401
     
@@ -563,6 +566,7 @@ def profile(id):
             user.zipcode = data.get('zipcode')
             user.avatar = data.get('avatar')
             user.avatar_default = data.get('avatar_default')
+            user.status = data.get('status')
 
             db.session.commit()
             return jsonify(user.to_dict()), 200
