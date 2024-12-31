@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const AdminEmail = () => {
     const [previewHtml, setPreviewHtml] = useState('');
-    const [emailAddress, setEmailAddress] = useState('')
     const [newSubject, setNewSubject] = useState('')
     const [newEmail, setNewEmail] = useState(`<mjml>
         <mj-head>
@@ -93,7 +92,6 @@ const AdminEmail = () => {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        emailAddress: emailAddress,
                         subject: newSubject,
                         html: newEmail
                      }),

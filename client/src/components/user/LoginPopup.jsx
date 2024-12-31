@@ -20,7 +20,7 @@ function Login({ handlePopup }) {
     const [signupZipCode, setSignupZipCode] = useState('');
 
     const navigate = useNavigate();
-
+    
     const handleLogin = async (event) => {
         event.preventDefault();
     
@@ -36,9 +36,10 @@ function Login({ handlePopup }) {
                 }),
                 credentials: 'include',
             });
-    
+            
+            const data = await response.json();
+
             if (response.ok) {
-                const data = await response.json();
     
                 // Clear any existing admin or vendor_user session data
                 globalThis.localStorage.removeItem('admin_user_id');
@@ -55,7 +56,7 @@ function Login({ handlePopup }) {
                 handlePopup();
                 // navigate('/');
             } else {
-                alert('Login failed');
+                alert(data.error || 'Login failed');
             }
         } catch (error) {
             console.error('Error during login:', error);
