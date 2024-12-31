@@ -333,9 +333,9 @@ const AdminUsers = () => {
                                     onChange={handleInputChange}
                                 >
                                     <option value="">Select</option>
-                                    {avatars_default.map((item, index) => (
-                                        <option key={index} value={item}>
-                                            {item}
+                                    {Object.entries(avatars_default).map(([key, value], index) => (
+                                        <option key={index} value={value}>
+                                            {key}
                                         </option>
                                     ))}
                                 </select>
@@ -346,7 +346,7 @@ const AdminUsers = () => {
                                         className='img-avatar-profile'
                                         src={tempUserData.avatar ? `/user-images/${tempUserData.avatar}` : `/user-images/_default-images/${tempUserData.avatar_default}`}
                                         alt="Avatar"
-                                        style={{ maxWidth: '100%', height: 'auto' }}
+                                        style={{ maxWidth: '100%', height: 'auto', padding: '4px' }}
                                     />
                                 <div className='flex-start flex-center-align'>
                                     <div className='margin-l-8'>

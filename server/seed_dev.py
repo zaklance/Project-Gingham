@@ -918,11 +918,11 @@ def run():
          ]
     apartment = ['Apt', 'Suite', 'Floor', 'Building']
     avatars = [
-        "avatar-apricot.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage.jpg",
-        "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime.jpg", "avatar-melon.jpg",
-        "avatar-nectarine.jpg", "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg",
-        "avatar-peach.jpg", "avatar-pomegranate.jpg", "avatar-radish.jpg", "avatar-tomato.jpg",
-        "avatar-watermelon.jpg"
+        "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage-1.jpg",
+        "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime-1.jpg", "avatar-melon-1.jpg",
+        "avatar-nectarine-1.jpg", "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg",
+        "avatar-peach-1.jpg", "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
+        "avatar-watermelon-1.jpg"
     ]
 
     # user for demo

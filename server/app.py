@@ -53,11 +53,11 @@ CORS(app, supports_credentials=True)
 jwt = JWTManager(app)
 
 avatars = [
-        "avatar-apricot.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage.jpg",
-        "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime.jpg", "avatar-melon.jpg",
-        "avatar-nectarine.jpg", "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg",
-        "avatar-peach.jpg", "avatar-pomegranate.jpg", "avatar-radish.jpg", "avatar-tomato.jpg",
-        "avatar-watermelon.jpg"
+        "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage-1.jpg",
+        "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime-1.jpg", "avatar-melon-1.jpg",
+        "avatar-nectarine-1.jpg", "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg",
+        "avatar-peach-1.jpg", "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
+        "avatar-watermelon-1.jpg"
     ]
 
 def allowed_file(filename):
@@ -250,7 +250,7 @@ def delete_image():
                     user.avatar = None
                     db.session.commit()
 
-            return {'message': 'Image deleted successfully'}, 200
+            return {'message': 'Image deleted successfully'}, 204
         else:
             return {'error': f'File not found at path: {file_path}'}, 404
 
@@ -877,7 +877,12 @@ def handle_admin_user_by_id(id):
 @app.route('/api/markets', methods=['GET', 'POST'])
 def all_markets():
     if request.method == 'GET':
-        markets = Market.query.all()
+        is_visible = request.args.get('is_visible')
+        if is_visible:
+            is_visible_bool = is_visible.lower() == 'true'
+            markets = Market.query.filter_by(is_visible=is_visible_bool).all()
+        else:
+            markets = Market.query.all()
         return jsonify([market.to_dict() for market in markets]), 200
     
     elif request.method == 'POST':
@@ -934,6 +939,8 @@ def market_by_id(id):
                 market.name = data['name']
             if 'image' in data:
                 market.image = data['image']
+            if 'image_default' in data:
+                market.image_default = data['image_default']
             if 'location' in data:
                 market.location = data['location']
             if 'zipcode' in data:
@@ -944,6 +951,13 @@ def market_by_id(id):
                 market.schedule = data['schedule']
             if 'year_round' in data:
                 market.year_round = data['year_round']
+            if 'is_visible' in data:
+                if isinstance(data['is_visible'], bool):
+                    market.is_visible = data['is_visible']
+                elif isinstance(data['is_visible'], str):
+                    market.is_visible = data['is_visible'].lower() == 'true'
+                else:
+                    return {'error': 'Invalid value for is_visible. Must be a boolean or "true"/"false" string.'}, 400
             if 'season_start' in data:
                 if data['season_start'] is None:
                     market.season_start = None
@@ -1025,10 +1039,6 @@ def market_day_by_id(id):
         except Exception as e:
             db.session.rollback()
             return {'error': str(e)}, 500
-    elif request.method == 'DELETE':
-        db.session.delete(market_day)
-        db.session.commit()
-        return {}, 204
     elif request.method == 'DELETE':
         try:
             db.session.delete(market_day)
@@ -1474,6 +1484,7 @@ def get_vendor_markets():
     if request.method == 'GET':
         vendor_id = request.args.get('vendor_id', type=int)
         market_id = request.args.get('market_id', type=int)
+        is_visible = request.args.get('is_visible', type=str)
 
         query = VendorMarket.query.options(
             db.joinedload(VendorMarket.vendor),
@@ -1484,7 +1495,10 @@ def get_vendor_markets():
             query = query.filter(VendorMarket.vendor_id == vendor_id)
         if market_id:
             query = query.filter(VendorMarket.market_day.has(MarketDay.market_id == market_id))
-
+        if is_visible is not None:
+            is_visible_bool = is_visible.lower() == 'true'
+            query = query.filter(VendorMarket.market_day.has(MarketDay.markets.has(Market.is_visible == is_visible_bool)))
+            
         vendor_markets = query.all()
         return jsonify([vendor_market.to_dict() for vendor_market in vendor_markets]), 200
     
@@ -1751,7 +1765,7 @@ def handle_baskets():
             db.session.commit()
 
             if deleted_count > 0:
-                return jsonify({"message": f"{deleted_count} baskets deleted successfully"}), 200
+                return jsonify({"message": f"{deleted_count} baskets deleted successfully"}), 204
             else:
                 return jsonify({"message": "No baskets found with the provided IDs"}), 404
         except Exception as e:
@@ -1820,22 +1834,24 @@ def handle_todays_baskets():
             if not baskets:
                 return jsonify({'message': 'No baskets found for today'}), 404
 
-            return jsonify([{
-                'id': basket.id,
-                'vendor_id': basket.vendor_id,
-                'market_day_id': basket.market_day_id,
-                'market_name': basket.market_day.markets.name,
-                'sale_date': basket.sale_date.strftime('%Y-%m-%d'),
-                'pickup_start': basket.pickup_start.strftime('%H:%M') if basket.pickup_start else None,
-                'pickup_end': basket.pickup_end.strftime('%H:%M') if basket.pickup_end else None,
-                'price': basket.price,
-                'basket_value': basket.basket_value,
-                'is_sold': basket.is_sold,
-                'is_grabbed': basket.is_grabbed
-            } for basket in baskets]), 200
-        
+            return jsonify([
+                {
+                    'id': basket.id,
+                    'vendor_id': basket.vendor_id,
+                    'market_day_id': basket.market_day_id,
+                    'market_name': basket.market_day.markets.name,
+                    'sale_date': basket.sale_date.strftime('%Y-%m-%d'),
+                    'pickup_start': basket.pickup_start.strftime('%H:%M') if basket.pickup_start else None,
+                    'pickup_end': basket.pickup_end.strftime('%H:%M') if basket.pickup_end else None,
+                    'price': basket.price,
+                    'basket_value': basket.basket_value,
+                    'is_sold': basket.is_sold,
+                    'is_grabbed': basket.is_grabbed
+                } for basket in baskets
+            ]), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api/baskets/user-sales-history', methods=['GET'])
 @jwt_required()
@@ -2030,7 +2046,7 @@ def qr_code(id):
         try:
             db.session.delete(qr_code)
             db.session.commit()
-            return {'message': 'QR code deleted successfully'}, 200
+            return {'message': 'QR code deleted successfully'}, 204
         except Exception as e:
             db.session.rollback()
             return {'error': f'Failed to delete QR code: {str(e)}'}, 500
@@ -2384,7 +2400,7 @@ def delete_user_notifications(id):
         
         db.session.delete(notification)
         db.session.commit()
-        return jsonify({'notifications': notification_data})
+        return jsonify({'notifications': notification_data}), 204
 
 @app.route('/api/create-vendor-notification', methods=['POST'])
 def create_vendor_notification():
@@ -2510,7 +2526,7 @@ def delete_notification(id):
         
         db.session.delete(notification)
         db.session.commit()
-        return jsonify({'notifications': notification_data}) 
+        return jsonify({'notifications': notification_data}), 204
     
 @app.route('/api/vendor-notifications/vendor/<int:vendor_id>', methods=['GET'])
 def get_vendor_notifications(vendor_id):
@@ -2578,7 +2594,7 @@ def reject_notification(notification_id):
     db.session.delete(notification)
     db.session.commit()
 
-    return jsonify({'message': 'Notification rejected successfully'}), 200
+    return jsonify({'message': 'Notification rejected successfully'}), 204
 
 @app.route('/api/create-admin-notification', methods=['POST'])
 def create_admin_notification():
@@ -2636,7 +2652,7 @@ def delete_admin_notifications(id):
         
         db.session.delete(notification)
         db.session.commit()
-        return jsonify({'notifications': notification_data})
+        return jsonify({'notifications': notification_data}), 204
 
 @app.route('/api/faqs', methods=['GET', 'POST'])
 def faqs():

@@ -385,9 +385,9 @@ function Profile({ marketData }) {
                                 onChange={handleInputChange}
                             >
                                 <option value="">Select</option>
-                                {avatars_default.map((item, index) => (
-                                    <option key={index} value={item}>
-                                        {item}
+                                {Object.entries(avatars_default).map(([key, value], index) => (
+                                    <option key={index} value={value}>
+                                        {key}
                                     </option>
                                 ))}
                             </select>

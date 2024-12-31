@@ -366,6 +366,18 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     </div>
                                 </>
                             )}
+                            <div className='form-group'>
+                                <label title="true or false">Is Visible:</label>
+                                <select
+                                    name="is_visible"
+                                    value={tempMarketData ? tempMarketData.is_visible : ''}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="">Select</option>
+                                    <option value={true}>true</option>
+                                    <option value={false}>false</option>
+                                </select>
+                            </div>
                             <div className="form-group">
                                 <label>Default Image:</label>
                                 <select className='select'
@@ -374,9 +386,9 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     onChange={handleInputChange}
                                 >
                                     <option value="">Select</option>
-                                    {markets_default.map((item, index) => (
-                                        <option key={index} value={item}>
-                                            {item}
+                                    {Object.entries(markets_default).map(([key, value], index) => (
+                                        <option key={index} value={value}>
+                                            {key}
                                         </option>
                                     ))}
                                 </select>
@@ -458,6 +470,10 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                             </tr>
                                         </>
                                     )}
+                                    <tr>
+                                        <td className='cell-title' title="true or false">Is Visible:</td>
+                                        <td className='cell-text'>{adminMarketData ? `${adminMarketData.is_visible}` : ''}</td>
+                                    </tr>
                                 </tbody>
                             </table>
                             {matchingMarketId ? (

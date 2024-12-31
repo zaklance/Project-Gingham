@@ -64,7 +64,7 @@ function Markets() {
         if (location.state?.resetFilters) {
             setIsClicked(false);
         }
-        fetch("http://127.0.0.1:5555/api/markets")
+        fetch("http://127.0.0.1:5555/api/markets?is_visible=true")
             .then(response => response.json())
             .then(markets => setMarkets(markets))
             .catch(error => console.error('Error fetching markets', error));

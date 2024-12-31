@@ -66,11 +66,11 @@ function VendorDetail({ products }) {
     }, [vendor]); 
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${id}`)
+        fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${id}&is_visible=true`)
             .then(response => response.json())
             .then(markets => {
                 if (Array.isArray(markets)) {
-                    const marketDayIds = markets.map(market => market.market_day_id);
+                    // const marketDayIds = markets.map(market => market.market_day_id);
                     setMarkets(markets);
                 }
             })
@@ -361,70 +361,77 @@ function VendorDetail({ products }) {
                 <h2>Farmers Market Locations:</h2>
                 <div className='box-scroll'>
                 {Array.isArray(markets) && markets.length > 0 ? (
-                    markets.map((market, index) => {
-                        const marketDetail = marketDetails[market.market_day_id] || {};
-                        const firstBasket = (marketBaskets.length > 0 ? marketBaskets.find((item) => item.market_day_id === marketDetail.id && item.is_sold === false) : '');
-                        const allBaskets = (marketBaskets.length > 0 ? marketBaskets.filter((item) => item.market_day_id === marketDetail.id && item.is_sold === false) : '');
-                        return (
-                            <div key={index} className="market-item" >
-                                <span>
-                                    <Link to={`/user/markets/${market.market_day.market_id}`} className="market-name">
-                                        {marketDetail?.markets?.name || 'Loading...'}
-                                    </Link>
-                                    <br/>
-                                    Hours: {marketDetail.day_of_week ? `${weekDay[marketDetail.day_of_week]}, ` : 'Loading...'}
-                                    {`${marketDetail.hour_start && timeConverter(marketDetail.hour_start)} - 
-                                    ${marketDetail.hour_end && timeConverter(marketDetail.hour_end)}`}
-                                </span>
-                                <span></span>
-                                    <>
-                                    <br className='m-br'/>
-                                    {marketBaskets.filter((item) => item.market_day_id === marketDetail.id && item.is_sold === false).length > 0 ? (
-                                            <span className="market-price">Price: ${firstBasket ? firstBasket.price : ''}</span>
-                                        ) : (
-                                            <span className="market-price">Out of Stock</span>
-                                        )}
-                                        {allBaskets.length > 4 ? (
-                                            <span className="market-baskets nowrap">
-                                                Baskets Available
-                                                <br/>
-                                                Pick Up:
-                                                {firstBasket && firstBasket.pickup_start
-                                                    ? ` ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
-                                                    : ' Not Available'}
-                                            </span>
-                                        ) : (
-                                            <span className="market-baskets nowrap margin-r-8">
-                                                {allBaskets.length > 0
-                                                    ? `Available Baskets: ${allBaskets.length}`
-                                                    // : !firstBasket
-                                                    //     ? 'None Available'
-                                                    : <a className='link-edit' onClick={() => handleNotifyMe(market.market_day.market_id)}>Notify Me</a>}
-                                                <br />
-                                                
-                                                {firstBasket && firstBasket.pickup_start
-                                                    ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
-                                                    : ''}
-                                                {vendorAlertStates[market.market_day_id] && (
-                                                    <div className={`alert alert-cart-vendor`}>
-                                                        {alertMessage}
-                                                    </div>
-                                                )}
-                                            </span>
-                                        )}
-                                        {allBaskets.length > 0 ? (
-                                            <button className="btn-add nowrap" onClick={() => handleAddToCart(marketDetail)}>
-                                                Add to Cart
-                                            </button>
-                                        ) : (
-                                            <button className="btn-add nowrap" onClick={() => handleAddToCart(marketDetail)}>
-                                                Sold Out
-                                            </button>
-                                        )}                                
-                                    </>
-                            </div>
-                        );
-                    })
+                    markets
+                        .slice() // Create a shallow copy to avoid mutating the original array
+                        .sort((a, b) => {
+                            const nameA = (marketDetails[a.market_day_id]?.markets?.name || '').toLowerCase();
+                            const nameB = (marketDetails[b.market_day_id]?.markets?.name || '').toLowerCase();
+                            return nameA.localeCompare(nameB);
+                        })
+                        .map((market, index) => {
+                            const marketDetail = marketDetails[market.market_day_id] || {};
+                            const firstBasket = (marketBaskets.length > 0 ? marketBaskets.find((item) => item.market_day_id === marketDetail.id && item.is_sold === false) : '');
+                            const allBaskets = (marketBaskets.length > 0 ? marketBaskets.filter((item) => item.market_day_id === marketDetail.id && item.is_sold === false) : '');
+                            return (
+                                <div key={index} className="market-item" >
+                                    <span>
+                                        <Link to={`/user/markets/${market.market_day.market_id}`} className="market-name">
+                                            {marketDetail?.markets?.name || 'Loading...'}
+                                        </Link>
+                                        <br/>
+                                        Hours: {marketDetail.day_of_week ? `${weekDay[marketDetail.day_of_week]}, ` : 'Loading...'}
+                                        {`${marketDetail.hour_start && timeConverter(marketDetail.hour_start)} - 
+                                        ${marketDetail.hour_end && timeConverter(marketDetail.hour_end)}`}
+                                    </span>
+                                    <span></span>
+                                        <>
+                                        <br className='m-br'/>
+                                        {marketBaskets.filter((item) => item.market_day_id === marketDetail.id && item.is_sold === false).length > 0 ? (
+                                                <span className="market-price">Price: ${firstBasket ? firstBasket.price : ''}</span>
+                                            ) : (
+                                                <span className="market-price">Out of Stock</span>
+                                            )}
+                                            {allBaskets.length > 4 ? (
+                                                <span className="market-baskets nowrap">
+                                                    Baskets Available
+                                                    <br/>
+                                                    Pick Up:
+                                                    {firstBasket && firstBasket.pickup_start
+                                                        ? ` ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
+                                                        : ' Not Available'}
+                                                </span>
+                                            ) : (
+                                                <span className="market-baskets nowrap margin-r-8">
+                                                    {allBaskets.length > 0
+                                                        ? `Available Baskets: ${allBaskets.length}`
+                                                        // : !firstBasket
+                                                        //     ? 'None Available'
+                                                        : <a className='link-edit' onClick={() => handleNotifyMe(market.market_day.market_id)}>Notify Me</a>}
+                                                    <br />
+                                                    
+                                                    {firstBasket && firstBasket.pickup_start
+                                                        ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
+                                                        : ''}
+                                                    {vendorAlertStates[market.market_day_id] && (
+                                                        <div className={`alert alert-cart-vendor`}>
+                                                            {alertMessage}
+                                                        </div>
+                                                    )}
+                                                </span>
+                                            )}
+                                            {allBaskets.length > 0 ? (
+                                                <button className="btn-add nowrap" onClick={() => handleAddToCart(marketDetail)}>
+                                                    Add to Cart
+                                                </button>
+                                            ) : (
+                                                <button className="btn-add nowrap" onClick={() => handleAddToCart(marketDetail)}>
+                                                    Sold Out
+                                                </button>
+                                            )}                                
+                                        </>
+                                </div>
+                            );
+                        })
                     ) : (
                         <p>No market locations at this time</p>
                     )}

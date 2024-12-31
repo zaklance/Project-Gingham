@@ -462,65 +462,72 @@ function MarketDetail ({ match }) {
 
             <div className='box-scroll'>
                 {Array.isArray(uniqueFilteredVendorsList) && uniqueFilteredVendorsList.length > 0 ? (
-                    uniqueFilteredVendorsList.map((vendorId, index) => {
-                        const vendorDetail = vendorDetailsMap[vendorId];
-                        const availableBaskets = getAvailableBaskets(vendorId);
-                        const firstBasket = (marketBaskets.length > 0 ? marketBaskets.find(item => item.vendor_id === vendorDetail.id) : '');
+                    uniqueFilteredVendorsList
+                        .slice() // Create a shallow copy to avoid mutating the original array
+                        .sort((a, b) => {
+                            const nameA = (vendorDetailsMap[a]?.name || '').toLowerCase();
+                            const nameB = (vendorDetailsMap[b]?.name || '').toLowerCase();
+                            return nameA.localeCompare(nameB);
+                        })
+                        .map((vendorId, index) => {
+                            const vendorDetail = vendorDetailsMap[vendorId];
+                            const availableBaskets = getAvailableBaskets(vendorId);
+                            const firstBasket = (marketBaskets.length > 0 ? marketBaskets.find(item => item.vendor_id === vendorDetail.id) : '');
 
-                        return (
-                            <div key={index} className="market-item flex-center-align">
-                                <Link to={`/user/vendors/${vendorId}`} className="market-name">
-                                    {vendorDetail.name || 'Loading...'}
-                                </Link>
-                                <span className="market-name margin-l-16">
-                                    {products.find(p => p.id === vendorDetail.product)?.product || 'No product listed'}
-                                </span>
-                                {availableBaskets.length > 0 ? (
-                                    <span className="market-price">
-                                        Price: ${firstBasket.price}
+                            return (
+                                <div key={index} className="market-item flex-center-align">
+                                    <Link to={`/user/vendors/${vendorId}`} className="market-name">
+                                        {vendorDetail.name || 'Loading...'}
+                                    </Link>
+                                    <span className="market-name margin-l-16">
+                                        {products.find(p => p.id === vendorDetail.product)?.product || 'No product listed'}
                                     </span>
-                                ) : (
-                                    <span className="market-price"></span>
-                                )}
-                                {availableBaskets.length > 4 ? (
-                                    <span className="market-baskets nowrap">
-                                        Baskets Available
+                                    {availableBaskets.length > 0 ? (
+                                        <span className="market-price">
+                                            Price: ${firstBasket.price}
+                                        </span>
+                                    ) : (
+                                        <span className="market-price"></span>
+                                    )}
+                                    {availableBaskets.length > 4 ? (
+                                        <span className="market-baskets nowrap">
+                                            Baskets Available
+                                            <br />
+                                            {firstBasket
+                                                ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
+                                                : ''}
+                                        </span>
+                                    ) : (
+                                    <span className="market-baskets nowrap margin-r-8">
+                                        {availableBaskets.length > 0
+                                            ? `Available Baskets: ${availableBaskets.length}`
+                                            // : !firstBasket
+                                            //     ? 'None Available'
+                                                : <a className='link-edit' onClick={() => handleNotifyMe(vendorDetail)}>Notify Me</a>}
                                         <br />
-                                        {firstBasket
+                                        {firstBasket && firstBasket.pickup_start
                                             ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
                                             : ''}
+                                        {vendorAlertStates[vendorId] && (
+                                            <div className={`alert alert-cart-market`}>
+                                                {alertMessage}
+                                            </div>
+                                        )}
                                     </span>
-                                ) : (
-                                <span className="market-baskets nowrap margin-r-8">
-                                    {availableBaskets.length > 0
-                                        ? `Available Baskets: ${availableBaskets.length}`
-                                        // : !firstBasket
-                                        //     ? 'None Available'
-                                            : <a className='link-edit' onClick={() => handleNotifyMe(vendorDetail)}>Notify Me</a>}
-                                    <br />
-                                    {firstBasket && firstBasket.pickup_start
-                                        ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
-                                        : ''}
-                                    {vendorAlertStates[vendorId] && (
-                                        <div className={`alert alert-cart-market`}>
-                                            {alertMessage}
-                                        </div>
                                     )}
-                                </span>
-                                )}
-                                {availableBaskets.length > 0 ? (
-                                    <button className="btn-add nowrap" onClick={() => handleAddToCart(vendorId, vendorDetail, availableBaskets)}>
-                                            Add to Cart
-                                        </button>
-                                    ) : (
-                                        <button className="btn-add nowrap m-hidden" onClick={() => handleAddToCart(vendorId, vendorDetail)}>
-                                            Sold Out
-                                        </button>
-                                    )}
-                                
-                            </div>
-                        );
-                    })
+                                    {availableBaskets.length > 0 ? (
+                                        <button className="btn-add nowrap" onClick={() => handleAddToCart(vendorId, vendorDetail, availableBaskets)}>
+                                                Add to Cart
+                                            </button>
+                                        ) : (
+                                            <button className="btn-add nowrap m-hidden" onClick={() => handleAddToCart(vendorId, vendorDetail)}>
+                                                Sold Out
+                                            </button>
+                                        )}
+                                    
+                                </div>
+                            );
+                        })
                 ) : (
                     <p>No vendors at this market</p>
                 )}
