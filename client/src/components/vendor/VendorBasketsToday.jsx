@@ -3,17 +3,12 @@ import { timeConverter, formatBasketDate } from '../../utils/helpers';
 
 function VendorBasketsToday({vendorId, marketDay, entry}) {
     const [todayBaskets, setTodayBaskets] = useState([]);
-    const [startTime, setStartTime] = useState('');
-    const [endTime, setEndTime] = useState('');
     const [startAmPm, setStartAmPm] = useState('PM');
     const [endAmPm, setEndAmPm] = useState('PM');
     const [isEditing, setIsEditing] = useState({});
     const [basketCounts, setBasketCounts] = useState({});
     const [numBaskets, setNumBaskets] = useState(() => entry?.baskets?.length || 0);
     const [prevNumBaskets, setPrevNumBaskets] = useState(numBaskets);
-    const [savedBaskets, setSavedBaskets] = useState([]);
-    const [price, setPrice] = useState('');
-    const [basketValue, setBasketValue] = useState('');
     const [tempSavedBaskets, setTempSavedBaskets] = useState({});
     const [errorMessage, setErrorMessage] = useState([]);
 
@@ -113,7 +108,7 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
         });
     };
       
-    const handleSave = async (basketId, startTime, endTime) => {
+    const handleSave = async (basketId, startTime, endTime, price) => {
         const parsedNumBaskets = numBaskets;
         const today = new Date();
         const formattedSaleDate = today.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', }).split('/').reverse().join('-');
@@ -136,21 +131,15 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
                 console.error('Invalid hour or minute:', hours, minutes);
                 return null;
             }
-            // if (amPm === 'PM' && hours !== 12) hours += 12;
-            // if (amPm === 'AM' && hours === 12) hours = 0;
-            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+            
+            let period = amPm.toUpperCase();
+            if (hours === 0) { hours = 12; period = 'AM';
+            } else if (hours === 12) { period = 'PM';
+            } else if (hours > 12) { hours -= 12; period = 'PM';
+            }
+            
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
         };
-      
-        const formattedPickupStart = formatTime(startTime, startAmPm);
-        const formattedPickupEnd = formatTime(endTime, endAmPm);
-
-        console.log(formattedPickupStart);
-        console.log(formattedPickupEnd);
-      
-        if (!formattedPickupStart || !formattedPickupEnd) {
-            setErrorMessage('Invalid start or end time format.');
-            return;
-        }
       
         const additionalBaskets = parsedNumBaskets - prevNumBaskets;
       
@@ -210,7 +199,6 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
         setErrorMessage('');
     };
       
-    
     return (
         <div>
             <div className="flex flex-nowrap box-scroll-x">
@@ -302,7 +290,7 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
                                     <div className="text-center basket-actions">
                                         {isEditing[entry.baskets[0]?.id] ? (
                                             <>
-                                                <button onClick={() => handleSave(entry.baskets[0]?.id, entry.baskets[0]?.pickup_start, entry.baskets[0]?.pickup_end)} className="btn-basket-save" > Save </button>
+                                                <button onClick={() => handleSave(entry.baskets[0]?.id, entry.baskets[0]?.pickup_start, entry.baskets[0]?.pickup_end, entry.baskets[0]?.price, entry.baskets[0]?.basket_value)} className="btn-basket-save" > Save </button>
                                                 <button onClick={() => cancelBasketEdit(entry.baskets[0]?.id)} className="btn-basket-save" > Cancel </button>
                                             </>
                                         ) : (
