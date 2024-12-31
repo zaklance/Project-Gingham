@@ -22,11 +22,11 @@ db = SQLAlchemy(metadata=metadata)
 bcrypt = Bcrypt()
 
 avatars = [
-        "avatar-apricot.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage.jpg",
-        "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime.jpg", "avatar-melon.jpg",
-        "avatar-nectarine.jpg", "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg",
-        "avatar-peach.jpg", "avatar-pomegranate.jpg", "avatar-radish.jpg", "avatar-tomato.jpg",
-        "avatar-watermelon.jpg"
+        "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage-1.jpg",
+        "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime-1.jpg", "avatar-melon-1.jpg",
+        "avatar-nectarine-1.jpg", "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg",
+        "avatar-peach-1.jpg", "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
+        "avatar-watermelon-1.jpg"
     ]
 
 def random_avatar():
@@ -180,7 +180,7 @@ class Market(db.Model, SerializerMixin):
     year_round = db.Column(db.Boolean, nullable=True)
     season_start = db.Column(db.Date, nullable=True)
     season_end = db.Column(db.Date, nullable=True)
-    is_visible = db.Column(db.Boolean, nullable=True)
+    is_visible = db.Column(db.Boolean, nullable=True, default=True)
 
     # Relationships
     reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic', cascade="all, delete")
@@ -292,7 +292,7 @@ class VendorMarket(db.Model, SerializerMixin):
     vendor = db.relationship('Vendor', back_populates='vendor_markets')
     market_day = db.relationship( 'MarketDay', back_populates="vendor_markets")
 
-    serialize_rules = ('-vendor.vendor_markets', '-market_day.vendor_markets', '-market_day.markets.market_favorites', '-vendor.vendor_favorites')
+    serialize_rules = ('-vendor.vendor_markets', '-market_day.vendor_markets', '-market_day.markets.market_favorites', '-vendor.vendor_favorites', 'market_day.markets.is_visible')
 
     def __repr__(self) -> str:
         return f"<VendorMarket Vendor ID: {self.vendor_id}, Market ID: {self.market_id}>"
