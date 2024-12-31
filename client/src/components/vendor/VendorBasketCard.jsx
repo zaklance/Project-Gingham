@@ -177,11 +177,13 @@ function VendorBasketCard({ vendorId, marketDay }) {
     };
      
     const handleDecrement = () => {
+        const soldBasketsCount = savedBaskets.filter(basket => basket.is_sold).length;
         setNumBaskets(prevNum => {
-            const newNum = prevNum > 0 ? prevNum - 1 : prevNum;
-            return newNum;
+          const newNum = prevNum > soldBasketsCount ? prevNum - 1 : soldBasketsCount;
+          return newNum;
         });
-    };
+      };
+      
 
     useEffect(() => {
         setPrevNumBaskets(savedBaskets.length);
@@ -340,62 +342,62 @@ function VendorBasketCard({ vendorId, marketDay }) {
 
     const handleDelete = async () => {
         if (!confirm('Are you sure you want to delete all unsold baskets?')) {
-            return;
+          return;
         }
-    
+      
         const unsoldBaskets = savedBaskets.filter(basket => !basket.is_sold);
-    
         if (unsoldBaskets.length === 0) {
             setErrorMessage('No unsold baskets available for deletion.');
             return;
         }
-    
+      
         if (vendorId && marketDay?.id && marketDay?.date) {
             const formattedSaleDate = new Date(marketDay.date).toISOString().split('T')[0];
-    
-            try {
-                const response = await fetch(
+                try {
+                    const response = await fetch(
                     `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.id}&sale_date=${formattedSaleDate}`,
                     {
                         method: 'DELETE',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            basket_ids: unsoldBaskets.map(basket => basket.id),
-                        }),
+                        body: JSON.stringify({ basket_ids: unsoldBaskets.map(basket => basket.id) }),
                     }
-                );
-    
-                if (!response.ok) {
-                    const errorBody = await response.json();
-                    console.error('Failed to delete baskets:', errorBody);
-                    setErrorMessage(`Failed to delete baskets: ${errorBody.error || response.statusText}`);
-                    return;
-                }
-    
-                const responseBody = await response.json().catch(() => null);
-                if (responseBody) {
-                    console.log('Unsold baskets deleted successfully:', responseBody);
+                    );
+            
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+            
+                    const responseText = await response.text();
+                    let responseBody;
+                    
+                    if (responseText) {
+                        try {
+                            responseBody = JSON.parse(responseText);
+                        } catch (e) {
+                            console.warn('Response is not JSON, but operation may have succeeded');
+                        }
+                    }
+            
+                    console.log('Unsold baskets deleted successfully');
                     setSavedBaskets(savedBaskets.filter(basket => basket.is_sold));
                     setIsSaved(false);
                     setIsEditing(true);
-                    setNumBaskets('');
+                    setNumBaskets(savedBaskets.filter(basket => basket.is_sold).length);
                     setBasketValue('');
                     setPrice('');
                     setStartTime('');
                     setEndTime('');
-                } else {
-                    console.error('Unexpected response format');
-                    setErrorMessage('Unexpected response from the server.');
+                    setErrorMessage('');
+                } catch (error) {
+                    console.error('Error deleting baskets:', error);
+                    setErrorMessage(`An error occurred while deleting baskets: ${error.message}`);
                 }
-            } catch (error) {
-                console.error('Error deleting baskets:', error);
-                setErrorMessage('An error occurred while deleting baskets.');
+            } else {
+                console.error('Missing vendorId, marketDay.id, or marketDay.date');
+                setErrorMessage('Missing vendor ID, market day ID, or sale date.');
             }
-        } else {
-            console.error('Missing vendorId, marketDay.id, or marketDay.date');
-            setErrorMessage('Missing vendor ID, market day ID, or sale date.');
-        }
-    };
+      };
+      
  
     useEffect(() => {
         if (marketDay?.date) {
