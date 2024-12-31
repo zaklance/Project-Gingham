@@ -21,6 +21,7 @@ jwt = "*"
 pyjwt = "*"
 python-dotenv = "*"
 flask-jwt-extended = "*"
+sendgrid = "*"
 
 [dev-packages]
 

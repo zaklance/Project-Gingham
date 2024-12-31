@@ -27,6 +27,8 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import utils.events as events
 from utils.emails import send_contact_email, send_user_password_reset_email, send_vendor_password_reset_email, send_admin_password_reset_email
 import subprocess
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
 load_dotenv()
 
@@ -2095,7 +2097,7 @@ def preview_email():
 @app.route('/api/send-mjml-email', methods=['POST'])
 def send_mjml_email():
     data = request.json
-    mjml_template = data.get('mjmlTemplate', '')
+    mjml = data.get('mjml', '')
     subject = data.get('subject', '')
     email_address = data.get('emailAddress', '')
 
@@ -2103,7 +2105,7 @@ def send_mjml_email():
         # Run MJML CLI to compile MJML to HTML
         result = subprocess.run(
             ['mjml', '--stdin'],
-            input=mjml_template.encode(),
+            input=mjml.encode(),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
@@ -2144,8 +2146,6 @@ def send_mjml_email():
             except Exception as e:
                 print("General Error:", e)
                 return jsonify({"error": f"General Error: {str(e)}"}), 500
-
-            return {"message": "Email sent successfully!"}, 201 
         
         except Exception as e: 
             print("Error occured:", str(e))
@@ -2158,7 +2158,7 @@ def send_mjml_email():
 @app.route('/api/send-html-email', methods=['POST'])
 def send_html_email():
     data = request.json
-    html_template = data.get('htmlTemplate', '')
+    html = data.get('html', '')
     subject = data.get('subject', '')
     email_address = data.get('emailAddress', '')
 
@@ -2172,7 +2172,7 @@ def send_html_email():
         msg['To'] = recipient_email
         msg['Subject'] = subject
 
-        body = html_template
+        body = html
         msg.attach(MIMEText(body, 'html'))
 
         server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
@@ -2198,6 +2198,59 @@ def send_html_email():
         print("Error occured:", str(e))
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/sendgrid-email', methods=['POST'])
+def send_sendgrid_email():
+    data = request.json
+    html = data.get('html', '')
+    subject = data.get('subject', '')
+    sender_email = os.getenv('EMAIL_USER')
+
+    try:
+        # Run MJML CLI to compile MJML to HTML
+        result = subprocess.run(
+            ['mjml', '--stdin'],
+            input=html.encode(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+
+        if result.returncode != 0:
+            return jsonify({'error': result.stderr.decode()}), 400
+    
+    except Exception as e: 
+        print("Error occured:", str(e))
+        return jsonify({"error": str(e)}), 500
+
+    compiled_html = result.stdout.decode()
+
+    try:
+        users = User.query.with_entities(User.email).all()
+        email_list = [user.email for user in users]
+
+        if not email_list:
+            return jsonify({"error": "No users found to send emails to."}), 404
+        
+    except Exception as e:
+        print("Database Error:", str(e))
+        return jsonify({"error": str(e)}), 500
+
+    message = Mail(
+        from_email=sender_email,
+        to_emails=email_list,
+        subject=subject,
+        html_content=compiled_html,
+        is_multiple=True
+        )
+    try:
+        sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+        response = sg.send(message)
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
+        return jsonify({"message": "Email sent successfully", "status_code": response.status_code}), 202
+    except Exception as e:
+        print(e.message)
+        return jsonify({"error": str(e)}), 500
     
 # Stripe
 stripe.api_key = os.getenv('STRIPE_PY_KEY')

@@ -215,18 +215,18 @@ def run():
 
     # user for demo
     user_demo = [
-        User(
-            email="hamging@gingham.nyc",
-            password="lol",
-            first_name="Ham-man",
-            last_name="Gingy",
-            phone="2095553880",
-            address_1="11 Broadway",
-            address_2="Floor 2",
-            city="New York",
-            state="NY",
-            zipcode="10004"
-        ),
+        # User(
+        #     email="hamging@gingham.nyc",
+        #     password="lol",
+        #     first_name="Ham-man",
+        #     last_name="Gingy",
+        #     phone="2095553880",
+        #     address_1="11 Broadway",
+        #     address_2="Floor 2",
+        #     city="New York",
+        #     state="NY",
+        #     zipcode="10004"
+        # ),
         User(
             email="zak@mufo.nyc",
             password="lol",
@@ -264,41 +264,41 @@ def run():
             zipcode="10004"
         ),
     ]
-    db.session.add(user_demo)
+    db.session.add_all(user_demo)
     db.session.commit()
 
-    for i in range(16):
-        email = fake.ascii_free_email()
-        # password = fake.password()
-        password = "lol"
-        first_name = fake.first_name()
-        last_name = fake.last_name()
-        phone = str(randint(1000000000,9999999999))
-        address_1 = fake.street_address()
-        address_2 = f'{choice(apartment)} {randint(1, 200)}'
-        city = fake.city()
-        state = choice(states)
-        zipcode = fake.postcode()
-        # avatar = choice(avatars)
-        # avatar = f'_default-images/{choice(avatars)}'
+    # for i in range(16):
+    #     email = fake.ascii_free_email()
+    #     # password = fake.password()
+    #     password = "lol"
+    #     first_name = fake.first_name()
+    #     last_name = fake.last_name()
+    #     phone = str(randint(1000000000,9999999999))
+    #     address_1 = fake.street_address()
+    #     address_2 = f'{choice(apartment)} {randint(1, 200)}'
+    #     city = fake.city()
+    #     state = choice(states)
+    #     zipcode = fake.postcode()
+    #     # avatar = choice(avatars)
+    #     # avatar = f'_default-images/{choice(avatars)}'
 
-        u = User(
-            email=email,
-            password=password,
-            first_name=first_name,
-            last_name=last_name,
-            phone=phone,
-            address_1=address_1,
-            address_2=address_2,
-            city=city,
-            state=state,
-            zipcode=zipcode,
-            # avatar=avatar
-        )
-        users.append(u)
+    #     u = User(
+    #         email=email,
+    #         password=password,
+    #         first_name=first_name,
+    #         last_name=last_name,
+    #         phone=phone,
+    #         address_1=address_1,
+    #         address_2=address_2,
+    #         city=city,
+    #         state=state,
+    #         zipcode=zipcode,
+    #         # avatar=avatar
+    #     )
+    #     users.append(u)
 
-    db.session.add_all(users)
-    db.session.commit()
+    # db.session.add_all(users)
+    # db.session.commit()
 
     # add fake market reviews
     market_revs = []
@@ -308,7 +308,7 @@ def run():
 
         review_text = str(fake.paragraph(nb_sentences=rev_len))
         market_id = str(randint(1, 4))
-        user_id = str(randint(1, 20))
+        user_id = str(randint(1, 3))
         is_reported = choice(reported)
         last_year = randint(0, 365)
         post_date = datetime.now(timezone.utc) - timedelta(days=last_year)
@@ -332,7 +332,7 @@ def run():
 
         review_text = fake.paragraph(nb_sentences=rev_len)
         vendor_id = str(randint(1, 20))
-        user_id = str(randint(1, 20))
+        user_id = str(randint(1, 3))
         is_reported = choice(reported)
         last_year = randint(0, 365)
         post_date = datetime.now(timezone.utc) - timedelta(days=last_year)
@@ -352,7 +352,7 @@ def run():
     market_favs = []
     for i in range(40):
         market_id = randint(1, 4)
-        user_id = randint(1, 20)
+        user_id = randint(1, 3)
 
         mf = MarketFavorite(
             market_id=market_id,
@@ -366,7 +366,7 @@ def run():
     vendor_favs = []
     for i in range(80):
         vendor_id = randint(1, 20)
-        user_id = randint(1, 20)
+        user_id = randint(1, 3)
 
         vf = VendorFavorite(
             vendor_id=vendor_id,
@@ -630,7 +630,7 @@ def run():
         subject = choice(["vendor", "market"])
         message = fake.paragraph(nb_sentences=msg_len)
         link = choice (['/user/vendors/1', '/user/markets/1'])
-        user_id = randint(1, 20)
+        user_id = randint(1, 3)
         market_id = rand_market
         vendor_id = rand_vendor
         created_at = datetime.now(timezone.utc) - timedelta(days=few_days)
@@ -658,7 +658,7 @@ def run():
         rand_bool = choice([True, False])
 
         review_id = str(randint(1, 200))
-        user_id = str(randint(1, 50))
+        user_id = str(randint(1, 3))
         vote_down = rand_bool
         if rand_bool is False:
             vote_up = True
@@ -683,7 +683,7 @@ def run():
         rand_bool = choice([True, False])
 
         review_id = str(randint(1, 200))
-        user_id = str(randint(1, 50))
+        user_id = str(randint(1, 3))
         vote_down = rand_bool
         if rand_bool is False:
             vote_up = True
