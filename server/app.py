@@ -1691,7 +1691,7 @@ def handle_baskets():
             db.session.add(new_basket)
             db.session.commit()
             return jsonify(new_basket.to_dict()), 201
-
+        
         except Exception as e:
             db.session.rollback()
             app.logger.error(f'Error creating basket: {e}')
@@ -1809,51 +1809,50 @@ def handle_basket_by_id(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route('/api/todays-baskets', methods=['GET'])
-def handle_todays_baskets():
-    try:
-        if request.method == 'GET':
-            today_str = request.args.get('date', type=str)
-            if not today_str:
-                return jsonify({'error': 'Date parameter is required'}), 400
-            try:
-                today = datetime.strptime(today_str, '%Y-%m-%d').date()
-            except ValueError:
-                return jsonify({'error': 'Invalid date format. Expected YYYY-MM-DD.'}), 400
+# @app.route('/api/todays-baskets', methods=['GET'])
+# def handle_todays_baskets():
+#     try:
+#         if request.method == 'GET':
+#             today_str = request.args.get('date', type=str)
+#             if not today_str:
+#                 return jsonify({'error': 'Date parameter is required'}), 400
+#             try:
+#                 today = datetime.strptime(today_str, '%Y-%m-%d').date()
+#             except ValueError:
+#                 return jsonify({'error': 'Invalid date format. Expected YYYY-MM-DD.'}), 400
 
-            vendor_id = request.args.get('vendor_id', type=int)
-            user_id = request.args.get('user_id', type=int)
-            if not vendor_id and not user_id:
-                return jsonify({'error': 'At least one of vendor_id or user_id is required'}), 400
+#             vendor_id = request.args.get('vendor_id', type=int)
+#             user_id = request.args.get('user_id', type=int)
+#             if not vendor_id and not user_id:
+#                 return jsonify({'error': 'At least one of vendor_id or user_id is required'}), 400
 
-            query = db.session.query(Basket).filter(func.date(Basket.sale_date) == today)
-            if vendor_id:
-                query = query.filter(Basket.vendor_id == vendor_id)
-            if user_id:
-                query = query.filter(Basket.user_id == user_id)
-            baskets = query.all()
+#             query = db.session.query(Basket).filter(func.date(Basket.sale_date) == today)
+#             if vendor_id:
+#                 query = query.filter(Basket.vendor_id == vendor_id)
+#             if user_id:
+#                 query = query.filter(Basket.user_id == user_id)
+#             baskets = query.all()
 
-            if not baskets:
-                return jsonify({'message': 'No baskets found for today'}), 404
+#             if not baskets:
+#                 return jsonify({'message': 'No baskets found for today'}), 404
 
-            return jsonify([
-                {
-                    'id': basket.id,
-                    'vendor_id': basket.vendor_id,
-                    'market_day_id': basket.market_day_id,
-                    'market_name': basket.market_day.markets.name,
-                    'sale_date': basket.sale_date.strftime('%Y-%m-%d'),
-                    'pickup_start': basket.pickup_start.strftime('%H:%M') if basket.pickup_start else None,
-                    'pickup_end': basket.pickup_end.strftime('%H:%M') if basket.pickup_end else None,
-                    'price': basket.price,
-                    'basket_value': basket.basket_value,
-                    'is_sold': basket.is_sold,
-                    'is_grabbed': basket.is_grabbed
-                } for basket in baskets
-            ]), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
+#             return jsonify([
+#                 {
+#                     'id': basket.id,
+#                     'vendor_id': basket.vendor_id,
+#                     'market_day_id': basket.market_day_id,
+#                     'market_name': basket.market_day.markets.name,
+#                     'sale_date': basket.sale_date.strftime('%Y-%m-%d'),
+#                     'pickup_start': basket.pickup_start.strftime('%H:%M') if basket.pickup_start else None,
+#                     'pickup_end': basket.pickup_end.strftime('%H:%M') if basket.pickup_end else None,
+#                     'price': basket.price,
+#                     'basket_value': basket.basket_value,
+#                     'is_sold': basket.is_sold,
+#                     'is_grabbed': basket.is_grabbed
+#                 } for basket in baskets
+#             ]), 200
+#     except Exception as e:
+#         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/baskets/user-sales-history', methods=['GET'])
 @jwt_required()
