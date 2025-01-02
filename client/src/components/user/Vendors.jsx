@@ -26,6 +26,7 @@ function Vendors() {
         setQuery(value);
         setShowDropdown(value.trim().length > 0); // Show dropdown if there's input
     };
+    
     const filteredVendorsDropdown = vendors.filter(vendor =>
         vendor.name.toLowerCase().includes(query.toLowerCase()) &&
         vendor.name !== query &&
