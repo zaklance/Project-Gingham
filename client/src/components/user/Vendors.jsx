@@ -190,14 +190,21 @@ function Vendors() {
                 </table>
             </div>
             <div className="market-cards-container box-scroll-large">
-                {filteredVendorsResults.map((vendorData) => (
-                    <VendorCard 
-                        key={vendorData.id} 
-                        vendorData={vendorData} 
-                        products={products} 
-                        selectedProduct={selectedProduct}
-                        onClick={() => handleVendorClick(vendorData.id)} 
-                    />
+                {filteredVendorsResults
+                    .slice() // Create a shallow copy to avoid mutating the original array
+                    .sort((a, b) => {
+                        const nameA = (a?.name || '').toLowerCase();
+                        const nameB = (b?.name || '').toLowerCase();
+                        return nameA.localeCompare(nameB);
+                    })
+                    .map((vendorData) => (
+                        <VendorCard 
+                            key={vendorData.id} 
+                            vendorData={vendorData} 
+                            products={products} 
+                            selectedProduct={selectedProduct}
+                            onClick={() => handleVendorClick(vendorData.id)} 
+                        />
                 ))}
             </div>
         </div>

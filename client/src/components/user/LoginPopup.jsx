@@ -167,7 +167,7 @@ function Login({ handlePopup }) {
                                     onChange={(event) => setLoginPassword(event.target.value)}
                                     required
                                 />
-                                <i className={showPassword.pw1 ? 'img-eye-alt' : 'img-eye'} onClick={() => togglePasswordVisibility('pw1')}>&emsp;</i>
+                                <i className={showPassword.pw1 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw1')}>&emsp;</i>
                             </div>
                         </div>
                         <div className='flex-center-align flex-space-around margin-t-16'>
@@ -214,7 +214,7 @@ function Login({ handlePopup }) {
                                     onChange={(event) => setSignupPassword(event.target.value)}
                                     required
                                 />
-                                <i className={showPassword.pw2 ? 'img-eye-alt' : 'img-eye'} onClick={() => togglePasswordVisibility('pw2')}>&emsp;</i>
+                                <i className={showPassword.pw2 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw2')}>&emsp;</i>
                             </div>
                         </div>
                         <div className="form-group form-login">
@@ -227,7 +227,7 @@ function Login({ handlePopup }) {
                                     onChange={(event) => setSignupConfirmPassword(event.target.value)}
                                     required
                                 />
-                                <i className={showPassword.pw3 ? 'img-eye-alt' : 'img-eye'} onClick={() => togglePasswordVisibility('pw3')}>&emsp;</i>
+                                <i className={showPassword.pw3 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw3')}>&emsp;</i>
                             </div>
                         </div>
                         <div className="form-group form-login">
