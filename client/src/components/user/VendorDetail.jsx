@@ -374,7 +374,7 @@ function VendorDetail({ products }) {
                             const allBaskets = (marketBaskets.length > 0 ? marketBaskets.filter((item) => item.market_day_id === marketDetail.id && item.is_sold === false) : '');
                             return (
                                 <div key={index} className="market-item" >
-                                    <span>
+                                    <span className='width-40'>
                                         <Link to={`/user/markets/${market.market_day.market_id}`} className="market-name">
                                             {marketDetail?.markets?.name || 'Loading...'}
                                         </Link>
@@ -383,7 +383,6 @@ function VendorDetail({ products }) {
                                         {`${marketDetail.hour_start && timeConverter(marketDetail.hour_start)} - 
                                         ${marketDetail.hour_end && timeConverter(marketDetail.hour_end)}`}
                                     </span>
-                                    <span></span>
                                         <>
                                         <br className='m-br'/>
                                         {marketBaskets.filter((item) => item.market_day_id === marketDetail.id && item.is_sold === false).length > 0 ? (

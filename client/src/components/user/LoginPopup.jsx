@@ -18,6 +18,7 @@ function Login({ handlePopup }) {
     const [signupCity, setSignupCity] = useState('');
     const [signupState, setSignupState] = useState('');
     const [signupZipCode, setSignupZipCode] = useState('');
+    const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false, pw3: false });
 
     const navigate = useNavigate();
     
@@ -54,7 +55,6 @@ function Login({ handlePopup }) {
                 console.log('Login successful:', data);
     
                 handlePopup();
-                // navigate('/');
             } else {
                 alert(data.error || 'Login failed');
             }
@@ -128,6 +128,17 @@ function Login({ handlePopup }) {
         }
     };
 
+    const togglePasswordVisibility = (field) => {
+        setShowPassword((prev) => ({
+            ...prev,
+            [field]: !prev[field],
+        }));
+        setTimeout(() => {
+            setShowPassword(prev => ({ ...prev, [field]: false }));
+        }, 8000);
+    };
+
+
     return (
         <div className='login-bar'>
             <button className="btn btn-large x-btn" onClick={handlePopup}>X</button>
@@ -148,13 +159,16 @@ function Login({ handlePopup }) {
                         </div>
                         <div className="form-group form-login">
                             <label>Password:</label>
-                            <input
-                                type="password"
-                                value={loginPassword}
-                                placeholder="enter your password"
-                                onChange={(event) => setLoginPassword(event.target.value)}
-                                required
-                            />
+                            <div className='badge-container-strict'>
+                                <input
+                                    type={showPassword.pw1 ? 'text' : 'password'}
+                                    value={loginPassword}
+                                    placeholder="enter your password"
+                                    onChange={(event) => setLoginPassword(event.target.value)}
+                                    required
+                                />
+                                <i className={showPassword.pw1 ? 'img-eye-alt' : 'img-eye'} onClick={() => togglePasswordVisibility('pw1')}>&emsp;</i>
+                            </div>
                         </div>
                         <div className='flex-center-align flex-space-around margin-t-16'>
                             <button className='btn btn-login' type="submit">Login</button>
@@ -192,23 +206,29 @@ function Login({ handlePopup }) {
                         </div>
                         <div className="form-group form-login">
                             <label>Password: </label>
-                            <input
-                                type="password"
-                                value={signupPassword}
-                                placeholder='enter a password'
-                                onChange={(event) => setSignupPassword(event.target.value)}
-                                required
-                            />
+                            <div className='badge-container-strict'>
+                                <input
+                                    type={showPassword.pw2 ? 'text' : 'password'}
+                                    value={signupPassword}
+                                    placeholder='enter a password'
+                                    onChange={(event) => setSignupPassword(event.target.value)}
+                                    required
+                                />
+                                <i className={showPassword.pw2 ? 'img-eye-alt' : 'img-eye'} onClick={() => togglePasswordVisibility('pw2')}>&emsp;</i>
+                            </div>
                         </div>
                         <div className="form-group form-login">
                             <label></label>
-                            <input
-                                type="password"
-                                value={signupConfirmPassword}
-                                placeholder="re-enter your password"
-                                onChange={(event) => setSignupConfirmPassword(event.target.value)}
-                                required
-                            />
+                            <div className='badge-container-strict'>
+                                <input
+                                    type={showPassword.pw3 ? 'text' : 'password'}
+                                    value={signupConfirmPassword}
+                                    placeholder="re-enter your password"
+                                    onChange={(event) => setSignupConfirmPassword(event.target.value)}
+                                    required
+                                />
+                                <i className={showPassword.pw3 ? 'img-eye-alt' : 'img-eye'} onClick={() => togglePasswordVisibility('pw3')}>&emsp;</i>
+                            </div>
                         </div>
                         <div className="form-group form-login">
                             <label>First Name: </label>

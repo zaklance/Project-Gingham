@@ -207,7 +207,7 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
                     todayBaskets.map((entry, index) => {
 
                         return (
-                            <div key={index} className="badge-container">
+                            <div key={index} className="badge-container padding-12">
                                 <div className="basket-card">
                                     {entry.baskets.length > 0 && new Date(entry.baskets[0]?.sale_date) <= new Date() && ( <p className="badge-live">Live</p> )}
     
