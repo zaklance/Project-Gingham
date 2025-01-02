@@ -66,13 +66,6 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
-    if image.format == 'PNG':
-        if image.mode != 'RGBA' or 'RGB':
-            image = image.convert('RGBA')
-    else:
-        if image.mode != 'RGB':
-            image = image.convert('RGB')
-
     image.thumbnail(resolution, Image.LANCZOS)
 
     temp_output = BytesIO()
@@ -129,6 +122,12 @@ def upload_file():
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
 
+        # Check if there's an existing image and delete it
+        existing_files = [f for f in os.listdir(upload_folder) if os.path.isfile(os.path.join(upload_folder, f))]
+        for existing_file in existing_files:
+            os.remove(os.path.join(upload_folder, existing_file))
+            print(f"Deleted existing file: {existing_file}")
+
         file_path = os.path.join(upload_folder, original_filename)
 
         # Prevent overwriting files by appending a number to the filename if it already exists
@@ -159,7 +158,7 @@ def upload_file():
                 if not user:
                     return {'error': 'User not found'}, 404
 
-                user.avatar = f'{user_id}/{os.path.basename(file_path)}' 
+                user.avatar = f'{user_id}/{os.path.basename(file_path)}'
                 db.session.commit()
 
             elif upload_type == 'vendor':
@@ -193,7 +192,6 @@ def upload_file():
             return {'error': f'Failed to upload image: {str(e)}'}, 500
 
     return {'error': 'File type not allowed'}, 400
-
 
 @app.route('/api/delete-image', methods=['DELETE'])
 @jwt_required()
