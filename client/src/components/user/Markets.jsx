@@ -18,7 +18,6 @@ function Markets() {
     const [selectedDay, setSelectedDay] = useState('');
     const [isInSeason, setIsInSeason] = useState(false);
 
-    
     const dropdownRef = useRef(null);
     const location = useLocation();
     
@@ -56,7 +55,6 @@ function Markets() {
         );
     });
 
-    
     useEffect(() => {
         if (location.state?.isClicked !== undefined) {
             setIsClicked(location.state.isClicked);
@@ -207,7 +205,6 @@ function Markets() {
         }
     };
 
-
     return (
         <>
         <div className="markets-container">
@@ -255,33 +252,33 @@ function Markets() {
                                     onClick={handleClick}>&#9829;
                                 </button>
                             </td>
-                                <td>
-                                    <button className='btn btn-filter' onClick={handleDropDownFilters}>&#9776;</button>
-                                    {showFilters && (
-                                        <div className='dropdown-content box-filters'>
-                                            <div className='form-filters'>
-                                                <label className='margin-r-26'>In Season:</label>
-                                                <input
-                                                    type="checkbox"
-                                                    name="in_season"
-                                                    value={true}
-                                                    onChange={handleInSeasonChange}
-                                                />
-                                            </div>
-                                            <select className='select-dropdown' value={selectedDay} onChange={handleDayChange}>
-                                                <option value="">Days Open</option>
-                                                {Array.isArray(weekDay) && weekDay.map((product, index) => (
-                                                    <option key={index} value={index}>
-                                                        {product}
-                                                    </option>
-                                                ))}
-                                            </select>
+                            <td>
+                                <button className='btn btn-filter' onClick={handleDropDownFilters}>&#9776;</button>
+                                {showFilters && (
+                                    <div className='dropdown-content box-filters'>
+                                        <div className='form-filters'>
+                                            <label className='margin-r-26'>In Season:</label>
+                                            <input
+                                                type="checkbox"
+                                                name="in_season"
+                                                value={true}
+                                                onChange={handleInSeasonChange}
+                                            />
                                         </div>
-                                    )}
-                                    {showFilters && (
-                                        <div className="popup-overlay-clear" onClick={closePopup}></div>
-                                    )}
-                                </td>
+                                        <select className='select-dropdown' value={selectedDay} onChange={handleDayChange}>
+                                            <option value="">Days Open</option>
+                                            {Array.isArray(weekDay) && weekDay.map((product, index) => (
+                                                <option key={index} value={index}>
+                                                    {product}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
+                                {showFilters && (
+                                    <div className="popup-overlay-clear" onClick={closePopup}></div>
+                                )}
+                            </td>
                         </tr>
                     </tbody>
                 </table>

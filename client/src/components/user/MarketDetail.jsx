@@ -216,7 +216,7 @@ function MarketDetail ({ match }) {
     }, [amountInCart, cartItems]);
 
     const handleBackButtonClick = () => {
-        if (isClicked) {
+        if ( isClicked ) {
             navigate('/user/markets', { state: { isClicked } });
         } else {
             console.log("No filters applied");

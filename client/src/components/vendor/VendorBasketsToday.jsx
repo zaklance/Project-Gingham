@@ -140,6 +140,9 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
             
             return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
         };
+
+        const formattedPickupStart = formatTime(startTime, startAmPm);
+        const formattedPickupEnd = formatTime(endTime, endAmPm);
       
         const additionalBaskets = parsedNumBaskets - prevNumBaskets;
       
