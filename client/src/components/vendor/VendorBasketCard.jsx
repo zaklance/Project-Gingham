@@ -409,7 +409,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
     }, [marketDay]);
 
     return (
-        <div className='badge-container'>
+        <div className='badge-container padding-12'>
             <div className="basket-card">
                 {isLive ? (
                     <p className="badge-live">Live</p>

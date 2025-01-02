@@ -788,7 +788,7 @@ def run():
             for_vendor=True
         ),
         FAQ(
-            question="Can I edit or cancel my baskets after they are listed? ",
+            question="Can I edit or cancel my baskets after they are listed?",
             answer="Yes, you can edit or cancel unsold baskets through the Vendor Dashboard up until 9:00 AM on the day of the market.",
             for_vendor=True
         ),
