@@ -10,7 +10,7 @@ function Home({ isPopup, setIsPopup, handlePopup }) {
                 <img className='big-logo' src="/site-images/gingham-logo-A_2.svg" alt="Gingham Logo"></img>
             </div>
             <div className="sidebar">
-                <h1 className="font-gingham title-big">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</h1>
+                <h1 className="font-gingham title-big m-text-center">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</h1>
                 <br></br>
                 <h3> MAKE A POSITIVE IMPACT BY MINIMIZING FOOD WASTE </h3><br/>
                 <p>

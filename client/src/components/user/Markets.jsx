@@ -287,8 +287,15 @@ function Markets() {
                 </table>
             </div>
             <div className="market-cards-container box-scroll-large margin-t-24">
-                {filteredMarketsResults.map((marketData) => (
-                    <MarketCard key={marketData.id} marketData={marketData} />
+                {filteredMarketsResults
+                    .slice() // Create a shallow copy to avoid mutating the original array
+                    .sort((a, b) => {
+                        const nameA = (a?.name || '').toLowerCase();
+                        const nameB = (b?.name || '').toLowerCase();
+                        return nameA.localeCompare(nameB);
+                    })
+                    .map((marketData) => (
+                        <MarketCard key={marketData.id} marketData={marketData} />
                 ))}
             </div>
         </div>
