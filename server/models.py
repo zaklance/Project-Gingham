@@ -805,6 +805,7 @@ class Receipt(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     baskets = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self) -> str:
         return f"<FAQ ID: {self.id}, Question: {self.question}, Answer: {self.answer}>"
