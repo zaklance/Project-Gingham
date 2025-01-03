@@ -120,7 +120,7 @@ function Markets() {
                 if (userId & markets.length > 0) {
                     const sortedMarkets = markets
                         .map(market => {
-                            const distance = zipCodeDistance(
+                            let distance = zipCodeDistance(
                                 user.zipcode,
                                 market.zipcode,
                                 'M'
