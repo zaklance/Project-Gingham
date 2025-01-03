@@ -786,3 +786,25 @@ class FAQ(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<FAQ ID: {self.id}, Question: {self.question}, Answer: {self.answer}>"
+
+class Blog(db.Model, SerializerMixin):
+    __tablename__ = 'blogs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String, nullable=False)
+    body = db.Column(db.String, nullable=False)
+    admin_id = db.Column(db.Integer, db.ForeignKey('admin_users.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self) -> str:
+        return f"<Blog ID: {self.id}, Title: {self.title}, Body: {self.body}, admin_id: {self.admin_id}, Created at: {self.created_at}>"
+
+class Receipt(db.Model, SerializerMixin):
+    __tablename__ = 'receipts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    baskets = db.Column(db.JSON, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"<FAQ ID: {self.id}, Question: {self.question}, Answer: {self.answer}>"
