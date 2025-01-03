@@ -1226,13 +1226,15 @@ def run():
     few_days = 14
     date_start = (datetime.now() - timedelta(days=last_month)).date()
     date_end = date_start + timedelta(days=few_days)
+    schedule_change = bool(fake.boolean())
 
     holiday = Event(
         title="Holiday Market",
         message=fake.paragraph(nb_sentences=5),
         market_id=1,
         start_date=date_start,
-        end_date=date_end
+        end_date=date_end,
+        schedule_change=False
     )
     events.append(holiday)
     
@@ -1241,7 +1243,8 @@ def run():
         message=fake.paragraph(nb_sentences=4),
         vendor_id=1,
         start_date=date_start,
-        end_date=date_end
+        end_date=date_end,
+        schedule_change=True
     )
     events.append(special)
 
@@ -1264,6 +1267,7 @@ def run():
         vendor_id = rand_vendor
         start_date = date_start
         end_date = date_end
+        schedule_change = bool(fake.boolean())
         
         ev = Event(
             title=title,
@@ -1271,7 +1275,8 @@ def run():
             market_id=market_id,
             vendor_id=vendor_id,
             start_date=start_date,
-            end_date=end_date
+            end_date=end_date,
+            schedule_change=schedule_change
         )
         events.append(ev)
 
