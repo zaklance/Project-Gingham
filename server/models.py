@@ -719,6 +719,7 @@ class Event(db.Model):
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
+    schedule_change = db.Column(db.Boolean, default=False, nullable=False)
 
     @validates('title')
     def validate_title(self, key, value):
@@ -738,6 +739,7 @@ class Event(db.Model):
             "vendor_id": self.vendor_id,
             "start_date": start_date_str,
             "end_date": end_date_str,
+            "schedule_change": self.schedule_change
         }
     
     def __repr__(self):
@@ -797,7 +799,7 @@ class Blog(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self) -> str:
-        return f"<Blog ID: {self.id}, Title: {self.title}, Body: {self.body}, admin_id: {self.admin_id}, Created at: {self.created_at}>"
+        return f"<Blog ID: {self.id}, Title: {self.title}, Body: {self.body}, Admin ID: {self.admin_id}, Created at: {self.created_at}>"
 
 class Receipt(db.Model, SerializerMixin):
     __tablename__ = 'receipts'
