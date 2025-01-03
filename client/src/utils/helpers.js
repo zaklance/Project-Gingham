@@ -9,6 +9,9 @@ export function timeConverter(time24) {
         minute: 'numeric',
         hour12: true,
     });
+    if (time12.includes(':00')) {
+        return time12.replace(/:00/, '').trim();
+    }
     return time12;
 }
 
