@@ -48,7 +48,8 @@ def run():
             schedule='Thursday (8 a.m. - 4 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 27),
-            season_end=date(2024, 11, 21)
+            season_end=date(2024, 11, 21),
+            is_visible=False
         ),
         Market(
             name='57th Street Greenmarket',
@@ -58,7 +59,8 @@ def run():
             schedule='Saturday (8 a.m. - 3 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 1),
-            season_end=date(2024, 11, 23)
+            season_end=date(2024, 11, 23),
+            is_visible=False
         ),
         Market(
             name='79th Street Greenmarket',
@@ -66,7 +68,8 @@ def run():
             zipcode='10024',
             coordinates={"lat": "40.782040858828", "lng": "-73.9759752811397"},
             schedule='Sunday (9 a.m. - 4 p.m.)',
-            year_round=True
+            year_round=True,
+            is_visible=False
         ),
         Market(
             name='82nd Street Greenmarket',
@@ -74,7 +77,8 @@ def run():
             zipcode='10028',
             coordinates={"lat": "40.77397099020891", "lng": "-73.95064361322936"},
             schedule='Saturday (9 a.m. - 2:30 p.m.)',
-            year_round=True
+            year_round=True,
+            is_visible=False
         ),
         Market(
             name='94th Street Greenmarket',
@@ -84,7 +88,8 @@ def run():
             schedule='Sunday (9 a.m. - 4 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 18),
-            season_end=date(2024, 11, 19)
+            season_end=date(2024, 11, 19),
+            is_visible=False
         ),
         Market(
             name='97th Street Greenmarket',
@@ -92,7 +97,8 @@ def run():
             zipcode='10025',
             coordinates={"lat": "40.79433392796688", "lng": "-73.96852339557134"},
             schedule='Friday (8 a.m. - 2 p.m.)',
-            year_round=True
+            year_round=True,
+            is_visible=False
         ),
         Market(
             name='Abingdon Square Greenmarket',
@@ -100,7 +106,8 @@ def run():
             zipcode='10014',
             coordinates={"lat": "40.737268845844085", "lng": "-74.00531736212757"},
             schedule='Saturday (8 a.m. - 2 p.m.)',
-            year_round=True
+            year_round=True,
+            is_visible=False
         ),
         Market(
             name='Astor Place Greenmarket',
@@ -110,7 +117,8 @@ def run():
             schedule='Tuesday (8 a.m. - 5 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 4),
-            season_end=date(2024, 11, 26)
+            season_end=date(2024, 11, 26),
+            is_visible=False
         ),
         Market(
             name='Bowling Green Greenmarket',
@@ -120,7 +128,8 @@ def run():
             schedule='Tuesday & Thursday (8 a.m. - 2 p.m.)',
             year_round=False,
             season_start=date(2024, 4, 16),
-            season_end=date(2024, 11, 26)
+            season_end=date(2024, 11, 26),
+            is_visible=False
         ),
         Market(
             name='Bro Sis Green Youth Market',
@@ -130,7 +139,8 @@ def run():
             schedule='Wednesday (10:30 a.m. - 6 p.m.)',
             year_round=False,
             season_start=date(2024, 7, 8),
-            season_end=date(2024, 11, 25)
+            season_end=date(2024, 11, 25),
+            is_visible=False
         ),
         Market(
             name="Chelsea’s Down to Earth Farmers Market",
@@ -140,7 +150,8 @@ def run():
             schedule='Saturday (9 a.m. - 2 p.m.)',
             year_round=False,
             season_start=date(2024, 4, 20),
-            season_end=date(2024, 12, 21)
+            season_end=date(2024, 12, 21),
+            is_visible=False
         ),
         Market(
             name="Children’s Aid Go!Healthy Food Box + Farmstand - Milbank Center",
@@ -150,7 +161,8 @@ def run():
             schedule='Wednesday (2 - 4:30 p.m.)',
             year_round=False,
             season_start=date(2024, 7, 10),
-            season_end=date(2024, 11, 20)
+            season_end=date(2024, 11, 20),
+            is_visible=False
         ),
         Market(
             name='Columbia Greenmarket',
@@ -158,7 +170,8 @@ def run():
             zipcode='10025',
             coordinates={"lat": "40.80711550674964", "lng": "-73.9643334908912"},
             schedule='Thursday & Sunday (8 a.m. - 4 p.m.)',
-            year_round=True
+            year_round=True,
+            is_visible=False
         ),
         Market(
             name='Dag Hammarskjold Greenmarket',
@@ -166,7 +179,8 @@ def run():
             zipcode='10017',
             coordinates={"lat": "40.752106980482026", "lng": "-73.96813449641382"},
             schedule='Wednesday (8 a.m. - 3 p.m.)',
-            year_round=True
+            year_round=True,
+            is_visible=False
         ),
         Market(
             name='Fort Washington Greenmarket',
@@ -176,7 +190,8 @@ def run():
             schedule='Tuesday (8 a.m. - 4 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 4),
-            season_end=date(2024, 11, 26)
+            season_end=date(2024, 11, 26),
+            is_visible=False
         ),
         Market(
             name='Fulton Stall Market (Indoor Farmers Market)',
@@ -184,7 +199,8 @@ def run():
             zipcode='10038',
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
             schedule='Monday - Saturday (11:30 a.m. - 5 p.m.)',
-            year_round=True
+            year_round=True,
+            is_visible=False
         ),
         Market(
             name='Gouverneur Health Farmstand',
@@ -194,7 +210,8 @@ def run():
             schedule='Thursday (9 a.m. - 2 p.m.)',
             year_round=False,
             season_start=date(2024, 7, 5),
-            season_end=date(2024, 11, 22)
+            season_end=date(2024, 11, 22),
+            is_visible=False
         ),
         Market(
             name='Grass Roots Farmers Market',
@@ -202,7 +219,8 @@ def run():
             zipcode='10039',
             coordinates={"lat": "40.82373611412579", "lng": "-73.9435495760123"},
             schedule='Tuesday & Saturday (9 a.m. - 4 p.m.)',
-            year_round=False
+            year_round=False,
+            is_visible=False
         ),
         Market(
             name='Greenmarket at the Oculus',
@@ -212,7 +230,8 @@ def run():
             schedule='Tuesday (8 a.m. - 5 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 18),
-            season_end=date(2024, 10, 29)
+            season_end=date(2024, 10, 29),
+            is_visible=False
         ),
         Market(
             name='Harlem Meer Farmstand',
@@ -222,7 +241,8 @@ def run():
             schedule='Saturday (10 a.m. - 2 p.m.)',
             year_round=False,
             season_start=date(2024, 7, 20),
-            season_end=date(2024, 11, 30)
+            season_end=date(2024, 11, 30),
+            is_visible=False
         ),
         Market(
             name='Harvest Home East Harlem Farmers Market',
@@ -232,7 +252,8 @@ def run():
             schedule='Thursday (8 a.m. - 3 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 13),
-            season_end=date(2024, 11, 14)
+            season_end=date(2024, 11, 14),
+            is_visible=False
         ),
         Market(
             name='Harvest Home Harlem Hospital Farmers Market',
@@ -242,7 +263,8 @@ def run():
             schedule='Friday (8 a.m. - 3 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 14),
-            season_end=date(2024, 11, 15)
+            season_end=date(2024, 11, 15),
+            is_visible=False
         ),
         Market(
             name='Harvest Home Lenox Avenue Farm Stand',
@@ -252,7 +274,8 @@ def run():
             schedule='Saturday (8 a.m. - 3 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 22),
-            season_end=date(2024, 11, 16)
+            season_end=date(2024, 11, 16),
+            is_visible=False
         ),
         Market(
             name='Harvest Home Metropolitan Hospital Farmers Market',
@@ -262,7 +285,8 @@ def run():
             schedule='Friday (8 a.m. - 3 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 14),
-            season_end=date(2024, 11, 15)
+            season_end=date(2024, 11, 15),
+            is_visible=False
         ),
         Market(
             name='Inwood Park Greenmarket',
@@ -270,7 +294,8 @@ def run():
             zipcode='10034',
             coordinates={"lat": "40.86911825882977", "lng": "-73.92025906885881"},
             schedule='Saturday (8 a.m. - 3 p.m.)',
-            year_round=True
+            year_round=True,
+            is_visible=False
         ),
         Market(
             name='Lower East Side Farmstand',
@@ -280,7 +305,8 @@ def run():
             schedule='Thursday (8:30 a.m. - 3 p.m.)',
             year_round=False,
             season_start=date(2024, 7, 5),
-            season_end=date(2024, 11, 22)
+            season_end=date(2024, 11, 22),
+            is_visible=False
         ),
         Market(
             name='Morningside Park’s Down to Earth Farmers Market',
@@ -288,7 +314,8 @@ def run():
             zipcode='10026',
             coordinates={"lat": "40.801382884379336", "lng": "-73.95970142371496"},
             schedule='Saturday (9 a.m. - 2 p.m.)',
-            year_round=True
+            year_round=True,
+            is_visible=False
         ),
         Market(
             name='Mount Sinai Greenmarket',
@@ -298,7 +325,8 @@ def run():
             schedule='Wednesday (8 a.m. - 3 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 19),
-            season_end=date(2024, 11, 27)
+            season_end=date(2024, 11, 27),
+            is_visible=False
         ),
         Market(
             name='NYP Youth Market - Audoban',
@@ -306,7 +334,8 @@ def run():
             zipcode='10032',
             coordinates={"lat": "40.839630140355446", "lng": "-73.93889062898364"},
             schedule='Thursday (9 a.m. - 3 p.m.)',
-            year_round=False
+            year_round=False,
+            is_visible=False
         ),
         Market(
             name='NYP Youth Market - Broadway',
@@ -314,7 +343,8 @@ def run():
             zipcode='10034',
             coordinates={"lat": "40.86600006214813", "lng": "-73.9263264427691"},
             schedule='Wednesday (9 a.m. - 3 p.m.)',
-            year_round=False
+            year_round=False,
+            is_visible=False
         ),
         Market(
             name='Project EATS Farm Stand at Essex Crossing',
@@ -322,7 +352,8 @@ def run():
             zipcode='10002',
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
             schedule='Wednesday-Sunday (11 a.m. - 7 p.m.)',
-            year_round=False
+            year_round=False,
+            is_visible=False
         ),
         Market(
             name='P.S. 11 Farm Market',
@@ -332,7 +363,8 @@ def run():
             schedule='Wednesday (8 a.m. - 10 a.m.)',
             year_round=False,
             season_start=date(2024, 6, 11),
-            season_end=date(2024, 11, 12)
+            season_end=date(2024, 11, 12),
+            is_visible=False
         ),
         Market(
             name='P.S. 57 Farmstand',
@@ -340,7 +372,8 @@ def run():
             zipcode='10029',
             coordinates={"lat": "40.797300330819134", "lng": "-73.94074817230118"},
             schedule='Wednesday (9:30 a.m. - 3 p.m.)',
-            year_round=True
+            year_round=True,
+            is_visible=False
         ),
         Market(
             name='Stuyvesant Town Greenmarket',
@@ -350,7 +383,8 @@ def run():
             schedule='Sunday (9:30 a.m. - 4 p.m.)',
             year_round=False,
             season_start=date(2024, 5, 12),
-            season_end=date(2024, 12, 15)
+            season_end=date(2024, 12, 15),
+            is_visible=False
         ),
         Market(
             name='Tompkins Square Greenmarket',
@@ -358,7 +392,8 @@ def run():
             zipcode='10003',
             coordinates={"lat": "40.72606737678102", "lng": "-73.98333751481684"},
             schedule='Sunday (9 a.m. - 4 p.m.)',
-            year_round=True
+            year_round=True,
+            is_visible=False
         ),
         Market(
             name='Tribeca Greenmarket',
@@ -368,7 +403,8 @@ def run():
             schedule='Wednesday & Saturday (8 a.m. - 2 p.m.)',
             year_round=False,
             season_start=date(2024, 4, 17),
-            season_end=date(2024, 11, 27)
+            season_end=date(2024, 11, 27),
+            is_visible=False
         ),
         Market(
             name='Tucker Square Greenmarket',
@@ -376,7 +412,8 @@ def run():
             zipcode='10023',
             coordinates={"lat": "40.77367979894632", "lng": "-73.9819555713842"},
             schedule='Thursday (8 a.m. - 3 p.m.); Saturday (8 a.m. - 4 p.m.)',
-            year_round=True
+            year_round=True,
+            is_visible=False
         ),
         Market(
             name='Two Bridges Youth Market',
@@ -386,7 +423,8 @@ def run():
             schedule='Sunday (10:30 a.m. - 3:30 p.m.)',
             year_round=False,
             season_start=date(2024, 5, 26),
-            season_end=date(2024, 12, 15)
+            season_end=date(2024, 12, 15),
+            is_visible=False
         ),
         Market(
             name='Union Square Greenmarket',
@@ -394,7 +432,8 @@ def run():
             zipcode='10003',
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
             schedule='Monday, Wednesday, Friday & Saturday (8 a.m. - 6 p.m.)',
-            year_round=True
+            year_round=True,
+            is_visible=True
         ),
         Market(
             name='Uptown Good Food Farm Stand',
@@ -404,7 +443,8 @@ def run():
             schedule='Thursday (4 - 7 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 1),
-            season_end=date(2024, 11, 23)
+            season_end=date(2024, 11, 23),
+            is_visible=False
         )
     ]
     db.session.add_all(markets)
