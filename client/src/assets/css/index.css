@@ -1480,6 +1480,7 @@ link {
 
 #zipcodeNum {
   margin-top: 6px;
+  margin-bottom: -6px;
   width: 120px;
   padding: 4px;
 }

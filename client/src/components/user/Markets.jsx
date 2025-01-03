@@ -378,7 +378,13 @@ function Markets() {
                         <tr>
                             {/* <td className='cell-title btn-grey m-hidden'>Search:</td> */}
                             <td className='cell-text'>
-                                <input id='search' className="search-bar" type="text" placeholder="Search markets..." value={query} onChange={onUpdateQuery} />
+                                <input
+                                    id='search'
+                                    className="search-bar" 
+                                    type="text" 
+                                    placeholder="Search markets..." 
+                                    value={query || ""} 
+                                    onChange={onUpdateQuery} />
                                 {showDropdown && (
                                     <div className="dropdown-content" ref={dropdownRef}>
                                         {filteredMarketsDropdown.slice(0, 10).map(item => (
