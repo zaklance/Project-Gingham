@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useOutletContext } from 'react-router-dom';
 import { weekDay } from '../../utils/common';
 import MarketCard from './MarketCard';
@@ -17,6 +17,10 @@ function Markets() {
     const [isClicked, setIsClicked] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
+    const [filterAZ, setFilterAZ] = useState(false);
+    const [filterZA, setFilterZA] = useState(false);
+    const [filterZipcode, setFilterZipcode] = useState(false);
+    const [filterZipcodeNum, setFilterZipcodeNum] = useState();
     const [selectedDay, setSelectedDay] = useState('');
     const [isInSeason, setIsInSeason] = useState(false);
 
@@ -70,6 +74,8 @@ function Markets() {
     };
 
     useEffect(() => {
+        if (userId) {
+
             const fetchProfileData = async () => {
                 try {
                     const token = localStorage.getItem('user_jwt-token');
@@ -104,6 +110,7 @@ function Markets() {
                 }
             };
             fetchProfileData();
+        }
         }, [userId]);
 
     useEffect(() => {
@@ -116,7 +123,6 @@ function Markets() {
         fetch("http://127.0.0.1:5555/api/markets?is_visible=true")
             .then(response => response.json())
             .then(markets => {
-                // setMarkets(markets)
                 if (userId & markets.length > 0) {
                     const sortedMarkets = markets
                         .map(market => {
@@ -276,6 +282,79 @@ function Markets() {
         }
     };
 
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === 'Enter' && showDropdown) {
+                setShowDropdown(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutsideDropdown);
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutsideDropdown);
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [showDropdown]);
+
+    const handleFilterAZ = (event) => {
+        if (!filterAZ) {
+            setFilterAZ(!filterAZ)
+            setFilterZA(false)
+            setFilterZipcode(false)
+            setFilterZipcodeNum()
+        }
+    }
+
+    const handleFilterZA = (event) => {
+        if (!filterZA) {
+            setFilterAZ(false)
+            setFilterZA(!filterZA)
+            setFilterZipcode(false)
+            setFilterZipcodeNum()
+        }
+    }
+
+    const handleFilterZipcode = (event) => {
+        if (!filterZipcode) {
+            setFilterAZ(false)
+            setFilterZA(false)
+            setFilterZipcode(!filterZipcode)
+        }
+    }
+
+    const handleFilterZipcodeNum = (event) => {
+        setFilterZipcodeNum(event.target.value)
+    }
+
+    const sortedMarketsResults = useMemo(() => {
+        let results = [...filteredMarketsResults]; // Create a shallow copy
+
+        if (filterAZ) {
+            results.sort((a, b) => a.name.localeCompare(b.name));
+        }
+        else if (filterZA) {
+            results.sort((a, b) => b.name.localeCompare(a.name));
+        }
+        else if (filterZipcode && filterZipcodeNum) {
+            results = results
+                .map(market => {
+                    let distance = zipCodeDistance(
+                        filterZipcodeNum,
+                        market.zipcode,
+                        'M'
+                    );
+                    if (distance === null || isNaN(distance)) {
+                        distance = Infinity;
+                    }
+                    return { ...market, distance };
+                })
+                .sort((a, b) => a.distance - b.distance);
+        }
+
+        return results;
+    }, [filteredMarketsResults, filterAZ, filterZA, filterZipcode, filterZipcodeNum]);
 
 
     return (
@@ -329,6 +408,48 @@ function Markets() {
                                 <button className='btn btn-filter' onClick={handleDropDownFilters}>&#9776;</button>
                                 {showFilters && (
                                     <div className='dropdown-content box-filters'>
+                                        <div className='form-filters-markets'>
+                                            <input
+                                                className='margin-r-8'
+                                                id="aZ"
+                                                type="radio"
+                                                name="filters"
+                                                value={true}
+                                                onChange={handleFilterAZ}
+                                            />
+                                            <label htmlFor='aZ'>A to Z</label>
+                                        </div>
+                                        <div className='form-filters-markets'>
+                                            <input
+                                                className='margin-r-8'
+                                                id="zA"
+                                                type="radio"
+                                                name="filters"
+                                                value={true}
+                                                onChange={handleFilterZA}
+                                            />
+                                            <label htmlFor='zA'>Z to A</label>
+                                        </div>
+                                        <div className='form-filters-markets'>
+                                            <input
+                                                className='margin-r-8'
+                                                id="zipcode"
+                                                type="radio"
+                                                name="filters"
+                                                value={true}
+                                                onChange={handleFilterZipcode}
+                                            />
+                                            <label htmlFor='zipcode'>By Zipcode</label>
+                                            <input
+                                                className='margin-r-8'
+                                                id="zipcodeNum"
+                                                type="text"
+                                                name="zipcode"
+                                                placeholder='10003'
+                                                value={filterZipcodeNum}
+                                                onChange={(event) => handleFilterZipcodeNum(event)}
+                                            />
+                                        </div>
                                         <div className='form-filters'>
                                             <label className='margin-r-26'>In Season:</label>
                                             <input
@@ -357,13 +478,7 @@ function Markets() {
                 </table>
             </div>
             <div className="market-cards-container box-scroll-large margin-t-24">
-                {filteredMarketsResults
-                    .slice() // Create a shallow copy to avoid mutating the original array
-                    // .sort((a, b) => {
-                    //     const nameA = (a?.name || '').toLowerCase();
-                    //     const nameB = (b?.name || '').toLowerCase();
-                    //     return nameA.localeCompare(nameB);
-                    // })
+                {sortedMarketsResults
                     .map((marketData) => (
                         <MarketCard key={marketData.id} marketData={marketData} userZipcode={user.zipcode} />
                 ))}
