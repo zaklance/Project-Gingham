@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import PasswordStrengthBar from 'react-password-strength-bar';
 import { states } from '../../utils/common';
 // import '../../assets/css/index.css';
 
@@ -21,6 +22,8 @@ function Login({ handlePopup }) {
     const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false, pw3: false });
 
     const navigate = useNavigate();
+
+    // const { password } = this.state;
     
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -215,6 +218,7 @@ function Login({ handlePopup }) {
                                     required
                                 />
                                 <i className={showPassword.pw2 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw2')}>&emsp;</i>
+                                <PasswordStrengthBar className='password-bar' scoreWords={''} shortScoreWord={''} password={signupPassword} />
                             </div>
                         </div>
                         <div className="form-group form-login">

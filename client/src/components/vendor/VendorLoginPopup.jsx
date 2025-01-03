@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import PasswordStrengthBar from 'react-password-strength-bar';
 // import '../../assets/css/index.css';
 
 function VendorLogin({ handlePopup }) {
@@ -196,6 +197,7 @@ function VendorLogin({ handlePopup }) {
                                     required
                                 />
                                 <i className={showPassword.pw2 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw2')}>&emsp;</i>
+                                <PasswordStrengthBar className='password-bar' scoreWords={''} shortScoreWord={''} password={signupPassword} />
                             </div>
                         </div>
                         <div className="form-group form-login">

@@ -808,4 +808,4 @@ class Receipt(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self) -> str:
-        return f"<FAQ ID: {self.id}, Question: {self.question}, Answer: {self.answer}>"
+        return f"<Receipt ID: {self.id}, User ID: {self.user_id}, Baskets: {self.baskets}, Created at: {self.created_at}>"
