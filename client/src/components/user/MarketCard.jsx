@@ -2,8 +2,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../assets/css/index.css';
 import { timeConverter, formatDate } from '../../utils/helpers';
+import { getRadius, zipCodeData, zipCodeDistance } from 'zipcode-city-distance';
 
-function MarketCard({ marketData }) {
+
+function MarketCard({ marketData, userZipcode }) {
     const navigate = useNavigate();
 
     const handleLearnMore = () => {
@@ -27,11 +29,12 @@ function MarketCard({ marketData }) {
                     <p><strong>Season:</strong> {formatDate(marketData.season_start)} – {formatDate(marketData.season_end)}</p>
                 ) : (
                     marketData.year_round === false && (!marketData.season_start || !marketData.season_end) ? (
-                        <p><strong>Season:</strong> Call Zak Wosewick</p>
+                        <></>
                     ) : (
                         <p><strong>Open Year Round</strong></p>
                     )
                 )}
+                {userZipcode ? <p><strong>Distance:</strong> {zipCodeDistance(userZipcode, marketData.zipcode, 'M').toFixed(2)} miles</p> : <></>}
             </div>
             <div>
                 <button className="btn-market-card" onClick={handleLearnMore}>Learn More!</button>

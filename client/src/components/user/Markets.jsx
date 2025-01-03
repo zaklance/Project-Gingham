@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useOutletContext } from 'react-router-dom';
 import { weekDay } from '../../utils/common';
 import MarketCard from './MarketCard';
-// import AdvancedMarkerCard from './AdvancedMarkerCard';
 import '../../assets/css/index.css';
 import { APIProvider, Map, Marker, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
+import { getRadius, zipCodeData, zipCodeDistance } from 'zipcode-city-distance';
 // import { Map, Marker } from 'mapkit-react';
 
+
 function Markets() {
+    const [user, setUser] = useState({});
     const [markets, setMarkets] = useState([]);
     const [marketDays, setMarketDays] = useState([]);
     const [query, setQuery] = useState("");
@@ -31,12 +33,14 @@ function Markets() {
     };
 
     const filteredMarketsDropdown = markets.filter(market =>
-        market.name.toLowerCase().includes(query.toLowerCase()) &&
+        market?.name?.toLowerCase().includes(query.toLowerCase()) &&
         market.name !== query &&
         (!isClicked || marketFavs.some(marketFavs => marketFavs.market_id === market.id))
     );
 
     const filteredMarketsResults = markets.filter(market => {
+        if (!market?.name) return false;
+
         const today = new Date();
         const seasonStart = new Date(market.season_start);
         const seasonEnd = new Date(market.season_end);
@@ -55,6 +59,53 @@ function Markets() {
         );
     });
 
+    const decodeJwt = (token) => {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return payload;
+        } catch (error) {
+            console.error('Failed to decode JWT:', error);
+            return null;
+        }
+    };
+
+    useEffect(() => {
+            const fetchProfileData = async () => {
+                try {
+                    const token = localStorage.getItem('user_jwt-token');
+                    if (token) {
+                        const decodedToken = decodeJwt(token);
+                        if (decodedToken && decodedToken.role) {
+                        }
+                    }
+                    const response = await fetch(`http://127.0.0.1:5555/api/users/${userId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    const text = await response.text();
+                    if (response.ok) {
+                        try {
+                            const data = JSON.parse(text);
+                            setUser({ ...data });
+                        } catch (jsonError) {
+                            console.error('Error parsing JSON:', jsonError);
+                        }
+                    } else {
+                        console.error('Error fetching profile:', response.status);
+                        if (response.status === 401) {
+                            console.error('Unauthorized: Token may be missing or invalid');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching profile data:', error);
+                }
+            };
+            fetchProfileData();
+        }, [userId]);
+
     useEffect(() => {
         if (location.state?.isClicked !== undefined) {
             setIsClicked(location.state.isClicked);
@@ -64,9 +115,29 @@ function Markets() {
         }
         fetch("http://127.0.0.1:5555/api/markets?is_visible=true")
             .then(response => response.json())
-            .then(markets => setMarkets(markets))
+            .then(markets => {
+                // setMarkets(markets)
+                if (userId & markets.length > 0) {
+                    const sortedMarkets = markets
+                        .map(market => {
+                            const distance = zipCodeDistance(
+                                user.zipcode,
+                                market.zipcode,
+                                'M'
+                            );
+                            if (distance === null || isNaN(distance)) {
+                                distance = Infinity;
+                            }
+                            return { ...market, distance };
+                        })
+                        .sort((a, b) => a.distance - b.distance);
+                    setMarkets(sortedMarkets);
+                } else {
+                    setMarkets(markets)
+                }
+            })
             .catch(error => console.error('Error fetching markets', error));
-    }, [location.state]);
+    }, [location.state, user]);
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/market-days`)
@@ -205,6 +276,8 @@ function Markets() {
         }
     };
 
+
+
     return (
         <>
         <div className="markets-container">
@@ -286,13 +359,13 @@ function Markets() {
             <div className="market-cards-container box-scroll-large margin-t-24">
                 {filteredMarketsResults
                     .slice() // Create a shallow copy to avoid mutating the original array
-                    .sort((a, b) => {
-                        const nameA = (a?.name || '').toLowerCase();
-                        const nameB = (b?.name || '').toLowerCase();
-                        return nameA.localeCompare(nameB);
-                    })
+                    // .sort((a, b) => {
+                    //     const nameA = (a?.name || '').toLowerCase();
+                    //     const nameB = (b?.name || '').toLowerCase();
+                    //     return nameA.localeCompare(nameB);
+                    // })
                     .map((marketData) => (
-                        <MarketCard key={marketData.id} marketData={marketData} />
+                        <MarketCard key={marketData.id} marketData={marketData} userZipcode={user.zipcode} />
                 ))}
             </div>
         </div>
