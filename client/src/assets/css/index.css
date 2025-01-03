@@ -1458,18 +1458,30 @@ link {
   padding-left: 12px;
 }
 
+.form-filters-markets {
+  background-color: #eef;
+  padding: 2px;
+  padding-left: 12px;
+}
+
 .form-filters-reviews {
   background-color: #eef;
   padding: 10px 16px 10px 12px;
 }
 
-.form-filters label, .form-filters-reviews label {
+.form-filters label, .form-filters-reviews label, .form-filters-markets label {
   margin-left: 4px;
   /* padding: 4px; */
   font-size: .9em;
   font-weight: 500;
   background-color: #eef;
   color: #006FE6;
+}
+
+#zipcodeNum {
+  margin-top: 6px;
+  width: 120px;
+  padding: 4px;
 }
 
 .select-dropdown {

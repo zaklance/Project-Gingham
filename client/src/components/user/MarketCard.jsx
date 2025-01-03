@@ -34,7 +34,7 @@ function MarketCard({ marketData, userZipcode }) {
                         <p><strong>Open Year Round</strong></p>
                     )
                 )}
-                {userZipcode ? <p><strong>Distance:</strong> {zipCodeDistance(userZipcode, marketData.zipcode, 'M').toFixed(2)} miles</p> : <></>}
+                {userZipcode ? <p><strong>Distance:</strong> {parseFloat(zipCodeDistance(userZipcode, marketData.zipcode, 'M').toFixed(2)) === 0.00 ? 'Same Zipcode' : `${zipCodeDistance(userZipcode, marketData.zipcode, 'M').toFixed(2)} miles`}</p> : <></>}
             </div>
             <div>
                 <button className="btn-market-card" onClick={handleLearnMore}>Learn More!</button>

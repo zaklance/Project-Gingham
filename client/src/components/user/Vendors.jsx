@@ -133,12 +133,22 @@ function Vendors() {
     };
 
     useEffect(() => {
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
+            const handleKeyDown = (event) => {
+                if (event.key === 'Enter' && showDropdown) {
+                    setShowDropdown(false);
+                }
+            };
+    
+            document.addEventListener("mousedown", handleClickOutside);
+            document.addEventListener("keydown", handleKeyDown);
+    
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+                document.removeEventListener("keydown", handleKeyDown);
+            };
+        }, [showDropdown]);
 
+        
     return (
         <div className="markets-container">
             <div className='header margin-b-24'>
