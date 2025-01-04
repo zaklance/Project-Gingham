@@ -1581,8 +1581,10 @@ def event_by_id(id):
             return {'error': 'user not found'}, 404
         try:
             data = request.get_json()
-            event.title=data['title']
-            event.message=data['message']
+            event.title=data.get('title')
+            event.message=data.get('message')
+            event.schedule_change=data.get('schedule_change') in [True, 'true', 'True']
+            print(event.schedule_change)
             if data.get('start_date'):
                 event.season_start = datetime.strptime(data.get('start_date'), '%Y-%m-%d').date()
             if data.get('end_date'):

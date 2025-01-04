@@ -235,11 +235,11 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
                                                 <td>Total Baskets:</td>
                                                 <td className="text-center">
                                                 {isEditing ? (
-                                                    <>
+                                                    <div className="basket-adjustment flex-space-evenly flex-center-align">
                                                         <button onClick={() => handleDecrement(entry)} className="btn btn-adjust btn-red">-</button>
                                                         <span>{tempBasketData.numBaskets}</span>
                                                         <button onClick={handleIncrement} className="btn btn-adjust btn-green">+</button>
-                                                    </>
+                                                    </div>
                                                 ) : (
                                                     entry.baskets.length
                                                 )}
