@@ -27,7 +27,7 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
         setNewEvent((prevEvent) => ({
             ...prevEvent,
             [name]: value,
-            vendor_id: prevEvent.vendor_id, // Ensure vendor_id is not overwritten
+            vendor_id: prevEvent.vendor_id,
         }));
     };
 
@@ -39,9 +39,9 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
         }));
     };
 
-    const handleEventEditToggle = (eventId, title, message, start_date, end_date) => {
+    const handleEventEditToggle = (eventId, title, message, start_date, end_date, schedule_change) => {
         setEditingEventId(eventId);
-        setEditedEventData({ title, message, start_date, end_date });
+        setEditedEventData({ title, message, start_date, end_date, schedule_change });
     };
 
     const handleSaveNewEvent = async () => {
@@ -250,6 +250,18 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
                             onChange={handleInputEventChange}
                         />
                     </div>
+                    <div className='form-group'>
+                        <label title="true or false">Change in Schedule:</label>
+                        <select
+                            name="schedule_change"
+                            value={newEvent.schedule_change || ''}
+                            onChange={handleInputEventChange}
+                        >
+                            <option value="">Select</option>
+                            <option value={true}>true</option>
+                            <option value={false}>false</option>
+                        </select>
+                    </div>
                     <button className='btn-edit' onClick={handleSaveNewEvent}>Create Event</button>
                 </div>
             </div>
@@ -303,7 +315,19 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
                                                     onChange={handleEditInputChange}
                                                 />
                                             </div>
-                                            <button className='btn btn-small margin-t-24' onClick={() => handleEventUpdate(event.id)}>Save</button>
+                                            <div className='form-group'>
+                                                <label title="true or false">Change in Schedule:</label>
+                                                <select
+                                                    name="schedule_change"
+                                                    value={editedEventData?.schedule_change?.toString() || ''}
+                                                    onChange={handleEditInputChange}
+                                                >
+                                                    <option value="">Select</option>
+                                                    <option value="true">true</option>
+                                                    <option value="false">false</option>
+                                                </select>
+                                            </div>
+                                            <button className='btn btn-small margin-t-24 margin-r-8' onClick={() => handleEventUpdate(event.id)}>Save</button>
                                             <button className='btn btn-small btn-gap' onClick={() => setEditingEventId(null)}>Cancel</button>
 
                                         </div>
@@ -320,7 +344,7 @@ function VendorEvents({ vendors, vendorId, vendorUserData }) {
                                             <h3 className='nowrap'>{event.title ? event.title : 'Loading...'}:</h3>
                                             <p>{event.message}</p>
                                         </div>
-                                        <button className='btn btn-small' onClick={() => handleEventEditToggle(event.id, event.title, event.message, event.start_date, event.end_date)}>
+                                        <button className='btn btn-small margin-t-16 margin-r-8' onClick={() => handleEventEditToggle(event.id, event.title, event.message, event.start_date, event.end_date, event.schedule_change)}>
                                             Edit
                                         </button>
                                         <button className='btn btn-small btn-x btn-gap' onClick={() => handleEventDelete(event.id)}>
