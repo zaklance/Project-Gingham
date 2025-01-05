@@ -11,7 +11,10 @@ const AdminBlog = () => {
     useEffect(() => {
             fetch("http://127.0.0.1:5555/api/blogs")
                 .then(response => response.json())
-                .then(data => setBlogs(data))
+                .then(data => {
+                    const sortedData = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    setBlogs(sortedData);
+                })
                 .catch(error => console.error('Error fetching blogs', error));
     
             const urlParams = new URLSearchParams(window.location.search);
