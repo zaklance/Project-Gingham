@@ -6,7 +6,7 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
                     VendorMarket, VendorUser, VendorVendorUser, AdminUser, 
                     Basket, Event, Product, UserNotification, VendorNotification, 
-                    AdminNotification, QRCode, FAQ, bcrypt )
+                    AdminNotification, QRCode, FAQ, Blog, bcrypt )
 import json
 from datetime import datetime, timedelta, timezone, time, date
 
@@ -36,6 +36,7 @@ def run():
     AdminNotification.query.delete()
     QRCode.query.delete()
     FAQ.query.delete()
+    Blog.query.delete()
 
     db.session.commit()
 
@@ -806,6 +807,86 @@ def run():
 
     db.session.add_all(user_faqs)
     db.session.add_all(vendor_faqs)
+    db.session.commit()
+
+    blogs = [
+        Blog(
+            title="Butternut Squash Soup",
+            body="""
+                <div class="column-3">
+                    <h5>Prep Time: 10 mins | Cook Time: 35 mins | Total: 45 mins | Serves: 6</h5>
+                    <br/>
+                    <article class="first-letter">
+                        This vegan butternut squash soup is the perfect fall comfort food! Store in the fridge for 4 days or freeze for months.
+                    </article>
+                    <h5>Ingredients</h5>
+                    <ul class="ul-bullet">
+                        <li>2 tbsp olive oil</li>
+                        <li>1 large yellow onion, chopped</li>
+                        <li>½ tsp sea salt</li>
+                        <li>1 (3-lb) butternut squash, peeled, seeded, cubed</li>
+                        <li>3 garlic cloves, chopped</li>
+                        <li>1 tbsp fresh sage, chopped</li>
+                        <li>½ tbsp fresh rosemary, minced</li>
+                        <li>1 tsp fresh ginger, grated/li>
+                        <li>3–4 cups vegetable broth</li>
+                        <li>Freshly ground black pepper</li>
+                    </ul>
+                    <h5>Instructions</h5>
+                    <ul class="ul-numbers">
+                        <li>Heat oil in a large pot over medium heat. Add onion, salt, and pepper; sauté 5–8 mins. Add squash and cook 8–10 mins, stirring./li>
+                        <li>Add garlic, sage, rosemary, and ginger; cook 30 secs to 1 min until fragrant. Add 3 cups broth, bring to a boil, cover, and simmer 20–30 mins until squash is tender.</li>
+                        <li>Cool slightly, blend until smooth (in batches if needed). Adjust thickness with more broth, season, and serve.</li>
+                    </ul>
+                    <article>
+                        Enjoy this creamy, cozy soup!
+                    </article>
+                    <article>
+                        —The Gingham Team
+                    </article>
+                    <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
+                </div>
+            """,
+            admin_user_id=1
+        ),
+        Blog(
+            title="What types of baskets can I purchase?",
+            body="""
+                <div class="column-3">
+                    <article class="first-letter">
+                        Do you love supporting local farmers, enjoying fresh produce, and finding great 
+                        deals? Meet Gingham, the innovative platform that connects you with discounted 
+                        baskets from farmers market vendors while helping reduce food waste.
+                    </article>
+                    <article>
+                        Here’s how it works: Farmers market vendors often have surplus items at the end 
+                        of the day. With Gingham, they bundle these items into discounted baskets for you 
+                        to browse, reserve, and pick up at your convenience. Think of it as your personal 
+                        gateway to fresh, local, and sustainable food.
+                    </article>
+                    <article>
+                        Gingham isn’t just about savings—it’s about creating a positive impact. By 
+                        purchasing a basket, you’re rescuing perfectly good food from going to waste, 
+                        supporting local businesses, and embracing a more sustainable way of living. Plus, 
+                        with fresh ingredients at your fingertips, you can enjoy cooking, meal prep, or 
+                        even a spontaneous picnic with ease.
+                    </article>
+                    <article>
+                        Signing up is quick and simple. Join the Gingham community today to start saving, 
+                        reducing waste, and supporting your local farmers markets. Together, we can create 
+                        a more sustainable future—one basket at a time!
+                    </article>
+                    <article>
+                        —The Gingham Team
+                    </article>
+                    <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
+                </div>
+            """,
+            admin_user_id=1
+        )
+    ]
+
+    db.session.add_all(blogs)
     db.session.commit()
 
 
