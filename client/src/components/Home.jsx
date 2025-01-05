@@ -1,8 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Login from "./user/LoginPopup";
 
 
 function Home({ isPopup, setIsPopup, handlePopup }) {
+    const [blogs, setBlogs] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+
+    useEffect(() => {
+            fetch("http://127.0.0.1:5555/api/blogs")
+                .then(response => response.json())
+                .then(data => setBlogs(data))
+                .catch(error => console.error('Error fetching blogs', error));
+        }, []);
+
+    const handleNavigate = (direction) => {
+        setCurrentIndex((prevIndex) => {
+            if (direction === 'prev') {
+                return prevIndex > 0 ? prevIndex - 1 : prevIndex; // Prevent moving past index 0
+            } else if (direction === 'next') {
+                return prevIndex < blogs.length - 1 ? prevIndex + 1 : prevIndex; // Prevent moving past last index
+            }
+            return prevIndex;
+        });
+    };
+
+    if (blogs.length === 0) return <div>No blogs available.</div>;
+
+    const currentBlog = blogs[currentIndex];
+
 
     return (
         <div>
@@ -30,6 +56,15 @@ function Home({ isPopup, setIsPopup, handlePopup }) {
                 <img src={farmers} style={{ width: '60%' }}/>
                 <img src={blanket} style={{ width: '38%' }}/>
             </div> */}
+            <div className="box-blog margin-t-16 badge-container">
+                <div className="badge-arrows">
+                    <i className="icon-arrow-l margin-r-8" onClick={() => handleNavigate('prev')}>&emsp;&thinsp;</i>
+                    <i className="icon-arrow-r" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>
+                </div>
+                <h1>{currentBlog.title}</h1>
+                <h6 className="margin-b-8">{currentBlog.created_at}</h6>
+                <div dangerouslySetInnerHTML={{ __html: currentBlog.body }} style={{ width: '100%', height: '100%' }}></div>
+            </div>
         </div>
     )
 }

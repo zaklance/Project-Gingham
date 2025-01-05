@@ -250,7 +250,6 @@ function Markets() {
         }
     }
 
-    // Close dropdown if clicked outside
     const handleClickOutsideDropdown = (event) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
             setShowDropdown(false);
