@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { blogTimeConverter } from "../utils/helpers";
 
 function Home() {
     const [blogs, setBlogs] = useState([]);
@@ -30,6 +31,9 @@ function Home() {
 
     const currentBlog = blogs[currentIndex];
 
+    console.log(currentBlog.created_at);
+
+
 
     return (
         <div>
@@ -52,7 +56,7 @@ function Home() {
                     <i className="icon-arrow-r" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>
                 </div>
                 <h1>{currentBlog.title}</h1>
-                <h6 className="margin-b-8">{currentBlog.created_at}</h6>
+                <h6 className="margin-b-8">{blogTimeConverter(currentBlog.created_at)}</h6>
                 <div dangerouslySetInnerHTML={{ __html: currentBlog.body }} style={{ width: '100%', height: '100%' }}></div>
             </div>
             : <></>}
