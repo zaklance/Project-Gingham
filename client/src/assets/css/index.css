@@ -648,14 +648,9 @@ ul {
   margin-right: 0;
 }
 
-.box-big {
-  float: none;
-}
-
 .box-big-blue {
   float: none;
   background-color: #d8f4fe;
-  margin-top: 48px;
   padding: 24px;
 }
 

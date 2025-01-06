@@ -480,7 +480,10 @@ function MarketDetail ({ match }) {
                                         {vendorDetail.name || 'Loading...'}
                                     </Link>
                                     <span className="market-name margin-l-16">
-                                        {products.find(p => p.id === vendorDetail.product)?.product || 'No product listed'}
+                                        {products
+                                            .filter(p => vendorDetail.products?.includes(p.id))
+                                            .map(p => p.product)
+                                            .join(', ') || 'No products listed'}
                                     </span>
                                     {availableBaskets.length > 0 ? (
                                         <span className="market-price">

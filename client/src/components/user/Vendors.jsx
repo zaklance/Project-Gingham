@@ -30,24 +30,26 @@ function Vendors() {
     const filteredVendorsDropdown = vendors.filter(vendor =>
         vendor.name.toLowerCase().includes(query.toLowerCase()) &&
         vendor.name !== query &&
-        (!selectedProduct || vendor.product === Number(selectedProduct)) &&
+        (!selectedProduct || vendor.products.includes(Number(selectedProduct))) &&
         (!isClicked || vendorFavs.some(vendorFavs => vendorFavs.vendor_id === vendor.id))
     );
 
     const filteredVendorsResults = vendors.filter(vendor =>
         vendor.name.toLowerCase().includes(query.toLowerCase()) &&
-        (!selectedProduct || vendor.product === Number(selectedProduct)) &&
+        (!selectedProduct || vendor.products.includes(Number(selectedProduct))) &&
         (!isClicked || vendorFavs.some(vendorFavs => vendorFavs.vendor_id === vendor.id))
     );
 
     useEffect(() => {
         if (!vendors || !products?.length) return;
         const filteredProducts = products.filter(product =>
-            vendors.some(vendor => vendor.product === product.id)
+            vendors.some(vendor =>
+                Array.isArray(vendor.products) &&
+                vendor.products.includes(product.id)
+            )
         );
         setProductList(filteredProducts);
     }, [vendors, products]);
-
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/products")
