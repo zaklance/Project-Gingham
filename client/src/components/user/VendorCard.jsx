@@ -9,7 +9,8 @@ function VendorCard({ vendorData, selectedProduct, products }) {
         navigate(`/user/vendors/${vendorData.id}`, { state: { selectedProduct } });
     };
 
-    const product = products.find(p => p.id == vendorData.product);
+    const productList = products.filter(p => vendorData.products.includes(p.id));
+    console.log(productList)
 
 
     return (
@@ -21,7 +22,11 @@ function VendorCard({ vendorData, selectedProduct, products }) {
             )}
             <h2 className='center'>{vendorData.name}</h2>
             <h4>{vendorData.city}, {vendorData.state}</h4>
-            <h4>{product ? product.product : ""}</h4>
+            <h4>
+                {productList.length > 0
+                    ? productList.map(p => p.product).join(', ')
+                    : "No products available"}
+            </h4>
             <button className="btn-market-card" onClick={handleLearnMore}>Learn More</button>
         </div>
     )

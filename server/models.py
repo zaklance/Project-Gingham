@@ -238,7 +238,7 @@ class Vendor(db.Model, SerializerMixin):
     name = db.Column(db.String, nullable=False)
     city = db.Column(db.String, nullable=True)
     state = db.Column(db.String(2), nullable=True)
-    product = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    products = db.Column(db.JSON, nullable=False)
     bio = db.Column(db.String, nullable=True)
     image = db.Column(db.String)
     image_default = db.Column(db.String, nullable=False, default=random_vendor)
@@ -261,14 +261,14 @@ class Vendor(db.Model, SerializerMixin):
             'name': self.name,
             'city': self.city,
             'state': self.state,
-            'product': self.product,
+            'products': self.products,
             'bio': self.bio,
             'image': self.image,
             'image_default': self.image_default,
         }
 
     # Validations
-    @validates('name', 'product')
+    @validates('name', 'products')
     def validates_not_empty(self, key, value):
         if not value:
             raise ValueError(f"{key} cannot be empty")

@@ -5,11 +5,12 @@ import { timeConverter, formatEventDate } from '../../utils/helpers';
 import MarketCard from './MarketCard';
 import ReviewVendor from './ReviewVendor';
 
-function VendorDetail({ products }) {
+function VendorDetail() {
     const { id } = useParams();
 
     const [vendor, setVendor] = useState(null);
-    const [product, setProduct] = useState(null);
+    const [products, setProducts] = useState(null);
+    const [productList, setProductList] = useState(null);
     const [marketDetails, setMarketDetails] = useState({});
     const [markets, setMarkets] = useState([]);
     const [vendorFavs, setVendorFavs] = useState([]);
@@ -59,11 +60,20 @@ function VendorDetail({ products }) {
 
     useEffect(() => {
         if (vendor) {
-            fetch(`http://127.0.0.1:5555/api/products/${vendor.product}`)
+            fetch(`http://127.0.0.1:5555/api/products`)
                 .then(response => response.json())
-                .then(data => setProduct(data))
+                .then(data => setProducts(data))
         }
     }, [vendor]); 
+
+    useEffect(() => {
+            if (!vendor || !products?.length) return;
+            const filteredProducts = products.filter(product =>
+                Array.isArray(vendor.products) &&
+                vendor.products.includes(product.id)
+            );
+            setProductList(filteredProducts);
+        }, [vendor, products]);
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${id}&is_visible=true`)
@@ -336,7 +346,9 @@ function VendorDetail({ products }) {
                     )}
                 </div>
                 <div className='side-basket'>
-                    <h3 className='margin-t-8'>Product: {product ? product.product : ""}</h3>
+                    <h3 className='margin-t-8'>Product: {productList.length > 0
+                        ? productList.map(p => p.product).join(', ')
+                        : "No products available"}</h3>
                     <div className='flex-start'>
                         <h4 className='nowrap'>Based out of: {vendor.city}, {vendor.state}</h4>
                         <div className='alert-container flex-start flex-center-align nowrap'>

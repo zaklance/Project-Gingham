@@ -373,7 +373,9 @@ def run():
             zipcode='10029',
             coordinates={"lat": "40.797300330819134", "lng": "-73.94074817230118"},
             schedule='Wednesday (9:30 a.m. - 3 p.m.)',
-            year_round=True,
+            year_round=False,
+            season_start=date(2024, 6, 1),
+            season_end=date(2024, 11, 21),
             is_visible=False
         ),
         Market(
@@ -853,6 +855,27 @@ def run():
         )
     ]
     db.session.add_all(market_day_list)
+    db.session.commit()
+
+
+    products_list = [
+        'Other', 'Art', 'Baked Goods', 'Beer & Wine', 'Cheese', 'Cider', 
+        'Craft Goods', 'Coffee/Tea', 'Dairy', 'Eggs', 'Flowers', 'Fruit', 
+        'Gluten-Free', 'Herbs & Spices', 'Honey', 'International', 
+        'Jams & Preserves', 'Juice', 'Kimchi', 'Maple Syrup', 'Meat', 
+        'Microgreens', 'Mushrooms', 'Nuts', 'Oil & Vinegar', 'Plants', 
+        'Pickles', 'Poultry', 'Prepared Foods', 'Seafood', 'Spirits', 
+        'Vegetables'
+        ]
+    products = []
+
+    for product_name in products_list:
+        product = Product(
+            product=product_name
+            )
+        products.append(product)
+
+    db.session.add_all(products)
     db.session.commit()
 
 

@@ -4,7 +4,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from app import app
 from faker import Faker
-from random import random, choice, randint
+from random import random, choice, randint, sample
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
                     VendorReview, ReportedReview, MarketReviewRating, 
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
@@ -895,7 +895,7 @@ def run():
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
         city = str(fake.city())
         state = str(choice(states_ne))
-        product = str(randint(1, 23))
+        products = sample(range(1, 33), randint(1, 3))
         bio = str(fake.paragraph(nb_sentences=rev_len))
         image = choice(images) if randint(1, 8) > 1 else None
 
@@ -903,7 +903,7 @@ def run():
             name=name,
             city=city,
             state=state,
-            product=product,
+            products=products,
             bio=bio,
             image=image
         )
@@ -1386,10 +1386,13 @@ def run():
     db.session.commit()
 
     products_list = [
-        'Other', 'Art', 'Baked Goods', 'Cheese', 'Cider', 'Ceramics', 'Coffee/Tea', 
-        'Fish', 'Flowers', 'Fruit', 'Gifts', 'Honey', 'International', 
-        'Juice', 'Maple Syrup', 'Meats', 'Mushrooms', 'Nuts', 'Pasta', 
-        'Pickles', "Spices", 'Spirits', 'Vegetables'
+        'Other', 'Art', 'Baked Goods', 'Beer & Wine', 'Cheese', 'Cider', 
+        'Craft Goods', 'Coffee/Tea', 'Dairy', 'Eggs', 'Flowers', 'Fruit', 
+        'Gluten-Free', 'Herbs & Spices', 'Honey', 'International', 
+        'Jams & Preserves', 'Juice', 'Kimchi', 'Maple Syrup', 'Meat', 
+        'Microgreens', 'Mushrooms', 'Nuts', 'Oil & Vinegar', 'Plants', 
+        'Pickles', 'Poultry', 'Prepared Foods', 'Seafood', 'Spirits', 
+        'Vegetables'
         ]
     products = []
 

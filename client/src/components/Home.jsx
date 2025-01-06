@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Login from "./user/LoginPopup";
 
-
-function Home({ isPopup, setIsPopup, handlePopup }) {
+function Home() {
     const [blogs, setBlogs] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -28,7 +26,7 @@ function Home({ isPopup, setIsPopup, handlePopup }) {
         });
     };
 
-    if (blogs.length === 0) return <div>No blogs available.</div>;
+    // if (blogs.length === 0) return <div>No blogs available.</div>;
 
     const currentBlog = blogs[currentIndex];
 
@@ -47,19 +45,8 @@ function Home({ isPopup, setIsPopup, handlePopup }) {
                     Our mission is to minimize food waste by creating a marketplace for vendors in Farmers Market's across the globe. <br/><strong>Rescue good food from going to waste today!</strong>
                 </p>
             </div>
-            <div className="box-big-blue no-float">
-                <h3>HOW DOES GINGHAM WORK?</h3> <br/>
-                <p>
-                    When vendors at farmers markets approach the end of the day, they want to start git rid of all their product, and sometimes at a cheaper price. 
-                    <strong> With Gingham you can browse through vendors and buy discount bundles!</strong>
-                </p>
-                <img src="/site-images/GINGHAM_HOWITWORKS.png" style={{ width: '100%' }} />
-            </div>
-            {/* <div className="box-big">
-                <img src={farmers} style={{ width: '60%' }}/>
-                <img src={blanket} style={{ width: '38%' }}/>
-            </div> */}
-            <div className="box-blog margin-t-16 badge-container">
+            {currentBlog ?
+            <div className="box-blog margin-t-24 badge-container no-float">
                 <div className="badge-arrows">
                     <i className="icon-arrow-l margin-r-8" onClick={() => handleNavigate('prev')}>&emsp;&thinsp;</i>
                     <i className="icon-arrow-r" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>
@@ -67,6 +54,15 @@ function Home({ isPopup, setIsPopup, handlePopup }) {
                 <h1>{currentBlog.title}</h1>
                 <h6 className="margin-b-8">{currentBlog.created_at}</h6>
                 <div dangerouslySetInnerHTML={{ __html: currentBlog.body }} style={{ width: '100%', height: '100%' }}></div>
+            </div>
+            : <></>}
+            <div className="box-big-blue margin-t-24">
+                <h3>HOW DOES GINGHAM WORK?</h3> <br/>
+                <p>
+                    When vendors at farmers markets approach the end of the day, they want to start git rid of all their product, and sometimes at a cheaper price. 
+                    <strong> With Gingham you can browse through vendors and buy discount bundles!</strong>
+                </p>
+                <img src="/site-images/GINGHAM_HOWITWORKS.png" style={{ width: '100%' }} />
             </div>
         </div>
     )
