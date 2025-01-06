@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { states } from '../../utils/common';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
+
 
 function AdminVendorEdit({ vendors }) {
     const [vendorData, setVendorData] = useState({});
     const [image, setImage] = useState(null)
+    const [newProduct, setNewProduct] = useState(null);
     const [status, setStatus] = useState('initial')
     const [products, setProducts] = useState([])
 
     const location = useLocation();
     
+
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/products")
             .then(response => response.json())
@@ -102,6 +107,23 @@ function AdminVendorEdit({ vendors }) {
         }
     }
 
+    const handleDelete = (productId) => {
+        setVendorData((prev) => ({
+            ...prev,
+            products: prev.products.filter((id) => id !== productId),
+        }));
+    };
+
+    const handleAddProduct = (newProductId) => {
+        setVendorData((prev) => ({
+            ...prev,
+            products: (prev.products || []).includes(Number(newProductId))
+                ? prev.products
+                : [...(prev.products || []), Number(newProductId)],
+        }));
+    };
+
+
     return (
         <>
             <div className='box-bounding'>
@@ -144,8 +166,8 @@ function AdminVendorEdit({ vendors }) {
                         <label>Product:</label>
                         <select
                             name="product"
-                            value={vendorData.product || ''}
-                            onChange={handleInputChange}
+                            value={newProduct ? newProduct : ''}
+                            onChange={(e) => setNewProduct(e.target.value)}
                         >
                             <option value="">Select</option>
                             {Array.isArray(products) && products.map((product) => (
@@ -154,6 +176,23 @@ function AdminVendorEdit({ vendors }) {
                                 </option>
                             ))}
                         </select>
+                        <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddProduct(newProduct)}>Add</button>
+                        <Stack className='padding-4' direction="row" spacing={1}>
+                            {vendorData.products?.map((productId) => {
+                                const product = products.find((p) => p.id === productId);
+                                return (
+                                    <Chip
+                                        key={productId}
+                                        style={{
+                                            backgroundColor: "#eee", fontSize: ".9em"
+                                        }}
+                                        label={product?.product || 'Unknown Product'}
+                                        size="small"
+                                        onDelete={() => handleDelete(productId)}
+                                    />
+                                );
+                            })}
+                        </Stack>
                     </div>
                     <div className='form-group'>
                         <label>Bio:</label>

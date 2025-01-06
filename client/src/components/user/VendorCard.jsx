@@ -10,7 +10,6 @@ function VendorCard({ vendorData, selectedProduct, products }) {
     };
 
     const productList = products.filter(p => vendorData.products.includes(p.id));
-    console.log(productList)
 
 
     return (

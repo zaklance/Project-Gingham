@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { states } from '../../utils/common';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 
 function VendorCreate () {
     const [vendorEditMode, setVendorEditMode] = useState(false);
@@ -16,6 +18,7 @@ function VendorCreate () {
     const [status, setStatus] = useState('initial')
     const [vendorImageURL, setVendorImageURL] = useState(null);
     const [products, setProducts] = useState([])
+    const [newProduct, setNewProduct] = useState(null);
     const [productRequest, setProductRequest] = useState('')
 
     const navigate = useNavigate();
@@ -154,7 +157,7 @@ function VendorCreate () {
             return;
         }
 
-        const newVendorData = { name: vendorData.name, city: vendorData.city, state: vendorData.state, bio: vendorData.bio, product: vendorData.product, image: vendorImageURL, };
+        const newVendorData = { name: vendorData.name, city: vendorData.city, state: vendorData.state, bio: vendorData.bio, products: vendorData.products, image: vendorImageURL, };
 
         try {
             const vendorResponse = await fetch('http://127.0.0.1:5555/api/vendors', {
@@ -211,7 +214,7 @@ function VendorCreate () {
             } else {
                 console.log('Error updating user with vendor_id');
             }
-            if (Number(vendorData.product) === 1 && productRequest.trim() !== '') {
+            if (Number(newProduct) === 1 && productRequest.trim() !== '') {
                 try {
                     const response = await fetch('http://127.0.0.1:5555/api/create-admin-notification', {
                         method: 'POST',
@@ -219,6 +222,7 @@ function VendorCreate () {
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
+                            subject: 'product-request',
                             vendor_id: createdVendor.id,
                             vendor_user_id: vendorUserId,
                             message: `${vendorData.name} has requested to for a new Product category: ${productRequest}.`,
@@ -359,6 +363,22 @@ function VendorCreate () {
         };
         fetchNotifications();
     }, [vendorUserId]);
+
+    const handleDelete = (productId) => {
+        setVendorData((prev) => ({
+            ...prev,
+            products: prev.products.filter((id) => id !== productId),
+        }));
+    };
+
+    const handleAddProduct = (newProductId) => {
+        setVendorData((prev) => ({
+            ...prev,
+            products: (prev.products || []).includes(Number(newProductId))
+                ? prev.products
+                : [...(prev.products || []), Number(newProductId)],
+        }));
+    };
     
 
     return (
@@ -375,9 +395,13 @@ function VendorCreate () {
                     onChange={handleVendorInputChange} 
                 />
             </div>
-            <div className="form-group">
+            <div className='form-group'>
                 <label>Product:</label>
-                <select name="product" value={vendorData?.product || ''} onChange={handleVendorInputChange}>
+                <select
+                    name="product"
+                    value={newProduct ? newProduct : ''}
+                    onChange={(e) => setNewProduct(e.target.value)}
+                >
                     <option value="">Select</option>
                     {Array.isArray(products) && products.map((product) => (
                         <option key={product.id} value={product.id}>
@@ -385,13 +409,31 @@ function VendorCreate () {
                         </option>
                     ))}
                 </select>
+                <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddProduct(newProduct)}>Add</button>
+                <Stack className='padding-4' direction="row" spacing={1}>
+                    {vendorData?.products?.map((productId) => {
+                        const product = products.find((p) => p.id === productId);
+                        return (
+                            <Chip
+                                key={productId}
+                                style={{
+                                    backgroundColor: "#eee", fontSize: ".9em"
+                                }}
+                                label={product?.product || 'Unknown Product'}
+                                size="small"
+                                onDelete={() => handleDelete(productId)}
+                            />
+                        );
+                    })}
+                </Stack>
             </div>
-            {Number(vendorData?.product) === 1 && (
+            {Number(newProduct) === 1 && (
                 <div className="form-group">
                     <label>Other Product:</label>
                     <input
                         type="text"
                         name="new_product"
+                        placeholder='Your Product Here'
                         value={productRequest || ''}
                         onChange={handleProductInputChange}
                     />

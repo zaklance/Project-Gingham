@@ -1064,7 +1064,7 @@ def all_vendors():
             name=data.get('name'),
             city=data.get('city'),
             state=data.get('state'),
-            product=data.get('product'),
+            products=data.get('products'),
             bio=data.get('bio'),
             image=data.get('image')
         )
@@ -1086,8 +1086,8 @@ def all_vendors():
 
         if 'name' in data:
             vendor.name = data['name']
-        if 'product' in data:
-            vendor.product = data['product']
+        if 'products' in data:
+            vendor.product = data['products']
         if 'city' in data:
             vendor.city = data['city']
         if 'state' in data:
@@ -1123,8 +1123,8 @@ def vendor_by_id(id):
            
             if 'name' in data:
                 vendor.name = data['name']
-            if 'product' in data:
-                vendor.product = data['product']
+            if 'products' in data:
+                vendor.products = data['products']
             if 'city' in data:
                 vendor.city = data['city']
             if 'state' in data:
@@ -2661,6 +2661,7 @@ def create_admin_notification():
 
     try:
         new_notification = AdminNotification(
+            subject=data['subject'],
             message=data['message'],
             vendor_user_id=data['vendor_user_id'],
             vendor_id=data['vendor_id'],
@@ -2672,6 +2673,7 @@ def create_admin_notification():
 
         response_data = {
             'id': new_notification.id,
+            'subject': new_notification.subject,
             'message': new_notification.message,
             'is_read': new_notification.is_read
         }
