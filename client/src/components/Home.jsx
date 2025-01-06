@@ -31,10 +31,6 @@ function Home() {
 
     const currentBlog = blogs[currentIndex];
 
-    console.log(currentBlog.created_at);
-
-
-
     return (
         <div>
             <div className="m-flex-center">
@@ -44,10 +40,9 @@ function Home() {
                 <h1 className="font-gingham title-big m-text-center">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</h1>
                 <br></br>
                 <h3> MAKE A POSITIVE IMPACT BY MINIMIZING FOOD WASTE </h3><br/>
-                <p>
-                    Do you love to cook? Do you love cheap produce? How about picnics in the park? Well here is the <strong>social impact company</strong> for you: <strong>Gingham</strong>. 
-                    Our mission is to minimize food waste by creating a marketplace for vendors in Farmers Market's across the globe. <br/><strong>Rescue good food from going to waste today!</strong>
-                </p>
+                <p> Do you love fresh, local produce at a great price? Meet <strong>Gingham</strong>, the platform connecting you with vendors in farmers markets. <strong>With Gingham, you can pre-order mystery baskets filled with surplus or seasonal goods and pick them up directly at the market. </strong></p>
+                <br/>
+                <p> Our mission: reduce waste, support vendors, and provide fresh, affordable food. <strong>Every basket purchased helps reduce waste and strengthen your community.</strong> </p>
             </div>
             {currentBlog ?
             <div className="box-blog margin-t-24 badge-container no-float">
@@ -63,8 +58,8 @@ function Home() {
             <div className="box-big-blue margin-t-24">
                 <h3>HOW DOES GINGHAM WORK?</h3> <br/>
                 <p>
-                    When vendors at farmers markets approach the end of the day, they want to start git rid of all their product, and sometimes at a cheaper price. 
-                    <strong> With Gingham you can browse through vendors and buy discount bundles!</strong>
+                    Vendors build mystery baskets of bundled surplus products that you are able to pre-order and pick-up at a designated time.  
+                    <strong>Gingham makes it easy to shop sustainably while supporting your local farmers market community!</strong>
                 </p>
                 <img src="/site-images/GINGHAM_HOWITWORKS.png" style={{ width: '100%' }} />
             </div>
