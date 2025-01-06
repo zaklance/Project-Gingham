@@ -391,6 +391,10 @@ const AdminUsers = () => {
                                                 <td className='cell-text'>{userData?.status || ""}</td>
                                             </tr>
                                             <tr>
+                                                <td className='cell-title'>ID:</td>
+                                                <td className='cell-text'>{userData?.id || ""}</td>
+                                            </tr>
+                                            <tr>
                                                 <td className='cell-title'>Name:</td>
                                                 <td className='cell-text'>{userData?.first_name || ""} {userData?.last_name || ""}</td>
                                             </tr>

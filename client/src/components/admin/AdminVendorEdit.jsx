@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { states, vendors_default } from '../../utils/common';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
+
 
 function AdminVendorEdit({ vendors }) {
     const [query, setQuery] = useState("");
     const [editMode, setEditMode] = useState(false);
     const [vendorData, setVendorData] = useState(null);
     const [tempVendorData, setTempVendorData] = useState(null);
+    const [newProduct, setNewProduct] = useState(null);
     const [image, setImage] = useState(null);
     const [status, setStatus] = useState('initial');
     const [products, setProducts] = useState([])
@@ -192,6 +196,22 @@ function AdminVendorEdit({ vendors }) {
         }
     };
 
+    const handleDelete = (productId) => {
+        setTempVendorData((prev) => ({
+            ...prev,
+            products: prev.products.filter((id) => id !== productId),
+        }));
+    };
+
+    const handleAddProduct = (newProductId) => {
+        setTempVendorData((prev) => ({
+            ...prev,
+            products: (prev.products || []).includes(Number(newProductId))
+                ? prev.products
+                : [...(prev.products || []), Number(newProductId)],
+        }));
+    };
+
 
     return (
         <>
@@ -255,8 +275,8 @@ function AdminVendorEdit({ vendors }) {
                                 <label>Product:</label>
                                 <select
                                     name="product"
-                                    value={tempVendorData ? tempVendorData.product : ''}
-                                    onChange={handleInputChange}
+                                    value={newProduct ? newProduct : ''}
+                                    onChange={(e) => setNewProduct(e.target.value)}
                                 >
                                     <option value="">Select</option>
                                     {Array.isArray(products) && products.map((product) => (
@@ -265,6 +285,22 @@ function AdminVendorEdit({ vendors }) {
                                         </option>
                                     ))}
                                 </select>
+                                <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddProduct(newProduct)}>Add</button>
+                                <Stack className='padding-4' direction="row" spacing={1}>
+                                    {tempVendorData.products?.map((productId) => {
+                                        const product = products.find((p) => p.id === productId);
+                                        return (
+                                            <Chip
+                                                key={productId}
+                                                style={{
+                                                    backgroundColor: "#eee", fontSize: ".9em"}}
+                                                label={product?.product || 'Unknown Product'}
+                                                size="small"
+                                                onDelete={() => handleDelete(productId)}
+                                            />
+                                        );
+                                    })}
+                                </Stack>
                             </div>
                             <div className='form-group'>
                                 <label>Bio:</label>
@@ -331,6 +367,10 @@ function AdminVendorEdit({ vendors }) {
                                         </td>
                                     </tr>
                                     <tr>
+                                        <td className='cell-title'>ID:</td>
+                                        <td className='cell-text'>{vendorData ? `${vendorData.id}` : ''}</td>
+                                    </tr>
+                                    <tr>
                                         <td className='cell-title'>Name:</td>
                                         <td className='cell-text'>{vendorData ? `${vendorData.name}` : ''}</td>
                                     </tr>
@@ -345,9 +385,10 @@ function AdminVendorEdit({ vendors }) {
                                     <tr>
                                         <td className='cell-title'>Product:</td>
                                         <td className='cell-text'>
-                                            {vendorData?.product
-                                                ? products.find(product => Number(product.id) === Number(vendorData.product))?.product || 'Unknown Product'
-                                                : ''}
+                                            {products
+                                                .filter(p => vendorData?.products?.includes(p.id))
+                                                .map(p => p.product)
+                                                .join(', ') || ''}
                                         </td>
                                     </tr>
                                     <tr>

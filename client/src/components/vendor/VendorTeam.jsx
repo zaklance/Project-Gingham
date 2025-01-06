@@ -143,14 +143,14 @@ function VendorTeam({ vendors, vendorId, vendorUserData, notifications }) {
     
     return (
         <>
-            <div className='box-bounding'>
-                <h2 className='margin-b-16'>Notifications</h2>
-                {notifications && notifications.length > 0 ? (
-                    <VendorNotification notifications={notifications} vendorId={vendorId} teamMembers={teamMembers} setTeamMembers={setTeamMembers} vendorUserData={vendorUserData} />
+            {notifications && notifications.length > 0 ? (
+                <div className='box-bounding margin-b-24'>
+                    <h2 className='margin-b-16'>Notifications</h2>
+                        <VendorNotification notifications={notifications} vendorId={vendorId} teamMembers={teamMembers} setTeamMembers={setTeamMembers} vendorUserData={vendorUserData} />
+                </div>
                 ) : (
-                    <p>No notifications.</p>
-                )}
-            </div>
+                <></>
+            )}
             <div className='box-bounding'>
                 <h2 className="title margin-b-16">Team Members</h2>
                 <div>
@@ -184,7 +184,7 @@ function VendorTeam({ vendors, vendorId, vendorUserData, notifications }) {
                         </select>
                     </div>
                     <button className="btn-edit" onClick={handleAddTeamMember}>Add Team Member</button>
-                    <h3 className='margin-b-16 margin-t-24'>Current Team Members:</h3>
+                    <h3 className='margin-b-16'>Current Team Members:</h3>
                     <ul className='ul-team box-scroll-small'>
                         {teamMembers.map(member => (
                             <li key={member.id} className='li-team'>

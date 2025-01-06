@@ -116,6 +116,10 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
                             <td className='cell-text'>{adminMarketData ? <img className='img-market' src={`/market-images/${adminMarketData.image}`} alt="Market Image" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
                         </tr>
                         <tr>
+                            <td className='cell-title'>ID:</td>
+                            <td className='cell-text'>{adminMarketData ? `${adminMarketData.id}` : ''}</td>
+                        </tr>
+                        <tr>
                             <td className='cell-title'>Name:</td>
                             <td className='cell-text'>{adminMarketData ? `${adminMarketData.name}` : ''}</td>
                         </tr>

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, NavLink, Link, Route, Routes, BrowserRouter as Router} from 'react-router-dom';
 import { vendors_default, states } from '../../utils/common';
 import { formatPhoneNumber } from '../../utils/helpers';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 import VendorCreate from './VendorCreate';
 import VendorLocations from './VendorLocations';
 
@@ -20,6 +22,7 @@ function VendorProfile () {
     const [status, setStatus] = useState('initial')
     const [vendorImageURL, setVendorImageURL] = useState(null);
     const [products, setProducts] = useState([])
+    const [newProduct, setNewProduct] = useState(null);
     const [productRequest, setProductRequest] = useState('')
 
     const vendorUserId = parseInt(globalThis.localStorage.getItem('vendor_user_id'))
@@ -173,7 +176,7 @@ function VendorProfile () {
         if (!vendorEditMode) {
             setTempVendorData({
                 name: vendorData.name,
-                product: vendorData.product, 
+                products: vendorData.products, 
                 bio: vendorData.bio,
                 city: vendorData.city,
                 state: vendorData.state,
@@ -376,6 +379,22 @@ function VendorProfile () {
         setProductRequest(event.target.value);
     };
 
+    const handleDelete = (productId) => {
+        setTempVendorData((prev) => ({
+            ...prev,
+            products: prev.products.filter((id) => id !== productId),
+        }));
+    };
+
+    const handleAddProduct = (newProductId) => {
+        setTempVendorData((prev) => ({
+            ...prev,
+            products: (prev.products || []).includes(Number(newProductId))
+                ? prev.products
+                : [...(prev.products || []), Number(newProductId)],
+        }));
+    };
+
 
     return(
         <div>
@@ -466,8 +485,8 @@ function VendorProfile () {
                                         <label>Product:</label>
                                         <select
                                             name="product"
-                                            value={tempVendorData ? tempVendorData.product : ''}
-                                            onChange={handleVendorInputChange}
+                                            value={newProduct ? newProduct : ''}
+                                            onChange={(e) => setNewProduct(e.target.value)}
                                         >
                                             <option value="">Select</option>
                                             {Array.isArray(products) && products.map((product) => (
@@ -476,13 +495,31 @@ function VendorProfile () {
                                                 </option>
                                             ))}
                                         </select>
+                                        <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddProduct(newProduct)}>Add</button>
+                                        <Stack className='padding-4' direction="row" spacing={1}>
+                                            {tempVendorData.products?.map((productId) => {
+                                                const product = products.find((p) => p.id === productId);
+                                                return (
+                                                    <Chip
+                                                        key={productId}
+                                                        style={{
+                                                            backgroundColor: "#eee", fontSize: ".9em"
+                                                        }}
+                                                        label={product?.product || 'Unknown Product'}
+                                                        size="small"
+                                                        onDelete={() => handleDelete(productId)}
+                                                    />
+                                                );
+                                            })}
+                                        </Stack>
                                     </div>
-                                    {Number(tempVendorData?.product) === 1 && (
+                                    {Number(newProduct) === 1 && (
                                         <div className="form-group">
                                             <label>Other Product:</label>
                                             <input
                                                 type="text"
                                                 name="new_product"
+                                                placeholder='Your Product Here'
                                                 value={productRequest || ''}
                                                 onChange={handleProductInputChange}
                                             />
@@ -592,9 +629,10 @@ function VendorProfile () {
                                                     <tr>
                                                         <td className='cell-title'>Product:</td>
                                                         <td className='cell-text'>
-                                                            {vendorData?.product
-                                                                ? products.find(product => Number(product.id) === Number(vendorData.product))?.product || 'Unknown Product'
-                                                                : ''}
+                                                            {products
+                                                                .filter(p => vendorData?.products?.includes(p.id))
+                                                                .map(p => p.product)
+                                                                .join(', ') || ''}
                                                         </td>
                                                     </tr>
                                                     <tr>
