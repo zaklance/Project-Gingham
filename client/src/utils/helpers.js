@@ -15,6 +15,13 @@ export function timeConverter(time24) {
     return time12;
 }
 
+export function blogTimeConverter(createdAt) {
+    const [date] = createdAt.split(/T| /);
+    const [year, month, day] = date.split('-');
+    const formattedDate = `${year}/${month}/${day}`;
+    return formattedDate;
+}
+
 export function convertToLocalDate(gmtDateString) {
     const [year, month, day] = gmtDateString.split('-').map(Number);
     const localDate = new Date(year, month - 1, day);
