@@ -202,7 +202,7 @@ function MarketDetail ({ match }) {
             );
             setAlertMessage('added to cart');
         } else {
-            alert("Sorry, all baskets are sold out!");
+            setAlertMessage("Sorry, all baskets are sold out!");
         }
         setVendorAlertStates(prev => ({ ...prev, [vendorId]: true }));
         setTimeout(() => {

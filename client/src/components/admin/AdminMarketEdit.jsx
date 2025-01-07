@@ -186,30 +186,32 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         setEditDayMode(!editDayMode);
     };
 
-    const handleSaveChanges = async (event) => {;
-        try {
-            const response = await fetch(`http://127.0.0.1:5555/api/markets/${matchingMarketId}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(tempMarketData),
-            });
-    
-            if (response.ok) {
-                const updatedData = await response.json();
-                setAdminMarketData(updatedData);
-                setEditMode(false);
-                alert('Market details updated successfully.');
-    
-                if (image) {
-                    await handleImageUpload(matchingMarketId);
+    const handleSaveChanges = async (event) => {
+        if (confirm(`Are you sure you want to edit ${adminMarketData.name}'s account?`)) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5555/api/markets/${matchingMarketId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(tempMarketData),
+                });
+        
+                if (response.ok) {
+                    const updatedData = await response.json();
+                    setAdminMarketData(updatedData);
+                    setEditMode(false);
+                    alert('Market details updated successfully.');
+        
+                    if (image) {
+                        await handleImageUpload(matchingMarketId);
+                    }
+                } else {
+                    console.error('Failed to save market details:', await response.text());
                 }
-            } else {
-                console.error('Failed to save market details:', await response.text());
+            } catch (error) {
+                console.error('Error saving market changes:', error);
             }
-        } catch (error) {
-            console.error('Error saving market changes:', error);
         }
     };
 

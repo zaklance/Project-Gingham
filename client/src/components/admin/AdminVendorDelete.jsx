@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 function AdminVendorDelete({ vendors }) {
     const [query, setQuery] = useState("");
     const [vendorData, setVendorData] = useState(null);
+    const [products, setProducts] = useState([])
 
     const navigate = useNavigate();
 
@@ -11,6 +12,19 @@ function AdminVendorDelete({ vendors }) {
     const filteredVendors = vendors.filter(vendor => vendor.name.toLowerCase().includes(query.toLowerCase()) && vendor.name !== query)
     const matchingVendor = vendors.find(vendor => vendor.name.toLowerCase() === query.toLowerCase());
     const matchingVendorId = matchingVendor ? matchingVendor.id : null;
+
+    useEffect(() => {
+            fetch("http://127.0.0.1:5555/api/products")
+                .then(response => response.json())
+                .then(data => {
+                    const sortedProducts = data.sort((a, b) => {
+                        if (a.product === "Other") return 1;
+                        if (b.product === "Other") return -1;
+                        return a.product.localeCompare(b.product);
+                    });
+                    setProducts(sortedProducts);
+                });
+        }, []);
 
     useEffect(() => {
         if (!matchingVendorId) return
@@ -113,7 +127,12 @@ function AdminVendorDelete({ vendors }) {
                         </tr>
                         <tr>
                             <td className='cell-title'>Product:</td>
-                            <td className='cell-text'>{vendorData ? vendorData.product : ''}</td>
+                            <td className='cell-text'>{vendorData ? vendorData.product : ''}
+                                {products
+                                    .filter(p => vendorData?.products?.includes(p.id))
+                                    .map(p => p.product)
+                                    .join(', ') || ''}
+                            </td>
                         </tr>
                         <tr>
                             <td className='cell-title'>Bio:</td>
