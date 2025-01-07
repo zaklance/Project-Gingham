@@ -12,7 +12,7 @@ function AdminVendorNotifications({ notifications, setNotifications }) {
 
         if (!newProduct?.product || newProduct.product.trim() === "") {
             alert("Product name cannot be empty.");
-            return; // Exit the function early
+            return;
         }
 
         try {
@@ -23,28 +23,39 @@ function AdminVendorNotifications({ notifications, setNotifications }) {
                 },
                 body: JSON.stringify(newProduct),
             });
-            if (productResponse.ok) {{
+            if (productResponse.ok) {
                 const newProductData = await productResponse.json();
-                console.log(newProductData)
+
+                const vendorResponse = await fetch(`http://127.0.0.1:5555/api/vendors/${notification.vendor_id}`);
+                if (!vendorResponse.ok) {
+                    throw new Error('Failed to fetch vendor data');
+                }
+                const vendorData = await vendorResponse.json();
+
+                const updatedProducts = [
+                    ...vendorData.products.filter(productId => productId !== 1),
+                    newProductData.id
+                ];
+
+                console.log(updatedProducts)
                 
-                const vendorResponse = await fetch(`http://127.0.0.1:5555/api/vendors/${notification.vendor_id}`, {
+                const updateVendorResponse = await fetch(`http://127.0.0.1:5555/api/vendors/${notification.vendor_id}`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        product: newProductData.id
+                        products: updatedProducts
                     }),
                 });
-                if (vendorResponse.ok) {
+                if (updateVendorResponse.ok) {
                     alert('Vendor product updated successfully');
                 } else {
                     console.error('Failed to update vendor');
-                    const responseData = await vendorResponse.json();
+                    const responseData = await updateVendorResponse.json();
                     alert(responseData.message || 'Something went wrong');
                 }
-            }
             } else {
                 console.error('Failed to create product');
                 const responseData = await productResponse.json();
@@ -59,8 +70,8 @@ function AdminVendorNotifications({ notifications, setNotifications }) {
                 },
             });
             if (adminResponse.ok) {
-                setNotifications((prevNotifications) =>
-                    prevNotifications.filter((notif) => notif.id !== notification.id)
+                setNotifications((prev) =>
+                    prev.filter((item) => item.id !== notification.id)
                 );
                 alert('Notification approved and product updated successfully');
             } else {
