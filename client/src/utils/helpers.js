@@ -32,6 +32,13 @@ export function convertToLocalDate(gmtDateString) {
     });
 }
 
+export const formatTime = (time) => {
+    const [hour, minute] = time.split(':');
+    const formattedHour = hour.padStart(2, '0');
+    const formattedMinute = minute ? minute.padStart(2, '0') : '00';
+    return `${formattedHour}:${formattedMinute}`;
+};
+
 export function formatDate(dateString) {
     if (!dateString || dateString.length !== 10) return "Invalid Date";
 

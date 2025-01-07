@@ -200,9 +200,19 @@ function VendorBasketCard({ vendorId, marketDay }) {
             setErrorMessage(`You cannot reduce the number of baskets below the sold count (${soldBasketsCount}).`);
             return;
         }
+
+        const parseTimeInput = (time) => {
+            const [hour, minute] = time.split(':').map(num => parseInt(num, 10));
+            const formattedHour = hour < 10 ? `0${hour}` : hour.toString();
+            const formattedMinute = isNaN(minute) ? '00' : minute < 10 ? `0${minute}` : minute.toString();
+            return `${formattedHour}:${formattedMinute}`;
+        };
     
-        const [startHour, startMinute] = startTime.split(':').map(num => parseInt(num, 10));
-        const [endHour, endMinute] = endTime.split(':').map(num => parseInt(num, 10));
+        const formattedStartTime = parseTimeInput(startTime);
+        const formattedEndTime = parseTimeInput(endTime);
+    
+        const [startHour, startMinute] = formattedStartTime.split(':').map(num => parseInt(num, 10));
+        const [endHour, endMinute] = formattedEndTime.split(':').map(num => parseInt(num, 10));
     
         if (isNaN(startHour) || isNaN(startMinute) || isNaN(endHour) || isNaN(endMinute)) {
             console.error('Invalid hour or minute values for pickup start or end.');
@@ -218,7 +228,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
     
         const formattedEndHour = endAmPm === 'PM' && endHour !== 12
             ? endHour + 12
-            : startAmPm === 'AM' && endHour === 12
+            : endAmPm === 'AM' && endHour === 12
             ? 0
             : endHour;
     
@@ -237,8 +247,6 @@ function VendorBasketCard({ vendorId, marketDay }) {
         if (parsedNumBaskets > 0 && vendorId && marketDay && marketDay.id && !isNaN(parsedPrice) && parsedPrice > 0) {
             const promises = [];
             const additionalBaskets = parsedNumBaskets - prevNumBaskets;
-
-            const basketsToDelete = savedBaskets.filter(basket => basket.shouldDelete);
     
             if (additionalBaskets > 0) {
                 for (let i = 0; i < additionalBaskets; i++) {
@@ -321,6 +329,16 @@ function VendorBasketCard({ vendorId, marketDay }) {
         } else {
             setErrorMessage('Please enter valid data for all fields.');
         }
+    };
+
+    const handleStartTimeChange = (e) => {
+        const value = e.target.value;
+        setStartTime(value);
+    };
+    
+    const handleEndTimeChange = (e) => {
+        const value = e.target.value;
+        setEndTime(value);
     };
     
     const editSavedBaskets = () => {
@@ -509,7 +527,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                         <div className='form-baskets-small'>
                             <label className='margin-t-16 margin-b-8'>Pick-Up Start:</label>
                             <div className='flex-start'>
-                                <input placeholder="HH:MM" name="pickup_start" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+                                <input placeholder="HH:MM" name="pickup_start" value={startTime} onChange={handleStartTimeChange} />
                                 <select name="amPm" value={startAmPm} className='am-pm' onChange={(e) => setStartAmPm(e.target.value)} >
                                     <option value="AM">AM</option>
                                     <option value="PM">PM</option>
@@ -519,7 +537,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                         <div className='form-baskets-small'>
                             <label className='margin-t-16 margin-b-8'>Pick-Up End:</label>
                             <div className='flex-start'>
-                                <input placeholder="HH:MM" name="pickup_end" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+                                <input placeholder="HH:MM" name="pickup_end" value={endTime} onChange={handleEndTimeChange} />
                                 <select name="amPm" value={endAmPm} className='am-pm' onChange={(e) => setEndAmPm(e.target.value)} >
                                     <option value="AM">AM</option>
                                     <option value="PM">PM</option>
