@@ -339,8 +339,6 @@ def signup():
         user = User.query.filter(User.email == data['email']).first()
         if user:
             return {'error': 'email already exists'}, 400
-        
-        # avatar = data.get('avatar') or choice(avatars)
 
         new_user = User(
             email=data['email'],
@@ -353,7 +351,7 @@ def signup():
             city=data['city'],
             state=data['state'],
             zipcode=data['zipcode'],
-            # avatar_default=avatar
+            coordinates=data['coordinates']
         )
 
         db.session.add(new_user)
@@ -553,18 +551,32 @@ def profile(id):
             data = request.get_json()
             # for key, value in data.items():
             #     setattr(user, key, value)
-            user.first_name = data.get('first_name')
-            user.last_name = data.get('last_name')
-            user.email = data.get('email')
-            user.phone = data.get('phone')
-            user.address_1 = data.get('address_1')
-            user.address_2 = data.get('address_2')
-            user.city = data.get('city')
-            user.state = data.get('state')
-            user.zipcode = data.get('zipcode')
-            user.avatar = data.get('avatar')
-            user.avatar_default = data.get('avatar_default')
-            user.status = data.get('status')
+            if 'first_name' in data:
+                user.first_name = data.get('first_name')
+            if 'last_name' in data:
+                user.last_name = data.get('last_name')
+            if 'email' in data:
+                user.email = data.get('email')
+            if 'phone' in data:
+                user.phone = data.get('phone')
+            if 'address_1' in data:
+                user.address_1 = data.get('address_1')
+            if 'address_2' in data:
+                user.address_2 = data.get('address_2')
+            if 'city' in data:
+                user.city = data.get('city')
+            if 'state' in data:
+                user.state = data.get('state')
+            if 'zipcode' in data:
+                user.zipcode = data.get('zipcode')
+            if 'coordinates' in data:
+                user.coordinates = data['coordinates']
+            if 'avatar' in data:
+                user.avatar = data.get('avatar')
+            if 'avatar_default' in data:
+                user.avatar_default = data.get('avatar_default')
+            if 'status' in data:
+                user.status = data.get('status')
 
             db.session.commit()
             return jsonify(user.to_dict()), 200

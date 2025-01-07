@@ -92,29 +92,57 @@ function Profile({ marketData }) {
 
     const handleSaveChanges = async () => {
         let uploadedFilename = null;
+        const token = localStorage.getItem('user_jwt-token');
         
         try {
-            const token = localStorage.getItem('user_jwt-token');
-            const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(tempProfileData)
-            });
+            const apiKey = import.meta.env.VITE_RADAR_KEY;
+            const query = `${tempProfileData.address_1} ${tempProfileData.city} ${tempProfileData.state} ${tempProfileData.zipcode}`;
+            try {
+                const responseRadar = await fetch(`https://api.radar.io/v1/geocode/forward?query=${encodeURIComponent(query)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': apiKey,
+                    },
+                });
+                if (responseRadar.ok) {
+                    const data = await responseRadar.json();
+                    if (data.addresses && data.addresses.length > 0) {
+                        const { latitude, longitude } = data.addresses[0];
 
-            console.log('Request body:', JSON.stringify(tempProfileData));
+                        const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                first_name: tempProfileData.first_name,
+                                last_name: tempProfileData.last_name,
+                                email: tempProfileData.email,
+                                phone: tempProfileData.phone,
+                                address_1: tempProfileData.address_1,
+                                address_2: tempProfileData.address_2,
+                                city: tempProfileData.city,
+                                state: tempProfileData.state,
+                                zipcode: tempProfileData.zipcode,
+                                coordinates: { lat: latitude, lng: longitude }
+                            })
+                        });
 
-            if (response.ok) {
-                const updatedData = await response.json();
-                setProfileData(updatedData);
-                setEditMode(false);
-                console.log('Profile data updated successfully:', updatedData);
-            } else {
-                console.log('Failed to save changes');
-                console.log('Response status:', response.status);
-                console.log('Response text:', await response.text());
+                        if (response.ok) {
+                            const updatedData = await response.json();
+                            setProfileData(updatedData);
+                            setEditMode(false);
+                            console.log('Profile data updated successfully:', updatedData);
+                        } else {
+                            console.log('Failed to save changes');
+                            console.log('Response status:', response.status);
+                            console.log('Response text:', await response.text());
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Geocoding Error:', error);
             }
             if (image) {
 

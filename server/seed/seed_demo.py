@@ -226,7 +226,8 @@ def run():
         #     address_2="Floor 2",
         #     city="New York",
         #     state="NY",
-        #     zipcode="10004"
+        #     zipcode="10004",
+        #     coordinates={"lat": 40.726586, "lng": -73.988734}
         # ),
         User(
             email="zak@mufo.nyc",
@@ -238,7 +239,8 @@ def run():
             address_2="Floor 2",
             city="New York",
             state="NY",
-            zipcode="10004"
+            zipcode="10004",
+            coordinates={"lat": 40.726586, "lng": -73.988734}
         ),
         User(
             email="sandro@mufo.nyc",
@@ -250,7 +252,8 @@ def run():
             address_2="Floor 2",
             city="New York",
             state="NY",
-            zipcode="10004"
+            zipcode="10004",
+            coordinates={"lat": 40.726586, "lng": -73.988734}
         ),
         User(
             email="vinh@mufo.nyc",
@@ -262,7 +265,8 @@ def run():
             address_2="Floor 2",
             city="New York",
             state="NY",
-            zipcode="10004"
+            zipcode="10004",
+            coordinates={"lat": 40.726586, "lng": -73.988734}
         ),
     ]
     db.session.add_all(user_demo)
@@ -294,7 +298,8 @@ def run():
     #         city=city,
     #         state=state,
     #         zipcode=zipcode,
-    #         # avatar=avatar
+    #         # avatar=avatar,
+    #         coordinates={"lat": 40.726586, "lng": -73.988734}
     #     )
     #     users.append(u)
 
