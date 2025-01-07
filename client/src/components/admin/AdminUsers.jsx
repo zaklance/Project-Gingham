@@ -114,76 +114,78 @@ const AdminUsers = () => {
 
     const handleSaveChanges = async () => {
         let uploadedFilename = null;
+        
+        if (confirm(`Are you sure you want to edit ${userData.first_name}'s account?`)) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5555/api/users/${userData.id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(tempUserData)
+                });
 
-        try {
-            const response = await fetch(`http://127.0.0.1:5555/api/users/${userData.id}`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(tempUserData)
-            });
+                // console.log('Request body:', JSON.stringify(tempUserData));
 
-            // console.log('Request body:', JSON.stringify(tempUserData));
-
-            if (response.ok) {
-                const updatedData = await response.json();
-                setUserData(updatedData);
-                setEditMode(false);
-                // console.log('Profile data updated successfully:', updatedData);
-            } else {
-                console.log('Failed to save changes');
-                console.log('Response status:', response.status);
-                console.log('Response text:', await response.text());
-            }
-            if (image) {
-
-                const maxFileSize = 25 * 1024 * 1024
-                if (image.size > maxFileSize) {
-                    alert("File size exceeds 25 MB. Please upload a smaller file.");
-                    return;
+                if (response.ok) {
+                    const updatedData = await response.json();
+                    setUserData(updatedData);
+                    setEditMode(false);
+                    // console.log('Profile data updated successfully:', updatedData);
+                } else {
+                    console.log('Failed to save changes');
+                    console.log('Response status:', response.status);
+                    console.log('Response text:', await response.text());
                 }
+                if (image) {
 
-                console.log('Uploading file...');
-                const formData = new FormData();
-                formData.append('file', image);
-                formData.append('type', 'user');
-                formData.append('user_id', userData.id);
-
-                for (const [key, value] of formData.entries()) {
-                    console.log(`${key}:`, value);
-                }
-
-                try {
-                    const result = await fetch('http://127.0.0.1:5555/api/upload', {
-                        method: 'POST',
-                        body: formData,
-                    });
-
-                    console.log('Request Body:', formData);
-
-                    if (result.ok) {
-                        const data = await result.json();
-                        uploadedFilename = `${userData.id}/${data.filename}`;
-                        console.log('Image uploaded:', uploadedFilename);
-                        setUserData((prevData) => ({
-                            ...prevData,
-                            avatar: uploadedFilename, // Update avatar with the new filename
-                        }));
-                    } else {
-                        console.log('Image upload failed');
-                        console.log('Response:', await result.text());
+                    const maxFileSize = 25 * 1024 * 1024
+                    if (image.size > maxFileSize) {
+                        alert("File size exceeds 25 MB. Please upload a smaller file.");
                         return;
                     }
-                } catch (error) {
-                    console.error('Error uploading image:', error);
-                    return;
+
+                    console.log('Uploading file...');
+                    const formData = new FormData();
+                    formData.append('file', image);
+                    formData.append('type', 'user');
+                    formData.append('user_id', userData.id);
+
+                    for (const [key, value] of formData.entries()) {
+                        console.log(`${key}:`, value);
+                    }
+
+                    try {
+                        const result = await fetch('http://127.0.0.1:5555/api/upload', {
+                            method: 'POST',
+                            body: formData,
+                        });
+
+                        console.log('Request Body:', formData);
+
+                        if (result.ok) {
+                            const data = await result.json();
+                            uploadedFilename = `${userData.id}/${data.filename}`;
+                            console.log('Image uploaded:', uploadedFilename);
+                            setUserData((prevData) => ({
+                                ...prevData,
+                                avatar: uploadedFilename, // Update avatar with the new filename
+                            }));
+                        } else {
+                            console.log('Image upload failed');
+                            console.log('Response:', await result.text());
+                            return;
+                        }
+                    } catch (error) {
+                        console.error('Error uploading image:', error);
+                        return;
+                    }
+                    window.location.reload()
                 }
-                window.location.reload()
+            } catch (error) {
+                console.error('Error saving changes:', error);
             }
-        } catch (error) {
-            console.error('Error saving changes:', error);
         }
     };
 

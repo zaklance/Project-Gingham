@@ -27,22 +27,29 @@ function Home() {
         });
     };
 
-    // if (blogs.length === 0) return <div>No blogs available.</div>;
-
     const currentBlog = blogs[currentIndex];
+
 
     return (
         <div>
-            <div className="m-flex-center">
-                <img className='big-logo' src="/site-images/gingham-logo-A_2.svg" alt="Gingham Logo"></img>
-            </div>
-            <div className="sidebar">
-                <h1 className="font-gingham title-big m-text-center">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</h1>
-                <br></br>
-                <h3> MAKE A POSITIVE IMPACT BY MINIMIZING FOOD WASTE </h3><br/>
-                <p> Do you love fresh, local produce at a great price? Meet <strong>Gingham</strong>, the platform connecting you with vendors in farmers markets. <strong>With Gingham, you can pre-order mystery baskets filled with surplus or seasonal goods and pick them up directly at the market. </strong></p>
-                <br/>
-                <p> Our mission: reduce waste, support vendors, and provide fresh, affordable food. <strong>Every basket purchased helps reduce waste and strengthen your community.</strong> </p>
+            <div className="flex-space-between">
+                <div className="m-flex-center">
+                    <img className='big-logo' src="/site-images/gingham-logo-A_2.svg" alt="Gingham Logo"></img>
+                </div>
+                <div className="sidebar">
+                    <h1 className="font-gingham title-big m-text-center">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</h1>
+                    <br/>
+                    <h3> MAKE A POSITIVE IMPACT BY MINIMIZING FOOD WASTE </h3><br/>
+                    <p> Do you love fresh, local produce at a great price? Meet Gingham, the platform connecting 
+                        you with vendors in farmers markets. <span className="text-500">With Gingham, you can 
+                        pre-order mystery baskets filled with surplus or seasonal goods and pick them up directly 
+                        at the market.</span>
+                    </p>
+                    <br/>
+                    <p> Our mission: reduce waste, support vendors, and provide fresh, affordable food. Every 
+                        basket purchased helps reduce waste and strengthen your community.
+                    </p>
+                </div>
             </div>
             {currentBlog ?
             <div className="box-blog margin-t-24 badge-container no-float">
