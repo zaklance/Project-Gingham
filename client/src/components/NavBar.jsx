@@ -279,7 +279,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         </li>
                         {adminNotifications.length > 0 &&
                             <li className='notification' onClick={handleAdminNotifPopup}>
-                                <a className='nav-tab color-4 btn-nav nav-tab-wide icon-notif' to="/notifications">&emsp;</a>
+                                <a className='nav-tab color-2 btn-nav nav-tab-wide icon-notif' to="/notifications">&emsp;</a>
                                 {adminNotifications.length > 0 && <p className='badge'>{adminNotifications.length}</p>}
                             </li>
                         }

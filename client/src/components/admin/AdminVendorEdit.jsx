@@ -163,29 +163,31 @@ function AdminVendorEdit({ vendors }) {
     };
 
     const handleSaveChanges = async () => {
-        try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendors/${matchingVendorId}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(tempVendorData),
-            });
-    
-            if (response.ok) {
-                const updatedData = await response.json();
-                setVendorData(updatedData);
-                setEditMode(false);
-                alert('Vendor details updated successfully.');
-    
-                if (image) {
-                    await handleImageUpload(matchingVendorId);
+        if (confirm(`Are you sure you want to edit ${vendorData.name}'s account?`)) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendors/${matchingVendorId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(tempVendorData),
+                });
+        
+                if (response.ok) {
+                    const updatedData = await response.json();
+                    setVendorData(updatedData);
+                    setEditMode(false);
+                    alert('Vendor details updated successfully.');
+        
+                    if (image) {
+                        await handleImageUpload(matchingVendorId);
+                    }
+                } else {
+                    console.error('Failed to save vendor details:', await response.text());
                 }
-            } else {
-                console.error('Failed to save vendor details:', await response.text());
+            } catch (error) {
+                console.error('Error saving vendor details:', error);
             }
-        } catch (error) {
-            console.error('Error saving vendor details:', error);
         }
     };
 

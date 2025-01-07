@@ -133,7 +133,7 @@ function VendorDetail() {
             setMarketBaskets(prevBaskets => prevBaskets.filter(item => item.id !== basketInCart.id));
             setAlertMessage('added to cart');
         } else {
-            alert("Sorry, all baskets are sold out!");
+            setAlertMessage("Sorry, all baskets are sold out!");
         }
         setVendorAlertStates(prev => ({ ...prev, [marketDay.id]: true }));
         setTimeout(() => {
@@ -346,7 +346,7 @@ function VendorDetail() {
                     )}
                 </div>
                 <div className='side-basket'>
-                    <h3 className='margin-t-8'>Product: {productList.length > 0
+                    <h3 className='margin-t-8'>Product: {productList?.length > 0
                         ? productList.map(p => p.product).join(', ')
                         : "No products available"}</h3>
                     <div className='flex-start'>
