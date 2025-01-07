@@ -19,12 +19,16 @@ function Markets() {
     const [showFilters, setShowFilters] = useState(false);
     const [filterAZ, setFilterAZ] = useState(false);
     const [filterZA, setFilterZA] = useState(false);
-    const [filterZipcode, setFilterZipcode] = useState(false);
-    const [filterZipcodeNum, setFilterZipcodeNum] = useState();
+    const [filterAddress, setFilterAddress] = useState(false);
+    const [address, setAddress] = useState();
     const [selectedDay, setSelectedDay] = useState('');
     const [isInSeason, setIsInSeason] = useState(false);
-
+    const [addressResults, setAddressResults] = useState();
+    const [showAddressDropdown, setShowAddressDropdown] = useState(false);
+    const [resultCoordinates, setResultCoordinates] = useState();
+    
     const dropdownRef = useRef(null);
+    const debounceTimeout = useRef(null);
     const location = useLocation();
     
     const { handlePopup } = useOutletContext();
@@ -126,10 +130,9 @@ function Markets() {
                 if (userId & markets.length > 0) {
                     const sortedMarkets = markets
                         .map(market => {
-                            let distance = zipCodeDistance(
-                                user.zipcode,
-                                market.zipcode,
-                                'M'
+                            let distance = haversineDistance(
+                                user.coordinates,
+                                market.coordinates
                             );
                             if (distance === null || isNaN(distance)) {
                                 distance = Infinity;
@@ -301,8 +304,8 @@ function Markets() {
         if (!filterAZ) {
             setFilterAZ(!filterAZ)
             setFilterZA(false)
-            setFilterZipcode(false)
-            setFilterZipcodeNum()
+            setFilterAddress(false)
+            setAddress()
         }
     }
 
@@ -310,21 +313,79 @@ function Markets() {
         if (!filterZA) {
             setFilterAZ(false)
             setFilterZA(!filterZA)
-            setFilterZipcode(false)
-            setFilterZipcodeNum()
+            setFilterAddress(false)
+            setAddress()
         }
     }
 
-    const handleFilterZipcode = (event) => {
-        if (!filterZipcode) {
+    const handleFilterAddress = (event) => {
+        if (!filterAddress) {
             setFilterAZ(false)
             setFilterZA(false)
-            setFilterZipcode(!filterZipcode)
+            setFilterAddress(!filterAddress)
         }
     }
 
-    const handleFilterZipcodeNum = (event) => {
-        setFilterZipcodeNum(event.target.value)
+    const handleAddress = (event) => {
+        const query = event.target.value;
+        setAddress(query);
+        // Clear the previous debounce timer
+        if (debounceTimeout.current) {
+            clearTimeout(debounceTimeout.current);
+        }
+        // Start a new debounce timer
+        debounceTimeout.current = setTimeout(() => {
+            if (query.trim() !== '') {
+                handleSearchAddress(query);
+            }
+        }, 600); // 1 second delay
+    };
+
+    const handleSearchAddress = async (query) => {
+        const apiKey = import.meta.env.VITE_RADAR_KEY;
+
+        try {
+            const responseRadar = await fetch(`https://api.radar.io/v1/search/autocomplete?query=${encodeURIComponent(query)}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': apiKey,
+                },
+            });
+            if (responseRadar.ok) {
+                const data = await responseRadar.json();
+                setAddressResults(data.addresses);
+                setShowAddressDropdown(true);
+
+                if (data.addresses && data.addresses.length > 0) {
+                    const { latitude, longitude } = data.addresses[0];
+                    console.log('Coordinates:', latitude, longitude);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching address:', error);
+        }
+    };
+
+    function haversineDistance(coord1, coord2) {
+        if (coord1 && coord2) {
+            const R = 3959; // Earth's radius in miles
+    
+            const lat1 = coord1.lat;
+            const lon1 = coord1.lng;
+            const lat2 = coord2.lat;
+            const lon2 = coord2.lng;
+    
+            const dLat = (lat2 - lat1) * (Math.PI / 180);
+            const dLon = (lon2 - lon1) * (Math.PI / 180);
+    
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    
+            return R * c; // Distance in miles
+        }
     }
 
     const sortedMarketsResults = useMemo(() => {
@@ -336,13 +397,12 @@ function Markets() {
         else if (filterZA) {
             results.sort((a, b) => b.name.localeCompare(a.name));
         }
-        else if (filterZipcode && filterZipcodeNum) {
+        else if (filterAddress && address) {
             results = results
                 .map(market => {
-                    let distance = zipCodeDistance(
-                        filterZipcodeNum,
-                        market.zipcode,
-                        'M'
+                    let distance = haversineDistance(
+                        resultCoordinates,
+                        market.coordinates
                     );
                     if (distance === null || isNaN(distance)) {
                         distance = Infinity;
@@ -351,9 +411,8 @@ function Markets() {
                 })
                 .sort((a, b) => a.distance - b.distance);
         }
-
         return results;
-    }, [filteredMarketsResults, filterAZ, filterZA, filterZipcode, filterZipcodeNum]);
+    }, [filteredMarketsResults, filterAZ, filterZA, filterAddress, address, resultCoordinates]);
 
 
     return (
@@ -363,14 +422,8 @@ function Markets() {
                 <div id='map'>
                     <APIProvider apiKey={import.meta.env.VITE_GOOGLE_KEY} onLoad={() => console.log('Maps API has loaded.')}>
                         <Map defaultCenter={unionSquare} defaultZoom={13} mapId={import.meta.env.VITE_GOOGLE_MAP_ID}>
-                            {/* {markets.map((marketData) => (
-                                <AdvancedMarkerCard key={marketData.id} marketData={marketData} />
-                            ))}  */}
                         </Map>
                     </APIProvider>
-                    {/* <gmp-map defaultCenter={unionSquare} zoom={13} map-id="DEMO_MAP_ID">
-                            <gmp-advanced-marker position={unionSquare} title="Union Square"></gmp-advanced-marker>
-                    </gmp-map> */}
                 </div>
                 <table className='table-search margin-t-24'>
                     <tbody>
@@ -442,19 +495,37 @@ function Markets() {
                                                 type="radio"
                                                 name="filters"
                                                 value={true}
-                                                onChange={handleFilterZipcode}
+                                                onChange={handleFilterAddress}
                                             />
-                                            <label htmlFor='zipcode'>By Zipcode</label>
+                                            <label htmlFor='zipcode'>By Address</label>
                                             <input
                                                 className='margin-r-8'
                                                 id="zipcodeNum"
                                                 type="text"
                                                 name="zipcode"
-                                                placeholder='10003'
-                                                value={filterZipcodeNum}
-                                                onChange={(event) => handleFilterZipcodeNum(event)}
+                                                    placeholder="1 Union Square West, New York"
+                                                value={address}
+                                                onChange={(event) => handleAddress(event)}
                                             />
+                                            {showAddressDropdown && (
+                                                <div className="dropdown-content" ref={dropdownRef}>
+                                                    {addressResults.map(item => (
+                                                        <div
+                                                            className="search-results-address"
+                                                            key={item.id}
+                                                            onClick={() => {
+                                                                setAddress(item.formattedAddress);
+                                                                setShowAddressDropdown(false);
+                                                                setResultCoordinates({ 'lat': item.latitude, 'lng': item.longitude })
+                                                            }}
+                                                        >
+                                                            {item.formattedAddress}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
+                                        
                                         <div className='form-filters'>
                                             <label className='margin-r-26'>In Season:</label>
                                             <input
@@ -485,7 +556,7 @@ function Markets() {
             <div className="market-cards-container box-scroll-large margin-t-24">
                 {sortedMarketsResults
                     .map((marketData) => (
-                        <MarketCard key={marketData.id} marketData={marketData} userZipcode={user.zipcode} />
+                        <MarketCard key={marketData.id} marketData={marketData} user={user} haversineDistance={haversineDistance} resultCoordinates={resultCoordinates} />
                 ))}
             </div>
         </div>

@@ -425,7 +425,7 @@ def run():
             image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='50 Madison St.',
             zipcode='10010',
-            coordinates={"lat": "40.86600289682479", "lng": "-73.92633729986045"},
+            coordinates={"lat": "40.71160138343196", "lng": "-73.99773475060357"},
             schedule='Sunday (10:30 a.m. - 3:30 p.m.)',
             year_round=False,
             season_start=date(2024, 5, 26),
@@ -941,7 +941,8 @@ def run():
         address_2="Floor 2",
         city="New York",
         state="NY",
-        zipcode="10004"
+        zipcode="10004",
+        coordinates={"lat": 40.726586, "lng": -73.988734}
     )
     db.session.add(user_demo)
     db.session.commit()
@@ -972,6 +973,7 @@ def run():
             city=city,
             state=state,
             zipcode=zipcode,
+            coordinates={"lat": 40.726586, "lng": -73.988734}
             # avatar=avatar
         )
         users.append(u)

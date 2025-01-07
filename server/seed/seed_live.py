@@ -422,7 +422,7 @@ def run():
             name='Two Bridges Youth Market',
             location='50 Madison St.',
             zipcode='10010',
-            coordinates={"lat": "40.86600289682479", "lng": "-73.92633729986045"},
+            coordinates={"lat": "40.71160138343196", "lng": "-73.99773475060357"},
             schedule='Sunday (10:30 a.m. - 3:30 p.m.)',
             year_round=False,
             season_start=date(2024, 5, 26),

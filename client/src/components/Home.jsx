@@ -32,7 +32,7 @@ function Home() {
 
     return (
         <div>
-            <div className="flex-space-between">
+            <div className="d-flex-space-between">
                 <div className="m-flex-center">
                     <img className='big-logo' src="/site-images/gingham-logo-A_2.svg" alt="Gingham Logo"></img>
                 </div>

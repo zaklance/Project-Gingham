@@ -65,6 +65,7 @@ class User(db.Model, SerializerMixin):
     city = db.Column(db.String, nullable=False)
     state = db.Column(db.String(2), nullable=False)
     zipcode = db.Column(db.String(10), nullable=False)
+    coordinates = db.Column(db.JSON, nullable=True)
     avatar = db.Column(db.String)
     avatar_default = db.Column(db.String, nullable=False, default=random_avatar)
     status = db.Column(db.String(10), nullable=False, default="active")
