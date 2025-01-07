@@ -5,7 +5,6 @@ function Home() {
     const [blogs, setBlogs] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
 
-
     useEffect(() => {
             fetch("http://127.0.0.1:5555/api/blogs")
                 .then(response => response.json())
@@ -59,7 +58,7 @@ function Home() {
                 <h3>HOW DOES GINGHAM WORK?</h3> <br/>
                 <p>
                     Vendors build mystery baskets of bundled surplus products that you are able to pre-order and pick-up at a designated time.  
-                    <strong>Gingham makes it easy to shop sustainably while supporting your local farmers market community!</strong>
+                    <strong> Gingham makes it easy to shop sustainably while supporting your local farmers market community!</strong>
                 </p>
                 <img src="/site-images/GINGHAM_HOWITWORKS.png" style={{ width: '100%' }} />
             </div>
