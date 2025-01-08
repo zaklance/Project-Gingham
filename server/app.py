@@ -7,7 +7,7 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
                     VendorMarket, VendorUser, VendorVendorUser, AdminUser, 
                     Basket, Event, Product, UserNotification, VendorNotification, 
-                    AdminNotification, QRCode, FAQ, Blog, bcrypt )
+                    AdminNotification, QRCode, FAQ, Blog, Receipt, bcrypt )
 from dotenv import load_dotenv
 from sqlalchemy import func, desc
 from sqlalchemy.exc import IntegrityError
@@ -628,7 +628,8 @@ def get_vendor_users():
         vendor_id = request.args.get('vendor_id', type=int)
 
         if not vendor_id:
-            return jsonify({'error': 'Vendor ID is required'}), 400
+            vendor_users = VendorUser.query.all()
+            return jsonify([user.to_dict() for user in vendor_users]), 200
 
         vendor_users = VendorUser.query.filter_by(vendor_id=vendor_id).all()
 
@@ -650,7 +651,7 @@ def get_vendor_users():
 @app.route('/api/vendor-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 @jwt_required()
 def get_vendor_user(id):
-    if not check_role('vendor'):
+    if not check_role('vendor') and not check_role('admin'):
         return {'error': "Access forbidden: Vendor only"}, 403
 
     if request.method == 'GET':
