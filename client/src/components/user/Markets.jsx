@@ -4,7 +4,6 @@ import { weekDay } from '../../utils/common';
 import MarketCard from './MarketCard';
 import '../../assets/css/index.css';
 // import { APIProvider, Map, Marker, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
-import { getRadius, zipCodeData, zipCodeDistance } from 'zipcode-city-distance';
 // import { Map, Marker } from 'mapkit-react';
 
 function Markets() {
@@ -27,6 +26,7 @@ function Markets() {
     const [resultCoordinates, setResultCoordinates] = useState();
     
     const dropdownRef = useRef(null);
+    const dropdownAddressRef = useRef(null);
     const debounceTimeout = useRef(null);
     const location = useLocation();
     
@@ -238,6 +238,26 @@ function Markets() {
             setShowDropdown(false);
         }
     };
+    
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutsideDropdown);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutsideDropdown);
+        };
+    }, [showDropdown]);
+    
+    const handleClickOutsideAddressDropdown = (event) => {
+        if (dropdownAddressRef.current && !dropdownAddressRef.current.contains(event.target)) {
+            setShowAddressDropdown(false);
+        }
+    };
+    
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutsideAddressDropdown);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutsideAddressDropdown);
+        };
+    }, [showAddressDropdown]);
 
     const handleDropDownFilters = (event) => {
         setShowFilters(!showFilters)
@@ -251,12 +271,6 @@ function Markets() {
         setIsInSeason(!isInSeason)
     }
 
-    useEffect(() => {
-        document.addEventListener("mousedown", handleClickOutsideDropdown);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutsideDropdown);
-        };
-    }, [showDropdown]);
 
     const closePopup = () => {
         if (showFilters) {
@@ -338,7 +352,7 @@ function Markets() {
 
                 if (data.addresses && data.addresses.length > 0) {
                     const { latitude, longitude } = data.addresses[0];
-                    console.log('Coordinates:', latitude, longitude);
+                    // console.log('Coordinates:', latitude, longitude);
                 }
             }
         } catch (error) {
@@ -399,7 +413,7 @@ function Markets() {
         <>
         <div className="markets-container">
             <div className='header'>
-                <div id="map-container" style={{ width: "100%", height: "600px" }}></div>  
+                <div id="map-container" style={{ width: "98%", height: "400px" }}></div>  
                 {/* <div id='map'>
                     <APIProvider apiKey={import.meta.env.VITE_GOOGLE_KEY} onLoad={() => console.log('Maps API has loaded.')}>
                         <Map defaultCenter={unionSquare} defaultZoom={13} mapId={import.meta.env.VITE_GOOGLE_MAP_ID}>
@@ -496,7 +510,7 @@ function Markets() {
                                                 onChange={(event) => handleAddress(event)}
                                             />
                                             {showAddressDropdown && (
-                                                <div className="dropdown-content" ref={dropdownRef}>
+                                                <div className="dropdown-content" ref={dropdownAddressRef}>
                                                     {addressResults.map(item => (
                                                         <div
                                                             className="search-results-address"
@@ -544,7 +558,7 @@ function Markets() {
             <div className="market-cards-container box-scroll-large margin-t-24">
                 {sortedMarketsResults
                     .map((marketData) => (
-                        <MarketCard key={marketData.id} marketData={marketData} user={user} haversineDistance={haversineDistance} resultCoordinates={resultCoordinates} />
+                        <MarketCard key={marketData.id} marketData={marketData} user={user} haversineDistance={haversineDistance} resultCoordinates={resultCoordinates} filterAddress={filterAddress} />
                 ))}
             </div>
         </div>
