@@ -15,6 +15,7 @@ from sqlalchemy.orm import joinedload
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
+import jwt as map_jwt
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
@@ -53,6 +54,11 @@ Migrate(app, db)
 CORS(app, supports_credentials=True)
 
 jwt = JWTManager(app)
+
+# MapKit Credentials
+TEAM_ID = os.environ['TEAM_ID']
+KEY_ID = os.environ['KEY_ID']
+PRIVATE_KEY_PATH = "utils/AuthKey.p8"
 
 avatars = [
         "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage-1.jpg",
@@ -2862,6 +2868,48 @@ def blog(id):
         except Exception as e:
             db.session.rollback()
             return {'error': f'Failed to delete Blog: {str(e)}'}, 500
+        
+def generate_mapkit_token():
+    try:
+        # Load the private key from the .p8 file
+        with open(PRIVATE_KEY_PATH, "r") as key_file:
+            private_key = key_file.read()
+
+        # Current timestamp and expiration (2 hours from now)
+        current_time = datetime.utcnow()
+        expiration_time = current_time + timedelta(hours=2)
+
+        # UNIX timestamps (seconds since epoch)
+        current_timestamp = int(current_time.timestamp())
+        expiration_timestamp = int(expiration_time.timestamp())
+
+        # Generate MapKit JWT token with PyJWT
+        token = map_jwt.encode(
+            {
+                "iss": TEAM_ID,
+                "iat": current_timestamp,
+                "exp": expiration_timestamp,
+            },
+            private_key,
+            algorithm="ES256",
+            headers={"alg": "ES256", "kid": KEY_ID},
+        )
+
+        return token
+
+    except Exception as e:
+        raise RuntimeError(f"Error generating MapKit token: {e}")
+
+
+@app.route('/api/mapkit-token', methods=['GET'])
+def mapkit_token():
+    try:
+        token = generate_mapkit_token()
+        print("✅ MapKit token generated successfully!")
+        return jsonify({"token": token}), 200
+    except Exception as e:
+        print(f"❌ Error generating MapKit token: {e}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

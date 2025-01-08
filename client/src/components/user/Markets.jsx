@@ -4,7 +4,7 @@ import { weekDay } from '../../utils/common';
 import MarketCard from './MarketCard';
 import '../../assets/css/index.css';
 // import { APIProvider, Map, Marker, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
-// import { Map, Marker } from 'mapkit-react';
+import { Map, Marker } from 'mapkit-react';
 
 function Markets() {
     const [user, setUser] = useState({});
@@ -24,6 +24,10 @@ function Markets() {
     const [addressResults, setAddressResults] = useState();
     const [showAddressDropdown, setShowAddressDropdown] = useState(false);
     const [resultCoordinates, setResultCoordinates] = useState();
+    
+    //mapkit-react state
+    const [mapCenter, setMapCenter] = useState({ lat: 40.736358642578125, lng: -73.99076080322266 }); // Union Square
+    const [marketCoordinates, setMarketCoordinates] = useState([]);
     
     const dropdownRef = useRef(null);
     const dropdownAddressRef = useRef(null);
@@ -123,7 +127,7 @@ function Markets() {
         if (location.state?.resetFilters) {
             setIsClicked(false);
         }
-        fetch("http://127.0.0.1:5555/api/markets?is_visible=true")
+        fetch("http://127.0.0.1:5555/api/markets")
             .then(response => response.json())
             .then(markets => {
                 if (userId & markets.length > 0) {
@@ -156,65 +160,23 @@ function Markets() {
             .catch(error => console.error('Error fetching market data:', error));
     }, []);
 
-
-    const unionSquare = { lat: 40.736358642578125, lng: -73.99076080322266 };
-
-    const mapkitKey = import.meta.env.VITE_MAPKIT_KEY;
-
+    //initialize map
     useEffect(() => {
-        const loadMapKitLibrary = async () => {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement("script");
-                script.src = "https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.core.js";
-                script.async = true;
-                script.crossOrigin = "anonymous";
-                script.setAttribute("data-libraries", "map");
-                script.setAttribute("data-token", mapkitKey);
-
-                script.onload = () => {
-                    console.log("MapKit script loaded");
-                    if (window.mapkit) {
-                        if (window.mapkit.loadedLibraries.includes("map")) {
-                            console.log("Map library loaded");
-                            resolve();
-                        } else {
-                            reject(new Error("MapKit 'map' library failed to load"));
-                        }
-                    } else {
-                        reject(new Error("MapKit is not available on window"));
-                    }
-                };
-
-                script.onerror = () => reject(new Error("Failed to load MapKit script"));
-
-                document.body.appendChild(script);
-            });
-        };
-
-        const initializeMap = async () => {
-            try {
-                await loadMapKitLibrary();
-
-                // Initialize the MapKit map
-                const map = new mapkit.Map("map-container", {
-                    center: new mapkit.Coordinate(unionSquare.lat, unionSquare.lng),
-                    region: new mapkit.CoordinateRegion(
-                        new mapkit.Coordinate(unionSquare.lat, unionSquare.lng),
-                        new mapkit.CoordinateSpan(0.1, 0.1)
-                    ),
-                    showsUserLocation: false,
-                    mapType: mapkit.Map.MapTypes.standard,
-                });
-
-                console.log("Map initialized", map);
-            } catch (error) {
-                console.error("Error initializing MapKit:", error);
-            }
-        };
-
-        initializeMap();
+        fetch("http://127.0.0.1:5555/api/markets")
+            .then((response) => response.json())
+            .then((markets) => {
+                const coordinates = markets
+                    .filter((market) => market.coordinates)
+                    .map((market) => ({
+                        id: market.id,
+                        name: market.name,
+                        latitude: parseFloat(market.coordinates.lat),
+                        longitude: parseFloat(market.coordinates.lng),
+                    }));
+                setMarketCoordinates(coordinates);
+            })
+            .catch((error) => console.error("Error fetching markets", error));
     }, []);
-
 
     useEffect(() => {
         if (userId && !isNaN(userId)) {
@@ -413,7 +375,23 @@ function Markets() {
         <>
         <div className="markets-container">
             <div className='header'>
-                <div id="map-container" style={{ width: "98%", height: "400px" }}></div>  
+                <div id="map">
+                    <Map
+                        token={import.meta.env.VITE_MAPKIT_KEY}
+                        center={{ latitude: mapCenter.lat, longitude: mapCenter.lng }}
+                        zoom={5}
+                        style={{ height: "600px", width: "100%" }}
+                    >
+                        {marketCoordinates.map((market) => (
+                            <Marker
+                                key={market.id}
+                                latitude={market.latitude}
+                                longitude={market.longitude}
+                                title={market.name}
+                            />
+                        ))}
+                    </Map>
+                </div>
                 {/* <div id='map'>
                     <APIProvider apiKey={import.meta.env.VITE_GOOGLE_KEY} onLoad={() => console.log('Maps API has loaded.')}>
                         <Map defaultCenter={unionSquare} defaultZoom={13} mapId={import.meta.env.VITE_GOOGLE_MAP_ID}>
