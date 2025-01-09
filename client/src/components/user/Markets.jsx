@@ -4,7 +4,7 @@ import { weekDay } from '../../utils/common';
 import MarketCard from './MarketCard';
 import '../../assets/css/index.css';
 // import { APIProvider, Map, Marker, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
-import { Map, Marker } from 'mapkit-react';
+import { Annotation, FeatureVisibility, Map, Marker } from 'mapkit-react';
 
 function Markets() {
     const [user, setUser] = useState({});
@@ -24,8 +24,7 @@ function Markets() {
     const [addressResults, setAddressResults] = useState();
     const [showAddressDropdown, setShowAddressDropdown] = useState(false);
     const [resultCoordinates, setResultCoordinates] = useState();
-    
-    //mapkit-react state
+    const [markerViews, setMarkerViews] = useState({});
     const [marketCoordinates, setMarketCoordinates] = useState([]);
 
     const dropdownRef = useRef(null);
@@ -187,6 +186,7 @@ function Markets() {
                         name: market.name,
                         latitude: parseFloat(market.coordinates.lat),
                         longitude: parseFloat(market.coordinates.lng),
+                        schedule: market.schedule
                     }));
                 setMarketCoordinates(coordinates);
             })
@@ -389,6 +389,14 @@ function Markets() {
 
     const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
     
+    const handleMarkerClick = (marketId) => {
+        setMarkerViews((prev) => ({
+            ...prev,
+            [marketId]: !prev[marketId], // Toggle the state for the specific market ID
+        }));
+    };
+    
+    
     return (
         <>
         <div className="markets-container">
@@ -397,21 +405,38 @@ function Markets() {
                     <Map
                         token={mapToken}
                         initialRegion={{
-                            centerLatitude: 40.7831,
-                            centerLongitude: -73.9712,
-                            latitudeDelta: 0.1,
+                            centerLatitude: 40.736358642578125,
+                            centerLongitude: -73.99076080322266,
+                            latitudeDelta: 0.04,
                             longitudeDelta: 0.05
                         }}
+                        showsScale={FeatureVisibility.Visible}
                         showsUserLocation={true}
                         style={{ height: "100%", width: "100%" }}
                     >
                         {marketCoordinates.map((market) => (
-                        <Marker
-                            key={market.id}
-                            latitude={market.latitude}
-                            longitude={market.longitude}
-                            title={market.name}
-                        />
+                            <Annotation
+                                key={market.id}
+                                latitude={market.latitude}
+                                longitude={market.longitude}
+                                // title={market.name}
+                                // subtitle={market.schedule}
+                                onSelect={() => handleMarkerClick(market.id)}
+                                onDeselect={() => handleMarkerClick(market.id)}
+                            >
+                                {!markerViews[market.id] ? (
+                                    <div>
+                                        <div className="map-circle"></div>
+                                        <div className="map-inside-circle"></div>
+                                        <div className="map-triangle"></div>
+                                    </div>
+                                ) : (
+                                    <div className="marker-details">
+                                        <div className="marker-name">{market.name}</div>
+                                        <div className="marker-day">{market.schedule}</div>
+                                    </div> 
+                                )}
+                            </Annotation>
                         ))}
                     </Map>
                 </div>
