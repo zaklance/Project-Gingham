@@ -55,6 +55,11 @@ CORS(app, supports_credentials=True)
 
 jwt = JWTManager(app)
 
+# MapKit Credentials
+TEAM_ID = os.environ['TEAM_ID']
+KEY_ID = os.environ['KEY_ID']
+PRIVATE_KEY_PATH = "utils/AuthKey.p8"
+
 avatars = [
         "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage-1.jpg",
         "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime-1.jpg", "avatar-melon-1.jpg",
@@ -2785,6 +2790,56 @@ def blog(id):
         except Exception as e:
             db.session.rollback()
             return {'error': f'Failed to delete Blog: {str(e)}'}, 500
+        
+# def generate_mapkit_token():
+#     """Generates a valid MapKit JWT token."""
+#     try:
+#         # Load the private key
+#         with open(PRIVATE_KEY_PATH, "r") as key_file:
+#             private_key = key_file.read()
+
+#         # Current and expiration times
+#         current_time = datetime.utcnow()
+#         expiration_time = current_time + timedelta(hours=2)
+
+#         # Generate the token
+#         token = map_jwt.encode(
+#             {
+#                 "iss": TEAM_ID,
+#                 "iat": int(current_time.timestamp()),
+#                 "exp": int(expiration_time.timestamp()),
+#             },
+#             private_key,
+#             algorithm="ES256",
+#             headers={"alg": "ES256", "kid": KEY_ID},
+#         )
+
+#         # Debug print for the token
+#         print(f"Debug - Generated Token: {token}")
+#         # Debug print for sensitive information (use only temporarily)
+#         print(f"Debug - Private Key: {private_key}")  # Print the first 50 characters
+#         print(f"Debug - TEAM_ID: {TEAM_ID}")
+#         print(f"Debug - KEY_ID: {KEY_ID}")
+        
+#         return token
+
+#     except Exception as e:
+#         print(f"❌ Error generating MapKit token: {e}")
+#         raise RuntimeError(f"Error generating MapKit token: {e}")
+
+#     except Exception as e:
+#         raise RuntimeError(f"Error generating MapKit token: {e}")
+
+
+# @app.route('/api/mapkit-token', methods=['GET'])
+# def mapkit_token():
+#     try:
+#         token = generate_mapkit_token()
+#         print("✅ MapKit token generated successfully!")
+#         return jsonify({"token": token}), 200
+#     except Exception as e:
+#         print(f"❌ Error generating MapKit token: {e}")
+#         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
