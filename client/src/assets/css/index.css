@@ -1358,18 +1358,25 @@ link {
 }
 
 .marker-details {
-  background-color: #fff;
+  background-color: #eff;
   border-style: solid;
-  border-color: #b5b5b5;
+  border-color: #007BFF;
   border-width: 2px;
-  width: fit-content;
-  max-width: 192px;
+  width: max-content;
+  max-width: 240px;
   padding: 4px;
   border-radius: 8px;
+  margin-left:-100px;
+  margin-top: -24px;
 }
 
 .marker-name {
+  color: #007BFF;
   font-weight: 600;
+}
+
+.marker-day {
+  color: #007BFF;
 }
 
 .highlight {
