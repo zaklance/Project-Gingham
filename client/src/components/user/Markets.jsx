@@ -26,9 +26,8 @@ function Markets() {
     const [resultCoordinates, setResultCoordinates] = useState();
     
     //mapkit-react state
-    const [mapCenter, setMapCenter] = useState({ lat: 40.736358642578125, lng: -73.99076080322266 }); // Union Square
     const [marketCoordinates, setMarketCoordinates] = useState([]);
-    
+
     const dropdownRef = useRef(null);
     const dropdownAddressRef = useRef(null);
     const debounceTimeout = useRef(null);
@@ -161,8 +160,24 @@ function Markets() {
     }, []);
 
     //initialize map
+    // const defaultCenter = { latitude: 40.736358642578125, longitude: -73.99076080322266 };
+
+    // useEffect(() => {
+    //     const fetchToken = async () => {
+    //         try {
+    //             const response = await fetch("http://127.0.0.1:5555/api/mapkit-token");
+    //             const data = await response.json();
+    //             setMapToken(data.token);
+    //         } catch (error) {
+    //             console.error("Error fetching MapKit token:", error);
+    //         }
+    //     };
+
+    //     fetchToken();
+    // }, []);
+
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/markets")
+        fetch("http://127.0.0.1:5555/api/markets") 
             .then((response) => response.json())
             .then((markets) => {
                 const coordinates = markets
@@ -175,7 +190,9 @@ function Markets() {
                     }));
                 setMarketCoordinates(coordinates);
             })
-            .catch((error) => console.error("Error fetching markets", error));
+            .catch((error) => {
+                console.error("Error fetching markets:", error);
+            });
     }, []);
 
     useEffect(() => {
@@ -370,25 +387,31 @@ function Markets() {
         return results;
     }, [filteredMarketsResults, filterAZ, filterZA, filterAddress, address, resultCoordinates]);
 
-
+    const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
+    
     return (
         <>
         <div className="markets-container">
             <div className='header'>
                 <div id="map">
                     <Map
-                        token={import.meta.env.VITE_MAPKIT_KEY}
-                        center={{ latitude: mapCenter.lat, longitude: mapCenter.lng }}
-                        zoom={5}
-                        style={{ height: "600px", width: "100%" }}
+                        token={mapToken}
+                        initialRegion={{
+                            centerLatitude: 40.7831,
+                            centerLongitude: -73.9712,
+                            latitudeDelta: 0.1,
+                            longitudeDelta: 0.05
+                        }}
+                        showsUserLocation={true}
+                        style={{ height: "100%", width: "100%" }}
                     >
                         {marketCoordinates.map((market) => (
-                            <Marker
-                                key={market.id}
-                                latitude={market.latitude}
-                                longitude={market.longitude}
-                                title={market.name}
-                            />
+                        <Marker
+                            key={market.id}
+                            latitude={market.latitude}
+                            longitude={market.longitude}
+                            title={market.name}
+                        />
                         ))}
                     </Map>
                 </div>

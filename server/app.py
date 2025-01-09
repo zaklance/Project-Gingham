@@ -15,7 +15,6 @@ from sqlalchemy.orm import joinedload
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
-import jwt as map_jwt
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
@@ -2869,47 +2868,55 @@ def blog(id):
             db.session.rollback()
             return {'error': f'Failed to delete Blog: {str(e)}'}, 500
         
-def generate_mapkit_token():
-    try:
-        # Load the private key from the .p8 file
-        with open(PRIVATE_KEY_PATH, "r") as key_file:
-            private_key = key_file.read()
+# def generate_mapkit_token():
+#     """Generates a valid MapKit JWT token."""
+#     try:
+#         # Load the private key
+#         with open(PRIVATE_KEY_PATH, "r") as key_file:
+#             private_key = key_file.read()
 
-        # Current timestamp and expiration (2 hours from now)
-        current_time = datetime.utcnow()
-        expiration_time = current_time + timedelta(hours=2)
+#         # Current and expiration times
+#         current_time = datetime.utcnow()
+#         expiration_time = current_time + timedelta(hours=2)
 
-        # UNIX timestamps (seconds since epoch)
-        current_timestamp = int(current_time.timestamp())
-        expiration_timestamp = int(expiration_time.timestamp())
+#         # Generate the token
+#         token = map_jwt.encode(
+#             {
+#                 "iss": TEAM_ID,
+#                 "iat": int(current_time.timestamp()),
+#                 "exp": int(expiration_time.timestamp()),
+#             },
+#             private_key,
+#             algorithm="ES256",
+#             headers={"alg": "ES256", "kid": KEY_ID},
+#         )
 
-        # Generate MapKit JWT token with PyJWT
-        token = map_jwt.encode(
-            {
-                "iss": TEAM_ID,
-                "iat": current_timestamp,
-                "exp": expiration_timestamp,
-            },
-            private_key,
-            algorithm="ES256",
-            headers={"alg": "ES256", "kid": KEY_ID},
-        )
+#         # Debug print for the token
+#         print(f"Debug - Generated Token: {token}")
+#         # Debug print for sensitive information (use only temporarily)
+#         print(f"Debug - Private Key: {private_key}")  # Print the first 50 characters
+#         print(f"Debug - TEAM_ID: {TEAM_ID}")
+#         print(f"Debug - KEY_ID: {KEY_ID}")
+        
+#         return token
 
-        return token
+#     except Exception as e:
+#         print(f"❌ Error generating MapKit token: {e}")
+#         raise RuntimeError(f"Error generating MapKit token: {e}")
 
-    except Exception as e:
-        raise RuntimeError(f"Error generating MapKit token: {e}")
+#     except Exception as e:
+#         raise RuntimeError(f"Error generating MapKit token: {e}")
 
 
-@app.route('/api/mapkit-token', methods=['GET'])
-def mapkit_token():
-    try:
-        token = generate_mapkit_token()
-        print("✅ MapKit token generated successfully!")
-        return jsonify({"token": token}), 200
-    except Exception as e:
-        print(f"❌ Error generating MapKit token: {e}")
-        return jsonify({"error": str(e)}), 500
+# @app.route('/api/mapkit-token', methods=['GET'])
+# def mapkit_token():
+#     try:
+#         token = generate_mapkit_token()
+#         print("✅ MapKit token generated successfully!")
+#         return jsonify({"token": token}), 200
+#     except Exception as e:
+#         print(f"❌ Error generating MapKit token: {e}")
+#         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
