@@ -5,7 +5,6 @@ import VendorEvents from './VendorEvents';
 import VendorTeam from './VendorTeam';
 
 function VendorDashboard({ marketId }) {
-    const [vendors, setVendors] = useState([]);
     const [vendorId, setVendorId] = useState(null);
     const [activeTab, setActiveTab] = useState('baskets');
     const [vendorUserData, setVendorUserData] = useState(null);
@@ -13,12 +12,7 @@ function VendorDashboard({ marketId }) {
     const [notifications, setNotifications] = useState([]);
 
 
-    useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/vendors")
-            .then(response => response.json())
-            .then(vendors => setVendors(vendors))
-            .catch(error => console.error('Error fetching vendors', error));
-            
+    useEffect(() => {            
         const urlParams = new URLSearchParams(window.location.search);
         const tab = urlParams.get('tab');
         if (tab) setActiveTab(tab);
@@ -85,7 +79,7 @@ function VendorDashboard({ marketId }) {
                     // console.log('Fetched vendor data:', data);
                     setVendorUserData(data);
                     if (data.vendor_id) {
-                        setVendorId(data.vendor_id);
+                        setVendorId(data.vendor_id[data.active_vendor]);
                     }
                 } else {
                     console.error('Failed to fetch vendor user data');
@@ -143,7 +137,7 @@ function VendorDashboard({ marketId }) {
             <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
                 <h2 className=''>Vendor Dashboard</h2>
                 <br/>
-                {vendorUserData?.is_admin === true ? (
+                {vendorUserData && vendorUserData.active_vendor !== null && vendorUserData.is_admin[vendorUserData.active_vendor] === true ? (
                     <div className='tabs margin-t-20'>
                         <Link to="#" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                             Baskets
@@ -151,7 +145,7 @@ function VendorDashboard({ marketId }) {
                         <Link to="#" onClick={() => setActiveTab('events')} className={activeTab === 'events' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                             Events
                         </Link>
-                        {vendorUserData?.is_admin && (
+                        {vendorUserData?.is_admin[vendorUserData.active_vendor] && (
                             <Link to="#" onClick={() => setActiveTab('team')} className={activeTab === 'team' ? 'notification active-tab btn btn-reset btn-tab' : 'notification btn btn-reset btn-tab'}>
                                 Team
                                 {notifications.length > 0 && <p className='badge'>{notifications.length}</p>}
@@ -164,8 +158,8 @@ function VendorDashboard({ marketId }) {
             </div>
             <br />            
             {activeTab === 'baskets' && <VendorBaskets marketId={marketId} vendorId={vendorId} vendorUserData={vendorUserData} newVendor={newVendor} setNewVendor={setNewVendor} />}
-            {activeTab === 'events' && <VendorEvents vendors={vendors} vendorId={vendorId} vendorUserData={vendorUserData} />}
-            {activeTab === 'team' && <VendorTeam vendors={vendors} vendorId={vendorId} vendorUserData={vendorUserData} notifications={notifications} />}
+            {activeTab === 'events' && <VendorEvents vendorId={vendorId} vendorUserData={vendorUserData} />}
+            {activeTab === 'team' && <VendorTeam vendorId={vendorId} vendorUserData={vendorUserData} notifications={notifications} setNotifications={setNotifications} />}
         </div>
     );
 }

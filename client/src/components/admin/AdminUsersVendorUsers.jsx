@@ -201,37 +201,35 @@ const AdminUsersVendorUsers = () => {
                     ) : (
                         <>
                             <div className='flex-start flex-gap-16 flex-start-align m-flex-wrap'>
-                                <div className='width-80'>
-                                    <table className='table-profile'>
-                                        <tbody>
-                                            <tr>
-                                                <td className='cell-title'>Vendor User ID:</td>
-                                                <td className='cell-text'>{userData?.id || ""}</td>
-                                            </tr>
-                                            <tr>
-                                                <td className='cell-title'>Name:</td>
-                                                <td className='cell-text'>{userData?.first_name || ""} {userData?.last_name || ""}</td>
-                                            </tr>
-                                            <tr>
-                                                <td className='cell-title'>Email:</td>
-                                                <td className='cell-text'>{userData?.email || ""}</td>
-                                            </tr>
-                                            <tr>
-                                                <td className='cell-title'>Phone:</td>
-                                                <td className='cell-text'>{formatPhoneNumber(userData?.phone) || ""}</td>
-                                            </tr>
-                                            <tr>
-                                                <td className='cell-title'>Is Admin?:</td>
-                                                <td className='cell-text'>{userData ? `${userData.is_admin}` : ""}</td>
-                                            </tr>
-                                            <tr>
-                                                <td className='cell-title'>Vendor ID:</td>
-                                                <td className='cell-text'>{userData?.id || ""}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
-                                </div>
+                                <table className='table-profile'>
+                                    <tbody>
+                                        <tr>
+                                            <td className='cell-title'>Vendor User ID:</td>
+                                            <td className='cell-text'>{userData?.id || ""}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='cell-title'>Name:</td>
+                                            <td className='cell-text'>{userData?.first_name || ""} {userData?.last_name || ""}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='cell-title'>Email:</td>
+                                            <td className='cell-text'>{userData?.email || ""}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='cell-title'>Phone:</td>
+                                            <td className='cell-text'>{formatPhoneNumber(userData?.phone) || ""}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='cell-title'>Is Admin?:</td>
+                                            <td className='cell-text'>{userData ? `${userData.is_admin}` : ""}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='cell-title'>Vendor ID:</td>
+                                            <td className='cell-text'>{userData?.id || ""}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                             </div>
                         </>
                     )}

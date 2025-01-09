@@ -4,9 +4,9 @@ from random import random, choice, randint, sample
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
                     VendorReview, ReportedReview, MarketReviewRating, 
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
-                    VendorMarket, VendorUser, VendorVendorUser, AdminUser, 
-                    Basket, Event, Product, UserNotification, VendorNotification, 
-                    AdminNotification, QRCode, FAQ, Blog, bcrypt )
+                    VendorMarket, VendorUser, AdminUser, Basket, Event, 
+                    Product, UserNotification, VendorNotification, 
+                    AdminNotification, QRCode, FAQ, Blog, Receipt, bcrypt )
 import json
 from datetime import datetime, timedelta, timezone, time, date
 
@@ -26,7 +26,6 @@ def run():
     VendorFavorite.query.delete()
     VendorMarket.query.delete()
     VendorUser.query.delete()
-    VendorVendorUser.query.delete()
     AdminUser.query.delete()
     Basket.query.delete()
     Event.query.delete()
@@ -408,14 +407,16 @@ def run():
         first_name="Ham-man",
         last_name="Gingy",
         phone="2095553880",
-        vendor_id="1",
-        is_admin=True
+        active_vendor=1,
+        vendor_id={1:1},
+        is_admin={1:True}
     )
     db.session.add(vendor_user_demo)
     db.session.commit()
 
     vendor_users = []
     for i in range(40):
+        rand_vendor_id = randint(1, 20)
         email = fake.ascii_free_email()
         # password = fake.password()
         password = "lol"
@@ -423,8 +424,9 @@ def run():
         last_name = fake.last_name()
         # phone = fake.phone_number()
         phone = str(randint(1000000000,9999999999))
-        vendor_id = str(randint(1, 20))
-        is_admin = bool(fake.boolean())
+        active_vendor = rand_vendor_id
+        vendor_id = { rand_vendor_id: rand_vendor_id}
+        is_admin = {rand_vendor_id: bool(fake.boolean())}
 
 
         vu = VendorUser(
@@ -433,6 +435,7 @@ def run():
             first_name=first_name,
             last_name=last_name,
             phone=phone,
+            active_vendor=active_vendor,
             vendor_id=vendor_id,
             is_admin=is_admin
         )

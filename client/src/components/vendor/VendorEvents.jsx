@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function VendorEvents({ vendors, vendorId, vendorUserData }) {
+function VendorEvents({ vendorId, vendorUserData }) {
     const [newEvent, setNewEvent] = useState({});
     const [events, setEvents] = useState([]);
     const [editingEventId, setEditingEventId] = useState(null);

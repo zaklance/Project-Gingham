@@ -4,9 +4,9 @@ from random import random, choice, randint
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
                     VendorReview, ReportedReview, MarketReviewRating, 
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
-                    VendorMarket, VendorUser, VendorVendorUser, AdminUser, 
-                    Basket, Event, Product, UserNotification, VendorNotification, 
-                    AdminNotification, QRCode, FAQ, Blog, bcrypt )
+                    VendorMarket, VendorUser, AdminUser, Basket, Event, 
+                    Product, UserNotification, VendorNotification, 
+                    AdminNotification, QRCode, FAQ, Blog, Receipt, bcrypt )
 import json
 from datetime import datetime, timedelta, timezone, time, date
 
@@ -26,7 +26,6 @@ def run():
     VendorFavorite.query.delete()
     VendorMarket.query.delete()
     VendorUser.query.delete()
-    VendorVendorUser.query.delete()
     AdminUser.query.delete()
     Basket.query.delete()
     Event.query.delete()

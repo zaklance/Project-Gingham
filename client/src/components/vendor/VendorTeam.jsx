@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import VendorNotification from './VendorNotification';
 
-function VendorTeam({ vendors, vendorId, vendorUserData, notifications }) {
+function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications }) {
     const [isLoading, setIsLoading] = useState(true);
     const [teamMembers, setTeamMembers] = useState([]);
     const [newMemberEmail, setNewMemberEmail] = useState('');
@@ -14,7 +14,7 @@ function VendorTeam({ vendors, vendorId, vendorUserData, notifications }) {
             if (vendorUserData && vendorUserData.vendor_id) {
                 try {
                     const token = localStorage.getItem('vendor_jwt-token');
-                    const response = await fetch(`http://127.0.0.1:5555/api/vendor-users?vendor_id=${vendorUserData.vendor_id}`, {
+                    const response = await fetch(`http://127.0.0.1:5555/api/vendor-users?vendor_id=${vendorUserData.vendor_id[vendorUserData.active_vendor]}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -73,14 +73,14 @@ function VendorTeam({ vendors, vendorId, vendorUserData, notifications }) {
         if (confirm(`Are you sure you want to delete this team member?`)) {
             try {
                 const token = localStorage.getItem('vendor_jwt-token');
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${memberId}`, {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${memberId}?delete_vendor_id=${vendorId}`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        vendor_id: null
+                        active_vendor: null
                     })
                 });
     
@@ -96,26 +96,24 @@ function VendorTeam({ vendors, vendorId, vendorUserData, notifications }) {
         }
     };
 
-    const handleToggleRole = async (memberId, currentRole) => {
-        const isAdmin = currentRole === 'Admin' ? false : true;
-    
-        const member = teamMembers.find((member) => member.id === memberId);
+    const handleToggleRole = async (member, currentRole) => {
+        const isAdmin = currentRole === true ? false : true;
     
         if (!member) {
             alert("Member not found");
             return;
         }
-    
         try {
             const token = localStorage.getItem('vendor_jwt-token');
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${memberId}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${member.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ 
-                    is_admin: isAdmin, 
+                    is_admin: isAdmin,
+                    vendor_id: member.vendor_id[member.active_vendor],
                     first_name: member.first_name,
                     last_name: member.last_name,
                     email: member.email, 
@@ -123,11 +121,20 @@ function VendorTeam({ vendors, vendorId, vendorUserData, notifications }) {
             });
     
             if (response.ok) {
-                setTeamMembers((prevTeamMembers) =>
-                    prevTeamMembers.map((member) =>
-                        member.id === memberId ? { ...member, role: isAdmin ? 'Admin' : 'Employee' } : member
+                setTeamMembers((prev) =>
+                    prev.map((item) =>
+                        item.id === member.id
+                            ? {
+                                ...item,
+                                is_admin: {
+                                    ...item.is_admin,
+                                    [item.active_vendor]: isAdmin ? true : false,
+                                },
+                            }
+                            : item
                     )
                 );
+
                 alert(`Successfully updated role to ${isAdmin ? 'Admin' : 'Employee'}`);
             } else {
                 const responseData = await response.json();
@@ -146,7 +153,7 @@ function VendorTeam({ vendors, vendorId, vendorUserData, notifications }) {
             {notifications && notifications.length > 0 ? (
                 <div className='box-bounding margin-b-24'>
                     <h2 className='margin-b-16'>Notifications</h2>
-                        <VendorNotification notifications={notifications} vendorId={vendorId} teamMembers={teamMembers} setTeamMembers={setTeamMembers} vendorUserData={vendorUserData} />
+                        <VendorNotification notifications={notifications} setNotifications={setNotifications} vendorId={vendorId} teamMembers={teamMembers} setTeamMembers={setTeamMembers} vendorUserData={vendorUserData} />
                 </div>
                 ) : (
                 <></>
@@ -179,8 +186,8 @@ function VendorTeam({ vendors, vendorId, vendorUserData, notifications }) {
                             value={newMemberRole}
                             onChange={e => setNewMemberRole(e.target.value)}
                         >
-                            <option value="Admin">Admin</option>
-                            <option value="Employee">Employee</option>
+                            <option value={true}>Admin</option>
+                            <option value={false}>Employee</option>
                         </select>
                     </div>
                     <button className="btn-edit" onClick={handleAddTeamMember}>Add Team Member</button>
@@ -190,11 +197,11 @@ function VendorTeam({ vendors, vendorId, vendorUserData, notifications }) {
                             <li key={member.id} className='li-team'>
 
                                 <div className='flex-space-between'>
-                                    <p><strong>{member.first_name} {member.last_name}</strong> - {member.role}</p>
+                                    <p><strong>{member.first_name} {member.last_name}</strong> - {member.is_admin[vendorId] ? 'Admin' : 'Employee'}</p>
                                     {member.id !== vendorUserData.id && (
                                         <>
                                             <div className='flex-end flex-center-align'>
-                                                <button className="btn btn-small btn-white margin-r-8" onClick={() => handleToggleRole(member.id, member.role)} > Switch to {member.role === 'Admin' ? 'Employee' : 'Admin'} </button>
+                                                <button className="btn btn-small btn-white margin-r-8" onClick={() => handleToggleRole(member, member.is_admin[vendorId])} > Switch to {member.is_admin[vendorId] === true ? 'Employee' : 'Admin'} </button>
                                                 <button className="btn btn-small btn-unreport" onClick={() => handleDeleteTeamMember(member.id)} > Remove from Team</button>
                                             </div> 
                                         </>

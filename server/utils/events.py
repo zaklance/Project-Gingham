@@ -1,13 +1,11 @@
 from sqlalchemy import event
 from sqlalchemy.orm.attributes import get_history
-from models import (
-    db, User, Market, MarketDay, Vendor, MarketReview,
-    VendorReview, ReportedReview, MarketReviewRating,
-    VendorReviewRating, MarketFavorite, VendorFavorite,
-    VendorMarket, VendorUser, VendorVendorUser, AdminUser,
-    Basket, Event, Product, UserNotification, VendorNotification,
-    AdminNotification, QRCode, FAQ, Blog, bcrypt
-)
+from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
+                    VendorReview, ReportedReview, MarketReviewRating, 
+                    VendorReviewRating, MarketFavorite, VendorFavorite, 
+                    VendorMarket, VendorUser, AdminUser, Basket, Event, 
+                    Product, UserNotification, VendorNotification, 
+                    AdminNotification, QRCode, FAQ, Blog, Receipt, bcrypt )
 
 
 def track_vendor_favorite(mapper, connection, target):

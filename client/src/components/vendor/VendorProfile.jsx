@@ -6,6 +6,7 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import VendorCreate from './VendorCreate';
 import VendorLocations from './VendorLocations';
+import VendorTeamRequest from './VendorTeamRequest';
 
 function VendorProfile () {
     const { id } = useParams();
@@ -66,8 +67,7 @@ function VendorProfile () {
                         setVendorUserData({
                             ...data,
                         });
-                        setVendorId(data.vendor_id)
-
+                        setVendorId(data.vendor_id[data.active_vendor])
                     } catch (jsonError) {
                         console.error('Error parsing JSON:', jsonError);
                     }
@@ -146,12 +146,12 @@ function VendorProfile () {
             if (!vendorUserData || !vendorUserData.vendor_id) return;
     
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendors/${vendorUserData.vendor_id}`);
+                const response = await fetch(`http://127.0.0.1:5555/api/vendors/${vendorUserData.vendor_id[vendorUserData.active_vendor]}`);
                 if (response.ok) {
                     const data = await response.json();
                     setVendorData(data);
                     if (data.image) {
-                        setVendorImageURL(`http://127.0.0.1:5555/api/vendors/${vendorUserData.vendor_id}/image`);
+                        setVendorImageURL(`http://127.0.0.1:5555/api/vendors/${vendorUserData.vendor_id[vendorUserData.active_vendor]}/image`);
                     }
                 } else {
                     console.error('Failed to fetch vendor data:', response.status);
@@ -220,7 +220,7 @@ function VendorProfile () {
                     uploadedFilename = data.filename;
                     console.log('Image uploaded:', uploadedFilename);
                     setStatus('success');
-                    setVendorImageURL(`${vendorUserId}/${uploadedFilename}`);
+                    setVendorImageURL(`${vendorData.id}/${uploadedFilename}`);
     
                     window.location.reload();
                 } else {
@@ -238,8 +238,8 @@ function VendorProfile () {
         
         const updatedVendorData = { ...tempVendorData };
         if (uploadedFilename) {
-            updatedVendorData.image = `${vendorUserId}/${uploadedFilename}`;
-            tempVendorData.image = `${vendorUserId}/${uploadedFilename}`;
+            updatedVendorData.image = `${vendorData.id}/${uploadedFilename}`;
+            tempVendorData.image = `${vendorData.id}/${uploadedFilename}`;
         }
         
         try {
@@ -466,11 +466,13 @@ function VendorProfile () {
                             </>
                         )}
                     </div>
-                    <br />
-                    <h2 className='title'>Vendor Information</h2>
+                    <div className='box-bounding'>
+                        <VendorTeamRequest vendorUserId={vendorUserId} vendorUserData={vendorUserData} />
+                    </div>
+                    <h2 className='title margin-t-24'>Vendor Information</h2>
                     <div className='box-bounding'>
                         {vendorData?.id ? (
-                            vendorEditMode && vendorUserData?.is_admin ? (
+                            vendorEditMode && vendorUserData?.is_admin[vendorUserData.active_vendor] ? (
                                 <>
                                     <div className='form-group'>
                                         <label>Vendor Name:</label>
