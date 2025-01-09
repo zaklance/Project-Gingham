@@ -5,13 +5,14 @@ from flask import Flask, request, jsonify, session, send_from_directory, redirec
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
                     VendorReview, ReportedReview, MarketReviewRating, 
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
-                    VendorMarket, VendorUser, VendorVendorUser, AdminUser, 
-                    Basket, Event, Product, UserNotification, VendorNotification, 
+                    VendorMarket, VendorUser, AdminUser, Basket, Event, 
+                    Product, UserNotification, VendorNotification, 
                     AdminNotification, QRCode, FAQ, Blog, Receipt, bcrypt )
 from dotenv import load_dotenv
 from sqlalchemy import func, desc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
+from sqlalchemy.dialects.postgresql import JSONB
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
@@ -626,12 +627,17 @@ def profile(id):
 def get_vendor_users():
     try:
         vendor_id = request.args.get('vendor_id', type=int)
+        print(vendor_id)
+        query = VendorUser.query
 
-        if not vendor_id:
-            vendor_users = VendorUser.query.all()
-            return jsonify([user.to_dict() for user in vendor_users]), 200
-
-        vendor_users = VendorUser.query.filter_by(vendor_id=vendor_id).all()
+        if vendor_id is not None:
+            vendor_users = query.all()
+            vendor_users = [
+                user for user in vendor_users
+                if str(vendor_id) in (user.vendor_id or {}).keys()
+            ]
+        else:
+            vendor_users = query.all()
 
         if not vendor_users:
             return jsonify({'message': 'No team members found for this vendor'}), 404
@@ -642,7 +648,9 @@ def get_vendor_users():
             'last_name': vendor_user.last_name,
             'email': vendor_user.email,
             'phone': vendor_user.phone,
-            'role': 'Admin' if vendor_user.is_admin else 'Employee'
+            'vendor_id': vendor_user.vendor_id,
+            'is_admin': vendor_user.is_admin,
+            'active_vendor': vendor_user.active_vendor
         } for vendor_user in vendor_users]), 200
 
     except Exception as e:
@@ -653,7 +661,7 @@ def get_vendor_users():
 def get_vendor_user(id):
     if not check_role('vendor') and not check_role('admin'):
         return {'error': "Access forbidden: Vendor only"}, 403
-
+    
     if request.method == 'GET':
         vendor_user = VendorUser.query.get(id)
         if not vendor_user:
@@ -663,10 +671,20 @@ def get_vendor_user(id):
 
     elif request.method == 'PATCH':
         vendor_user = VendorUser.query.get(id)
+        delete_vendor_id = request.args.get('delete_vendor_id', type=int)
+
         if not vendor_user:
             return jsonify({'error': 'User not found'}), 404
 
         try:
+            if delete_vendor_id:
+                delete_vendor_id_str = str(delete_vendor_id)
+                if isinstance(vendor_user.is_admin, dict):
+                    vendor_user.is_admin.pop(delete_vendor_id_str, None)
+                if isinstance(vendor_user.vendor_id, dict):
+                    vendor_user.vendor_id.pop(delete_vendor_id_str, None)
+                vendor_user.active_vendor = None
+
             data = request.get_json()
 
             if 'first_name' in data:
@@ -677,27 +695,15 @@ def get_vendor_user(id):
                 vendor_user.email = data['email']
             if 'phone' in data:
                 vendor_user.phone = data['phone']
-
             if 'is_admin' in data:
                 is_admin_value = data['is_admin']
-
-                if isinstance(is_admin_value, bool):
-                    vendor_user.is_admin = is_admin_value
-                elif isinstance(is_admin_value, str):
-                    vendor_user.is_admin = is_admin_value.lower() == 'true'
-                else:
-                    return jsonify({'error': 'Invalid value for is_admin, must be true or false'}), 400
-
-            if 'vendor_id' in data:
-                new_vendor_id = data['vendor_id']
-                if new_vendor_id is None:
-                    vendor_user.vendor_id = None
-                else:
-                    vendor = Vendor.query.get(new_vendor_id)
-                    if not vendor:
-                        return jsonify({'error': 'Invalid vendor_id'}), 400
-                    vendor_user.vendor_id = new_vendor_id
-
+                vendor_id = str(data.get('vendor_id'))
+                if vendor_id is None:
+                    return jsonify({'error': 'vendor_id is required when setting is_admin'}), 400
+                if not isinstance(vendor_user.is_admin, dict):
+                    vendor_user.is_admin = {}
+                vendor_user.is_admin[vendor_id] = is_admin_value
+            
             db.session.commit()
             return jsonify(vendor_user.to_dict()), 200
 
@@ -720,98 +726,6 @@ def get_vendor_user(id):
             db.session.rollback()
             app.logger.error(f"Error deleting VendorUser: {str(e)}")
             return jsonify({'error': str(e)}), 500
-
-@app.route('/api/vendor-vendor-users', methods=['GET', 'POST', 'PATCH', 'DELETE'])
-def handle_vendor_vendor_users():
-    if request.method == "GET":
-        try:
-            vendor_vendor_users = VendorVendorUser.query.all()
-            return jsonify([vvu.to_dict() for vvu in vendor_vendor_users]), 200
-        except Exception as e:
-            return {'error': f'Exception: {str(e)}'}, 500
-
-    elif request.method == "POST":
-        data = request.get_json()
-        
-        try:
-            if not data.get('vendor_id') or not data.get('vendor_user_id'):
-                return {'error': 'vendor_id and vendor_user_id are required'}, 400
-
-            new_vendor_vendor_user = VendorVendorUser(
-                vendor_id=data['vendor_id'],
-                vendor_user_id=data['vendor_user_id'],
-                role=data.get('role')
-            )
-
-            db.session.add(new_vendor_vendor_user)
-            db.session.commit()
-
-            return new_vendor_vendor_user.to_dict(), 201
-
-        except IntegrityError as e:
-            db.session.rollback()
-            return {'error': f'IntegrityError: {str(e)}'}, 400
-        
-        except ValueError as e:
-            return {'error': f'ValueError: {str(e)}'}, 400
-
-        except Exception as e:
-            db.session.rollback()
-            return {'error': f'Exception: {str(e)}'}, 500
-
-    elif request.method == "PATCH":
-        data = request.get_json()
-
-        try:
-            if not data.get('id'):
-                return {'error': 'vendor_vendor_user ID is required for patching'}, 400
-
-            vendor_vendor_user = VendorVendorUser.query.filter_by(id=data['id']).first()
-
-            if not vendor_vendor_user:
-                return {'error': 'VendorVendorUser not found'}, 404
-
-            if 'vendor_id' in data:
-                vendor_vendor_user.vendor_id = data['vendor_id']
-            if 'vendor_user_id' in data:
-                vendor_vendor_user.vendor_user_id = data['vendor_user_id']
-            if 'role' in data:
-                vendor_vendor_user.role = data['role']
-
-            db.session.commit()
-            return jsonify(vendor_vendor_user.to_dict()), 200
-
-        except IntegrityError as e:
-            db.session.rollback()
-            return {'error': f'IntegrityError: {str(e)}'}, 400
-        
-        except ValueError as e:
-            return {'error': f'ValueError: {str(e)}'}, 400
-
-        except Exception as e:
-            db.session.rollback()
-            return {'error': f'Exception: {str(e)}'}, 500
-
-    elif request.method == "DELETE":
-        data = request.get_json()
-
-        try:
-            if not data.get('id'):
-                return {'error': 'vendor_vendor_user ID is required for deletion'}, 400
-
-            vendor_vendor_user = VendorVendorUser.query.filter_by(id=data['id']).first()
-
-            if not vendor_vendor_user:
-                return {'error': 'VendorVendorUser not found'}, 404
-
-            db.session.delete(vendor_vendor_user)
-            db.session.commit()
-
-            return {}, 204
-
-        except Exception as e:
-            db.session.rollback()
-            return {'error': f'Exception: {str(e)}'}, 500
 
 @app.route('/api/admin-users', methods=['GET', 'POST'])
 @jwt_required()
@@ -2641,10 +2555,18 @@ def approve_notification(notification_id):
     if not user:
         return jsonify({'message': 'Vendor user not found'}), 404
 
-    user.vendor_id = notification.vendor_id
-    user.is_admin = is_admin
+    if not isinstance(user.vendor_id, dict):
+        user.vendor_id = {}
 
-    db.session.commit()
+    if not isinstance(user.is_admin, dict):
+        user.is_admin = {}
+
+    user.vendor_id[notification.vendor_id] = notification.vendor_id
+
+    if is_admin is not None:
+        user.is_admin[notification.vendor_id] = bool(is_admin)
+    
+    user.active_vendor = int(notification.vendor_id)
 
     notification.is_read = True
     db.session.commit()
@@ -2653,6 +2575,7 @@ def approve_notification(notification_id):
     db.session.commit()
 
     return jsonify({'message': 'Notification approved and user updated successfully'}), 200
+
 
 @app.route('/api/vendor-notifications/<int:notification_id>/reject', methods=['DELETE'])
 def reject_notification(notification_id):

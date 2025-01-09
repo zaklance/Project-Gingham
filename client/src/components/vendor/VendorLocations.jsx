@@ -14,6 +14,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
     const [selectedMarketDay, setSelectedMarketDay] = useState(null);
     const [queryMarkets, setQueryMarkets] = useState("");
     const [queryMarketDays, setQueryMarketDays] = useState("");
+    
     const onUpdateQueryMarkets = event => setQueryMarkets(event.target.value);
     const filteredQueryMarkets = allMarkets.filter(market => market.name.toLowerCase().includes(queryMarkets.toLowerCase()) && market.name !== queryMarkets)
     const matchingMarket = allMarkets.find(market => market.name.toLowerCase() === queryMarkets.toLowerCase());
@@ -29,9 +30,10 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
     const filteredQueryMarketDays = filteredQueryMarketDaysByMarket.filter(marketDay => weekDay[marketDay.day_of_week].includes(queryMarketDays) && weekDay[marketDay.day_of_week] !== queryMarketDays)
     const matchingMarketDay = filteredQueryMarketDays.find(marketDay => weekDay[marketDay.day_of_week] === queryMarketDays);
     const matchingMarketDayId = matchingMarketDay ? matchingMarketDay.id : null;
-
+    
 
     useEffect(() => {
+    
         fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${vendorId}`)
             .then(response => response.json())
             .then(data => {
@@ -174,7 +176,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
                         </li>
                     ))}
                 </ul>
-                {vendorUserData?.is_admin === true ? (
+                {vendorUserData?.is_admin[vendorUserData.active_vendor] === true ? (
                     <>
                         <h2 className='margin-b-16 margin-t-24'>Add Markets</h2>
                         <form>

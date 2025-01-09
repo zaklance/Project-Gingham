@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-function VendorNotification({ notifications, teamMembers, setTeamMembers, vendorUserData }) {
+function VendorNotification({ notifications, setNotifications, teamMembers, setTeamMembers, vendorUserData }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     
@@ -19,7 +19,7 @@ function VendorNotification({ notifications, teamMembers, setTeamMembers, vendor
                 body: JSON.stringify({ is_admin: isAdmin }),
             });
             if (response.ok) {
-                const vendorUserResponse = await fetch(`http://127.0.0.1:5555/api/vendor-users?vendor_id=${vendorUserData.vendor_id}`, {
+                const vendorUserResponse = await fetch(`http://127.0.0.1:5555/api/vendor-users?vendor_id=${vendorUserData.vendor_id[vendorUserData.active_vendor]}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,

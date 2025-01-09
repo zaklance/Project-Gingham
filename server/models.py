@@ -2,6 +2,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData, func
 from sqlalchemy.orm import validates, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.dialects.postgresql import JSON
 from flask_bcrypt import Bcrypt
 from sqlalchemy_serializer import SerializerMixin
 from datetime import date, time, datetime, timezone
@@ -247,7 +249,6 @@ class Vendor(db.Model, SerializerMixin):
     # Relationships
     reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic', cascade="all, delete")
     vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic', cascade="all, delete")
-    # vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor', lazy='dynamic')
     vendor_markets = db.relationship('VendorMarket', back_populates='vendor', cascade="all, delete")
     # notifications = db.relationship('VendorNotification', back_populates='vendor', lazy='dynamic')
 
@@ -447,11 +448,10 @@ class VendorUser(db.Model, SerializerMixin):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     phone = db.Column(db.String, nullable=False)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
-    is_admin = db.Column(db.Boolean, default=True, nullable=False)
+    active_vendor = db.Column(db.Integer, nullable=True)
+    vendor_id = db.Column(MutableDict.as_mutable(JSON), nullable=True)
+    is_admin = db.Column(MutableDict.as_mutable(JSON), nullable=True)
 
-    # Relationships
-    # vendor_vendor_users = db.relationship('VendorVendorUser', back_populates='vendor_user', lazy='dynamic')
     # notifications = db.relationship('VendorNotification', back_populates='vendor_user')
 
     serialize_rules = ('-_password', '-vendor_vendor_users.vendor_user')
@@ -492,23 +492,7 @@ class VendorUser(db.Model, SerializerMixin):
         return bcrypt.check_password_hash(self._password, password.encode('utf-8'))
 
     def __repr__(self) -> str:
-        return f"<VendorUser {self.email}>"
-    
-class VendorVendorUser(db.Model, SerializerMixin):
-    __tablename__ = 'vendor_vendor_users'
-
-    id = db.Column(db.Integer, primary_key=True)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
-    vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=False)
-
-    # Relationships
-    # vendor = db.relationship('Vendor', back_populates='vendor_vendor_users')
-    # vendor_user = db.relationship('VendorUser', back_populates='vendor_vendor_users')
-
-    serialize_rules = ('-vendor.vendor_vendor_users', '-vendor_user.vendor_vendor_users')
-
-    def __repr__(self) -> str:
-        return f"<VendorVendorUser Vendor ID: {self.vendor_id}, VendorUser ID: {self.vendor_user_id}>"
+        return f"<VendorUser {self.email} {self.is_admin}>"
    
 class AdminUser(db.Model, SerializerMixin):
     __tablename__ = 'admin_users'

@@ -1273,7 +1273,7 @@ link {
 }
 
 .big-logo {
-  float: left;
+  /* float: left; */
   width: 300px;
 }
 
@@ -1723,7 +1723,8 @@ select:hover {
 
 .search-bar {
   padding: 4px;
-  width: 360px;
+  /* width: 360px; */
+  width: 100%;
   font-size: 1em;
 }
 
