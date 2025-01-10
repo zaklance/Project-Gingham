@@ -78,6 +78,15 @@ function Markets() {
         }
     };
 
+    const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
+
+    const handleMarkerClick = (marketId) => {
+        setMarkerViews((prev) => ({
+            ...prev,
+            [marketId]: !prev[marketId], // Toggle the state for the specific market ID
+        }));
+    };
+
     useEffect(() => {
         if (userId) {
 
@@ -157,23 +166,6 @@ function Markets() {
             })
             .catch(error => console.error('Error fetching market data:', error));
     }, []);
-
-    //initialize map
-    // const defaultCenter = { latitude: 40.736358642578125, longitude: -73.99076080322266 };
-
-    // useEffect(() => {
-    //     const fetchToken = async () => {
-    //         try {
-    //             const response = await fetch("http://127.0.0.1:5555/api/mapkit-token");
-    //             const data = await response.json();
-    //             setMapToken(data.token);
-    //         } catch (error) {
-    //             console.error("Error fetching MapKit token:", error);
-    //         }
-    //     };
-
-    //     fetchToken();
-    // }, []);
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/markets") 
@@ -386,15 +378,6 @@ function Markets() {
         }
         return results;
     }, [filteredMarketsResults, filterAZ, filterZA, filterAddress, address, resultCoordinates]);
-
-    const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
-    
-    const handleMarkerClick = (marketId) => {
-        setMarkerViews((prev) => ({
-            ...prev,
-            [marketId]: !prev[marketId], // Toggle the state for the specific market ID
-        }));
-    };
     
     
     return (
@@ -412,7 +395,6 @@ function Markets() {
                         }}
                         showsScale={FeatureVisibility.Visible}
                         showsUserLocation={true}
-                        style={{ height: "100%", width: "100%" }}
                     >
                         {marketCoordinates.map((market) => (
                             <Annotation
