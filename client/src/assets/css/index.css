@@ -1315,6 +1315,7 @@ link {
 
 .map-market-detail{
   max-width: 400px;
+  max-height: 400px;
 }
 
 .map-circle {
@@ -1359,8 +1360,10 @@ link {
 
 .marker-details {
   background-color: #eff;
+  /* background-color: #fff; */
   border-style: solid;
   border-color: #007BFF;
+  /* border-color: #b5b5b5; */
   border-width: 2px;
   width: max-content;
   max-width: 240px;
@@ -1368,6 +1371,7 @@ link {
   border-radius: 8px;
   margin-left:-100px;
   margin-top: -24px;
+  /* bottom: 10px; */
 }
 
 .marker-name {
@@ -2586,6 +2590,7 @@ select:hover {
   #map {
     margin: 0;
     width: 100%;
+    height: 100%;
   }
   
   .cart {
