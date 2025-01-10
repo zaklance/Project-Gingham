@@ -4,7 +4,7 @@ import { weekDay } from '../../utils/common';
 import MarketCard from './MarketCard';
 import '../../assets/css/index.css';
 // import { APIProvider, Map, Marker, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
-import { Annotation, FeatureVisibility, Map, Marker } from 'mapkit-react';
+import { Annotation, ColorScheme, FeatureVisibility, Map, Marker } from 'mapkit-react';
 
 function Markets() {
     const [user, setUser] = useState({});
@@ -18,7 +18,7 @@ function Markets() {
     const [filterAZ, setFilterAZ] = useState(false);
     const [filterZA, setFilterZA] = useState(false);
     const [filterAddress, setFilterAddress] = useState(false);
-    const [address, setAddress] = useState();
+    const [address, setAddress] = useState("");
     const [selectedDay, setSelectedDay] = useState('');
     const [isInSeason, setIsInSeason] = useState(false);
     const [addressResults, setAddressResults] = useState();
@@ -242,7 +242,6 @@ function Markets() {
         setIsInSeason(!isInSeason)
     }
 
-
     const closePopup = () => {
         if (showFilters) {
             setShowFilters(false);
@@ -255,10 +254,9 @@ function Markets() {
                 setShowDropdown(false);
             }
         };
-
         document.addEventListener("mousedown", handleClickOutsideDropdown);
         document.addEventListener("keydown", handleKeyDown);
-
+        
         return () => {
             document.removeEventListener("mousedown", handleClickOutsideDropdown);
             document.removeEventListener("keydown", handleKeyDown);
@@ -271,6 +269,7 @@ function Markets() {
             setFilterZA(false)
             setFilterAddress(false)
             setAddress()
+            setResultCoordinates(null)
         }
     }
 
@@ -280,6 +279,7 @@ function Markets() {
             setFilterZA(!filterZA)
             setFilterAddress(false)
             setAddress()
+            setResultCoordinates(null)
         }
     }
 
@@ -288,12 +288,22 @@ function Markets() {
             setFilterAZ(false)
             setFilterZA(false)
             setFilterAddress(!filterAddress)
+            setResultCoordinates(null)
         }
     }
+
+    const toggleRadio = () => {
+        if (!filterAddress) {
+            setFilterAZ(false)
+            setFilterZA(false)
+            setFilterAddress(true)
+        }
+    };
 
     const handleAddress = (event) => {
         const query = event.target.value;
         setAddress(query);
+        toggleRadio()
         // Clear the previous debounce timer
         if (debounceTimeout.current) {
             clearTimeout(debounceTimeout.current);
@@ -354,7 +364,7 @@ function Markets() {
     }
 
     const sortedMarketsResults = useMemo(() => {
-        let results = [...filteredMarketsResults]; // Create a shallow copy
+        let results = [...filteredMarketsResults];
 
         if (filterAZ) {
             results.sort((a, b) => a.name.localeCompare(b.name));
@@ -393,8 +403,10 @@ function Markets() {
                             latitudeDelta: 0.04,
                             longitudeDelta: 0.05
                         }}
+                        colorScheme={ColorScheme.Auto}
                         showsScale={FeatureVisibility.Visible}
                         showsUserLocation={true}
+                        tracksUserLocation={true}
                     >
                         {marketCoordinates.map((market) => (
                             <Annotation
@@ -405,6 +417,10 @@ function Markets() {
                                 // subtitle={market.schedule}
                                 onSelect={() => handleMarkerClick(market.id)}
                                 onDeselect={() => handleMarkerClick(market.id)}
+                                size={{
+                                    height: 28,
+                                    width: 28
+                                }}
                             >
                                 {!markerViews[market.id] ? (
                                     <div>
@@ -422,19 +438,6 @@ function Markets() {
                         ))}
                     </Map>
                 </div>
-                {/* <div id='map'>
-                    <APIProvider apiKey={import.meta.env.VITE_GOOGLE_KEY} onLoad={() => console.log('Maps API has loaded.')}>
-                        <Map defaultCenter={unionSquare} defaultZoom={13} mapId={import.meta.env.VITE_GOOGLE_MAP_ID}>
-                            {{markets.map((marketData) => (
-                                <AdvancedMarkerCard key={marketData.id} marketData={marketData} />
-                            ))}}
-                        </Map>
-                    </APIProvider>
-                </div>
-                    { <gmp-map defaultCenter={unionSquare} zoom={13} map-id="DEMO_MAP_ID">
-                            <gmp-advanced-marker position={unionSquare} title="Union Square"></gmp-advanced-marker>
-                    </gmp-map>}
-                </div> */}
                 <table className='table-search margin-t-24'>
                     <tbody>
                         <tr>
@@ -448,9 +451,9 @@ function Markets() {
                                     value={query || ""} 
                                     onChange={onUpdateQuery} />
                                 {showDropdown && (
-                                    <div className="dropdown-content" ref={dropdownRef}>
+                                    <ul className="dropdown-content" ref={dropdownRef}>
                                         {filteredMarketsDropdown.slice(0, 10).map(item => (
-                                            <div
+                                            <li
                                                 className="search-results"
                                                 key={item.id}
                                                 onClick={() => {
@@ -459,9 +462,9 @@ function Markets() {
                                                 }}
                                             >
                                                 {item.name}
-                                            </div>
+                                            </li>
                                         ))}
-                                    </div>
+                                    </ul>
                                 )}
                             </td>
                             {/* <td className='cell-text cell-filter m-hidden'>Filters: </td> */}
@@ -501,28 +504,29 @@ function Markets() {
                                         <div className='form-filters-markets'>
                                             <input
                                                 className='margin-r-8'
-                                                id="zipcode"
+                                                id="address"
                                                 type="radio"
                                                 name="filters"
+                                                checked={filterAddress}
                                                 value={true}
                                                 onChange={handleFilterAddress}
                                             />
-                                            <label htmlFor='zipcode'>By Address</label>
+                                            <label htmlFor='address'>By Address</label>
                                             <input
                                                 className='margin-r-8'
-                                                id="zipcodeNum"
+                                                id="address-address"
                                                 type="text"
-                                                name="zipcode"
-                                                    placeholder="1 Union Square West, New York"
-                                                value={address}
+                                                name="addressFilter"
+                                                placeholder="1 Union Square West, New York"
+                                                value={address || ""}
                                                 onChange={(event) => handleAddress(event)}
                                             />
                                             {showAddressDropdown && (
-                                                <div className="dropdown-content" ref={dropdownAddressRef}>
+                                                <ul className="dropdown-content" ref={dropdownAddressRef}>
                                                     {addressResults.map(item => (
-                                                        <div
+                                                        <li
                                                             className="search-results-address"
-                                                            key={item.id}
+                                                            key={item.formattedAddress}
                                                             onClick={() => {
                                                                 setAddress(item.formattedAddress);
                                                                 setShowAddressDropdown(false);
@@ -530,9 +534,9 @@ function Markets() {
                                                             }}
                                                         >
                                                             {item.formattedAddress}
-                                                        </div>
+                                                        </li>
                                                     ))}
-                                                </div>
+                                                </ul>
                                             )}
                                         </div>
                                         

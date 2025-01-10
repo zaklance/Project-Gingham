@@ -34,11 +34,16 @@ function MarketCard({ marketData, user, haversineDistance, resultCoordinates, fi
                         <p><strong>Open Year Round</strong></p>
                     )
                 )}
-                {user?.coordinates || resultCoordinates ? 
-                    <p><strong>Distance:</strong> {filterAddress ?
-                         haversineDistance(resultCoordinates, marketData.coordinates).toFixed(2) 
-                         : haversineDistance(user.coordinates, marketData.coordinates).toFixed(2)} miles</p> 
-                            : <></>}
+                {(user?.coordinates || resultCoordinates) && marketData?.coordinates ? (
+                    <p>
+                        <strong>Distance:</strong> {(
+                            haversineDistance(
+                                filterAddress ? resultCoordinates : user?.coordinates,
+                                marketData.coordinates
+                            ) || 0
+                        ).toFixed(2)} miles
+                    </p>
+                ) : <></>}
             </div>
             <div>
                 <button className="btn-market-card" onClick={handleLearnMore}>Learn More!</button>

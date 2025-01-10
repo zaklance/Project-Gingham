@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const VendorTeamRequest = ({ vendorUserId, vendorUserData }) => {
     const [notifications, setNotifications] = useState([]);
     const [vendors, setVendors] = useState([]);
     const [query, setQuery] = useState("");
     const [selectedVendor, setSelectedVendor] = useState(null);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/vendors")
