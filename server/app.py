@@ -55,11 +55,6 @@ CORS(app, supports_credentials=True)
 
 jwt = JWTManager(app)
 
-# MapKit Credentials
-TEAM_ID = os.environ['TEAM_ID']
-KEY_ID = os.environ['KEY_ID']
-PRIVATE_KEY_PATH = "utils/AuthKey.p8"
-
 avatars = [
         "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage-1.jpg",
         "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime-1.jpg", "avatar-melon-1.jpg",
@@ -708,7 +703,17 @@ def get_vendor_user(id):
                 if not isinstance(vendor_user.is_admin, dict):
                     vendor_user.is_admin = {}
                 vendor_user.is_admin[vendor_id] = is_admin_value
-            
+            if 'vendor_id' in data:
+                vendor_id_key = str(data.get('vendor_id'))
+                vendor_id_value = data['vendor_id']
+                if vendor_id_key is None:
+                    return jsonify({'error': 'vendor_id is required when setting vendor_id'}), 400
+                if not isinstance(vendor_user.vendor_id, dict):
+                    vendor_user.vendor_id = {}
+                vendor_user.vendor_id[vendor_id_key] = vendor_id_value
+            if 'active_vendor' in data:
+                vendor_user.active_vendor = data['active_vendor']
+                
             db.session.commit()
             return jsonify(vendor_user.to_dict()), 200
 
@@ -1745,51 +1750,6 @@ def handle_basket_by_id(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-# @app.route('/api/todays-baskets', methods=['GET'])
-# def handle_todays_baskets():
-#     try:
-#         if request.method == 'GET':
-#             today_str = request.args.get('date', type=str)
-#             if not today_str:
-#                 return jsonify({'error': 'Date parameter is required'}), 400
-#             try:
-#                 today = datetime.strptime(today_str, '%Y-%m-%d').date()
-#             except ValueError:
-#                 return jsonify({'error': 'Invalid date format. Expected YYYY-MM-DD.'}), 400
-
-#             vendor_id = request.args.get('vendor_id', type=int)
-#             user_id = request.args.get('user_id', type=int)
-#             if not vendor_id and not user_id:
-#                 return jsonify({'error': 'At least one of vendor_id or user_id is required'}), 400
-
-#             query = db.session.query(Basket).filter(func.date(Basket.sale_date) == today)
-#             if vendor_id:
-#                 query = query.filter(Basket.vendor_id == vendor_id)
-#             if user_id:
-#                 query = query.filter(Basket.user_id == user_id)
-#             baskets = query.all()
-
-#             if not baskets:
-#                 return jsonify({'message': 'No baskets found for today'}), 404
-
-#             return jsonify([
-#                 {
-#                     'id': basket.id,
-#                     'vendor_id': basket.vendor_id,
-#                     'market_day_id': basket.market_day_id,
-#                     'market_name': basket.market_day.markets.name,
-#                     'sale_date': basket.sale_date.strftime('%Y-%m-%d'),
-#                     'pickup_start': basket.pickup_start.strftime('%H:%M') if basket.pickup_start else None,
-#                     'pickup_end': basket.pickup_end.strftime('%H:%M') if basket.pickup_end else None,
-#                     'price': basket.price,
-#                     'basket_value': basket.basket_value,
-#                     'is_sold': basket.is_sold,
-#                     'is_grabbed': basket.is_grabbed
-#                 } for basket in baskets
-#             ]), 200
-#     except Exception as e:
-#         return jsonify({'error': str(e)}), 500
-
 @app.route('/api/baskets/user-sales-history', methods=['GET'])
 @jwt_required()
 def get_user_sales_history():
@@ -2791,55 +2751,6 @@ def blog(id):
             db.session.rollback()
             return {'error': f'Failed to delete Blog: {str(e)}'}, 500
         
-# def generate_mapkit_token():
-#     """Generates a valid MapKit JWT token."""
-#     try:
-#         # Load the private key
-#         with open(PRIVATE_KEY_PATH, "r") as key_file:
-#             private_key = key_file.read()
-
-#         # Current and expiration times
-#         current_time = datetime.utcnow()
-#         expiration_time = current_time + timedelta(hours=2)
-
-#         # Generate the token
-#         token = map_jwt.encode(
-#             {
-#                 "iss": TEAM_ID,
-#                 "iat": int(current_time.timestamp()),
-#                 "exp": int(expiration_time.timestamp()),
-#             },
-#             private_key,
-#             algorithm="ES256",
-#             headers={"alg": "ES256", "kid": KEY_ID},
-#         )
-
-#         # Debug print for the token
-#         print(f"Debug - Generated Token: {token}")
-#         # Debug print for sensitive information (use only temporarily)
-#         print(f"Debug - Private Key: {private_key}")  # Print the first 50 characters
-#         print(f"Debug - TEAM_ID: {TEAM_ID}")
-#         print(f"Debug - KEY_ID: {KEY_ID}")
-        
-#         return token
-
-#     except Exception as e:
-#         print(f"❌ Error generating MapKit token: {e}")
-#         raise RuntimeError(f"Error generating MapKit token: {e}")
-
-#     except Exception as e:
-#         raise RuntimeError(f"Error generating MapKit token: {e}")
-
-
-# @app.route('/api/mapkit-token', methods=['GET'])
-# def mapkit_token():
-#     try:
-#         token = generate_mapkit_token()
-#         print("✅ MapKit token generated successfully!")
-#         return jsonify({"token": token}), 200
-#     except Exception as e:
-#         print(f"❌ Error generating MapKit token: {e}")
-#         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

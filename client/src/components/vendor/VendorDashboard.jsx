@@ -3,6 +3,7 @@ import { NavLink, Link } from 'react-router-dom';
 import VendorBaskets from './VendorBaskets';
 import VendorEvents from './VendorEvents';
 import VendorTeam from './VendorTeam';
+import VendorActiveVendor from './VendorActiveVendor';
 
 function VendorDashboard({ marketId }) {
     const [vendorId, setVendorId] = useState(null);
@@ -133,12 +134,12 @@ function VendorDashboard({ marketId }) {
 
 
     return (
-        <div>
-            <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
+        <>
+            <VendorActiveVendor />
+            <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap margin-t-16'>
                 <h2 className=''>Vendor Dashboard</h2>
-                <br/>
                 {vendorUserData && vendorUserData.active_vendor !== null && vendorUserData.is_admin[vendorUserData.active_vendor] === true ? (
-                    <div className='tabs margin-t-20'>
+                    <div className='tabs margin-t-20 margin-l-24'>
                         <Link to="#" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                             Baskets
                         </Link>
@@ -160,7 +161,7 @@ function VendorDashboard({ marketId }) {
             {activeTab === 'baskets' && <VendorBaskets marketId={marketId} vendorId={vendorId} vendorUserData={vendorUserData} newVendor={newVendor} setNewVendor={setNewVendor} />}
             {activeTab === 'events' && <VendorEvents vendorId={vendorId} vendorUserData={vendorUserData} />}
             {activeTab === 'team' && <VendorTeam vendorId={vendorId} vendorUserData={vendorUserData} notifications={notifications} setNotifications={setNotifications} />}
-        </div>
+        </>
     );
 }
 

@@ -148,7 +148,11 @@ function VendorCreate () {
             const userDataWithVendor = {
                 ...vendorUserData,
                 vendor_id: vendorId,
+                is_admin: true
             };
+
+            console.log(vendorUserData)
+            console.log(userDataWithVendor)
 
             const token = localStorage.getItem('vendor_jwt-token');
             if (!token) {
@@ -202,6 +206,7 @@ function VendorCreate () {
                     alert('An error occurred while sending the request. Please try again later.');
                 }
             }
+            window.location.reload();
         } catch (error) {
             console.error('Error creating vendor and updating user:', error);
         }
