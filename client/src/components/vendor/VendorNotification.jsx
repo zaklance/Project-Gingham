@@ -30,7 +30,7 @@ function VendorNotification({ notifications, setNotifications, teamMembers, setT
                     throw new Error('Error fetching vendor user details');
                 }
                 const vendorUser = await vendorUserResponse.json();
-                console.log(vendorUser)
+                // console.log(vendorUser)
                 setTeamMembers(vendorUser);
                 setNotifications((prevNotifications) => 
                     prevNotifications.filter((notif) => notif.id !== notification.id)
