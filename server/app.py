@@ -627,7 +627,7 @@ def profile(id):
 def get_vendor_users():
     try:
         vendor_id = request.args.get('vendor_id', type=int)
-        print(vendor_id)
+        email = request.args.get('email', type=str)
         query = VendorUser.query
 
         if vendor_id is not None:
@@ -636,6 +636,8 @@ def get_vendor_users():
                 user for user in vendor_users
                 if str(vendor_id) in (user.vendor_id or {}).keys()
             ]
+        elif email is not None:
+            vendor_users = VendorUser.query.filter_by(email=email).all()
         else:
             vendor_users = query.all()
 

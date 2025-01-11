@@ -6,7 +6,7 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
     const [teamMembers, setTeamMembers] = useState([]);
     const [newMemberEmail, setNewMemberEmail] = useState('');
     const [confirmMemberEmail, setConfirmMemberEmail] = useState('');
-    const [newMemberRole, setNewMemberRole] = useState('Employee'); 
+    const [newMemberRole, setNewMemberRole] = useState(true); 
 
 
     useEffect(() => {
@@ -36,36 +36,69 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
 
     const handleAddTeamMember = async () => {
 
+        fetch(`http://127.0.0.1:5555/api/vendor-users?email=${encodeURIComponent(newMemberEmail)}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json().then(data => {
+                    console.log(data[0].id)
+                    const token = localStorage.getItem('vendor_jwt-token');
+                    const response = fetch(`http://127.0.0.1:5555/api/vendor-users/${data[0].id}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            active_vendor: vendorUserData.vendor_id[vendorUserData.active_vendor],
+                            vendor_id: vendorUserData.vendor_id[vendorUserData.active_vendor],
+                            is_admin: newMemberRole
+                        }),
+                    });
+                    if (response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                })
+            } else {
+                try {
+                    const token = localStorage.getItem('vendor_jwt-token');
+                    const response = fetch('http://127.0.0.1:5555/api/vendor-users', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            email: newMemberEmail,
+                            role: newMemberRole,
+                            vendor_id: vendorUserData.vendor_id
+                        })
+                    });
+
+                    if (response.ok) {
+                        const addedMember = response.json();
+                        setTeamMembers([...teamMembers, addedMember]);
+                        setNewMemberEmail('');
+                        setNewMemberRole('Employee');
+                    } else {
+                        console.error('Error adding team member');
+                    }
+                } catch (error) {
+                    console.error('Error adding team member:', error);
+                }
+            }
+            return response.json();
+        })
+        .then(data => console.log(data))
+        .catch(error => console.error('Error fetching users:', error));
+
         if (newMemberEmail !== confirmMemberEmail) {
             alert("Emails do not match")
             return;
-        }
-
-        try {
-            const token = localStorage.getItem('vendor_jwt-token');
-            const response = await fetch('http://127.0.0.1:5555/api/vendor-users', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: newMemberEmail,
-                    role: newMemberRole,
-                    vendor_id: vendorUserData.vendor_id
-                })
-            });
-
-            if (response.ok) {
-                const addedMember = await response.json();
-                setTeamMembers([...teamMembers, addedMember]);
-                setNewMemberEmail('');
-                setNewMemberRole('Employee');
-            } else {
-                console.error('Error adding team member');
-            }
-        } catch (error) {
-            console.error('Error adding team member:', error);
         }
     };
 
