@@ -7,6 +7,7 @@ import Stack from '@mui/material/Stack';
 import VendorCreate from './VendorCreate';
 import VendorLocations from './VendorLocations';
 import VendorTeamRequest from './VendorTeamRequest';
+import VendorActiveVendor from './VendorActiveVendor';
 
 function VendorProfile () {
     const { id } = useParams();
@@ -397,11 +398,11 @@ function VendorProfile () {
 
 
     return(
-        <div>
+        <>
+            <VendorActiveVendor />
             <div className="tab-content">
                 <div>
                     <h2 className='title'>Profile Information </h2>
-                    
                     <div className='box-bounding'>
                         {editMode ? (
                             <>
@@ -671,7 +672,7 @@ function VendorProfile () {
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     )
 }
 

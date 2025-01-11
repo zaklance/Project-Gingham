@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { timeConverter } from '../../utils/helpers';
 import Chart from 'chart.js/auto';
+import VendorActiveVendor from './VendorActiveVendor';
 
 function VendorSales() {
     const chartRef = useRef();
@@ -285,7 +286,8 @@ function VendorSales() {
 
 
     return (
-        <div>
+        <>
+            <VendorActiveVendor />
             <div className='flex-space-between flex-bottom-align'>
                 <h2 className='margin-t-16'>Vendor Sales</h2>
                 <select className='' value={selectedRangeGraph} onChange={handleDateChangeGraph}>
@@ -396,7 +398,7 @@ function VendorSales() {
                 <br />
 
             </div>
-        </div>
+        </>
     )
 }
 

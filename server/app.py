@@ -683,39 +683,48 @@ def get_vendor_user(id):
                     vendor_user.is_admin.pop(delete_vendor_id_str, None)
                 if isinstance(vendor_user.vendor_id, dict):
                     vendor_user.vendor_id.pop(delete_vendor_id_str, None)
-                vendor_user.active_vendor = None
+                
+                remaining_keys = list(vendor_user.vendor_id.keys())
+                if remaining_keys:
+                    first_key = next(iter(vendor_user.vendor_id))
+                    vendor_user.active_vendor = int(first_key)
+                else:
+                    vendor_user.active_vendor = None
+
+                db.session.commit()
+                return jsonify({'message': 'Vendor updated successfully'}), 200
 
             data = request.get_json()
-
-            if 'first_name' in data:
-                vendor_user.first_name = data['first_name']
-            if 'last_name' in data:
-                vendor_user.last_name = data['last_name']
-            if 'email' in data:
-                vendor_user.email = data['email']
-            if 'phone' in data:
-                vendor_user.phone = data['phone']
-            if 'is_admin' in data:
-                is_admin_value = data['is_admin']
-                vendor_id = str(data.get('vendor_id'))
-                if vendor_id is None:
-                    return jsonify({'error': 'vendor_id is required when setting is_admin'}), 400
-                if not isinstance(vendor_user.is_admin, dict):
-                    vendor_user.is_admin = {}
-                vendor_user.is_admin[vendor_id] = is_admin_value
-            if 'vendor_id' in data:
-                vendor_id_key = str(data.get('vendor_id'))
-                vendor_id_value = data['vendor_id']
-                if vendor_id_key is None:
-                    return jsonify({'error': 'vendor_id is required when setting vendor_id'}), 400
-                if not isinstance(vendor_user.vendor_id, dict):
-                    vendor_user.vendor_id = {}
-                vendor_user.vendor_id[vendor_id_key] = vendor_id_value
-            if 'active_vendor' in data:
-                vendor_user.active_vendor = data['active_vendor']
-                
-            db.session.commit()
-            return jsonify(vendor_user.to_dict()), 200
+            if not delete_vendor_id:
+                if 'first_name' in data:
+                    vendor_user.first_name = data['first_name']
+                if 'last_name' in data:
+                    vendor_user.last_name = data['last_name']
+                if 'email' in data:
+                    vendor_user.email = data['email']
+                if 'phone' in data:
+                    vendor_user.phone = data['phone']
+                if 'is_admin' in data:
+                    is_admin_value = data['is_admin']
+                    vendor_id = str(data.get('vendor_id'))
+                    if vendor_id is None:
+                        return jsonify({'error': 'vendor_id is required when setting is_admin'}), 400
+                    if not isinstance(vendor_user.is_admin, dict):
+                        vendor_user.is_admin = {}
+                    vendor_user.is_admin[vendor_id] = is_admin_value
+                if 'vendor_id' in data:
+                    vendor_id_key = str(data.get('vendor_id'))
+                    vendor_id_value = data['vendor_id']
+                    if vendor_id_key is None:
+                        return jsonify({'error': 'vendor_id is required when setting vendor_id'}), 400
+                    if not isinstance(vendor_user.vendor_id, dict):
+                        vendor_user.vendor_id = {}
+                    vendor_user.vendor_id[vendor_id_key] = vendor_id_value
+                if 'active_vendor' in data:
+                    vendor_user.active_vendor = data['active_vendor']
+                    
+                db.session.commit()
+                return jsonify(vendor_user.to_dict()), 200
 
         except Exception as e:
             db.session.rollback()

@@ -147,6 +147,7 @@ function VendorCreate () {
             
             const userDataWithVendor = {
                 ...vendorUserData,
+                active_vendor: vendorId,
                 vendor_id: vendorId,
                 is_admin: true
             };
@@ -307,6 +308,7 @@ function VendorCreate () {
                     value={vendorData?.city || ''} 
                     onChange={handleVendorInputChange} 
                 />
+                <br className='m-br'/>
                 <select className="select-state" name="state" value={vendorData?.state || ''} onChange={handleVendorInputChange}>
                     <option value="">Select</option>
                     {states.map((state, index) => (
