@@ -135,7 +135,9 @@ function VendorDashboard({ marketId }) {
 
     return (
         <>
-            <VendorActiveVendor />
+            <div className='box-bounding'>
+                <VendorActiveVendor />
+            </div>
             <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap margin-t-16'>
                 <h2 className=''>Vendor Dashboard</h2>
                 {vendorUserData && vendorUserData.active_vendor !== null && vendorUserData.is_admin[vendorUserData.active_vendor] === true ? (
