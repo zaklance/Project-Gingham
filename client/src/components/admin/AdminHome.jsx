@@ -11,7 +11,7 @@ function Home() {
             <br/>
             <br/>
             <br/>
-            <h1 className="title-big m-title-big box-portal-home">Welcome</h1>
+            <h1 className="title-big text-blend-lighten m-title-big box-portal-home">Welcome</h1>
         </div>
     )
 }

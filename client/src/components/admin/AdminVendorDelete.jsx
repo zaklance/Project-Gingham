@@ -76,6 +76,24 @@ function AdminVendorDelete({ vendors }) {
                 console.error('Error deleting market or associated days:', error);
                 alert('An error occurred while deleting the market and its associated days.');
             }
+            try {
+                const token = localStorage.getItem('vendor_jwt-token');
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users?delete_vendor_id=${matchingVendorId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                if (response.ok) {
+                    const updatedData = await response.json();
+                    console.log(updatedData)
+                } else {
+                    console.log('Failed to save changes');
+                }
+            } catch (error) {
+                console.error('Error saving changes:', error);
+            }
         } else {
             setQuery('');
         }

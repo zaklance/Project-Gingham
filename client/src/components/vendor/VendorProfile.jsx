@@ -467,6 +467,7 @@ function VendorProfile () {
                             </>
                         )}
                     </div>
+                    <h2 className='title margin-t-24'>Vendor Team Management</h2>
                     <div className='box-bounding'>
                         <VendorTeamRequest vendorUserId={vendorUserId} vendorUserData={vendorUserData} />
                     </div>

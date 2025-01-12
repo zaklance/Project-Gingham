@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { formatPhoneNumber } from '../../utils/helpers';
 import { avatars_default, states, status } from '../../utils/common';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 
 const AdminUsersVendorUsers = () => {
     const [users, setUsers] = useState([]);
@@ -112,6 +114,30 @@ const AdminUsersVendorUsers = () => {
         setEditMode(!editMode);
     };
 
+    const handleRoleToggle = (key) => {
+        setTempUserData((prevData) => ({
+            ...prevData,
+            is_admin: {
+                ...prevData.is_admin,
+                [key]: !prevData.is_admin[key], // Toggle the boolean value
+            },
+        }));
+    };
+
+    const handleDelete = (key) => {
+        setTempUserData((prevData) => {
+            const updatedIsAdmin = { ...prevData.is_admin };
+            const updatedVendorId = { ...prevData.vendor_id };
+            delete updatedIsAdmin[key];
+            delete updatedVendorId[key];
+            return {
+                ...prevData,
+                is_admin: updatedIsAdmin,
+                vendor_id: updatedVendorId,
+            };
+        });
+    };
+
 
     return (
         <div>
@@ -174,63 +200,108 @@ const AdminUsersVendorUsers = () => {
                                     onChange={handleInputChange}
                                 />
                             </div>
-                            <div className='form-group'>
-                                <label title="true or false">Is Admin?:</label>
-                                <select
-                                    name="is_admin"
-                                    value={tempUserData ? tempUserData.is_admin?.toString() : ''}
-                                    onChange={handleInputChange}
-                                >
-                                    <option value="">Select</option>
-                                    <option value="true">true</option>
-                                    <option value="false">false</option>
-                                </select>
-                            </div>
                             <div className="form-group">
                                 <label>Vendor ID:</label>
-                                <input
-                                    type="text"
-                                    name="vendor_id"
-                                    value={tempUserData ? tempUserData.vendor_id : ''}
-                                    onChange={handleInputChange}
-                                />
+                                <Stack className='padding-4' direction="row" spacing={1}>
+                                    {Object.entries(tempUserData.vendor_id || {}).map(([key, value]) => {
+                                        return (
+                                            <Chip
+                                                key={key}
+                                                style={{
+                                                    backgroundColor: "#eee", fontSize: ".9em"
+                                                }}
+                                                label={`${key}` || 'Unknown Product'}
+                                                size="small"
+                                                onDelete={() => handleDelete(key)}
+                                            />
+                                        );
+                                    })}
+                                </Stack>
+                            </div>
+                            <div className='form-group'>
+                                <label title="true or false">Is Admin?:</label>
+                                <Stack className='padding-4' direction="row" spacing={1}>
+                                    {Object.entries(tempUserData.is_admin || {}).map(([key, value]) => {
+                                        return (
+                                            <Chip
+                                                key={key}
+                                                style={{
+                                                    backgroundColor: "#eee", fontSize: ".9em"
+                                                }}
+                                                label={`${key}: ${value ? 'Admin' : 'Employee'}` || 'Unknown Product'}
+                                                size="small"
+                                                onClick={() => handleRoleToggle(key)}
+                                                onDelete={() => handleDelete(key)}
+                                            />
+                                        );
+                                    })}
+                                </Stack>
                             </div>
                             <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
                             <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
                         </div>
                     ) : (
                         <>
-                            <div className='flex-start flex-gap-16 flex-start-align m-flex-wrap'>
-                                <table className='table-profile'>
-                                    <tbody>
-                                        <tr>
-                                            <td className='cell-title'>Vendor User ID:</td>
-                                            <td className='cell-text'>{userData?.id || ""}</td>
-                                        </tr>
-                                        <tr>
-                                            <td className='cell-title'>Name:</td>
-                                            <td className='cell-text'>{userData?.first_name || ""} {userData?.last_name || ""}</td>
-                                        </tr>
-                                        <tr>
-                                            <td className='cell-title'>Email:</td>
-                                            <td className='cell-text'>{userData?.email || ""}</td>
-                                        </tr>
-                                        <tr>
-                                            <td className='cell-title'>Phone:</td>
-                                            <td className='cell-text'>{formatPhoneNumber(userData?.phone) || ""}</td>
-                                        </tr>
-                                        <tr>
-                                            <td className='cell-title'>Is Admin?:</td>
-                                            <td className='cell-text'>{userData ? `${userData.is_admin}` : ""}</td>
-                                        </tr>
-                                        <tr>
-                                            <td className='cell-title'>Vendor ID:</td>
-                                            <td className='cell-text'>{userData?.id || ""}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
-                            </div>
+                            <table className='table-profile'>
+                                <tbody>
+                                    <tr>
+                                        <td className='cell-title'>Vendor User ID:</td>
+                                        <td className='cell-text'>{userData?.id || ""}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='cell-title'>Name:</td>
+                                        <td className='cell-text'>{userData?.first_name || ""} {userData?.last_name || ""}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='cell-title'>Email:</td>
+                                        <td className='cell-text'>{userData?.email || ""}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='cell-title'>Phone:</td>
+                                        <td className='cell-text'>{formatPhoneNumber(userData?.phone) || ""}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='cell-title'>Vendor IDs:</td>
+                                        <td className='cell-text'>{userData ? 
+                                            <Stack className='padding-4' direction="row" spacing={1}>
+                                                {Object.entries(userData.vendor_id || {}).map(([key, value]) => {
+                                                    return (
+                                                        <Chip
+                                                            key={key}
+                                                            style={{
+                                                                backgroundColor: "#eee", fontSize: ".9em"
+                                                            }}
+                                                            label={`${key}` || 'Unknown Product'}
+                                                            size="small"
+                                                        />
+                                                    );
+                                                })}
+                                            </Stack>
+                                            : ""}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='cell-title'>Is Admin?:</td>
+                                        <td className='cell-text'>{userData ? 
+                                            <Stack className='padding-4' direction="row" spacing={1}>
+                                                {Object.entries(userData.is_admin || {}).map(([key, value]) => {
+                                                    return (
+                                                        <Chip
+                                                            key={key}
+                                                            style={{
+                                                                backgroundColor: "#eee", fontSize: ".9em"
+                                                            }}
+                                                            label={`${key}: ${value ? 'Admin' : 'Employee'}` || 'Unknown Product'}
+                                                            size="small"
+                                                        />
+                                                    );
+                                                })}
+                                            </Stack>
+                                            : ""}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                         </>
                     )}
                 </div>

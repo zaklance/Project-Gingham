@@ -417,10 +417,6 @@ function Markets() {
                                 // subtitle={market.schedule}
                                 onSelect={() => handleMarkerClick(market.id)}
                                 onDeselect={() => handleMarkerClick(market.id)}
-                                size={{
-                                    height: 28,
-                                    width: 28
-                                }}
                             >
                                 {!markerViews[market.id] ? (
                                     <div>
