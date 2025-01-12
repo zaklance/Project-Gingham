@@ -81,7 +81,7 @@ const VendorTeamLeave = ({ className, vendorUserData, setVendorUserData }) => {
 
     return (
         <div className={className || ''}>
-            {vendorUserData.vendor_id ?(
+            {vendorUserData?.vendor_id ?(
                 <>
                     <h3 className='margin-b-16'>On Vendors' Team:</h3>
                     <ul className='ul-team box-scroll-small'>
