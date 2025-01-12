@@ -444,14 +444,41 @@ def run():
     db.session.add_all(vendor_users)
     db.session.commit()
 
-    admin_user_demo = AdminUser(
-        email="admin@gingham.nyc",
-        password="lol",
-        first_name="Ham-man",
-        last_name="Gingy",
-        phone="2095553880",
-    )
-    db.session.add(admin_user_demo)
+    admin_user_demo = [
+        AdminUser(
+            email="admin@gingham.nyc",
+            password="lol",
+            first_name="Ham-man",
+            last_name="Gingy",
+            phone="2095553880",
+            is_admin=True
+        ),
+        AdminUser(
+            email="zak@mufo.nyc",
+            password="lol",
+            first_name="Zak",
+            last_name="Wosewick",
+            phone="0000000000",
+            is_admin=True
+        ),
+        AdminUser(
+            email="sandro@mufo.nyc",
+            password="lol",
+            first_name="Sand",
+            last_name="Man",
+            phone="0000000000",
+            is_admin=True
+        ),
+        AdminUser(
+            email="vinh@mufo.nyc",
+            password="lol",
+            first_name="Vinh",
+            last_name="Cent",
+            phone="0000000000",
+            is_admin=True
+        ),
+    ]
+    db.session.add_all(admin_user_demo)
     db.session.commit()
 
 

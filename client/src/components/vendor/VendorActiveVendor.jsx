@@ -7,13 +7,13 @@ const VendorActiveVendor = ({ className }) => {
     const [activeVendor, setActiveVendor] = useState(null);
 
 
-    const vendoUserId = parseInt(globalThis.localStorage.getItem('vendor_user_id'));
+    const vendorUserId = parseInt(globalThis.localStorage.getItem('vendor_user_id'));
 
     useEffect(() => {
             const fetchVendorUserData = async () => {
                 try {
                     const token = localStorage.getItem('vendor_jwt-token');
-                    const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendoUserId}`, {
+                    const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -44,12 +44,12 @@ const VendorActiveVendor = ({ className }) => {
                 }
             };
             fetchVendorUserData();
-        }, [vendoUserId]);
+        }, [vendorUserId]);
 
     const handleSaveChanges = async () => {
         try {
             const token = localStorage.getItem('vendor_jwt-token');
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendoUserId}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
