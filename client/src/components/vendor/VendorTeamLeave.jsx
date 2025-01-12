@@ -81,28 +81,34 @@ const VendorTeamLeave = ({ className, vendorUserData, setVendorUserData }) => {
 
     return (
         <div className={className || ''}>
-            <h3 className='margin-b-16'>On Vendors' Team:</h3>
-            <ul className='ul-team box-scroll-small'>
-                {vendorUserData?.vendor_id && vendorsData && Object.entries(vendorUserData.vendor_id).map(([key, value]) => (
-                    <li key={key} className='li-team'>
-                        <div className='flex-space-between'>
-                            <div>
-                                <p><strong>{vendorsData[key]?.name || 'Unknown Name'}</strong> - {vendorUserData.is_admin[value] ? 'Admin' : 'Employee'}</p>
-                            </div>
-                            {key !== vendorUserData.id && (
-                                <div className='flex-end flex-center-align'>
-                                    <button
-                                        className="btn btn-small btn-unreport"
-                                        onClick={() => handleDeleteTeamMember(key)}
-                                    >
-                                        Leave Team
-                                    </button>
+            {vendorUserData.vendor_id ?(
+                <>
+                    <h3 className='margin-b-16'>On Vendors' Team:</h3>
+                    <ul className='ul-team box-scroll-small'>
+                        {vendorUserData?.vendor_id && vendorsData && Object.entries(vendorUserData.vendor_id).map(([key, value]) => (
+                            <li key={key} className='li-team'>
+                                <div className='flex-space-between'>
+                                    <div>
+                                        <p><strong>{vendorsData[key]?.name || 'Unknown Name'}</strong> - {vendorUserData.is_admin[value] ? 'Admin' : 'Employee'}</p>
+                                    </div>
+                                    {key !== vendorUserData.id && (
+                                        <div className='flex-end flex-center-align'>
+                                            <button
+                                                className="btn btn-small btn-unreport"
+                                                onClick={() => handleDeleteTeamMember(key)}
+                                            >
+                                                Leave Team
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                    </li>
-                ))}
-            </ul>
+                            </li>
+                        ))}
+                    </ul>
+                </>
+                ) : (
+                    null
+                )}
         </div>
     );
 };
