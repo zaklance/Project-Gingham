@@ -623,40 +623,71 @@ def profile(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route('/api/vendor-users', methods=['GET'])
+@app.route('/api/vendor-users', methods=['GET', 'PATCH'])
 def get_vendor_users():
-    try:
-        vendor_id = request.args.get('vendor_id', type=int)
-        email = request.args.get('email', type=str)
-        query = VendorUser.query
+    if request.method =='GET':
+        try:
+            vendor_id = request.args.get('vendor_id', type=int)
+            email = request.args.get('email', type=str)
+            query = VendorUser.query
 
-        if vendor_id is not None:
-            vendor_users = query.all()
-            vendor_users = [
-                user for user in vendor_users
-                if str(vendor_id) in (user.vendor_id or {}).keys()
-            ]
-        elif email is not None:
-            vendor_users = VendorUser.query.filter_by(email=email).all()
-        else:
-            vendor_users = query.all()
+            if vendor_id is not None:
+                vendor_users = query.all()
+                vendor_users = [
+                    user for user in vendor_users
+                    if str(vendor_id) in (user.vendor_id or {}).keys()
+                ]
+            elif email is not None:
+                vendor_users = VendorUser.query.filter_by(email=email).all()
+            else:
+                vendor_users = query.all()
 
-        if not vendor_users:
-            return jsonify({'message': 'No team members found for this vendor'}), 404
+            if not vendor_users:
+                return jsonify({'message': 'No team members found for this vendor'}), 404
 
-        return jsonify([{
-            'id': vendor_user.id,
-            'first_name': vendor_user.first_name,
-            'last_name': vendor_user.last_name,
-            'email': vendor_user.email,
-            'phone': vendor_user.phone,
-            'vendor_id': vendor_user.vendor_id,
-            'is_admin': vendor_user.is_admin,
-            'active_vendor': vendor_user.active_vendor
-        } for vendor_user in vendor_users]), 200
+            return jsonify([{
+                'id': vendor_user.id,
+                'first_name': vendor_user.first_name,
+                'last_name': vendor_user.last_name,
+                'email': vendor_user.email,
+                'phone': vendor_user.phone,
+                'vendor_id': vendor_user.vendor_id,
+                'is_admin': vendor_user.is_admin,
+                'active_vendor': vendor_user.active_vendor
+            } for vendor_user in vendor_users]), 200
 
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+    
+    elif request.method == 'PATCH':
+        try:
+            delete_vendor_id = request.args.get('delete_vendor_id', type=int)
+            if delete_vendor_id:
+                if not delete_vendor_id:
+                    return jsonify({'message': 'delete_vendor_id parameter is required'}), 400
+                
+                vendor_users = VendorUser.query.all()
+
+                for vendor_user in vendor_users:
+                    vendor_id_str = str(delete_vendor_id)
+                    
+                    if isinstance(vendor_user.is_admin, dict) and vendor_id_str in vendor_user.is_admin:
+                        vendor_user.is_admin.pop(vendor_id_str)
+                    if isinstance(vendor_user.vendor_id, dict) and vendor_id_str in vendor_user.vendor_id:
+                        vendor_user.vendor_id.pop(vendor_id_str)
+
+                        remaining_keys = list(vendor_user.vendor_id.keys())
+                        if remaining_keys:
+                            vendor_user.active_vendor = int(remaining_keys[0])
+                        else:
+                            vendor_user.active_vendor = None
+                    
+                    db.session.commit()
+
+                return jsonify({'message': 'Vendor updated successfully'}), 200
+        
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
     
 @app.route('/api/vendor-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 @jwt_required()

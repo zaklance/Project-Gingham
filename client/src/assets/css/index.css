@@ -192,6 +192,10 @@ p, li, div, form, input, select, button, textarea, td {
   color: white !important;
 }
 
+.text-blend-lighten {
+  mix-blend-mode: lighten;
+}
+
 .text-500 {
   font-weight: 500;
 }
@@ -349,6 +353,10 @@ article {
 
 .padding-12 {
   padding: 12px;
+}
+
+.width-fit {
+  width: fit-content;
 }
 
 .width-100 {
@@ -652,6 +660,22 @@ ul {
   margin-right: 0;
 }
 
+.box-strawberry {
+  background-image: url('../images/LzYeux_120719_0036_1800px.jpg');
+  background-size: auto;
+  moz-box-sizing: border-box;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.box-gradient {
+  background-image: linear-gradient(45deg, #ff8300, #ff3399);
+}
+
+.box-white {
+  background-color: white;
+}
+
 .box-big-blue {
   float: none;
   background-color: #d8f4fe;
@@ -663,6 +687,7 @@ ul {
   padding-bottom: 4px;
   border-radius: 12px 12px 0 0;
   margin-bottom: -22px;
+  color: #ff3399;
 }
 
 .box-inside {
