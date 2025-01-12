@@ -323,6 +323,9 @@ def login():
     if not user.authenticate(data['password']):
         return {'error': 'Login failed'}, 401
     
+    user.last_log_on = datetime.utcnow()
+    db.session.commit()
+    
     access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "user"})
     
     return jsonify(access_token=access_token, user_id=user.id), 200
@@ -375,16 +378,19 @@ def signup():
 def vendorLogin():
 
     data = request.get_json()
-    vendorUser = VendorUser.query.filter(VendorUser.email == data['email']).first()
-    if not vendorUser:
+    vendor_user = VendorUser.query.filter(VendorUser.email == data['email']).first()
+    if not vendor_user:
         return {'error': 'Login failed'}, 401
     
-    if not vendorUser.authenticate(data['password']):
+    if not vendor_user.authenticate(data['password']):
         return {'error': 'Login failed'}, 401
     
-    access_token = create_access_token(identity=vendorUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "vendor"})
+    vendor_user.last_log_on = datetime.utcnow()
+    db.session.commit()
+    
+    access_token = create_access_token(identity=vendor_user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "vendor"})
 
-    return jsonify(access_token=access_token, vendor_user_id=vendorUser.id), 200
+    return jsonify(access_token=access_token, vendor_user_id=vendor_user.id), 200
 
 @app.route('/api/vendor-signup', methods=['POST'])
 def vendorSignup():
@@ -428,16 +434,19 @@ def vendorLogout():
 def adminLogin():
 
     data = request.get_json()
-    adminUser = AdminUser.query.filter(AdminUser.email == data['email']).first()
-    if not adminUser:
+    admin_user = AdminUser.query.filter(AdminUser.email == data['email']).first()
+    if not admin_user:
         return {'error': 'Login failed'}, 401
     
-    if not adminUser.authenticate(data['password']):
+    if not admin_user.authenticate(data['password']):
         return {'error': 'Login failed'}, 401
     
-    access_token = create_access_token(identity=adminUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "admin"})
+    admin_user.last_log_on = datetime.utcnow()
+    db.session.commit()
+    
+    access_token = create_access_token(identity=admin_user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "admin"})
 
-    return jsonify(access_token=access_token, admin_user_id=adminUser.id), 200
+    return jsonify(access_token=access_token, admin_user_id=admin_user.id), 200
 
 @app.route('/api/admin-signup', methods=['POST'])
 def adminSignup():
@@ -781,7 +790,6 @@ def get_vendor_user(id):
                     vendor_user.active_vendor = data['active_vendor']
                     
                 db.session.commit()
-                print(vendor_user.is_admin)
                 return jsonify(vendor_user.to_dict()), 200
 
         except Exception as e:

@@ -72,6 +72,7 @@ const VendorTeamLeave = ({ className, vendorUserData, setVendorUserData }) => {
                     const errorData = await response.json();
                     console.error('Error updating team member:', errorData);
                 }
+                window.location.reload()
             } catch (error) {
                 console.error('Error updating team member:', error);
             }

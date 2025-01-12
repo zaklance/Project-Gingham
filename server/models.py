@@ -71,6 +71,7 @@ class User(db.Model, SerializerMixin):
     avatar = db.Column(db.String)
     avatar_default = db.Column(db.String, nullable=False, default=random_avatar)
     status = db.Column(db.String(10), nullable=False, default="active")
+    last_log_on = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships
     market_reviews = db.relationship('MarketReview', back_populates='user')
@@ -451,6 +452,7 @@ class VendorUser(db.Model, SerializerMixin):
     active_vendor = db.Column(db.Integer, nullable=True)
     vendor_id = db.Column(MutableDict.as_mutable(JSON), nullable=True)
     is_admin = db.Column(MutableDict.as_mutable(JSON), nullable=True)
+    last_log_on = db.Column(db.DateTime, default=datetime.utcnow)
 
     # notifications = db.relationship('VendorNotification', back_populates='vendor_user')
 
@@ -503,6 +505,8 @@ class AdminUser(db.Model, SerializerMixin):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     phone = db.Column(db.String, nullable=True)
+    is_admin = db.Column(db.Boolean, default=False)
+    last_log_on = db.Column(db.DateTime, default=datetime.utcnow)
 
     serialize_rules = ('-_password',)
 

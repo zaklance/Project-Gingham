@@ -470,7 +470,7 @@ function VendorProfile () {
                     <h2 className='title margin-t-24'>Vendor Team Management</h2>
                     <div className='box-bounding'>
                         <VendorTeamRequest className="margin-b-32" vendorUserId={vendorUserId} vendorUserData={vendorUserData} />
-                        <VendorActiveVendor className="margin-b-32" />
+                        <VendorActiveVendor className="margin-b-32" vendorUserData={vendorUserData} setVendorUserData={setVendorUserData} />
                         <VendorTeamLeave vendorUserData={vendorUserData} setVendorUserData={setVendorUserData} />
                     </div>
                     <h2 className='title margin-t-24'>Vendor Information</h2>
