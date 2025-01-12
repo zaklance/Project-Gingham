@@ -10,6 +10,7 @@ const AdminUsersVendorUsers = () => {
     const [editMode, setEditMode] = useState(false);
     const [userData, setUserData] = useState(null);
     const [tempUserData, setTempUserData] = useState(null);
+    const [newVendor, setNewVendor] = useState(null);
     const [image, setImage] = useState(null);
 
     const token = localStorage.getItem('admin_jwt-token');
@@ -68,7 +69,7 @@ const AdminUsersVendorUsers = () => {
     const handleSaveChanges = async () => {
         if (confirm(`Are you sure you want to edit ${userData.first_name}'s account?`)) {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${userData.id}`, {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${userData.id}?admin_patch=true`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -115,6 +116,7 @@ const AdminUsersVendorUsers = () => {
     };
 
     const handleRoleToggle = (key) => {
+        console.log(key)
         setTempUserData((prevData) => ({
             ...prevData,
             is_admin: {
@@ -136,6 +138,21 @@ const AdminUsersVendorUsers = () => {
                 vendor_id: updatedVendorId,
             };
         });
+    };
+
+    const handleAddVendor = () => {
+        setTempUserData((prevData) => ({
+            ...prevData,
+            vendor_id: {
+                ...prevData.vendor_id,
+                [newVendor]: Number(newVendor),
+            },
+            is_admin: {
+                ...prevData.is_admin,
+                [newVendor]: true,
+            },
+        }));
+        setNewVendor(null)
     };
 
 
@@ -219,7 +236,7 @@ const AdminUsersVendorUsers = () => {
                                 </Stack>
                             </div>
                             <div className='form-group'>
-                                <label title="true or false">Is Admin?:</label>
+                                <label title="Click to switch">Is Admin?:</label>
                                 <Stack className='padding-4' direction="row" spacing={1}>
                                     {Object.entries(tempUserData.is_admin || {}).map(([key, value]) => {
                                         return (
@@ -230,12 +247,23 @@ const AdminUsersVendorUsers = () => {
                                                 }}
                                                 label={`${key}: ${value ? 'Admin' : 'Employee'}` || 'Unknown Product'}
                                                 size="small"
+                                                title="Click to switch"
                                                 onClick={() => handleRoleToggle(key)}
                                                 onDelete={() => handleDelete(key)}
                                             />
                                         );
                                     })}
                                 </Stack>
+                            </div>
+                            <div className='form-group'>
+                                <label>Add Vendor:</label>
+                                <input
+                                    type="text"
+                                    name="new_vendor"
+                                    value={newVendor || ''}
+                                    onChange={(e) => setNewVendor(e.target.value)}
+                                />
+                                <button className='btn btn-small btn-switch margin-l-8' onClick={handleAddVendor}>Add Vendor</button>
                             </div>
                             <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
                             <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>

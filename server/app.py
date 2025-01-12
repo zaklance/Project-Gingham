@@ -705,6 +705,7 @@ def get_vendor_user(id):
     elif request.method == 'PATCH':
         vendor_user = VendorUser.query.get(id)
         delete_vendor_id = request.args.get('delete_vendor_id', type=int)
+        admin_patch = request.args.get('admin_patch', type=bool)
 
         if not vendor_user:
             return jsonify({'error': 'User not found'}), 404
@@ -728,7 +729,30 @@ def get_vendor_user(id):
                 return jsonify({'message': 'Vendor updated successfully'}), 200
 
             data = request.get_json()
-            if not delete_vendor_id:
+            if admin_patch:
+                if 'first_name' in data:
+                    vendor_user.first_name = data['first_name']
+                if 'last_name' in data:
+                    vendor_user.last_name = data['last_name']
+                if 'email' in data:
+                    vendor_user.email = data['email']
+                if 'phone' in data:
+                    vendor_user.phone = data['phone']
+                if 'is_admin' in data:
+                    vendor_user.is_admin = data['is_admin']
+                if 'vendor_id' in data:
+                    vendor_user.vendor_id = data['vendor_id']
+                remaining_keys = list(vendor_user.vendor_id.keys())
+                if remaining_keys:
+                    first_key = next(iter(vendor_user.vendor_id))
+                    vendor_user.active_vendor = int(first_key)
+                else:
+                    vendor_user.active_vendor = None
+
+                db.session.commit()
+                return jsonify(vendor_user.to_dict()), 200                
+                    
+            if not delete_vendor_id and not admin_patch:
                 if 'first_name' in data:
                     vendor_user.first_name = data['first_name']
                 if 'last_name' in data:
@@ -757,6 +781,7 @@ def get_vendor_user(id):
                     vendor_user.active_vendor = data['active_vendor']
                     
                 db.session.commit()
+                print(vendor_user.is_admin)
                 return jsonify(vendor_user.to_dict()), 200
 
         except Exception as e:

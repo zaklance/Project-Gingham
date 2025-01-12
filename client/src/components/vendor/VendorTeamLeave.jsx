@@ -88,9 +88,7 @@ const VendorTeamLeave = ({ className, vendorUserData, setVendorUserData }) => {
                         {vendorUserData?.vendor_id && vendorsData && Object.entries(vendorUserData.vendor_id).map(([key, value]) => (
                             <li key={key} className='li-team'>
                                 <div className='flex-space-between'>
-                                    <div>
-                                        <p><strong>{vendorsData[key]?.name || 'Unknown Name'}</strong> - {vendorUserData.is_admin[value] ? 'Admin' : 'Employee'}</p>
-                                    </div>
+                                    <p><strong>{vendorsData[key]?.name || 'Unknown Name'}</strong> — {vendorUserData.is_admin[value] ? 'Admin' : 'Employee'}</p>
                                     {key !== vendorUserData.id && (
                                         <div className='flex-end flex-center-align'>
                                             <button
