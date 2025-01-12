@@ -128,26 +128,24 @@ const VendorActiveVendor = () => {
 
     return (
         <>
-            <div className='box-bounding'>
-                <div className='flex-start flex-center-align m-flex-wrap'>
-                    <h3 className='margin-r-16'>Active Vendor:</h3>
-                    <select
-                        name="active_vendor"
-                        value={activeVendor || ''}
-                        onChange={(e) => setActiveVendor(Number(e.target.value))}
-                    >
-                        {/* <option value="">Select</option> */}
-                        {vendorUserData?.vendor_id ? Object.keys(vendorUserData.vendor_id).map((key) => {
-                            const vendorId = vendorUserData.vendor_id[key];
-                            const vendor = vendorData?.[vendorId];
-                            return (
-                            <option key={key} value={vendorUserData.vendor_id[key]}>
-                                    {vendor ? vendor.name : ''}
-                            </option>
-                        )}) : null}
-                    </select>
-                    <button className='btn btn-switch margin-l-8' onClick={handleSaveChanges}>Set Vendor</button>
-                </div>
+            <div className='flex-start flex-center-align m-flex-wrap'>
+                <h3 className='margin-r-16'>Active Vendor:</h3>
+                <select
+                    name="active_vendor"
+                    value={activeVendor || ''}
+                    onChange={(e) => setActiveVendor(Number(e.target.value))}
+                >
+                    {/* <option value="">Select</option> */}
+                    {vendorUserData?.vendor_id ? Object.keys(vendorUserData.vendor_id).map((key) => {
+                        const vendorId = vendorUserData.vendor_id[key];
+                        const vendor = vendorData?.[vendorId];
+                        return (
+                        <option key={key} value={vendorUserData.vendor_id[key]}>
+                                {vendor ? vendor.name : ''}
+                        </option>
+                    )}) : null}
+                </select>
+                <button className='btn btn-switch margin-l-8' onClick={handleSaveChanges}>Set Vendor</button>
             </div>
         </>
     );

@@ -399,7 +399,6 @@ function VendorProfile () {
 
     return(
         <>
-            <VendorActiveVendor />
             <div className="tab-content">
                 <div>
                     <h2 className='title'>Profile Information </h2>
@@ -469,6 +468,7 @@ function VendorProfile () {
                     </div>
                     <h2 className='title margin-t-24'>Vendor Team Management</h2>
                     <div className='box-bounding'>
+                        <VendorActiveVendor className="margin-b-24" />
                         <VendorTeamRequest vendorUserId={vendorUserId} vendorUserData={vendorUserData} />
                     </div>
                     <h2 className='title margin-t-24'>Vendor Information</h2>
