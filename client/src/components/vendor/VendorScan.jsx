@@ -83,7 +83,9 @@ function VendorScan() {
 
     return (
         <>
-            <VendorActiveVendor />
+            <div className='box-bounding margin-b-16'>
+                <VendorActiveVendor />
+            </div>
             <div className='flex-center'>
                 <Scanner
                     onScan={(result) => handleScan(result)}

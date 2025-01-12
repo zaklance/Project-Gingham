@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-const VendorActiveVendor = () => {
+const VendorActiveVendor = ({ className }) => {
     const [vendorData, setVendorData] = useState(null);
     const [vendorUserData, setVendorUserData] = useState(null);
     const [activeVendor, setActiveVendor] = useState(null);
@@ -128,7 +128,7 @@ const VendorActiveVendor = () => {
 
     return (
         <>
-            <div className='flex-start flex-center-align m-flex-wrap'>
+            <div className={`flex-start flex-center-align m-flex-wrap ${className || ''}`}>
                 <h3 className='margin-r-16'>Active Vendor:</h3>
                 <select
                     name="active_vendor"

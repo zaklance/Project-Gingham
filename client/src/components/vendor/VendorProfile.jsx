@@ -8,6 +8,7 @@ import VendorCreate from './VendorCreate';
 import VendorLocations from './VendorLocations';
 import VendorTeamRequest from './VendorTeamRequest';
 import VendorActiveVendor from './VendorActiveVendor';
+import VendorTeamLeave from './VendorTeamLeave';
 
 function VendorProfile () {
     const { id } = useParams();
@@ -468,8 +469,9 @@ function VendorProfile () {
                     </div>
                     <h2 className='title margin-t-24'>Vendor Team Management</h2>
                     <div className='box-bounding'>
-                        <VendorActiveVendor className="margin-b-24" />
-                        <VendorTeamRequest vendorUserId={vendorUserId} vendorUserData={vendorUserData} />
+                        <VendorTeamRequest className="margin-b-32" vendorUserId={vendorUserId} vendorUserData={vendorUserData} />
+                        <VendorActiveVendor className="margin-b-32" />
+                        <VendorTeamLeave vendorUserData={vendorUserData} setVendorUserData={setVendorUserData} />
                     </div>
                     <h2 className='title margin-t-24'>Vendor Information</h2>
                     <div className='box-bounding'>
