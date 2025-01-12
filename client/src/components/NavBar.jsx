@@ -80,7 +80,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
 
 
     useEffect(() => {
-        if (isVendorLoggedIn && vendorUserData) {
+        if (isVendorLoggedIn && vendorUserData?.active_vendor) {
             fetch(`http://127.0.0.1:5555/api/vendor-notifications?vendor_id=${vendorUserData.vendor_id[vendorUserData.active_vendor]}`)
                 .then(response => response.json())
                 .then(data => {
