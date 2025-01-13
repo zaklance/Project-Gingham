@@ -224,7 +224,7 @@ const AdminUsersUsers = () => {
                         <tr>
                             <td className='cell-title'>Search:</td>
                             <td className='cell-text'>
-                                <input id='search' className="search-bar" type="text" placeholder="Search vendors..." value={query} onChange={onUpdateQuery} />
+                                <input id='search' className="search-bar" type="text" placeholder="Search users..." value={query} onChange={onUpdateQuery} />
                                 <div className="dropdown-content">
                                     {
                                         query &&

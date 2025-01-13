@@ -2,10 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import AdminUsersUsers from './AdminUsersUsers';
 import AdminUsersVendorUsers from './AdminUsersVendorUsers';
+import AdminUsersAdminUsers from './AdminUsersAdminUsers';
 
 
 function AdminUsers() {
     const [activeTab, setActiveTab] = useState('user');
+    const [adminUserData, setAdminUserData] = useState(null);
+
+    const token = localStorage.getItem('admin_jwt-token');
+    const adminUserId = localStorage.getItem('admin_user_id')
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -13,21 +18,59 @@ function AdminUsers() {
         if (tab) setActiveTab(tab);
     }, []);
 
+    useEffect(() => {
+            if (!adminUserId) return
+            const fetchUserData = async () => {
+                try {
+                    const response = await fetch(`http://127.0.0.1:5555/api/admin-users/${adminUserId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        setAdminUserData(data);
+                    } else {
+                        console.error('Error fetching profile:', response.status);
+                        if (response.status === 401) {
+                            console.error('Unauthorized: Token may be missing or invalid');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching vendor data:', error);
+                }
+            };
+            fetchUserData();
+        }, [adminUserId]);
+
+
     return (
         <>
-            <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
-                <h1>User Management</h1>
-                <div className='tabs margin-t-20 m-scroll'>
-                    <Link to="#" onClick={() => setActiveTab('user')} className={activeTab === 'users' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
-                        User
-                    </Link>
-                    <Link to="#" onClick={() => setActiveTab('vendor-user')} className={activeTab === 'vendor-users' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
-                        Vendor User
-                    </Link>
-                </div>
-            </div>
-            {activeTab === 'user' && <AdminUsersUsers />}
-            {activeTab === 'vendor-user' && <AdminUsersVendorUsers />}
+            {adminUserData && adminUserData.is_admin && adminUserData.is_admin === true ? (
+                <>
+                    <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
+                        <h1>User Management</h1>
+                        <div className='tabs margin-t-20 m-scroll'>
+                            <Link to="#" onClick={() => setActiveTab('user')} className={activeTab === 'users' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                                User
+                            </Link>
+                            <Link to="#" onClick={() => setActiveTab('vendor-user')} className={activeTab === 'vendor-users' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                                Vendor User
+                            </Link>
+                            <Link to="#" onClick={() => setActiveTab('admin-user')} className={activeTab === 'admin-users' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                                Admin User
+                            </Link>
+                        </div>
+                    </div>
+                    {activeTab === 'user' && <AdminUsersUsers />}
+                    {activeTab === 'vendor-user' && <AdminUsersVendorUsers />}
+                    {activeTab === 'admin-user' && <AdminUsersAdminUsers />}
+                </>
+            ) : (
+                null
+            )}
         </>
     )
 }

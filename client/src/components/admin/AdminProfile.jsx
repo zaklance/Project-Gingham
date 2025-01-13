@@ -8,6 +8,8 @@ function AdminProfile () {
     const [adminUserData, setAdminUserData] = useState(null);
     const [tempProfileData, setTempProfileData] = useState(null);
 
+    const token = localStorage.getItem('admin_jwt-token');
+
     const decodeJwt = (token) => {
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
@@ -21,7 +23,6 @@ function AdminProfile () {
     useEffect(() => {
         const fetchAdminUserData = async () => {
             try {
-                const token = localStorage.getItem('admin_jwt-token');
                 if (!token) {
                     console.error('Token missing, redirecting to login.');
                     // Redirect to login page or unauthorized page
@@ -82,6 +83,7 @@ function AdminProfile () {
             const response = await fetch(`http://127.0.0.1:5555/api/admin-users/${id}`, {
                 method: 'PATCH', 
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(tempProfileData)

@@ -8,14 +8,15 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const [vendorNotifications, setVendorNotifications] = useState([]);
     const [isNotifPopup, setIsNotifPopup] = useState(false);
     const [vendorUserData, setVendorUserData] = useState(null);
+    const [adminUserData, setAdminUserData] = useState(null);
 
     const location = useLocation();
     const userId = globalThis.localStorage.getItem('user_id');
     const vendorUserId = globalThis.localStorage.getItem('vendor_user_id');
-    const admin_id = globalThis.localStorage.getItem('admin_user_id');
+    const adminUserId = globalThis.localStorage.getItem('admin_user_id');
     const isUserLoggedIn = userId;
     const isVendorLoggedIn = vendorUserId;
-    const isAdminLoggedIn = admin_id;
+    const isAdminLoggedIn = adminUserId;
     // const isLoggedIn = userId && location.pathname !== '/' && location.pathname !== '/login';
     const isNotUser = location.pathname.startsWith('/vendor') || location.pathname.startsWith('/admin');
     const isVendorPage = location.pathname.startsWith('/vendor');
@@ -152,6 +153,34 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
         }
     };
 
+    useEffect(() => {
+        const token = localStorage.getItem('admin_jwt-token');
+        if (!adminUserId) return
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch(`http://127.0.0.1:5555/api/admin-users/${adminUserId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setAdminUserData(data);
+                } else {
+                    console.error('Error fetching profile:', response.status);
+                    if (response.status === 401) {
+                        console.error('Unauthorized: Token may be missing or invalid');
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching vendor data:', error);
+            }
+        };
+        fetchUserData();
+    }, [adminUserId]);
+
     const handleAdminNotificationLink = () => {
         window.location.href = "/admin/vendors?tab=products";
     }
@@ -254,7 +283,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isAdminLoggedIn && isAdminPage && (
                     <>
                         <li>
-                            <NavLink className='nav-tab m-tab-left color-3 btn-nav' to={`/admin/profile/${admin_id}`}>Profile</NavLink>
+                            <NavLink className='nav-tab m-tab-left color-3 btn-nav' to={`/admin/profile/${adminUserId}`}>Profile</NavLink>
                         </li>
                         <li>
                             <NavLink className='nav-tab color-5 btn-nav' to={`/admin/markets`}>Markets</NavLink>
@@ -262,9 +291,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li>
                             <NavLink className='nav-tab color-4 btn-nav' to={`/admin/vendors`}>Vendors</NavLink>
                         </li>
-                        <li>
-                            <NavLink className='nav-tab color-1 btn-nav' to={`/admin/users`}>Users</NavLink>
-                        </li>
+                        {adminUserData && adminUserData.is_admin && adminUserData.is_admin === true ? (
+                            <>
+                                <li>
+                                    <NavLink className='nav-tab color-1 btn-nav' to={`/admin/users`}>Users</NavLink>
+                                </li>
+                            </>
+                        ) : null}
                         <li>
                             <NavLink className='nav-tab color-2 btn-nav' to={`/admin/help`}>Help</NavLink>
                         </li>

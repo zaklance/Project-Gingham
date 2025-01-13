@@ -871,6 +871,7 @@ def handle_admin_user_by_id(id):
     elif request.method == 'PATCH':
         try:
             data = request.get_json()
+            data.pop('last_log_on', None)
             for key, value in data.items():
                 setattr(admin_user, key, value)
             db.session.commit()

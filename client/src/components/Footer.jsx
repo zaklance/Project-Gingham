@@ -50,6 +50,9 @@ function Footer() {
                                 <NavLink to="/vendor/faqs">Vendor FAQs</NavLink>
                             </li>
                         )}
+                        <li className='footer-li'>
+                            &copy; Gingham, 2025
+                        </li>
                     </ul>
                     <img className='small-logo' src="/site-images/gingham-logo-A_3.svg" alt="Gingham Logo"></img>
                 </div>
