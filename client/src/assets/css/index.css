@@ -1342,6 +1342,7 @@ link {
   margin-left: 1%;
   margin-bottom: 4px;
 }
+
 #map {
   width: 98%;
   height: 60vh;
@@ -2606,6 +2607,7 @@ select:hover {
 
   .footer {
     width: 100vw;
+    margin-bottom: -32px;
   }
 
   .img-market {
@@ -2634,9 +2636,8 @@ select:hover {
   }
 
   #map {
-    margin: 0;
-    width: 100%;
-    height: 100%;
+    height: 40vh;
+    min-height: 300px;
   }
   
   .cart {

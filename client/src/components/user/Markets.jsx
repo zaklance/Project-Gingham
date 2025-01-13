@@ -31,6 +31,7 @@ function Markets() {
     const dropdownAddressRef = useRef(null);
     const debounceTimeout = useRef(null);
     const location = useLocation();
+    const scaleFactor = 1
     
     const { handlePopup } = useOutletContext();
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
@@ -80,10 +81,17 @@ function Markets() {
 
     const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
 
-    const handleMarkerClick = (marketId) => {
+    const handleMarkerClickOn = (marketId) => {
         setMarkerViews((prev) => ({
             ...prev,
-            [marketId]: !prev[marketId], // Toggle the state for the specific market ID
+            [marketId]: true,
+        }));
+    };
+
+    const handleMarkerClickOff = (marketId) => {
+        setMarkerViews((prev) => ({
+            ...prev,
+            [marketId]: false,
         }));
     };
 
@@ -317,7 +325,7 @@ function Markets() {
     };
 
     const handleSearchAddress = async (query) => {
-        const apiKey = import.meta.env.VITE_RADAR_KEY;
+        const apiKey = import.meta.env.VITE_RADAR_TEST_KEY;
 
         try {
             const responseRadar = await fetch(`https://api.radar.io/v1/search/autocomplete?query=${encodeURIComponent(query)}`, {
@@ -388,188 +396,188 @@ function Markets() {
         }
         return results;
     }, [filteredMarketsResults, filterAZ, filterZA, filterAddress, address, resultCoordinates]);
-    
+
     
     return (
         <>
-        <div className="markets-container">
-            <div className='header'>
-                <div id="map">
-                    <Map
-                        token={mapToken}
-                        initialRegion={{
-                            centerLatitude: 40.736358642578125,
-                            centerLongitude: -73.99076080322266,
-                            latitudeDelta: 0.04,
-                            longitudeDelta: 0.05
-                        }}
-                        colorScheme={ColorScheme.Auto}
-                        showsScale={FeatureVisibility.Visible}
-                        showsUserLocation={true}
-                        tracksUserLocation={true}
-                    >
-                        {marketCoordinates.map((market) => (
-                            <Annotation
-                                key={market.id}
-                                latitude={market.latitude}
-                                longitude={market.longitude}
-                                // title={market.name}
-                                // subtitle={market.schedule}
-                                onSelect={() => handleMarkerClick(market.id)}
-                                onDeselect={() => handleMarkerClick(market.id)}
-                            >
-                                {!markerViews[market.id] ? (
-                                    <div>
-                                        <div className="map-circle"></div>
-                                        <div className="map-inside-circle"></div>
-                                        <div className="map-triangle"></div>
-                                    </div>
-                                ) : (
-                                    <div className="marker-details">
-                                        <div className="marker-name">{market.name}</div>
-                                        <div className="marker-day">{market.schedule}</div>
-                                    </div> 
-                                )}
-                            </Annotation>
-                        ))}
-                    </Map>
-                </div>
-                <table className='table-search margin-t-24'>
-                    <tbody>
-                        <tr>
-                            {/* <td className='cell-title btn-grey m-hidden'>Search:</td> */}
-                            <td className='cell-text'>
-                                <input
-                                    id='search'
-                                    className="search-bar" 
-                                    type="text" 
-                                    placeholder="Search markets..." 
-                                    value={query || ""} 
-                                    onChange={onUpdateQuery} />
-                                {showDropdown && (
-                                    <ul className="dropdown-content" ref={dropdownRef}>
-                                        {filteredMarketsDropdown.slice(0, 10).map(item => (
-                                            <li
-                                                className="search-results"
-                                                key={item.id}
-                                                onClick={() => {
-                                                    setQuery(item.name);
-                                                    setShowDropdown(false);
-                                                }}
-                                            >
-                                                {item.name}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </td>
-                            {/* <td className='cell-text cell-filter m-hidden'>Filters: </td> */}
-                            <td>
-                                <button
-                                    className={`btn-fav-filter ${isClicked ? 'btn-fav-filter-on' : ''}`}
-                                    title="show favorites"
-                                    onClick={handleClick}>&#9829;
-                                </button>
-                            </td>
-                            <td>
-                                <button className='btn btn-filter' onClick={handleDropDownFilters}>&#9776;</button>
-                                {showFilters && (
-                                    <div className='dropdown-content box-filters'>
-                                        <div className='form-filters-markets'>
-                                            <input
-                                                className='margin-r-8'
-                                                id="aZ"
-                                                type="radio"
-                                                name="filters"
-                                                value={true}
-                                                onChange={handleFilterAZ}
-                                            />
-                                            <label htmlFor='aZ'>A to Z</label>
+            <div className="markets-container">
+                <div className='header'>
+                    <div id="map">
+                        <Map
+                            token={mapToken}
+                            initialRegion={{
+                                centerLatitude: 40.736358642578125,
+                                centerLongitude: -73.99076080322266,
+                                latitudeDelta: 0.04,
+                                longitudeDelta: 0.04
+                            }}
+                            colorScheme={ColorScheme.Auto}
+                            showsScale={FeatureVisibility.Visible}
+                            showsUserLocation={true}
+                            tracksUserLocation={true}
+                        >
+                            {marketCoordinates.map((market) => (
+                                <Annotation
+                                    key={market.id}
+                                    latitude={market.latitude}
+                                    longitude={market.longitude}
+                                    // title={market.name}
+                                    // subtitle={market.schedule}
+                                    onSelect={() => handleMarkerClickOn(market.id)}
+                                    onDeselect={() => handleMarkerClickOff(market.id)}
+                                >
+                                    {!markerViews[market.id] ? (
+                                        <div onClick={() => handleMarkerClickOn(market.id)}>
+                                            <div className="map-circle"></div>
+                                            <div className="map-inside-circle"></div>
+                                            <div className="map-triangle"></div>
                                         </div>
-                                        <div className='form-filters-markets'>
-                                            <input
-                                                className='margin-r-8'
-                                                id="zA"
-                                                type="radio"
-                                                name="filters"
-                                                value={true}
-                                                onChange={handleFilterZA}
-                                            />
-                                            <label htmlFor='zA'>Z to A</label>
-                                        </div>
-                                        <div className='form-filters-markets'>
-                                            <input
-                                                className='margin-r-8'
-                                                id="address"
-                                                type="radio"
-                                                name="filters"
-                                                checked={filterAddress}
-                                                value={true}
-                                                onChange={handleFilterAddress}
-                                            />
-                                            <label htmlFor='address'>By Address</label>
-                                            <input
-                                                className='margin-r-8'
-                                                id="address-address"
-                                                type="text"
-                                                name="addressFilter"
-                                                placeholder="1 Union Square West, New York"
-                                                value={address || ""}
-                                                onChange={(event) => handleAddress(event)}
-                                            />
-                                            {showAddressDropdown && (
-                                                <ul className="dropdown-content" ref={dropdownAddressRef}>
-                                                    {addressResults.map(item => (
-                                                        <li
-                                                            className="search-results-address"
-                                                            key={item.formattedAddress}
-                                                            onClick={() => {
-                                                                setAddress(item.formattedAddress);
-                                                                setShowAddressDropdown(false);
-                                                                setResultCoordinates({ 'lat': item.latitude, 'lng': item.longitude })
-                                                            }}
-                                                        >
-                                                            {item.formattedAddress}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            )}
-                                        </div>
-                                        
-                                        <div className='form-filters'>
-                                            <label className='margin-r-26'>In Season:</label>
-                                            <input
-                                                type="checkbox"
-                                                name="in_season"
-                                                value={true}
-                                                onChange={handleInSeasonChange}
-                                            />
-                                        </div>
-                                        <select className='select-dropdown' value={selectedDay} onChange={handleDayChange}>
-                                            <option value="">Days Open</option>
-                                            {Array.isArray(weekDay) && weekDay.map((product, index) => (
-                                                <option key={index} value={index}>
-                                                    {product}
-                                                </option>
+                                    ) : (
+                                            <div className="marker-details" onClick={() => handleMarkerClickOff(market.id)}>
+                                            <div className="marker-name">{market.name}</div>
+                                            <div className="marker-day">{market.schedule}</div>
+                                        </div> 
+                                    )}
+                                </Annotation>
+                            ))}
+                        </Map>
+                    </div>
+                    <table className='table-search margin-t-24'>
+                        <tbody>
+                            <tr>
+                                {/* <td className='cell-title btn-grey m-hidden'>Search:</td> */}
+                                <td className='cell-text'>
+                                    <input
+                                        id='search'
+                                        className="search-bar" 
+                                        type="text" 
+                                        placeholder="Search markets..." 
+                                        value={query || ""} 
+                                        onChange={onUpdateQuery} />
+                                    {showDropdown && (
+                                        <ul className="dropdown-content" ref={dropdownRef}>
+                                            {filteredMarketsDropdown.slice(0, 10).map(item => (
+                                                <li
+                                                    className="search-results"
+                                                    key={item.id}
+                                                    onClick={() => {
+                                                        setQuery(item.name);
+                                                        setShowDropdown(false);
+                                                    }}
+                                                >
+                                                    {item.name}
+                                                </li>
                                             ))}
-                                        </select>
-                                    </div>
-                                )}
-                                {showFilters && (
-                                    <div className="popup-overlay-clear" onClick={closePopup}></div>
-                                )}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                        </ul>
+                                    )}
+                                </td>
+                                {/* <td className='cell-text cell-filter m-hidden'>Filters: </td> */}
+                                <td>
+                                    <button
+                                        className={`btn-fav-filter ${isClicked ? 'btn-fav-filter-on' : ''}`}
+                                        title="show favorites"
+                                        onClick={handleClick}>&#9829;
+                                    </button>
+                                </td>
+                                <td>
+                                    <button className='btn btn-filter' onClick={handleDropDownFilters}>&#9776;</button>
+                                    {showFilters && (
+                                        <div className='dropdown-content box-filters'>
+                                            <div className='form-filters-markets'>
+                                                <input
+                                                    className='margin-r-8'
+                                                    id="aZ"
+                                                    type="radio"
+                                                    name="filters"
+                                                    value={true}
+                                                    onChange={handleFilterAZ}
+                                                />
+                                                <label htmlFor='aZ'>A to Z</label>
+                                            </div>
+                                            <div className='form-filters-markets'>
+                                                <input
+                                                    className='margin-r-8'
+                                                    id="zA"
+                                                    type="radio"
+                                                    name="filters"
+                                                    value={true}
+                                                    onChange={handleFilterZA}
+                                                />
+                                                <label htmlFor='zA'>Z to A</label>
+                                            </div>
+                                            <div className='form-filters-markets'>
+                                                <input
+                                                    className='margin-r-8'
+                                                    id="address"
+                                                    type="radio"
+                                                    name="filters"
+                                                    checked={filterAddress}
+                                                    value={true}
+                                                    onChange={handleFilterAddress}
+                                                />
+                                                <label htmlFor='address'>By Address</label>
+                                                <input
+                                                    className='margin-r-8'
+                                                    id="address-address"
+                                                    type="text"
+                                                    name="addressFilter"
+                                                    placeholder="1 Union Square West, New York"
+                                                    value={address || ""}
+                                                    onChange={(event) => handleAddress(event)}
+                                                />
+                                                {showAddressDropdown && (
+                                                    <ul className="dropdown-content" ref={dropdownAddressRef}>
+                                                        {addressResults.map(item => (
+                                                            <li
+                                                                className="search-results-address"
+                                                                key={item.formattedAddress}
+                                                                onClick={() => {
+                                                                    setAddress(item.formattedAddress);
+                                                                    setShowAddressDropdown(false);
+                                                                    setResultCoordinates({ 'lat': item.latitude, 'lng': item.longitude })
+                                                                }}
+                                                            >
+                                                                {item.formattedAddress}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                )}
+                                            </div>
+                                            
+                                            <div className='form-filters'>
+                                                <label className='margin-r-26'>In Season:</label>
+                                                <input
+                                                    type="checkbox"
+                                                    name="in_season"
+                                                    value={true}
+                                                    onChange={handleInSeasonChange}
+                                                />
+                                            </div>
+                                            <select className='select-dropdown' value={selectedDay} onChange={handleDayChange}>
+                                                <option value="">Days Open</option>
+                                                {Array.isArray(weekDay) && weekDay.map((product, index) => (
+                                                    <option key={index} value={index}>
+                                                        {product}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    )}
+                                    {showFilters && (
+                                        <div className="popup-overlay-clear" onClick={closePopup}></div>
+                                    )}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div className="market-cards-container box-scroll-large margin-t-24">
+                    {sortedMarketsResults
+                        .map((marketData) => (
+                            <MarketCard key={marketData.id} marketData={marketData} user={user} haversineDistance={haversineDistance} resultCoordinates={resultCoordinates} filterAddress={filterAddress} />
+                    ))}
+                </div>
             </div>
-            <div className="market-cards-container box-scroll-large margin-t-24">
-                {sortedMarketsResults
-                    .map((marketData) => (
-                        <MarketCard key={marketData.id} marketData={marketData} user={user} haversineDistance={haversineDistance} resultCoordinates={resultCoordinates} filterAddress={filterAddress} />
-                ))}
-            </div>
-        </div>
         </>
     );
 }
