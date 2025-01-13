@@ -104,6 +104,7 @@ function AdminProfile () {
             console.error('Error saving changes:', error);
         }
     };
+    
 
     return(
         <div>
@@ -167,6 +168,10 @@ function AdminProfile () {
                                         <tr>
                                             <td className='cell-title'>Phone:</td>
                                             <td className='cell-text'>{adminUserData ? formatPhoneNumber(adminUserData.phone) : ' Loading...'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='cell-title'>Admin Role:</td>
+                                            <td className='cell-text'>{adminUserData ? adminUserData.admin_role : ' Loading...'}</td>
                                         </tr>
                                     </tbody>
                                 </table>

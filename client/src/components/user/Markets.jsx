@@ -433,7 +433,7 @@ function Markets() {
                                             <div className="map-triangle"></div>
                                         </div>
                                     ) : (
-                                            <div className="marker-details" onClick={() => handleMarkerClickOff(market.id)}>
+                                        <div className="marker-details" onClick={() => handleMarkerClickOff(market.id)}>
                                             <div className="marker-name">{market.name}</div>
                                             <div className="marker-day">{market.schedule}</div>
                                         </div> 

@@ -1126,7 +1126,7 @@ def run():
             first_name="Ham-man",
             last_name="Gingy",
             phone="2095553880",
-            is_admin=True
+            admin_role=0
         ),
         AdminUser(
             email="zak@mufo.nyc",
@@ -1134,7 +1134,7 @@ def run():
             first_name="Zak",
             last_name="Wosewick",
             phone="0000000000",
-            is_admin=True
+            admin_role=1
         ),
         AdminUser(
             email="sandro@mufo.nyc",
@@ -1142,7 +1142,7 @@ def run():
             first_name="Sand",
             last_name="Man",
             phone="0000000000",
-            is_admin=True
+            admin_role=1
         ),
         AdminUser(
             email="vinh@mufo.nyc",
@@ -1150,9 +1150,18 @@ def run():
             first_name="Vinh",
             last_name="Cent",
             phone="0000000000",
-            is_admin=True
+            admin_role=1
         ),
+        AdminUser(
+            email="hello@mufo.nyc",
+            password="lol",
+            first_name="Hell",
+            last_name="Oh",
+            phone="0000000000",
+            admin_role=2
+        )
     ]
+    
     db.session.add_all(admin_user_demo)
     db.session.commit()
 

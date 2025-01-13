@@ -58,6 +58,7 @@ class User(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String, unique=True, nullable=False)
+    email_verified = db.Column(db.Boolean, default=False)
     _password = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
@@ -445,6 +446,7 @@ class VendorUser(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String, unique=True, nullable=False)
+    email_verified = db.Column(db.Boolean, default=False)
     _password = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
@@ -501,11 +503,12 @@ class AdminUser(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String, unique=True, nullable=False)
+    email_verified = db.Column(db.Boolean, default=False)
     _password = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     phone = db.Column(db.String, nullable=True)
-    is_admin = db.Column(db.Boolean, default=False)
+    admin_role = db.Column(db.Integer, default=5)
     last_log_on = db.Column(db.DateTime, default=datetime.utcnow)
 
     serialize_rules = ('-_password',)
