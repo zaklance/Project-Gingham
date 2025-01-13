@@ -1624,6 +1624,7 @@ def handle_baskets():
             market_day_id = request.args.get('market_day_id', type=int)
             vendor_id = request.args.get('vendor_id', type=int)
             sale_date = request.args.get('sale_date', type=str)
+            user_id = request.args.get('user_id', type=int)
 
             query = Basket.query
 
@@ -1638,6 +1639,8 @@ def handle_baskets():
                     query = query.filter_by(sale_date=sale_date_obj)
                 except ValueError:
                     return jsonify({'error': 'Invalid date format. Expected format: YYYY-MM-DD'}), 400
+            if user_id is not None:
+                query = query.filter_by(user_id=user_id)
 
             saved_baskets = query.all()
 
