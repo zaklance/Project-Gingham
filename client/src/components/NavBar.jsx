@@ -285,13 +285,17 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li>
                             <NavLink className='nav-tab m-tab-left color-3 btn-nav' to={`/admin/profile/${adminUserId}`}>Profile</NavLink>
                         </li>
-                        <li>
-                            <NavLink className='nav-tab color-5 btn-nav' to={`/admin/markets`}>Markets</NavLink>
-                        </li>
-                        <li>
-                            <NavLink className='nav-tab color-4 btn-nav' to={`/admin/vendors`}>Vendors</NavLink>
-                        </li>
-                        {adminUserData && adminUserData.is_admin && adminUserData.is_admin === true ? (
+                        {adminUserData && adminUserData.admin_role <= 4 ? (
+                            <li>
+                                <NavLink className='nav-tab color-5 btn-nav' to={`/admin/markets`}>Markets</NavLink>
+                            </li>
+                        ) : null}
+                        {adminUserData && adminUserData.admin_role <= 3 ? (
+                            <li>
+                                <NavLink className='nav-tab color-4 btn-nav' to={`/admin/vendors`}>Vendors</NavLink>
+                            </li>
+                        ) : null}
+                        {adminUserData && adminUserData.admin_role <= 3 ? (
                             <>
                                 <li>
                                     <NavLink className='nav-tab color-1 btn-nav' to={`/admin/users`}>Users</NavLink>
