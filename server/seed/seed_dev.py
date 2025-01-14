@@ -1569,7 +1569,7 @@ def run():
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
                 </div>
             """,
-            created_at=datetime.strptime("2025-01-10 00:00:00", "%Y-%m-%d %H:%M:%S"),
+            post_date=datetime.strptime("2025-01-10 00:00:00", "%Y-%m-%d %H:%M:%S"),
             admin_user_id=1
         ),
         Blog(
@@ -1605,7 +1605,7 @@ def run():
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
                 </div>
             """,
-            created_at=datetime.strptime("2025-01-06 00:00:00", "%Y-%m-%d %H:%M:%S"),
+            post_date=datetime.strptime("2025-01-06 00:00:00", "%Y-%m-%d %H:%M:%S"),
             admin_user_id=1
         ), 
         Blog(
@@ -1631,7 +1631,7 @@ def run():
                     </article>
                 </div>
             """,
-            created_at=datetime.strptime("2025-01-18 00:00:00", "%Y-%m-%d %H:%M:%S"),
+            post_date=datetime.strptime("2025-01-18 00:00:00", "%Y-%m-%d %H:%M:%S"),
             admin_user_id=1
         )
     ]

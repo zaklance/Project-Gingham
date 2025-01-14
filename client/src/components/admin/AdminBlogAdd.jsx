@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { formatDate } from '../../utils/helpers';
+import { blogTimeConverter } from '../../utils/helpers';
 
 const AdminBlogAdd = () => {
     const [newTitle, setNewTitle] = useState('');
@@ -36,13 +36,13 @@ const AdminBlogAdd = () => {
         </div>
     `);
 
+    const textareasRef = useRef([]);
     const adminId = parseInt(globalThis.localStorage.getItem('admin_user_id'));
 
     const postBlog = async () => {
         if (confirm(`Are you sure you want to post the blog "${newTitle}" to the site?`)) {
             try {
-                const createdAt = newDate;
-    
+                const postedAt = new Date(newDate); // Convert to a JavaScript Date object
                 const response = await fetch('http://127.0.0.1:5555/api/blogs', {
                     method: 'POST',
                     headers: {
@@ -51,11 +51,10 @@ const AdminBlogAdd = () => {
                     body: JSON.stringify({
                         title: newTitle,
                         body: newBlog,
-                        created_at: createdAt,
+                        post_date: postedAt.toISOString(), // Convert Date to ISO string
                         admin_user_id: adminId,
                     }),
                 });
-    
                 const result = await response.json();
                 if (response.ok) {
                     alert('Blog posted successfully!');
@@ -68,7 +67,38 @@ const AdminBlogAdd = () => {
             }
         }
     };
-    
+
+    useEffect(() => {
+        textareasRef.current.forEach((textarea) => {
+            if (textarea) {
+                textarea.addEventListener('keydown', handleTabKey);
+            }
+        });
+
+        return () => {
+            textareasRef.current.forEach((textarea) => {
+                if (textarea) {
+                    textarea.removeEventListener('keydown', handleTabKey);
+                }
+            });
+        };
+    }, []);
+
+    const handleTabKey = (e) => {
+        // if (e.key === 'Tab' && e.shiftKey) {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = e.target.selectionStart;
+            const end = e.target.selectionEnd;
+
+            e.target.value =
+                e.target.value.substring(0, start) +
+                '\t' +
+                e.target.value.substring(end);
+
+            e.target.selectionStart = e.target.selectionEnd = start + 1;
+        }
+    };
 
     return (
         <>
@@ -93,14 +123,25 @@ const AdminBlogAdd = () => {
                 <div className='form-group'>
                     <label>Body HTML:</label>
                     <textarea
+                        id="htmlinput"
                         value={newBlog}
                         onChange={(e) => setNewBlog(e.target.value)}
                         placeholder="Type something..."
+                        ref={(el) => (textareasRef.current[0] = el)}
                     />
                 </div>
                 <div className='flex-start'>
                     <button className='btn btn-small margin-t-8 margin-l-16 margin-b-16' onClick={postBlog}>Post Blog</button>
                 </div>
+            </div>
+            <div className="box-blog margin-t-16 badge-container">
+                <div className="badge-arrows">
+                    <i className="icon-arrow-l margin-r-8">&emsp;&thinsp;</i>
+                    <i className="icon-arrow-r">&emsp;&thinsp;</i>
+                </div>
+                <h1>{newTitle}</h1>
+                <h6 className="margin-b-8">{blogTimeConverter(newDate)}</h6>
+                <div dangerouslySetInnerHTML={{ __html: newBlog }} style={{ width: '100%', height: '100%'}}></div>
             </div>
         </>
     );
