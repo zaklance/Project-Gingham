@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PasswordStrengthBar from 'react-password-strength-bar';
+import { formatPhoneNumber } from '../../utils/helpers';
 // import '../../assets/css/index.css';
 
 function Login({ handlePopup }) {
@@ -81,7 +82,7 @@ function Login({ handlePopup }) {
                 password: signupPassword,
                 first_name: signupFirstName,
                 last_name: signupLastName,
-                address: signupPhone
+                phone: signupPhone
             }),
             credentials: 'include'
         });
@@ -239,7 +240,7 @@ function Login({ handlePopup }) {
                                 type="text"
                                 value={signupPhone}
                                 placeholder='enter your phone number'
-                                onChange={(event => setSignupPhone(event.target.value))}
+                                onChange={(event => setSignupPhone(formatPhoneNumber(event.target.value)))}
                                 required
                             />
                         </div>
