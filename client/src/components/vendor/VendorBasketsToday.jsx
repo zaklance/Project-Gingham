@@ -107,30 +107,24 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
             }
         
             let [hours, minutes] = time.split(':').map(num => parseInt(num, 10));
+        
             if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours >= 24 || minutes < 0 || minutes >= 60) {
                 console.error('Invalid time:', time);
                 return null;
             }
         
-            let period = 'AM';
-            if (hours >= 12) {
-                period = 'PM';
-                if (hours > 12) hours -= 12;
-            } else if (hours === 0) {
-                hours = 12;
-            }
+            const period = (hours >= 12) ? 'PM' : 'AM';
         
             return `${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
-        };        
+        };
         
         console.log('Raw input times:', tempBasketData.startTime, tempBasketData.endTime);
         console.log('Selected AM/PM:', startAmPm, endAmPm);
 
-        const formattedPickupStart = formatTime(tempBasketData.startTime, startAmPm);
-        const formattedPickupEnd = formatTime(tempBasketData.endTime, endAmPm);
+        const formattedPickupStart = formatTime(tempBasketData.startTime);
+        const formattedPickupEnd = formatTime(tempBasketData.endTime);
 
         console.log('Formatted times:', formattedPickupStart, formattedPickupEnd);
-
 
         if (!formattedPickupStart || !formattedPickupEnd) {
             console.error('Error formatting times. Aborting save.');
