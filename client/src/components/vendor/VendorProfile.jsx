@@ -267,7 +267,7 @@ function VendorProfile () {
                 console.log('Response status:', response.status);
                 console.log('Response text:', await response.text());
             }
-            if (Number(vendorData.product) === 1 && productRequest.trim() !== '') {
+            if (tempVendorData.products.includes(1) && productRequest.trim() !== '') {
                 try {
                     const response = await fetch('http://127.0.0.1:5555/api/create-admin-notification', {
                         method: 'POST',
@@ -277,6 +277,7 @@ function VendorProfile () {
                         body: JSON.stringify({
                             vendor_id: vendorId,
                             vendor_user_id: id,
+                            subject: 'product-request',
                             message: `${vendorData.name} has requested to for a new Product category: ${productRequest}.`,
                         }),
                     });
@@ -606,7 +607,7 @@ function VendorProfile () {
                                             />
                                         </div>
                                     </div>
-                                    <dix className='flex-start flex-gap-8'>
+                                    <div className='flex-start flex-gap-8'>
                                         <button className='btn-edit nowrap' onClick={handleSaveVendorChanges}>Save Changes</button>
                                         <button className='btn-edit' onClick={handleVendorEditToggle}>Cancel</button>
                                         <div className='alert-container'>
@@ -617,7 +618,7 @@ function VendorProfile () {
                                                 Uploading Image
                                             </div>
                                         </div>
-                                    </dix>
+                                    </div>
                                 </>
                             ) : (
                                     <>
