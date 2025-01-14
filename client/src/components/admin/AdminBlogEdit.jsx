@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { blogTimeConverter } from '../../utils/helpers';
 
 const AdminBlogEdit = ({ blogs, setBlogs }) => {
     const [tempBlogData, setTempBlogData] = useState(null);
@@ -55,9 +56,9 @@ const AdminBlogEdit = ({ blogs, setBlogs }) => {
         }));
     };
 
-    const handleBlogEditToggle = (id, title, body, created_at) => {
+    const handleBlogEditToggle = (id, title, body, post_date) => {
         setEditingBlogId(id);
-        setTempBlogData({ title, body, created_at });
+        setTempBlogData({ title, body, post_date });
     };
     
     const handleTabKey = (e) => {
@@ -131,7 +132,7 @@ const AdminBlogEdit = ({ blogs, setBlogs }) => {
                                         <i className="icon-arrow-r">&emsp;&thinsp;</i>
                                     </div>
                                     <h1>{tempBlogData.title}</h1>
-                                    <h6 className="margin-b-8">{tempBlogData.created_at}</h6>
+                                    <h6 className="margin-b-8">{blogTimeConverter(tempBlogData.post_date)}</h6>
                                     <div dangerouslySetInnerHTML={{ __html: tempBlogData.body }} style={{ width: '100%', height: '100%' }}></div>
                                 </div>
                             </>
@@ -143,10 +144,10 @@ const AdminBlogEdit = ({ blogs, setBlogs }) => {
                                         <i className="icon-arrow-r" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>  
                                     </div>
                                     <h1>{currentBlog.title}</h1>
-                                    <h6 className="margin-b-8">{currentBlog.created_at}</h6>
+                                    <h6 className="margin-b-8">{blogTimeConverter(currentBlog.post_date)}</h6>
                                     <div dangerouslySetInnerHTML={{ __html: currentBlog.body }} style={{ width: '100%', height: '100%' }}></div>
                                 </div>
-                                <button className='btn btn-small margin-b-16 margin-r-8 margin-t-8' onClick={() => handleBlogEditToggle(currentBlog.id, currentBlog.title, currentBlog.body, currentBlog.created_at)}>
+                                <button className='btn btn-small margin-b-16 margin-r-8 margin-t-8' onClick={() => handleBlogEditToggle(currentBlog.id, currentBlog.title, currentBlog.body, currentBlog.post_date)}>
                                     Edit
                                 </button>
                                 <button className='btn btn-small btn-x btn-gap' onClick={() => handleBlogDelete(currentBlog.id)}>
