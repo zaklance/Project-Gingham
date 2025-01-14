@@ -97,27 +97,46 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
         const today = new Date();
         const formattedSaleDate = today.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).split('/').reverse().join('-');
         
-        const formatTime = (time, amPm) => {
+        console.log('startTime:', tempBasketData.startTime, 'startAmPm:', startAmPm);
+        console.log('endTime:', tempBasketData.endTime, 'endAmPm:', endAmPm);
+
+        const formatTime = (time) => {
             if (!time || typeof time !== 'string') {
                 console.error('Invalid time format:', time);
                 return null;
             }
+        
             let [hours, minutes] = time.split(':').map(num => parseInt(num, 10));
-            if (isNaN(hours) || isNaN(minutes)) {
-                console.error('Invalid hour or minute:', hours, minutes);
+            if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours >= 24 || minutes < 0 || minutes >= 60) {
+                console.error('Invalid time:', time);
                 return null;
             }
-            
-            let period = amPm.toUpperCase();
-            if (hours === 0) { hours = 12; period = 'AM'; }
-            else if (hours === 12) { period = 'PM'; }
-            else if (hours > 12) { hours -= 12; period = 'PM'; }
-            
-            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
-        };
         
+            let period = 'AM';
+            if (hours >= 12) {
+                period = 'PM';
+                if (hours > 12) hours -= 12;
+            } else if (hours === 0) {
+                hours = 12;
+            }
+        
+            return `${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
+        };        
+        
+        console.log('Raw input times:', tempBasketData.startTime, tempBasketData.endTime);
+        console.log('Selected AM/PM:', startAmPm, endAmPm);
+
         const formattedPickupStart = formatTime(tempBasketData.startTime, startAmPm);
         const formattedPickupEnd = formatTime(tempBasketData.endTime, endAmPm);
+
+        console.log('Formatted times:', formattedPickupStart, formattedPickupEnd);
+
+
+        if (!formattedPickupStart || !formattedPickupEnd) {
+            console.error('Error formatting times. Aborting save.');
+            setErrorMessage('Invalid time format. Please correct and try again.');
+            return;
+        }
         
         const currentCount = tempBasketData.numBaskets;
         const prevCount = entry.baskets.length;
@@ -142,6 +161,18 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
                     }),
                 }));
             }
+
+            console.log('Data being sent:', {
+                vendor_id: vendorId,
+                market_day_id: entry.marketId,
+                sale_date: formattedSaleDate,
+                pickup_start: formattedPickupStart,
+                pickup_end: formattedPickupEnd,
+                is_sold: false,
+                is_grabbed: false,
+                price: parseFloat(tempBasketData.price),
+                basket_value: entry.baskets[0]?.basket_value,
+            });
             
             try {
                 await Promise.all(promises);
