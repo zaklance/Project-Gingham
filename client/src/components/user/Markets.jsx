@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useOutletContext } from 'react-router-dom';
 import { weekDay } from '../../utils/common';
+import { Annotation, ColorScheme, FeatureVisibility, Map, Marker } from 'mapkit-react';
 import MarketCard from './MarketCard';
 import '../../assets/css/index.css';
-// import { APIProvider, Map, Marker, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
-import { Annotation, ColorScheme, FeatureVisibility, Map, Marker } from 'mapkit-react';
 
 function Markets() {
     const [user, setUser] = useState({});
@@ -31,9 +30,8 @@ function Markets() {
     const dropdownAddressRef = useRef(null);
     const debounceTimeout = useRef(null);
     const location = useLocation();
-    const scaleFactor = 1
-    
     const { handlePopup } = useOutletContext();
+    
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     
     const onUpdateQuery = (event) => {
@@ -321,7 +319,7 @@ function Markets() {
             if (query.trim() !== '') {
                 handleSearchAddress(query);
             }
-        }, 600); // 1 second delay
+        }, 600);
     };
 
     const handleSearchAddress = async (query) => {
