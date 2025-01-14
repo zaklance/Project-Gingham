@@ -2778,11 +2778,12 @@ def blogs():
     elif request.method == 'POST':
         data = request.get_json()
         created_at = None
-        if data.get('created_at'):
+
+        if 'created_at' in data:
             try:
-                created_at = datetime.strptime(data['created_at'], '%Y-%m-%d').date()
+                created_at = datetime.strptime('2025-01-14', '%Y-%m-%d').date()
             except ValueError:
-                return {'error': 'Invalid date format for created_at'}, 400
+                return {'error': 'Invalid date format for created_at. Expected format: YYYY-MM-DD HH:MM'}, 400
 
         new_blog = Blog(
             title=data.get('title'),
@@ -2790,6 +2791,7 @@ def blogs():
             admin_user_id=data.get('admin_user_id'),
             created_at=created_at
         )
+
         try:
             db.session.add(new_blog)
             db.session.commit()
@@ -2797,6 +2799,7 @@ def blogs():
         except Exception as e:
             db.session.rollback()
             return {'error': f'Failed to create Blog: {str(e)}'}, 500
+
 
 @app.route('/api/blogs/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def blog(id):

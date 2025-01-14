@@ -1569,10 +1569,11 @@ def run():
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
                 </div>
             """,
+            created_at=datetime.strptime("2025-01-10 00:00:00", "%Y-%m-%d %H:%M:%S"),
             admin_user_id=1
         ),
         Blog(
-            title="What types of baskets can I purchase?",
+            title="Discover Gingham: Fresh, Local, and Impactful",
             body="""
                 <div class="column-3">
                     <article class="first-letter">
@@ -1604,6 +1605,33 @@ def run():
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
                 </div>
             """,
+            created_at=datetime.strptime("2025-01-06 00:00:00", "%Y-%m-%d %H:%M:%S"),
+            admin_user_id=1
+        ), 
+        Blog(
+            title="Market Spotlight: Union Square Greenmarket",
+            body="""
+                <div class="column-3">
+                    <article class="first-letter">
+                        The world-famous Union Square Greenmarket began with just a few farmers in 1976, has grown 
+                        exponentially; in peak season 140 regional farmers, fishers, and bakers sell their products 
+                        to a dedicated legion of city dwellers. 
+                    </article>
+                    <article>
+                        As Greenmarket's flagship market, the seasonal bounty is unparalleled, with hundreds of 
+                        varieties to choose from during any given season. From just-picked fresh fruits and vegetables, 
+                        to heritage meats and award-winning farmstead cheeses, artisan breads, jams, pickles, a profusion 
+                        of cut flowers and plants, wine, ciders, maple syrup and much more. 
+                    </article>
+                    <article>
+                        Located in one of New York City's great public spaces, the atmosphere at Union Square on a market 
+                        day is electric: 60,000 market shoppers shop and chat with farmers; students of all ages tour the 
+                        market and learn about seasonality; visitors watch and taste cooking demonstrations by some of 
+                        New York's hottest local chefs. 
+                    </article>
+                </div>
+            """,
+            created_at=datetime.strptime("2025-01-18 00:00:00", "%Y-%m-%d %H:%M:%S"),
             admin_user_id=1
         )
     ]
@@ -1611,8 +1639,6 @@ def run():
     db.session.add_all(blogs)
     db.session.commit()
 
-
-    
 if __name__ == '__main__':
     with app.app_context():
         run()
