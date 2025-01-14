@@ -7,10 +7,11 @@ function VendorScan() {
     const [qRCode, setQRCode] = useState(null);
     const [vendorId, setVendorId] = useState(null);
     const [isScanning, setIsScanning] = useState(false);
+    
+    const vendorUserId = localStorage.getItem('vendor_user_id');
 
     useEffect(() => {
         const fetchVendorId = async () => {
-            const vendorUserId = localStorage.getItem('vendor_user_id');
             if (!vendorUserId) {
                 console.error("No vendor user ID found in local storage");
                 return;
@@ -27,7 +28,7 @@ function VendorScan() {
                 if (response.ok) {
                     const data = await response.json();
                     if (data.vendor_id) {
-                        setVendorId(data.vendor_id);
+                        setVendorId(data.vendor_id[data.active_vendor]);
                     }
                 } else {
                     console.error('Failed to fetch vendor user data');
@@ -83,7 +84,7 @@ function VendorScan() {
 
     return (
         <>
-            <VendorActiveVendor />
+            <VendorActiveVendor className="box-bounding margin-b-16" />
             <div className='flex-center'>
                 <Scanner
                     onScan={(result) => handleScan(result)}

@@ -12,6 +12,7 @@ function VendorDashboard({ marketId }) {
     const [newVendor, setNewVendor] = useState(false);
     const [notifications, setNotifications] = useState([]);
 
+    const vendorUserId = localStorage.getItem('vendor_user_id');
 
     useEffect(() => {            
         const urlParams = new URLSearchParams(window.location.search);
@@ -21,7 +22,6 @@ function VendorDashboard({ marketId }) {
 
     useEffect(() => {
         const fetchVendorUserData = async () => {
-            const vendorUserId = localStorage.getItem('vendor_user_id');
             if (!vendorUserId) {
                 console.error("No vendor user ID found");
                 return;
@@ -57,7 +57,7 @@ function VendorDashboard({ marketId }) {
             }
         };
         fetchVendorUserData();
-    }, []);
+    }, [vendorUserId]);
 
     useEffect(() => {
         const fetchVendorId = async () => {
@@ -135,7 +135,7 @@ function VendorDashboard({ marketId }) {
 
     return (
         <>
-            <VendorActiveVendor />
+            <VendorActiveVendor className={'box-bounding'} />
             <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap margin-t-16'>
                 <h2 className=''>Vendor Dashboard</h2>
                 {vendorUserData && vendorUserData.active_vendor !== null && vendorUserData.is_admin[vendorUserData.active_vendor] === true ? (

@@ -12,6 +12,8 @@ function PickUp() {
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
 
     useEffect(() => {
+        const userId = parseInt(globalThis.localStorage.getItem('user_id'));
+
         const today = new Date();
         const formattedDate = today.toLocaleDateString('en-CA', { // Using en-CA for correct ISO format
             year: 'numeric',
@@ -22,7 +24,7 @@ function PickUp() {
         const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         console.log('Browser timezone:', browserTimezone);
 
-        fetch(`http://127.0.0.1:5555/api/todays-baskets?user_id=${userId}&date=${formattedDate}`, {
+        fetch(`http://127.0.0.1:5555/api/baskets?user_id=${userId}&sale_date=${formattedDate}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -36,6 +38,7 @@ function PickUp() {
                 return response.json();
             })
             .then(data => {
+                console.log("Baskets received from API:", data);
                 const filteredData = data.filter(item => item.is_grabbed === false);
                 setBaskets(filteredData);
             })
@@ -116,7 +119,7 @@ function PickUp() {
                                                         <QRCodeSVG
                                                             className='img-qr'
                                                             value={matchingQRCode ? matchingQRCode.qr_code : 'Invalid QR Code'}
-                                                            minVersion={3}
+                                                            minVersion={4}
                                                         />
                                                     </div>
                                                     <div className='text-center margin-t-16'>

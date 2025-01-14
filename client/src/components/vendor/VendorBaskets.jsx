@@ -29,7 +29,9 @@ function VendorBaskets({ vendorUserData }) {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    setVendorId(data.vendor_id[data.active_vendor]);
+                    if (data.active_vendor !== null) {
+                        setVendorId(data.vendor_id[data.active_vendor]);
+                    }
                 } else {
                     console.error('Failed to fetch vendor user data');
                 }

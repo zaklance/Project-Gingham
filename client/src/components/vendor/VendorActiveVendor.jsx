@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-const VendorActiveVendor = () => {
+const VendorActiveVendor = ({ className }) => {
     const [vendorData, setVendorData] = useState(null);
     const [vendorUserData, setVendorUserData] = useState(null);
     const [activeVendor, setActiveVendor] = useState(null);
 
 
-    const vendoUserId = parseInt(globalThis.localStorage.getItem('vendor_user_id'));
+    const vendorUserId = parseInt(globalThis.localStorage.getItem('vendor_user_id'));
 
     useEffect(() => {
             const fetchVendorUserData = async () => {
                 try {
                     const token = localStorage.getItem('vendor_jwt-token');
-                    const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendoUserId}`, {
+                    const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -44,12 +44,12 @@ const VendorActiveVendor = () => {
                 }
             };
             fetchVendorUserData();
-        }, [vendoUserId]);
+        }, [vendorUserId]);
 
     const handleSaveChanges = async () => {
         try {
             const token = localStorage.getItem('vendor_jwt-token');
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendoUserId}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -128,26 +128,24 @@ const VendorActiveVendor = () => {
 
     return (
         <>
-            <div className='box-bounding'>
-                <div className='flex-start flex-center-align m-flex-wrap'>
-                    <h3 className='margin-r-16'>Active Vendor:</h3>
-                    <select
-                        name="active_vendor"
-                        value={activeVendor || ''}
-                        onChange={(e) => setActiveVendor(Number(e.target.value))}
-                    >
-                        {/* <option value="">Select</option> */}
-                        {vendorUserData?.vendor_id ? Object.keys(vendorUserData.vendor_id).map((key) => {
-                            const vendorId = vendorUserData.vendor_id[key];
-                            const vendor = vendorData?.[vendorId];
-                            return (
-                            <option key={key} value={vendorUserData.vendor_id[key]}>
-                                    {vendor ? vendor.name : ''}
-                            </option>
-                        )}) : null}
-                    </select>
-                    <button className='btn btn-switch margin-l-8' onClick={handleSaveChanges}>Set Vendor</button>
-                </div>
+            <div className={`flex-start flex-center-align m-flex-wrap ${className || ''}`}>
+                <h3 className='margin-r-16'>Active Vendor:</h3>
+                <select
+                    name="active_vendor"
+                    value={activeVendor || ''}
+                    onChange={(e) => setActiveVendor(Number(e.target.value))}
+                >
+                    {/* <option value="">Select</option> */}
+                    {vendorUserData?.vendor_id ? Object.keys(vendorUserData.vendor_id).map((key) => {
+                        const vendorId = vendorUserData.vendor_id[key];
+                        const vendor = vendorData?.[vendorId];
+                        return (
+                        <option key={key} value={vendorUserData.vendor_id[key]}>
+                                {vendor ? vendor.name : ''}
+                        </option>
+                    )}) : null}
+                </select>
+                <button className='btn btn-switch margin-l-8' onClick={handleSaveChanges}>Set Vendor</button>
             </div>
         </>
     );

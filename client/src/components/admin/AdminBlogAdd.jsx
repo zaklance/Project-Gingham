@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { formatDate } from '../../utils/helpers';
+import { blogTimeConverter } from '../../utils/helpers';
 
 const AdminBlogAdd = () => {
-    const [newTitle, setNewTitle] = useState('')
-    const [newTime, setNewTime] = useState('')
+    const [newTitle, setNewTitle] = useState('');
+    const [newDate, setNewDate] = useState(''); // Date only
     const [newBlog, setNewBlog] = useState(`
         <div class="column-3">
             <article class="first-letter">
@@ -37,14 +37,12 @@ const AdminBlogAdd = () => {
     `);
 
     const textareasRef = useRef([]);
-    const adminId = parseInt(globalThis.localStorage.getItem('admin_user_id'))
+    const adminId = parseInt(globalThis.localStorage.getItem('admin_user_id'));
 
-    const today = new Date();
-    const formattedDate = today.toISOString().split('T')[0];
-    
     const postBlog = async () => {
-        if (confirm(`Are you sure you want to post the blog ${newTitle} to the site?`)) {
+        if (confirm(`Are you sure you want to post the blog "${newTitle}" to the site?`)) {
             try {
+                const postedAt = new Date(newDate); // Convert to a JavaScript Date object
                 const response = await fetch('http://127.0.0.1:5555/api/blogs', {
                     method: 'POST',
                     headers: {
@@ -53,14 +51,14 @@ const AdminBlogAdd = () => {
                     body: JSON.stringify({
                         title: newTitle,
                         body: newBlog,
-                        created_at: newTime,
-                        admin_user_id: adminId
-                     }),
+                        post_date: postedAt.toISOString(), // Convert Date to ISO string
+                        admin_user_id: adminId,
+                    }),
                 });
-                const result = await response.json()
+                const result = await response.json();
                 if (response.ok) {
                     alert('Blog posted successfully!');
-                    console.log(result)
+                    console.log(result);
                 } else {
                     alert('Error posting blog:', result.error);
                 }
@@ -101,7 +99,6 @@ const AdminBlogAdd = () => {
             e.target.selectionStart = e.target.selectionEnd = start + 1;
         }
     };
-    
 
     return (
         <>
@@ -116,13 +113,11 @@ const AdminBlogAdd = () => {
                     />
                 </div>
                 <div className='form-group'>
-                    <label title="yyyy-mm-dd">Post Date:</label>
+                    <label>Post Date:</label>
                     <input
                         type="date"
-                        name="created_at"
-                        placeholder='yyyy-mm-dd'
-                        value={newTime ? newTime.created_at : ''}
-                        onChange={(e) => setNewTime(e.target.value)}
+                        value={newDate}
+                        onChange={(e) => setNewDate(e.target.value)}
                     />
                 </div>
                 <div className='form-group'>
@@ -145,7 +140,7 @@ const AdminBlogAdd = () => {
                     <i className="icon-arrow-r">&emsp;&thinsp;</i>
                 </div>
                 <h1>{newTitle}</h1>
-                <h6 className="margin-b-8">{newTime}</h6>
+                <h6 className="margin-b-8">{newDate ? blogTimeConverter(newDate) : ''}</h6>
                 <div dangerouslySetInnerHTML={{ __html: newBlog }} style={{ width: '100%', height: '100%'}}></div>
             </div>
         </>

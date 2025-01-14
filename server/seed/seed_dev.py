@@ -1119,14 +1119,50 @@ def run():
     db.session.add_all(vendor_users)
     db.session.commit()
 
-    admin_user_demo = AdminUser(
-        email="admin@gingham.nyc",
-        password="lol",
-        first_name="Ham-man",
-        last_name="Gingy",
-        phone="2095553880",
-    )
-    db.session.add(admin_user_demo)
+    admin_user_demo = [
+        AdminUser(
+            email="admin@gingham.nyc",
+            password="lol",
+            first_name="Ham-man",
+            last_name="Gingy",
+            phone="2095553880",
+            admin_role=0
+        ),
+        AdminUser(
+            email="zak@mufo.nyc",
+            password="lol",
+            first_name="Zak",
+            last_name="Wosewick",
+            phone="0000000000",
+            admin_role=1
+        ),
+        AdminUser(
+            email="sandro@mufo.nyc",
+            password="lol",
+            first_name="Sand",
+            last_name="Man",
+            phone="0000000000",
+            admin_role=1
+        ),
+        AdminUser(
+            email="vinh@mufo.nyc",
+            password="lol",
+            first_name="Vinh",
+            last_name="Cent",
+            phone="0000000000",
+            admin_role=1
+        ),
+        AdminUser(
+            email="hello@mufo.nyc",
+            password="lol",
+            first_name="Hell",
+            last_name="Oh",
+            phone="0000000000",
+            admin_role=2
+        )
+    ]
+    
+    db.session.add_all(admin_user_demo)
     db.session.commit()
 
 
@@ -1514,13 +1550,13 @@ def run():
                         <li>3 garlic cloves, chopped</li>
                         <li>1 tbsp fresh sage, chopped</li>
                         <li>½ tbsp fresh rosemary, minced</li>
-                        <li>1 tsp fresh ginger, grated/li>
+                        <li>1 tsp fresh ginger, grated</li>
                         <li>3–4 cups vegetable broth</li>
                         <li>Freshly ground black pepper</li>
                     </ul>
                     <h5>Instructions</h5>
                     <ul class="ul-numbers">
-                        <li>Heat oil in a large pot over medium heat. Add onion, salt, and pepper; sauté 5–8 mins. Add squash and cook 8–10 mins, stirring./li>
+                        <li>Heat oil in a large pot over medium heat. Add onion, salt, and pepper; sauté 5–8 mins. Add squash and cook 8–10 mins, stirring.</li>
                         <li>Add garlic, sage, rosemary, and ginger; cook 30 secs to 1 min until fragrant. Add 3 cups broth, bring to a boil, cover, and simmer 20–30 mins until squash is tender.</li>
                         <li>Cool slightly, blend until smooth (in batches if needed). Adjust thickness with more broth, season, and serve.</li>
                     </ul>
@@ -1533,10 +1569,11 @@ def run():
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
                 </div>
             """,
+            post_date=datetime.strptime("2025-01-10 00:00:00", "%Y-%m-%d %H:%M:%S"),
             admin_user_id=1
         ),
         Blog(
-            title="What types of baskets can I purchase?",
+            title="Discover Gingham: Fresh, Local, and Impactful",
             body="""
                 <div class="column-3">
                     <article class="first-letter">
@@ -1568,6 +1605,33 @@ def run():
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
                 </div>
             """,
+            post_date=datetime.strptime("2025-01-06 00:00:00", "%Y-%m-%d %H:%M:%S"),
+            admin_user_id=1
+        ), 
+        Blog(
+            title="Market Spotlight: Union Square Greenmarket",
+            body="""
+                <div class="column-3">
+                    <article class="first-letter">
+                        The world-famous Union Square Greenmarket began with just a few farmers in 1976, has grown 
+                        exponentially; in peak season 140 regional farmers, fishers, and bakers sell their products 
+                        to a dedicated legion of city dwellers. 
+                    </article>
+                    <article>
+                        As Greenmarket's flagship market, the seasonal bounty is unparalleled, with hundreds of 
+                        varieties to choose from during any given season. From just-picked fresh fruits and vegetables, 
+                        to heritage meats and award-winning farmstead cheeses, artisan breads, jams, pickles, a profusion 
+                        of cut flowers and plants, wine, ciders, maple syrup and much more. 
+                    </article>
+                    <article>
+                        Located in one of New York City's great public spaces, the atmosphere at Union Square on a market 
+                        day is electric: 60,000 market shoppers shop and chat with farmers; students of all ages tour the 
+                        market and learn about seasonality; visitors watch and taste cooking demonstrations by some of 
+                        New York's hottest local chefs. 
+                    </article>
+                </div>
+            """,
+            post_date=datetime.strptime("2025-01-18 00:00:00", "%Y-%m-%d %H:%M:%S"),
             admin_user_id=1
         )
     ]
@@ -1575,8 +1639,6 @@ def run():
     db.session.add_all(blogs)
     db.session.commit()
 
-
-    
 if __name__ == '__main__':
     with app.app_context():
         run()

@@ -10,6 +10,9 @@ import AdminMarketEvents from './AdminMarketEvents'
 function AdminMarkets () {
     const [markets, setMarkets] = useState([]);
     const [activeTab, setActiveTab] = useState('edit');
+    const [adminUserData, setAdminUserData] = useState(null);
+    
+    const adminUserId = globalThis.localStorage.getItem('admin_user_id');
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/markets")
@@ -21,6 +24,37 @@ function AdminMarkets () {
         const tab = urlParams.get('tab');
         if (tab) setActiveTab(tab);
     }, []);
+
+    useEffect(() => {
+            const token = localStorage.getItem('admin_jwt-token');
+            if (!adminUserId) return
+            const fetchUserData = async () => {
+                try {
+                    const response = await fetch(`http://127.0.0.1:5555/api/admin-users/${adminUserId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        setAdminUserData(data);
+                    } else {
+                        console.error('Error fetching profile:', response.status);
+                        if (response.status === 401) {
+                            console.error('Unauthorized: Token may be missing or invalid');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching vendor data:', error);
+                }
+            };
+            fetchUserData();
+        }, [adminUserId]);
+
+    if (adminUserData?.admin_role === 5) return
+
 
     return(
         <div>
