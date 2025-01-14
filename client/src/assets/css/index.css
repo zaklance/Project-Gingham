@@ -212,6 +212,12 @@ p, li, div, form, input, select, button, textarea, td {
   color: #ff4b5a;
 }
 
+.text-timezone {
+  color: #808080;
+  font-size: .75em;
+  text-transform: uppercase;
+}
+
 .text-error {
   text-transform: uppercase;
   background-color: #ffd1d8;
@@ -1419,13 +1425,13 @@ link {
 }
 
 .marker-name {
-  color: #646464;
+  color: #808080;
   font-weight: 600;
   font-size: 0.88em;
 }
 
 .marker-day {
-  color: #646464;
+  color: #808080;
   font-size: 0.88em;
 }
 
@@ -1965,7 +1971,6 @@ select:hover {
   background-repeat: no-repeat;
   background-position: right 50% top 46%;
   background-size: 1.2rem auto;
-  /* font-size: 1.5em; */
 }
 
 .icon-notif:hover {
@@ -1980,7 +1985,6 @@ select:hover {
   background-repeat: no-repeat;
   background-position: right 50% top 46%;
   background-size: 1.2rem auto;
-  /* font-size: 1.5em; */
 }
 
 .icon-email:hover {
@@ -1988,6 +1992,24 @@ select:hover {
   background-repeat: no-repeat;
   background-position: right 50% top 40%;
   background-size: 1.2rem auto;
+}
+
+.icon-settings {
+  position: absolute;
+  height: 36px;
+  width: 36px;
+  top: 4px;
+  right: 4px;
+  background-image: url('../images/icons8-settings.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 46%;
+  background-size: 1.8rem auto;
+}
+
+.icon-settings:hover {
+  background-image: url('../images/icons8-settings.gif');
+  background-position: right 50% top 40%;
+  background-size: 1.74rem auto;
 }
 
 .icon-eye, .icon-eye-alt {
@@ -2258,7 +2280,7 @@ select:hover {
 
 .popup-notif-on {
   display: block;
-  position: absolute;
+  position: fixed;
   /* top: auto; */
   /* left: 48px; */
   /* width: 90%; */
@@ -2268,8 +2290,8 @@ select:hover {
   max-width: 400px;
   /* height: fit-content; */
   background-color: #eee;
-  margin-top: 20px;
-  margin-left: -20px;
+  top: 20px !important;
+  left: calc((100vw - 392px) / 2);
   /* border-color: #ccc;
   border-width: 1px;
   border-style: solid; */
@@ -2440,6 +2462,15 @@ select:hover {
   .width-30 {
     width: 20%;
   }
+
+  .popup-notif-on {
+    position: fixed;
+    top: 20px;
+    left: calc((100vw - 392px) / 2);
+    width: 90vw;
+    margin-left: 0;
+    max-height: 320px !important;
+  }
 }
 
 
@@ -2470,6 +2501,13 @@ select:hover {
     text-align: center;
   }
 
+  .nav-bar {
+    overflow-x: scroll;
+    overflow-y: visible !important;
+    height: 80px;
+    margin-bottom: -22px;
+  }
+
   .nav-bar ul {
     height: 57px;
   }
@@ -2480,9 +2518,10 @@ select:hover {
 
   .popup-notif-on {
     position: fixed;
-    top: 0;
-    left: 10vw;
+    top: 20px;
+    left: calc((100vw - 392px) / 2);
     width: 90vw;
+    margin-left: 0;
     max-height: 320px !important;
   }
 
@@ -2776,4 +2815,14 @@ select:hover {
   .column-3 {
     column-count: 1;
   }
+}
+
+
+
+
+/* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
+@media screen and (max-width: 444px) {
+  .popup-notif-on {
+      left: 5vw;
+    }
 }

@@ -315,7 +315,8 @@ function Profile({ marketData }) {
     return (
         <div>
             <h1>Welcome to Your Profile, {profileData.first_name}!</h1>
-            <div className='box-bounding'>
+            <div className='box-bounding badge-container'>
+                <i className='icon-settings'>&emsp;</i>
                 <h2 className='margin-b-16'>Profile Information</h2>
                 {editMode ? (
                     <div className='margin-t-16'>

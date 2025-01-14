@@ -51,7 +51,8 @@ function Login({ handlePopup }) {
                 handlePopup();
                 navigate(`/admin/profile/${globalThis.localStorage.getItem('admin_user_id', data.admin_user_id) }`);
             } else {
-                alert('Login failed');
+                const errorData = await response.json();
+                alert('Login failed:' + (errorData.error || "Unknown error"));
             }
         } catch (error) {
             console.error('Error during login:', error);
