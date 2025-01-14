@@ -287,7 +287,7 @@ function VendorSales() {
 
     return (
         <>
-            <VendorActiveVendor />
+            <VendorActiveVendor className={'box-bounding'} />
             <div className='flex-space-between flex-bottom-align'>
                 <h2 className='margin-t-16'>Vendor Sales</h2>
                 <select className='' value={selectedRangeGraph} onChange={handleDateChangeGraph}>

@@ -13,14 +13,14 @@ function Home() {
                     <br className="m-hidden"/>
                     <br className="m-hidden"/>
                     <br/>
-                    <div className='box-portal-home text-center'>
+                    <div className='box-portal-home text-center text-blend-lighten'>
                         <h1 className="font-gingham title-big text-center">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</h1>
                         <br/>
                         <p>WELCOME CURRENT AND FUTURE VENDORS!</p>
                     </div>
                     <br className="m-hidden"/>
                     <br/>
-                    <h2 className="box-portal-home">Sell Surplus Product instead of putting it to waste!</h2>
+                    <h2 className="box-portal-home text-blend-lighten">Sell Surplus Product instead of putting it to waste!</h2>
                 </div>
                 <div className="box-inside">
                     <h3 className="margin-b-16">Why Partner with Gingham?</h3>

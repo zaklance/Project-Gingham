@@ -323,6 +323,9 @@ def login():
     if not user.authenticate(data['password']):
         return {'error': 'Login failed'}, 401
     
+    user.last_log_on = datetime.utcnow()
+    db.session.commit()
+    
     access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "user"})
     
     return jsonify(access_token=access_token, user_id=user.id), 200
@@ -375,16 +378,19 @@ def signup():
 def vendorLogin():
 
     data = request.get_json()
-    vendorUser = VendorUser.query.filter(VendorUser.email == data['email']).first()
-    if not vendorUser:
+    vendor_user = VendorUser.query.filter(VendorUser.email == data['email']).first()
+    if not vendor_user:
         return {'error': 'Login failed'}, 401
     
-    if not vendorUser.authenticate(data['password']):
+    if not vendor_user.authenticate(data['password']):
         return {'error': 'Login failed'}, 401
     
-    access_token = create_access_token(identity=vendorUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "vendor"})
+    vendor_user.last_log_on = datetime.utcnow()
+    db.session.commit()
+    
+    access_token = create_access_token(identity=vendor_user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "vendor"})
 
-    return jsonify(access_token=access_token, vendor_user_id=vendorUser.id), 200
+    return jsonify(access_token=access_token, vendor_user_id=vendor_user.id), 200
 
 @app.route('/api/vendor-signup', methods=['POST'])
 def vendorSignup():
@@ -428,16 +434,19 @@ def vendorLogout():
 def adminLogin():
 
     data = request.get_json()
-    adminUser = AdminUser.query.filter(AdminUser.email == data['email']).first()
-    if not adminUser:
+    admin_user = AdminUser.query.filter(AdminUser.email == data['email']).first()
+    if not admin_user:
         return {'error': 'Login failed'}, 401
     
-    if not adminUser.authenticate(data['password']):
+    if not admin_user.authenticate(data['password']):
         return {'error': 'Login failed'}, 401
     
-    access_token = create_access_token(identity=adminUser.id, expires_delta=timedelta(hours=12), additional_claims={"role": "admin"})
+    admin_user.last_log_on = datetime.utcnow()
+    db.session.commit()
+    
+    access_token = create_access_token(identity=admin_user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "admin"})
 
-    return jsonify(access_token=access_token, admin_user_id=adminUser.id), 200
+    return jsonify(access_token=access_token, admin_user_id=admin_user.id), 200
 
 @app.route('/api/admin-signup', methods=['POST'])
 def adminSignup():
@@ -623,40 +632,71 @@ def profile(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route('/api/vendor-users', methods=['GET'])
+@app.route('/api/vendor-users', methods=['GET', 'PATCH'])
 def get_vendor_users():
-    try:
-        vendor_id = request.args.get('vendor_id', type=int)
-        email = request.args.get('email', type=str)
-        query = VendorUser.query
+    if request.method =='GET':
+        try:
+            vendor_id = request.args.get('vendor_id', type=int)
+            email = request.args.get('email', type=str)
+            query = VendorUser.query
 
-        if vendor_id is not None:
-            vendor_users = query.all()
-            vendor_users = [
-                user for user in vendor_users
-                if str(vendor_id) in (user.vendor_id or {}).keys()
-            ]
-        elif email is not None:
-            vendor_users = VendorUser.query.filter_by(email=email).all()
-        else:
-            vendor_users = query.all()
+            if vendor_id is not None:
+                vendor_users = query.all()
+                vendor_users = [
+                    user for user in vendor_users
+                    if str(vendor_id) in (user.vendor_id or {}).keys()
+                ]
+            elif email is not None:
+                vendor_users = VendorUser.query.filter_by(email=email).all()
+            else:
+                vendor_users = query.all()
 
-        if not vendor_users:
-            return jsonify({'message': 'No team members found for this vendor'}), 404
+            if not vendor_users:
+                return jsonify({'message': 'No team members found for this vendor'}), 404
 
-        return jsonify([{
-            'id': vendor_user.id,
-            'first_name': vendor_user.first_name,
-            'last_name': vendor_user.last_name,
-            'email': vendor_user.email,
-            'phone': vendor_user.phone,
-            'vendor_id': vendor_user.vendor_id,
-            'is_admin': vendor_user.is_admin,
-            'active_vendor': vendor_user.active_vendor
-        } for vendor_user in vendor_users]), 200
+            return jsonify([{
+                'id': vendor_user.id,
+                'first_name': vendor_user.first_name,
+                'last_name': vendor_user.last_name,
+                'email': vendor_user.email,
+                'phone': vendor_user.phone,
+                'vendor_id': vendor_user.vendor_id,
+                'is_admin': vendor_user.is_admin,
+                'active_vendor': vendor_user.active_vendor
+            } for vendor_user in vendor_users]), 200
 
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+    
+    elif request.method == 'PATCH':
+        try:
+            delete_vendor_id = request.args.get('delete_vendor_id', type=int)
+            if delete_vendor_id:
+                if not delete_vendor_id:
+                    return jsonify({'message': 'delete_vendor_id parameter is required'}), 400
+                
+                vendor_users = VendorUser.query.all()
+
+                for vendor_user in vendor_users:
+                    vendor_id_str = str(delete_vendor_id)
+                    
+                    if isinstance(vendor_user.is_admin, dict) and vendor_id_str in vendor_user.is_admin:
+                        vendor_user.is_admin.pop(vendor_id_str)
+                    if isinstance(vendor_user.vendor_id, dict) and vendor_id_str in vendor_user.vendor_id:
+                        vendor_user.vendor_id.pop(vendor_id_str)
+
+                        remaining_keys = list(vendor_user.vendor_id.keys())
+                        if remaining_keys:
+                            vendor_user.active_vendor = int(remaining_keys[0])
+                        else:
+                            vendor_user.active_vendor = None
+                    
+                    db.session.commit()
+
+                return jsonify({'message': 'Vendor updated successfully'}), 200
+        
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
     
 @app.route('/api/vendor-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 @jwt_required()
@@ -674,6 +714,7 @@ def get_vendor_user(id):
     elif request.method == 'PATCH':
         vendor_user = VendorUser.query.get(id)
         delete_vendor_id = request.args.get('delete_vendor_id', type=int)
+        admin_patch = request.args.get('admin_patch', type=bool)
 
         if not vendor_user:
             return jsonify({'error': 'User not found'}), 404
@@ -697,7 +738,30 @@ def get_vendor_user(id):
                 return jsonify({'message': 'Vendor updated successfully'}), 200
 
             data = request.get_json()
-            if not delete_vendor_id:
+            if admin_patch:
+                if 'first_name' in data:
+                    vendor_user.first_name = data['first_name']
+                if 'last_name' in data:
+                    vendor_user.last_name = data['last_name']
+                if 'email' in data:
+                    vendor_user.email = data['email']
+                if 'phone' in data:
+                    vendor_user.phone = data['phone']
+                if 'is_admin' in data:
+                    vendor_user.is_admin = data['is_admin']
+                if 'vendor_id' in data:
+                    vendor_user.vendor_id = data['vendor_id']
+                remaining_keys = list(vendor_user.vendor_id.keys())
+                if remaining_keys:
+                    first_key = next(iter(vendor_user.vendor_id))
+                    vendor_user.active_vendor = int(first_key)
+                else:
+                    vendor_user.active_vendor = None
+
+                db.session.commit()
+                return jsonify(vendor_user.to_dict()), 200                
+                    
+            if not delete_vendor_id and not admin_patch:
                 if 'first_name' in data:
                     vendor_user.first_name = data['first_name']
                 if 'last_name' in data:
@@ -807,6 +871,7 @@ def handle_admin_user_by_id(id):
     elif request.method == 'PATCH':
         try:
             data = request.get_json()
+            data.pop('last_log_on', None)
             for key, value in data.items():
                 setattr(admin_user, key, value)
             db.session.commit()
@@ -1559,6 +1624,7 @@ def handle_baskets():
             market_day_id = request.args.get('market_day_id', type=int)
             vendor_id = request.args.get('vendor_id', type=int)
             sale_date = request.args.get('sale_date', type=str)
+            user_id = request.args.get('user_id', type=int)
 
             query = Basket.query
 
@@ -1573,6 +1639,8 @@ def handle_baskets():
                     query = query.filter_by(sale_date=sale_date_obj)
                 except ValueError:
                     return jsonify({'error': 'Invalid date format. Expected format: YYYY-MM-DD'}), 400
+            if user_id is not None:
+                query = query.filter_by(user_id=user_id)
 
             saved_baskets = query.all()
 
@@ -2648,7 +2716,7 @@ def faqs():
             query = query.filter(FAQ.for_admin == True)
             admin_result = query.all()
             if admin_result:
-                return jsonify([faq.to_dict() for faq in vendor_result]), 200
+                return jsonify([faq.to_dict() for faq in admin_result]), 200
             return jsonify({'error': 'Admin FAQs not found'}), 404
         elif not for_user and not for_vendor and not for_admin:
             result = query.all()
@@ -2709,19 +2777,21 @@ def blogs():
 
     elif request.method == 'POST':
         data = request.get_json()
-        created_at = None
-        if data.get('created_at'):
+        post_date = None
+
+        if 'post_date' in data:
             try:
-                created_at = datetime.strptime(data['created_at'], '%Y-%m-%d').date()
+                post_date = datetime.strptime('2025-01-14', '%Y-%m-%d').date()
             except ValueError:
-                return {'error': 'Invalid date format for created_at'}, 400
+                return {'error': 'Invalid date format for created_at. Expected format: YYYY-MM-DD HH:MM'}, 400
 
         new_blog = Blog(
             title=data.get('title'),
             body=data.get('body'),
             admin_user_id=data.get('admin_user_id'),
-            created_at=created_at
+            post_date=post_date
         )
+
         try:
             db.session.add(new_blog)
             db.session.commit()
@@ -2729,6 +2799,7 @@ def blogs():
         except Exception as e:
             db.session.rollback()
             return {'error': f'Failed to create Blog: {str(e)}'}, 500
+
 
 @app.route('/api/blogs/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def blog(id):

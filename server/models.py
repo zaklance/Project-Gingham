@@ -58,6 +58,7 @@ class User(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String, unique=True, nullable=False)
+    email_verified = db.Column(db.Boolean, default=False)
     _password = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
@@ -71,6 +72,7 @@ class User(db.Model, SerializerMixin):
     avatar = db.Column(db.String)
     avatar_default = db.Column(db.String, nullable=False, default=random_avatar)
     status = db.Column(db.String(10), nullable=False, default="active")
+    last_log_on = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships
     market_reviews = db.relationship('MarketReview', back_populates='user')
@@ -444,6 +446,7 @@ class VendorUser(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String, unique=True, nullable=False)
+    email_verified = db.Column(db.Boolean, default=False)
     _password = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
@@ -451,6 +454,7 @@ class VendorUser(db.Model, SerializerMixin):
     active_vendor = db.Column(db.Integer, nullable=True)
     vendor_id = db.Column(MutableDict.as_mutable(JSON), nullable=True)
     is_admin = db.Column(MutableDict.as_mutable(JSON), nullable=True)
+    last_log_on = db.Column(db.DateTime, default=datetime.utcnow)
 
     # notifications = db.relationship('VendorNotification', back_populates='vendor_user')
 
@@ -499,10 +503,13 @@ class AdminUser(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String, unique=True, nullable=False)
+    email_verified = db.Column(db.Boolean, default=False)
     _password = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     phone = db.Column(db.String, nullable=True)
+    admin_role = db.Column(db.Integer, default=5)
+    last_log_on = db.Column(db.DateTime, default=datetime.utcnow)
 
     serialize_rules = ('-_password',)
 
@@ -781,10 +788,10 @@ class Blog(db.Model, SerializerMixin):
     title = db.Column(db.String, nullable=False)
     body = db.Column(db.String, nullable=False)
     admin_user_id = db.Column(db.Integer, db.ForeignKey('admin_users.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    post_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self) -> str:
-        return f"<Blog ID: {self.id}, Title: {self.title}, Body: {self.body}, Admin ID: {self.admin_user_id}, Created at: {self.created_at}>"
+        return f"<Blog ID: {self.id}, Title: {self.title}, Body: {self.body}, Admin ID: {self.admin_user_id}, Post Date: {self.post_date}>"
 
 class Receipt(db.Model, SerializerMixin):
     __tablename__ = 'receipts'

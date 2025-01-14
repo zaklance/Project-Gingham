@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const VendorTeamRequest = ({ vendorUserId, vendorUserData }) => {
+const VendorTeamRequest = ({ className, vendorUserId, vendorUserData }) => {
     const [notifications, setNotifications] = useState([]);
     const [vendors, setVendors] = useState([]);
     const [query, setQuery] = useState("");
@@ -164,7 +164,7 @@ const VendorTeamRequest = ({ vendorUserId, vendorUserData }) => {
 
 
     return (
-        <>
+        <div className={className || ''}>
             <div>
                 {notifications.length !== 0 ? (
                     <div className="notification">
@@ -207,7 +207,7 @@ const VendorTeamRequest = ({ vendorUserId, vendorUserData }) => {
                     </div>
                 )}
             </div>
-        </>
+        </div>
     );
 };
 

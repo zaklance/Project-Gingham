@@ -857,6 +857,45 @@ def run():
     db.session.commit()
 
 
+    admin_user_demo = [
+        AdminUser(
+            email="admin@gingham.nyc",
+            password="lol",
+            first_name="Ham-man",
+            last_name="Gingy",
+            phone="2095553880",
+            admin_role=0
+        ),
+        AdminUser(
+            email="zak@mufo.nyc",
+            password="lol",
+            first_name="Zak",
+            last_name="Wosewick",
+            phone="0000000000",
+            admin_role=1
+        ),
+        AdminUser(
+            email="sandro@mufo.nyc",
+            password="lol",
+            first_name="Sand",
+            last_name="Man",
+            phone="0000000000",
+            admin_role=1
+        ),
+        AdminUser(
+            email="vinh@mufo.nyc",
+            password="lol",
+            first_name="Vinh",
+            last_name="Cent",
+            phone="0000000000",
+            admin_role=1
+        ),
+    ]
+    
+    db.session.add_all(admin_user_demo)
+    db.session.commit()
+
+
     products_list = [
         'Other', 'Art', 'Baked Goods', 'Beer & Wine', 'Cheese', 'Cider', 
         'Craft Goods', 'Coffee/Tea', 'Dairy', 'Eggs', 'Flowers', 'Fruit', 

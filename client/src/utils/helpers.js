@@ -15,8 +15,8 @@ export function timeConverter(time24) {
     return time12;
 }
 
-export function blogTimeConverter(createdAt) {
-    const [date] = createdAt.split(/T| /);
+export function blogTimeConverter(postedAt) {
+    const [date] = postedAt.split(/T| /);
     const [year, month, day] = date.split('-');
     const formattedDate = `${year}/${month}/${day}`;
     return formattedDate;
@@ -114,6 +114,8 @@ export const formatPhoneNumber = (phone) => {
     }
     return phone;
 };
+
+
 
 // Link Generators
 

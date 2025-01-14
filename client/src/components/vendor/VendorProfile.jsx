@@ -8,6 +8,7 @@ import VendorCreate from './VendorCreate';
 import VendorLocations from './VendorLocations';
 import VendorTeamRequest from './VendorTeamRequest';
 import VendorActiveVendor from './VendorActiveVendor';
+import VendorTeamLeave from './VendorTeamLeave';
 
 function VendorProfile () {
     const { id } = useParams();
@@ -266,7 +267,7 @@ function VendorProfile () {
                 console.log('Response status:', response.status);
                 console.log('Response text:', await response.text());
             }
-            if (Number(vendorData.product) === 1 && productRequest.trim() !== '') {
+            if (tempVendorData.products.includes(1) && productRequest.trim() !== '') {
                 try {
                     const response = await fetch('http://127.0.0.1:5555/api/create-admin-notification', {
                         method: 'POST',
@@ -276,6 +277,7 @@ function VendorProfile () {
                         body: JSON.stringify({
                             vendor_id: vendorId,
                             vendor_user_id: id,
+                            subject: 'product-request',
                             message: `${vendorData.name} has requested to for a new Product category: ${productRequest}.`,
                         }),
                     });
@@ -399,7 +401,6 @@ function VendorProfile () {
 
     return(
         <>
-            <VendorActiveVendor />
             <div className="tab-content">
                 <div>
                     <h2 className='title'>Profile Information </h2>
@@ -467,8 +468,11 @@ function VendorProfile () {
                             </>
                         )}
                     </div>
+                    <h2 className='title margin-t-24'>Vendor Team Management</h2>
                     <div className='box-bounding'>
-                        <VendorTeamRequest vendorUserId={vendorUserId} vendorUserData={vendorUserData} />
+                        <VendorTeamRequest className="margin-b-32" vendorUserId={vendorUserId} vendorUserData={vendorUserData} />
+                        <VendorActiveVendor className="margin-b-32" vendorUserData={vendorUserData} setVendorUserData={setVendorUserData} />
+                        <VendorTeamLeave vendorUserData={vendorUserData} setVendorUserData={setVendorUserData} />
                     </div>
                     <h2 className='title margin-t-24'>Vendor Information</h2>
                     <div className='box-bounding'>
@@ -603,7 +607,7 @@ function VendorProfile () {
                                             />
                                         </div>
                                     </div>
-                                    <dix className='flex-start flex-gap-8'>
+                                    <div className='flex-start flex-gap-8'>
                                         <button className='btn-edit nowrap' onClick={handleSaveVendorChanges}>Save Changes</button>
                                         <button className='btn-edit' onClick={handleVendorEditToggle}>Cancel</button>
                                         <div className='alert-container'>
@@ -614,7 +618,7 @@ function VendorProfile () {
                                                 Uploading Image
                                             </div>
                                         </div>
-                                    </dix>
+                                    </div>
                                 </>
                             ) : (
                                     <>
