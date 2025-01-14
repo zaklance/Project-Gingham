@@ -7,7 +7,6 @@ const AdminBlog = () => {
     const [blogs, setBlogs] = useState([]);
     const [activeTab, setActiveTab] = useState('add');
 
-
     useEffect(() => {
             fetch("http://127.0.0.1:5555/api/blogs")
                 .then(response => response.json())
