@@ -140,7 +140,7 @@ const AdminBlogAdd = () => {
                     <i className="icon-arrow-r">&emsp;&thinsp;</i>
                 </div>
                 <h1>{newTitle}</h1>
-                <h6 className="margin-b-8">{blogTimeConverter(newDate)}</h6>
+                <h6 className="margin-b-8">{newDate ? blogTimeConverter(newDate) : ''}</h6>
                 <div dangerouslySetInnerHTML={{ __html: newBlog }} style={{ width: '100%', height: '100%'}}></div>
             </div>
         </>
