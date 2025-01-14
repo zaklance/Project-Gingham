@@ -52,7 +52,8 @@ function VendorLogin({ handlePopup }) {
                 handlePopup();
                 navigate(`/vendor/dashboard`);
             } else {
-                alert('Login failed:', errorData.error);
+                const errorData = await response.json();
+                alert('Login failed:' + (errorData.error || "Unknown error"));
             }
         } catch (error) {
             console.error('Error during login:', error);

@@ -283,6 +283,7 @@ function VendorProfile () {
                     });
                     if (response.ok) {
                         const responseData = await response.json();
+                        setProductRequest('')
                         alert(`Your product request has been sent to the admins for approval, if approved your product will be automatically changed!`);
                     } else {
                         const errorData = await response.json();
