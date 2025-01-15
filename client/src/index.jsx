@@ -50,6 +50,7 @@ import AdminHelp from './components/admin/AdminHelp.jsx';
 import AdminEmail from './components/admin/AdminEmail.jsx';
 import AdminBlog from './components/admin/AdminBlog.jsx';
 import AdminReport from './components/admin/AdminReport.jsx';
+import AdminFAQs from './components/admin/AdminFAQs.jsx';
 import AdminResetRequest from './components/admin/AdminResetRequest.jsx';
 import AdminPasswordReset from './components/admin/AdminPasswordReset.jsx';
 
@@ -279,6 +280,7 @@ const router = createBrowserRouter([
                     { path: "blog", element: <AdminAuthRoute><AdminBlog /></AdminAuthRoute>},
                     { path: "report", element: <AdminAuthRoute><AdminReport /></AdminAuthRoute>},
                     { path: "profile/:id",element:<AdminRoute><AdminProfile /></AdminRoute>},
+                    { path: "faqs", element: <AdminFAQs /> },
                     { path: "logout", element: <AdminLogout /> },
                     { path: "reset-request", element: <AdminResetRequest /> },
                     { path: "password-reset/:token", element: <AdminPasswordReset /> },

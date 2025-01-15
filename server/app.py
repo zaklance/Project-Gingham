@@ -2716,7 +2716,7 @@ def faqs():
             query = query.filter(FAQ.for_admin == True)
             admin_result = query.all()
             if admin_result:
-                return jsonify([faq.to_dict() for faq in vendor_result]), 200
+                return jsonify([faq.to_dict() for faq in admin_result]), 200
             return jsonify({'error': 'Admin FAQs not found'}), 404
         elif not for_user and not for_vendor and not for_admin:
             result = query.all()

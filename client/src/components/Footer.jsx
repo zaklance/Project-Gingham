@@ -6,6 +6,9 @@ function Footer() {
     const isNotUser = location.pathname.startsWith('/vendor') || location.pathname.startsWith('/admin');
     const isVendorPage = location.pathname.startsWith('/vendor');
     const isAdminPage = location.pathname.startsWith('/admin');
+    const adminUserId = globalThis.localStorage.getItem('admin_user_id');
+    const isAdminLoggedIn = adminUserId;
+
 
     return (
         <>
@@ -48,6 +51,11 @@ function Footer() {
                         {isVendorPage && (
                             <li className='footer-li'>
                                 <NavLink to="/vendor/faqs">Vendor FAQs</NavLink>
+                            </li>
+                        )}
+                        {isAdminLoggedIn && isAdminPage && (
+                            <li className='footer-li'>
+                                <NavLink to="/admin/faqs">Admin FAQs</NavLink>
                             </li>
                         )}
                         <li className='footer-li'>
