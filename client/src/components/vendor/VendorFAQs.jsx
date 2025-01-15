@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-function UserFAQs() {
+function VendorFAQs() {
     const [openFAQ, setOpenFAQ] = useState(null);
     const [fAQs, setFAQs] = useState([]);
 
@@ -39,4 +39,4 @@ function UserFAQs() {
     );
 }
 
-export default UserFAQs;
+export default VendorFAQs;

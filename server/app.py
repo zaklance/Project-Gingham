@@ -1656,7 +1656,8 @@ def handle_baskets():
     elif request.method == 'POST':
         data = request.get_json()
         app.logger.debug(f'Received data for new basket: {data}')
-        
+
+        # Initialize variables
         sale_date = None
         pickup_start = None
         pickup_end = None
@@ -1675,7 +1676,7 @@ def handle_baskets():
                     pickup_start = datetime.strptime(data['pickup_start'], '%H:%M %p').time()
                 except ValueError:
                     return jsonify({'error': 'Invalid pickup_start format. Expected HH:MM AM/PM.'}), 400
-            
+
             if 'pickup_end' in data:
                 try:
                     from datetime import datetime
@@ -1686,14 +1687,14 @@ def handle_baskets():
             try:
                 price = float(data['price'])
                 if price < 0:
-                    return {'error': 'Price must be a non-negative number'}, 400
+                    return jsonify({'error': 'Price must be a non-negative number'}), 400
             except (ValueError, TypeError):
                 return jsonify({'error': 'Invalid price format. Must be a positive number.'}), 400
 
             try:
                 basket_value = float(data['basket_value'])
                 if basket_value < 0:
-                    return {'error': 'basket_value must be a non-negative number'}, 400
+                    return jsonify({'error': 'basket_value must be a non-negative number'}), 400
             except (ValueError, TypeError):
                 return jsonify({'error': 'Invalid basket_value format. Must be a number.'}), 400
 
@@ -1708,8 +1709,10 @@ def handle_baskets():
                 is_sold=data.get('is_sold', False),
                 is_grabbed=data.get('is_grabbed', False)
             )
+
             db.session.add(new_basket)
             db.session.commit()
+
             return jsonify(new_basket.to_dict()), 201
         
         except Exception as e:

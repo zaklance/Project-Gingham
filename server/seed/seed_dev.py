@@ -1186,7 +1186,7 @@ def run():
         rand_user = [None, randint(1, 50)]
         last_month = randint(-4, 4)
         sale_date = (datetime.now() - timedelta(days=last_month)).date()
-        pickup_start = datetime.combine(sale_date, fake.time_object())
+        pickup_start = datetime.combine(sale_date, fake.time_object()).replace(second=0, microsecond=0)
         random_duration_minutes = randint(30, 120)
         pickup_end = pickup_start + timedelta(minutes=random_duration_minutes)
 
@@ -1216,7 +1216,7 @@ def run():
         rand_user = [None, randint(1, 50)]
         last_month = randint(-1, 1)
         sale_date = (datetime.now() - timedelta(days=last_month)).date()
-        pickup_start = datetime.combine(sale_date, fake.time_object())
+        pickup_start = datetime.combine(sale_date, fake.time_object()).replace(second=0, microsecond=0)
         random_duration_minutes = randint(30, 120)
         pickup_end = pickup_start + timedelta(minutes=random_duration_minutes)
 
