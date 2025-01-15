@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
 import { weekDay } from '../../utils/common';
-import { timeConverter, formatEventDate, formatDate } from '../../utils/helpers';
+import { timeConverter, formatEventDate, formatDate, marketDateConvert } from '../../utils/helpers';
 import ReviewMarket from './ReviewMarket';
 
 function MarketDetail ({ match }) {
@@ -488,6 +488,8 @@ function MarketDetail ({ match }) {
                                     {availableBaskets.length > 0 ? (
                                         <span className="market-price">
                                             Price: ${firstBasket.price}
+                                            <br/>
+                                            Value: ${firstBasket.basket_value}
                                         </span>
                                     ) : (
                                         <span className="market-price"></span>
@@ -497,7 +499,7 @@ function MarketDetail ({ match }) {
                                             Baskets Available
                                             <br />
                                             {firstBasket
-                                                ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
+                                                ? `Pick Up on ${marketDateConvert(firstBasket.sale_date)} at ${timeConverter(firstBasket.pickup_start)}-${timeConverter(firstBasket.pickup_end)}`
                                                 : ''}
                                         </span>
                                     ) : (
@@ -509,7 +511,7 @@ function MarketDetail ({ match }) {
                                                 : <a className='link-edit' onClick={() => handleNotifyMe(vendorDetail)}>Notify Me</a>}
                                         <br />
                                         {firstBasket && firstBasket.pickup_start
-                                            ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
+                                            ? `Pick Up on ${marketDateConvert(firstBasket.sale_date)} at ${timeConverter(firstBasket.pickup_start)}-${timeConverter(firstBasket.pickup_end)}`
                                             : ''}
                                         {vendorAlertStates[vendorId] && (
                                             <div className={`alert alert-cart-market`}>
