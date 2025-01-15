@@ -15,7 +15,7 @@ function VendorCreate () {
     const [status, setStatus] = useState('initial')
     const [vendorImageURL, setVendorImageURL] = useState(null);
     const [products, setProducts] = useState([])
-    const [newProduct, setNewProduct] = useState(null);
+    const [newProducts, setNewProducts] = useState(null);
     const [productRequest, setProductRequest] = useState('')
 
     const navigate = useNavigate();
@@ -179,7 +179,7 @@ function VendorCreate () {
             } else {
                 console.log('Error updating user with vendor_id');
             }
-            if (Number(newProduct) === 1 && productRequest.trim() !== '') {
+            if (Number(newProducts).includes(1) && productRequest.trim() !== '') {
                 try {
                     const response = await fetch('http://127.0.0.1:5555/api/create-admin-notification', {
                         method: 'POST',
@@ -221,12 +221,12 @@ function VendorCreate () {
         }));
     };
 
-    const handleAddProduct = (newProductId) => {
+    const handleAddProduct = (newProductsId) => {
         setVendorData((prev) => ({
             ...prev,
-            products: (prev.products || []).includes(Number(newProductId))
+            products: (prev.products || []).includes(Number(newProductsId))
                 ? prev.products
-                : [...(prev.products || []), Number(newProductId)],
+                : [...(prev.products || []), Number(newProductsId)],
         }));
     };
     
@@ -249,8 +249,8 @@ function VendorCreate () {
                 <label>Product:</label>
                 <select
                     name="product"
-                    value={newProduct ? newProduct : ''}
-                    onChange={(e) => setNewProduct(e.target.value)}
+                    value={newProducts ? newProducts : ''}
+                    onChange={(e) => setNewProducts(e.target.value)}
                 >
                     <option value="">Select</option>
                     {Array.isArray(products) && products.map((product) => (
@@ -259,7 +259,7 @@ function VendorCreate () {
                         </option>
                     ))}
                 </select>
-                <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddProduct(newProduct)}>Add</button>
+                <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddProduct(newProducts)}>Add</button>
                 <Stack className='padding-4' direction="row" spacing={1}>
                     {vendorData?.products?.map((productId) => {
                         const product = products.find((p) => p.id === productId);
@@ -277,7 +277,7 @@ function VendorCreate () {
                     })}
                 </Stack>
             </div>
-            {Number(newProduct) === 1 && (
+            {Number(newProducts) === 1 && (
                 <div className="form-group">
                     <label>Other Product:</label>
                     <input

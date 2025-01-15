@@ -93,6 +93,7 @@ const AdminBlogAdd = () => {
                 <div className='form-group'>
                     <label>Body HTML:</label>
                     <textarea
+                        id="html-input"
                         value={newBlog}
                         onChange={(e) => setNewBlog(e.target.value)}
                         placeholder="Type something..."
