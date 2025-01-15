@@ -376,13 +376,11 @@ function MarketDetail ({ match }) {
                         initialRegion={{
                             centerLatitude: marketLocation.lat,
                             centerLongitude: marketLocation.lng,
-                            latitudeDelta: 0.04,
-                            longitudeDelta: 0.04,
+                            latitudeDelta: .008,
+                            longitudeDelta: .008,
                         }}
                         colorScheme={ColorScheme.Auto}
                         showsScale={FeatureVisibility.Visible}
-                        showsUserLocation={true}
-                        tracksUserLocation={true}
                     >
                         <Annotation
                             latitude={marketLocation.lat}
