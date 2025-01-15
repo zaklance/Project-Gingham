@@ -277,7 +277,7 @@ function VendorProfile () {
                         body: JSON.stringify({
                             vendor_id: vendorId,
                             vendor_user_id: id,
-                            subject: 'new-product',
+                            subject: 'product-request',
                             message: `${vendorData.name} has requested to for a new Product category: ${productRequest}.`,
                         }),
                     });
