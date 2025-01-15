@@ -9,7 +9,9 @@ function Home() {
             fetch("http://127.0.0.1:5555/api/blogs")
                 .then(response => response.json())
                 .then(data => {
-                    const sortedData = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    const now = new Date();
+                    const filteredData = data.filter(blog => new Date(blog.created_at) <= now);
+                    const sortedData = filteredData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
                     setBlogs(sortedData);
                 })
                 .catch(error => console.error('Error fetching blogs', error));
@@ -27,7 +29,6 @@ function Home() {
     };
 
     const currentBlog = blogs[currentIndex];
-
 
     return (
         <div>

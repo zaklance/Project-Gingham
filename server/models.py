@@ -788,7 +788,7 @@ class Blog(db.Model, SerializerMixin):
     title = db.Column(db.String, nullable=False)
     body = db.Column(db.String, nullable=False)
     admin_user_id = db.Column(db.Integer, db.ForeignKey('admin_users.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self) -> str:
         return f"<Blog ID: {self.id}, Title: {self.title}, Body: {self.body}, Admin ID: {self.admin_user_id}, Created at: {self.created_at}>"
