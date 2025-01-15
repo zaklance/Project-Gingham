@@ -30,11 +30,10 @@ import VendorHome from './components/vendor/VendorHome.jsx';
 import VendorLogout from './components/vendor/VendorLogout.jsx';
 import VendorCreate from './components/vendor/VendorCreate.jsx';
 import VendorDashboard from './components/vendor/VendorDashboard.jsx';
-import VendorNotification from './components/vendor/VendorNotification.jsx';
 import VendorSales from './components/vendor/VendorSales.jsx';
 import VendorScan from './components/vendor/VendorScan.jsx';
 import VendorProfile from './components/vendor/VendorProfile.jsx';
-import VendorFAQs from './components/vendor/VendorFAQs.jsx';
+import VendorHelpCenter from './components/vendor/VendorHelpCenter.jsx';
 import VendorLoginPopup from './components/vendor/VendorLoginPopup.jsx';
 import VendorResetRequest from './components/vendor/VendorResetRequest.jsx';
 import VendorPasswordReset from './components/vendor/VendorPasswordReset.jsx';
@@ -260,7 +259,7 @@ const router = createBrowserRouter([
                     { path: "scan", element: <VendorAuthRoute><VendorScan /></VendorAuthRoute> },
                     { path: "signup", element: <VendorLoginPopup /> },
                     { path: "profile/:id", element: <VendorRoute><VendorProfile /></VendorRoute> },
-                    { path: "faqs", element: <VendorFAQs /> },
+                    { path: "helpcenter", element: <VendorHelpCenter /> },
                     { path: "contact", element: <Contact /> },
                     { path: "vendor-create", element: <VendorAuthRoute><VendorCreate /></VendorAuthRoute> },
                     { path: "logout", element: <VendorLogout />},
