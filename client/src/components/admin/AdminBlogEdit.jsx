@@ -114,7 +114,7 @@ const AdminBlogEdit = ({ blogs, setBlogs }) => {
                                     <div className='form-group'>
                                         <label>Body HTML:</label>
                                         <textarea
-                                            id="htmlinput"
+                                            id="html-input"
                                             name="body"
                                             value={tempBlogData.body}
                                             placeholder="Type something..."

@@ -60,7 +60,8 @@ function Login({ handlePopup }) {
     
                 handlePopup();
             } else {
-                alert(data.error || 'Login failed');
+                alert('Login failed:' + data.error || 'Login failed');
+
             }
         } catch (error) {
             console.error('Error during login:', error);

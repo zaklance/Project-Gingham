@@ -894,7 +894,7 @@ def run():
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
         city = str(fake.city())
         state = str(choice(states_ne))
-        products = sample(range(1, 33), randint(1, 3))
+        products = sample(range(1, 34), randint(1, 3))
         bio = str(fake.paragraph(nb_sentences=rev_len))
         image = choice(images) if randint(1, 8) > 1 else None
 
@@ -1427,13 +1427,13 @@ def run():
     db.session.commit()
 
     products_list = [
-        'Other', 'Art', 'Baked Goods', 'Beer & Wine', 'Cheese', 'Cider', 
+        'Other', 'Art', 'Baked Goods', 'Beer', 'Cheese', 'Cider', 
         'Craft Goods', 'Coffee/Tea', 'Dairy', 'Eggs', 'Flowers', 'Fruit', 
         'Gluten-Free', 'Herbs & Spices', 'Honey', 'International', 
         'Jams & Preserves', 'Juice', 'Kimchi', 'Maple Syrup', 'Meat', 
         'Microgreens', 'Mushrooms', 'Nuts', 'Oil & Vinegar', 'Plants', 
         'Pickles', 'Poultry', 'Prepared Foods', 'Seafood', 'Spirits', 
-        'Vegetables'
+        'Vegetables', 'Wine'
         ]
     products = []
 

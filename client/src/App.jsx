@@ -9,6 +9,7 @@ import Footer from './components/Footer.jsx';
 import VendorLoginPopup from './components/vendor/VendorLoginPopup.jsx';
 import AdminLoginPopup from './components/admin/AdminLoginPopup.jsx';
 import { jwtDecode } from 'jwt-decode';
+import BrowserTimezone from './components/BrowserTimezone.jsx';
 
 function App() {
     const location = useLocation();
@@ -94,6 +95,7 @@ function App() {
                         {isAdminPage && (<AdminLoginPopup handlePopup={handlePopup} />)}
                     </div>
                     <Outlet context={{ amountInCart, setAmountInCart, cartItems, setCartItems, isPopup, setIsPopup, handlePopup }} />
+                    {isVendorPage || isAdminPage ? <BrowserTimezone /> : null}
                 </main>
             </div>
             <Footer />
