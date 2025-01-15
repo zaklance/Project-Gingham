@@ -1343,39 +1343,39 @@ def run():
     # user_notifs.append(unm)
     # user_notifs.append(unv)
 
-    for i in range(200):
-        msg_len = randint(1, 2)
-        rand_market = choice([None, randint(1, 40)])
-        if rand_market is None:
-            rand_vendor = randint(1, 150)
-        else:
-            rand_vendor = None
-        few_days = randint(0, 14)
+    # for i in range(200):
+    #     msg_len = randint(1, 2)
+    #     rand_market = choice([None, randint(1, 40)])
+    #     if rand_market is None:
+    #         rand_vendor = randint(1, 150)
+    #     else:
+    #         rand_vendor = None
+    #     few_days = randint(0, 14)
 
-        subject = choice(["vendor", "market"])
-        message = fake.paragraph(nb_sentences=msg_len)
-        link = choice (['/user/vendors/1', '/user/markets/1'])
-        user_id = randint(1, 51)
-        market_id = rand_market
-        vendor_id = rand_vendor
-        created_at = datetime.now(timezone.utc) - timedelta(days=few_days)
-        is_read = bool(False)
+    #     subject = choice(["vendor", "market"])
+    #     message = fake.paragraph(nb_sentences=msg_len)
+    #     link = choice (['/user/vendors/1', '/user/markets/1'])
+    #     user_id = randint(1, 51)
+    #     market_id = rand_market
+    #     vendor_id = rand_vendor
+    #     created_at = datetime.now(timezone.utc) - timedelta(days=few_days)
+    #     is_read = bool(False)
 
         
-        un = UserNotification(
-            subject=subject,
-            message=message,
-            link=link,
-            user_id=user_id,
-            market_id=market_id,
-            vendor_id=vendor_id,
-            created_at=created_at,
-            is_read=is_read
-        )
-        user_notifs.append(un)
+    #     un = UserNotification(
+    #         subject=subject,
+    #         message=message,
+    #         link=link,
+    #         user_id=user_id,
+    #         market_id=market_id,
+    #         vendor_id=vendor_id,
+    #         created_at=created_at,
+    #         is_read=is_read
+    #     )
+    #     user_notifs.append(un)
 
-    db.session.add_all(user_notifs)
-    db.session.commit()
+    # db.session.add_all(user_notifs)
+    # db.session.commit()
 
     # add fake market review ratings
     market_rev_ratings = []

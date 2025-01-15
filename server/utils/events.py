@@ -13,7 +13,7 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
 @listens_for(VendorFavorite, 'after_insert')
 def track_vendor_favorite(mapper, connection, target):
     try:
-        print(f"New favorite detected: User ID={target.user_id}, Vendor ID={target.vendor_id}")
+        # print(f"New favorite detected: User ID={target.user_id}, Vendor ID={target.vendor_id}")
 
         # Retrieve the vendor
         vendor = connection.execute(
@@ -34,7 +34,7 @@ def track_vendor_favorite(mapper, connection, target):
         # Create a notification
         subject = "Favorite Vendor Added"
         message = f"{user.first_name} added {vendor.name} to their favorites!"
-        print(f"Creating notification for User ID={user.id} about Vendor ID={vendor.id}")
+        # print(f"Creating notification for User ID={user.id} about Vendor ID={vendor.id}")
 
         connection.execute(
             VendorNotification.__table__.insert().values(
@@ -46,61 +46,61 @@ def track_vendor_favorite(mapper, connection, target):
                 is_read=False
             )
         )
-        print("Notification successfully created.")
+        # print("Notification successfully created.")
     except Exception as e:
         print(f"Error in track_vendor_favorite: {e}")
         
-@listens_for(MarketFavorite, 'after_insert')
-def track_market_favorite(mapper, connection, target):
-    try:
-        print(f"New favorite detected: User ID={target.user_id}, Market ID={target.market_id}")
+# @listens_for(MarketFavorite, 'after_insert')
+# def track_market_favorite(mapper, connection, target):
+#     try:
+#         # print(f"New favorite detected: User ID={target.user_id}, Market ID={target.market_id}")
 
-        # Retrieve the market
-        market = connection.execute(
-            Market.__table__.select().where(Market.id == target.market_id)
-        ).fetchone()
-        if not market:
-            print(f"Market not found for Market ID: {target.market_id}")
-            return
+#         # Retrieve the market
+#         market = connection.execute(
+#             Market.__table__.select().where(Market.id == target.market_id)
+#         ).fetchone()
+#         if not market:
+#             print(f"Market not found for Market ID: {target.market_id}")
+#             return
 
-        # Retrieve the user
-        user = connection.execute(
-            User.__table__.select().where(User.id == target.user_id)
-        ).fetchone()
-        if not user:
-            print(f"User not found for User ID: {target.user_id}")
-            return
+#         # Retrieve the user
+#         user = connection.execute(
+#             User.__table__.select().where(User.id == target.user_id)
+#         ).fetchone()
+#         if not user:
+#             print(f"User not found for User ID: {target.user_id}")
+#             return
 
-        # Create a notification
-        subject = "Favorite Market Added"
-        message = f"{user.first_name} added {market.name} to their favorites!"
-        print(f"Creating notification for User ID={user.id} about Market ID={market.id}")
+#         # Create a notification
+#         subject = "Favorite Market Added"
+#         message = f"{user.first_name} added {market.name} to their favorites!"
+#         # print(f"Creating notification for User ID={user.id} about Market ID={market.id}")
 
-        connection.execute(
-            UserNotification.__table__.insert().values(
-                subject=subject,
-                message=message,
-                user_id=user.id,
-                market_id=market.id,
-                created_at=datetime.utcnow(),
-                is_read=False
-            )
-        )
-        print("Notification successfully created.")
-    except Exception as e:
-        print(f"Error in track_market_favorite: {e}")
+#         connection.execute(
+#             UserNotification.__table__.insert().values(
+#                 subject=subject,
+#                 message=message,
+#                 user_id=user.id,
+#                 market_id=market.id,
+#                 created_at=datetime.utcnow(),
+#                 is_read=False
+#             )
+#         )
+#         # print("Notification successfully created.")
+#     except Exception as e:
+#         print(f"Error in track_market_favorite: {e}")
 
 @listens_for(Event, 'after_insert')
 def track_fav_market_event(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        print(f"Event detected: ID={target.id}, Title='{target.title}', Market ID={target.market_id}")
+        # print(f"Event detected: ID={target.id}, Title='{target.title}', Market ID={target.market_id}")
 
         # Notify users who favorited the market
         favorited_users = session.query(User).join(MarketFavorite).filter(
             MarketFavorite.market_id == target.market_id
         ).all()
-        print(f"Favorited users for Market ID {target.market_id}: {len(favorited_users)} users found.")
+        # print(f"Favorited users for Market ID {target.market_id}: {len(favorited_users)} users found.")
 
         if not favorited_users:
             print(f"No favorited users for Market ID {target.market_id}. No user notifications will be created.")
@@ -110,13 +110,13 @@ def track_fav_market_event(mapper, connection, target):
         if not market:
             print(f"Market with ID {target.market_id} not found. Aborting notification creation.")
             return
-        print(f"Market found: ID={market.id}, Name='{market.name}'")
+        # print(f"Market found: ID={market.id}, Name='{market.name}'")
 
         # Notify vendors associated with the market
         vendors = session.query(Vendor).join(VendorMarket).join(MarketDay).filter(
             MarketDay.market_id == market.id
         ).all()
-        print(f"Vendors associated with Market ID {market.id}: {len(vendors)} vendors found.")
+        # print(f"Vendors associated with Market ID {market.id}: {len(vendors)} vendors found.")
 
         # Prepare user notifications
         user_notifications = []
@@ -124,14 +124,14 @@ def track_fav_market_event(mapper, connection, target):
             user_notification = UserNotification(
                 subject="New Event in Your Favorite Market!",
                 message=f"The market '{market.name}' has added a new event: {target.title}",
-                link=f"/markets/{market.id}/events/{target.id}",
+                link=f"/user/markets/{market.id}",
                 user_id=user.id,
                 market_id=market.id,
                 created_at=datetime.utcnow(),
                 is_read=False
             )
             user_notifications.append(user_notification)
-            print(f"Prepared user notification for User ID={user.id}, Email='{user.email}'")
+            # print(f"Prepared user notification for User ID={user.id}, Email='{user.email}'")
 
         # Prepare vendor notifications
         vendor_notifications = []
@@ -139,23 +139,23 @@ def track_fav_market_event(mapper, connection, target):
             vendor_notification = VendorNotification(
                 subject="New Event at a Market You Attend!",
                 message=f"A new event '{target.title}' has been added to the market '{market.name}'.",
-                link=f"/vendors/{vendor.id}/events/{target.id}",
+                link=f"/user/vendors/{vendor.id}",
                 vendor_id=vendor.id,
                 market_id=market.id,
                 created_at=datetime.utcnow(),
                 is_read=False
             )
             vendor_notifications.append(vendor_notification)
-            print(f"Prepared vendor notification for Vendor ID={vendor.id}, Name='{vendor.name}'")
+            # print(f"Prepared vendor notification for Vendor ID={vendor.id}, Name='{vendor.name}'")
 
         # Save all notifications
         if user_notifications:
             session.bulk_save_objects(user_notifications)
-            print(f"Successfully created {len(user_notifications)} user notifications for Market ID={market.id}")
+            # print(f"Successfully created {len(user_notifications)} user notifications for Market ID={market.id}")
 
         if vendor_notifications:
             session.bulk_save_objects(vendor_notifications)
-            print(f"Successfully created {len(vendor_notifications)} vendor notifications for Market ID={market.id}")
+            # print(f"Successfully created {len(vendor_notifications)} vendor notifications for Market ID={market.id}")
 
         session.commit()
 
@@ -173,13 +173,13 @@ def track_fav_vendor_event(mapper, connection, target):
 
     session = Session(bind=connection)
     try:
-        (f"Vendor Event detected: ID={target.id}, Title='{target.title}', Vendor ID={target.vendor_id}")
+        # (f"Vendor Event detected: ID={target.id}, Title='{target.title}', Vendor ID={target.vendor_id}")
 
         # Retrieve all users who favorited the vendor related to this event
         favorited_users = session.query(User).join(VendorFavorite).filter(
             VendorFavorite.vendor_id == target.vendor_id
         ).all()
-        print(f"Favorited users for Vendor ID {target.vendor_id}: {len(favorited_users)} users found.")
+        # print(f"Favorited users for Vendor ID {target.vendor_id}: {len(favorited_users)} users found.")
 
         if not favorited_users:
             print(f"No favorited users for Vendor ID {target.vendor_id}. No notifications will be created.")
@@ -190,7 +190,7 @@ def track_fav_vendor_event(mapper, connection, target):
         if not vendor:
             print(f"Vendor with ID {target.vendor_id} not found.")
             return
-        print(f"Vendor found: ID={vendor.id}, Name='{vendor.name}'")
+        # print(f"Vendor found: ID={vendor.id}, Name='{vendor.name}'")
 
         # Prepare notifications
         notifications = []
@@ -198,18 +198,18 @@ def track_fav_vendor_event(mapper, connection, target):
             notification = UserNotification(
                 subject="New Event from Your Favorite Vendor!",
                 message=f"The vendor '{vendor.name}' has added a new event: {target.title}",
-                link=f"/vendors/{vendor.id}/events/{target.id}",  # Adjust this to your app's routing structure
+                link=f"/user/vendors/{vendor.id}",  # Adjust this to your app's routing structure
                 user_id=user.id,
                 vendor_id=vendor.id,
                 created_at=datetime.utcnow(),
                 is_read=False
             )
             notifications.append(notification)
-            print(f"Prepared notification for User ID={user.id}, Email='{user.email}'")
+            # print(f"Prepared notification for User ID={user.id}, Email='{user.email}'")
 
         session.bulk_save_objects(notifications)
         session.commit()
-        print(f"Successfully created {len(notifications)} notifications for Vendor ID={target.vendor_id}")
+        # print(f"Successfully created {len(notifications)} notifications for Vendor ID={target.vendor_id}")
 
     except Exception as e:
         session.rollback()
@@ -220,7 +220,7 @@ def track_fav_vendor_event(mapper, connection, target):
 @listens_for(VendorMarket, 'after_insert')
 def notify_new_vendor_in_favorite_market(mapper, connection, target):
     try:
-        print(f"New vendor detected: Vendor ID={target.vendor_id}, Market Day ID={target.market_day_id}")
+        # print(f"New vendor detected: Vendor ID={target.vendor_id}, Market Day ID={target.market_day_id}")
 
         # Retrieve the market associated with the market day
         market_day = connection.execute(
@@ -236,7 +236,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
         if not market:
             print(f"Market not found for Market ID associated with Market Day ID: {target.market_day_id}")
             return
-        print(f"Market found: ID={market.id}, Name='{market.name}'")
+        # print(f"Market found: ID={market.id}, Name='{market.name}'")
 
         # Retrieve the vendor
         vendor = connection.execute(
@@ -245,7 +245,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
         if not vendor:
             print(f"Vendor not found for Vendor ID: {target.vendor_id}")
             return
-        print(f"Vendor found: ID={vendor.id}, Name='{vendor.name}'")
+        # print(f"Vendor found: ID={vendor.id}, Name='{vendor.name}'")
 
         # Retrieve users who have favorited this market
         favorited_users = connection.execute(
@@ -254,7 +254,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
             .where(MarketFavorite.market_id == market.id)
         ).fetchall()
 
-        print(f"Favorited users for Market ID {market.id}: {len(favorited_users)} users found.")
+        # print(f"Favorited users for Market ID {market.id}: {len(favorited_users)} users found.")
 
         if not favorited_users:
             print(f"No users have favorited Market ID {market.id}. No notifications will be created.")
@@ -266,17 +266,18 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
             notifications.append({
                 "subject": "New Vendor in Your Favorite Market!",
                 "message": f"The vendor '{vendor.name}' has been added to your favorite market '{market.name}'.",
+                "link": f"/user/vendors/{market.id}",
                 "user_id": user.id,
                 "market_id": market.id,
                 "vendor_id": vendor.id,
                 "created_at": datetime.utcnow(),
                 "is_read": False
             })
-            print(f"Prepared notification for User ID={user.id}, Email='{user.email}'")
+            # print(f"Prepared notification for User ID={user.id}, Email='{user.email}'")
 
         if notifications:
             connection.execute(UserNotification.__table__.insert(), notifications)
-            print(f"Successfully created {len(notifications)} notifications for Market ID={market.id}")
+            # print(f"Successfully created {len(notifications)} notifications for Market ID={market.id}")
 
     except Exception as e:
         print(f"Error in notify_new_vendor_in_favorite_market: {e}")
@@ -285,7 +286,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
 def notify_admin_vendor_review_reported(mapper, connection, target):
     if target.is_reported:
         try:
-            print(f"Vendor Review reported: ID={target.id}, Vendor ID={target.vendor_id}")
+            # print(f"Vendor Review reported: ID={target.id}, Vendor ID={target.vendor_id}")
 
             # Retrieve the vendor
             vendor = connection.execute(
@@ -298,18 +299,19 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
             # Create admin notification
             subject = "Reported Vendor Review"
             message = f"A review for vendor '{vendor.name}' has been reported."
-            link = f"/admin/vendors/{vendor.id}/reviews/{target.id}"  # Adjust this link as per your app's routing
+            link = f"/admin/report"  # Adjust this link as per your app's routing
 
             connection.execute(
                 AdminNotification.__table__.insert().values(
                     subject=subject,
+                    link=link,
                     message=message,
                     vendor_id=vendor.id,
                     created_at=datetime.utcnow(),
                     is_read=False
                 )
             )
-            print("Admin notification created for reported Vendor Review.")
+            # print("Admin notification created for reported Vendor Review.")
         except Exception as e:
             print(f"Error creating admin notification for Vendor Review: {e}")
 
@@ -318,7 +320,7 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
 def notify_admin_market_review_reported(mapper, connection, target):
     if target.is_reported:
         try:
-            print(f"Market Review reported: ID={target.id}, Market ID={target.market_id}")
+            # print(f"Market Review reported: ID={target.id}, Market ID={target.market_id}")
 
             # Retrieve the market
             market = connection.execute(
@@ -331,7 +333,7 @@ def notify_admin_market_review_reported(mapper, connection, target):
             # Create admin notification
             subject = "Reported Market Review"
             message = f"A review for market '{market.name}' has been reported."
-            link = f"/admin/markets/{market.id}/reviews/{target.id}"  # Adjust this link as per your app's routing
+            link = f"/admin/report"  # Adjust this link as per your app's routing
 
             connection.execute(
                 AdminNotification.__table__.insert().values(
@@ -342,7 +344,7 @@ def notify_admin_market_review_reported(mapper, connection, target):
                     is_read=False
                 )
             )
-            print("Admin notification created for reported Market Review.")
+            # print("Admin notification created for reported Market Review.")
         except Exception as e:
             print(f"Error creating admin notification for Market Review: {e}")
 
