@@ -228,26 +228,36 @@ function VendorDetail() {
     }, [id]);
 
     useEffect(() => {
-        if (!vendor?.id) return;
-    
+        if (!vendor?.id) return;    
         fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendor.id}`)
             .then((response) => response.json())
             .then((data) => {
                 const today = new Date();
-                today.setHours(0, 0, 0, 0); // Start of today (midnight)
+                today.setHours(0, 0, 0, 0);
+                const window48hr = new Date(today);
+                window48hr.setDate(today.getDate() + 2);
     
                 const filteredBaskets = data.filter((basket) => {
-                    const saleDate = new Date(basket.sale_date);
+                    const [year, month, day] = basket.sale_date.split('-').map(Number);
+                    const saleDate = new Date(year, month - 1, day); // Local time
                     
-                    // Compare sale_date with today's date (ignoring time part)
-                    return saleDate >= today;
-                });
+                    console.log("Basket sale_date (raw):", basket.sale_date);
+                    console.log("Parsed saleDate (local):", saleDate);
     
-                // Filter out baskets already in cart
+                    const isWithinWindow = saleDate >= today && saleDate < window48hr;
+
+                    console.log(`Is basket within 48-hour window? ${isWithinWindow}`);
+                    return isWithinWindow;
+                });
+
+                console.log("Filtered baskets within 48-hour window:", filteredBaskets);
+
                 const filteredData = filteredBaskets.filter(item =>
                     !cartItems.some(cartItem => cartItem.id === item.id)
                 );
-    
+
+                console.log("Filtered baskets excluding cart items:", filteredData);
+
                 setMarketBaskets(filteredData);
             })
             .catch((error) => console.error('Error fetching market baskets', error));
@@ -376,16 +386,31 @@ function VendorDetail() {
                 <div className='box-scroll'>
                 {Array.isArray(markets) && markets.length > 0 ? (
                     markets
-                        .slice() // Create a shallow copy to avoid mutating the original array
+                        .slice()
                         .sort((a, b) => {
-                            const nameA = (marketDetails[a.market_day_id]?.markets?.name || '').toLowerCase();
-                            const nameB = (marketDetails[b.market_day_id]?.markets?.name || '').toLowerCase();
-                            return nameA.localeCompare(nameB);
+                            const marketDetailA = marketDetails[a.market_day_id] || {};
+                            const marketDetailB = marketDetails[b.market_day_id] || {};
+
+                            const firstBasketA = marketBaskets.find(
+                                (item) => item.market_day_id === marketDetailA.id && item.is_sold === false
+                            );
+                            const firstBasketB = marketBaskets.find(
+                                (item) => item.market_day_id === marketDetailB.id && item.is_sold === false
+                            );
+
+                            const dateA = firstBasketA ? new Date(firstBasketA.sale_date) : new Date();
+                            const dateB = firstBasketB ? new Date(firstBasketB.sale_date) : new Date();
+
+                            return dateA - dateB; // Sort by sale_date (ascending order)
                         })
                         .map((market, index) => {
                             const marketDetail = marketDetails[market.market_day_id] || {};
-                            const firstBasket = (marketBaskets.length > 0 ? marketBaskets.find((item) => item.market_day_id === marketDetail.id && item.is_sold === false) : '');
-                            const allBaskets = (marketBaskets.length > 0 ? marketBaskets.filter((item) => item.market_day_id === marketDetail.id && item.is_sold === false) : '');
+                            const firstBasket = marketBaskets.find(
+                                (item) => item.market_day_id === marketDetail.id && item.is_sold === false
+                            );
+                            const allBaskets = marketBaskets.filter(
+                                (item) => item.market_day_id === marketDetail.id && item.is_sold === false
+                            );
                             return (
                                 <div key={index} className="market-item" >
                                     <span className='width-40'>
@@ -411,24 +436,46 @@ function VendorDetail() {
                                             {allBaskets.length > 4 ? (
                                                 <span className="market-baskets nowrap">
                                                     Baskets Available
-                                                    <br/>
-                                                    Pick Up on
-                                                    {firstBasket && firstBasket.pickup_start
-                                                        ? ` ${marketDateConvert(firstBasket.sale_date)} at ${timeConverter(firstBasket.pickup_start)}-${timeConverter(firstBasket.pickup_end)}`
-                                                        : ' Not Available'}
+                                                    <br />
+                                                    {firstBasket && firstBasket.pickup_start ? (
+                                                        (() => {
+                                                            const today = new Date();
+                                                            const todayFormatted = today.toISOString().split('T')[0];
+                                                            const saleDate = new Date(firstBasket.sale_date).toISOString().split('T')[0];
+                                                            if (saleDate === todayFormatted) {
+                                                                return `Pick Up Today at ${timeConverter(firstBasket.pickup_start)}-${timeConverter(firstBasket.pickup_end)}`;
+                                                            } else {
+                                                                return `Pick Up: ${marketDateConvert(firstBasket.sale_date)} at ${timeConverter(firstBasket.pickup_start)}-${timeConverter(firstBasket.pickup_end)}`;
+                                                            }
+                                                        })()
+                                                    ) : (
+                                                        'Not Available'
+                                                    )}
                                                 </span>
                                             ) : (
                                                 <span className="market-baskets nowrap margin-r-8">
-                                                    {allBaskets.length > 0
-                                                        ? `Available Baskets: ${allBaskets.length}`
-                                                        // : !firstBasket
-                                                        //     ? 'None Available'
-                                                        : <a className='link-edit' onClick={() => handleNotifyMe(market.market_day.market_id)}>Notify Me</a>}
+                                                    {allBaskets.length > 0 ? (
+                                                        `Available Baskets: ${allBaskets.length}`
+                                                    ) : (
+                                                        <a className="link-edit" onClick={() => handleNotifyMe(market.market_day.market_id)}>
+                                                            Notify Me
+                                                        </a>
+                                                    )}
                                                     <br />
-                                                    
-                                                    {firstBasket && firstBasket.pickup_start
-                                                        ? `Pick Up on ${marketDateConvert(firstBasket.sale_date)} at ${timeConverter(firstBasket.pickup_start)}-${timeConverter(firstBasket.pickup_end)}`
-                                                        : ''}
+                                                    {firstBasket && firstBasket.pickup_start ? (
+                                                        (() => {
+                                                            const today = new Date();
+                                                            const todayFormatted = today.toISOString().split('T')[0];
+                                                            const saleDate = new Date(firstBasket.sale_date).toISOString().split('T')[0];
+                                                            if (saleDate === todayFormatted) {
+                                                                return `Pick Up Today at ${timeConverter(firstBasket.pickup_start)}-${timeConverter(firstBasket.pickup_end)}`;
+                                                            } else {
+                                                                return `Pick Up: ${marketDateConvert(firstBasket.sale_date)} at ${timeConverter(firstBasket.pickup_start)}-${timeConverter(firstBasket.pickup_end)}`;
+                                                            }
+                                                        })()
+                                                    ) : (
+                                                        ''
+                                                    )}
                                                     {vendorAlertStates[market.market_day_id] && (
                                                         <div className={`alert alert-cart-vendor`}>
                                                             {alertMessage}
