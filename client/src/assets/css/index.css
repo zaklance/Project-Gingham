@@ -433,6 +433,13 @@ ul {
   width: 100%;
 }
 
+.nav-bar {
+  overflow-x: scroll;
+  overflow-y: visible !important;
+  height: 80px;
+  margin-bottom: -22px;
+}
+
 .nav-bar ul{
   display: flex;
   align-content: center;
@@ -1766,7 +1773,7 @@ select:hover {
   margin-bottom: -4px;
 }
 
-#htmlinput {
+#html-input {
   width: 600px;
   height: 300px;
 }
@@ -2461,13 +2468,6 @@ select:hover {
 
   .m-text-center {
     text-align: center;
-  }
-
-  .nav-bar {
-    overflow-x: scroll;
-    overflow-y: visible !important;
-    height: 80px;
-    margin-bottom: -22px;
   }
 
   .nav-bar ul {
