@@ -30,9 +30,9 @@ function Footer() {
                         </li> */}
                     </ul>
                     <ul className='ul-footer'>
-                        <li className='footer-li'>
+                        {/* <li className='footer-li'>
                             <NavLink to="/">About</NavLink>
-                        </li>
+                        </li> */}
                         {!isNotUser && (
                             <li className='footer-li'>
                                 <NavLink to="/contact">Contact</NavLink>

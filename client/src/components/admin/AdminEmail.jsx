@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import BrowserTimezone from '../BrowserTimezone';
 
 const AdminEmail = () => {
     const [previewHtml, setPreviewHtml] = useState('');
@@ -161,7 +162,7 @@ const AdminEmail = () => {
                 <div className='form-group'>
                     <label>Message:</label>
                     <textarea
-                        id="htmlinput"
+                        id="html-input"
                         value={newEmail}
                         onChange={(e) => setNewEmail(e.target.value)}
                         placeholder="Type something..."

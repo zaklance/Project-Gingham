@@ -315,13 +315,13 @@ def login():
     data = request.get_json()
     user = User.query.filter(User.email == data['email']).first()
     if not user:
-        return {'error': 'Login failed'}, 401
+        return {'error': ' Incorrect email or password—or both!'}, 401
     
     if user.status == "banned":
-        return {'error': 'Account is banned. Please contact support.'}, 403
+        return {'error': ' Account is banned. Please contact support.'}, 403
     
     if not user.authenticate(data['password']):
-        return {'error': 'Login failed'}, 401
+        return {'error': ' Incorrect email or password—or both!'}, 401
     
     user.last_log_on = datetime.utcnow()
     db.session.commit()
@@ -380,10 +380,10 @@ def vendorLogin():
     data = request.get_json()
     vendor_user = VendorUser.query.filter(VendorUser.email == data['email']).first()
     if not vendor_user:
-        return {'error': 'Login failed'}, 401
+        return {'error': ' Incorrect email or password—or both!'}, 401
     
     if not vendor_user.authenticate(data['password']):
-        return {'error': 'Login failed'}, 401
+        return {'error': ' Incorrect email or password—or both!'}, 401
     
     vendor_user.last_log_on = datetime.utcnow()
     db.session.commit()
@@ -436,10 +436,10 @@ def adminLogin():
     data = request.get_json()
     admin_user = AdminUser.query.filter(AdminUser.email == data['email']).first()
     if not admin_user:
-        return {'error': 'Login failed'}, 401
+        return {'error': ' Incorrect email or password—or both!'}, 401
     
     if not admin_user.authenticate(data['password']):
-        return {'error': 'Login failed'}, 401
+        return {'error': ' Incorrect email or password—or both!'}, 401
     
     admin_user.last_log_on = datetime.utcnow()
     db.session.commit()

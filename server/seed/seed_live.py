@@ -897,13 +897,13 @@ def run():
 
 
     products_list = [
-        'Other', 'Art', 'Baked Goods', 'Beer & Wine', 'Cheese', 'Cider', 
+        'Other', 'Art', 'Baked Goods', 'Beer', 'Cheese', 'Cider', 
         'Craft Goods', 'Coffee/Tea', 'Dairy', 'Eggs', 'Flowers', 'Fruit', 
         'Gluten-Free', 'Herbs & Spices', 'Honey', 'International', 
         'Jams & Preserves', 'Juice', 'Kimchi', 'Maple Syrup', 'Meat', 
         'Microgreens', 'Mushrooms', 'Nuts', 'Oil & Vinegar', 'Plants', 
         'Pickles', 'Poultry', 'Prepared Foods', 'Seafood', 'Spirits', 
-        'Vegetables'
+        'Vegetables', 'Wine'
         ]
     products = []
 

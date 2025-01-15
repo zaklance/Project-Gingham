@@ -395,8 +395,6 @@ function VendorSales() {
                         </tbody>
                     </table>
                 </div>
-                <br />
-
             </div>
         </>
     )
