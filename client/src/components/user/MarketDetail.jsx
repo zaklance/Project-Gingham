@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
-import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
+// import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
 import { weekDay } from '../../utils/common';
 import { timeConverter, formatEventDate, formatDate, marketDateConvert } from '../../utils/helpers';
 import ReviewMarket from './ReviewMarket';
+import { Annotation, ColorScheme, FeatureVisibility, Map, Marker } from 'mapkit-react'
 
 function MarketDetail ({ match }) {
     const { id } = useParams();
@@ -26,9 +27,7 @@ function MarketDetail ({ match }) {
     const [productList, setProductList] = useState({});
     
     const { handlePopup, amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
-    
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
-    
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -324,14 +323,9 @@ function MarketDetail ({ match }) {
         return <div>Loading...</div>;
     }
 
-    const { coordinates } = market;
-
-    const googleMapsLink = market?.coordinates
-        ? `https://www.google.com/maps?q=${market.coordinates.lat},${market.coordinates.lng}`
-        : '#';
-
     const marketLocation = { 'lat': parseFloat(market.coordinates.lat), 'lng': parseFloat(market.coordinates.lng) }
 
+    const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
 
     return (
         <div>
@@ -377,18 +371,32 @@ function MarketDetail ({ match }) {
                     )}
                 </div>
                 <div id='map' className='map-market-detail'>
-                    <APIProvider apiKey={import.meta.env.VITE_GOOGLE_KEY} onLoad={() => console.log('Maps API has loaded.')}>
-                        <Map defaultCenter={marketLocation} defaultZoom={16} mapId={import.meta.env.VITE_GOOGLE_MAP_ID}>
-                            <AdvancedMarker position={marketLocation} />
-                        </Map>
-                    </APIProvider>
+                    <Map
+                        token={mapToken}
+                        initialRegion={{
+                            centerLatitude: marketLocation.lat,
+                            centerLongitude: marketLocation.lng,
+                            latitudeDelta: 0.04,
+                            longitudeDelta: 0.04,
+                        }}
+                        colorScheme={ColorScheme.Auto}
+                        showsScale={FeatureVisibility.Visible}
+                        showsUserLocation={true}
+                        tracksUserLocation={true}
+                    >
+                        <Annotation
+                            latitude={marketLocation.lat}
+                            longitude={marketLocation.lng}
+                        >
+                            <div className="map-circle"></div>
+                            <div className="map-inside-circle"></div>
+                            <div className="map-triangle"></div>
+                        </Annotation>
+                    </Map>
                 </div>
             </div>
             <p>{market.description}</p>
             <div className='flex-start market-details margin-t-8'>
-                <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
-                    {market.location}
-                </a></h4>
                 <div className='flex-start alert-container'>
                     <button
                         className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
