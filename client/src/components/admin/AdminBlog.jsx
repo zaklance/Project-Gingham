@@ -12,7 +12,7 @@ const AdminBlog = () => {
             fetch("http://127.0.0.1:5555/api/blogs")
                 .then(response => response.json())
                 .then(data => {
-                    const sortedData = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    const sortedData = data.sort((a, b) => new Date(b.post_date) - new Date(a.post_date));
                     setBlogs(sortedData);
                 })
                 .catch(error => console.error('Error fetching blogs', error));
