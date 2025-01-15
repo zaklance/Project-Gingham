@@ -10,8 +10,8 @@ function Home() {
                 .then(response => response.json())
                 .then(data => {
                     const now = new Date();
-                    const filteredData = data.filter(blog => new Date(blog.created_at) <= now);
-                    const sortedData = filteredData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    const filteredData = data.filter(blog => new Date(blog.post_date) <= now);
+                    const sortedData = filteredData.sort((a, b) => new Date(b.post_date) - new Date(a.post_date));
                     setBlogs(sortedData);
                 })
                 .catch(error => console.error('Error fetching blogs', error));
@@ -58,7 +58,7 @@ function Home() {
                     <i className="icon-arrow-r" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>
                 </div>
                 <h1>{currentBlog.title}</h1>
-                <h6 className="margin-b-8">{blogTimeConverter(currentBlog.created_at)}</h6>
+                <h6 className="margin-b-8">{blogTimeConverter(currentBlog.post_date)}</h6>
                 <div dangerouslySetInnerHTML={{ __html: currentBlog.body }} style={{ width: '100%', height: '100%' }}></div>
             </div>
             : <></>}

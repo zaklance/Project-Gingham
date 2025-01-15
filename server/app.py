@@ -2777,11 +2777,11 @@ def blogs():
 
     elif request.method == 'POST':
         data = request.get_json()
-        created_at = None
+        post_date = None
 
-        if 'created_at' in data:
+        if 'post_date' in data:
             try:
-                created_at = datetime.strptime('2025-01-14', '%Y-%m-%d').date()
+                post_date = datetime.strptime('2025-01-14', '%Y-%m-%d').date()
             except ValueError:
                 return {'error': 'Invalid date format for created_at. Expected format: YYYY-MM-DD HH:MM'}, 400
 
@@ -2789,7 +2789,7 @@ def blogs():
             title=data.get('title'),
             body=data.get('body'),
             admin_user_id=data.get('admin_user_id'),
-            created_at=created_at
+            post_date=post_date
         )
 
         try:
