@@ -1186,8 +1186,11 @@ def run():
         rand_user = [None, randint(1, 50)]
         last_month = randint(-4, 4)
         sale_date = (datetime.now() - timedelta(days=last_month)).date()
-        pickup_start = datetime.combine(sale_date, fake.time_object()).replace(second=0, microsecond=0)
-        random_duration_minutes = randint(30, 120)
+        rand_hour = randint(10, 14)
+        rand_minute = choice([0, 0, 30])
+        date_time = datetime(sale_date.year, sale_date.month, sale_date.day, rand_hour, rand_minute, 0)
+        pickup_start = date_time
+        random_duration_minutes = choice([30, 60, 60, 90, 90, 120, 120, 120, 120, 240, 240, 360])
         pickup_end = pickup_start + timedelta(minutes=random_duration_minutes)
 
         user_id = choice(rand_user)
@@ -1216,8 +1219,11 @@ def run():
         rand_user = [None, randint(1, 50)]
         last_month = randint(-1, 1)
         sale_date = (datetime.now() - timedelta(days=last_month)).date()
-        pickup_start = datetime.combine(sale_date, fake.time_object()).replace(second=0, microsecond=0)
-        random_duration_minutes = randint(30, 120)
+        rand_hour = randint(10, 14)
+        rand_minute = choice([0, 0, 30])
+        date_time = datetime(sale_date.year, sale_date.month, sale_date.day, rand_hour, rand_minute, 0)
+        pickup_start = date_time
+        random_duration_minutes = choice([30, 60, 60, 90, 90, 120, 120, 120, 120, 240, 240, 360])
         pickup_end = pickup_start + timedelta(minutes=random_duration_minutes)
 
         user_id = choice(rand_user)

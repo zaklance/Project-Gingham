@@ -280,7 +280,7 @@ const router = createBrowserRouter([
                     { path: "blog", element: <AdminAuthRoute><AdminBlog /></AdminAuthRoute>},
                     { path: "report", element: <AdminAuthRoute><AdminReport /></AdminAuthRoute>},
                     { path: "profile/:id",element:<AdminRoute><AdminProfile /></AdminRoute>},
-                    { path: "faqs", element: <AdminFAQs /> },
+                    { path: "faqs", element: <AdminRoute><AdminFAQs /></AdminRoute>},
                     { path: "logout", element: <AdminLogout /> },
                     { path: "reset-request", element: <AdminResetRequest /> },
                     { path: "password-reset/:token", element: <AdminPasswordReset /> },
