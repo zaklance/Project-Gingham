@@ -22,6 +22,13 @@ export function blogTimeConverter(postedAt) {
     return formattedDate;
 }
 
+export function marketDateConvert(sale_date) {
+    const [date] = sale_date.split(/T| /);
+    const [year, month, day] = date.split('-');
+    const formattedDate = `${month}/${day}`;
+    return formattedDate;
+}
+
 export function convertToLocalDate(gmtDateString) {
     const [year, month, day] = gmtDateString.split('-').map(Number);
     const localDate = new Date(year, month - 1, day);

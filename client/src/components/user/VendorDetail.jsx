@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useOutletContext, useNavigate, useLocation } from 'react-router-dom';
 import { weekDay } from '../../utils/common';
-import { timeConverter, formatEventDate } from '../../utils/helpers';
+import { timeConverter, formatEventDate, marketDateConvert } from '../../utils/helpers';
 import MarketCard from './MarketCard';
 import ReviewVendor from './ReviewVendor';
 
@@ -229,27 +229,29 @@ function VendorDetail() {
 
     useEffect(() => {
         if (!vendor?.id) return;
-
+    
         fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendor.id}`)
             .then((response) => response.json())
             .then((data) => {
                 const today = new Date();
-                today.setHours(0, 0, 0, 0); // Start of today
-                const sixDaysFromNow = new Date();
-                sixDaysFromNow.setDate(today.getDate() + 1); // Formerly 6
-                sixDaysFromNow.setHours(23, 59, 59, 999); // End of the sixth day
-
+                today.setHours(0, 0, 0, 0); // Start of today (midnight)
+    
                 const filteredBaskets = data.filter((basket) => {
                     const saleDate = new Date(basket.sale_date);
-                    return saleDate >= today && saleDate <= sixDaysFromNow;
+                    
+                    // Compare sale_date with today's date (ignoring time part)
+                    return saleDate >= today;
                 });
+    
+                // Filter out baskets already in cart
                 const filteredData = filteredBaskets.filter(item =>
                     !cartItems.some(cartItem => cartItem.id === item.id)
                 );
+    
                 setMarketBaskets(filteredData);
             })
             .catch((error) => console.error('Error fetching market baskets', error));
-    }, [vendor]);
+    }, [vendor, cartItems]);
 
     const handleNotifyMe = async (marketId) => {
 
@@ -398,7 +400,11 @@ function VendorDetail() {
                                         <>
                                         <br className='m-br'/>
                                         {marketBaskets.filter((item) => item.market_day_id === marketDetail.id && item.is_sold === false).length > 0 ? (
-                                                <span className="market-price">Price: ${firstBasket ? firstBasket.price : ''}</span>
+                                                <span className="market-price">
+                                                    Price: ${firstBasket ? firstBasket.price : ''}
+                                                    <br/>
+                                                    Value: ${firstBasket ? firstBasket.basket_value : ''}
+                                                </span>
                                             ) : (
                                                 <span className="market-price">Out of Stock</span>
                                             )}
@@ -406,9 +412,9 @@ function VendorDetail() {
                                                 <span className="market-baskets nowrap">
                                                     Baskets Available
                                                     <br/>
-                                                    Pick Up:
+                                                    Pick Up on
                                                     {firstBasket && firstBasket.pickup_start
-                                                        ? ` ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
+                                                        ? ` ${marketDateConvert(firstBasket.sale_date)} at ${timeConverter(firstBasket.pickup_start)}-${timeConverter(firstBasket.pickup_end)}`
                                                         : ' Not Available'}
                                                 </span>
                                             ) : (
@@ -421,7 +427,7 @@ function VendorDetail() {
                                                     <br />
                                                     
                                                     {firstBasket && firstBasket.pickup_start
-                                                        ? `Pick Up: ${timeConverter(firstBasket.pickup_start)} - ${timeConverter(firstBasket.pickup_end)}`
+                                                        ? `Pick Up on ${marketDateConvert(firstBasket.sale_date)} at ${timeConverter(firstBasket.pickup_start)}-${timeConverter(firstBasket.pickup_end)}`
                                                         : ''}
                                                     {vendorAlertStates[market.market_day_id] && (
                                                         <div className={`alert alert-cart-vendor`}>
