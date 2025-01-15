@@ -2396,12 +2396,16 @@ select:hover {
   padding: 8px
 }
 
-.faqs p {
+.faqs p, .faqs ul li {
   background-color: #eff;
   color: #007BFF;
   font-size: 1.2em;
   font-weight: 200;
   padding: 8px 8px 16px 28px;
+}
+
+.faqs ul li {
+  margin-bottom: -12px;
 }
 
 .m-br {

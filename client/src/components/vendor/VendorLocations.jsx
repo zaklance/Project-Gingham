@@ -71,7 +71,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://127.0.0.1:5555/api/markets");
+                const response = await fetch("http://127.0.0.1:5555/api/markets?is_visible=true");
                 const data = await response.json();
                 setAllMarkets(data);
                 if (filteredMarketDays.length > 0) {
@@ -212,6 +212,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
                                     </>
                                 )}
                             </div>
+                            <p className='margin-t-8 margin-l-8'>Can't find a market? Email us at hello@gingham.nyc today!</p>
                             <button className='btn-edit' onClick={handleAddVendorMarket}>Add Day</button>
                         </form>
                         <h2 className='margin-b-16 margin-t-24'>Delete Markets</h2>

@@ -119,7 +119,7 @@ function PickUp() {
                                                         <QRCodeSVG
                                                             className='img-qr'
                                                             value={matchingQRCode ? matchingQRCode.qr_code : 'Invalid QR Code'}
-                                                            minVersion={3}
+                                                            minVersion={4}
                                                         />
                                                     </div>
                                                     <div className='text-center margin-t-16'>
