@@ -2,19 +2,26 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { avatars_default, states } from '../../utils/common';
 import { timeConverter, formatPhoneNumber } from '../../utils/helpers';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import BasketSales from './BasketSales';
 
 function Profile({ marketData }) {
     const { id } = useParams();
     const [user, setUser] = useState(null);
     const [profileData, setProfileData] = useState(null);
+    const [userSettings, setUserSettings] = useState(null);
+    const [tempUserSettings, setTempUserSettings] = useState(null);
     const [tempProfileData, setTempProfileData] = useState(null);
     const [editMode, setEditMode] = useState(false);
+    const [settingsMode, setSettingsMode] = useState(false);
     const [vendorFavs, setVendorFavs] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
     const [salesHistory, setSalesHistory] = useState([]);
+    const [activeTab, setActiveTab] = useState('website');
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'))
 
@@ -71,6 +78,35 @@ function Profile({ marketData }) {
         };
 
         fetchProfileData();
+    }, [id]);
+
+    useEffect(() => {
+        const fetchUserSettings = async () => {
+            const token = localStorage.getItem('user_jwt-token');
+            try {
+                const response = await fetch(`http://127.0.0.1:5555/api/settings-users?user_id=${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const text = await response.text();
+                if (response.ok) {
+                    try {
+                        const data = JSON.parse(text);
+                        setUserSettings({ ...data });
+                    } catch (jsonError) {
+                        console.error('Error parsing JSON:', jsonError);
+                    }
+                } else {
+                    console.error('Error fetching user settings:', response.status);
+                }
+            } catch (error) {
+                console.error('Error fetching user settings data:', error);
+            }
+        };
+        fetchUserSettings();
     }, [id]);
 
     const handleEditToggle = () => {
@@ -198,6 +234,32 @@ function Profile({ marketData }) {
         }
     };
 
+    const handleSaveSettings = async () => {
+        const token = localStorage.getItem('user_jwt-token');
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/api/settings-users/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(tempUserSettings)
+            });
+            if (response.ok) {
+                const updatedData = await response.json();
+                setUserSettings(updatedData);
+                setSettingsMode(false);
+                console.log('Profile data updated successfully:', updatedData);
+            } else {
+                console.log('Failed to save changes');
+                console.log('Response status:', response.status);
+                console.log('Response text:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error saving changes:', error);
+        }
+    };
+
     const handleDeleteImage = async () => {
         if (!profileData || !profileData.avatar) {
             alert('No image to delete.');
@@ -305,6 +367,23 @@ function Profile({ marketData }) {
             })
             .catch(error => console.error('Error fetching sales history:', error.message));
     }, []);
+
+    const handleSettingsToggle = () => {
+        if (!settingsMode) {
+            setTempUserSettings({ ...userSettings });
+        } else {
+            setTempUserSettings(null);
+        }
+        setSettingsMode(!settingsMode);
+        console.log('toggling')
+    };
+    
+    const handleSwitchChange = (field) => {
+        setTempUserSettings({
+            ...tempUserSettings,
+            [field]: !tempUserSettings[field]
+        });
+    };
     
 
     if (!profileData) {
@@ -316,174 +395,227 @@ function Profile({ marketData }) {
         <div>
             <h1>Welcome to Your Profile, {profileData.first_name}!</h1>
             <div className='box-bounding badge-container'>
-                <i className='icon-settings'>&emsp;</i>
-                <h2 className='margin-b-16'>Profile Information</h2>
-                {editMode ? (
-                    <div className='margin-t-16'>
-                        <div className="form-group">
-                            <label>First Name:</label>
-                            <input
-                                type="text"
-                                name="first_name"
-                                value={tempProfileData ? tempProfileData.first_name : ''}
-                                onChange={handleInputChange}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Last Name:</label>
-                            <input
-                                type="text"
-                                name="last_name"
-                                value={tempProfileData ? tempProfileData.last_name : ''}
-                                onChange={handleInputChange}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Email:</label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={tempProfileData ? tempProfileData.email : ''}
-                                onChange={handleInputChange}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Phone:</label>
-                            <input
-                                type="tel"
-                                name="phone"
-                                value={tempProfileData ? formatPhoneNumber(tempProfileData.phone) : ''}
-                                onChange={handleInputChange}
-                            />
-                        </div>
-                        <div className="form-address">
-                            <label>Address:</label>
-                            <input
-                                type="text"
-                                name="address_1"
-                                size="36"
-                                placeholder='Address 1'
-                                value={tempProfileData ? tempProfileData.address_1 : ''}
-                                onChange={handleInputChange}
-                            />
-                            <input
-                                type="text"
-                                name="address_2"
-                                size="8"
-                                placeholder='Apt, Floor, Suite # etc'
-                                value={tempProfileData ? tempProfileData.address_2 : ''}
-                                onChange={handleInputChange}
-                            />
-                        </div>
-                        <div className='form-address'>
-                            <label></label>
-                            <input
-                                type="text"
-                                name="city"
-                                size="36"
-                                placeholder='City'
-                                value={tempProfileData ? tempProfileData.city : ''}
-                                onChange={handleInputChange}
-                            />
-                            <select className='select-state'
-                                name="state"
-                                value={tempProfileData ? tempProfileData.state : ''}
-                                onChange={handleInputChange}
-                            >
-                                <option value="">Select</option>
-                                {states.map((state, index) => (
-                                    <option key={index} value={state}>
-                                        {state}
-                                    </option>
-                                ))}
-                            </select>
-                            <input
-                                type="text"
-                                name="zipcode"
-                                size="5"
-                                placeholder='Zipcode'
-                                value={tempProfileData ? tempProfileData.zipcode : ''}
-                                onChange={handleInputChange}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Default Avatar:</label>
-                            <select className='select'
-                                name="avatar_default"
-                                value={tempProfileData ? tempProfileData.avatar_default : ''}
-                                onChange={handleInputChange}
-                            >
-                                <option value="">Select</option>
-                                {Object.entries(avatars_default).map(([key, value], index) => (
-                                    <option key={index} value={value}>
-                                        {key}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className='form-group'>
-                            <label>Avatar:</label>
-                            {profileData ? (
-                                <>
-                                    <img
-                                        className='img-avatar-profile'
-                                        src={tempProfileData.avatar ? `/user-images/${tempProfileData.avatar}` : `/user-images/_default-images/${tempProfileData.avatar_default}`}
-                                        alt="Avatar"
-                                        style={{ maxWidth: '100%', height: 'auto', padding: '4px' }}
+                <i className='icon-settings' onClick={handleSettingsToggle}>&emsp;</i>
+                {!settingsMode ? (
+                    <>
+                        <h2 className='margin-b-16'>Profile Information</h2>
+                        {editMode ? (
+                            <div className='margin-t-16'>
+                                <div className="form-group">
+                                    <label>First Name:</label>
+                                    <input
+                                        type="text"
+                                        name="first_name"
+                                        value={tempProfileData ? tempProfileData.first_name : ''}
+                                        onChange={handleInputChange}
                                     />
-                                </>
-                            ) : (
-                                <p>No image uploaded.</p>
-                            )}
-                            <div className='flex-start flex-center-align'>
-                                <div className='margin-l-8'>
-                                    <button className='btn btn-small btn-blue' onClick={handleDeleteImage}>Delete Image</button>
                                 </div>
-                                <label htmlFor='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
-                                <input
-                                    id="file-upload"
-                                    type="file"
-                                    name="file"
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                />
+                                <div className="form-group">
+                                    <label>Last Name:</label>
+                                    <input
+                                        type="text"
+                                        name="last_name"
+                                        value={tempProfileData ? tempProfileData.last_name : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Email:</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={tempProfileData ? tempProfileData.email : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Phone:</label>
+                                    <input
+                                        type="tel"
+                                        name="phone"
+                                        value={tempProfileData ? formatPhoneNumber(tempProfileData.phone) : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className="form-address">
+                                    <label>Address:</label>
+                                    <input
+                                        type="text"
+                                        name="address_1"
+                                        size="36"
+                                        placeholder='Address 1'
+                                        value={tempProfileData ? tempProfileData.address_1 : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                    <input
+                                        type="text"
+                                        name="address_2"
+                                        size="8"
+                                        placeholder='Apt, Floor, Suite # etc'
+                                        value={tempProfileData ? tempProfileData.address_2 : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className='form-address'>
+                                    <label></label>
+                                    <input
+                                        type="text"
+                                        name="city"
+                                        size="36"
+                                        placeholder='City'
+                                        value={tempProfileData ? tempProfileData.city : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                    <select className='select-state'
+                                        name="state"
+                                        value={tempProfileData ? tempProfileData.state : ''}
+                                        onChange={handleInputChange}
+                                    >
+                                        <option value="">Select</option>
+                                        {states.map((state, index) => (
+                                            <option key={index} value={state}>
+                                                {state}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <input
+                                        type="text"
+                                        name="zipcode"
+                                        size="5"
+                                        placeholder='Zipcode'
+                                        value={tempProfileData ? tempProfileData.zipcode : ''}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Default Avatar:</label>
+                                    <select className='select'
+                                        name="avatar_default"
+                                        value={tempProfileData ? tempProfileData.avatar_default : ''}
+                                        onChange={handleInputChange}
+                                    >
+                                        <option value="">Select</option>
+                                        {Object.entries(avatars_default).map(([key, value], index) => (
+                                            <option key={index} value={value}>
+                                                {key}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className='form-group'>
+                                    <label>Avatar:</label>
+                                    {profileData ? (
+                                        <>
+                                            <img
+                                                className='img-avatar-profile'
+                                                src={tempProfileData.avatar ? `/user-images/${tempProfileData.avatar}` : `/user-images/_default-images/${tempProfileData.avatar_default}`}
+                                                alt="Avatar"
+                                                style={{ maxWidth: '100%', height: 'auto', padding: '4px' }}
+                                            />
+                                        </>
+                                    ) : (
+                                        <p>No image uploaded.</p>
+                                    )}
+                                    <div className='flex-start flex-center-align'>
+                                        <div className='margin-l-8'>
+                                            <button className='btn btn-small btn-blue' onClick={handleDeleteImage}>Delete Image</button>
+                                        </div>
+                                        <label htmlFor='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
+                                        <input
+                                            id="file-upload"
+                                            type="file"
+                                            name="file"
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                        />
+                                    </div>
+                                </div>
+                                <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
+                                <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
                             </div>
-                        </div>
-                        <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
-                        <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
-                    </div>
+                        ) : (
+                            <>
+                                <div className='flex-space-evenly flex-gap-16 flex-start-align m-flex-wrap'>
+                                    <img className='img-avatar-profile' src={profileData.avatar ? `/user-images/${profileData.avatar}` : `/user-images/_default-images/${profileData.avatar_default}`} alt="Avatar" />
+                                    <div className='width-80'>
+                                        <table className='table-profile'>
+                                            <tbody>
+                                                <tr>
+                                                    <td className='cell-title'>Name:</td>
+                                                    <td className='cell-text'>{profileData.first_name} {profileData.last_name}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Email:</td>
+                                                    <td className='cell-text'>{profileData.email}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Phone:</td>
+                                                    <td className='cell-text'>{formatPhoneNumber(profileData.phone)}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Address:</td>
+                                                    <td className='cell-text'>{profileData.address_1}, {profileData.address_2}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'></td>
+                                                    <td className='cell-text'>{profileData.city}, {profileData.state} {profileData.zipcode}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </>
                 ) : (
                     <>
-                        <div className='flex-space-evenly flex-gap-16 flex-start-align m-flex-wrap'>
-                            <img className='img-avatar-profile' src={profileData.avatar ? `/user-images/${profileData.avatar}` : `/user-images/_default-images/${profileData.avatar_default}`} alt="Avatar" />
-                            <div className='width-80'>
-                                <table className='table-profile'>
-                                    <tbody>
-                                        <tr>
-                                            <td className='cell-title'>Name:</td>
-                                            <td className='cell-text'>{profileData.first_name} {profileData.last_name}</td>
-                                        </tr>
-                                        <tr>
-                                            <td className='cell-title'>Email:</td>
-                                            <td className='cell-text'>{profileData.email}</td>
-                                        </tr>
-                                        <tr>
-                                            <td className='cell-title'>Phone:</td>
-                                            <td className='cell-text'>{formatPhoneNumber(profileData.phone)}</td>
-                                        </tr>
-                                        <tr>
-                                            <td className='cell-title'>Address:</td>
-                                            <td className='cell-text'>{profileData.address_1}, {profileData.address_2}</td>
-                                        </tr>
-                                        <tr>
-                                            <td className='cell-title'></td>
-                                            <td className='cell-text'>{profileData.city}, {profileData.state} {profileData.zipcode}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
+                        <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
+                            <h2 className='margin-b-16'>Settings</h2>
+                            <div className='tabs margin-t-20'>                
+                                <Link to="#" onClick={() => setActiveTab('website')} className={activeTab === 'website' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                                    Website
+                                </Link>
+                                <Link to="#" onClick={() => setActiveTab('email')} className={activeTab === 'email' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                                    Email
+                                </Link>
+                                <Link to="#" onClick={() => setActiveTab('text')} className={activeTab === 'text' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                                    Text
+                                </Link>
                             </div>
                         </div>
+                        {activeTab === 'website' && (
+                            <FormGroup>
+                                <FormControlLabel control={<Switch checked={tempUserSettings.site_fav_market_new_event} onChange={() => handleSwitchChange('site_fav_market_new_event')} color={'secondary'} />} label="Favorite market creates an event"/>
+                                <FormControlLabel control={<Switch checked={tempUserSettings.site_fav_market_schedule_change} onChange={() => handleSwitchChange('site_fav_market_schedule_change')} color={'secondary'} />} label="Favorite market changes schedule"/>
+                                <FormControlLabel control={<Switch checked={tempUserSettings.site_fav_market_new_vendor} onChange={() => handleSwitchChange('site_fav_market_new_vendor')} color={'secondary'} />} label="New vendor in a favorited market"/>
+                                <FormControlLabel control={<Switch checked={tempUserSettings.site_fav_market_new_basket} onChange={() => handleSwitchChange('site_fav_market_new_basket')} color={'secondary'} />} label="New basket for sale by a favorited market"/>
+                                <FormControlLabel control={<Switch checked={tempUserSettings.site_fav_vendor_new_event} onChange={() => handleSwitchChange('site_fav_vendor_new_event')} color={'secondary'} />} label="Favorite vendor creates an event or special"/>
+                                <FormControlLabel control={<Switch checked={tempUserSettings.site_fav_vendor_schedule_change} onChange={() => handleSwitchChange('site_fav_vendor_schedule_change')} color={'secondary'} />} label="Favorite vendor changes schedule"/>
+                                <FormControlLabel control={<Switch checked={tempUserSettings.site_fav_vendor_new_basket} onChange={() => handleSwitchChange('site_fav_vendor_new_basket')} color={'secondary'} />} label="New basket for sale by a favorited vendor"/>
+                                <FormControlLabel control={<Switch checked={tempUserSettings.site_basket_pickup_time} onChange={() => handleSwitchChange('site_basket_pickup_time')} color={'secondary'} />} label="Pickup time for a basket you purchased"/>
+                            </FormGroup>
+                        )}
+                        {activeTab === 'email' && (
+                            <FormGroup>
+                                <FormControlLabel control={<Switch checked={tempUserSettings.email_fav_market_new_event} onChange={() => handleSwitchChange('email_fav_market_new_event')} color={'secondary'} />} label="Favorite market creates an event" />
+                                <FormControlLabel control={<Switch checked={tempUserSettings.email_fav_market_schedule_change} onChange={() => handleSwitchChange('email_fav_market_schedule_change')} color={'secondary'} />} label="Favorite market changes schedule" />
+                                <FormControlLabel control={<Switch checked={tempUserSettings.email_fav_market_new_vendor} onChange={() => handleSwitchChange('email_fav_market_new_vendor')} color={'secondary'} />} label="New vendor in a favorited market" />
+                                <FormControlLabel control={<Switch checked={tempUserSettings.email_fav_vendor_new_event} onChange={() => handleSwitchChange('email_fav_vendor_new_event')} color={'secondary'} />} label="Favorite vendor creates an event or special" />
+                                <FormControlLabel control={<Switch checked={tempUserSettings.email_fav_vendor_schedule_change} onChange={() => handleSwitchChange('email_fav_vendor_schedule_change')} color={'secondary'} />} label="Favorite vendor changes schedule" />
+                                <FormControlLabel control={<Switch checked={tempUserSettings.email_fav_vendor_new_basket} onChange={() => handleSwitchChange('email_fav_vendor_new_basket')} color={'secondary'} />} label="New basket for sale by a favorited vendor" />
+                                <FormControlLabel control={<Switch checked={tempUserSettings.email_basket_pickup_time} onChange={() => handleSwitchChange('email_basket_pickup_time')} color={'secondary'} />} label="Pickup time for a basket you purchased" />
+                            </FormGroup>
+                        )}
+                        {activeTab === 'text' && (
+                            <FormGroup>
+                                <FormControlLabel control={<Switch checked={tempUserSettings.text_fav_market_schedule_change} onChange={() => handleSwitchChange('text_fav_market_schedule_change')} color={'secondary'} />} label="Favorite market changes schedule" />
+                                <FormControlLabel control={<Switch checked={tempUserSettings.text_fav_market_new_basket} onChange={() => handleSwitchChange('text_fav_market_new_basket')} color={'secondary'} />} label="New basket for sale by a favorited market" />
+                                <FormControlLabel control={<Switch checked={tempUserSettings.text_fav_vendor_schedule_change} onChange={() => handleSwitchChange('text_fav_vendor_schedule_change')} color={'secondary'} />} label="Favorite vendor changes schedule" />
+                                <FormControlLabel control={<Switch checked={tempUserSettings.text_basket_pickup_time} onChange={() => handleSwitchChange('text_basket_pickup_time')} color={'secondary'} />} label="Pickup time for a basket you purchased" />
+                            </FormGroup>
+                        )}
+                        <button className='btn-edit' onClick={handleSaveSettings}>Save</button>
                     </>
                 )}
             </div>
