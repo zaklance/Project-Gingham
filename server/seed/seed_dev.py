@@ -1076,20 +1076,20 @@ def run():
     db.session.commit()
 
     # add fake vendor markets
-    # vendor_markets = []
-    # for i in range(500):
+    vendor_markets = []
+    for i in range(500):
 
-    #     vendor_id = str(randint(1, 150))
-    #     market_day_id = str(randint(1, 57))
+        vendor_id = str(randint(1, 150))
+        market_day_id = str(randint(1, 57))
 
-    #     vm = VendorMarket(
-    #         vendor_id=vendor_id,
-    #         market_day_id=market_day_id
-    #     )
-    #     vendor_markets.append(vm)
+        vm = VendorMarket(
+            vendor_id=vendor_id,
+            market_day_id=market_day_id
+        )
+        vendor_markets.append(vm)
 
-    # db.session.add_all(vendor_markets)
-    # db.session.commit()
+    db.session.add_all(vendor_markets)
+    db.session.commit()
 
 
     # add fake users
