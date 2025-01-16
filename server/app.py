@@ -7,7 +7,8 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
                     VendorMarket, VendorUser, AdminUser, Basket, Event, 
                     Product, UserNotification, VendorNotification, 
-                    AdminNotification, QRCode, FAQ, Blog, Receipt, bcrypt )
+                    AdminNotification, QRCode, FAQ, Blog, Receipt, 
+                    SettingsUser, SettingsVendor, SettingsAdmin, bcrypt )
 from dotenv import load_dotenv
 from sqlalchemy import func, desc
 from sqlalchemy.exc import IntegrityError
@@ -526,6 +527,104 @@ def check_admin_session():
         return {'error': 'Authorization failed'}, 401
 
     return admin_user.to_dict(), 200
+
+@app.route('/api/settings-users', methods=['GET', 'POST'])
+def post_settings_user():
+
+    try:
+        if request.method == 'GET':
+
+            user_id = request.args.get('user_id', type=int)
+            query = SettingsUser.query
+
+            if user_id is not None:
+                user_result = query.filter(SettingsUser.user_id == user_id).first()
+                if user_result:
+                    return jsonify(user_result.to_dict()), 200
+                return jsonify({'error': 'Settings not found for this user'}), 404
+            else:
+                users_settings = query.all()
+
+            if not users_settings:
+                return jsonify({'message': 'No team members found for this vendor'}), 404
+            return jsonify([user.to_dict() for user in query]), 200
+        
+    except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+    
+    if request.method =='POST':
+        data = request.get_json()
+
+        try:
+            user = SettingsUser.query.filter(SettingsUser.user_id == data['user_id']).first()
+            if user:
+                return {'error': 'user settings already exists'}, 400
+
+            new_user_settings = SettingsUser(
+                user_id=data['user_id'],
+            )
+
+            db.session.add(new_user_settings)
+            db.session.commit()
+
+            return new_user_settings.to_dict(), 201
+
+        except IntegrityError as e:
+            db.session.rollback()
+            return {'error': f'IntegrityError: {str(e)}'}, 400 
+
+        except ValueError as e:
+            return {'error': f'ValueError: {str(e)}'}, 400
+
+        except Exception as e:
+            return {'error': f'Exception: {str(e)}'}, 500
+
+@app.route('/api/settings-users/<int:id>', methods=['GET', 'PATCH'])
+@jwt_required()
+def settings_user(id):
+    
+    if not check_role('user') and not check_role('admin'):
+        return {'error': "Access forbidden: User only"}, 403
+    
+    if request.method == 'GET':
+        settings = SettingsUser.query.filter_by(id=id).first()
+        if not settings:
+            return {'error': 'user not found'}, 404
+        settings_data = settings.to_dict()
+        return jsonify(settings_data), 200
+
+    elif request.method == 'PATCH':
+        settings = SettingsUser.query.filter_by(id=id).first()
+        if not settings:
+            return {'error': 'user not found'}, 404
+        try:
+            data = request.get_json()
+            for key, value in data.items():
+                setattr(settings, key, value)
+            # if 'email_fav_market_new_event' in data:
+            #     settings.email_fav_market_new_event = data.get('email_fav_market_new_event')
+            # if 'email_fav_market_schedule_change' in data:
+            #     settings.email_fav_market_schedule_change = data.get('email_fav_market_schedule_change')
+            # if 'email_fav_market_new_vendor' in data:
+            #     settings.email_fav_market_new_vendor = data.get('email_fav_market_new_vendor')
+            # if 'email_fav_market_new_basket' in data:
+            #     settings.email_fav_market_new_basket = data.get('email_fav_market_new_basket')
+            # if 'email_fav_vendor_new_event' in data:
+            #     settings.email_fav_vendor_new_event = data.get('email_fav_vendor_new_event')
+            # if 'email_fav_vendor_schedule_change' in data:
+            #     settings.email_fav_vendor_schedule_change = data.get('email_fav_vendor_schedule_change')
+            # if 'email_fav_vendor_new_basket' in data:
+            #     settings.email_fav_vendor_new_basket = data.get('email_fav_vendor_new_basket')
+            # if 'email_basket_pickup_time' in data:
+            #     settings.email_basket_pickup_time = data.get('email_basket_pickup_time')
+
+            db.session.commit()
+            return jsonify(settings.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
 
 @app.route('/api/users', methods=['GET'])
 @jwt_required()

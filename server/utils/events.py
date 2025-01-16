@@ -7,7 +7,8 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
                     VendorMarket, VendorUser, AdminUser, Basket, Event, 
                     Product, UserNotification, VendorNotification, 
-                    AdminNotification, QRCode, FAQ, Blog, Receipt, bcrypt )
+                    AdminNotification, QRCode, FAQ, Blog, Receipt, 
+                    SettingsUser, SettingsVendor, SettingsAdmin, bcrypt )
 
 
 @listens_for(VendorFavorite, 'after_insert')
@@ -266,7 +267,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
             notifications.append({
                 "subject": "New Vendor in Your Favorite Market!",
                 "message": f"The vendor '{vendor.name}' has been added to your favorite market '{market.name}'.",
-                "link": f"/user/vendors/{market.id}",
+                "link": f"/user/markets/{market.id}",
                 "user_id": user.id,
                 "market_id": market.id,
                 "vendor_id": vendor.id,

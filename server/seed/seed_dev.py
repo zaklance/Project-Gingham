@@ -10,7 +10,8 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
                     VendorMarket, VendorUser, AdminUser, Basket, Event, 
                     Product, UserNotification, VendorNotification, 
-                    AdminNotification, QRCode, FAQ, Blog, Receipt, bcrypt )
+                    AdminNotification, QRCode, FAQ, Blog, Receipt, 
+                    SettingsUser, SettingsVendor, SettingsAdmin, bcrypt )
 import json
 from datetime import datetime, timedelta, timezone, time, date
 
@@ -40,6 +41,10 @@ def run():
     QRCode.query.delete()
     FAQ.query.delete()
     Blog.query.delete()
+    Receipt.query.delete()
+    SettingsUser.query.delete()
+    SettingsVendor.query.delete()
+    SettingsAdmin.query.delete()
 
     db.session.commit()
 
@@ -913,6 +918,7 @@ def run():
 
     # add fake users
     users = []
+    users_settings = []
     states = [
          'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA', 
          'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA', 
@@ -928,23 +934,6 @@ def run():
         "avatar-peach-1.jpg", "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
         "avatar-watermelon-1.jpg"
     ]
-
-    # user for demo
-    user_demo = User(
-        email="hamging@gingham.nyc",
-        password="lol",
-        first_name="Ham-man",
-        last_name="Gingy",
-        phone="2095553880",
-        address_1="11 Broadway",
-        address_2="Floor 2",
-        city="New York",
-        state="NY",
-        zipcode="10004",
-        coordinates={"lat": 40.726586, "lng": -73.988734}
-    )
-    db.session.add(user_demo)
-    db.session.commit()
 
     for i in range(50):
         email = fake.ascii_free_email()
@@ -962,6 +951,7 @@ def run():
         # avatar = f'_default-images/{choice(avatars)}'
 
         u = User(
+            id=(i + 1),
             email=email,
             password=password,
             first_name=first_name,
@@ -977,7 +967,35 @@ def run():
         )
         users.append(u)
 
+        su = SettingsUser(
+            user_id=(i + 1)
+        )
+        users_settings.append(su)
+
     db.session.add_all(users)
+    db.session.add_all(users_settings)
+    db.session.commit()
+
+
+    # user for demo
+    user_demo = User(
+        email="hamging@gingham.nyc",
+        password="lol",
+        first_name="Ham-man",
+        last_name="Gingy",
+        phone="2095553880",
+        address_1="11 Broadway",
+        address_2="Floor 2",
+        city="New York",
+        state="NY",
+        zipcode="10004",
+        coordinates={"lat": 40.726586, "lng": -73.988734}
+    )
+    user_settings_demo = SettingsUser(
+        user_id=51
+    )
+    db.session.add(user_demo)
+    db.session.add(user_settings_demo)
     db.session.commit()
 
     # add fake market reviews
@@ -1331,57 +1349,6 @@ def run():
     db.session.add_all(events)
     db.session.commit()
 
-    user_notifs = []
-
-    # unm = UserNotification(
-    #         message=fake.paragraph(nb_sentences=1),
-    #         user_id=1,
-    #         market_id=1,
-    #         is_read=False
-    #     )
-    # unv = UserNotification(
-    #         message=fake.paragraph(nb_sentences=2),
-    #         user_id=1,
-    #         vendor_id=1,
-    #         is_read=False
-    #     )
-    
-    # user_notifs.append(unm)
-    # user_notifs.append(unv)
-
-    # for i in range(200):
-    #     msg_len = randint(1, 2)
-    #     rand_market = choice([None, randint(1, 40)])
-    #     if rand_market is None:
-    #         rand_vendor = randint(1, 150)
-    #     else:
-    #         rand_vendor = None
-    #     few_days = randint(0, 14)
-
-    #     subject = choice(["vendor", "market"])
-    #     message = fake.paragraph(nb_sentences=msg_len)
-    #     link = choice (['/user/vendors/1', '/user/markets/1'])
-    #     user_id = randint(1, 51)
-    #     market_id = rand_market
-    #     vendor_id = rand_vendor
-    #     created_at = datetime.now(timezone.utc) - timedelta(days=few_days)
-    #     is_read = bool(False)
-
-        
-    #     un = UserNotification(
-    #         subject=subject,
-    #         message=message,
-    #         link=link,
-    #         user_id=user_id,
-    #         market_id=market_id,
-    #         vendor_id=vendor_id,
-    #         created_at=created_at,
-    #         is_read=is_read
-    #     )
-    #     user_notifs.append(un)
-
-    # db.session.add_all(user_notifs)
-    # db.session.commit()
 
     # add fake market review ratings
     market_rev_ratings = []
