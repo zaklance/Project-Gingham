@@ -496,7 +496,7 @@ class VendorUser(db.Model, SerializerMixin):
         return bcrypt.check_password_hash(self._password, password.encode('utf-8'))
 
     def __repr__(self) -> str:
-        return f"<VendorUser {self.email} {self.is_admin}>"
+        return f"<VendorUser {self.email} {self.vendor_role}>"
    
 class AdminUser(db.Model, SerializerMixin):
     __tablename__ = 'admin_users'

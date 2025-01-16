@@ -92,7 +92,7 @@ def upgrade():
     sa.Column('phone', sa.String(), nullable=False),
     sa.Column('active_vendor', sa.Integer(), nullable=True),
     sa.Column('vendor_id', postgresql.JSON(astext_type=Text()), nullable=True),
-    sa.Column('is_admin', postgresql.JSON(astext_type=Text()), nullable=True),
+    sa.Column('vendor_role', postgresql.JSON(astext_type=Text()), nullable=True),
     sa.Column('last_log_on', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_vendor_users')),
     sa.UniqueConstraint('email', name=op.f('uq_vendor_users_email'))
