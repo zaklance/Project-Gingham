@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useOutletContext, useNavigate, useLocation } from 'react-router-dom';
 import { weekDay } from '../../utils/common';
-import { timeConverter, formatEventDate, marketDateConvert } from '../../utils/helpers';
+import { timeConverter, formatEventDate, marketDateConvert, formatPickupText } from '../../utils/helpers';
 import MarketCard from './MarketCard';
 import ReviewVendor from './ReviewVendor';
 
@@ -239,14 +239,9 @@ function VendorDetail() {
     
                 const filteredBaskets = data.filter((basket) => {
                     const [year, month, day] = basket.sale_date.split('-').map(Number);
-                    const saleDate = new Date(year, month - 1, day); // Local time
-                    
-                    console.log("Basket sale_date (raw):", basket.sale_date);
-                    console.log("Parsed saleDate (local):", saleDate);
-    
+                    const saleDate = new Date(year, month - 1, day);
                     const isWithinWindow = saleDate >= today && saleDate < window48hr;
 
-                    console.log(`Is basket within 48-hour window? ${isWithinWindow}`);
                     return isWithinWindow;
                 });
 
@@ -454,27 +449,22 @@ function VendorDetail() {
                                                 </span>
                                             ) : (
                                                 <span className="market-baskets nowrap margin-r-8">
-                                                    {allBaskets.length > 0 ? (
-                                                        `Available Baskets: ${allBaskets.length}`
+                                                    {allBaskets.length > 4 ? (
+                                                        <span className="market-baskets nowrap">
+                                                            Baskets Available
+                                                            <br />
+                                                            {formatPickupText(firstBasket, timeConverter, marketDateConvert)}
+                                                        </span>
                                                     ) : (
-                                                        <a className="link-edit" onClick={() => handleNotifyMe(market.market_day.market_id)}>
-                                                            Notify Me
-                                                        </a>
-                                                    )}
-                                                    <br />
-                                                    {firstBasket && firstBasket.pickup_start ? (
-                                                        (() => {
-                                                            const today = new Date();
-                                                            const todayFormatted = today.toISOString().split('T')[0];
-                                                            const saleDate = new Date(firstBasket.sale_date).toISOString().split('T')[0];
-                                                            if (saleDate === todayFormatted) {
-                                                                return `Pick Up Today at ${timeConverter(firstBasket.pickup_start)}-${timeConverter(firstBasket.pickup_end)}`;
-                                                            } else {
-                                                                return `Pick Up: ${marketDateConvert(firstBasket.sale_date)} at ${timeConverter(firstBasket.pickup_start)}-${timeConverter(firstBasket.pickup_end)}`;
-                                                            }
-                                                        })()
-                                                    ) : (
-                                                        ''
+                                                        <span className="market-baskets nowrap margin-r-8">
+                                                            {allBaskets.length > 0 ? (
+                                                                `Available Baskets: ${allBaskets.length}`
+                                                            ) : (
+                                                                <a className="link-edit" onClick={() => handleNotifyMe(market.market_day.market_id)}>Notify Me</a>
+                                                            )}
+                                                            <br />
+                                                            {formatPickupText(firstBasket, timeConverter, marketDateConvert)}
+                                                        </span>
                                                     )}
                                                     {vendorAlertStates[market.market_day_id] && (
                                                         <div className={`alert alert-cart-vendor`}>
