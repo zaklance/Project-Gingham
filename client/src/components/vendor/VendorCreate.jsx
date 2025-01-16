@@ -149,7 +149,7 @@ function VendorCreate () {
                 ...vendorUserData,
                 active_vendor: vendorId,
                 vendor_id: vendorId,
-                is_admin: true
+                vendor_role: true
             };
 
             console.log(vendorUserData)
@@ -325,7 +325,7 @@ function VendorCreate () {
 
             </div>
 
-            {/* {vendorUserData?.is_admin && ( */}
+            {/* {vendorUserData?.vendor_role && ( */}
                 <>
                     <button className="btn-edit" onClick={handleCreateVendor}>Create Vendor</button>
                     <button className="btn-edit" onClick={() => setNewVendor(false)}>Cancel</button>

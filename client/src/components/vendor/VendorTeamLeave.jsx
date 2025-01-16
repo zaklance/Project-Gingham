@@ -7,7 +7,6 @@ const VendorTeamLeave = ({ className, vendorUserData, setVendorUserData }) => {
 
     const vendorUserId = parseInt(globalThis.localStorage.getItem('vendor_user_id'))
 
-
     useEffect(() => {
         const fetchVendorData = async () => {
             if (!vendorUserData || !vendorUserData.vendor_id) return;
@@ -89,7 +88,7 @@ const VendorTeamLeave = ({ className, vendorUserData, setVendorUserData }) => {
                         {vendorUserData?.vendor_id && vendorsData && Object.entries(vendorUserData.vendor_id).map(([key, value]) => (
                             <li key={key} className='li-team'>
                                 <div className='flex-space-between'>
-                                    <p><strong>{vendorsData[key]?.name || 'Unknown Name'}</strong> — {vendorUserData.is_admin[value] ? 'Admin' : 'Employee'}</p>
+                                    <p><strong>{vendorsData[key]?.name || 'Unknown Name'}</strong> — {vendorUserData.vendor_role[value] ? 'Admin' : 'Employee'}</p>
                                     {key !== vendorUserData.id && (
                                         <div className='flex-end flex-center-align'>
                                             <button
