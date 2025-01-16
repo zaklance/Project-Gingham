@@ -100,7 +100,7 @@ const AdminUsersVendorUsers = () => {
         const { name, value } = event.target;
         setTempUserData((prev) => ({
             ...prev,
-            [name]: name === 'is_admin' ? (value === 'true') : value,
+            [name]: name === 'vendor_role' ? (value === 'true') : value,
         }));
     };
 
@@ -119,22 +119,22 @@ const AdminUsersVendorUsers = () => {
         console.log(key)
         setTempUserData((prevData) => ({
             ...prevData,
-            is_admin: {
-                ...prevData.is_admin,
-                [key]: !prevData.is_admin[key], // Toggle the boolean value
+            vendor_role: {
+                ...prevData.vendor_role,
+                [key]: !prevData.vendor_role[key], // Toggle the boolean value
             },
         }));
     };
 
     const handleDelete = (key) => {
         setTempUserData((prevData) => {
-            const updatedIsAdmin = { ...prevData.is_admin };
+            const updatedIsAdmin = { ...prevData.vendor_role };
             const updatedVendorId = { ...prevData.vendor_id };
             delete updatedIsAdmin[key];
             delete updatedVendorId[key];
             return {
                 ...prevData,
-                is_admin: updatedIsAdmin,
+                vendor_role: updatedIsAdmin,
                 vendor_id: updatedVendorId,
             };
         });
@@ -147,8 +147,8 @@ const AdminUsersVendorUsers = () => {
                 ...prevData.vendor_id,
                 [newVendor]: Number(newVendor),
             },
-            is_admin: {
-                ...prevData.is_admin,
+            vendor_role: {
+                ...prevData.vendor_role,
                 [newVendor]: true,
             },
         }));
@@ -238,7 +238,7 @@ const AdminUsersVendorUsers = () => {
                             <div className='form-group'>
                                 <label title="Click to switch">Is Admin?:</label>
                                 <Stack className='padding-4' direction="row" spacing={1}>
-                                    {Object.entries(tempUserData.is_admin || {}).map(([key, value]) => {
+                                    {Object.entries(tempUserData.vendor_role || {}).map(([key, value]) => {
                                         return (
                                             <Chip
                                                 key={key}
@@ -311,7 +311,7 @@ const AdminUsersVendorUsers = () => {
                                         <td className='cell-title'>Is Admin?:</td>
                                         <td className='cell-text'>{userData ? 
                                             <Stack className='padding-4' direction="row" spacing={1}>
-                                                {Object.entries(userData.is_admin || {}).map(([key, value]) => {
+                                                {Object.entries(userData.vendor_role || {}).map(([key, value]) => {
                                                     return (
                                                         <Chip
                                                             key={key}

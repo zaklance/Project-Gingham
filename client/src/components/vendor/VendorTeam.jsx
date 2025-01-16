@@ -56,7 +56,7 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                         body: JSON.stringify({
                             active_vendor: vendorUserData.vendor_id[vendorUserData.active_vendor],
                             vendor_id: vendorUserData.vendor_id[vendorUserData.active_vendor],
-                            is_admin: newMemberRole
+                            vendor_role: newMemberRole
                         }),
                     });
                     if (response.ok) {
@@ -145,7 +145,7 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ 
-                    is_admin: isAdmin,
+                    vendor_role: isAdmin,
                     vendor_id: member.vendor_id[member.active_vendor],
                     first_name: member.first_name,
                     last_name: member.last_name,
@@ -159,8 +159,8 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                         item.id === member.id
                             ? {
                                 ...item,
-                                is_admin: {
-                                    ...item.is_admin,
+                                vendor_role: {
+                                    ...item.vendor_role,
                                     [item.active_vendor]: isAdmin ? true : false,
                                 },
                             }
@@ -230,11 +230,11 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                             <li key={member.id} className='li-team'>
 
                                 <div className='flex-space-between'>
-                                    <p><strong>{member.first_name} {member.last_name}</strong> - {member.is_admin[vendorId] ? 'Admin' : 'Employee'}</p>
+                                    <p><strong>{member.first_name} {member.last_name}</strong> - {member.vendor_role[vendorId] ? 'Admin' : 'Employee'}</p>
                                     {member.id !== vendorUserData.id && (
                                         <>
                                             <div className='flex-end flex-center-align'>
-                                                <button className="btn btn-small btn-white margin-r-8" onClick={() => handleToggleRole(member, member.is_admin[vendorId])} > Switch to {member.is_admin[vendorId] === true ? 'Employee' : 'Admin'} </button>
+                                                <button className="btn btn-small btn-white margin-r-8" onClick={() => handleToggleRole(member, member.vendor_role[vendorId])} > Switch to {member.vendor_role[vendorId] === true ? 'Employee' : 'Admin'} </button>
                                                 <button className="btn btn-small btn-unreport" onClick={() => handleDeleteTeamMember(member.id)} > Remove from Team</button>
                                             </div> 
                                         </>
