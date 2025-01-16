@@ -760,7 +760,7 @@ def get_vendor_users():
                 'email': vendor_user.email,
                 'phone': vendor_user.phone,
                 'vendor_id': vendor_user.vendor_id,
-                'is_admin': vendor_user.is_admin,
+                'vendor_role': vendor_user.vendor_role,
                 'active_vendor': vendor_user.active_vendor
             } for vendor_user in vendor_users]), 200
 
@@ -779,8 +779,8 @@ def get_vendor_users():
                 for vendor_user in vendor_users:
                     vendor_id_str = str(delete_vendor_id)
                     
-                    if isinstance(vendor_user.is_admin, dict) and vendor_id_str in vendor_user.is_admin:
-                        vendor_user.is_admin.pop(vendor_id_str)
+                    if isinstance(vendor_user.vendor_role, dict) and vendor_id_str in vendor_user.vendor_role:
+                        vendor_user.vendor_role.pop(vendor_id_str)
                     if isinstance(vendor_user.vendor_id, dict) and vendor_id_str in vendor_user.vendor_id:
                         vendor_user.vendor_id.pop(vendor_id_str)
 
@@ -821,8 +821,8 @@ def get_vendor_user(id):
         try:
             if delete_vendor_id:
                 delete_vendor_id_str = str(delete_vendor_id)
-                if isinstance(vendor_user.is_admin, dict):
-                    vendor_user.is_admin.pop(delete_vendor_id_str, None)
+                if isinstance(vendor_user.vendor_role, dict):
+                    vendor_user.vendor_role.pop(delete_vendor_id_str, None)
                 if isinstance(vendor_user.vendor_id, dict):
                     vendor_user.vendor_id.pop(delete_vendor_id_str, None)
                 
@@ -846,8 +846,8 @@ def get_vendor_user(id):
                     vendor_user.email = data['email']
                 if 'phone' in data:
                     vendor_user.phone = data['phone']
-                if 'is_admin' in data:
-                    vendor_user.is_admin = data['is_admin']
+                if 'vendor_role' in data:
+                    vendor_user.vendor_role = data['vendor_role']
                 if 'vendor_id' in data:
                     vendor_user.vendor_id = data['vendor_id']
                 remaining_keys = list(vendor_user.vendor_id.keys())
@@ -869,14 +869,14 @@ def get_vendor_user(id):
                     vendor_user.email = data['email']
                 if 'phone' in data:
                     vendor_user.phone = data['phone']
-                if 'is_admin' in data:
-                    is_admin_value = data['is_admin']
+                if 'vendor_role' in data:
+                    vendor_role_value = data['vendor_role']
                     vendor_id = str(data.get('vendor_id'))
                     if vendor_id is None:
-                        return jsonify({'error': 'vendor_id is required when setting is_admin'}), 400
-                    if not isinstance(vendor_user.is_admin, dict):
-                        vendor_user.is_admin = {}
-                    vendor_user.is_admin[vendor_id] = is_admin_value
+                        return jsonify({'error': 'vendor_id is required when setting vendor_role'}), 400
+                    if not isinstance(vendor_user.vendor_role, dict):
+                        vendor_user.vendor_role = {}
+                    vendor_user.vendor_role[vendor_id] = vendor_role_value
                 if 'vendor_id' in data:
                     vendor_id_key = str(data.get('vendor_id'))
                     vendor_id_value = data['vendor_id']
@@ -2688,7 +2688,7 @@ def get_vendor_user_notifications(vendor_user_id):
 @app.route('/api/vendor-notifications/<int:notification_id>/approve', methods=['POST'])
 def approve_notification(notification_id):
     data = request.get_json()
-    is_admin = data.get('is_admin')
+    vendor_role = data.get('vendor_role')
 
     notification = VendorNotification.query.get(notification_id)
     if not notification:
@@ -2704,13 +2704,13 @@ def approve_notification(notification_id):
     if not isinstance(user.vendor_id, dict):
         user.vendor_id = {}
 
-    if not isinstance(user.is_admin, dict):
-        user.is_admin = {}
+    if not isinstance(user.vendor_role, dict):
+        user.vendor_role = {}
 
     user.vendor_id[notification.vendor_id] = notification.vendor_id
 
-    if is_admin is not None:
-        user.is_admin[notification.vendor_id] = bool(is_admin)
+    if vendor_role is not None:
+        user.vendor_role[notification.vendor_id] = bool(vendor_role)
     
     user.active_vendor = int(notification.vendor_id)
 
