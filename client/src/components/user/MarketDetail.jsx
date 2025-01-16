@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
 // import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
 import { weekDay } from '../../utils/common';
-import { timeConverter, formatEventDate, formatDate, marketDateConvert } from '../../utils/helpers';
+import { timeConverter, formatEventDate, formatDate, marketDateConvert, formatPickupText } from '../../utils/helpers';
 import ReviewMarket from './ReviewMarket';
 import { Annotation, ColorScheme, FeatureVisibility, Map, Marker } from 'mapkit-react'
 
@@ -81,7 +81,6 @@ function MarketDetail ({ match }) {
     
         fetchData();
     }, [market?.id, userId]);
-    
 
     useEffect(() => {
         const fetchVendorDetails = async () => {
@@ -106,7 +105,6 @@ function MarketDetail ({ match }) {
         setSelectedProduct(event.target.value);
     };
 
-    // filter all fetched vendors
     useEffect(() => {
         if (allVendorDetails.length > 0 && vendors.length > 0) {
             const filteredDetails = allVendorDetails.filter(vendor =>
@@ -279,7 +277,6 @@ function MarketDetail ({ match }) {
     };
 
     const handleNotifyMe = async (vendor) => {
-
         if (!userId) {
             alert('Please ensure you are logged in.');
             return;
@@ -318,13 +315,13 @@ function MarketDetail ({ match }) {
             alert('An error occurred while sending the request. Please try again later.');
         }
     };
-    
+
     if (!market) {
         return <div>Loading...</div>;
     }
 
+    const googleMapsLink = market?.coordinates ? `https://www.google.com/maps?q=${market.coordinates.lat},${market.coordinates.lng}` : '#';
     const marketLocation = { 'lat': parseFloat(market.coordinates.lat), 'lng': parseFloat(market.coordinates.lng) }
-
     const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
 
     return (
@@ -395,6 +392,9 @@ function MarketDetail ({ match }) {
             </div>
             <p>{market.description}</p>
             <div className='flex-start market-details margin-t-8'>
+                <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
+                    {market.location}
+                </a></h4>
                 <div className='flex-start alert-container'>
                     <button
                         className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
@@ -450,30 +450,23 @@ function MarketDetail ({ match }) {
                     uniqueFilteredVendorsList
                     .slice()
                     .sort((a, b) => {
-                        const nameA = (vendorDetailsMap[a]?.name || '').toLowerCase();
-                        const nameB = (vendorDetailsMap[b]?.name || '').toLowerCase();
-                        return nameA.localeCompare(nameB);
+                        const firstBasketA = marketBaskets
+                            .filter(item => item.vendor_id === vendorDetailsMap[a]?.id)
+                            .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
+                        const firstBasketB = marketBaskets
+                            .filter(item => item.vendor_id === vendorDetailsMap[b]?.id)
+                            .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
+
+                        const dateA = firstBasketA ? new Date(firstBasketA.sale_date) : new Date();
+                        const dateB = firstBasketB ? new Date(firstBasketB.sale_date) : new Date();
+
+                        return dateA - dateB;
                     })
                     .map((vendorId, index) => {
                         const vendorDetail = vendorDetailsMap[vendorId];
                         const availableBaskets = getAvailableBaskets(vendorId);
-                        const firstBasket = (marketBaskets.length > 0 ? marketBaskets
-                            .filter(item => item.vendor_id === vendorDetail.id)
-                            .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0] : '');
-
-                            const now = new Date();
-                            const today = new Date(now.setHours(0, 0, 0, 0));  // Reset to start of today (local time)
-                            const Window48hr = new Date(today);
-                            Window48hr.setHours(today.getHours() + 48);
-
-                        const formatPickupText = (basketDate) => {
-                            const basketTime = new Date(basketDate);
-                            if (basketTime.toDateString() === today.toDateString()) {
-                                return `Pick Up Today at ${timeConverter(firstBasket.pickup_start)}-${timeConverter(firstBasket.pickup_end)}`;
-                            } else {
-                                return `Pick Up on ${marketDateConvert(basketDate)} at ${timeConverter(firstBasket.pickup_start)}-${timeConverter(firstBasket.pickup_end)}`;
-                            }
-                        };
+                        const firstBasket = availableBaskets
+                            .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
 
                         return (
                             <div key={index} className="market-item flex-center-align">
@@ -482,8 +475,8 @@ function MarketDetail ({ match }) {
                                 </Link>
                                 <span className="market-name margin-l-16">
                                     {products
-                                        .filter(p => vendorDetail.products?.includes(p.id))
-                                        .map(p => p.product)
+                                        .filter((p) => vendorDetail.products?.includes(p.id))
+                                        .map((p) => p.product)
                                         .join(', ') || 'No products listed'}
                                 </span>
                                 {availableBaskets.length > 0 ? (
@@ -499,24 +492,15 @@ function MarketDetail ({ match }) {
                                     <span className="market-baskets nowrap">
                                         Baskets Available
                                         <br />
-                                        {firstBasket
-                                            ? formatPickupText(firstBasket.sale_date)
-                                            : ''}
+                                        {formatPickupText(firstBasket, timeConverter, marketDateConvert)}
                                     </span>
                                 ) : (
                                     <span className="market-baskets nowrap margin-r-8">
                                         {availableBaskets.length > 0
                                             ? `Available Baskets: ${availableBaskets.length}`
-                                            : <a className='link-edit' onClick={() => handleNotifyMe(vendorDetail)}>Notify Me</a>}
+                                            : <a className="link-edit" onClick={() => handleNotifyMe(vendorDetail)}>Notify Me</a>}
                                         <br />
-                                        {firstBasket && firstBasket.pickup_start
-                                            ? formatPickupText(firstBasket.sale_date)
-                                            : ''}
-                                        {vendorAlertStates[vendorId] && (
-                                            <div className={`alert alert-cart-market`}>
-                                                {alertMessage}
-                                            </div>
-                                        )}
+                                        {formatPickupText(firstBasket, timeConverter, marketDateConvert)}
                                     </span>
                                 )}
                                 {availableBaskets.length > 0 ? (
