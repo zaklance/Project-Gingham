@@ -45,17 +45,17 @@ function Footer() {
                         )}
                         {!isNotUser && (
                             <li className='footer-li'>
-                                <NavLink to="/user/faqs">User FAQs</NavLink>
+                                <NavLink to="/user/help">User Help</NavLink>
                             </li>
                         )}
                         {isVendorPage && (
                             <li className='footer-li'>
-                                <NavLink to="/vendor/helpcenter">Vendor Help Center</NavLink>
+                                <NavLink to="/vendor/help">Vendor Help</NavLink>
                             </li>
                         )}
                         {isAdminLoggedIn && isAdminPage && (
                             <li className='footer-li'>
-                                <NavLink to="/admin/faqs">Admin FAQs</NavLink>
+                                <NavLink to="/admin/help">Admin Help</NavLink>
                             </li>
                         )}
                         <li className='footer-li'>

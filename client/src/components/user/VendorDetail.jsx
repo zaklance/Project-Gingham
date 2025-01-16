@@ -295,9 +295,6 @@ function VendorDetail() {
         }
     };
 
-    console.log(marketDetails)
-    console.log(markets)
-
 
     if (!vendor) {
         return <div>Loading...</div>;
