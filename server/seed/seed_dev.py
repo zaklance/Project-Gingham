@@ -1093,21 +1093,8 @@ def run():
 
 
     # add fake users
-    # user for demo
-    vendor_user_demo = VendorUser(
-        email="hello@gingham.nyc",
-        password="lol",
-        first_name="Ham-man",
-        last_name="Gingy",
-        phone="2095553880",
-        active_vendor=1,
-        vendor_id={1:1},
-        vendor_role={1:True}
-    )
-    db.session.add(vendor_user_demo)
-    db.session.commit()
-
     vendor_users = []
+    vendor_users_settings = []
     for i in range(50):
         rand_vendor_id = randint(1, 150)
         email = fake.ascii_free_email()
@@ -1134,7 +1121,33 @@ def run():
         )
         vendor_users.append(vu)
 
+        svu = SettingsVendor(
+            vendor_user_id=(i + 1)
+        )
+        vendor_users_settings.append(svu)
+
     db.session.add_all(vendor_users)
+    db.session.add_all(vendor_users_settings)
+    db.session.commit()
+
+    # user for demo
+    vendor_user_demo = VendorUser(
+        email="hello@gingham.nyc",
+        password="lol",
+        first_name="Ham-man",
+        last_name="Gingy",
+        phone="2095553880",
+        active_vendor=1,
+        vendor_id={1:1},
+        vendor_role={1:True}
+    )
+
+    vendor_user_settings_demo = SettingsVendor(
+            vendor_user_id=51
+        )
+
+    db.session.add(vendor_user_demo)
+    db.session.add(vendor_user_settings_demo)
     db.session.commit()
 
     admin_user_demo = [
@@ -1146,6 +1159,9 @@ def run():
             phone="2095553880",
             admin_role=0
         ),
+        SettingsAdmin(
+            admin_id=1
+        ),
         AdminUser(
             email="zak@mufo.nyc",
             password="lol",
@@ -1153,6 +1169,9 @@ def run():
             last_name="Wosewick",
             phone="0000000000",
             admin_role=1
+        ),
+        SettingsAdmin(
+            admin_id=2
         ),
         AdminUser(
             email="sandro@mufo.nyc",
@@ -1162,6 +1181,9 @@ def run():
             phone="0000000000",
             admin_role=1
         ),
+        SettingsAdmin(
+            admin_id=3
+        ),
         AdminUser(
             email="vinh@mufo.nyc",
             password="lol",
@@ -1170,6 +1192,9 @@ def run():
             phone="0000000000",
             admin_role=1
         ),
+        SettingsAdmin(
+            admin_id=4
+        ),
         AdminUser(
             email="hello@mufo.nyc",
             password="lol",
@@ -1177,7 +1202,10 @@ def run():
             last_name="Oh",
             phone="0000000000",
             admin_role=2
-        )
+        ),
+        SettingsAdmin(
+            admin_id=5
+        ),
     ]
     
     db.session.add_all(admin_user_demo)

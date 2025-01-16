@@ -4,6 +4,9 @@ import { vendors_default, states } from '../../utils/common';
 import { formatPhoneNumber } from '../../utils/helpers';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import VendorCreate from './VendorCreate';
 import VendorLocations from './VendorLocations';
 import VendorTeamRequest from './VendorTeamRequest';
@@ -13,11 +16,14 @@ import VendorTeamLeave from './VendorTeamLeave';
 function VendorProfile () {
     const { id } = useParams();
     const [editMode, setEditMode] = useState(false);
+    const [settingsMode, setSettingsMode] = useState(false);
     const [vendorEditMode, setVendorEditMode] = useState(false);
     const [vendorUserData, setVendorUserData] = useState(null);
     const [vendorId, setVendorId] = useState(null);
     const [tempVendorUserData, setTempVendorUserData] = useState(null);
     const [tempVendorData, setTempVendorData] = useState(null);
+    const [vendorSettings, setVendorSettings] = useState(null);
+    const [tempVendorUserSettings, setTempVendorUserSettings] = useState(null);
     const [locations, setLocations] = useState([]);
     const [marketDetails, setMarketDetails] = useState({});
     const [vendorData, setVendorData] = useState(null);
@@ -27,6 +33,7 @@ function VendorProfile () {
     const [products, setProducts] = useState([])
     const [newProduct, setNewProduct] = useState(null);
     const [productRequest, setProductRequest] = useState('')
+    const [activeTab, setActiveTab] = useState('website');
 
     const vendorUserId = parseInt(globalThis.localStorage.getItem('vendor_user_id'))
 
@@ -85,6 +92,37 @@ function VendorProfile () {
         };
         fetchVendorUserData();
     }, [id]);
+
+    useEffect(() => {
+        const fetchVendorUserSettings = async () => {
+            const token = localStorage.getItem('vendor_jwt-token');
+            try {
+                const response = await fetch(`http://127.0.0.1:5555/api/settings-vendor-users?vendor_user_id=${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const text = await response.text();
+                if (response.ok) {
+                    try {
+                        const data = JSON.parse(text);
+                        setVendorSettings({ ...data });
+                    } catch (jsonError) {
+                        console.error('Error parsing JSON:', jsonError);
+                    }
+                } else {
+                    console.error('Error fetching user settings:', response.status);
+                }
+            } catch (error) {
+                console.error('Error fetching user settings data:', error);
+            }
+        };
+        fetchVendorUserSettings();
+    }, [id]);
+
+    console.log(vendorSettings)
 
     const handleInputChange = event => {
         const { name, value } = event.target;
@@ -298,6 +336,32 @@ function VendorProfile () {
             console.error('Error saving changes:', error);
         }
     };
+
+    const handleSaveSettings = async () => {
+        const token = localStorage.getItem('vendor_jwt-token');
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/api/settings-vendor-users/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(tempVendorUserSettings)
+            });
+            if (response.ok) {
+                const updatedData = await response.json();
+                setVendorSettings(updatedData);
+                setSettingsMode(false);
+                console.log('Profile data updated successfully:', updatedData);
+            } else {
+                console.log('Failed to save changes');
+                console.log('Response status:', response.status);
+                console.log('Response text:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error saving changes:', error);
+        }
+    };
     
     const handleDeleteImage = async () => {
         if (!vendorData || !vendorData.image) {
@@ -399,73 +463,132 @@ function VendorProfile () {
         }));
     };
 
+    const handleSettingsToggle = () => {
+        if (!settingsMode) {
+            setTempVendorUserSettings({ ...vendorSettings });
+        } else {
+            setTempVendorUserSettings(null);
+        }
+        setSettingsMode(!settingsMode);
+    };
+
+    const handleSwitchChange = (field) => {
+        setTempVendorUserSettings({
+            ...tempVendorUserSettings,
+            [field]: !tempVendorUserSettings[field]
+        });
+    };
+
 
     return(
         <>
             <div className="tab-content">
                 <div>
-                    <h2 className='title'>Profile Information </h2>
-                    <div className='box-bounding'>
-                        {editMode ? (
+                    <div className='box-bounding badge-container'>
+                        <i className='icon-settings' onClick={handleSettingsToggle}>&emsp;</i>
+                        <h2 className='title margin-b-16'>Profile Information </h2>
+                        {!settingsMode ? (
                             <>
-                                <div className='form-group flex-form'>
-                                    <label>First Name:</label>
-                                    <input
-                                        type="text"
-                                        name="first_name"
-                                        value={tempVendorUserData ? tempVendorUserData.first_name : ''}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className='form-group flex-form'>
-                                    <label>Last Name:</label>
-                                    <input
-                                        type="text"
-                                        name="last_name"
-                                        value={tempVendorUserData ? tempVendorUserData.last_name : ''}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className='form-group flex-form'>
-                                    <label>Email:</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={tempVendorUserData ? tempVendorUserData.email : ''}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className='form-group flex-form'>
-                                    <label>Phone Number:</label>
-                                    <input
-                                        type="tel"
-                                        name="phone"
-                                        value={tempVendorUserData ? tempVendorUserData.phone : ''}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
-                                <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
+                                {editMode ? (
+                                    <>
+                                        <div className='form-group flex-form'>
+                                            <label>First Name:</label>
+                                            <input
+                                                type="text"
+                                                name="first_name"
+                                                value={tempVendorUserData ? tempVendorUserData.first_name : ''}
+                                                onChange={handleInputChange}
+                                            />
+                                        </div>
+                                        <div className='form-group flex-form'>
+                                            <label>Last Name:</label>
+                                            <input
+                                                type="text"
+                                                name="last_name"
+                                                value={tempVendorUserData ? tempVendorUserData.last_name : ''}
+                                                onChange={handleInputChange}
+                                            />
+                                        </div>
+                                        <div className='form-group flex-form'>
+                                            <label>Email:</label>
+                                            <input
+                                                type="email"
+                                                name="email"
+                                                value={tempVendorUserData ? tempVendorUserData.email : ''}
+                                                onChange={handleInputChange}
+                                            />
+                                        </div>
+                                        <div className='form-group flex-form'>
+                                            <label>Phone Number:</label>
+                                            <input
+                                                type="tel"
+                                                name="phone"
+                                                value={tempVendorUserData ? tempVendorUserData.phone : ''}
+                                                onChange={handleInputChange}
+                                            />
+                                        </div>
+                                        <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
+                                        <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td className='cell-title'>Name:</td>
+                                                    <td className='cell-text'>{vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : ' Loading...'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Email:</td>
+                                                    <td className='cell-text'>{vendorUserData ? vendorUserData.email : ' Loading...'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Phone:</td>
+                                                    <td className='cell-text'>{vendorUserData ? formatPhoneNumber(vendorUserData.phone) : 'Loading...'}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
+                                    </>
+                                )}
                             </>
                         ) : (
                             <>
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td className='cell-title'>Name:</td>
-                                            <td className='cell-text'>{vendorUserData ? `${vendorUserData.first_name} ${vendorUserData.last_name}` : ' Loading...'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td className='cell-title'>Email:</td>
-                                            <td className='cell-text'>{vendorUserData ? vendorUserData.email : ' Loading...'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td className='cell-title'>Phone:</td>
-                                            <td className='cell-text'>{vendorUserData ? formatPhoneNumber(vendorUserData.phone) : 'Loading...'}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
+                                <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
+                                    <h2 className='margin-b-16'>Settings</h2>
+                                    <div className='tabs margin-t-20'>                
+                                        <Link to="#" onClick={() => setActiveTab('website')} className={activeTab === 'website' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                                            Website
+                                        </Link>
+                                        <Link to="#" onClick={() => setActiveTab('email')} className={activeTab === 'email' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                                            Email
+                                        </Link>
+                                        <Link to="#" onClick={() => setActiveTab('text')} className={activeTab === 'text' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                                            Text
+                                        </Link>
+                                    </div>
+                                </div>
+                                {activeTab === 'website' && (
+                                    <FormGroup>
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_market_new_event} onChange={() => handleSwitchChange('site_market_new_event')} color={'secondary'} />} label="Market creates an event"/>
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_market_schedule_change} onChange={() => handleSwitchChange('site_market_schedule_change')} color={'secondary'} />} label="Market changes schedule"/>
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_basket_sold} onChange={() => handleSwitchChange('site_basket_sold')} color={'secondary'} />} label="When a basket is sold"/>
+                                    </FormGroup>
+                                )}
+                                {activeTab === 'email' && (
+                                    <FormGroup>
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_market_new_event} onChange={() => handleSwitchChange('email_market_new_event')} color={'secondary'} />} label="Market creates an event" />
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_market_schedule_change} onChange={() => handleSwitchChange('email_market_schedule_change')} color={'secondary'} />} label="Market changes schedule" />
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_basket_sold} onChange={() => handleSwitchChange('email_basket_sold')} color={'secondary'} />} label="When a basket is sold" />
+                                    </FormGroup>
+                                )}
+                                {activeTab === 'text' && (
+                                    <FormGroup>
+                                            <FormControlLabel control={<Switch checked={tempVendorUserSettings.text_market_schedule_change} onChange={() => handleSwitchChange('text_market_schedule_change')} color={'secondary'} />} label="Market changes schedule" />
+                                            <FormControlLabel control={<Switch checked={tempVendorUserSettings.text_basket_sold} onChange={() => handleSwitchChange('text_basket_sold')} color={'secondary'} />} label="When a basket is sold" />
+                                    </FormGroup>
+                                )}
+                                <button className='btn-edit' onClick={handleSaveSettings}>Save</button>
                             </>
                         )}
                     </div>
