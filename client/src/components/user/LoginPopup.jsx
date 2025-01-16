@@ -125,19 +125,32 @@ function Login({ handlePopup }) {
                     if (response.ok) {
                         const data = await response.json();
                         console.log(data)
+                        const settingsResponse = await fetch('http://127.0.0.1:5555/api/settings-users', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                user_id: data.id
+                            })
+                        });
+                        if (!settingsResponse.ok) {
+                            const errorData = await response.json();
+                            console.log(errorData)
+                        }
                         alert("Sign Up Successful. Please log in!");
-                        // setSignupEmail('');
-                        // setSignupConfirmEmail('');
-                        // setSignupPassword('');
-                        // setSignupConfirmPassword('');
-                        // setSignupFirstName('');
-                        // setSignupLastName('');
-                        // setSignupPhone('');
-                        // setSignupAddress1('');
-                        // setSignupAddress2('');
-                        // setSignupCity('');
-                        // setSignupState('');
-                        // setSignupZipCode('');
+                        setSignupEmail('');
+                        setSignupConfirmEmail('');
+                        setSignupPassword('');
+                        setSignupConfirmPassword('');
+                        setSignupFirstName('');
+                        setSignupLastName('');
+                        setSignupPhone('');
+                        setSignupAddress1('');
+                        setSignupAddress2('');
+                        setSignupCity('');
+                        setSignupState('');
+                        setSignupZipCode('');
                     } else {
                         const errorData = await response.json();
                         if (errorData.error) {
