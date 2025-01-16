@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData, func
+from sqlalchemy import MetaData, func, Text
 from sqlalchemy.orm import validates, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
@@ -453,7 +453,7 @@ class VendorUser(db.Model, SerializerMixin):
     phone = db.Column(db.String, nullable=False)
     active_vendor = db.Column(db.Integer, nullable=True)
     vendor_id = db.Column(MutableDict.as_mutable(JSON), nullable=True)
-    is_admin = db.Column(MutableDict.as_mutable(JSON), nullable=True)
+    vendor_role = db.Column(MutableDict.as_mutable(JSON), nullable=True)
     last_log_on = db.Column(db.DateTime, default=datetime.utcnow)
 
     # notifications = db.relationship('VendorNotification', back_populates='vendor_user')
@@ -802,4 +802,98 @@ class Receipt(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self) -> str:
-        return f"<Receipt ID: {self.id}, User ID: {self.user_id}, Baskets: {self.baskets}, Created at: {self.created_at}>"
+        return f"<Receipt ID: {self.id}, User ID: {self.user_id}, Baskets: {self.baskets}, Created At: {self.created_at}>"
+
+class SettingsUser(db.Model):
+    __tablename__ = 'settings-users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    
+    site_fav_market_new_event = db.Column(db.Boolean, default=True, nullable=False)
+    site_fav_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
+    site_fav_market_new_vendor = db.Column(db.Boolean, default=True, nullable=False)
+    site_fav_market_new_basket = db.Column(db.Boolean, default=True, nullable=False)
+    site_fav_vendor_new_event = db.Column(db.Boolean, default=True, nullable=False)
+    site_fav_vendor_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
+    site_fav_vendor_new_basket = db.Column(db.Boolean, default=True, nullable=False)
+    site_basket_pickup_time = db.Column(db.Boolean, default=True, nullable=False)
+    
+    email_fav_market_new_event = db.Column(db.Boolean, default=True, nullable=False)
+    email_fav_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
+    email_fav_market_new_vendor = db.Column(db.Boolean, default=True, nullable=False)
+    email_fav_market_new_basket = db.Column(db.Boolean, default=False, nullable=False)
+    email_fav_vendor_new_event = db.Column(db.Boolean, default=True, nullable=False)
+    email_fav_vendor_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
+    email_fav_vendor_new_basket = db.Column(db.Boolean, default=True, nullable=False)
+    email_basket_pickup_time = db.Column(db.Boolean, default=True, nullable=False)
+    
+    text_fav_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
+    text_fav_market_new_basket = db.Column(db.Boolean, default=False, nullable=False)
+    text_fav_vendor_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
+    text_basket_pickup_time = db.Column(db.Boolean, default=True, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"<User Settings ID: {self.id}, User ID: {self.user_id}>"
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'site_fav_market_new_event': self.site_fav_market_new_event,
+            'site_fav_market_schedule_change': self.site_fav_market_schedule_change,
+            'site_fav_market_new_vendor': self.site_fav_market_new_vendor,
+            'site_fav_market_new_basket': self.site_fav_market_new_basket,
+            'site_fav_vendor_new_event': self.site_fav_vendor_new_event,
+            'site_fav_vendor_schedule_change': self.site_fav_vendor_schedule_change,
+            'site_fav_vendor_new_basket': self.site_fav_vendor_new_basket,
+            'site_basket_pickup_time': self.site_basket_pickup_time,
+            'email_fav_market_new_event': self.email_fav_market_new_event,
+            'email_fav_market_schedule_change': self.email_fav_market_schedule_change,
+            'email_fav_market_new_vendor': self.email_fav_market_new_vendor,
+            'email_fav_market_new_basket': self.email_fav_market_new_basket,
+            'email_fav_vendor_new_event': self.email_fav_vendor_new_event,
+            'email_fav_vendor_schedule_change': self.email_fav_vendor_schedule_change,
+            'email_fav_vendor_new_basket': self.email_fav_vendor_new_basket,
+            'email_basket_pickup_time': self.email_basket_pickup_time,
+            'text_fav_market_schedule_change': self.text_fav_market_schedule_change,
+            'text_fav_market_new_basket': self.text_fav_market_new_basket,
+            'text_fav_vendor_schedule_change': self.text_fav_vendor_schedule_change,
+            'text_basket_pickup_time': self.text_basket_pickup_time,
+        }
+
+class SettingsVendor(db.Model):
+    __tablename__ = 'settings-vendors'
+
+    id = db.Column(db.Integer, primary_key=True)
+    vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=False)
+    site_market_new_event = db.Column(db.Boolean, default=True, nullable=False)
+    site_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
+    site_basket_sold = db.Column(db.Boolean, default=True, nullable=False)
+
+    email_market_new_event = db.Column(db.Boolean, default=True, nullable=False)
+    email_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
+    email_basket_sold = db.Column(db.Boolean, default=False, nullable=False)
+
+    text_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
+    text_basket_sold = db.Column(db.Boolean, default=True, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"<Vendor Settings ID: {self.id}>"
+
+class SettingsAdmin(db.Model):
+    __tablename__ = 'settings-admins'
+
+    id = db.Column(db.Integer, primary_key=True)
+    admin_id = db.Column(db.Integer, db.ForeignKey('admin_users.id'), nullable=False)
+    site_report_review = db.Column(db.Boolean, default=True, nullable=False)
+    site_product_request = db.Column(db.Boolean, default=True, nullable=False)
+    
+    email_report_review = db.Column(db.Boolean, default=False, nullable=False)
+    email_product_request = db.Column(db.Boolean, default=True, nullable=False)
+    
+    text_report_review = db.Column(db.Boolean, default=False, nullable=False)
+    text_product_request = db.Column(db.Boolean, default=False, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"<Admin Settings ID: {self.id}>"

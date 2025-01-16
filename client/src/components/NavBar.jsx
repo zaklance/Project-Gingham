@@ -218,13 +218,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {!isNotUser && (
                     <>
                         <li>
-                            <NavLink className='nav-tab m-tab-left color-3 btn-nav' to="/user/markets" state={{ resetFilters: true }}>Markets</NavLink>
+                            <NavLink className='nav-tab m-tab-left color-3 btn-nav' to="/user/markets" state={{ resetFilters: true }} title="Markets">Markets</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav' to="/user/vendors" state={{ resetFilters: true }}>Vendors</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav' to="/user/vendors" state={{ resetFilters: true }} title="Vendors">Vendors</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-5 btn-nav nowrap' to="/user/your-cart">Cart ({amountInCart})</NavLink>
+                            <NavLink className='nav-tab color-5 btn-nav nowrap' to="/user/your-cart" title="Cart">Cart ({amountInCart})</NavLink>
                         </li>
                     </>
                 )}
@@ -232,20 +232,20 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isVendorLoggedIn && isVendorPage && (
                     <>
                         <li>
-                            <NavLink className='nav-tab m-tab-left color-3 btn-nav' to={`/vendor/dashboard`}>Dashboard</NavLink>
+                            <NavLink className='nav-tab m-tab-left color-3 btn-nav' to={`/vendor/dashboard`} title="Dashboard">Dashboard</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-5 btn-nav' to={`/vendor/sales`}>Sales</NavLink>
+                            <NavLink className='nav-tab color-5 btn-nav' to={`/vendor/sales`} title="Sales">Sales</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav' to={`/vendor/profile/${vendorUserId}`}>Profile</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav' to={`/vendor/profile/${vendorUserId}`} title="Profile">Profile</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-1 btn-nav' to={`/vendor/scan`}>Scan</NavLink>
+                            <NavLink className='nav-tab color-1 btn-nav' to={`/vendor/scan`} title="Scan">Scan</NavLink>
                         </li>
                         {vendorNotifications.length > 0 &&
                             <li className='notification' onClick={handleVendorNotifPopup}>
-                                <a className='nav-tab color-2 btn-nav nav-tab-wide icon-notif' to="/notifications">&emsp;</a>
+                                <a className='nav-tab color-2 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
                                 {vendorNotifications.filter(notification => !notification.is_read).length > 0 && (
                                     <p className='badge'>{vendorNotifications.filter(notification => !notification.is_read).length}</p>
                                 )}
@@ -283,40 +283,40 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isAdminLoggedIn && isAdminPage && (
                     <>
                         <li>
-                            <NavLink className='nav-tab m-tab-left color-3 btn-nav' to={`/admin/profile/${adminUserId}`}>Profile</NavLink>
+                            <NavLink className='nav-tab m-tab-left color-3 btn-nav' to={`/admin/profile/${adminUserId}`} title="Profile">Profile</NavLink>
                         </li>
                         {adminUserData && adminUserData.admin_role <= 4 ? (
                             <li>
-                                <NavLink className='nav-tab color-5 btn-nav' to={`/admin/markets`}>Markets</NavLink>
+                                <NavLink className='nav-tab color-5 btn-nav' to={`/admin/markets`} title="Markets">Markets</NavLink>
                             </li>
                         ) : null}
                         {adminUserData && adminUserData.admin_role <= 3 ? (
                             <li>
-                                <NavLink className='nav-tab color-4 btn-nav' to={`/admin/vendors`}>Vendors</NavLink>
+                                <NavLink className='nav-tab color-4 btn-nav' to={`/admin/vendors`} title="Vendors">Vendors</NavLink>
                             </li>
                         ) : null}
                         {adminUserData && adminUserData.admin_role <= 3 ? (
                             <>
                                 <li>
-                                    <NavLink className='nav-tab color-1 btn-nav' to={`/admin/users`}>Users</NavLink>
+                                    <NavLink className='nav-tab color-1 btn-nav' to={`/admin/users`} title="Users">Users</NavLink>
                                 </li>
                             </>
                         ) : null}
                         <li>
-                            <NavLink className='nav-tab color-2 btn-nav' to={`/admin/help`}>Help</NavLink>
+                            <NavLink className='nav-tab color-2 btn-nav' to={`/admin/help`} title="Help">Help</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-5 btn-nav' to={`/admin/blog`}>Blog</NavLink>
+                            <NavLink className='nav-tab color-5 btn-nav' to={`/admin/blog`} title="Blog">Blog</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-3 btn-nav icon-report' to={`/admin/report`}>&emsp;</NavLink>
+                            <NavLink className='nav-tab color-3 btn-nav icon-report' to={`/admin/report`} title="Reported Reviews">&emsp;</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav icon-email' to={`/admin/email`}>&emsp;</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav icon-email' to={`/admin/email`} title="Email">&emsp;</NavLink>
                         </li>
                         {adminNotifications.length > 0 &&
                             <li className='notification' onClick={handleAdminNotifPopup}>
-                                <a className='nav-tab color-2 btn-nav nav-tab-wide icon-notif' to="/notifications">&emsp;</a>
+                                <a className='nav-tab color-2 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
                                 {adminNotifications.length > 0 && <p className='badge'>{adminNotifications.length}</p>}
                             </li>
                         }
@@ -347,14 +347,14 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isUserLoggedIn && !isVendorPage && !isAdminPage ?  (
                     <>
                         <li>
-                            <NavLink className='nav-tab color-2 btn-nav nowrap' to={`/user/pick-up`}>Pick-Up</NavLink>
+                            <NavLink className='nav-tab color-2 btn-nav nowrap' to={`/user/pick-up`} title="Pick-Up">Pick-Up</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav' to={`/user/profile/${userId}`}>Profile</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav' to={`/user/profile/${userId}`} title="Profile">Profile</NavLink>
                         </li>
                         {notifications.length > 0 &&
                             <li className='notification' onClick={handleNotifPopup}>
-                                <a className='nav-tab color-1 btn-nav nav-tab-wide icon-notif' to="/notifications">&emsp;</a>
+                                <a className='nav-tab color-1 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
                                 {notifications.length > 0 && <p className='badge'>{notifications.length}</p>}
                             </li>
                         }
@@ -367,7 +367,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                                 <li key={notification.id} className='li-notif'>
                                                     <div className='flex-start'>
                                                         <button className='btn btn-unreport btn-notif' onClick={() => handleNotificationDelete(notification.id)}>x</button>
-                                                        <NavLink to={notification.link} onClick={closePopup}>{notification.message}</NavLink>
+                                                        <NavLink className="link-underline" to={notification.link} onClick={closePopup}>{notification.message}</NavLink>
                                                     </div>
                                                 </li>
                                             ))}
@@ -380,13 +380,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             )}
                         </div>
                         <li style={{ marginLeft: 'auto' }}>
-                            <NavLink className='nav-tab color-3 tab-right btn-nav' to="/user/logout">Logout</NavLink>
+                            <NavLink className='nav-tab color-3 tab-right btn-nav' to="/user/logout" title="Logout">Logout</NavLink>
                         </li>
                     </>
                 ) : (
                     !isNotUser && (
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-3 tab-right btn-nav btn-nav-login' onClick={handlePopup} >
+                            <button className='nav-tab color-3 tab-right btn-nav btn-nav-login' onClick={handlePopup} title="Login/Signup">
                                 Login/Signup
                             </button>
                         </li>
@@ -396,13 +396,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isVendorLoggedIn && isVendorPage ?  (
                     <>
                         <li style={{ marginLeft: 'auto' }}>
-                            <NavLink className='nav-tab color-3 tab-right btn-nav' to="/vendor/logout">Logout</NavLink>
+                            <NavLink className='nav-tab color-3 tab-right btn-nav' to="/vendor/logout" title="Logout">Logout</NavLink>
                         </li>
                     </>
                 ) : (
                     isVendorPage && (
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-3 tab-right btn-nav btn-nav-login' onClick={handlePopup} >
+                            <button className='nav-tab color-3 tab-right btn-nav btn-nav-login' onClick={handlePopup} title="Login/Signup">
                                 Login/Signup
                             </button>
                         </li>
@@ -412,13 +412,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isAdminLoggedIn && isAdminPage ?  (
                     <>
                         <li style={{ marginLeft: 'auto' }}>
-                            <NavLink className='nav-tab color-3 tab-right btn-nav' to="/admin/logout">Logout</NavLink>
+                            <NavLink className='nav-tab color-3 tab-right btn-nav' to="/admin/logout" title="Logout">Logout</NavLink>
                         </li>
                     </>
                 ) : (
                     isAdminPage && (
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-3 tab-right btn-nav btn-nav-login' onClick={handlePopup} >
+                            <button className='nav-tab color-3 tab-right btn-nav btn-nav-login' onClick={handlePopup} title="Login/Signup">
                                 Login/Signup
                             </button>
                         </li>

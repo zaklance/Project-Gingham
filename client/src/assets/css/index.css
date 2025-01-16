@@ -1303,6 +1303,7 @@ link {
 
 .link-underline:hover {
   text-decoration: underline;
+  background-color: transparent !important;
 }
 
 .add-cart {
