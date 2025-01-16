@@ -405,8 +405,8 @@ function VendorDetail() {
                                             {marketDetail?.markets?.name || 'Loading...'}
                                         </Link>
                                         <br/>
-                                        Hours: {marketDetail.day_of_week ? `${weekDay[marketDetail.day_of_week]}, ` : 'Loading...'}
-                                        {`${marketDetail.hour_start && timeConverter(marketDetail.hour_start)} - 
+                                        Hours: {weekDay[marketDetail?.day_of_week] || 'Loading...'}, 
+                                        {` ${marketDetail.hour_start && timeConverter(marketDetail.hour_start)} - 
                                         ${marketDetail.hour_end && timeConverter(marketDetail.hour_end)}`}
                                     </span>
                                         <>
