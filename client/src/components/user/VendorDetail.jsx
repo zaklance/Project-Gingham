@@ -378,28 +378,33 @@ function VendorDetail() {
                     markets
                         .slice()
                         .sort((a, b) => {
+                            // Fetch market details for comparison
                             const marketDetailA = marketDetails[a.market_day_id] || {};
                             const marketDetailB = marketDetails[b.market_day_id] || {};
 
-                            const firstBasketA = marketBaskets.find(
-                                (item) => item.market_day_id === marketDetailA.id && item.is_sold === false
-                            );
-                            const firstBasketB = marketBaskets.find(
-                                (item) => item.market_day_id === marketDetailB.id && item.is_sold === false
-                            );
+                            // Find the first unsold basket for each market
+                            const firstBasketA = marketBaskets
+                                .filter(item => item.market_day_id === marketDetailA.id && !item.is_sold)
+                                .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
+                            const firstBasketB = marketBaskets
+                                .filter(item => item.market_day_id === marketDetailB.id && !item.is_sold)
+                                .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
 
+                            // Determine the sorting dates
                             const dateA = firstBasketA ? new Date(firstBasketA.sale_date) : new Date();
                             const dateB = firstBasketB ? new Date(firstBasketB.sale_date) : new Date();
 
-                            return dateA - dateB; // Sort by sale_date (ascending order)
+                            return dateA - dateB; // Sort markets by sale_date
                         })
                         .map((market, index) => {
                             const marketDetail = marketDetails[market.market_day_id] || {};
-                            const firstBasket = marketBaskets.find(
-                                (item) => item.market_day_id === marketDetail.id && item.is_sold === false
-                            );
+
+                            // Get the first unsold basket and all available baskets for the market
+                            const firstBasket = marketBaskets
+                                .filter(item => item.market_day_id === marketDetail.id && !item.is_sold)
+                                .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
                             const allBaskets = marketBaskets.filter(
-                                (item) => item.market_day_id === marketDetail.id && item.is_sold === false
+                                item => item.market_day_id === marketDetail.id && !item.is_sold
                             );
                             return (
                                 <div key={index} className="market-item" >

@@ -503,6 +503,11 @@ function MarketDetail ({ match }) {
                                         {formatPickupText(firstBasket, timeConverter, marketDateConvert)}
                                     </span>
                                 )}
+                                {vendorAlertStates[vendorId] && (
+                                    <div className={`alert alert-cart-vendor`}>
+                                        {alertMessage}
+                                    </div>
+                                )}
                                 {availableBaskets.length > 0 ? (
                                     <button className="btn-add nowrap" onClick={() => handleAddToCart(vendorId, vendorDetail, availableBaskets)}>
                                         Add to Cart
