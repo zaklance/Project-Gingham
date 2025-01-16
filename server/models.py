@@ -879,7 +879,21 @@ class SettingsVendor(db.Model):
     text_basket_sold = db.Column(db.Boolean, default=True, nullable=False)
 
     def __repr__(self) -> str:
-        return f"<Vendor Settings ID: {self.id}>"
+        return f"<Vendor Settings ID: {self.id} Vendor User ID: {self.vendor_user_id}>"
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "vendor_user_id": self.vendor_user_id,
+            "site_market_new_event": self.site_market_new_event,
+            "site_market_schedule_change": self.site_market_schedule_change,
+            "site_basket_sold": self.site_basket_sold,
+            "email_market_new_event": self.email_market_new_event,
+            "email_market_schedule_change": self.email_market_schedule_change,
+            "email_basket_sold": self.email_basket_sold,
+            "text_market_schedule_change": self.text_market_schedule_change,
+            "text_basket_sold": self.text_basket_sold
+        }
 
 class SettingsAdmin(db.Model):
     __tablename__ = 'settings-admins'
@@ -896,4 +910,16 @@ class SettingsAdmin(db.Model):
     text_product_request = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self) -> str:
-        return f"<Admin Settings ID: {self.id}>"
+        return f"<Admin Settings ID: {self.id} Admin ID: {self.admin_id}>"
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "admin_id": self.admin_id,
+            "site_report_review": self.site_report_review,
+            "site_product_request": self.site_product_request,
+            "email_report_review": self.email_report_review,
+            "email_product_request": self.email_product_request,
+            "text_report_review": self.text_report_review,
+            "text_product_request": self.text_product_request
+        }

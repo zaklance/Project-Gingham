@@ -871,6 +871,9 @@ def run():
             phone="2095553880",
             admin_role=0
         ),
+        SettingsAdmin(
+            admin_id=1
+        ),
         AdminUser(
             email="zak@mufo.nyc",
             password="lol",
@@ -878,6 +881,9 @@ def run():
             last_name="Wosewick",
             phone="0000000000",
             admin_role=1
+        ),
+        SettingsAdmin(
+            admin_id=2
         ),
         AdminUser(
             email="sandro@mufo.nyc",
@@ -887,6 +893,9 @@ def run():
             phone="0000000000",
             admin_role=1
         ),
+        SettingsAdmin(
+            admin_id=3
+        ),
         AdminUser(
             email="vinh@mufo.nyc",
             password="lol",
@@ -894,6 +903,9 @@ def run():
             last_name="Cent",
             phone="0000000000",
             admin_role=1
+        ),
+        SettingsAdmin(
+            admin_id=4
         ),
     ]
     

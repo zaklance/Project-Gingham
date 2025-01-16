@@ -375,7 +375,6 @@ function Profile({ marketData }) {
             setTempUserSettings(null);
         }
         setSettingsMode(!settingsMode);
-        console.log('toggling')
     };
     
     const handleSwitchChange = (field) => {

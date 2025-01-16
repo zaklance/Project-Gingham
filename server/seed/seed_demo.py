@@ -439,7 +439,10 @@ def run():
             active_vendor=active_vendor,
             vendor_id=vendor_id,
             vendor_role=vendor_role
-        )
+        ),
+        SettingsVendor(
+            vendor_user_id=(i + 1)
+        ),
         vendor_users.append(vu)
 
     db.session.add_all(vendor_users)
@@ -454,6 +457,9 @@ def run():
             phone="2095553880",
             admin_role=0
         ),
+        SettingsAdmin(
+            admin_id=1
+        ),
         AdminUser(
             email="zak@mufo.nyc",
             password="lol",
@@ -461,6 +467,9 @@ def run():
             last_name="Wosewick",
             phone="0000000000",
             admin_role=1
+        ),
+        SettingsAdmin(
+            admin_id=2
         ),
         AdminUser(
             email="sandro@mufo.nyc",
@@ -470,6 +479,9 @@ def run():
             phone="0000000000",
             admin_role=1
         ),
+        SettingsAdmin(
+            admin_id=3
+        ),
         AdminUser(
             email="vinh@mufo.nyc",
             password="lol",
@@ -478,6 +490,9 @@ def run():
             phone="0000000000",
             admin_role=1
         ),
+        SettingsAdmin(
+            admin_id=4
+        ),
         AdminUser(
             email="hello@mufo.nyc",
             password="lol",
@@ -485,7 +500,10 @@ def run():
             last_name="Oh",
             phone="0000000000",
             admin_role=2
-        )
+        ),
+        SettingsAdmin(
+            admin_id=5
+        ),
     ]
     
     db.session.add_all(admin_user_demo)

@@ -546,7 +546,7 @@ def post_settings_user():
                 users_settings = query.all()
 
             if not users_settings:
-                return jsonify({'message': 'No team members found for this vendor'}), 404
+                return jsonify({'message': 'No user found'}), 404
             return jsonify([user.to_dict() for user in query]), 200
         
     except Exception as e:
@@ -602,22 +602,171 @@ def settings_user(id):
             data = request.get_json()
             for key, value in data.items():
                 setattr(settings, key, value)
-            # if 'email_fav_market_new_event' in data:
-            #     settings.email_fav_market_new_event = data.get('email_fav_market_new_event')
-            # if 'email_fav_market_schedule_change' in data:
-            #     settings.email_fav_market_schedule_change = data.get('email_fav_market_schedule_change')
-            # if 'email_fav_market_new_vendor' in data:
-            #     settings.email_fav_market_new_vendor = data.get('email_fav_market_new_vendor')
-            # if 'email_fav_market_new_basket' in data:
-            #     settings.email_fav_market_new_basket = data.get('email_fav_market_new_basket')
-            # if 'email_fav_vendor_new_event' in data:
-            #     settings.email_fav_vendor_new_event = data.get('email_fav_vendor_new_event')
-            # if 'email_fav_vendor_schedule_change' in data:
-            #     settings.email_fav_vendor_schedule_change = data.get('email_fav_vendor_schedule_change')
-            # if 'email_fav_vendor_new_basket' in data:
-            #     settings.email_fav_vendor_new_basket = data.get('email_fav_vendor_new_basket')
-            # if 'email_basket_pickup_time' in data:
-            #     settings.email_basket_pickup_time = data.get('email_basket_pickup_time')
+
+            db.session.commit()
+            return jsonify(settings.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
+@app.route('/api/settings-vendor-users', methods=['GET', 'POST'])
+def post_settings_vendor_user():
+
+    try:
+        if request.method == 'GET':
+
+            vendor_user_id = request.args.get('vendor_user_id', type=int)
+            query = SettingsVendor.query
+
+            if vendor_user_id is not None:
+                vendor_user_result = query.filter(SettingsVendor.vendor_user_id == vendor_user_id).first()
+                print('vendor user result', vendor_user_result)
+                if vendor_user_result:
+                    return jsonify(vendor_user_result.to_dict()), 200
+                return jsonify({'error': 'Settings not found for this user'}), 404
+            else:
+                vendor_users_settings = query.all()
+
+            if not vendor_users_settings:
+                return jsonify({'message': 'No vendor user found'}), 404
+            return jsonify([user.to_dict() for user in query]), 200
+        
+    except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+    
+    if request.method =='POST':
+        data = request.get_json()
+
+        try:
+            vendor_user = SettingsVendor.query.filter(SettingsVendor.user_id == data['user_id']).first()
+            if vendor_user:
+                return {'error': 'user settings already exists'}, 400
+
+            new_vendor_user_settings = SettingsVendor(
+                vendor_user_id=data['vendor_user_id'],
+            )
+
+            db.session.add(new_vendor_user_settings)
+            db.session.commit()
+
+            return new_vendor_user_settings.to_dict(), 201
+
+        except IntegrityError as e:
+            db.session.rollback()
+            return {'error': f'IntegrityError: {str(e)}'}, 400 
+
+        except ValueError as e:
+            return {'error': f'ValueError: {str(e)}'}, 400
+
+        except Exception as e:
+            return {'error': f'Exception: {str(e)}'}, 500
+
+@app.route('/api/settings-admins', methods=['GET', 'POST'])
+def post_settings_admin_user():
+
+    try:
+        if request.method == 'GET':
+
+            admin_id = request.args.get('admin_id', type=int)
+            query = SettingsAdmin.query
+
+            if admin_id is not None:
+                admin_result = query.filter(SettingsAdmin.admin_id == admin_id).first()
+                if admin_result:
+                    return jsonify(admin_result.to_dict()), 200
+                return jsonify({'error': 'Settings not found for this admin'}), 404
+            else:
+                admins_settings = query.all()
+
+            if not admins_settings:
+                return jsonify({'message': 'No admin user found'}), 404
+            return jsonify([user.to_dict() for user in query]), 200
+        
+    except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+    
+    if request.method =='POST':
+        data = request.get_json()
+
+        try:
+            admin = SettingsAdmin.query.filter(SettingsAdmin.admin_id == data['user_id']).first()
+            if admin:
+                return {'error': 'admin settings already exists'}, 400
+
+            new_admin_settings = SettingsAdmin(
+                admin_id=data['admin_id'],
+            )
+
+            db.session.add(new_admin_settings)
+            db.session.commit()
+
+            return new_admin_settings.to_dict(), 201
+
+        except IntegrityError as e:
+            db.session.rollback()
+            return {'error': f'IntegrityError: {str(e)}'}, 400 
+
+        except ValueError as e:
+            return {'error': f'ValueError: {str(e)}'}, 400
+
+        except Exception as e:
+            return {'error': f'Exception: {str(e)}'}, 500
+
+@app.route('/api/settings-admins/<int:id>', methods=['GET', 'PATCH'])
+@jwt_required()
+def settings_admin(id):
+    
+    if not check_role('admin') and not check_role('admin'):
+        return {'error': "Access forbidden: User only"}, 403
+    
+    if request.method == 'GET':
+        settings = SettingsAdmin.query.filter_by(id=id).first()
+        if not settings:
+            return {'error': 'user not found'}, 404
+        settings_data = settings.to_dict()
+        return jsonify(settings_data), 200
+
+    elif request.method == 'PATCH':
+        settings = SettingsAdmin.query.filter_by(id=id).first()
+        if not settings:
+            return {'error': 'user not found'}, 404
+        try:
+            data = request.get_json()
+            for key, value in data.items():
+                setattr(settings, key, value)
+
+            db.session.commit()
+            return jsonify(settings.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
+@app.route('/api/settings-vendor-users/<int:id>', methods=['GET', 'PATCH'])
+@jwt_required()
+def settings_vendor_user(id):
+    
+    if not check_role('vendor') and not check_role('admin'):
+        return {'error': "Access forbidden: User only"}, 403
+    
+    if request.method == 'GET':
+        settings = SettingsVendor.query.filter_by(id=id).first()
+        if not settings:
+            return {'error': 'vendor user not found'}, 404
+        settings_data = settings.to_dict()
+        return jsonify(settings_data), 200
+
+    elif request.method == 'PATCH':
+        settings = SettingsVendor.query.filter_by(id=id).first()
+        if not settings:
+            return {'error': 'vendor user not found'}, 404
+        try:
+            data = request.get_json()
+            for key, value in data.items():
+                setattr(settings, key, value)
 
             db.session.commit()
             return jsonify(settings.to_dict()), 200
