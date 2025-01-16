@@ -16,7 +16,7 @@ function VendorNotification({ notifications, setNotifications, teamMembers, setT
                     'Authorization': `Bearer ${token}`, 
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ is_admin: isAdmin }),
+                body: JSON.stringify({ vendor_role: isAdmin }),
             });
             if (response.ok) {
                 const vendorUserResponse = await fetch(`http://127.0.0.1:5555/api/vendor-users?vendor_id=${vendorUserData.vendor_id[vendorUserData.active_vendor]}`, {

@@ -295,6 +295,9 @@ function VendorDetail() {
         }
     };
 
+    console.log(marketDetails)
+    console.log(markets)
+
 
     if (!vendor) {
         return <div>Loading...</div>;
@@ -378,20 +381,14 @@ function VendorDetail() {
                     markets
                         .slice()
                         .sort((a, b) => {
-                            const marketDetailA = marketDetails[a.market_day_id] || {};
-                            const marketDetailB = marketDetails[b.market_day_id] || {};
-
-                            const firstBasketA = marketBaskets.find(
-                                (item) => item.market_day_id === marketDetailA.id && item.is_sold === false
-                            );
-                            const firstBasketB = marketBaskets.find(
-                                (item) => item.market_day_id === marketDetailB.id && item.is_sold === false
-                            );
-
-                            const dateA = firstBasketA ? new Date(firstBasketA.sale_date) : new Date();
-                            const dateB = firstBasketB ? new Date(firstBasketB.sale_date) : new Date();
-
-                            return dateA - dateB; // Sort by sale_date (ascending order)
+                            const dayOfWeekA = marketDetails[a.market_day_id]?.day_of_week || 0;
+                            const dayOfWeekB = marketDetails[b.market_day_id]?.day_of_week || 0;
+                            if (dayOfWeekA !== dayOfWeekB) {
+                                return dayOfWeekA - dayOfWeekB;
+                            }
+                            const marketNameA = (marketDetails[a.market_day_id]?.markets?.name || "").toLowerCase();
+                            const marketNameB = (marketDetails[b.market_day_id]?.markets?.name || "").toLowerCase();
+                            return marketNameA.localeCompare(marketNameB);
                         })
                         .map((market, index) => {
                             const marketDetail = marketDetails[market.market_day_id] || {};
@@ -441,26 +438,21 @@ function VendorDetail() {
                                                     ) : (
                                                         'Not Available'
                                                     )}
+                                                    {vendorAlertStates[market.market_day_id] && (
+                                                            <div className={`alert alert-cart-vendor`}>
+                                                                {alertMessage}
+                                                            </div>
+                                                        )}
                                                 </span>
                                             ) : (
-                                                <span className="market-baskets nowrap margin-r-8">
-                                                    {allBaskets.length > 4 ? (
-                                                        <span className="market-baskets nowrap">
-                                                            Baskets Available
-                                                            <br />
-                                                            {formatPickupText(firstBasket, timeConverter, marketDateConvert)}
-                                                        </span>
+                                                <span className="market-baskets nowrap width margin-r-8">
+                                                    {allBaskets.length > 0 ? (
+                                                        `Available Baskets: ${allBaskets.length}`
                                                     ) : (
-                                                        <span className="market-baskets nowrap margin-r-8">
-                                                            {allBaskets.length > 0 ? (
-                                                                `Available Baskets: ${allBaskets.length}`
-                                                            ) : (
-                                                                <a className="link-edit" onClick={() => handleNotifyMe(market.market_day.market_id)}>Notify Me</a>
-                                                            )}
-                                                            <br />
-                                                            {formatPickupText(firstBasket, timeConverter, marketDateConvert)}
-                                                        </span>
+                                                        <a className="link-edit" onClick={() => handleNotifyMe(market.market_day.market_id)}>Notify Me</a>
                                                     )}
+                                                    <br />
+                                                    {formatPickupText(firstBasket, timeConverter, marketDateConvert)}
                                                     {vendorAlertStates[market.market_day_id] && (
                                                         <div className={`alert alert-cart-vendor`}>
                                                             {alertMessage}

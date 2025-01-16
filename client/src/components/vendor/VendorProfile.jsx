@@ -478,7 +478,7 @@ function VendorProfile () {
                     <h2 className='title margin-t-24'>Vendor Information</h2>
                     <div className='box-bounding'>
                         {vendorData?.id ? (
-                            vendorEditMode && vendorUserData?.is_admin[vendorUserData.active_vendor] ? (
+                            vendorEditMode && vendorUserData?.vendor_role[vendorUserData.active_vendor] ? (
                                 <>
                                     <div className='form-group'>
                                         <label>Vendor Name:</label>
@@ -628,7 +628,7 @@ function VendorProfile () {
                                                 <tbody>
                                                     <tr>
                                                         <td className='cell-title'>Role:</td>
-                                                        <td className='cell-text'>{vendorUserData?.is_admin ? 'Admin' : 'Vendor'}</td>
+                                                        <td className='cell-text'>{vendorUserData?.vendor_role ? 'Admin' : 'Vendor'}</td>
                                                     </tr>
                                                     <tr>
                                                         <td className='cell-title'>Name:</td>
@@ -658,7 +658,7 @@ function VendorProfile () {
                                                 </tbody>
                                             </table>
                                         </div>
-                                        {vendorUserData?.is_admin && (    
+                                        {vendorUserData?.vendor_role && (    
                                             <div className='flex-start'>
                                                 <button className='btn-edit' onClick={handleVendorEditToggle}>Edit</button>
                                             <div className='alert-container'>
