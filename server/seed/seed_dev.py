@@ -1102,7 +1102,7 @@ def run():
         phone="2095553880",
         active_vendor=1,
         vendor_id={1:1},
-        is_admin={1:True}
+        vendor_role={1:True}
     )
     db.session.add(vendor_user_demo)
     db.session.commit()
@@ -1119,7 +1119,7 @@ def run():
         phone = str(randint(1000000000,9999999999))
         active_vendor = rand_vendor_id
         vendor_id = { rand_vendor_id: rand_vendor_id}
-        is_admin = {rand_vendor_id: bool(fake.boolean())}
+        vendor_role = {rand_vendor_id: bool(fake.boolean())}
 
 
         vu = VendorUser(
@@ -1130,7 +1130,7 @@ def run():
             phone=phone,
             active_vendor=active_vendor,
             vendor_id=vendor_id,
-            is_admin=is_admin
+            vendor_role=vendor_role
         )
         vendor_users.append(vu)
 
