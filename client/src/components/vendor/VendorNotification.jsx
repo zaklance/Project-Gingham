@@ -5,7 +5,7 @@ function VendorNotification({ notifications, setNotifications, teamMembers, setT
     const [error, setError] = useState(null);
     
 
-    const handleApprove = async (notification, isAdmin) => {
+    const handleApprove = async (notification, vendor_role) => {
         console.log(`Approval notification with ID: ${notification.id}`);
         const token = localStorage.getItem('vendor_jwt-token');
     
@@ -16,7 +16,7 @@ function VendorNotification({ notifications, setNotifications, teamMembers, setT
                     'Authorization': `Bearer ${token}`, 
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ vendor_role: isAdmin }),
+                body: JSON.stringify({ vendor_role: vendor_role }),
             });
             if (response.ok) {
                 const vendorUserResponse = await fetch(`http://127.0.0.1:5555/api/vendor-users?vendor_id=${vendorUserData.vendor_id[vendorUserData.active_vendor]}`, {
