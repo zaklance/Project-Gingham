@@ -146,9 +146,9 @@ function VendorDetail() {
         console.log("Cart items:", cartItems);
     }, [amountInCart, cartItems]);
 
-    useEffect(() => {
-        console.log("Selected Product in VendorDetail:", selectedProduct);
-    }, [selectedProduct]);
+    // useEffect(() => {
+    //     console.log("Selected Product in VendorDetail:", selectedProduct);
+    // }, [selectedProduct]);
 
     const handleBackButtonClick = () => {
         if (selectedProduct || isClicked) {
@@ -159,9 +159,9 @@ function VendorDetail() {
         }
     };
 
-    useEffect(() => {
-        console.log("Products passed to VendorDetail:", products);
-    }, [products]);
+    // useEffect(() => {
+    //     console.log("Products passed to VendorDetail:", products);
+    // }, [products]);
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/vendor-favorites?user_id=${userId}`)
@@ -244,14 +244,9 @@ function VendorDetail() {
 
                     return isWithinWindow;
                 });
-
-                console.log("Filtered baskets within 48-hour window:", filteredBaskets);
-
                 const filteredData = filteredBaskets.filter(item =>
                     !cartItems.some(cartItem => cartItem.id === item.id)
                 );
-
-                console.log("Filtered baskets excluding cart items:", filteredData);
 
                 setMarketBaskets(filteredData);
             })
