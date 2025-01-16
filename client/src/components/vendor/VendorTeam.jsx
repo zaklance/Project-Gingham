@@ -145,7 +145,7 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ 
-                    vendor_role: isAdmin,
+                    vendor_role: vendor_role,
                     vendor_id: member.vendor_id[member.active_vendor],
                     first_name: member.first_name,
                     last_name: member.last_name,

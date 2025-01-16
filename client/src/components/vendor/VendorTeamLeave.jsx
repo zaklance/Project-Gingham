@@ -7,7 +7,6 @@ const VendorTeamLeave = ({ className, vendorUserData, setVendorUserData }) => {
 
     const vendorUserId = parseInt(globalThis.localStorage.getItem('vendor_user_id'))
 
-
     useEffect(() => {
         const fetchVendorData = async () => {
             if (!vendorUserData || !vendorUserData.vendor_id) return;

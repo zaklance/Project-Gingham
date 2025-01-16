@@ -381,6 +381,7 @@ function VendorDetail() {
                     markets
                         .slice()
                         .sort((a, b) => {
+<<<<<<< HEAD
                             const dayOfWeekA = marketDetails[a.market_day_id]?.day_of_week || 0;
                             const dayOfWeekB = marketDetails[b.market_day_id]?.day_of_week || 0;
                             if (dayOfWeekA !== dayOfWeekB) {
@@ -389,14 +390,35 @@ function VendorDetail() {
                             const marketNameA = (marketDetails[a.market_day_id]?.markets?.name || "").toLowerCase();
                             const marketNameB = (marketDetails[b.market_day_id]?.markets?.name || "").toLowerCase();
                             return marketNameA.localeCompare(marketNameB);
+=======
+                            // Fetch market details for comparison
+                            const marketDetailA = marketDetails[a.market_day_id] || {};
+                            const marketDetailB = marketDetails[b.market_day_id] || {};
+
+                            // Find the first unsold basket for each market
+                            const firstBasketA = marketBaskets
+                                .filter(item => item.market_day_id === marketDetailA.id && !item.is_sold)
+                                .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
+                            const firstBasketB = marketBaskets
+                                .filter(item => item.market_day_id === marketDetailB.id && !item.is_sold)
+                                .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
+
+                            // Determine the sorting dates
+                            const dateA = firstBasketA ? new Date(firstBasketA.sale_date) : new Date();
+                            const dateB = firstBasketB ? new Date(firstBasketB.sale_date) : new Date();
+
+                            return dateA - dateB; // Sort markets by sale_date
+>>>>>>> bbffcad8a843b05bc5abbea7b69e9a3eed446b05
                         })
                         .map((market, index) => {
                             const marketDetail = marketDetails[market.market_day_id] || {};
-                            const firstBasket = marketBaskets.find(
-                                (item) => item.market_day_id === marketDetail.id && item.is_sold === false
-                            );
+
+                            // Get the first unsold basket and all available baskets for the market
+                            const firstBasket = marketBaskets
+                                .filter(item => item.market_day_id === marketDetail.id && !item.is_sold)
+                                .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
                             const allBaskets = marketBaskets.filter(
-                                (item) => item.market_day_id === marketDetail.id && item.is_sold === false
+                                item => item.market_day_id === marketDetail.id && !item.is_sold
                             );
                             return (
                                 <div key={index} className="market-item" >
@@ -412,15 +434,16 @@ function VendorDetail() {
                                         <>
                                         <br className='m-br'/>
                                         {marketBaskets.filter((item) => item.market_day_id === marketDetail.id && item.is_sold === false).length > 0 ? (
-                                                <span className="market-price">
-                                                    Price: ${firstBasket ? firstBasket.price : ''}
-                                                    <br/>
-                                                    Value: ${firstBasket ? firstBasket.basket_value : ''}
-                                                </span>
-                                            ) : (
-                                                <span className="market-price">Out of Stock</span>
-                                            )}
+                                            <span className="market-price">
+                                                Price: ${firstBasket ? firstBasket.price : ''}
+                                                <br/>
+                                                Value: ${firstBasket ? firstBasket.basket_value : ''}
+                                            </span>
+                                        ) : (
+                                            <span className="market-price">Out of Stock</span>
+                                        )}
                                             {allBaskets.length > 4 ? (
+<<<<<<< HEAD
                                                 <span className="market-baskets nowrap">
                                                     Baskets Available
                                                     <br />
@@ -459,6 +482,28 @@ function VendorDetail() {
                                                         </div>
                                                     )}
                                                 </span>
+=======
+                                            <span className="market-baskets nowrap">
+                                                Baskets Available
+                                                <br />
+                                                {formatPickupText(firstBasket, timeConverter, marketDateConvert)}
+                                            </span>
+                                            ) : (
+                                            <span className="market-baskets nowrap margin-r-8">
+                                                {allBaskets.length > 0 ? (
+                                                    `Available Baskets: ${allBaskets.length}`
+                                                ) : (
+                                                    <a className="link-edit" onClick={() => handleNotifyMe(market.market_day.market_id)}>Notify Me</a>
+                                                )}
+                                                <br />
+                                                {formatPickupText(firstBasket, timeConverter, marketDateConvert)}
+                                            </span>
+                                            )}
+                                            {vendorAlertStates[market.market_day_id] && (
+                                                <div className={`alert alert-cart-vendor`}>
+                                                    {alertMessage}
+                                                </div>
+>>>>>>> bbffcad8a843b05bc5abbea7b69e9a3eed446b05
                                             )}
                                             {allBaskets.length > 0 ? (
                                                 <button className="btn-add nowrap" onClick={() => handleAddToCart(marketDetail)}>
