@@ -50,7 +50,7 @@ function Footer() {
                         )}
                         {isVendorPage && (
                             <li className='footer-li'>
-                                <NavLink to="/vendor/faqs">Vendor FAQs</NavLink>
+                                <NavLink to="/vendor/helpcenter">Vendor Help Center</NavLink>
                             </li>
                         )}
                         {isAdminLoggedIn && isAdminPage && (

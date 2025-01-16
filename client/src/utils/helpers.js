@@ -100,6 +100,23 @@ export function formatBasketDate(dateInput) {
     }
 }
 
+export const isToday = (date) => {
+    const today = new Date();
+    const todayFormatted = today.toISOString().split('T')[0];
+    const dateFormatted = new Date(date).toISOString().split('T')[0];
+    return dateFormatted === todayFormatted;
+};
+
+export const formatPickupText = (basket, timeConverter, marketDateConvert) => {
+    if (!basket) return '';
+    const { sale_date, pickup_start, pickup_end } = basket;
+    if (isToday(sale_date)) {
+        return `Pick Up Today at ${timeConverter(pickup_start)}-${timeConverter(pickup_end)}`;
+    } else {
+        return `Pick Up: ${marketDateConvert(sale_date)} at ${timeConverter(pickup_start)}-${timeConverter(pickup_end)}`;
+    }
+};
+
 export function formatEventDate(dateString) {   
     const date = new Date(dateString + "T00:00:00");
 
