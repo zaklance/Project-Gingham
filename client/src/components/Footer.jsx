@@ -55,7 +55,7 @@ function Footer() {
                         )}
                         {isAdminLoggedIn && isAdminPage && (
                             <li className='footer-li'>
-                                <NavLink to="/admin/help">Admin Help</NavLink>
+                                <NavLink to="/admin/faqs">Admin Help</NavLink>
                             </li>
                         )}
                         <li className='footer-li'>

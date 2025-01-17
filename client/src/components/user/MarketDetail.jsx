@@ -121,33 +121,38 @@ function MarketDetail ({ match }) {
 
     // Filter vendors
     const filteredVendorsList = useMemo(() => {
-        return vendors.filter((vendorId) => {
+        return vendors.filter((vendorId, index, self) => {
             const vendorDetail = vendorDetailsMap[vendorId];
             if (!vendorDetail) return false;
-            
+    
             const availableOnSelectedDay = vendorMarkets.filter(vendorMarket => 
                 vendorMarket.vendor_id === vendorId &&
                 vendorMarket.market_day.market_id === market.id &&
                 vendorMarket.market_day.day_of_week === selectedDay?.day_of_week
             );
-            return availableOnSelectedDay.length > 0 && (!selectedProduct || Number(vendorDetail.product) === Number(selectedProduct));
+            const isUnique = self.findIndex(v => v === vendorId) === index;
+            return availableOnSelectedDay.length > 0 && (!selectedProduct || Number(vendorDetail.product) === Number(selectedProduct)) && isUnique;
         });
     }, [vendors, vendorMarkets, selectedDay, selectedProduct, market, vendorDetailsMap]);
+    
 
     // Filter productList so that it only shows products that are in filteredVendorsList
-    useEffect(() => {
-        if (!vendorMarkets || !products?.length || !selectedDay) return;
-
+    const filteredProducts = useMemo(() => {
+        if (!vendorMarkets || !products?.length || !selectedDay) return [];
+        
         const filteredMarketsOnDay = vendorMarkets.filter(
             vendorMarket =>
                 vendorMarket.market_day.day_of_week === selectedDay.day_of_week &&
                 vendorMarket.market_day.market_id === market.id
         );
-        const filteredProducts = products.filter(product =>
+        return products.filter(product =>
             filteredMarketsOnDay.some(vendorMarket => vendorMarket.vendor.product === product.id)
         );
-        setProductList(filteredProducts);
     }, [vendorMarkets, selectedDay, products, market]);
+    
+    useEffect(() => {
+        setProductList(filteredProducts);
+    }, [filteredProducts]);    
 
     // Gets rid of duplicate vendors (from different market_days)
     const uniqueFilteredVendorsList = [...new Set(filteredVendorsList)];
@@ -437,7 +442,7 @@ function MarketDetail ({ match }) {
                 <h2>Vendors:</h2>
                 <select value={selectedProduct} onChange={handleProductChange}>
                     <option value="">All Products</option>
-                    {Array.isArray(productList) && productList.map((product) => (
+                    {Array.isArray(products) && products.map((product) => (
                         <option key={product.id} value={product.id}>
                             {product.product}
                         </option>
@@ -484,14 +489,14 @@ function MarketDetail ({ match }) {
                                 <br/>
                                 <p>Products:{' '}
                                     {products
-                                        .filter((p) => vendorDetail.products?.includes(p.id))
-                                        .map((p) => p.product)
+                                        .filter((product) => vendorDetail.products?.includes(product.id))
+                                        .map((product) => product.product)
                                         .join(', ') || 'No products listed'}
                                 </p>
                                 </span>
                                 {availableBaskets.length > 0 ? (
                                     <span className="market-price">
-                                        Price: ${firstBasket.price}
+                                        <span className="text-500">Price: ${firstBasket.price}</span>
                                         <br />
                                         Value: ${firstBasket.basket_value}
                                     </span>

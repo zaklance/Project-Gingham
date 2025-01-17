@@ -417,7 +417,7 @@ function VendorDetail() {
                                         <br className='m-br'/>
                                         {marketBaskets.filter((item) => item.market_day_id === marketDetail.id && item.is_sold === false).length > 0 ? (
                                                 <span className="market-price">
-                                                    Price: ${firstBasket ? firstBasket.price : ''}
+                                                    <span className="text-500">Price: ${firstBasket ? firstBasket.price : ''}</span>
                                                     <br/>
                                                     Value: ${firstBasket ? firstBasket.basket_value : ''}
                                                 </span>

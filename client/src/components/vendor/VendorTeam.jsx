@@ -139,7 +139,6 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
             console.error('Invalid role');
             return;
         }
-
     
         if (!member) {
             alert("Member not found");
