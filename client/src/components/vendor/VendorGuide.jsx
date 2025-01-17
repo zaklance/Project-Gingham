@@ -59,7 +59,7 @@ return (
             </aside>
             <div className="help-content">
 
-                <section id="Introduction" className="section">
+                <section id="Introduction" className="section-help">
                     <h3 className="margin-b-16">Introduction</h3>
                     <p className="margin-b-16">
                         Welcome to the Gingham Vendor Portal How-To Guide! This page is designed to provide you with a comprehensive overview
@@ -75,7 +75,7 @@ return (
                     </a>
                 </section>
 
-                <section id="Setting-Up your Vendor-User Profile" className="section">
+                <section id="Setting-Up your Vendor-User Profile" className="section-help">
                     <h3 className="margin-b-16">Setting-Up your Vendor-User Profile</h3>
                     <ol>
                         <li> Go to the <span className="text-500">Home Page</span>, scroll to the footer, and click "Vendor Portal." </li>
@@ -85,7 +85,7 @@ return (
                     <p className="margin-b-16">This step is the foundation for accessing all Vendor Portal features, so make sure to set up your profile correctly.</p>
                 </section>
 
-                <section id="Editing your Vendor-User Profile" className="section">
+                <section id="Editing your Vendor-User Profile" className="section-help">
                     <h3 className="margin-b-16">Editing your Vendor-User Profile</h3>
                     <ol>
                         <li></li>
@@ -96,7 +96,7 @@ return (
                     <p className="margin-b-16"></p>
                 </section>
 
-                <section id="Creating a New Vendor Profile" className="section">
+                <section id="Creating a New Vendor Profile" className="section-help">
                     <h3 className="margin-b-16">Creating a New Vendor Profile</h3>
                     <ol>
                         <li></li>
@@ -107,7 +107,7 @@ return (
                     <p className="margin-b-16"></p>
                 </section>
 
-                <section id="Editing your existing Vendor Profile" className="section">
+                <section id="Editing your existing Vendor Profile" className="section-help">
                     <h3 className="margin-b-16">Editing your existing Vendor Profile</h3>
                     <ol>
                         <li></li>
@@ -118,7 +118,7 @@ return (
                     <p className="margin-b-16"></p>
                 </section>
 
-                <section id="Managing Members of your Vendor Team" className="section">
+                <section id="Managing Members of your Vendor Team" className="section-help">
                     <h3 className="margin-b-16">Managing Members of your Vendor Team</h3>
                     <ol>
                         <li></li>
@@ -129,7 +129,7 @@ return (
                     <p className="margin-b-16"></p>
                 </section>
 
-                <section id="Adding and Editing your Market Locations" className="section">
+                <section id="Adding and Editing your Market Locations" className="section-help">
                     <h3 className="margin-b-16">Adding and Editing your Market Locations</h3>
                     <ol>
                         <li></li>
@@ -140,7 +140,7 @@ return (
                     <p className="margin-b-16"></p>
                 </section>
 
-                <section id="Understanding the Vendor Dashboard" className="section">
+                <section id="Understanding the Vendor Dashboard" className="section-help">
                     <h3 className="margin-b-16">Understanding the Vendor Dashboard</h3>
                     <ol>
                         <li></li>
@@ -151,7 +151,7 @@ return (
                     <p className="margin-b-16"></p>
                 </section>
 
-                <section id="Building Future Baskets" className="section">
+                <section id="Building Future Baskets" className="section-help">
                     <h3 className="margin-b-16">Building Future Baskets</h3>
                     <ol>
                         <li></li>
@@ -162,7 +162,7 @@ return (
                     <p className="margin-b-16"></p>
                 </section>
 
-                <section id="Editing Future Baskets" className="section">
+                <section id="Editing Future Baskets" className="section-help">
                     <h3 className="margin-b-16">Editing Future Baskets</h3>
                     <ol>
                         <li></li>
@@ -173,7 +173,7 @@ return (
                     <p className="margin-b-16"></p>
                 </section>
 
-                <section id="Editing Today’s Baskets" className="section">
+                <section id="Editing Today’s Baskets" className="section-help">
                     <h3 className="margin-b-16">Editing Today’s Baskets</h3>
                     <ol>
                         <li></li>
@@ -184,7 +184,7 @@ return (
                     <p className="margin-b-16"></p>
                 </section>
 
-                <section id="Scanning and Validating Basket Pick-Up’s" className="section">
+                <section id="Scanning and Validating Basket Pick-Up’s" className="section-help">
                     <h3 className="margin-b-16">Scanning and Validating Basket Pick-Up’s</h3>
                     <ol>
                         <li></li>
@@ -195,7 +195,7 @@ return (
                     <p className="margin-b-16"></p>
                 </section>
 
-                <section id="Creating and Modifying Events" className="section">
+                <section id="Creating and Modifying Events" className="section-help">
                     <h3 className="margin-b-16">Creating and Modifying Events</h3>
                     <ol>
                         <li></li>
@@ -206,7 +206,7 @@ return (
                     <p className="margin-b-16"></p>
                 </section>
 
-                <section id="Using the Vendor Sales dashboard" className="section">
+                <section id="Using the Vendor Sales dashboard" className="section-help">
                     <h3 className="margin-b-16">Using the Vendor Sales dashboard</h3>
                     <ol>
                         <li></li>
@@ -217,7 +217,7 @@ return (
                     <p className="margin-b-16"></p>
                 </section>
 
-                <section id="Creating and Managing Multi-Vendor Profiles" className="section">
+                <section id="Creating and Managing Multi-Vendor Profiles" className="section-help">
                     <h3 className="margin-b-16">Creating and Managing Multi-Vendor Profiles</h3>
                     <ol>
                         <li></li>
