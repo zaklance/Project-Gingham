@@ -245,12 +245,12 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                                 <li key={member.id} className='li-team'>
 
                                     <div className='flex-space-between'>
-                                        <p><strong>{member.first_name} {member.last_name}</strong> - 
+                                        <p><strong>{member.first_name} {member.last_name}</strong> – 
                                         {(() => {
                                             const role = member?.vendor_role[vendorId];
-                                            if (role == 0) return 'Owner';
-                                            if (role == 1) return 'Admin';
-                                            if (role == 2) return 'Employee';
+                                            if (role == 0) return ' Owner';
+                                            if (role == 1) return ' Admin';
+                                            if (role == 2) return ' Employee';
                                             return 'Unknown Role';
                                         })()}
                                         </p>
