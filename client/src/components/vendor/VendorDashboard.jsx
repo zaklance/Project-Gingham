@@ -138,7 +138,7 @@ function VendorDashboard({ marketId }) {
             <VendorActiveVendor className={'box-bounding'} />
             <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap margin-t-16'>
                 <h2 className=''>Vendor Dashboard</h2>
-                {vendorUserData && vendorUserData.active_vendor !== null && vendorUserData.vendor_role[vendorUserData.active_vendor] === true ? (
+                {vendorUserData && vendorUserData.active_vendor !== null && vendorUserData.vendor_role[vendorUserData.active_vendor] <= 1 ? (
                     <div className='tabs margin-t-20 margin-l-24'>
                         <Link to="#" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                             Baskets
@@ -146,7 +146,7 @@ function VendorDashboard({ marketId }) {
                         <Link to="#" onClick={() => setActiveTab('events')} className={activeTab === 'events' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                             Events
                         </Link>
-                        {vendorUserData?.vendor_role[vendorUserData.active_vendor] && (
+                        {vendorUserData?.vendor_role[vendorUserData.active_vendor] <= 1 && (
                             <Link to="#" onClick={() => setActiveTab('team')} className={activeTab === 'team' ? 'notification active-tab btn btn-reset btn-tab' : 'notification btn btn-reset btn-tab'}>
                                 Team
                                 {notifications.length > 0 && <p className='badge'>{notifications.length}</p>}

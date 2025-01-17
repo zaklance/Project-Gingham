@@ -149,7 +149,7 @@ function VendorCreate () {
                 ...vendorUserData,
                 active_vendor: vendorId,
                 vendor_id: vendorId,
-                vendor_role: true
+                vendor_role: 0
             };
 
             console.log(vendorUserData)
@@ -196,8 +196,6 @@ function VendorCreate () {
                     if (response.ok) {
                         const responseData = await response.json();
                         alert(`Your product request has been sent to the admins for approval, if approved your product will be automatically changed!`);
-                        navigate('/vendor/dashboard');
-                        window.location.reload()
                     } else {
                         const errorData = await response.json();
                         alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
@@ -207,6 +205,7 @@ function VendorCreate () {
                     alert('An error occurred while sending the request. Please try again later.');
                 }
             }
+            navigate('/vendor/dashboard');
             window.location.reload();
         } catch (error) {
             console.error('Error creating vendor and updating user:', error);
@@ -319,24 +318,13 @@ function VendorCreate () {
                 </select>
             </div>
             <div className="form-group">
-
                 <label>Vendor Image:</label>
                 <input type="file" name="file" accept="image/*" onChange={handleFileChange} />
-
             </div>
-
-            {/* {vendorUserData?.vendor_role && ( */}
-                <>
-                    <button className="btn-edit" onClick={handleCreateVendor}>Create Vendor</button>
-                    <button className="btn-edit" onClick={() => setNewVendor(false)}>Cancel</button>
-                </>
-            {/* )} */}
-
-            <br />
-            <br />
-
+                <button className="btn-edit" onClick={handleCreateVendor}>Create Vendor</button>
+                <button className="btn-edit" onClick={() => setNewVendor(false)}>Cancel</button>
             <div>
-            <div className="tab-content margin-b-24">
+            <div className="tab-content margin-t-24 margin-b-16">
                 <h2>Already a Vendor?</h2>
             </div>
             <VendorTeamRequest vendorUserId={vendorUserId} vendorUserData={vendorUserData} />

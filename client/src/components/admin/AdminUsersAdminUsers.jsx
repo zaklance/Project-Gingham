@@ -144,7 +144,7 @@ const AdminUsers = () => {
         const { name, value } = event.target;
         setTempUserData((prev) => ({
             ...prev,
-            [name]: name === 'vendor_role' ? (value === 'true') : value,
+            [name]: name === 'admin_role' ? (value === 'true') : value,
         }));
     };
     const handleEditToggle = () => {

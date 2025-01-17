@@ -199,7 +199,7 @@ function VendorLogin({ handlePopup }) {
                                     required
                                 />
                                 <i className={showPassword.pw2 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw2')}>&emsp;</i>
-                                <PasswordStrengthBar className='password-bar' scoreWords={''} shortScoreWord={''} minLength={1} password={signupPassword} />
+                                <PasswordStrengthBar className='password-bar' minLength={5} password={signupPassword} />
                             </div>
                         </div>
                         <div className="form-group form-login">

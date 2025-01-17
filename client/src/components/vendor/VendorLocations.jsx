@@ -176,7 +176,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
                         </li>
                     ))}
                 </ul>
-                {vendorUserData?.vendor_role[vendorUserData.active_vendor] === true ? (
+                {vendorUserData?.vendor_role[vendorUserData.active_vendor] <= 1 ? (
                     <>
                         <h2 className='margin-b-16 margin-t-24'>Add Markets</h2>
                         <form>

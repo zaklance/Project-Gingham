@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 function VendorGuide() {
     const [activeSection, setActiveSection] = useState("");
 
+    
     const sections = [
         "Introduction",
         "Setting-Up your Vendor-User Profile",
@@ -24,7 +25,7 @@ function VendorGuide() {
 
     useEffect(() => {
         const handleScroll = () => {
-        const sections = document.querySelectorAll('.section');
+        const sections = document.querySelectorAll('.section-help');
         let current = "";
         sections.forEach((section) => {
             const sectionTop = section.offsetTop;
@@ -39,7 +40,6 @@ function VendorGuide() {
         return () => window.removeEventListener('scroll', handleScroll);
 }, []);
 
-    console.log(encodeURI(sections))
 
 return (
     <div className='box-bounding'>
