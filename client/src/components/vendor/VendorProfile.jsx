@@ -601,7 +601,7 @@ function VendorProfile () {
                     <h2 className='title margin-t-24'>Vendor Information</h2>
                     <div className='box-bounding'>
                         {vendorData?.id ? (
-                            vendorEditMode && vendorUserData?.vendor_role[vendorUserData.active_vendor] ? (
+                            vendorEditMode && vendorUserData?.vendor_role[vendorUserData.active_vendor] <= 1 ? (
                                 <>
                                     <div className='form-group'>
                                         <label>Vendor Name:</label>
@@ -751,7 +751,15 @@ function VendorProfile () {
                                                 <tbody>
                                                     <tr>
                                                         <td className='cell-title'>Role:</td>
-                                                        <td className='cell-text'>{vendorUserData?.vendor_role ? 'Admin' : 'Vendor'}</td>
+                                                        <td className='cell-text'>
+                                                            {(() => {
+                                                                const role = vendorUserData?.vendor_role[vendorUserData.active_vendor];
+                                                                if (role === 0) return 'Owner';
+                                                                if (role === 1) return 'Admin';
+                                                                if (role === 2) return 'Employee';
+                                                                return 'Unknown Role';
+                                                            })()}
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td className='cell-title'>Name:</td>
@@ -781,17 +789,19 @@ function VendorProfile () {
                                                 </tbody>
                                             </table>
                                         </div>
-                                        {vendorUserData?.vendor_role && (    
-                                            <div className='flex-start'>
-                                                <button className='btn-edit' onClick={handleVendorEditToggle}>Edit</button>
-                                            <div className='alert-container'>
-                                                <div className={status === 'success' ? 'alert alert-favorites' : 'alert-favorites-hidden'}>
-                                                    Success Uploading Image
+                                        {vendorUserData?.vendor_role[vendorUserData.active_vendor] <= 1 && (    
+                                           <>
+                                                <div className='flex-start'>
+                                                    <button className='btn-edit' onClick={handleVendorEditToggle}>Edit</button>
+                                                    <div className='alert-container'>
+                                                        <div className={status === 'success' ? 'alert alert-favorites' : 'alert-favorites-hidden'}>
+                                                            Success Uploading Image
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
+                                                <VendorLocations vendorId={vendorId} vendorUserData={vendorUserData} />
+                                            </>
                                         )}
-                                        <VendorLocations vendorId={vendorId} vendorUserData={vendorUserData} />
                                     </>
                                 )
                             ) : (

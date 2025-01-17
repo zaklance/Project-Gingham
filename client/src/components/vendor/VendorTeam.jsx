@@ -130,7 +130,16 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
     };
 
     const handleToggleRole = async (member, currentRole) => {
-        const isAdmin = currentRole === true ? false : true;
+        let newRole;
+        if (currentRole == 1) {
+            newRole = 2;
+        } else if (currentRole == 2) {
+            newRole = 1;
+        } else {
+            console.error('Invalid role');
+            return;
+        }
+
     
         if (!member) {
             alert("Member not found");
@@ -145,8 +154,8 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ 
-                    vendor_role: vendor_role,
-                    vendor_id: member.vendor_id[member.active_vendor],
+                    vendor_role: newRole,
+                    vendor_id: member.vendor_id[vendorId],
                     first_name: member.first_name,
                     last_name: member.last_name,
                     email: member.email, 
@@ -161,14 +170,14 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                                 ...item,
                                 vendor_role: {
                                     ...item.vendor_role,
-                                    [item.active_vendor]: isAdmin ? true : false,
+                                    [vendorId]: newRole,
                                 },
                             }
                             : item
                     )
                 );
 
-                alert(`Successfully updated role to ${isAdmin ? 'Admin' : 'Employee'}`);
+                alert(`Successfully updated role to ${newRole  == 1 ? 'Admin' : 'Employee'}`);
             } else {
                 const responseData = await response.json();
                 console.error('Error updating role:', responseData.message || response.statusText);
@@ -226,22 +235,39 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                     <button className="btn-edit" onClick={handleAddTeamMember}>Add Team Member</button>
                     <h3 className='margin-b-16'>Current Team Members:</h3>
                     <ul className='ul-team box-scroll-small'>
-                        {teamMembers.map(member => (
-                            <li key={member.id} className='li-team'>
+                        {teamMembers
+                            .sort((a, b) => {
+                                const nameA = teamMembers[a[0]]?.name?.toLowerCase() || 'unknown name';
+                                const nameB = teamMembers[b[0]]?.name?.toLowerCase() || 'unknown name';
+                                return nameA.localeCompare(nameB);
+                            })
+                            .map(member => (
+                                <li key={member.id} className='li-team'>
 
-                                <div className='flex-space-between'>
-                                    <p><strong>{member.first_name} {member.last_name}</strong> - {member.vendor_role[vendorId] ? 'Admin' : 'Employee'}</p>
-                                    {member.id !== vendorUserData.id && (
-                                        <>
-                                            <div className='flex-end flex-center-align'>
-                                                <button className="btn btn-small btn-white margin-r-8" onClick={() => handleToggleRole(member, member.vendor_role[vendorId])} > Switch to {member.vendor_role[vendorId] === true ? 'Employee' : 'Admin'} </button>
-                                                <button className="btn btn-small btn-unreport" onClick={() => handleDeleteTeamMember(member.id)} > Remove from Team</button>
-                                            </div> 
-                                        </>
-                                    )}
-                                </div>
-                            </li>
-                        ))}
+                                    <div className='flex-space-between'>
+                                        <p><strong>{member.first_name} {member.last_name}</strong> - 
+                                        {(() => {
+                                            const role = member?.vendor_role[vendorId];
+                                            if (role == 0) return 'Owner';
+                                            if (role == 1) return 'Admin';
+                                            if (role == 2) return 'Employee';
+                                            return 'Unknown Role';
+                                        })()}
+                                        </p>
+                                        {member.id !== vendorUserData.id && (
+                                            <>
+                                                <div className='flex-end flex-center-align'>
+                                                    <button className="btn btn-small btn-white margin-r-8" 
+                                                        onClick={() => handleToggleRole(member, member.vendor_role[vendorId])}>
+                                                            Switch to {member.vendor_role[vendorId] === 1 ? 'Employee' : 'Admin'}
+                                                    </button>
+                                                    <button className="btn btn-small btn-unreport" onClick={() => handleDeleteTeamMember(member.id)} > Remove from Team</button>
+                                                </div> 
+                                            </>
+                                        )}
+                                    </div>
+                                </li>
+                            ))}
                     </ul>
                 </div>
             </div>
