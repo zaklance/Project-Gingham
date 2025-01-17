@@ -2484,29 +2484,26 @@ select:hover {
   padding: 0 20px;
 }
 
-.section {
+.section-help {
   margin-bottom: 36px;
   background-color: #fbf7eb;
   padding: 12px;
   border-radius: 12px;
 }
 
-.section h3 {
+.section-help h3 {
   border-bottom: 1px solid #dbdbdb;
   padding-bottom: 5px;
 }
 
-/* Indent list items in sections */
-.section ol,
-.section ul {
-  margin-left: 20px;
-  /* Indent the list */
-  padding-left: 10px;
+.section-help ol,
+.section-help ul {
+  margin-left: 12px;
+  padding-left: 12px;
 }
 
-.section li {
-  margin-bottom: 10px;
-  /* Add spacing between list items */
+.section-help li {
+  margin-bottom: 12px;
 }
 
 
