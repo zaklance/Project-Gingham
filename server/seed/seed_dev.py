@@ -1106,7 +1106,7 @@ def run():
         phone = str(randint(1000000000,9999999999))
         active_vendor = rand_vendor_id
         vendor_id = { rand_vendor_id: rand_vendor_id}
-        vendor_role = {rand_vendor_id: bool(fake.boolean())}
+        vendor_role = {rand_vendor_id: randint(0, 1)}
 
 
         vu = VendorUser(
@@ -1139,7 +1139,7 @@ def run():
         phone="2095553880",
         active_vendor=1,
         vendor_id={1:1},
-        vendor_role={1:True}
+        vendor_role={1:0}
     )
 
     vendor_user_settings_demo = SettingsVendor(

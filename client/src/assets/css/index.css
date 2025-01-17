@@ -2449,7 +2449,7 @@ select:hover {
 .vendor-guide {
   display: grid;
   grid-template-columns: 204px 1fr;
-  gap: 16px;
+  /* gap: 16px; */
 }
 
 .toc {
@@ -2481,13 +2481,14 @@ select:hover {
 }
 
 .help-content {
-  padding: 0 20px;
+  padding: 0 0 0 20px;
 }
 
 .section-help {
   margin-bottom: 36px;
   background-color: #fbf7eb;
   padding: 12px;
+  margin-left: 16px;
   border-radius: 12px;
 }
 
