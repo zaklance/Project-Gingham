@@ -456,12 +456,19 @@ function MarketDetail ({ match }) {
                         const firstBasketB = marketBaskets
                             .filter(item => item.vendor_id === vendorDetailsMap[b]?.id)
                             .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
-
-                        const dateA = firstBasketA ? new Date(firstBasketA.sale_date) : new Date();
-                        const dateB = firstBasketB ? new Date(firstBasketB.sale_date) : new Date();
-
-                        return dateA - dateB;
-                    })
+                    
+                        const dateA = firstBasketA ? new Date(firstBasketA.sale_date) : Infinity;
+                        const dateB = firstBasketB ? new Date(firstBasketB.sale_date) : Infinity;
+                    
+                        if (dateA !== dateB) {
+                            return dateA - dateB;
+                        }
+                    
+                        const availableA = getAvailableBaskets(a).length > 0 ? 1 : 0;
+                        const availableB = getAvailableBaskets(b).length > 0 ? 1 : 0;
+                    
+                        return availableB - availableA;
+                    })                    
                     .map((vendorId, index) => {
                         const vendorDetail = vendorDetailsMap[vendorId];
                         const availableBaskets = getAvailableBaskets(vendorId);
@@ -470,14 +477,17 @@ function MarketDetail ({ match }) {
 
                         return (
                             <div key={index} className="market-item flex-center-align">
+                                <span className="market-name margin-l-16">
                                 <Link to={`/user/vendors/${vendorId}`} className="market-name">
                                     {vendorDetail.name || 'Loading...'}
                                 </Link>
-                                <span className="market-name margin-l-16">
+                                <br/>
+                                <p>Products:{' '}
                                     {products
                                         .filter((p) => vendorDetail.products?.includes(p.id))
                                         .map((p) => p.product)
                                         .join(', ') || 'No products listed'}
+                                </p>
                                 </span>
                                 {availableBaskets.length > 0 ? (
                                     <span className="market-price">
