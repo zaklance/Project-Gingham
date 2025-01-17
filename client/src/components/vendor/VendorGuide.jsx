@@ -86,144 +86,119 @@ return (
                 <section id="Editing your Vendor-User Profile" className="section-help">
                     <h3 className="margin-b-16">Editing your Vendor-User Profile</h3>
                     <ol>
-                        <li></li>
-                        <li></li>
-                        <li></li>
+                        <li>Log in to your account and navigate to the <span className="text-500">Profile tab</span>.</li>
+                        <li>Click the <span className="text-500">Edit button</span> to enter Edit Mode.</li>
+                        <li>Make the necessary changes and click <span className="text-500">Save Changes</span> or <span className="text-500">Cancel</span> to discard them.</li>
                     </ol>
-                    <p className="margin-b-16"></p>
-                    <p className="margin-b-16"></p>
                 </section>
 
-                <section id="Creating a New Vendor Profile" className="section-help">
+                <section id="Creating a new Vendor Profile" className="section-help">
                     <h3 className="margin-b-16">Creating a New Vendor Profile</h3>
                     <ol>
-                        <li></li>
-                        <li></li>
-                        <li></li>
+                        <li>After creating a new Profile, navigate to the <span className="text-500">Dashboard</span> or <span className="text-500">Profile tab</span>.</li>
+                        <li>Fill out the required fields in the Vendor Profile form.</li>
+                        <li>Click <span className="text-500">Create Vendor</span> to complete the process.</li>
                     </ol>
-                    <p className="margin-b-16"></p>
-                    <p className="margin-b-16"></p>
+                    <p className="margin-b-16">If the product you sell isn't listed, choose "Other" and specify it. It will update once approved.</p>
                 </section>
 
                 <section id="Editing your existing Vendor Profile" className="section-help">
-                    <h3 className="margin-b-16">Editing your existing Vendor Profile</h3>
+                    <h3 className="margin-b-16">Editing your Existing Vendor Profile</h3>
                     <ol>
-                        <li></li>
-                        <li></li>
-                        <li></li>
+                        <li>Navigate to the <span className="text-500">Profile tab</span>.</li>
+                        <li>Click <span className="text-500">Edit</span> to modify your Vendor Profile information.</li>
+                        <li>After making the changes, click <span className="text-500">Save Changes</span> or <span className="text-500">Cancel</span> to discard.</li>
                     </ol>
-                    <p className="margin-b-16"></p>
-                    <p className="margin-b-16"></p>
                 </section>
 
                 <section id="Managing Members of your Vendor Team" className="section-help">
                     <h3 className="margin-b-16">Managing Members of your Vendor Team</h3>
                     <ol>
-                        <li></li>
-                        <li></li>
-                        <li></li>
+                        <li>Team members can create a Vendor-User profile and request to join an existing team.</li>
+                        <li>If you are the admin, you’ll receive notifications to approve or reject requests.</li>
+                        <li>You can also invite members by email or manage roles in the Vendor Dashboard under the Team tab.</li>
                     </ol>
-                    <p className="margin-b-16"></p>
-                    <p className="margin-b-16"></p>
                 </section>
 
                 <section id="Adding and Editing your Market Locations" className="section-help">
                     <h3 className="margin-b-16">Adding and Editing your Market Locations</h3>
                     <ol>
-                        <li></li>
-                        <li></li>
-                        <li></li>
+                        <li>Navigate to the Vendor Information section and search for the desired Market location.</li>
+                        <li>Select the day(s) for participation and click <span className="text-500">Add Day</span>.</li>
+                        <li>To remove a Market, find it under <span className="text-500">Delete Markets</span> and click <span className="text-500">Delete</span>.</li>
                     </ol>
-                    <p className="margin-b-16"></p>
-                    <p className="margin-b-16"></p>
+                    <p className="margin-b-16">For new Farmers Markets, email hello@gingham.nyc with your request.</p>
                 </section>
 
                 <section id="Understanding the Vendor Dashboard" className="section-help">
                     <h3 className="margin-b-16">Understanding the Vendor Dashboard</h3>
-                    <ol>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                    </ol>
-                    <p className="margin-b-16"></p>
-                    <p className="margin-b-16"></p>
+                    <p className="margin-b-16">The Vendor Dashboard consists of three main tabs: Baskets, Events, and Team.</p>
+                    <ul>
+                        <li><span className="text-500">Admins</span> can manage all tabs, including Baskets, Events, and Team settings.</li>
+                        <li><span className="text-500">Employees</span> can access and manage Baskets.</li>
+                    </ul>
                 </section>
 
                 <section id="Building Future Baskets" className="section-help">
                     <h3 className="margin-b-16">Building Future Baskets</h3>
                     <ol>
-                        <li></li>
-                        <li></li>
-                        <li></li>
+                        <li>Enter the quantity of Baskets for sale, their value, and price.</li>
+                        <li>Specify pick-up start and end times.</li>
+                        <li>Click <span className="text-500">Save</span> to confirm your entries. Baskets will go live 48 hours before pick-up.</li>
                     </ol>
-                    <p className="margin-b-16"></p>
-                    <p className="margin-b-16"></p>
+                    <p className="margin-b-16">Note: Sold Baskets cannot be deleted. Update other fields as needed.</p>
                 </section>
 
                 <section id="Editing Future Baskets" className="section-help">
                     <h3 className="margin-b-16">Editing Future Baskets</h3>
                     <ol>
-                        <li></li>
-                        <li></li>
-                        <li></li>
+                        <li>Click <span className="text-500">Edit</span> to adjust quantities or details of unsold Baskets.</li>
+                        <li>To delete, click <span className="text-500">Delete Unsold</span>, ensuring no sales have occurred.</li>
                     </ol>
-                    <p className="margin-b-16"></p>
-                    <p className="margin-b-16"></p>
                 </section>
 
                 <section id="Editing Today’s Baskets" className="section-help">
                     <h3 className="margin-b-16">Editing Today’s Baskets</h3>
                     <ol>
-                        <li></li>
-                        <li></li>
-                        <li></li>
+                        <li>Click <span className="text-500">Edit</span> to adjust Basket quantities as needed, ensuring no decrease below sold amounts.</li>
+                        <li>Click <span className="text-500">Save</span> to confirm changes.</li>
                     </ol>
-                    <p className="margin-b-16"></p>
-                    <p className="margin-b-16"></p>
                 </section>
 
                 <section id="Scanning and Validating Basket Pick-Up’s" className="section-help">
                     <h3 className="margin-b-16">Scanning and Validating Basket Pick-Up’s</h3>
                     <ol>
-                        <li></li>
-                        <li></li>
-                        <li></li>
+                        <li>Click the <span className="text-500">Scan</span> tab in the navigation bar.</li>
+                        <li>Use your device to scan the customer’s QR Code.</li>
+                        <li>Ensure the scanned code matches the listed Basket details.</li>
                     </ol>
-                    <p className="margin-b-16"></p>
-                    <p className="margin-b-16"></p>
                 </section>
 
                 <section id="Creating and Modifying Events" className="section-help">
                     <h3 className="margin-b-16">Creating and Modifying Events</h3>
                     <ol>
-                        <li></li>
-                        <li></li>
-                        <li></li>
+                        <li>Navigate to the <span className="text-500">Events</span> tab in the Vendor Dashboard.</li>
+                        <li>Create an event for the appropriate Market and save changes.</li>
+                        <li>Edit or cancel events as needed before their end dates.</li>
                     </ol>
-                    <p className="margin-b-16"></p>
-                    <p className="margin-b-16"></p>
                 </section>
 
                 <section id="Using the Vendor Sales dashboard" className="section-help">
-                    <h3 className="margin-b-16">Using the Vendor Sales dashboard</h3>
+                    <h3 className="margin-b-16">Using the Vendor Sales Dashboard</h3>
                     <ol>
-                        <li></li>
-                        <li></li>
-                        <li></li>
+                        <li>Access the <span className="text-500">Sales</span> tab in the navigation bar.</li>
+                        <li>Review sales data using filters for timeframes and Markets.</li>
+                        <li>Analyze sales trends to optimize your strategy.</li>
                     </ol>
-                    <p className="margin-b-16"></p>
-                    <p className="margin-b-16"></p>
                 </section>
 
                 <section id="Creating and Managing Multi-Vendor Profiles" className="section-help">
                     <h3 className="margin-b-16">Creating and Managing Multi-Vendor Profiles</h3>
                     <ol>
-                        <li></li>
-                        <li></li>
-                        <li></li>
+                        <li>Add or join additional Vendor Teams as an Admin or Employee.</li>
+                        <li>Switch between Active Vendor profiles using the dropdown menu.</li>
+                        <li>Ensure the correct Active Vendor is selected for each task.</li>
                     </ol>
-                    <p className="margin-b-16"></p>
-                    <p className="margin-b-16"></p>
                 </section>
 
             </div>
