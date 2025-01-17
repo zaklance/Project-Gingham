@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import '../../assets/css/index.css';
 
-function VendorGuide({ activeTab, setActiveTab }) {
+function VendorGuide() {
+    const [activeSection, setActiveSection] = useState("");
 
+    
     const sections = [
         "Introduction",
         "Setting-Up your Vendor-User Profile",
@@ -22,11 +23,9 @@ function VendorGuide({ activeTab, setActiveTab }) {
         "Creating and Managing Multi-Vendor Profiles",
     ];
 
-    const [activeSection, setActiveSection] = useState("");
-
     useEffect(() => {
         const handleScroll = () => {
-        const sections = document.querySelectorAll('.section');
+        const sections = document.querySelectorAll('.section-help');
         let current = "";
         sections.forEach((section) => {
             const sectionTop = section.offsetTop;
@@ -41,7 +40,6 @@ function VendorGuide({ activeTab, setActiveTab }) {
         return () => window.removeEventListener('scroll', handleScroll);
 }, []);
 
-    console.log(encodeURI(sections))
 
 return (
     <div className='box-bounding'>

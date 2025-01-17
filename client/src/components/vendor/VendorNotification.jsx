@@ -76,10 +76,10 @@ function VendorNotification({ notifications, setNotifications, teamMembers, setT
                     {notifications.map((notification) => (
                         <li key={notification.id}>
                             <p><strong>{notification.message}</strong></p>
-                            <button className='btn-edit' onClick={() => handleApprove(notification, true)}>
+                            <button className='btn-edit' onClick={() => handleApprove(notification, 1)}>
                                 Approve as Admin
                             </button>
-                            <button className='btn-edit' onClick={() => handleApprove(notification, false)}>
+                            <button className='btn-edit' onClick={() => handleApprove(notification, 2)}>
                                 Approve as Employee
                             </button>
                             <button className='btn-edit' onClick={() => handleReject(notification.id)}>
