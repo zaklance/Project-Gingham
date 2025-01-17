@@ -378,15 +378,22 @@ function VendorDetail() {
                     markets
                         .slice()
                         .sort((a, b) => {
+                            const today = new Date().getDay();
+                        
                             const dayOfWeekA = marketDetails[a.market_day_id]?.day_of_week || 0;
                             const dayOfWeekB = marketDetails[b.market_day_id]?.day_of_week || 0;
-                            if (dayOfWeekA !== dayOfWeekB) {
-                                return dayOfWeekA - dayOfWeekB;
+                        
+                            const adjustedDayA = (dayOfWeekA - today + 7) % 7;
+                            const adjustedDayB = (dayOfWeekB - today + 7) % 7;
+                        
+                            if (adjustedDayA !== adjustedDayB) {
+                                return adjustedDayA - adjustedDayB;
                             }
+                        
                             const marketNameA = (marketDetails[a.market_day_id]?.markets?.name || "").toLowerCase();
                             const marketNameB = (marketDetails[b.market_day_id]?.markets?.name || "").toLowerCase();
                             return marketNameA.localeCompare(marketNameB);
-                        })
+                        })                               
                         .map((market, index) => {
                             const marketDetail = marketDetails[market.market_day_id] || {};
                             const firstBasket = marketBaskets.find(
