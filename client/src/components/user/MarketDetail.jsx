@@ -131,7 +131,13 @@ function MarketDetail ({ match }) {
                 vendorMarket.market_day.day_of_week === selectedDay?.day_of_week
             );
             const isUnique = self.findIndex(v => v === vendorId) === index;
-            return availableOnSelectedDay.length > 0 && (!selectedProduct || Number(vendorDetail.product) === Number(selectedProduct)) && isUnique;
+            
+            const hasSelectedProduct =
+                !selectedProduct ||
+                (Array.isArray(vendorDetail.products) &&
+                    vendorDetail.products.map(Number).includes(Number(selectedProduct)));
+
+            return availableOnSelectedDay.length > 0 && hasSelectedProduct && isUnique;
         });
     }, [vendors, vendorMarkets, selectedDay, selectedProduct, market, vendorDetailsMap]);
     
@@ -146,13 +152,20 @@ function MarketDetail ({ match }) {
                 vendorMarket.market_day.market_id === market.id
         );
         return products.filter(product =>
-            filteredMarketsOnDay.some(vendorMarket => vendorMarket.vendor.product === product.id)
+            filteredMarketsOnDay.some(vendorMarket =>
+                Array.isArray(vendorMarket.vendor.products) &&
+                vendorMarket.vendor.products.some(vendorProductId =>
+                    vendorProductId === product.id
+                )
+            )
         );
     }, [vendorMarkets, selectedDay, products, market]);
     
     useEffect(() => {
         setProductList(filteredProducts);
-    }, [filteredProducts]);    
+    }, [filteredProducts]);  
+
+
 
     // Gets rid of duplicate vendors (from different market_days)
     const uniqueFilteredVendorsList = [...new Set(filteredVendorsList)];
@@ -329,6 +342,7 @@ function MarketDetail ({ match }) {
     const marketLocation = { 'lat': parseFloat(market.coordinates.lat), 'lng': parseFloat(market.coordinates.lng) }
     const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
 
+
     return (
         <div>
             <div className='flex-space-between'>
@@ -442,14 +456,13 @@ function MarketDetail ({ match }) {
                 <h2>Vendors:</h2>
                 <select value={selectedProduct} onChange={handleProductChange}>
                     <option value="">All Products</option>
-                    {Array.isArray(products) && products.map((product) => (
+                    {Array.isArray(productList) && productList.map((product) => (
                         <option key={product.id} value={product.id}>
                             {product.product}
                         </option>
                     ))}
                 </select>
             </div>
-
             <div className='box-scroll'>
                 {Array.isArray(uniqueFilteredVendorsList) && uniqueFilteredVendorsList.length > 0 ? (
                     uniqueFilteredVendorsList
@@ -471,9 +484,11 @@ function MarketDetail ({ match }) {
                     
                         const availableA = getAvailableBaskets(a).length > 0 ? 1 : 0;
                         const availableB = getAvailableBaskets(b).length > 0 ? 1 : 0;
-                    
-                        return availableB - availableA;
-                    })                    
+                        
+                        const nameA = vendorDetailsMap[a]?.name?.toLowerCase() || '';
+                        const nameB = vendorDetailsMap[b]?.name?.toLowerCase() || '';
+                        return nameA.localeCompare(nameB);
+                    })
                     .map((vendorId, index) => {
                         const vendorDetail = vendorDetailsMap[vendorId];
                         const availableBaskets = getAvailableBaskets(vendorId);
@@ -497,7 +512,7 @@ function MarketDetail ({ match }) {
                                 {availableBaskets.length > 0 ? (
                                     <span className="market-price">
                                         <span className="text-500">Price: ${firstBasket.price}</span>
-                                        <br />
+                                        <br/>
                                         Value: ${firstBasket.basket_value}
                                     </span>
                                 ) : (
@@ -514,7 +529,7 @@ function MarketDetail ({ match }) {
                                         {availableBaskets.length > 0
                                             ? `Available Baskets: ${availableBaskets.length}`
                                             : <a className="link-edit" onClick={() => handleNotifyMe(vendorDetail)}>Notify Me</a>}
-                                        <br />
+                                        <br/>
                                         {formatPickupText(firstBasket, timeConverter, marketDateConvert)}
                                     </span>
                                 )}
