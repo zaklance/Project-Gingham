@@ -302,7 +302,7 @@ function VendorDetail() {
     
 
     return (
-        <div>
+        <div className='markets-container'>
             <div className='flex-space-between'>
                 <div className='flex-start flex-gap-8 flex-bottom-align'>
                     <h2>{vendor.name}</h2>
