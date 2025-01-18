@@ -115,16 +115,18 @@ const AdminUsersVendorUsers = () => {
         setEditMode(!editMode);
     };
 
-    const handleRoleToggle = (key) => {
+    const handleRoleToggle = (key, value) => {
         console.log(key)
         setTempUserData((prevData) => ({
             ...prevData,
             vendor_role: {
                 ...prevData.vendor_role,
-                [key]: !prevData.vendor_role[key], // Toggle the boolean value
+                [key]: value === 0 ? 1 : value === 1 ? 2 : 0,
             },
         }));
     };
+
+    console.log(tempUserData?.vendor_role)
 
     const handleDelete = (key) => {
         setTempUserData((prevData) => {
@@ -245,10 +247,10 @@ const AdminUsersVendorUsers = () => {
                                                 style={{
                                                     backgroundColor: "#eee", fontSize: ".9em"
                                                 }}
-                                                label={`${key}: ${value ? 'Admin' : 'Employee'}` || 'Unknown Product'}
+                                                label={`${key}: ${value === 0 ? 'Owner' : value === 1 ? 'Admin' : value === 2 ? 'Employee' : 'Unknown Role'}` || 'Unknown Product'}
                                                 size="small"
                                                 title="Click to switch"
-                                                onClick={() => handleRoleToggle(key)}
+                                                onClick={() => handleRoleToggle(key, value)}
                                                 onDelete={() => handleDelete(key)}
                                             />
                                         );
@@ -318,7 +320,7 @@ const AdminUsersVendorUsers = () => {
                                                             style={{
                                                                 backgroundColor: "#eee", fontSize: ".9em"
                                                             }}
-                                                            label={`${key}: ${value ? 'Admin' : 'Employee'}` || 'Unknown Product'}
+                                                            label={`${key}: ${value === 0 ? 'Owner' : value === 1 ? 'Admin' : value === 2 ? 'Employee' : 'Unknown Role'}` || 'Unknown Product'}
                                                             size="small"
                                                         />
                                                     );

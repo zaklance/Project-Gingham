@@ -89,16 +89,32 @@ function VendorLogin({ handlePopup }) {
                 }),
                 credentials: 'include'
             });
-    
             if (response.ok) {
-                alert("Sign Up Successful. Please log in!");
-                setSignupEmail('');
-                setSignupConfirmEmail('');
-                setSignupPassword('');
-                setSignupConfirmPassword('');
-                setSignupFirstName('');
-                setSignupLastName('');
-                setSignupPhone('');
+                const data = await response.json();
+                // console.log(data)
+                // const settingsResponse = await fetch('http://127.0.0.1:5555/api/settings-vendor-users', {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json'
+                //     },
+                //     body: JSON.stringify({
+                //         vendor_user_id: data.id
+                //     })
+                // });
+                // if (!settingsResponse.ok) {
+                //     const errorData = await response.json();
+                //     console.log(errorData)
+                // }
+                // if (response.ok) {
+                    alert("Sign Up Successful. Please log in!");
+                    setSignupEmail('');
+                    setSignupConfirmEmail('');
+                    setSignupPassword('');
+                    setSignupConfirmPassword('');
+                    setSignupFirstName('');
+                    setSignupLastName('');
+                    setSignupPhone('');
+                // }
             } else {
                 const errorData = await response.json();
                 console.log('Full error response:', errorData);

@@ -14,6 +14,8 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     SettingsUser, SettingsVendor, SettingsAdmin, bcrypt )
 import json
 from datetime import datetime, timedelta, timezone, time, date
+import datetime as dt
+from pytz import timezone
 
 fake = Faker()
 
@@ -462,6 +464,7 @@ def run():
     market_day_list = [
         # 175th Street Greenmarket
         MarketDay(
+            id=1,
             market_id=1,
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
@@ -469,6 +472,7 @@ def run():
         ),
         # 57th Street Greenmarket
         MarketDay(
+            id=2,
             market_id=2,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -476,6 +480,7 @@ def run():
         ),
         # 79th Street Greenmarket
         MarketDay(
+            id=3,
             market_id=3,
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
@@ -483,6 +488,7 @@ def run():
         ),
         # 82nd Street Greenmarket
         MarketDay(
+            id=4,
             market_id=4,
             hour_start=time(9, 0, 0),
             hour_end=time(14, 30, 0),
@@ -490,6 +496,7 @@ def run():
         ),
         # 94th Street Greenmarket
         MarketDay(
+            id=5,
             market_id=5,
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
@@ -497,6 +504,7 @@ def run():
         ),
         # 97th Street Greenmarket
         MarketDay(
+            id=6,
             market_id=6,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
@@ -504,6 +512,7 @@ def run():
         ),
         # Abingdon Square Greenmarket
         MarketDay(
+            id=7,
             market_id=7,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
@@ -511,6 +520,7 @@ def run():
         ),
         # Astor Place Greenmarket
         MarketDay(
+            id=8,
             market_id=8,
             hour_start=time(8, 0, 0),
             hour_end=time(17, 0, 0),
@@ -518,6 +528,7 @@ def run():
         ),
         # Bowling Green Greenmarket
         MarketDay(
+            id=9,
             market_id=9,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
@@ -525,6 +536,7 @@ def run():
         ),
         # Bowling Green Greenmarket
         MarketDay(
+            id=10,
             market_id=9,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
@@ -532,6 +544,7 @@ def run():
         ),
         # Bro Sis Green Youth Market
         MarketDay(
+            id=11,
             market_id=10,
             hour_start=time(10, 30, 0),
             hour_end=time(18, 0, 0),
@@ -539,6 +552,7 @@ def run():
         ),
         # Chelsea’s Down to Earth Farmers Market
         MarketDay(
+            id=12,
             market_id=11,
             hour_start=time(9, 0, 0),
             hour_end=time(14, 0, 0),
@@ -546,6 +560,7 @@ def run():
         ),
         # Children’s Aid Go!Healthy Food Box + Farmstand - Milbank Center
         MarketDay(
+            id=13,
             market_id=12,
             hour_start=time(14, 0, 0),
             hour_end=time(16, 30, 0),
@@ -553,6 +568,7 @@ def run():
         ),
         # Columbia Greenmarket
         MarketDay(
+            id=14,
             market_id=13,
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
@@ -560,6 +576,7 @@ def run():
         ),
         # Columbia Greenmarket
         MarketDay(
+            id=15,
             market_id=13,
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
@@ -567,6 +584,7 @@ def run():
         ),
         # Dag Hammarskjold Greenmarket
         MarketDay(
+            id=16,
             market_id=14,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -574,6 +592,7 @@ def run():
         ),
         # Fort Washington Greenmarket
         MarketDay(
+            id=17,
             market_id=15,
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
@@ -581,6 +600,7 @@ def run():
         ),
         # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
+            id=18,
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
@@ -588,6 +608,7 @@ def run():
         ),
         # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
+            id=19,
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
@@ -595,6 +616,7 @@ def run():
         ),
         # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
+            id=20,
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
@@ -602,6 +624,7 @@ def run():
         ),
         # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
+            id=21,
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
@@ -609,6 +632,7 @@ def run():
         ),
         # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
+            id=22,
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
@@ -616,6 +640,7 @@ def run():
         ),
         # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
+            id=23,
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
@@ -623,6 +648,7 @@ def run():
         ),
         # Gouverneur Health Farmstand
         MarketDay(
+            id=24,
             market_id=17,
             hour_start=time(9, 0, 0),
             hour_end=time(14, 0, 0),
@@ -630,6 +656,7 @@ def run():
         ),
         # Grass Roots Farmers Market
         MarketDay(
+            id=25,
             market_id=18,
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
@@ -637,6 +664,7 @@ def run():
         ),
         # Grass Roots Farmers Market
         MarketDay(
+            id=26,
             market_id=18,
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
@@ -644,6 +672,7 @@ def run():
         ),
         # Greenmarket at the Oculus
         MarketDay(
+            id=27,
             market_id=19,
             hour_start=time(8, 0, 0),
             hour_end=time(17, 0, 0),
@@ -651,6 +680,7 @@ def run():
         ),
         # Harlem Meer Farmstand
         MarketDay(
+            id=28,
             market_id=20,
             hour_start=time(10, 00, 0),
             hour_end=time(14, 0, 0),
@@ -658,6 +688,7 @@ def run():
         ),
         # Harvest Home East Harlem Farmers Market
         MarketDay(
+            id=29,
             market_id=21,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -665,6 +696,7 @@ def run():
         ),
         # Harvest Home Harlem Hospital Farmers Market
         MarketDay(
+            id=30,
             market_id=22,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -672,6 +704,7 @@ def run():
         ),
         # Harvest Home Lenox Avenue Farm Stand
         MarketDay(
+            id=31,
             market_id=23,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -679,6 +712,7 @@ def run():
         ),
         # Harvest Home Metropolitan Hospital Farmers Market
         MarketDay(
+            id=32,
             market_id=24,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -686,6 +720,7 @@ def run():
         ),
         # Inwood Park Greenmarket
         MarketDay(
+            id=33,
             market_id=25,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -693,6 +728,7 @@ def run():
         ),
         # Lower East Side Farmstand
         MarketDay(
+            id=34,
             market_id=26,
             hour_start=time(8, 30, 0),
             hour_end=time(15, 0, 0),
@@ -700,6 +736,7 @@ def run():
         ),
         # Morningside Park’s Down to Earth Farmers Market
         MarketDay(
+            id=35,
             market_id=27,
             hour_start=time(9, 0, 0),
             hour_end=time(14, 0, 0),
@@ -707,6 +744,7 @@ def run():
         ),
         # Mount Sinai Greenmarket
         MarketDay(
+            id=36,
             market_id=28,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -714,6 +752,7 @@ def run():
         ),
         # NYP Youth Market - Audoban
         MarketDay(
+            id=37,
             market_id=29,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -721,6 +760,7 @@ def run():
         ),
         # NYP Youth Market - Broadway
         MarketDay(
+            id=38,
             market_id=30,
             hour_start=time(9, 0, 0),
             hour_end=time(15, 0, 0),
@@ -728,6 +768,7 @@ def run():
         ),
         # Project EATS Farm Stand at Essex Crossing
         MarketDay(
+            id=39,
             market_id=31,
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
@@ -735,6 +776,7 @@ def run():
         ),
         # Project EATS Farm Stand at Essex Crossing
         MarketDay(
+            id=40,
             market_id=31,
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
@@ -742,6 +784,7 @@ def run():
         ),
         # Project EATS Farm Stand at Essex Crossing
         MarketDay(
+            id=41,
             market_id=31,
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
@@ -749,6 +792,7 @@ def run():
         ),
         # Project EATS Farm Stand at Essex Crossing
         MarketDay(
+            id=42,
             market_id=31,
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
@@ -756,6 +800,7 @@ def run():
         ),
         # Project EATS Farm Stand at Essex Crossing
         MarketDay(
+            id=43,
             market_id=31,
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
@@ -763,6 +808,7 @@ def run():
         ),
         # P.S. 11 Farm Market
         MarketDay(
+            id=44,
             market_id=32,
             hour_start=time(8, 0, 0),
             hour_end=time(10, 00, 0),
@@ -770,6 +816,7 @@ def run():
         ),
         # P.S. 57 Farmstand
         MarketDay(
+            id=45,
             market_id=33,
             hour_start=time(9, 30, 0),
             hour_end=time(15, 0, 0),
@@ -777,6 +824,7 @@ def run():
         ),
         # Stuyvesant Town Greenmarket
         MarketDay(
+            id=46,
             market_id=34,
             hour_start=time(9, 30, 0),
             hour_end=time(16, 0, 0),
@@ -784,6 +832,7 @@ def run():
         ),
         # Tompkins Square Greenmarket
         MarketDay(
+            id=47,
             market_id=35,
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
@@ -791,6 +840,7 @@ def run():
         ),
         # Tribeca Greenmarket
         MarketDay(
+            id=48,
             market_id=36,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
@@ -798,6 +848,7 @@ def run():
         ),
         # Tribeca Greenmarket
         MarketDay(
+            id=49,
             market_id=36,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
@@ -805,6 +856,7 @@ def run():
         ),
         # Tucker Square Greenmarket
         MarketDay(
+            id=50,
             market_id=37,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -812,6 +864,7 @@ def run():
         ),
         # Tucker Square Greenmarket
         MarketDay(
+            id=51,
             market_id=37,
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
@@ -819,6 +872,7 @@ def run():
         ),
         # Two Bridges Youth Market
         MarketDay(
+            id=52,
             market_id=38,
             hour_start=time(10, 30, 0),
             hour_end=time(15, 30, 0),
@@ -826,6 +880,7 @@ def run():
         ),
         # Union Square Greenmarket
         MarketDay(
+            id=53,
             market_id=39,
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
@@ -833,6 +888,7 @@ def run():
         ),
         # Union Square Greenmarket
         MarketDay(
+            id=54,
             market_id=39,
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
@@ -840,6 +896,7 @@ def run():
         ),
         # Union Square Greenmarket
         MarketDay(
+            id=55,
             market_id=39,
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
@@ -847,6 +904,7 @@ def run():
         ),
         # Union Square Greenmarket
         MarketDay(
+            id=56,
             market_id=39,
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
@@ -854,6 +912,7 @@ def run():
         ),
         # Uptown Good Food Farm Stand
         MarketDay(
+            id=57,
             market_id=40,
             hour_start=time(16, 0, 0),
             hour_end=time(19, 0, 0),
@@ -1009,7 +1068,7 @@ def run():
         user_id = str(randint(1, 50))
         is_reported = choice(reported)
         last_year = randint(0, 365)
-        post_date = datetime.now(timezone.utc) - timedelta(days=last_year)
+        post_date = dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=last_year)
 
         mr = MarketReview(
             review_text=review_text,
@@ -1033,7 +1092,7 @@ def run():
         user_id = str(randint(1, 50))
         is_reported = choice(reported)
         last_year = randint(0, 365)
-        post_date = datetime.now(timezone.utc) - timedelta(days=last_year)
+        post_date = dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=last_year)
         
         vr = VendorReview(
             review_text=review_text,
@@ -1226,26 +1285,45 @@ def run():
     db.session.add_all(vendor_markets)
     db.session.commit()
 
-
     baskets = []
+    est = timezone('US/Eastern')  # Define the EST timezone.
+
     for i in range(2000):
         rand_user = [None, randint(1, 50)]
-        last_month = randint(-4, 4)
-        sale_date = (datetime.now() - timedelta(days=last_month)).date()
+
+        selected_vm = choice(vendor_markets)
+        selected_market_day = next(item for item in market_day_list if item.id == selected_vm.market_day_id)
+        day_of_week = selected_market_day.day_of_week
+        current_date = datetime.now(est).date()
+
+        def find_matching_date(day_of_week, reference_date):
+            difference = (day_of_week - reference_date.weekday()) % 7
+            return reference_date + timedelta(days=difference)
+
+        possible_dates = [
+            find_matching_date(day_of_week, current_date + timedelta(days=delta))
+            for delta in range(-4, 5)
+        ]
+
+        sale_date = min(possible_dates, key=lambda x: abs(x - current_date))
+
+        sale_date -= timedelta(days=1)
+
+        sale_date = datetime.combine(sale_date, time.min).date()
+
         rand_hour = randint(10, 14)
         rand_minute = choice([0, 0, 30])
-        date_time = datetime(sale_date.year, sale_date.month, sale_date.day, rand_hour, rand_minute, 0)
+        date_time = est.localize(datetime(sale_date.year, sale_date.month, sale_date.day, rand_hour, rand_minute))
+
         pickup_start = date_time
-        random_duration_minutes = choice([30, 60, 60, 90, 90, 120, 120, 120, 120, 240, 240, 360])
+        random_duration_minutes = choice([30, 60, 90, 120, 240, 360])
         pickup_end = pickup_start + timedelta(minutes=random_duration_minutes)
 
         user_id = choice(rand_user)
         is_sold = user_id is not None
-        is_grabbed = bool(fake.boolean()) if is_sold else bool(False)
-        price = int(randint(5, 10))
-        basket_value = int(price + randint(2, 8))
-
-        selected_vm = choice(vendor_markets)
+        is_grabbed = bool(fake.boolean()) if is_sold else False
+        price = randint(5, 10)
+        basket_value = price + randint(2, 8)
 
         bsk = Basket(
             vendor_id=selected_vm.vendor_id,
@@ -1256,29 +1334,50 @@ def run():
             user_id=user_id,
             is_sold=is_sold,
             is_grabbed=is_grabbed,
-            price=price, 
+            price=price,
             basket_value=basket_value
         )
         baskets.append(bsk)
+
+    db.session.add_all(baskets)
+    db.session.commit()
     
     for i in range(12):
         rand_user = [None, randint(1, 50)]
-        last_month = randint(-1, 1)
-        sale_date = (datetime.now() - timedelta(days=last_month)).date()
+
+        selected_vm = choice(vendor_markets)
+        selected_market_day = next(item for item in market_day_list if item.id == selected_vm.market_day_id)
+        day_of_week = selected_market_day.day_of_week
+        current_date = datetime.now(est).date()
+
+        def find_matching_date(day_of_week, reference_date):
+            difference = (day_of_week - reference_date.weekday()) % 7
+            return reference_date + timedelta(days=difference)
+
+        possible_dates = [
+            find_matching_date(day_of_week, current_date + timedelta(days=delta))
+            for delta in range(-4, 5)
+        ]
+
+        sale_date = min(possible_dates, key=lambda x: abs(x - current_date))
+
+        sale_date -= timedelta(days=1)
+
+        sale_date = datetime.combine(sale_date, time.min).date()
+
         rand_hour = randint(10, 14)
         rand_minute = choice([0, 0, 30])
-        date_time = datetime(sale_date.year, sale_date.month, sale_date.day, rand_hour, rand_minute, 0)
+        date_time = est.localize(datetime(sale_date.year, sale_date.month, sale_date.day, rand_hour, rand_minute))
+
         pickup_start = date_time
-        random_duration_minutes = choice([30, 60, 60, 90, 90, 120, 120, 120, 120, 240, 240, 360])
+        random_duration_minutes = choice([30, 60, 90, 120, 240, 360])
         pickup_end = pickup_start + timedelta(minutes=random_duration_minutes)
 
         user_id = choice(rand_user)
         is_sold = user_id is not None
-        is_grabbed = bool(fake.boolean()) if is_sold else bool(False)
-        price = int(randint(5, 10))
-        basket_value = int(price + randint(2, 8))
-
-        selected_vm = choice(vendor_markets)
+        is_grabbed = bool(fake.boolean()) if is_sold else False
+        price = randint(5, 10)
+        basket_value = price + randint(2, 8)
 
         bsk2 = Basket(
             vendor_id=1,
