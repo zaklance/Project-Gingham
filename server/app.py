@@ -2680,25 +2680,38 @@ def delete_user_notifications(id):
         db.session.commit()
         return jsonify({'notifications': notification_data}), 204
 
-@app.route('/api/create-vendor-notification', methods=['POST'])
-def create_vendor_notification():
+@app.route('/api/notify-me-for-more-baskets', methods=['POST'])
+def notify_me_for_more_baskets():
     data = request.get_json()
 
-    if not data or 'message' not in data or 'vendor_id' not in data:
+    if not data or 'user_id' not in data or 'vendor_id' not in data:
         return jsonify({'message': 'Invalid request data.'}), 400
 
     try:
+        # Retrieve the vendor
+        vendor = Vendor.query.get(data['vendor_id'])
+        if not vendor:
+            return jsonify({'message': f"Vendor with ID {data['vendor_id']} not found."}), 404
+
+        # Retrieve the user
+        user = User.query.get(data['user_id'])
+        if not user:
+            return jsonify({'message': f"User with ID {data['user_id']} not found."}), 404
+
+        # Create a notification for the vendor
+        subject = "User Request: Notify Me for More Baskets"
+        message = f"{user.first_name} {user.last_name} has requested to be notified when more baskets are available."
+
         new_notification = VendorNotification(
-            subject=data['subject'],
-            message=data['message'],
-            link=data['link'],
-            user_id=data.get('user_id'),
-            market_id=data.get('market_id'),
-            vendor_id=data['vendor_id'],
-            vendor_user_id=data.get('vendor_user_id'),
+            subject=subject,
+            message=message,
+            link=f"/vendors/{vendor.id}/notifications",  # Adjust to your routing structure
+            user_id=user.id,
+            vendor_id=vendor.id,
             created_at=datetime.utcnow(),
             is_read=False
         )
+
         db.session.add(new_notification)
         db.session.commit()
 
@@ -2708,9 +2721,7 @@ def create_vendor_notification():
             'message': new_notification.message,
             'link': new_notification.link,
             'user_id': new_notification.user_id,
-            'market_id': new_notification.market_id,
             'vendor_id': new_notification.vendor_id,
-            'vendor_user_id': new_notification.vendor_user_id,
             'is_read': new_notification.is_read
         }), 201
 
