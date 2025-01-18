@@ -2376,7 +2376,7 @@ select:hover {
 .market-item {
   display: flex;
   justify-content: space-between;
-  /* align-items: baseline; */
+  align-items: center;
   border-bottom: 1px solid #dbdbdb;
   padding: 4px 0;
   position: relative;

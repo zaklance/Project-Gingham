@@ -640,7 +640,7 @@ def post_settings_vendor_user():
         data = request.get_json()
 
         try:
-            vendor_user = SettingsVendor.query.filter(SettingsVendor.user_id == data['user_id']).first()
+            vendor_user = SettingsVendor.query.filter(SettingsVendor.vendor_user_id == data['vendor_user_id']).first()
             if vendor_user:
                 return {'error': 'user settings already exists'}, 400
 
@@ -692,7 +692,7 @@ def post_settings_admin_user():
         data = request.get_json()
 
         try:
-            admin = SettingsAdmin.query.filter(SettingsAdmin.admin_id == data['user_id']).first()
+            admin = SettingsAdmin.query.filter(SettingsAdmin.admin_id == data['admin_id']).first()
             if admin:
                 return {'error': 'admin settings already exists'}, 400
 
@@ -2859,7 +2859,7 @@ def approve_notification(notification_id):
     user.vendor_id[notification.vendor_id] = notification.vendor_id
 
     if vendor_role is not None:
-        user.vendor_role[notification.vendor_id] = bool(vendor_role)
+        user.vendor_role[notification.vendor_id] = int(vendor_role)
     
     user.active_vendor = int(notification.vendor_id)
 

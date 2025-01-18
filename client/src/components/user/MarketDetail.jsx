@@ -452,7 +452,7 @@ function MarketDetail ({ match }) {
                         )
                     )}
             </div>
-            <div className='flex-space-between margin-t-24'>
+            <div id="vendors" className='flex-space-between margin-t-24'>
                 <h2>Vendors:</h2>
                 <select value={selectedProduct} onChange={handleProductChange}>
                     <option value="">All Products</option>
