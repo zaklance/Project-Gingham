@@ -121,33 +121,51 @@ function MarketDetail ({ match }) {
 
     // Filter vendors
     const filteredVendorsList = useMemo(() => {
-        return vendors.filter((vendorId) => {
+        return vendors.filter((vendorId, index, self) => {
             const vendorDetail = vendorDetailsMap[vendorId];
             if (!vendorDetail) return false;
-            
+    
             const availableOnSelectedDay = vendorMarkets.filter(vendorMarket => 
                 vendorMarket.vendor_id === vendorId &&
                 vendorMarket.market_day.market_id === market.id &&
                 vendorMarket.market_day.day_of_week === selectedDay?.day_of_week
             );
-            return availableOnSelectedDay.length > 0 && (!selectedProduct || Number(vendorDetail.product) === Number(selectedProduct));
+            const isUnique = self.findIndex(v => v === vendorId) === index;
+            
+            const hasSelectedProduct =
+                !selectedProduct ||
+                (Array.isArray(vendorDetail.products) &&
+                    vendorDetail.products.map(Number).includes(Number(selectedProduct)));
+
+            return availableOnSelectedDay.length > 0 && hasSelectedProduct && isUnique;
         });
     }, [vendors, vendorMarkets, selectedDay, selectedProduct, market, vendorDetailsMap]);
+    
 
     // Filter productList so that it only shows products that are in filteredVendorsList
-    useEffect(() => {
-        if (!vendorMarkets || !products?.length || !selectedDay) return;
-
+    const filteredProducts = useMemo(() => {
+        if (!vendorMarkets || !products?.length || !selectedDay) return [];
+        
         const filteredMarketsOnDay = vendorMarkets.filter(
             vendorMarket =>
                 vendorMarket.market_day.day_of_week === selectedDay.day_of_week &&
                 vendorMarket.market_day.market_id === market.id
         );
-        const filteredProducts = products.filter(product =>
-            filteredMarketsOnDay.some(vendorMarket => vendorMarket.vendor.product === product.id)
+        return products.filter(product =>
+            filteredMarketsOnDay.some(vendorMarket =>
+                Array.isArray(vendorMarket.vendor.products) &&
+                vendorMarket.vendor.products.some(vendorProductId =>
+                    vendorProductId === product.id
+                )
+            )
         );
-        setProductList(filteredProducts);
     }, [vendorMarkets, selectedDay, products, market]);
+    
+    useEffect(() => {
+        setProductList(filteredProducts);
+    }, [filteredProducts]);  
+
+
 
     // Gets rid of duplicate vendors (from different market_days)
     const uniqueFilteredVendorsList = [...new Set(filteredVendorsList)];
@@ -324,6 +342,7 @@ function MarketDetail ({ match }) {
     const marketLocation = { 'lat': parseFloat(market.coordinates.lat), 'lng': parseFloat(market.coordinates.lng) }
     const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
 
+
     return (
         <div>
             <div className='flex-space-between'>
@@ -433,7 +452,7 @@ function MarketDetail ({ match }) {
                         )
                     )}
             </div>
-            <div className='flex-space-between margin-t-24'>
+            <div id="vendors" className='flex-space-between margin-t-24'>
                 <h2>Vendors:</h2>
                 <select value={selectedProduct} onChange={handleProductChange}>
                     <option value="">All Products</option>
@@ -444,97 +463,88 @@ function MarketDetail ({ match }) {
                     ))}
                 </select>
             </div>
+            <div className="box-scroll">
+            {Array.isArray(uniqueFilteredVendorsList) && uniqueFilteredVendorsList.length > 0 ? (
+                uniqueFilteredVendorsList
+                .slice()
+                .sort((a, b) => {
+                    const availableA = getAvailableBaskets(a).length > 0 ? 1 : 0;
+                    const availableB = getAvailableBaskets(b).length > 0 ? 1 : 0;
 
-            <div className='box-scroll'>
-                {Array.isArray(uniqueFilteredVendorsList) && uniqueFilteredVendorsList.length > 0 ? (
-                    uniqueFilteredVendorsList
-                    .slice()
-                    .sort((a, b) => {
-                        const firstBasketA = marketBaskets
-                            .filter(item => item.vendor_id === vendorDetailsMap[a]?.id)
-                            .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
-                        const firstBasketB = marketBaskets
-                            .filter(item => item.vendor_id === vendorDetailsMap[b]?.id)
-                            .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
-                    
-                        const dateA = firstBasketA ? new Date(firstBasketA.sale_date) : Infinity;
-                        const dateB = firstBasketB ? new Date(firstBasketB.sale_date) : Infinity;
-                    
-                        if (dateA !== dateB) {
-                            return dateA - dateB;
-                        }
-                    
-                        const availableA = getAvailableBaskets(a).length > 0 ? 1 : 0;
-                        const availableB = getAvailableBaskets(b).length > 0 ? 1 : 0;
-                    
-                        return availableB - availableA;
-                    })                    
-                    .map((vendorId, index) => {
-                        const vendorDetail = vendorDetailsMap[vendorId];
-                        const availableBaskets = getAvailableBaskets(vendorId);
-                        const firstBasket = availableBaskets
-                            .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
+                    if (availableA !== availableB) {
+                    return availableB - availableA;
+                    }
 
-                        return (
-                            <div key={index} className="market-item flex-center-align">
-                                <span className="market-name margin-l-16">
-                                <Link to={`/user/vendors/${vendorId}`} className="market-name">
-                                    {vendorDetail.name || 'Loading...'}
-                                </Link>
-                                <br/>
-                                <p>Products:{' '}
-                                    {products
-                                        .filter((p) => vendorDetail.products?.includes(p.id))
-                                        .map((p) => p.product)
-                                        .join(', ') || 'No products listed'}
-                                </p>
-                                </span>
-                                {availableBaskets.length > 0 ? (
-                                    <span className="market-price">
-                                        Price: ${firstBasket.price}
-                                        <br />
-                                        Value: ${firstBasket.basket_value}
-                                    </span>
-                                ) : (
-                                    <span className="market-price"></span>
-                                )}
-                                {availableBaskets.length > 4 ? (
-                                    <span className="market-baskets nowrap">
-                                        Baskets Available
-                                        <br />
-                                        {formatPickupText(firstBasket, timeConverter, marketDateConvert)}
-                                    </span>
-                                ) : (
-                                    <span className="market-baskets nowrap margin-r-8">
-                                        {availableBaskets.length > 0
-                                            ? `Available Baskets: ${availableBaskets.length}`
-                                            : <a className="link-edit" onClick={() => handleNotifyMe(vendorDetail)}>Notify Me</a>}
-                                        <br />
-                                        {formatPickupText(firstBasket, timeConverter, marketDateConvert)}
-                                    </span>
-                                )}
-                                {vendorAlertStates[vendorId] && (
-                                    <div className={`alert alert-cart-vendor`}>
-                                        {alertMessage}
-                                    </div>
-                                )}
-                                {availableBaskets.length > 0 ? (
-                                    <button className="btn-add nowrap" onClick={() => handleAddToCart(vendorId, vendorDetail, availableBaskets)}>
-                                        Add to Cart
-                                    </button>
-                                ) : (
-                                    <button className="btn-add nowrap m-hidden" onClick={() => handleAddToCart(vendorId, vendorDetail)}>
-                                        Sold Out
-                                    </button>
-                                )}
-                            </div>
-                        );
-                    })
-                ) : (
-                    <p>No vendors at this market</p>
-                )}
+                    const nameA = vendorDetailsMap[a]?.name?.toLowerCase() || '';
+                    const nameB = vendorDetailsMap[b]?.name?.toLowerCase() || '';
+                    return nameA.localeCompare(nameB);
+                })
+                .map((vendorId, index) => {
+                    const vendorDetail = vendorDetailsMap[vendorId];
+                    const availableBaskets = getAvailableBaskets(vendorId);
+                    const firstBasket = availableBaskets
+                        .filter(basket => !isNaN(new Date(basket.sale_date)))
+                        .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0] || {};
+
+                    return (
+                    <div key={index} className="market-item flex-center-align">
+                        <span className="market-name margin-l-16">
+                            <Link to={`/user/vendors/${vendorId}`} className="market-name"> {vendorDetail.name || 'Loading...'} </Link>
+                            <br />
+                            <p>Products:{" "}
+                                {products
+                                    .filter((product) => vendorDetail.products?.includes(product.id))
+                                    .map((product) => product.product)
+                                    .join(", ") || "No products listed"}
+                            </p>
+                        </span>
+                        {availableBaskets.length > 0 ? (
+                        <span className="market-price">
+                            <span className="text-500">Price: ${firstBasket.price}</span>
+                            <br />
+                            Value: ${firstBasket.basket_value}
+                        </span>
+                        ) : (
+                        <span className="market-price"></span>
+                        )}
+                        {availableBaskets.length > 4 ? (
+                        <span className="market-baskets nowrap">
+                            Baskets Available
+                            <br />
+                            {firstBasket && firstBasket.sale_date
+                            ? formatPickupText(firstBasket, timeConverter, marketDateConvert)
+                            : ""}
+                        </span>
+                        ) : (
+                        <span className="market-baskets nowrap margin-r-8">
+                            {availableBaskets.length > 0 ? `Available Baskets: ${availableBaskets.length}` : <a className="link-edit" onClick={() => handleNotifyMe(vendorDetail)}>Notify Me</a>}
+                            <br />
+                            {firstBasket && firstBasket.sale_date ? formatPickupText(firstBasket, timeConverter, marketDateConvert) : ""}
+                        </span>
+                        )}
+                        {vendorAlertStates[vendorId] && (
+                        <div className={`alert alert-cart-vendor`}>
+                            {alertMessage}
+                        </div>
+                        )}
+                        {availableBaskets.length > 0 ? (
+                        <button className="btn-add nowrap" onClick={() => handleAddToCart(vendorId, vendorDetail, availableBaskets)}>
+                            Add to Cart
+                        </button>
+                        ) : (
+                        <button className="btn-add nowrap m-hidden" onClick={() => handleAddToCart(vendorId, vendorDetail)}>
+                            Sold Out
+                        </button>
+                        )}
+                    </div>
+                    );
+                })
+            ) : (
+                <p>No vendors at this market</p>
+            )}
             </div>
             <ReviewMarket market={market} alertMessage={alertMessage} setAlertMessage={setAlertMessage} />
+
         </div>
     );
 };

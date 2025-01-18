@@ -89,14 +89,30 @@ function Login({ handlePopup }) {
         });
         if (response.ok) {
             const data = await response.json();
-            alert("Sign Up Successful. Please log in!");
-            setSignupEmail('');
-            setSignupConfirmEmail('');
-            setSignupPassword('');
-            setSignupConfirmPassword('');
-            setSignupFirstName('');
-            setSignupLastName('');
-            setSignupPhone('');
+            // console.log(data)
+            // const settingsResponse = await fetch('http://127.0.0.1:5555/api/settings-admins', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json'
+            //     },
+            //     body: JSON.stringify({
+            //         admin_id: data.id
+            //     })
+            // });
+            // if (!settingsResponse.ok) {
+            //     const errorData = await response.json();
+            //     console.log(errorData)
+            // }
+            // if (response.ok) {
+                alert("Sign Up Successful. Please log in!");
+                setSignupEmail('');
+                setSignupConfirmEmail('');
+                setSignupPassword('');
+                setSignupConfirmPassword('');
+                setSignupFirstName('');
+                setSignupLastName('');
+                setSignupPhone('');
+            // }
         } else {
             const errorData = await response.json();
             if (errorData.error) {
@@ -199,7 +215,7 @@ function Login({ handlePopup }) {
                                     required
                                 />
                                 <i className={showPassword.pw2 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw2')}>&emsp;</i>
-                                <PasswordStrengthBar className='password-bar' scoreWords={''} shortScoreWord={''} minLength={1} password={signupPassword} />
+                                <PasswordStrengthBar className='password-bar' minLength={5} password={signupPassword} />
                             </div>
                         </div>
                         <div className="form-group form-login">

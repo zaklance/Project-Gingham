@@ -2376,8 +2376,8 @@ select:hover {
 .market-item {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  border-bottom: 1px solid #ccc;
+  align-items: center;
+  border-bottom: 1px solid #dbdbdb;
   padding: 4px 0;
   position: relative;
 }
@@ -2390,6 +2390,14 @@ select:hover {
 .market-price, .market-baskets {
   flex: 1;
   text-align: center;
+}
+
+.market-price {
+  max-width: 12%;
+}
+
+.market-baskets {
+  min-width: 30%;
 }
 
 .market-card-popup {
