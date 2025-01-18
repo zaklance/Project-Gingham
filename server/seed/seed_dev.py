@@ -1290,8 +1290,8 @@ def run():
 
         # last_month = randint(-4, 4)
         # sale_date = (datetime.now() - timedelta(days=last_month)).date()
-        selected_vm = choice(vendor_markets)
 
+        selected_vm = choice(vendor_markets)
         selected_market_day = next(item for item in market_day_list if item.id == selected_vm.market_day_id)
         day_of_week = selected_market_day.day_of_week
         current_date = datetime.now().date()
@@ -1337,8 +1337,8 @@ def run():
 
         # last_month = randint(-1, 1)
         # sale_date = (datetime.now() - timedelta(days=last_month)).date()
-        selected_vm = choice(vendor_markets)
 
+        selected_vm = choice(vendor_markets)
         selected_market_day = next(item for item in market_day_list if item.id == selected_vm.market_day_id)
         day_of_week = selected_market_day.day_of_week
         current_date = datetime.now().date()

@@ -452,7 +452,7 @@ function MarketDetail ({ match }) {
                         )
                     )}
             </div>
-            <div className='flex-space-between margin-t-24'>
+            <div id="vendors" className='flex-space-between margin-t-24'>
                 <h2>Vendors:</h2>
                 <select value={selectedProduct} onChange={handleProductChange}>
                     <option value="">All Products</option>
@@ -496,7 +496,7 @@ function MarketDetail ({ match }) {
                             .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
 
                         return (
-                            <div key={index} className="market-item flex-center-align">
+                            <div key={index} className="market-item">
                                 <span className="market-name margin-l-16">
                                 <Link to={`/user/vendors/${vendorId}`} className="market-name">
                                     {vendorDetail.name || 'Loading...'}
