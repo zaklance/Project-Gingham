@@ -463,98 +463,88 @@ function MarketDetail ({ match }) {
                     ))}
                 </select>
             </div>
-            <div className='box-scroll'>
-                {Array.isArray(uniqueFilteredVendorsList) && uniqueFilteredVendorsList.length > 0 ? (
-                    uniqueFilteredVendorsList
-                    .slice()
-                    .sort((a, b) => {
-                        const firstBasketA = marketBaskets
-                            .filter(item => item.vendor_id === vendorDetailsMap[a]?.id)
-                            .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
-                        const firstBasketB = marketBaskets
-                            .filter(item => item.vendor_id === vendorDetailsMap[b]?.id)
-                            .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
-                    
-                        const dateA = firstBasketA ? new Date(firstBasketA.sale_date) : Infinity;
-                        const dateB = firstBasketB ? new Date(firstBasketB.sale_date) : Infinity;
-                    
-                        if (dateA !== dateB) {
-                            return dateA - dateB;
-                        }
-                    
-                        const availableA = getAvailableBaskets(a).length > 0 ? 1 : 0;
-                        const availableB = getAvailableBaskets(b).length > 0 ? 1 : 0;
-                        
-                        const nameA = vendorDetailsMap[a]?.name?.toLowerCase() || '';
-                        const nameB = vendorDetailsMap[b]?.name?.toLowerCase() || '';
-                        return nameA.localeCompare(nameB);
-                    })
-                    .map((vendorId, index) => {
-                        const vendorDetail = vendorDetailsMap[vendorId];
-                        const availableBaskets = getAvailableBaskets(vendorId);
-                        const firstBasket = availableBaskets
-                            .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0];
+            <div className="box-scroll">
+            {Array.isArray(uniqueFilteredVendorsList) && uniqueFilteredVendorsList.length > 0 ? (
+                uniqueFilteredVendorsList
+                .slice()
+                .sort((a, b) => {
+                    const availableA = getAvailableBaskets(a).length > 0 ? 1 : 0;
+                    const availableB = getAvailableBaskets(b).length > 0 ? 1 : 0;
 
-                        return (
-                            <div key={index} className="market-item flex-center-align">
-                                <span className="market-name margin-l-16">
-                                <Link to={`/user/vendors/${vendorId}`} className="market-name">
-                                    {vendorDetail.name || 'Loading...'}
-                                </Link>
-                                <br/>
-                                <p>Products:{' '}
-                                    {products
-                                        .filter((product) => vendorDetail.products?.includes(product.id))
-                                        .map((product) => product.product)
-                                        .join(', ') || 'No products listed'}
-                                </p>
-                                </span>
-                                {availableBaskets.length > 0 ? (
-                                    <span className="market-price">
-                                        <span className="text-500">Price: ${firstBasket.price}</span>
-                                        <br/>
-                                        Value: ${firstBasket.basket_value}
-                                    </span>
-                                ) : (
-                                    <span className="market-price"></span>
-                                )}
-                                {availableBaskets.length > 4 ? (
-                                    <span className="market-baskets nowrap">
-                                        Baskets Available
-                                        <br />
-                                        {formatPickupText(firstBasket, timeConverter, marketDateConvert)}
-                                    </span>
-                                ) : (
-                                    <span className="market-baskets nowrap margin-r-8">
-                                        {availableBaskets.length > 0
-                                            ? `Available Baskets: ${availableBaskets.length}`
-                                            : <a className="link-edit" onClick={() => handleNotifyMe(vendorDetail)}>Notify Me</a>}
-                                        <br/>
-                                        {formatPickupText(firstBasket, timeConverter, marketDateConvert)}
-                                    </span>
-                                )}
-                                {vendorAlertStates[vendorId] && (
-                                    <div className={`alert alert-cart-vendor`}>
-                                        {alertMessage}
-                                    </div>
-                                )}
-                                {availableBaskets.length > 0 ? (
-                                    <button className="btn-add nowrap" onClick={() => handleAddToCart(vendorId, vendorDetail, availableBaskets)}>
-                                        Add to Cart
-                                    </button>
-                                ) : (
-                                    <button className="btn-add nowrap m-hidden" onClick={() => handleAddToCart(vendorId, vendorDetail)}>
-                                        Sold Out
-                                    </button>
-                                )}
-                            </div>
-                        );
-                    })
-                ) : (
-                    <p>No vendors at this market</p>
-                )}
+                    if (availableA !== availableB) {
+                    return availableB - availableA;
+                    }
+
+                    const nameA = vendorDetailsMap[a]?.name?.toLowerCase() || '';
+                    const nameB = vendorDetailsMap[b]?.name?.toLowerCase() || '';
+                    return nameA.localeCompare(nameB);
+                })
+                .map((vendorId, index) => {
+                    const vendorDetail = vendorDetailsMap[vendorId];
+                    const availableBaskets = getAvailableBaskets(vendorId);
+                    const firstBasket = availableBaskets
+                        .filter(basket => !isNaN(new Date(basket.sale_date)))
+                        .sort((a, b) => new Date(a.sale_date) - new Date(b.sale_date))[0] || {};
+
+                    return (
+                    <div key={index} className="market-item flex-center-align">
+                        <span className="market-name margin-l-16">
+                            <Link to={`/user/vendors/${vendorId}`} className="market-name"> {vendorDetail.name || 'Loading...'} </Link>
+                            <br />
+                            <p>Products:{" "}
+                                {products
+                                    .filter((product) => vendorDetail.products?.includes(product.id))
+                                    .map((product) => product.product)
+                                    .join(", ") || "No products listed"}
+                            </p>
+                        </span>
+                        {availableBaskets.length > 0 ? (
+                        <span className="market-price">
+                            <span className="text-500">Price: ${firstBasket.price}</span>
+                            <br />
+                            Value: ${firstBasket.basket_value}
+                        </span>
+                        ) : (
+                        <span className="market-price"></span>
+                        )}
+                        {availableBaskets.length > 4 ? (
+                        <span className="market-baskets nowrap">
+                            Baskets Available
+                            <br />
+                            {firstBasket && firstBasket.sale_date
+                            ? formatPickupText(firstBasket, timeConverter, marketDateConvert)
+                            : ""}
+                        </span>
+                        ) : (
+                        <span className="market-baskets nowrap margin-r-8">
+                            {availableBaskets.length > 0 ? `Available Baskets: ${availableBaskets.length}` : <a className="link-edit" onClick={() => handleNotifyMe(vendorDetail)}>Notify Me</a>}
+                            <br />
+                            {firstBasket && firstBasket.sale_date ? formatPickupText(firstBasket, timeConverter, marketDateConvert) : ""}
+                        </span>
+                        )}
+                        {vendorAlertStates[vendorId] && (
+                        <div className={`alert alert-cart-vendor`}>
+                            {alertMessage}
+                        </div>
+                        )}
+                        {availableBaskets.length > 0 ? (
+                        <button className="btn-add nowrap" onClick={() => handleAddToCart(vendorId, vendorDetail, availableBaskets)}>
+                            Add to Cart
+                        </button>
+                        ) : (
+                        <button className="btn-add nowrap m-hidden" onClick={() => handleAddToCart(vendorId, vendorDetail)}>
+                            Sold Out
+                        </button>
+                        )}
+                    </div>
+                    );
+                })
+            ) : (
+                <p>No vendors at this market</p>
+            )}
             </div>
             <ReviewMarket market={market} alertMessage={alertMessage} setAlertMessage={setAlertMessage} />
+
         </div>
     );
 };

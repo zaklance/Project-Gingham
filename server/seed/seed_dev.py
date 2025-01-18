@@ -14,6 +14,8 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     SettingsUser, SettingsVendor, SettingsAdmin, bcrypt )
 import json
 from datetime import datetime, timedelta, timezone, time, date
+import datetime as dt
+from pytz import timezone
 
 fake = Faker()
 
@@ -1066,7 +1068,7 @@ def run():
         user_id = str(randint(1, 50))
         is_reported = choice(reported)
         last_year = randint(0, 365)
-        post_date = datetime.now(timezone.utc) - timedelta(days=last_year)
+        post_date = dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=last_year)
 
         mr = MarketReview(
             review_text=review_text,
@@ -1090,7 +1092,7 @@ def run():
         user_id = str(randint(1, 50))
         is_reported = choice(reported)
         last_year = randint(0, 365)
-        post_date = datetime.now(timezone.utc) - timedelta(days=last_year)
+        post_date = dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=last_year)
         
         vr = VendorReview(
             review_text=review_text,
@@ -1283,40 +1285,45 @@ def run():
     db.session.add_all(vendor_markets)
     db.session.commit()
 
-
     baskets = []
+    est = timezone('US/Eastern')  # Define the EST timezone.
+
     for i in range(2000):
         rand_user = [None, randint(1, 50)]
 
-        # last_month = randint(-4, 4)
-        # sale_date = (datetime.now() - timedelta(days=last_month)).date()
         selected_vm = choice(vendor_markets)
-
         selected_market_day = next(item for item in market_day_list if item.id == selected_vm.market_day_id)
         day_of_week = selected_market_day.day_of_week
-        current_date = datetime.now().date()
+        current_date = datetime.now(est).date()
+
         def find_matching_date(day_of_week, reference_date):
             difference = (day_of_week - reference_date.weekday()) % 7
             return reference_date + timedelta(days=difference)
-        possible_dates = []
-        for delta in range(-4, 4):
-            possible_date = find_matching_date(day_of_week, current_date + timedelta(days=delta))
-            possible_dates.append(possible_date)
+
+        possible_dates = [
+            find_matching_date(day_of_week, current_date + timedelta(days=delta))
+            for delta in range(-4, 5)
+        ]
+
         sale_date = min(possible_dates, key=lambda x: abs(x - current_date))
+
+        sale_date -= timedelta(days=1)
+
+        sale_date = datetime.combine(sale_date, time.min).date()
 
         rand_hour = randint(10, 14)
         rand_minute = choice([0, 0, 30])
-        date_time = datetime(sale_date.year, sale_date.month, sale_date.day, rand_hour, rand_minute, 0)
+        date_time = est.localize(datetime(sale_date.year, sale_date.month, sale_date.day, rand_hour, rand_minute))
+
         pickup_start = date_time
-        random_duration_minutes = choice([30, 60, 60, 90, 90, 120, 120, 120, 120, 240, 240, 360])
+        random_duration_minutes = choice([30, 60, 90, 120, 240, 360])
         pickup_end = pickup_start + timedelta(minutes=random_duration_minutes)
 
         user_id = choice(rand_user)
         is_sold = user_id is not None
-        is_grabbed = bool(fake.boolean()) if is_sold else bool(False)
-        price = int(randint(5, 10))
-        basket_value = int(price + randint(2, 8))
-
+        is_grabbed = bool(fake.boolean()) if is_sold else False
+        price = randint(5, 10)
+        basket_value = price + randint(2, 8)
 
         bsk = Basket(
             vendor_id=selected_vm.vendor_id,
@@ -1327,43 +1334,50 @@ def run():
             user_id=user_id,
             is_sold=is_sold,
             is_grabbed=is_grabbed,
-            price=price, 
+            price=price,
             basket_value=basket_value
         )
         baskets.append(bsk)
+
+    db.session.add_all(baskets)
+    db.session.commit()
     
     for i in range(12):
         rand_user = [None, randint(1, 50)]
 
-        # last_month = randint(-1, 1)
-        # sale_date = (datetime.now() - timedelta(days=last_month)).date()
         selected_vm = choice(vendor_markets)
-
         selected_market_day = next(item for item in market_day_list if item.id == selected_vm.market_day_id)
         day_of_week = selected_market_day.day_of_week
-        current_date = datetime.now().date()
+        current_date = datetime.now(est).date()
+
         def find_matching_date(day_of_week, reference_date):
             difference = (day_of_week - reference_date.weekday()) % 7
             return reference_date + timedelta(days=difference)
-        possible_dates = []
-        for delta in range(-4, 4):
-            possible_date = find_matching_date(day_of_week, current_date + timedelta(days=delta))
-            possible_dates.append(possible_date)
+
+        possible_dates = [
+            find_matching_date(day_of_week, current_date + timedelta(days=delta))
+            for delta in range(-4, 5)
+        ]
+
         sale_date = min(possible_dates, key=lambda x: abs(x - current_date))
+
+        sale_date -= timedelta(days=1)
+
+        sale_date = datetime.combine(sale_date, time.min).date()
 
         rand_hour = randint(10, 14)
         rand_minute = choice([0, 0, 30])
-        date_time = datetime(sale_date.year, sale_date.month, sale_date.day, rand_hour, rand_minute, 0)
+        date_time = est.localize(datetime(sale_date.year, sale_date.month, sale_date.day, rand_hour, rand_minute))
+
         pickup_start = date_time
-        random_duration_minutes = choice([30, 60, 60, 90, 90, 120, 120, 120, 120, 240, 240, 360])
+        random_duration_minutes = choice([30, 60, 90, 120, 240, 360])
         pickup_end = pickup_start + timedelta(minutes=random_duration_minutes)
 
         user_id = choice(rand_user)
         is_sold = user_id is not None
-        is_grabbed = bool(fake.boolean()) if is_sold else bool(False)
-        price = int(randint(5, 10))
-        basket_value = int(price + randint(2, 8))
-
+        is_grabbed = bool(fake.boolean()) if is_sold else False
+        price = randint(5, 10)
+        basket_value = price + randint(2, 8)
 
         bsk2 = Basket(
             vendor_id=1,

@@ -101,11 +101,16 @@ export function formatBasketDate(dateInput) {
 }
 
 export const isToday = (date) => {
+    if (isNaN(new Date(date))) {
+        return false;
+    }
+
     const today = new Date();
     const todayFormatted = today.toISOString().split('T')[0];
     const dateFormatted = new Date(date).toISOString().split('T')[0];
     return dateFormatted === todayFormatted;
 };
+
 
 export const formatPickupText = (basket, timeConverter, marketDateConvert) => {
     if (!basket) return '';
