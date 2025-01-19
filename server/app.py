@@ -27,7 +27,7 @@ from random import choice
 import stripe
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import utils.events as events
-from utils.emails import send_contact_email, send_user_password_reset_email, send_vendor_password_reset_email, send_admin_password_reset_email
+from utils.emails import send_contact_email, send_user_password_reset_email, send_vendor_password_reset_email, send_admin_password_reset_email, send_user_confirmation_email
 import subprocess
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
@@ -339,40 +339,65 @@ def logout():
 @app.route('/api/signup', methods=['POST'])
 def signup():
     data = request.get_json()
+    email = data.get('email')
 
+    if not email:
+        return {'error': 'Email is required'}, 400
+
+    result = send_user_confirmation_email(email, data)
+        
+    if 'error' in result:
+        return jsonify({"error": result["error"]}), 500
+    return jsonify({"message": result["message"]}), 200
+    
+@app.route('/api/user/confirm-email/<token>', methods=['GET', 'POST'])
+def confirm_email(token):
     try:
-        user = User.query.filter(User.email == data['email']).first()
-        if user:
-            return {'error': 'email already exists'}, 400
+        # Decode the token (itsdangerous generates URL-safe tokens by default)
+        print(f"Received token: {token}")
+        data = serializer.loads(token, salt='user-confirmation-salt', max_age=3600)
 
-        new_user = User(
-            email=data['email'],
-            password=data['password'],
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            phone=data['phone'],
-            address_1=data['address1'],
-            address_2=data.get('address2', ''),
-            city=data['city'],
-            state=data['state'],
-            zipcode=data['zipcode'],
-            coordinates=data['coordinates']
-        )
+        if request.method == 'GET':
+            print(f"GET request: Token verified, email extracted: {data['email']}")
+            # Redirect to the frontend with the token
+            return redirect(f'http://localhost:5173/user/confirm-email/{token}')
 
-        db.session.add(new_user)
-        db.session.commit()
+        if request.method == 'POST':
+            print(f"POST request: Token verified, user data extracted: {data}")
 
-        return new_user.to_dict(), 201
+            # Check if the email already exists
+            if User.query.filter_by(email=data['email']).first():
+                print("POST request: Email already confirmed or in use")
+                return {'error': 'Email already confirmed or in use.'}, 400
 
-    except IntegrityError as e:
-        db.session.rollback()
-        return {'error': f'IntegrityError: {str(e)}'}, 400 
+            # Create a new user with the extracted data
+            new_user = User(
+                email=data['email'],
+                password=data['password'], 
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                phone=data['phone'],
+                address_1=data['address1'],
+                address_2=data.get('address2', ''),
+                city=data['city'],
+                state=data['state'],
+                zipcode=data['zipcode'],
+                coordinates=data.get('coordinates'),
+                email_verified=True
+            )
+            db.session.add(new_user)
+            db.session.commit()
 
-    except ValueError as e:
-        return {'error': f'ValueError: {str(e)}'}, 400
+            print("POST request: User created and committed to the database")
+            return {'message': 'Email confirmed and account created successfully.'}, 201
+
+    except SignatureExpired:
+        print("Request: The token has expired")
+        return {'error': 'The token has expired'}, 400
 
     except Exception as e:
-        return {'error': f'Exception: {str(e)}'}, 500
+        print(f"Request: An error occurred: {str(e)}")
+        return {'error': f'Failed to confirm email: {str(e)}'}, 500
 
 # VENDOR PORTAL
 @app.route('/api/vendor/login', methods=['POST'])
