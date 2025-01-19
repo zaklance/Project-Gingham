@@ -71,103 +71,73 @@ function Login({ handlePopup }) {
 
     const handleSignup = async (event) => {
         event.preventDefault();
-    
+      
         if (signupEmail !== signupConfirmEmail) {
-            alert("Emails do not match.");
-            return;
+          alert("Emails do not match.");
+          return;
         }
-    
+      
         if (signupPassword !== signupConfirmPassword) {
-            alert("Passwords do not match.");
-            return;
+          alert("Passwords do not match.");
+          return;
         }
-
+      
         const apiKey = import.meta.env.VITE_RADAR_KEY;
         const query = `${signupAddress1} ${signupCity} ${signupState} ${signupZipCode}`;
-
+      
         try {
-            const responseRadar = await fetch(`https://api.radar.io/v1/geocode/forward?query=${encodeURIComponent(query)}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': apiKey,
-                },
-            });
-            if (responseRadar.ok) {
-                const data = await responseRadar.json();
-                console.log(data)
-                if (data.addresses && data.addresses.length > 0) {
-                    const { latitude, longitude } = data.addresses[0];
-                    console.log(latitude)
-                    console.log(longitude)
-                    
-                    // Proceed with the API request if validation passes
-                    const response = await fetch('http://127.0.0.1:5555/api/signup', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            email: signupEmail,
-                            password: signupPassword,
-                            first_name: signupFirstName,
-                            last_name: signupLastName,
-                            phone: signupPhone,
-                            address1: signupAddress1,
-                            address2: signupAddress2,
-                            city: signupCity,
-                            state: signupState,
-                            zipcode: signupZipCode,
-                            coordinates: { lat: latitude, lng: longitude }
-                        }),
-                        credentials: 'include'
-                    });
-                    // const data = await response.json();
-                    // console.log(data)
-                    // const settingsResponse = await fetch('http://127.0.0.1:5555/api/settings-users', {
-                        //     method: 'POST',
-                        //     headers: {
-                            //         'Content-Type': 'application/json'
-                            //     },
-                            //     body: JSON.stringify({
-                                //         user_id: data.id
-                                //     })
-                                // });
-                    // if (!settingsResponse.ok) {
-                        // const errorData = await response.json();
-                        
-                    if (response.ok) {
-                    alert("Sign Up Successful. Please log in!");
-                    setSignupEmail('');
-                    setSignupConfirmEmail('');
-                    setSignupPassword('');
-                    setSignupConfirmPassword('');
-                    setSignupFirstName('');
-                    setSignupLastName('');
-                    setSignupPhone('');
-                    setSignupAddress1('');
-                    setSignupAddress2('');
-                    setSignupCity('');
-                    setSignupState('');
-                    setSignupZipCode('');
-                    } else {
-                        const errorData = await response.json();
-                        if (errorData.error) {
-                            if (errorData.error.includes('email')) {
-                                alert("This email is already in use. Please sign in or use a different email.");
-                            } else {
-                                alert("Signup failed: " + errorData.error);
-                                console.log('Signup failed');
-                            }
-                        } else {
-                            alert("Signup failed. Please check your details and try again.");
-                        }
-                    }
-                }
+          const responseRadar = await fetch(
+            `https://api.radar.io/v1/geocode/forward?query=${encodeURIComponent(query)}`,
+            {
+              method: "GET",
+              headers: { Authorization: apiKey },
             }
+          );
+      
+          if (responseRadar.ok) {
+            const data = await responseRadar.json();
+      
+            if (data.addresses && data.addresses.length > 0) {
+              const { latitude, longitude } = data.addresses[0];
+      
+              const response = await fetch("http://127.0.0.1:5555/api/signup", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  email: signupEmail,
+                  password: signupPassword,
+                  first_name: signupFirstName,
+                  last_name: signupLastName,
+                  phone: signupPhone,
+                  address1: signupAddress1,
+                  address2: signupAddress2,
+                  city: signupCity,
+                  state: signupState,
+                  zipcode: signupZipCode,
+                  coordinates: { lat: latitude, lng: longitude },
+                }),
+              });
+      
+              const result = await response.json();
+      
+              if (response.ok) {
+                alert("Signup successful! A confirmation email has been sent.");
+              } else {
+                alert(result.error || "Signup failed.");
+              }
+            } else {
+              alert("Unable to geocode the address. Please try again.");
+            }
+          } else {
+            alert("Failed to fetch geocoding information.");
+          }
         } catch (error) {
-            console.error('Geocoding Error:', error);
+          console.error("Error during signup:", error);
+          alert("An unexpected error occurred. Please try again.");
         }
-    };
+      };
 
     const togglePasswordVisibility = (field) => {
         setShowPassword((prev) => ({
