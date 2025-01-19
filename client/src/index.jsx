@@ -24,6 +24,7 @@ import UserFAQs from './components/user/UserFAQs.jsx';
 import Logout from './components/user/Logout.jsx';
 import UserResetRequest from './components/user/UserResetRequest.jsx';
 import UserPasswordReset from './components/user/UserPasswordReset.jsx';
+import UserEmailVerification from './components/user/UserEmailVerification.jsx';
 
 // vendor routes
 import VendorHome from './components/vendor/VendorHome.jsx';
@@ -248,6 +249,7 @@ const router = createBrowserRouter([
                     { path: "return", element: <Return />},
                     { path: "reset-request", element: <UserResetRequest /> },
                     { path: "password-reset/:token", element: <UserPasswordReset /> },
+                    { path: "confirm-email/:token", element: <UserEmailVerification /> },
                 ],
             },
             { path: "vendor", element: <VendorHome /> },

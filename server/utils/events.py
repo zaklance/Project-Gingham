@@ -12,45 +12,45 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     )
 
 
-@listens_for(VendorFavorite, 'after_insert')
-def track_vendor_favorite(mapper, connection, target):
-    try:
-        # print(f"New favorite detected: User ID={target.user_id}, Vendor ID={target.vendor_id}")
+# @listens_for(VendorFavorite, 'after_insert')
+# def track_vendor_favorite(mapper, connection, target):
+#     try:
+#         # print(f"New favorite detected: User ID={target.user_id}, Vendor ID={target.vendor_id}")
 
-        # Retrieve the vendor
-        vendor = connection.execute(
-            Vendor.__table__.select().where(Vendor.id == target.vendor_id)
-        ).fetchone()
-        if not vendor:
-            print(f"Vendor not found for Vendor ID: {target.vendor_id}")
-            return
+#         # Retrieve the vendor
+#         vendor = connection.execute(
+#             Vendor.__table__.select().where(Vendor.id == target.vendor_id)
+#         ).fetchone()
+#         if not vendor:
+#             print(f"Vendor not found for Vendor ID: {target.vendor_id}")
+#             return
 
-        # Retrieve the user
-        user = connection.execute(
-            User.__table__.select().where(User.id == target.user_id)
-        ).fetchone()
-        if not user:
-            print(f"User not found for User ID: {target.user_id}")
-            return
+#         # Retrieve the user
+#         user = connection.execute(
+#             User.__table__.select().where(User.id == target.user_id)
+#         ).fetchone()
+#         if not user:
+#             print(f"User not found for User ID: {target.user_id}")
+#             return
 
-        # Create a notification
-        subject = "Favorite Vendor Added"
-        message = f"{user.first_name} added {vendor.name} to their favorites!"
-        # print(f"Creating notification for User ID={user.id} about Vendor ID={vendor.id}")
+#         # Create a notification
+#         subject = "Favorite Vendor Added"
+#         message = f"{user.first_name} added {vendor.name} to their favorites!"
+#         # print(f"Creating notification for User ID={user.id} about Vendor ID={vendor.id}")
 
-        connection.execute(
-            VendorNotification.__table__.insert().values(
-                subject=subject,
-                message=message,
-                user_id=user.id,
-                vendor_id=vendor.id,
-                created_at=datetime.utcnow(),
-                is_read=False
-            )
-        )
-        # print("Notification successfully created.")
-    except Exception as e:
-        print(f"Error in track_vendor_favorite: {e}")
+#         connection.execute(
+#             VendorNotification.__table__.insert().values(
+#                 subject=subject,
+#                 message=message,
+#                 user_id=user.id,
+#                 vendor_id=vendor.id,
+#                 created_at=datetime.utcnow(),
+#                 is_read=False
+#             )
+#         )
+#         # print("Notification successfully created.")
+#     except Exception as e:
+#         print(f"Error in track_vendor_favorite: {e}")
 
 @listens_for(Event, 'after_insert')
 def vendor_market_event_or_schedule_change(mapper, connection, target):
@@ -75,7 +75,7 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
             print(f"No vendors found for Market ID {market.id}. No notifications will be created.")
             return
 
-        # Check if the event is a schedule change
+#         # Check if the event is a schedule change
         is_schedule_change = target.schedule_change
 
         # Prepare notifications for vendors
@@ -92,14 +92,14 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
             ).first()
 
             if existing_notification:
-                # print(f"Notification already exists for Vendor ID={vendor.id}, Market ID={market.id}. Skipping.")
+                print(f"Notification already exists for Vendor ID={vendor.id}, Market ID={market.id}. Skipping.")
                 continue
 
             if is_schedule_change:
                 notification = VendorNotification(
                     subject="Market Schedule Change",
                     message=f"The market '{market.name}' has updated its schedule due to unforeseen circumstances.",
-                    link=f"/user/vendors/{vendor.id}",
+                    link=f"/user/markets/{market.id}",
                     vendor_id=vendor.id,
                     market_id=market.id,
                     created_at=datetime.utcnow(),
@@ -158,7 +158,7 @@ def track_fav_vendor_event(mapper, connection, target):
             return
         # print(f"Vendor found: ID={vendor.id}, Name='{vendor.name}'")
 
-        # Check if the event is a schedule change
+#         # Check if the event is a schedule change
         is_schedule_change = target.schedule_change
 
         # Prepare notifications
@@ -174,15 +174,15 @@ def track_fav_vendor_event(mapper, connection, target):
                 ])
             ).first()
 
-            if existing_notification:
-                print(f"Notification already exists for User ID={user.id}, Vendor ID={vendor.id}. Skipping.")
-                continue
+#             if existing_notification:
+#                 print(f"Notification already exists for User ID={user.id}, Vendor ID={vendor.id}. Skipping.")
+#                 continue
 
             if is_schedule_change:
                 notification = UserNotification(
                     subject="Vendor Schedule Change",
                     message=f"The vendor '{vendor.name}' has updated their schedule due to unforeseen circumstances.",
-                    link=f"/user/vendors/{vendor.id}",
+                    link=f"/user/vendors",
                     user_id=user.id,
                     vendor_id=vendor.id,
                     created_at=datetime.utcnow(),
@@ -200,13 +200,13 @@ def track_fav_vendor_event(mapper, connection, target):
                 )
 
             notifications.append(notification)
-            # print(f"Prepared notification for User ID={user.id}, Email='{user.email}'")
+            print(f"Prepared notification for User ID={user.id}, Email='{user.email}'")
 
         # Save notifications
         if notifications:
             session.bulk_save_objects(notifications)
             session.commit()
-            # print(f"Successfully created {len(notifications)} notifications for Vendor ID={vendor.id}")
+            print(f"Successfully created {len(notifications)} notifications for Vendor ID={vendor.id}")
 
     except Exception as e:
         session.rollback()
@@ -400,7 +400,7 @@ def fav_vendor_new_baskets(mapper, connection, target):
             notification = UserNotification(
                 subject="New Baskets from Your Favorite Vendor!",
                 message=message,
-                link=f"/user/vendors/{vendor.id}#baskets",
+                link=f"/user/vendors/{vendor.id}#markets",
                 user_id=user.id,
                 vendor_id=vendor.id,
                 created_at=datetime.utcnow(),
@@ -428,7 +428,7 @@ def notify_users_new_blog(mapper, connection, target):
 
         # Retrieve all users to notify
         users = session.query(User).all()
-        print(f"Total users to notify: {len(users)}")
+        # print(f"Total users to notify: {len(users)}")
 
         if not users:
             print("No users found. No notifications will be created.")
@@ -439,19 +439,19 @@ def notify_users_new_blog(mapper, connection, target):
         for user in users:
             notification = UserNotification(
                 subject="New Blog Post Alert!",
-                message=f"A new blog titled '{target.title}' has been published. Check it out!",
-                link=f"/#blog",
+                message=f"A new blog post, {target.title}, has been published. Check it out!",
+                link=f"/home#blog",
                 user_id=user.id,
                 created_at=datetime.utcnow(),
                 is_read=False
             )
             notifications.append(notification)
-            print(f"Prepared notification for User ID={user.id}, Email='{user.email}'")
+            # print(f"Prepared notification for User ID={user.id}, Email='{user.email}'")
 
         if notifications:
             session.bulk_save_objects(notifications)
             session.commit()
-            print(f"Successfully created {len(notifications)} notifications for the new blog post.")
+            # print(f"Successfully created {len(notifications)} notifications for the new blog post.")
 
     except Exception as e:
         session.rollback()
@@ -488,7 +488,7 @@ def vendor_market_new_event(mapper, connection, target):
             notification = VendorNotification(
                 subject="New Event in Your Market!",
                 message=f"The market '{market.name}' has created a new event: '{target.title}'.",
-                link=f"/user/markets/{market.id}",
+                link=f"/user/markets/{market.id}",  # Adjust link as per your routing
                 vendor_id=vendor.id,
                 market_id=market.id,
                 created_at=datetime.utcnow(),
@@ -528,7 +528,7 @@ def vendor_basket_sold(mapper, connection, target):
             notification = VendorNotification(
                 subject="Basket Sold!",
                 message=f"One of your baskets has been sold for ${target.price:.2f}.",
-                link=f"/vendor/dashboard",
+                link=f"/vendor/dashboard",  # Adjust link as per your routing
                 vendor_id=vendor.id,
                 created_at=datetime.utcnow(),
                 is_read=False
@@ -539,7 +539,7 @@ def vendor_basket_sold(mapper, connection, target):
             session.commit()
             # print(f"Notification created for Vendor ID={vendor.id}, Basket ID={target.id}")
         # else:
-            # print(f"Basket ID={target.id} is not sold. No notification created.")
+        #     print(f"Basket ID={target.id} is not sold. No notification created.")
 
     except Exception as e:
         session.rollback()
