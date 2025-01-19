@@ -473,8 +473,8 @@ function Markets() {
                                 <td>
                                     <button
                                         className={`btn-fav-filter ${isClicked ? 'btn-fav-filter-on' : ''}`}
-                                        title="show favorites"
-                                        onClick={handleClick}>&#9829;
+                                        title="only show favorites"
+                                        onClick={handleClick}>&emsp;
                                     </button>
                                 </td>
                                 <td>

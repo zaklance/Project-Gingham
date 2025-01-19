@@ -7,8 +7,9 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
                     VendorMarket, VendorUser, AdminUser, Basket, Event, 
                     Product, UserNotification, VendorNotification, 
-                    AdminNotification, QRCode, FAQ, Blog, Receipt, 
-                    SettingsUser, SettingsVendor, SettingsAdmin, bcrypt )
+                    AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
+                    Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
+                    bcrypt )
 from dotenv import load_dotenv
 from sqlalchemy import func, desc
 from sqlalchemy.exc import IntegrityError
@@ -1703,13 +1704,13 @@ def all_market_favorites():
     
 @app.route('/api/market-favorites/<int:id>', methods=['GET', 'DELETE'])
 def del_market_fav(id):
-    marketFav = MarketFavorite.query.filter(MarketFavorite.id == id).first()
-    if not marketFav:
+    market_fav = MarketFavorite.query.filter(MarketFavorite.id == id).first()
+    if not market_fav:
         return {'error': 'market favorite not found'}, 404
     if request.method == 'GET':
-        return marketFav.to_dict(), 200
+        return market_fav.to_dict(), 200
     if request.method == 'DELETE':
-        db.session.delete(marketFav)
+        db.session.delete(market_fav)
         db.session.commit()
         return {}, 204
 
@@ -1735,12 +1736,44 @@ def all_vendor_favorites():
     
 @app.route('/api/vendor-favorites/<int:id>', methods=['GET', 'DELETE'])
 def del_vendor_fav(id):
-    vendorFav = VendorFavorite.query.filter(VendorFavorite.id == id).first()
+    vendor_fav = VendorFavorite.query.filter(VendorFavorite.id == id).first()
+    if not vendor_fav:
+        return {'error': 'vendor favorite not found'}, 404
+    if request.method == 'GET':
+        return vendor_fav.to_dict(), 200
+    if request.method == 'DELETE':
+        db.session.delete(vendor_fav)
+        db.session.commit()
+        return {}, 204
+
+@app.route('/api/blog-favorites', methods=['GET', 'POST'])
+def all_blog_favorites():
     if request.method == 'GET':
         user_id = request.args.get('user_id')
-        return vendorFav.to_dict(), 200
+        query = BlogFavorite.query
+        if user_id:
+            query = query.filter_by(user_id=user_id).all()
+        return jsonify([q.to_dict() for q in query]), 200
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_blog_favorite = BlogFavorite(
+            user_id=data['user_id'],
+            blog_id=data['blog_id']
+        )
+        db.session.add(new_blog_favorite)
+        db.session.commit()
+        return new_blog_favorite.to_dict(), 201
+    
+@app.route('/api/blog-favorites/<int:id>', methods=['GET', 'DELETE'])
+def del_blog_fav(id):
+    blog_fav = BlogFavorite.query.filter(BlogFavorite.id == id).first()
+    if not blog_fav:
+        return {'error': 'blog favorite not found'}, 404
+    if request.method == 'GET':
+        return blog_fav.to_dict(), 200
     if request.method == 'DELETE':
-        db.session.delete(vendorFav)
+        db.session.delete(blog_fav)
         db.session.commit()
         return {}, 204
     
@@ -3037,6 +3070,7 @@ def blogs():
                 return {'error': 'Invalid date format for created_at. Expected format: YYYY-MM-DD HH:MM'}, 400
 
         new_blog = Blog(
+            type=data.get('type'),
             title=data.get('title'),
             body=data.get('body'),
             admin_user_id=data.get('admin_user_id'),

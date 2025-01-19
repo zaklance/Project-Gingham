@@ -7,8 +7,9 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
                     VendorMarket, VendorUser, AdminUser, Basket, Event, 
                     Product, UserNotification, VendorNotification, 
-                    AdminNotification, QRCode, FAQ, Blog, Receipt, 
-                    SettingsUser, SettingsVendor, SettingsAdmin, bcrypt )
+                    AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
+                    Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
+                    )
 
 
 @listens_for(VendorFavorite, 'after_insert')
@@ -140,7 +141,7 @@ def track_fav_market_event(mapper, connection, target):
             vendor_notification = VendorNotification(
                 subject="New Event at a Market You Attend!",
                 message=f"A new event '{target.title}' has been added to the market '{market.name}'.",
-                link=f"/user/vendors/{vendor.id}",
+                link=f"/user/markets/{market.id}",
                 vendor_id=vendor.id,
                 market_id=market.id,
                 created_at=datetime.utcnow(),
@@ -267,7 +268,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
             notifications.append({
                 "subject": "New Vendor in Your Favorite Market!",
                 "message": f"The vendor '{vendor.name}' has been added to your favorite market '{market.name}'.",
-                "link": f"/user/markets/{market.id}",
+                "link": f"/user/markets/{market.id}#vendors",
                 "user_id": user.id,
                 "market_id": market.id,
                 "vendor_id": vendor.id,

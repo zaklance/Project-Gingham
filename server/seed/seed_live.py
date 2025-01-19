@@ -6,8 +6,9 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
                     VendorMarket, VendorUser, AdminUser, Basket, Event, 
                     Product, UserNotification, VendorNotification, 
-                    AdminNotification, QRCode, FAQ, Blog, Receipt, 
-                    SettingsUser, SettingsVendor, SettingsAdmin, bcrypt )
+                    AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
+                    Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
+                    )
 import json
 from datetime import datetime, timedelta, timezone, time, date
 
@@ -37,6 +38,7 @@ def run():
     QRCode.query.delete()
     FAQ.query.delete()
     Blog.query.delete()
+    BlogFavorite.query.delete()
     Receipt.query.delete()
     SettingsUser.query.delete()
     SettingsVendor.query.delete()

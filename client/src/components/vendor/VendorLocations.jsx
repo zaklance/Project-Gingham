@@ -208,8 +208,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
                                         ))}
                                     </select>
                                 ) : (
-                                    <>
-                                    </>
+                                    null
                                 )}
                             </div>
                             <p className='margin-t-8 margin-l-8'>Can't find a market? Email us at hello@gingham.nyc today!</p>
@@ -229,7 +228,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
                                         ))}
                                     </select>
                                 ) : (
-                                    <p>Loading markets...</p> // Optional: Placeholder or spinner while loading
+                                    <p className='margin-t-4 margin-l-8'>No market locations...</p> // Optional: Placeholder or spinner while loading
                                 )}
                             </div>
                             <button className='btn btn-small btn-x btn-gap margin-t-16' onClick={() => handleMarketDayDelete(event)}>

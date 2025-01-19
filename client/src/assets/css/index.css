@@ -51,7 +51,7 @@ body {
   /* margin-top: -15px; */
   place-items: center;
   min-height: 100vh;
-  background-image: url('../images/gingham_seamless-strawberry-01.svg');
+  background-image: url('../images/backgrounds/gingham_seamless-strawberry-01.svg');
   background-size: auto;
   moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -112,7 +112,7 @@ body {
 }
 
 .strawberry-wrapper {
-  background-image: url('../images/gingham_seamless-strawberry-02.svg');
+  background-image: url('../images/backgrounds/gingham_seamless-strawberry-02.svg');
   background-size: auto;
   moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -682,7 +682,7 @@ ul {
 }
 
 .box-strawberry {
-  background-image: url('../images/LzYeux_120719_0036_1800px.jpg');
+  background-image: url('../images/backgrounds/LzYeux_120719_0036_1800px.jpg');
   background-size: auto;
   moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -909,6 +909,10 @@ ul {
 }
 
 .btn-like {
+  background-image: url('../images/icons/heart-line-svgrepo-com-2.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.66rem auto;
   height: 34px;
   width: 34px;
   font-size: .8em;
@@ -923,31 +927,45 @@ ul {
 
 .btn-like:hover, .btn-fav-filter:hover {
   /* padding: 10px 12px; */
+  background-image: url('../images/icons/icons8-heart-red.gif');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.6rem auto;
   border-radius: 8px;
   border: none;
-  background-color: #ff7b8a;
+  background-color: #ffd1d8;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
   transition: .2s;
 }
 
 .btn-like:active, .btn-fav-filter:active {
+  /* background-color: #ff7b8a; */
+  background-image: url('../images/icons/heart-fill-red-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.6rem auto;
   background-color: #ff4b5a;
   transition: .1s;
 }
 
 .btn-like-on {
+  background-image: url('../images/icons/heart-fill-red-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.6rem auto;
   height: 34px;
   width: 34px;
   font-size: .8em;
   /* padding: 10px 12px; */
   border-radius: 8px;
   border: none;
-  background-color: #ff7b8a;
+  background-color: #ffd1d8;
   color: #ff4b5a;
 }
 
 .btn-like-on:hover, .btn-fav-filter-on:hover {
-  background-color: #ffd1d8;
+  background-image: url('../images/icons/heart-fill-red-svgrepo-com.svg');
+  background-color: #ff7b8a;
   transition: .2s;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
   color: #ff4b5a ;
@@ -956,7 +974,11 @@ ul {
 .btn-fav-filter {
   height: 48px;
   width: 48px;
-  font-size: 1.1em;;
+  background-image: url('../images/icons/heart-line-svgrepo-com-2.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.65rem auto;
+  font-size: 1.1em;
   border-radius: 12px;
   border: none;
   background-color: #ffd1d8;
@@ -966,12 +988,62 @@ ul {
 .btn-fav-filter-on {
   height: 48px;
   width: 48px;
+  background-image: url('../images/icons/heart-fill-red-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.6rem auto;
   font-size: 1.1em;
   /* padding: 10px 12px; */
   border-radius: 12px;
   border: none;
-  background-color: #ff7b8a;
+  background-color: #ffd1d8;
   color: #ff4b5a;
+}
+
+.btn-fav-blog {
+  height: 24px;
+  width: 24px;
+  background-image: url('../images/icons/heart-line-svgrepo-com-2.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.15rem auto;
+  border-radius: 12px;
+  border: none;
+  background-color: #ffd1d8;
+}
+
+.btn-fav-blog:hover {
+  background-image: url('../images/icons/icons8-heart-red.gif');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.1rem auto;
+  background-color: #ffd1d8;
+  transition: .2s;
+}
+
+.btn-fav-blog:active {
+  background-color: #ff4b5a;
+  background-image: url('../images/icons/heart-fill-red-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.15rem auto;
+  transition: .1s;
+}
+
+.btn-fav-blog-on {
+  background-image: url('../images/icons/heart-fill-red-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.15rem auto;
+}
+
+.btn-fav-blog-on:hover {
+  background-image: url('../images/icons/heart-fill-red-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.15rem auto;
+  background-color: #ff7b8a;
+  transition: .2s;
 }
 
 .btn-filter {
@@ -1972,28 +2044,28 @@ select:hover {
 }
 
 .icon-notif {
-  background-image: url('../images/icons8-notification.svg');
+  background-image: url('../images/icons/icons8-notification.svg');
   background-repeat: no-repeat;
   background-position: right 50% top 46%;
   background-size: 1.2rem auto;
 }
 
 .icon-notif:hover {
-  background-image: url('../images/icons8-notification-color-3.gif');
+  background-image: url('../images/icons/icons8-notification-color-3.gif');
   background-repeat: no-repeat;
   background-position: right 50% top 46%;
   background-size: 1.26rem auto;
 }
 
 .icon-email {
-  background-image: url('../images/email-unread-svgrepo-com.svg');
+  background-image: url('../images/icons/email-unread-svgrepo-com.svg');
   background-repeat: no-repeat;
   background-position: right 50% top 46%;
   background-size: 1.2rem auto;
 }
 
 .icon-email:hover {
-  background-image: url('../images/icons8-email-yellow.gif');
+  background-image: url('../images/icons/icons8-email-yellow.gif');
   background-repeat: no-repeat;
   background-position: right 50% top 40%;
   background-size: 1.2rem auto;
@@ -2005,14 +2077,14 @@ select:hover {
   width: 36px;
   top: 4px;
   right: 4px;
-  background-image: url('../images/icons8-settings.svg');
+  background-image: url('../images/icons/icons8-settings.svg');
   background-repeat: no-repeat;
   background-position: right 50% top 46%;
   background-size: 1.8rem auto;
 }
 
 .icon-settings:hover {
-  background-image: url('../images/icons8-settings.gif');
+  background-image: url('../images/icons/icons8-settings.gif');
   background-position: right 50% top 40%;
   background-size: 1.74rem auto;
 }
@@ -2021,18 +2093,18 @@ select:hover {
   position: absolute;
   top: 2px;
   right: 12px;
-  background-image: url('../images/eye-svgrepo-com.svg');
+  background-image: url('../images/icons/eye-svgrepo-com.svg');
   background-repeat: no-repeat;
   background-position: right 50% top 46%;
   background-size: 1.1rem auto;
 }
 
 .icon-eye-alt {
-  background-image: url('../images/eye-svgrepo-com-2.svg') !important;
+  background-image: url('../images/icons/eye-svgrepo-com-2.svg') !important;
 }
 
 .icon-file {
-  background-image: url('../images/icons8-document-50.svg');
+  background-image: url('../images/icons/icons8-document-50.svg');
   background-repeat: no-repeat;
   background-position: right 50% top 50%;
   background-size: 2rem auto;
@@ -2040,18 +2112,18 @@ select:hover {
 }
 
 .icon-file:hover {
-  background-image: url('../images/icons8-document.gif');
+  background-image: url('../images/icons/icons8-document.gif');
 }
 
 .icon-report, .icon-report:hover {
-  background-image: url('../images/flag-svgrepo-com-2.svg');
+  background-image: url('../images/icons/flag-svgrepo-com-2.svg');
   background-repeat: no-repeat;
   background-position: right 50% top 47%;
   background-size: 1.7rem auto;
 }
 
 .icon-arrow-l {
-  background-image: url('../images/left-arrow-svgrepo-com.svg');
+  background-image: url('../images/icons/left-arrow-svgrepo-com.svg');
   background-repeat: no-repeat;
   background-position: right 50% top 47%;
   background-size: 1rem auto;
@@ -2060,7 +2132,7 @@ select:hover {
 }
 
 .icon-arrow-r {
-  background-image: url('../images/right-arrow-svgrepo-com.svg');
+  background-image: url('../images/icons/right-arrow-svgrepo-com.svg');
   background-repeat: no-repeat;
   background-position: right 50% top 47%;
   background-size: 1rem auto;
@@ -2342,7 +2414,7 @@ select:hover {
 }
 
 .vendor-portal-background {
-  background-image: url('../images/LzYeux_120719_0036_1800px.jpg');
+  background-image: url('../images/backgrounds/LzYeux_120719_0036_1800px.jpg');
   background-size:cover;
   object-fit: cover;
   width: 100%;
@@ -2350,7 +2422,7 @@ select:hover {
 }
 
 .admin-portal-background {
-  background-image: url('../images/LzYeux_120719_0033_1800px.jpg');
+  background-image: url('../images/backgrounds/LzYeux_120719_0033_1800px.jpg');
   background-size:cover;
   width: 100%;
   height: 600px;
@@ -2448,6 +2520,22 @@ select:hover {
 
 .faqs ul li {
   margin-bottom: -12px;
+}
+
+.blog-favs summary {
+  background-color: #eef;
+  font-size: 0.9em;
+  font-weight: 600;
+  color: #007BFF;
+  padding: 8px
+}
+
+.blog-favs p {
+  background-color: #fbf7eb;
+  color: #007BFF;
+  /* font-size: 1.2em; */
+  /* font-weight: 200; */
+  padding: 16px;
 }
 
 .m-br {
