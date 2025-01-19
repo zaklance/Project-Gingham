@@ -31,6 +31,18 @@ function MarketDetail ({ match }) {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const anchor = window.location.hash.slice(1);
+        setTimeout(() => {
+            if (anchor) {
+                const anchorEl = document.getElementById(anchor);
+                if (anchorEl) {
+                    anchorEl.scrollIntoView();
+                }
+            }
+        }, 500);
+    }, []);
+
+    useEffect(() => {
         fetch("http://127.0.0.1:5555/api/products")
             .then(response => response.json())
             .then(data => {
@@ -193,7 +205,7 @@ function MarketDetail ({ match }) {
             );
             setAlertMessage('added to cart');
         } else {
-            setAlertMessage("Sorry, all baskets are sold out!");
+            setAlertMessage("All baskets are sold out!");
         }
         setVendorAlertStates(prev => ({ ...prev, [vendorId]: true }));
         setTimeout(() => {
@@ -201,10 +213,10 @@ function MarketDetail ({ match }) {
         }, 2000);
     };
 
-    useEffect(() => {
+    // useEffect(() => {
         // console.log("Amount in cart:", amountInCart);
         // console.log("Cart items:", cartItems);
-    }, [amountInCart, cartItems]);
+    // }, [amountInCart, cartItems]);
 
     const handleBackButtonClick = () => {
         if ( isClicked ) {
@@ -417,7 +429,7 @@ function MarketDetail ({ match }) {
                 <div className='flex-start alert-container'>
                     <button
                         className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
-                        onClick={handleClick}>&#9829;</button>
+                        onClick={handleClick}>&emsp;</button>
                     {showAlert && (
                         <div className={`alert alert-favorites ${!showAlert ? 'alert-favorites-hidden' : ''}`}>
                             {alertMessage}
@@ -427,7 +439,10 @@ function MarketDetail ({ match }) {
             </div>
             <div className='flex-start m-flex-wrap'>
                 <label><h4>Market Day:</h4></label>
-                <select id="marketDaysSelect"
+                {marketDays.length === 1 ? (
+                    <h4>&ensp; {weekDay[0]}, &ensp;</h4>
+                ) : (
+                    <select id="marketDaysSelect"
                     className='margin-r-4'
                     name="marketDays"
                     onChange={handleDayChange}>
@@ -436,7 +451,8 @@ function MarketDetail ({ match }) {
                             {weekDay[day.day_of_week]}
                         </option>
                     ))}
-                </select>
+                    </select>
+                )}
                 {selectedDay && (
                     <h4>Hours: {timeConverter(selectedDay.hour_start)} - {timeConverter(selectedDay.hour_end)}</h4>
                 )}

@@ -179,7 +179,7 @@ function VendorCreate () {
             } else {
                 console.log('Error updating user with vendor_id');
             }
-            if (Number(newProducts).includes(1) && productRequest.trim() !== '') {
+            if (Array.isArray(newProducts) && newProducts.includes(1) && productRequest.trim() !== '') {
                 try {
                     const response = await fetch('http://127.0.0.1:5555/api/create-admin-notification', {
                         method: 'POST',
@@ -190,12 +190,14 @@ function VendorCreate () {
                             subject: 'product-request',
                             vendor_id: createdVendor.id,
                             vendor_user_id: vendorUserId,
-                            message: `${vendorData.name} has requested to for a new Product category: ${productRequest}.`,
+                            message: `${vendorData.name} has requested a new Product category: ${productRequest}.`,
                         }),
                     });
                     if (response.ok) {
                         const responseData = await response.json();
-                        alert(`Your product request has been sent to the admins for approval, if approved your product will be automatically changed!`);
+                        alert(`Your product request has been sent to the admins for approval. If approved, your product will be automatically changed!`);
+                        // window.location.reload();
+                        // navigate('/vendor/dashboard');
                     } else {
                         const errorData = await response.json();
                         alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
