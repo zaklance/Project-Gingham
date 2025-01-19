@@ -106,7 +106,7 @@ function AdminReport() {
         <div>
             <h1>Review Management</h1>
             <div className='box-bounding'>
-                <h2 className='margin-b-24'>Reported Market Reviews</h2>
+                <h2 className='margin-b-24' id="markets">Reported Market Reviews</h2>
                 <div className='box-scroll'>
                     {marketReported.length > 0 ? (
                         marketReported.map((review, index) => (
@@ -131,7 +131,7 @@ function AdminReport() {
                 </div>
             </div>
             <div className='box-bounding'>
-                <h2 className='margin-b-24'>Reported Vendor Reviews</h2>
+                <h2 className='margin-b-24' id="vendors">Reported Vendor Reviews</h2>
                 <div className='box-scroll'>
                     {vendorReported.length > 0 ? (
                         vendorReported.map((review, index) => (
