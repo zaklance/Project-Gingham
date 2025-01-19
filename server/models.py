@@ -79,13 +79,16 @@ class User(db.Model, SerializerMixin):
     vendor_reviews = db.relationship('VendorReview', back_populates='user')
     market_favorites = db.relationship('MarketFavorite', back_populates='user')
     vendor_favorites = db.relationship('VendorFavorite', back_populates='user')
+    blog_favorites = db.relationship('BlogFavorite', back_populates='user')
+
 
     serialize_rules = (
         '-_password',
         '-market_reviews.user',
         '-vendor_reviews.user',
         '-market_favorites',
-        '-vendor_favorites'
+        '-vendor_favorites',
+        '-blog_favorites',
     )
 
     @validates('first_name')
@@ -245,6 +248,7 @@ class Vendor(db.Model, SerializerMixin):
     state = db.Column(db.String(2), nullable=True)
     products = db.Column(db.JSON, nullable=False)
     bio = db.Column(db.String, nullable=True)
+    website = db.Column(db.String, nullable=True)
     image = db.Column(db.String)
     image_default = db.Column(db.String, nullable=False, default=random_vendor)
 
@@ -258,18 +262,6 @@ class Vendor(db.Model, SerializerMixin):
         '-reviews.vendor', '-vendor_favorites.vendor', '-vendor_vendor_users.vendor', 
         '-vendor_markets.vendor', '-reviews.user.market_reviews', '-vendor_vendor_users.email',
     )
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'city': self.city,
-            'state': self.state,
-            'products': self.products,
-            'bio': self.bio,
-            'image': self.image,
-            'image_default': self.image_default,
-        }
 
     # Validations
     @validates('name', 'products')
@@ -354,7 +346,7 @@ class VendorReview(db.Model, SerializerMixin):
             raise ValueError(f"Review text cannot be empty")
         return value
 
-class MarketReviewRating(db.Model):
+class MarketReviewRating(db.Model, SerializerMixin):
     __tablename__ = 'market_review_ratings'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -365,17 +357,8 @@ class MarketReviewRating(db.Model):
 
     def __repr__(self) -> str:
         return f"<VendorReviewRating {self.id}>"
-    
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "review_id": self.review_id,
-            "user_id": self.user_id,
-            "vote_down": self.vote_down,
-            "vote_up": self.vote_up
-        }
 
-class VendorReviewRating(db.Model):
+class VendorReviewRating(db.Model, SerializerMixin):
     __tablename__ = 'vendor_review_ratings'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -386,17 +369,8 @@ class VendorReviewRating(db.Model):
 
     def __repr__(self) -> str:
         return f"<VendorReviewRating {self.id}>"
-    
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "review_id": self.review_id,
-            "user_id": self.user_id,
-            "vote_down": self.vote_down,
-            "vote_up": self.vote_up
-        }
 
-class ReportedReview(db.Model):
+class ReportedReview(db.Model, SerializerMixin):
     __tablename__ = 'reported_reviews'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -404,12 +378,6 @@ class ReportedReview(db.Model):
 
     def __repr__(self) -> str:
         return f"<ReportedReview {self.id}>"
-    
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "user_id": self.user_id
-        }
     
 class MarketFavorite(db.Model, SerializerMixin):
     __tablename__ = 'market_favorites'
@@ -454,6 +422,7 @@ class VendorUser(db.Model, SerializerMixin):
     active_vendor = db.Column(db.Integer, nullable=True)
     vendor_id = db.Column(MutableDict.as_mutable(JSON), nullable=True)
     vendor_role = db.Column(MutableDict.as_mutable(JSON), nullable=True)
+    market_locations = db.Column(MutableDict.as_mutable(JSON), nullable=True)
     last_log_on = db.Column(db.DateTime, default=datetime.utcnow)
 
     # notifications = db.relationship('VendorNotification', back_populates='vendor_user')
@@ -588,30 +557,12 @@ class Basket(db.Model, SerializerMixin):
         if not isinstance(value, (int, float)) or value < 0:
             raise ValueError(f"{key} must be a non-negative integer")
         return value
-    
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "vendor_id": self.vendor_id,
-            "vendor_name": self.vendor.name if self.vendor else None,
-            "market_day_id": self.market_day_id,
-            "market_name": self.market_day.markets.name if self.market_day and self.market_day.markets else "Unknown Market",
-            "sale_date": self.sale_date.isoformat() if self.sale_date else None,
-            "pickup_start": str(self.pickup_start),
-            "pickup_end": str(self.pickup_end),
-            "price": self.price,
-            "basket_value": self.basket_value,
-            "is_sold": self.is_sold,
-            "is_grabbed": self.is_grabbed,
-            "user_id": self.user_id,
-            "qr_codes": [qr.to_dict() for qr in self.qr_codes] if self.qr_codes else None,
-        }
 
     def __repr__(self):
         return (f"<Basket ID: {self.id}, Vendor: {self.vendor.name}, "
                 f"Market ID: {self.market_day_id}, Sold: {self.is_sold}, Value: {self.basket_value}>")
 
-class UserNotification(db.Model):
+class UserNotification(db.Model, SerializerMixin):
     __tablename__ = 'user_notifications'
     id = db.Column(db.Integer, primary_key=True)
     subject = db.Column(db.String, nullable=False)
@@ -622,18 +573,6 @@ class UserNotification(db.Model):
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'subject': self.subject,
-            'message': self.message,
-            "link": self.link,
-            'user_id': self.user_id,
-            'vendor_id': self.vendor_id,
-            'market_id': self.market_id,
-            'created_at': self.created_at.isoformat()
-        }
     
     def __repr__(self):
         return (f"<User Notification ID: {self.id}, created on {self.created_at}")
@@ -656,27 +595,13 @@ class VendorNotification(db.Model, SerializerMixin):
 
     serialize_rules = ('vendor_user.first_name', 'vendor_user.last_name')
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "subject": self.subject,
-            "message": self.message,
-            "link": self.link,
-            "user_id": self.user_id,
-            "market_id": self.market_id,
-            "vendor_id": self.vendor_id,
-            "vendor_user_id": self.vendor_user_id,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-            "is_read": self.is_read
-        }
-
     def get_vendor_name(self):
         return Vendor.query.filter_by(id=self.vendor_id).first().name
 
     def __repr__(self):
         return (f"<Vendor Notification ID: {self.id}, created on {self.created_at}")
 
-class AdminNotification(db.Model):
+class AdminNotification(db.Model, SerializerMixin):
     __tablename__ = 'admin_notifications'
     id = db.Column(db.Integer, primary_key=True)
     subject = db.Column(db.String, nullable=False)
@@ -686,18 +611,6 @@ class AdminNotification(db.Model):
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "subject": self.subject,
-            "message": self.message,
-            "link": self.link,
-            "vendor_id": self.vendor_id,
-            "vendor_user_id": self.vendor_user_id,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-            "is_read": self.is_read
-        }
     
     def __repr__(self):
         return (f"<Vendor Notification ID: {self.id}, created on {self.created_at}")
@@ -743,12 +656,6 @@ class Product(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     product = db.Column(db.String, nullable=False)
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'product': self.product
-        }
-
     def __repr__(self) -> str:
         return f"<Product ID: {self.id}, Product: {self.product}>"
     
@@ -785,14 +692,34 @@ class Blog(db.Model, SerializerMixin):
     __tablename__ = 'blogs'
 
     id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String, nullable=False, default='general')
     title = db.Column(db.String, nullable=False)
     body = db.Column(db.String, nullable=False)
     admin_user_id = db.Column(db.Integer, db.ForeignKey('admin_users.id'), nullable=False)
     post_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
+    blog_favorites = db.relationship('BlogFavorite', back_populates='blog')
+
+    serialize_rules = ('-blog_favorites.blog', '-blog_favorites.user')
+
     def __repr__(self) -> str:
         return f"<Blog ID: {self.id}, Title: {self.title}, Body: {self.body}, Admin ID: {self.admin_user_id}, Post Date: {self.post_date}>"
+    
+class BlogFavorite(db.Model, SerializerMixin):
+    __tablename__ = 'blog_favorites'
 
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    blog_id = db.Column(db.Integer, db.ForeignKey('blogs.id'), nullable=False)
+
+    user = db.relationship('User', back_populates='blog_favorites')
+    blog = db.relationship('Blog', back_populates='blog_favorites')
+
+    serialize_rules = ('-blog.blog_favorites', '-user.blog_favorites', '-user.market_reviews', '-user.vendor_reviews')
+
+    def __repr__(self) -> str:
+        return f"<BlogFavorite ID: {self.id}, User ID: {self.user_id}, Blog ID: {self.blog_id}>"
+    
 class Receipt(db.Model, SerializerMixin):
     __tablename__ = 'receipts'
 
@@ -804,8 +731,8 @@ class Receipt(db.Model, SerializerMixin):
     def __repr__(self) -> str:
         return f"<Receipt ID: {self.id}, User ID: {self.user_id}, Baskets: {self.baskets}, Created At: {self.created_at}>"
 
-class SettingsUser(db.Model):
-    __tablename__ = 'settings-users'
+class SettingsUser(db.Model, SerializerMixin):
+    __tablename__ = 'settings_users'
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -835,35 +762,9 @@ class SettingsUser(db.Model):
 
     def __repr__(self) -> str:
         return f"<User Settings ID: {self.id}, User ID: {self.user_id}>"
-    
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'user_id': self.user_id,
-            'site_fav_market_new_event': self.site_fav_market_new_event,
-            'site_fav_market_schedule_change': self.site_fav_market_schedule_change,
-            'site_fav_market_new_vendor': self.site_fav_market_new_vendor,
-            'site_fav_market_new_basket': self.site_fav_market_new_basket,
-            'site_fav_vendor_new_event': self.site_fav_vendor_new_event,
-            'site_fav_vendor_schedule_change': self.site_fav_vendor_schedule_change,
-            'site_fav_vendor_new_basket': self.site_fav_vendor_new_basket,
-            'site_basket_pickup_time': self.site_basket_pickup_time,
-            'email_fav_market_new_event': self.email_fav_market_new_event,
-            'email_fav_market_schedule_change': self.email_fav_market_schedule_change,
-            'email_fav_market_new_vendor': self.email_fav_market_new_vendor,
-            'email_fav_market_new_basket': self.email_fav_market_new_basket,
-            'email_fav_vendor_new_event': self.email_fav_vendor_new_event,
-            'email_fav_vendor_schedule_change': self.email_fav_vendor_schedule_change,
-            'email_fav_vendor_new_basket': self.email_fav_vendor_new_basket,
-            'email_basket_pickup_time': self.email_basket_pickup_time,
-            'text_fav_market_schedule_change': self.text_fav_market_schedule_change,
-            'text_fav_market_new_basket': self.text_fav_market_new_basket,
-            'text_fav_vendor_schedule_change': self.text_fav_vendor_schedule_change,
-            'text_basket_pickup_time': self.text_basket_pickup_time,
-        }
 
-class SettingsVendor(db.Model):
-    __tablename__ = 'settings-vendors'
+class SettingsVendor(db.Model, SerializerMixin):
+    __tablename__ = 'settings_vendors'
 
     id = db.Column(db.Integer, primary_key=True)
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=False)
@@ -880,23 +781,9 @@ class SettingsVendor(db.Model):
 
     def __repr__(self) -> str:
         return f"<Vendor Settings ID: {self.id} Vendor User ID: {self.vendor_user_id}>"
-    
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "vendor_user_id": self.vendor_user_id,
-            "site_market_new_event": self.site_market_new_event,
-            "site_market_schedule_change": self.site_market_schedule_change,
-            "site_basket_sold": self.site_basket_sold,
-            "email_market_new_event": self.email_market_new_event,
-            "email_market_schedule_change": self.email_market_schedule_change,
-            "email_basket_sold": self.email_basket_sold,
-            "text_market_schedule_change": self.text_market_schedule_change,
-            "text_basket_sold": self.text_basket_sold
-        }
 
-class SettingsAdmin(db.Model):
-    __tablename__ = 'settings-admins'
+class SettingsAdmin(db.Model, SerializerMixin):
+    __tablename__ = 'settings_admins'
 
     id = db.Column(db.Integer, primary_key=True)
     admin_id = db.Column(db.Integer, db.ForeignKey('admin_users.id'), nullable=False)
@@ -911,15 +798,3 @@ class SettingsAdmin(db.Model):
 
     def __repr__(self) -> str:
         return f"<Admin Settings ID: {self.id} Admin ID: {self.admin_id}>"
-    
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "admin_id": self.admin_id,
-            "site_report_review": self.site_report_review,
-            "site_product_request": self.site_product_request,
-            "email_report_review": self.email_report_review,
-            "email_product_request": self.email_product_request,
-            "text_report_review": self.text_report_review,
-            "text_product_request": self.text_product_request
-        }

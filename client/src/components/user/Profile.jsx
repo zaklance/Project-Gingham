@@ -6,6 +6,8 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import BasketSales from './BasketSales';
+import { blogTimeConverter } from "../../utils/helpers";
+
 
 function Profile({ marketData }) {
     const { id } = useParams();
@@ -18,10 +20,12 @@ function Profile({ marketData }) {
     const [settingsMode, setSettingsMode] = useState(false);
     const [vendorFavs, setVendorFavs] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
+    const [blogFavs, setBlogFavs] = useState([]);
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
     const [salesHistory, setSalesHistory] = useState([]);
     const [activeTab, setActiveTab] = useState('website');
+    const [openBlog, setOpenBlog] = useState(null);
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'))
 
@@ -383,6 +387,17 @@ function Profile({ marketData }) {
             [field]: !tempUserSettings[field]
         });
     };
+
+    useEffect(() => {
+        fetch(`http://127.0.0.1:5555/api/blog-favorites?user_id=${userId}`)
+            .then(response => response.json())
+            .then(data => { setBlogFavs(data) })
+            .catch(error => console.error('Error fetching blog favorites', error));
+    }, []);
+
+    const handleToggle = (name) => {
+        setOpenBlog((prev) => (prev === name ? null : name));
+    };
     
 
     if (!profileData) {
@@ -636,10 +651,9 @@ function Profile({ marketData }) {
                 <BasketSales salesHistory={salesHistory} />
             </div>
             <div className='box-bounding'>
-                <h2>Favorites</h2>
-                <br/>
+                <h2 className='margin-b-24'>Favorites</h2>
                 <h3>Vendors</h3>
-                <ul className='favorites-list'>
+                <ul className='favorites-list box-scroll'>
                     {vendorFavs.length > 0 ? (
                         vendorFavs.map((data) => (
                             <li key={data.id}>
@@ -650,9 +664,8 @@ function Profile({ marketData }) {
                         <p>No favorite vendors</p>
                     )}
                 </ul>
-                <br/>
-                <h3>Markets</h3>
-                <ul className='favorites-list'>
+                <h3 className='margin-t-16'>Markets</h3>
+                <ul className='favorites-list box-scroll'>
                     {marketFavs.length > 0 ? (
                         marketFavs.map((data) => (
                             <li key={data.id}>
@@ -663,6 +676,27 @@ function Profile({ marketData }) {
                         <p>No favorite markets</p>
                     )}
                 </ul>
+                <h3 className='margin-t-16 margin-b-8'>Blogs</h3>
+                <div className='box-scroll'>
+                    {blogFavs.length > 0 ? (
+                        blogFavs.map((blog) => (
+                        <details 
+                            key={blog.id}
+                            className='blog-favs'
+                            open={openBlog === blog.id}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleToggle(blog.id);
+                            }}
+                        >
+                            <summary>{blogTimeConverter(blog.blog.post_date)}, {blog.blog.title}</summary>
+                            <p dangerouslySetInnerHTML={{ __html: blog.blog.body }} style={{ width: '100%', height: '100%' }}></p>
+                        </details>
+                        ))
+                    ) : (
+                        null
+                    )}
+                </div>
             </div>
         </div>
     );

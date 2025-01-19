@@ -31,18 +31,16 @@ function VendorDetail() {
     const { selectedProduct } = location.state || {};
 
     useEffect(() => {
-        // Timer to clear cart items after 3 seconds
-        if (cartItems.length > 0) {
-            const timer = setTimeout(() => {
-                setCartItems([]);
-                setAmountInCart(0);
-                console.log("Cart cleared after 3 seconds");
-            }, ((3 * 60) * (60 * 1000)));
-
-            // Clear the timer if cartItems changes
-            return () => clearTimeout(timer);
-        }
-    }, [cartItems, setCartItems, setAmountInCart]);
+        const anchor = window.location.hash.slice(1);
+        setTimeout(() => {
+            if (anchor) {
+                const anchorEl = document.getElementById(anchor);
+                if (anchorEl) {
+                    anchorEl.scrollIntoView();
+                }
+            }
+        }, 500);
+    }, []);
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/vendors/${id}`)
@@ -133,7 +131,7 @@ function VendorDetail() {
             setMarketBaskets(prevBaskets => prevBaskets.filter(item => item.id !== basketInCart.id));
             setAlertMessage('added to cart');
         } else {
-            setAlertMessage("Sorry, all baskets are sold out!");
+            setAlertMessage("All baskets are sold out!");
         }
         setVendorAlertStates(prev => ({ ...prev, [marketDay.id]: true }));
         setTimeout(() => {
@@ -158,10 +156,6 @@ function VendorDetail() {
             navigate('/user/vendors');
         }
     };
-
-    // useEffect(() => {
-    //     console.log("Products passed to VendorDetail:", products);
-    // }, [products]);
 
     useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/vendor-favorites?user_id=${userId}`)
@@ -356,7 +350,7 @@ function VendorDetail() {
                         <div className='alert-container flex-start flex-center-align nowrap'>
                             <button 
                                 className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
-                                onClick={handleClick}>&#9829;
+                                onClick={handleClick}>&emsp;
                             </button>
                             {showAlert && (
                                 <div className='alert alert-favorites nowrap'>
@@ -370,9 +364,7 @@ function VendorDetail() {
                 </div>
             </div>
             <div>
-                <br />
-                <br />
-                <h2>Farmers Market Locations:</h2>
+                <h2 className="margin-t-24" id="markets">Farmers Market Locations:</h2>
                 <div className='box-scroll'>
                 {Array.isArray(markets) && markets.length > 0 ? (
                     markets

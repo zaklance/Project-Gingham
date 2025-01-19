@@ -110,6 +110,7 @@ function Cart() {
 	cartItems.forEach(item => {
 	  totalPrice += item.price;
 	})
+    
 
     return (
         <div>

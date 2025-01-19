@@ -1,9 +1,28 @@
 import React, { useEffect, useState } from "react";
+import { Link } from 'react-router-dom';
 import { blogTimeConverter } from "../utils/helpers";
 
 function Home() {
     const [blogs, setBlogs] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [isClicked, setIsClicked] = useState(false);
+    const [blogFavs, setBlogFavs] = useState([]);
+    const [alertMessage, setAlertMessage] = useState(null);
+    const [showAlert, setShowAlert] = useState(false);
+
+    const userId = parseInt(globalThis.localStorage.getItem('user_id'));
+
+    useEffect(() => {
+        const anchor = window.location.hash.slice(1);
+        setTimeout(() => {
+            if (anchor) {
+                const anchorEl = document.getElementById(anchor);
+                if (anchorEl) {
+                    anchorEl.scrollIntoView();
+                }
+            }
+        }, 500);
+    }, []);
 
     useEffect(() => {
             fetch("http://127.0.0.1:5555/api/blogs")
@@ -16,6 +35,67 @@ function Home() {
                 })
                 .catch(error => console.error('Error fetching blogs', error));
         }, []);
+
+    useEffect(() => {
+            fetch(`http://127.0.0.1:5555/api/blog-favorites?user_id=${userId}`)
+                .then(response => response.json())
+                .then(data => { setBlogFavs(data) })
+                .catch(error => console.error('Error fetching blog favorites', error));
+        }, []);
+    
+    useEffect(() => {
+        if (blogs) {
+            const updatedIsClicked = blogs.reduce((acc, blog) => {
+                acc[blog.id] = blogFavs.some(fav => fav.blog_id === blog.id);
+                return acc;
+            }, {});
+            setIsClicked(updatedIsClicked);
+        }
+    }, [blogs, blogFavs]);
+
+    const handleClick = async (blogId) => {
+        console.log(blogId)
+        if (userId !== null) {
+            setIsClicked((prevState) => ({
+                ...prevState,
+                [blogId]: !prevState[blogId]
+            }));
+            if (isClicked[blogId] == false) {
+                const response = await fetch('http://127.0.0.1:5555/api/blog-favorites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        blog_id: blogId
+                    })
+                    // credentials: 'include'
+                }).then((resp) => {
+                    return resp.json()
+                }).then(data => {
+                    setBlogFavs([...blogFavs, data])
+                    setAlertMessage('added to favorites');
+                });
+            } else {
+                const findBlogFavId = blogFavs.filter(item => item.blog_id == blogId)
+                for (const item of findBlogFavId) {
+                    fetch(`http://127.0.0.1:5555/api/blog-favorites/${item.id}`, {
+                        method: "DELETE",
+                    }).then(() => {
+                        setBlogFavs((favs) => favs.filter((fav) => fav.blog_id !== blogId));
+                        setAlertMessage('removed from favorites');
+                    })
+                }
+            }
+        } else {
+            handlePopup()
+        }
+        setShowAlert(true);
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 1600);
+    };
 
     const handleNavigate = (direction) => {
         setCurrentIndex((prevIndex) => {
@@ -49,19 +129,25 @@ function Home() {
                     <p> Our mission: reduce waste, support vendors, and provide fresh, affordable food. Every 
                         basket purchased helps reduce waste and strengthen your community.
                     </p>
+                    <Link to={'./user/markets/1/#vendors'}>Link</Link>
                 </div>
             </div>
-            {currentBlog ?
-            <div className="box-blog margin-t-24 badge-container no-float">
-                <div className="badge-arrows">
-                    <i className="icon-arrow-l margin-r-8" onClick={() => handleNavigate('prev')}>&emsp;&thinsp;</i>
-                    <i className="icon-arrow-r" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>
+            {currentBlog ? (
+                <div className="box-blog margin-t-24 badge-container no-float" id="blog">
+                    <div className="badge-arrows">
+                        <i className="icon-arrow-l margin-r-8" onClick={() => handleNavigate('prev')}>&emsp;&thinsp;</i>
+                        <i className="icon-arrow-r" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>
+                        <button
+                            className={`btn-fav-blog margin-l-8 ${isClicked[currentBlog.id] || blogFavs.some(fav => fav.blog_id === currentBlog.id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
+                            title="save blog as favorite"
+                            onClick={(e) => handleClick(currentBlog.id)}>&emsp;
+                        </button>
+                    </div>
+                    <h1>{currentBlog.title}</h1>
+                    <h6 className="margin-b-8">{blogTimeConverter(currentBlog.post_date)}</h6>
+                    <div dangerouslySetInnerHTML={{ __html: currentBlog.body }} style={{ width: '100%', height: '100%' }}></div>
                 </div>
-                <h1>{currentBlog.title}</h1>
-                <h6 className="margin-b-8">{blogTimeConverter(currentBlog.post_date)}</h6>
-                <div dangerouslySetInnerHTML={{ __html: currentBlog.body }} style={{ width: '100%', height: '100%' }}></div>
-            </div>
-            : <></>}
+            ) : <></>}
             <div className="box-big-blue margin-t-24">
                 <h3>HOW DOES GINGHAM WORK?</h3> <br/>
                 <p>
