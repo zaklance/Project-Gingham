@@ -17,13 +17,13 @@ function Footer() {
                 <div className='flex-space-around flex-center-align box-blue'>
                     <ul className='ul-footer'>
                         <li className='footer-li'>
-                            <NavLink to="/">User Portal</NavLink>
+                            <NavLink to="/" className="link-underline">User Portal</NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink to="/vendor">Vendor Portal</NavLink>
+                            <NavLink to="/vendor" className="link-underline">Vendor Portal</NavLink>
                         </li>
                         <li className='footer-li'>
-                            <NavLink to="/admin">Admin Portal</NavLink>
+                            <NavLink to="/admin" className="link-underline">Admin Portal</NavLink>
                         </li>
                         {/* <li className='footer-li'>
                             <a href='https://www.mufo.nyc/' target='_blank' rel="noreferrer noopener">Mû.F.O. Inc</a>
@@ -35,27 +35,27 @@ function Footer() {
                         </li> */}
                         {!isNotUser && (
                             <li className='footer-li'>
-                                <NavLink to="/contact">Contact</NavLink>
+                                <NavLink to="/contact" className="link-underline">Contact</NavLink>
                             </li>
                         )}
                         {isVendorPage && (
                             <li className='footer-li'>
-                                <NavLink to="/vendor/contact">Contact</NavLink>
+                                <NavLink to="/vendor/contact" className="link-underline">Contact</NavLink>
                             </li>
                         )}
                         {!isNotUser && (
                             <li className='footer-li'>
-                                <NavLink to="/user/help">User Help</NavLink>
+                                <NavLink to="/user/help" className="link-underline">User Help</NavLink>
                             </li>
                         )}
                         {isVendorPage && (
                             <li className='footer-li'>
-                                <NavLink to="/vendor/help">Vendor Help</NavLink>
+                                <NavLink to="/vendor/help" className="link-underline">Vendor Help</NavLink>
                             </li>
                         )}
                         {isAdminLoggedIn && isAdminPage && (
                             <li className='footer-li'>
-                                <NavLink to="/admin/faqs">Admin Help</NavLink>
+                                <NavLink to="/admin/faqs" className="link-underline">Admin Help</NavLink>
                             </li>
                         )}
                         <li className='footer-li'>

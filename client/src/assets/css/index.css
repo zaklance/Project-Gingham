@@ -373,6 +373,10 @@ article {
   width: fit-content;
 }
 
+.margin-auto {
+  margin: auto;
+}
+
 .width-100 {
   width: 100%;
 }
@@ -427,15 +431,6 @@ ul {
   margin: 4px;
   padding: 2px;
   font-weight: 600;
-}
-
-.footer-li:hover {
-  background-color: #fffcbe;
-}
-
-.footer-li:active {
-  background-color: #fff669;
-  transition: .1s;
 }
 
 .cart li {

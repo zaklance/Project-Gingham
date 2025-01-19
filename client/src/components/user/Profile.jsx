@@ -694,7 +694,7 @@ function Profile({ marketData }) {
                         </details>
                         ))
                     ) : (
-                        null
+                        <p>No favorite blogs</p>
                     )}
                 </div>
             </div>
