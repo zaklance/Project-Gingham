@@ -10,8 +10,9 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
                     VendorMarket, VendorUser, AdminUser, Basket, Event, 
                     Product, UserNotification, VendorNotification, 
-                    AdminNotification, QRCode, FAQ, Blog, Receipt, 
-                    SettingsUser, SettingsVendor, SettingsAdmin, bcrypt )
+                    AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
+                    Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
+                    )
 import json
 from datetime import datetime, timedelta, timezone, time, date
 import datetime as dt
@@ -43,6 +44,7 @@ def run():
     QRCode.query.delete()
     FAQ.query.delete()
     Blog.query.delete()
+    BlogFavorite.query.delete()
     Receipt.query.delete()
     SettingsUser.query.delete()
     SettingsVendor.query.delete()
@@ -968,7 +970,8 @@ def run():
             state=state,
             products=products,
             bio=bio,
-            image=image
+            image=image,
+            website='www.google.com/'
         )
         vendors.append(v)
 
@@ -1133,6 +1136,21 @@ def run():
 
     db.session.add_all(vendor_favs)
     db.session.commit()
+
+    blog_favs = []
+    for i in range(60):
+        blog_id = randint(1, 3)
+        user_id = randint(1, 50)
+
+        bf = BlogFavorite(
+            blog_id=blog_id,
+            user_id=user_id,
+        )
+        blog_favs.append(bf)
+
+    db.session.add_all(blog_favs)
+    db.session.commit()
+
 
     # add fake vendor markets
     vendor_markets = []
@@ -1633,7 +1651,8 @@ def run():
 
     blogs = [
         Blog(
-            title="Butternut Squash Soup",
+            type="recipe",
+            title="Recipe: Butternut Squash Soup",
             body="""
                 <div class="column-3">
                     <h5>Prep Time: 10 mins | Cook Time: 35 mins | Total: 45 mins | Serves: 6</h5>
@@ -1673,6 +1692,7 @@ def run():
             admin_user_id=1
         ),
         Blog(
+            type="general",
             title="Discover Gingham: Fresh, Local, and Impactful",
             body="""
                 <div class="column-3">
@@ -1709,6 +1729,7 @@ def run():
             admin_user_id=1
         ), 
         Blog(
+            type="market-spotlight",
             title="Market Spotlight: Union Square Greenmarket",
             body="""
                 <div class="column-3">

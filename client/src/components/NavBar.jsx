@@ -264,7 +264,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                                             {notification.subject == 'team-request' ?
                                                                 <button className='btn btn-unreport btn-notif' onClick={() => handleVendorNotificationIsRead(notification.id)}>o</button>
                                                                 : <button className='btn btn-unreport btn-notif' onClick={() => handleVendorNotificationDelete(notification.id)}>x</button>}
-                                                            {notification.link ? <NavLink to={notification.link} onClick={closePopup}>{notification.message}</NavLink>
+                                                            {notification.link ? <NavLink className="link-underline" to={notification.link} onClick={closePopup}>{notification.message}</NavLink>
                                                             : <p>{notification.message}</p>}
                                                         </div>
                                                     </li>

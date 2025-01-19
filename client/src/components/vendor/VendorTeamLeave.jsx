@@ -97,9 +97,9 @@ const VendorTeamLeave = ({ className, vendorUserData, setVendorUserData }) => {
                                         <p><strong>{vendorsData[key]?.name || 'Unknown Name'}</strong> — 
                                             {(() => {
                                                 const role = vendorUserData?.vendor_role[value];
-                                                if (role == 0) return 'Owner';
-                                                if (role == 1) return 'Admin';
-                                                if (role == 2) return 'Employee';
+                                                if (role == 0) return ' Owner';
+                                                if (role == 1) return ' Admin';
+                                                if (role == 2) return ' Employee';
                                                 return 'Unknown Role';
                                             })()}    
                                         </p>
