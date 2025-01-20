@@ -229,6 +229,14 @@ p, li, div, form, input, select, button, textarea, td {
   text-align: center;
 }
 
+.text-error-small {
+  text-transform: uppercase;
+  background-color: #ffd1d8;
+  border-radius: 24px;
+  text-align: center;
+  padding: 0 6px;
+}
+
 .text-white-background {
   background-color: white;
 }
@@ -1016,12 +1024,12 @@ ul {
   transition: .2s;
 }
 
-.btn-fav-blog:active {
-  background-color: #ff4b5a;
+.btn-fav-blog:active, .btn-fav-blog-on:active {
   background-image: url('../images/icons/heart-fill-red-svgrepo-com.svg');
   background-repeat: no-repeat;
   background-position: right 50% top 50%;
   background-size: 1.15rem auto;
+  background-color: #ff4b5a;
   transition: .1s;
 }
 

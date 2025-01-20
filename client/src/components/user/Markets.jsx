@@ -323,7 +323,7 @@ function Markets() {
     };
 
     const handleSearchAddress = async (query) => {
-        const apiKey = import.meta.env.VITE_RADAR_TEST_KEY;
+        const apiKey = import.meta.env.VITE_RADAR_KEY;
 
         try {
             const responseRadar = await fetch(`https://api.radar.io/v1/search/autocomplete?query=${encodeURIComponent(query)}`, {

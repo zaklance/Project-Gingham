@@ -61,7 +61,7 @@ const UserEmailVerification = () => {
 						Thank you for signing up. Please confirm your email to complete your
 						registration.
 					</p>
-					{errorMessage && <p className="text-error text-red width-fit margin-auto">{errorMessage}</p>}
+					{errorMessage && <p className="text-error-small text-red width-fit margin-auto">{errorMessage}</p>}
 					<button
 						className="btn btn-add"
 						onClick={handleConfirmation}

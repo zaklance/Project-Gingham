@@ -1356,9 +1356,14 @@ def run():
             basket_value=basket_value
         )
         baskets.append(bsk)
-
-    db.session.add_all(baskets)
-    db.session.commit()
+    try:
+        db.session.add_all(baskets)
+        db.session.flush()
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error during flush/commit: {e}")
+        raise
     
     for i in range(12):
         rand_user = [None, randint(1, 50)]
@@ -1689,7 +1694,8 @@ def run():
                 </div>
             """,
             post_date=datetime.strptime("2025-01-10 00:00:00", "%Y-%m-%d %H:%M:%S"),
-            admin_user_id=1
+            admin_user_id=1,
+            for_user=True
         ),
         Blog(
             type="general",
@@ -1726,7 +1732,8 @@ def run():
                 </div>
             """,
             post_date=datetime.strptime("2025-01-06 00:00:00", "%Y-%m-%d %H:%M:%S"),
-            admin_user_id=1
+            admin_user_id=1,
+            for_user=True
         ), 
         Blog(
             type="market-spotlight",
@@ -1753,7 +1760,8 @@ def run():
                 </div>
             """,
             post_date=datetime.strptime("2025-01-18 00:00:00", "%Y-%m-%d %H:%M:%S"),
-            admin_user_id=1
+            admin_user_id=1,
+            for_user=True
         )
     ]
 
