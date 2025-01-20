@@ -47,7 +47,7 @@ const AdminBlogAdd = () => {
     const postBlog = async () => {
         if (confirm(`Are you sure you want to post the blog "${newTitle}" to the site?`)) {
             try {
-                const postedAt = new Date(newDate); // Convert to a JavaScript Date object
+                const postedAt = newDate;
                 const response = await fetch('http://127.0.0.1:5555/api/blogs', {
                     method: 'POST',
                     headers: {
@@ -60,7 +60,7 @@ const AdminBlogAdd = () => {
                         for_user: forUser,
                         for_vendor: forVendor,
                         for_admin: forAdmin,
-                        post_date: postedAt.toISOString(),
+                        post_date: postedAt,
                         admin_user_id: adminId,
                     }),
                 });
