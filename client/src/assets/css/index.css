@@ -2606,6 +2606,10 @@ select:hover {
   margin-bottom: 12px;
 }
 
+.password-bar {
+  padding: 0 10px;
+}
+
 
 
 
@@ -2616,6 +2620,7 @@ select:hover {
       justify-content: space-between;
     }
 }
+
 
 
 
@@ -2720,15 +2725,19 @@ select:hover {
   .form-contact textarea {
     max-width: 48vw;
   }
+
+  #html-input {
+    width: 400px;
+    height: 300px;
+  }
 }
 
-.password-bar {
-  padding: 0 10px;
-}
+
 /* 
 .column-3 {
   column-count: 2;
 } */
+
 
 
 
