@@ -37,10 +37,10 @@ function Login({ handlePopup }) {
             if (response.ok) {
                 const data = await response.json();
 
-            globalThis.localStorage.removeItem('user_id');
-            globalThis.localStorage.removeItem('vendor_user_id');
-            globalThis.localStorage.removeItem('admin_jwt-token');
-            globalThis.localStorage.removeItem('vendor_jwt-token');
+                globalThis.localStorage.removeItem('user_id');
+                globalThis.localStorage.removeItem('vendor_user_id');
+                globalThis.localStorage.removeItem('admin_jwt-token');
+                globalThis.localStorage.removeItem('vendor_jwt-token');
     
                 globalThis.localStorage.setItem('admin_jwt-token', data.access_token);
                 globalThis.localStorage.setItem('admin_user_id', data.admin_user_id);
