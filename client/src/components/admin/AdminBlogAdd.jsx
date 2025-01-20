@@ -4,7 +4,8 @@ import { blogTimeConverter } from '../../utils/helpers';
 const AdminBlogAdd = () => {
     const [newTitle, setNewTitle] = useState('');
     const [newDate, setNewDate] = useState('');
-    const [blogType, setBlogType] = useState('for_user');
+    const [newBlogType, setNewBlogType] = useState('for_user');
+    const [blogFor, setBlogFor] = useState('for_user');
     const [forUser, setForUser] = useState(true);
     const [forVendor, setForVendor] = useState(false);
     const [forAdmin, setForAdmin] = useState(false);
@@ -53,6 +54,7 @@ const AdminBlogAdd = () => {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
+                        type: newBlogType,
                         title: newTitle,
                         body: newBlog,
                         for_user: forUser,
@@ -108,7 +110,7 @@ const AdminBlogAdd = () => {
     };
 
     const handleForInput = (event) => {
-        setBlogType(event)
+        setBlogFor(event)
         if (event === 'for_user') {
             setForUser(true)
             setForVendor(false)
@@ -126,15 +128,25 @@ const AdminBlogAdd = () => {
         }
     };
 
-    console.log(forUser)
-    console.log(forVendor)
-    console.log(forAdmin)
-
 
     return (
         <>
             <div className='box-bounding'>
                 <h2 className='margin-b-16'>Add Blogs</h2>
+                <div className='form-group'>
+                    <label>Blog Type:</label>
+                    <select
+                        name="blog_type"
+                        value={newBlogType}
+                        onChange={(e) => setNewBlogType(e.target.value)}
+                    >
+                        <option value="">Select</option>
+                        <option value='general'>General</option>
+                        <option value='recipe'>Recipe</option>
+                        <option value='spotlight-market'>Spotlight Market</option>
+                        <option value='spotlight-vendor'>Spotlight Vendor</option>
+                    </select>
+                </div>
                 <div className='form-group'>
                     <label>Title:</label>
                     <input
@@ -154,8 +166,8 @@ const AdminBlogAdd = () => {
                 <div className='form-group'>
                     <label>Blog for:</label>
                     <select
-                        name="blog_type"
-                        value={blogType}
+                        name="blog_for"
+                        value={blogFor}
                         onChange={(e) => handleForInput(e.target.value)}
                     >
                         <option value="">Select</option>
