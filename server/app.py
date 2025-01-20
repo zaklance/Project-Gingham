@@ -3127,21 +3127,21 @@ def blogs():
 
     elif request.method == 'POST':
         data = request.get_json()
-        post_date = None
 
-        if 'post_date' in data:
-            try:
-                post_date = datetime.strptime('2025-01-14', '%Y-%m-%d').date()
-            except ValueError:
-                return {'error': 'Invalid date format for created_at. Expected format: YYYY-MM-DD HH:MM'}, 400
+        try:
+            post_date = datetime.strptime(data['post_date'], '%Y-%m-%d').date()
+        except KeyError:
+            return {'error': 'Missing post_date field'}, 400
+        except ValueError:
+            return {'error': 'Invalid date format for post_date. Expected format: YYYY-MM-DD'}, 400
 
         new_blog = Blog(
             type=data.get('type'),
             title=data.get('title'),
             body=data.get('body'),
-            for_user=data.get('for_user'),
-            for_vendor=data.get('for_vendor'),
-            for_admin=data.get('for_admin'),
+            for_user=data.get('for_user', False),
+            for_vendor=data.get('for_vendor', False),
+            for_admin=data.get('for_admin', False),
             admin_user_id=data.get('admin_user_id'),
             post_date=post_date
         )
@@ -3153,7 +3153,6 @@ def blogs():
         except Exception as e:
             db.session.rollback()
             return {'error': f'Failed to create Blog: {str(e)}'}, 500
-
 
 @app.route('/api/blogs/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def blog(id):
