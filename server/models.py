@@ -695,6 +695,9 @@ class Blog(db.Model, SerializerMixin):
     type = db.Column(db.String, nullable=False, default='general')
     title = db.Column(db.String, nullable=False)
     body = db.Column(db.String, nullable=False)
+    for_user = db.Column(db.Boolean, default=True, nullable=False)
+    for_vendor = db.Column(db.Boolean, default=False, nullable=False)
+    for_admin = db.Column(db.Boolean, default=False, nullable=False)
     admin_user_id = db.Column(db.Integer, db.ForeignKey('admin_users.id'), nullable=False)
     post_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 

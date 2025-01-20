@@ -897,7 +897,8 @@ def run():
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
                 </div>
             """,
-            admin_user_id=1
+            admin_user_id=1,
+            for_user=True
         ),
         Blog(
             type="general",
@@ -933,7 +934,8 @@ def run():
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
                 </div>
             """,
-            admin_user_id=1
+            admin_user_id=1,
+            for_user=True
         )
     ]
 

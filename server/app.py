@@ -3092,8 +3092,38 @@ def faq(id):
 @app.route('/api/blogs', methods=['GET', 'POST'])
 def blogs():
     if request.method == 'GET':
-        blogs = Blog.query.all()
-        return jsonify([blog.to_dict() for blog in blogs]), 200
+        # blogs = Blog.query.all()
+        # return jsonify([blog.to_dict() for blog in blogs]), 200
+    
+        for_user = request.args.get('for_user', None)
+        for_vendor = request.args.get('for_vendor', None)
+        for_admin = request.args.get('for_admin', None)
+        query = Blog.query
+
+        if for_user:
+            query = query.filter(Blog.for_user == True)
+            user_result = query.all()
+            if user_result:
+                return jsonify([blog.to_dict() for blog in user_result]), 200
+            return jsonify({'error': 'User Blogs not found'}), 404
+        elif for_vendor:
+            query = query.filter(Blog.for_vendor == True)
+            vendor_result = query.all()
+            if vendor_result:
+                return jsonify([blog.to_dict() for blog in vendor_result]), 200
+            return jsonify({'error': 'Vendor Blogs not found'}), 404
+        elif for_admin:
+            query = query.filter(Blog.for_admin == True)
+            admin_result = query.all()
+            if admin_result:
+                return jsonify([blog.to_dict() for blog in admin_result]), 200
+            return jsonify({'error': 'Admin Blog not found'}), 404
+        elif not for_user and not for_vendor and not for_admin:
+            result = query.all()
+            if result:
+                return jsonify([blog.to_dict() for blog in result]), 200
+            return jsonify({'error': 'No Blogs found'}), 404
+        return jsonify({'error': 'Invalid query parameters'}), 400
 
     elif request.method == 'POST':
         data = request.get_json()
@@ -3109,6 +3139,9 @@ def blogs():
             type=data.get('type'),
             title=data.get('title'),
             body=data.get('body'),
+            for_user=data.get('for_user'),
+            for_vendor=data.get('for_vendor'),
+            for_admin=data.get('for_admin'),
             admin_user_id=data.get('admin_user_id'),
             post_date=post_date
         )

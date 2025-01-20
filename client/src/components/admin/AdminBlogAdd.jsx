@@ -3,7 +3,11 @@ import { blogTimeConverter } from '../../utils/helpers';
 
 const AdminBlogAdd = () => {
     const [newTitle, setNewTitle] = useState('');
-    const [newDate, setNewDate] = useState(''); // Date only
+    const [newDate, setNewDate] = useState('');
+    const [blogType, setBlogType] = useState('for_user');
+    const [forUser, setForUser] = useState(true);
+    const [forVendor, setForVendor] = useState(false);
+    const [forAdmin, setForAdmin] = useState(false);
     const [newBlog, setNewBlog] = useState(`
         <div class="column-3">
             <article class="first-letter">
@@ -51,7 +55,10 @@ const AdminBlogAdd = () => {
                     body: JSON.stringify({
                         title: newTitle,
                         body: newBlog,
-                        post_date: postedAt.toISOString(), // Convert Date to ISO string
+                        for_user: forUser,
+                        for_vendor: forVendor,
+                        for_admin: forAdmin,
+                        post_date: postedAt.toISOString(),
                         admin_user_id: adminId,
                     }),
                 });
@@ -100,6 +107,30 @@ const AdminBlogAdd = () => {
         }
     };
 
+    const handleForInput = (event) => {
+        setBlogType(event)
+        if (event === 'for_user') {
+            setForUser(true)
+            setForVendor(false)
+            setForAdmin(false)
+        }
+        if (event === 'for_vendor') {
+            setForUser(false)
+            setForVendor(true)
+            setForAdmin(false)
+        }
+        if (event === 'for_admin') {
+            setForUser(false)
+            setForVendor(false)
+            setForAdmin(true)
+        }
+    };
+
+    console.log(forUser)
+    console.log(forVendor)
+    console.log(forAdmin)
+
+
     return (
         <>
             <div className='box-bounding'>
@@ -119,6 +150,19 @@ const AdminBlogAdd = () => {
                         value={newDate}
                         onChange={(e) => setNewDate(e.target.value)}
                     />
+                </div>
+                <div className='form-group'>
+                    <label>Blog for:</label>
+                    <select
+                        name="blog_type"
+                        value={blogType}
+                        onChange={(e) => handleForInput(e.target.value)}
+                    >
+                        <option value="">Select</option>
+                        <option value='for_user'>Users</option>
+                        <option value='for_vendor'>Vendors</option>
+                        <option value='for_admin'>Admins</option>
+                    </select>
                 </div>
                 <div className='form-group'>
                     <label>Body HTML:</label>

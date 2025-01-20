@@ -200,13 +200,13 @@ def track_fav_vendor_event(mapper, connection, target):
                 )
 
             notifications.append(notification)
-            print(f"Prepared notification for User ID={user.id}, Email='{user.email}'")
+            # print(f"Prepared notification for User ID={user.id}, Email='{user.email}'")
 
         # Save notifications
         if notifications:
             session.bulk_save_objects(notifications)
             session.commit()
-            print(f"Successfully created {len(notifications)} notifications for Vendor ID={vendor.id}")
+            # print(f"Successfully created {len(notifications)} notifications for Vendor ID={vendor.id}")
 
     except Exception as e:
         session.rollback()
@@ -346,79 +346,79 @@ def notify_admin_market_review_reported(mapper, connection, target):
         except Exception as e:
             print(f"Error creating admin notification for Market Review: {e}")
 
-@listens_for(Basket, 'after_insert')
-def fav_vendor_new_baskets(mapper, connection, target):
-    session = Session(bind=connection)
-    try:
-        # print(f"New basket detected: ID={target.id}, Vendor ID={target.vendor_id}")
+# @listens_for(Basket, 'after_insert')
+# def fav_vendor_new_baskets(mapper, connection, target):
+#     session = Session(bind=connection)
+#     try:
+#         # print(f"New basket detected: ID={target.id}, Vendor ID={target.vendor_id}")
 
-        vendor = session.query(Vendor).get(target.vendor_id)
-        if not vendor:
-            print(f"Vendor not found for Vendor ID: {target.vendor_id}")
-            return
+#         vendor = session.query(Vendor).get(target.vendor_id)
+#         if not vendor:
+#             print(f"Vendor not found for Vendor ID: {target.vendor_id}")
+#             return
 
-        # Retrieve users who favorited this vendor
-        favorited_users = session.query(User).join(VendorFavorite).filter(
-            VendorFavorite.vendor_id == target.vendor_id
-        ).all()
-        # print(f"Users favorited Vendor ID {vendor.id}: {len(favorited_users)} users found.")
+#         # Retrieve users who favorited this vendor
+#         favorited_users = session.query(User).join(VendorFavorite).filter(
+#             VendorFavorite.vendor_id == target.vendor_id
+#         ).all()
+#         # print(f"Users favorited Vendor ID {vendor.id}: {len(favorited_users)} users found.")
 
-        if not favorited_users:
-            print(f"No users have favorited Vendor ID {vendor.id}. No notifications will be created.")
-            return
+#         if not favorited_users:
+#             print(f"No users have favorited Vendor ID {vendor.id}. No notifications will be created.")
+#             return
 
-        # Check for existing baskets for this vendor
-        recent_baskets = session.query(Basket).filter(
-            Basket.vendor_id == vendor.id,
-            Basket.sale_date >= datetime.utcnow().date()
-        ).all()
+#         # Check for existing baskets for this vendor
+#         recent_baskets = session.query(Basket).filter(
+#             Basket.vendor_id == vendor.id,
+#             Basket.sale_date >= datetime.utcnow().date()
+#         ).all()
 
-        basket_count = len(recent_baskets)
-        # print(f"Vendor ID {vendor.id} has {basket_count} baskets created today.")
+#         basket_count = len(recent_baskets)
+#         # print(f"Vendor ID {vendor.id} has {basket_count} baskets created today.")
 
-        # if basket_count >= 2:
-        #     # Consolidate notification
-        #     message = f"{vendor.name} has added {basket_count} new baskets today! Check them out before they're gone!"
-        # else:
-        #     # Individual basket notification
-        #     message = f"{vendor.name} has added a new basket! Check it out before it's gone!"
+#         # if basket_count >= 2:
+#         #     # Consolidate notification
+#         #     message = f"{vendor.name} has added {basket_count} new baskets today! Check them out before they're gone!"
+#         # else:
+#         #     # Individual basket notification
+#         #     message = f"{vendor.name} has added a new basket! Check it out before it's gone!"
 
-        # Prepare notifications for favorited users
-        notifications = []
-        for user in favorited_users:
-            existing_notification = session.query(UserNotification).filter(
-                UserNotification.user_id == user.id,
-                UserNotification.vendor_id == vendor.id,
-                UserNotification.created_at >= datetime.utcnow().date(),
-                UserNotification.subject == "New Baskets from Your Favorite Vendor!"
-            ).first()
+#         # Prepare notifications for favorited users
+#         notifications = []
+#         for user in favorited_users:
+#             existing_notification = session.query(UserNotification).filter(
+#                 UserNotification.user_id == user.id,
+#                 UserNotification.vendor_id == vendor.id,
+#                 UserNotification.created_at >= datetime.utcnow().date(),
+#                 UserNotification.subject == "New Baskets from Your Favorite Vendor!"
+#             ).first()
 
-            if existing_notification:
-                # print(f"Notification already exists for User ID={user.id}, Vendor ID={vendor.id}. Skipping.")
-                continue
+#             if existing_notification:
+#                 # print(f"Notification already exists for User ID={user.id}, Vendor ID={vendor.id}. Skipping.")
+#                 continue
 
-            notification = UserNotification(
-                subject="New Baskets from Your Favorite Vendor!",
-                message=message,
-                link=f"/user/vendors/{vendor.id}#markets",
-                user_id=user.id,
-                vendor_id=vendor.id,
-                created_at=datetime.utcnow(),
-                is_read=False
-            )
-            notifications.append(notification)
-            # print(f"Prepared notification for User ID={user.id}, Email='{user.email}'")
+#             notification = UserNotification(
+#                 subject="New Baskets from Your Favorite Vendor!",
+#                 message=message,
+#                 link=f"/user/vendors/{vendor.id}#markets",
+#                 user_id=user.id,
+#                 vendor_id=vendor.id,
+#                 created_at=datetime.utcnow(),
+#                 is_read=False
+#             )
+#             notifications.append(notification)
+#             # print(f"Prepared notification for User ID={user.id}, Email='{user.email}'")
 
-        if notifications:
-            session.bulk_save_objects(notifications)
-            session.commit()
-            # print(f"Successfully created {len(notifications)} notifications for Vendor ID={vendor.id}")
+#         if notifications:
+#             session.bulk_save_objects(notifications)
+#             session.commit()
+#             # print(f"Successfully created {len(notifications)} notifications for Vendor ID={vendor.id}")
 
-    except Exception as e:
-        session.rollback()
-        print(f"Error in fav_vendor_new_baskets: {e}")
-    finally:
-        session.close()
+#     except Exception as e:
+#         session.rollback()
+#         print(f"Error in fav_vendor_new_baskets: {e}")
+#     finally:
+#         session.close()
 
 @listens_for(Blog, 'after_insert')
 def notify_users_new_blog(mapper, connection, target):

@@ -25,7 +25,7 @@ function Home() {
     }, []);
 
     useEffect(() => {
-            fetch("http://127.0.0.1:5555/api/blogs")
+            fetch("http://127.0.0.1:5555/api/blogs?for_user=true")
                 .then(response => response.json())
                 .then(data => {
                     const now = new Date();
