@@ -58,6 +58,7 @@ body {
   position: relative;
   min-height: 100%;
   padding-bottom: 80px;
+  background-color: #fbf7eb;
 }
 
 /* Container for centering content */
@@ -293,6 +294,10 @@ article {
   margin-right: 26px;
 }
 
+.margin-r-48 {
+  margin-right: 48px;
+}
+
 .margin-l-8 {
   margin-left: 8px;
 }
@@ -307,6 +312,10 @@ article {
 
 .margin-l-24 {
   margin-left: 24px;
+}
+
+.margin-l-48 {
+  margin-left: 48px;
 }
 
 .margin-l-40 {
@@ -2730,13 +2739,13 @@ select:hover {
     width: 400px;
     height: 300px;
   }
+  
+  .column-3 {
+    column-count: 2;
+  }
 }
 
 
-/* 
-.column-3 {
-  column-count: 2;
-} */
 
 
 
@@ -2991,6 +3000,9 @@ select:hover {
     column-count: 1;
   }  
 }
+
+
+
 
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 @media screen and (max-width: 444px) {

@@ -56,9 +56,9 @@ const AdminBlogEdit = ({ blogs, setBlogs }) => {
         }));
     };
 
-    const handleBlogEditToggle = (id, title, body, post_date) => {
+    const handleBlogEditToggle = (id, title, body, post_date, type, for_user, for_vendor, for_admin) => {
         setEditingBlogId(id);
-        setTempBlogData({ title, body, post_date });
+        setTempBlogData({ title, body, post_date, type, for_user, for_vendor, for_admin });
     };
     
     const handleTabKey = (e) => {
@@ -97,6 +97,9 @@ const AdminBlogEdit = ({ blogs, setBlogs }) => {
         <>
             <div>
                 <h2>Edit Blogs</h2>
+                <div className='margin-t-16'>
+                    <h3>{currentBlog.for_user ? 'For User' : ''}{currentBlog.for_vendor ? 'For Vendor' : ''}{currentBlog.for_admin ? 'For Admin' : ''}; Type: {currentBlog.type}</h3>
+                </div>
                 <div className='flex-wrap'>
                     <div style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                         {editingBlogId === currentBlog.id ? (

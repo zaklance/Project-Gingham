@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, NavLink, Link } from 'react-router-dom';
-import { formatPhoneNumber } from '../../utils/helpers';
+import { blogTimeConverter, formatPhoneNumber } from '../../utils/helpers';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 
+
 function AdminProfile () {
     const { id } = useParams();
+    const [blogs, setBlogs] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
     const [editMode, setEditMode] = useState(false);
     const [settingsMode, setSettingsMode] = useState(false);
     const [adminUserData, setAdminUserData] = useState(null);
@@ -182,6 +185,43 @@ function AdminProfile () {
             [field]: !tempAdminSettings[field]
         });
     };
+
+    useEffect(() => {
+        const anchor = window.location.hash.slice(1);
+        setTimeout(() => {
+            if (anchor) {
+                const anchorEl = document.getElementById(anchor);
+                if (anchorEl) {
+                    anchorEl.scrollIntoView();
+                }
+            }
+        }, 500);
+    }, []);
+    
+    useEffect(() => {
+        fetch("http://127.0.0.1:5555/api/blogs?for_admin=true")
+            .then(response => response.json())
+            .then(data => {
+                const now = new Date();
+                const filteredData = data.filter(blog => new Date(blog.post_date) <= now);
+                const sortedData = filteredData.sort((a, b) => new Date(b.post_date) - new Date(a.post_date));
+                setBlogs(sortedData);
+            })
+            .catch(error => console.error('Error fetching blogs', error));
+    }, []);
+
+    const handleNavigate = (direction) => {
+        setCurrentIndex((prevIndex) => {
+            if (direction === 'prev') {
+                return prevIndex > 0 ? prevIndex - 1 : prevIndex; // Prevent moving past index 0
+            } else if (direction === 'next') {
+                return prevIndex < blogs.length - 1 ? prevIndex + 1 : prevIndex; // Prevent moving past last index
+            }
+            return prevIndex;
+        });
+    };
+
+    const currentBlog = blogs[currentIndex];
     
 
     return(
@@ -227,7 +267,7 @@ function AdminProfile () {
                                             <input
                                                 type="text"
                                                 name="phone"
-                                                value={tempProfileData ? tempProfileData.phone : ''}
+                                                value={tempProfileData ? formatPhoneNumber(tempProfileData.phone) : ''}
                                                 onChange={handleInputChange}
                                             />
                                         </div>
@@ -298,6 +338,17 @@ function AdminProfile () {
                             </>
                         )}
                     </div>
+                    {currentBlog ? (
+                        <div className="box-blog margin-t-24 badge-container no-float" id="blog">
+                            <div className="badge-arrows">
+                                <i className="icon-arrow-l margin-r-8" onClick={() => handleNavigate('prev')}>&emsp;&thinsp;</i>
+                                <i className="icon-arrow-r" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>
+                            </div>
+                            <h1>{currentBlog.title}</h1>
+                            <h6 className="margin-b-8">{blogTimeConverter(currentBlog.post_date)}</h6>
+                            <div dangerouslySetInnerHTML={{ __html: currentBlog.body }} style={{ width: '100%', height: '100%' }}></div>
+                        </div>
+                    ) : <></>}
                 </div>
             </div>
         </div>
