@@ -54,7 +54,6 @@ function Home() {
     }, [blogs, blogFavs]);
 
     const handleClick = async (blogId) => {
-        console.log(blogId)
         if (userId !== null) {
             setIsClicked((prevState) => ({
                 ...prevState,

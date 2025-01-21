@@ -92,7 +92,7 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
             ).first()
 
             if existing_notification:
-                print(f"Notification already exists for Vendor ID={vendor.id}, Market ID={market.id}. Skipping.")
+                # print(f"Notification already exists for Vendor ID={vendor.id}, Market ID={market.id}. Skipping.")
                 continue
 
             if is_schedule_change:
@@ -174,9 +174,9 @@ def track_fav_vendor_event(mapper, connection, target):
                 ])
             ).first()
 
-#             if existing_notification:
+            if existing_notification:
 #                 print(f"Notification already exists for User ID={user.id}, Vendor ID={vendor.id}. Skipping.")
-#                 continue
+                continue
 
             if is_schedule_change:
                 notification = UserNotification(
@@ -440,7 +440,7 @@ def notify_users_new_blog(mapper, connection, target):
             notification = UserNotification(
                 subject="New Blog Post Alert!",
                 message=f"A new blog post, {target.title}, has been published. Check it out!",
-                link=f"/home#blog",
+                link=f"/#blog",
                 user_id=user.id,
                 created_at=datetime.utcnow(),
                 is_read=False
