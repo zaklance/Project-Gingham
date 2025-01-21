@@ -45,9 +45,7 @@ function VendorLogin({ handlePopup }) {
     
                 globalThis.localStorage.setItem('vendor_jwt-token', data.access_token);
                 globalThis.localStorage.setItem('vendor_user_id', data.vendor_user_id);
-                console.log('Login successful:', data);
-
-                // const vendor_id = globalThis.localStorage.getItem('vendor_user_id');
+                // console.log('Login successful:', data);
     
                 handlePopup();
                 navigate(`/vendor/dashboard`);

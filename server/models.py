@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData, func, Text
 from sqlalchemy.orm import validates, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.ext.mutable import MutableDict, MutableList
 from sqlalchemy.dialects.postgresql import JSON
 from flask_bcrypt import Bcrypt
 from sqlalchemy_serializer import SerializerMixin
@@ -422,7 +422,6 @@ class VendorUser(db.Model, SerializerMixin):
     active_vendor = db.Column(db.Integer, nullable=True)
     vendor_id = db.Column(MutableDict.as_mutable(JSON), nullable=True)
     vendor_role = db.Column(MutableDict.as_mutable(JSON), nullable=True)
-    market_locations = db.Column(MutableDict.as_mutable(JSON), nullable=True)
     last_log_on = db.Column(db.DateTime, default=datetime.utcnow)
 
     # notifications = db.relationship('VendorNotification', back_populates='vendor_user')
@@ -771,6 +770,8 @@ class SettingsVendor(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=False)
+    market_locations = db.Column(MutableList.as_mutable(JSON), nullable=True)
+    
     site_market_new_event = db.Column(db.Boolean, default=True, nullable=False)
     site_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
     site_basket_sold = db.Column(db.Boolean, default=True, nullable=False)
@@ -790,6 +791,7 @@ class SettingsAdmin(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     admin_id = db.Column(db.Integer, db.ForeignKey('admin_users.id'), nullable=False)
+    
     site_report_review = db.Column(db.Boolean, default=True, nullable=False)
     site_product_request = db.Column(db.Boolean, default=True, nullable=False)
     
