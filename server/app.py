@@ -689,6 +689,36 @@ def post_settings_vendor_user():
         except Exception as e:
             return {'error': f'Exception: {str(e)}'}, 500
 
+@app.route('/api/settings-vendor-users/<int:id>', methods=['GET', 'PATCH'])
+@jwt_required()
+def settings_vendor_user(id):
+    
+    if not check_role('vendor') and not check_role('admin'):
+        return {'error': "Access forbidden: User only"}, 403
+    
+    if request.method == 'GET':
+        settings = SettingsVendor.query.filter_by(id=id).first()
+        if not settings:
+            return {'error': 'vendor user not found'}, 404
+        settings_data = settings.to_dict()
+        return jsonify(settings_data), 200
+
+    elif request.method == 'PATCH':
+        settings = SettingsVendor.query.filter_by(id=id).first()
+        if not settings:
+            return {'error': 'vendor user not found'}, 404
+        try:
+            data = request.get_json()
+            for key, value in data.items():
+                setattr(settings, key, value)
+
+            db.session.commit()
+            return jsonify(settings.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
 @app.route('/api/settings-admins', methods=['GET', 'POST'])
 def post_settings_admin_user():
 
@@ -759,36 +789,6 @@ def settings_admin(id):
         settings = SettingsAdmin.query.filter_by(id=id).first()
         if not settings:
             return {'error': 'user not found'}, 404
-        try:
-            data = request.get_json()
-            for key, value in data.items():
-                setattr(settings, key, value)
-
-            db.session.commit()
-            return jsonify(settings.to_dict()), 200
-
-        except Exception as e:
-            db.session.rollback()
-            return {'error': str(e)}, 500
-
-@app.route('/api/settings-vendor-users/<int:id>', methods=['GET', 'PATCH'])
-@jwt_required()
-def settings_vendor_user(id):
-    
-    if not check_role('vendor') and not check_role('admin'):
-        return {'error': "Access forbidden: User only"}, 403
-    
-    if request.method == 'GET':
-        settings = SettingsVendor.query.filter_by(id=id).first()
-        if not settings:
-            return {'error': 'vendor user not found'}, 404
-        settings_data = settings.to_dict()
-        return jsonify(settings_data), 200
-
-    elif request.method == 'PATCH':
-        settings = SettingsVendor.query.filter_by(id=id).first()
-        if not settings:
-            return {'error': 'vendor user not found'}, 404
         try:
             data = request.get_json()
             for key, value in data.items():
@@ -3076,7 +3076,7 @@ def faqs():
         elif not for_user and not for_vendor and not for_admin:
             result = query.all()
             if result:
-                return jsonify([qr.to_dict() for qr in result]), 200
+                return jsonify([faq.to_dict() for faq in result]), 200
             return jsonify({'error': 'No FAQs found'}), 404
         return jsonify({'error': 'Invalid query parameters'}), 400
 

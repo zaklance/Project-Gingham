@@ -598,6 +598,7 @@ function Profile({ marketData }) {
                                 </Link>
                             </div>
                         </div>
+                        <h3>Notifications</h3>
                         {activeTab === 'website' && (
                             <FormGroup>
                                 <FormControlLabel control={<Switch checked={tempUserSettings.site_fav_market_new_event} onChange={() => handleSwitchChange('site_fav_market_new_event')} color={'secondary'} />} label="Favorite market creates an event"/>

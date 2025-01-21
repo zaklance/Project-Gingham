@@ -316,6 +316,7 @@ function AdminProfile () {
                                         </Link>
                                     </div>
                                 </div>
+                                <h3>Notifications</h3>
                                 {activeTab === 'website' && (
                                     <FormGroup>
                                         <FormControlLabel control={<Switch checked={tempAdminSettings.site_report_review} onChange={() => handleSwitchChange('site_report_review')} color={'secondary'} />} label="Review is reported"/>

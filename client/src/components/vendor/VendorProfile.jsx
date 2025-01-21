@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, NavLink, Link, Route, Routes, BrowserRouter as Router} from 'react-router-dom';
-import { vendors_default, states } from '../../utils/common';
+import { vendors_default, states, weekDay } from '../../utils/common';
 import { formatPhoneNumber } from '../../utils/helpers';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
@@ -34,7 +34,14 @@ function VendorProfile () {
     const [newProduct, setNewProduct] = useState(null);
     const [productRequest, setProductRequest] = useState('')
     const [activeTab, setActiveTab] = useState('website');
-
+    
+    const [allVendorMarkets, setAllVendorMarkets] = useState([]);
+    const [allMarketDays, setAllMarketDays] = useState([]);
+    const [allMarkets, setAllMarkets] = useState([]);
+    const [filteredMarketDays, setFilteredMarketDays] = useState([]);
+    const [filteredMarkets, setFilteredMarkets] = useState([]);
+    const [newMarketDay, setNewMarketDay] = useState(null);
+    
     const vendorUserId = parseInt(globalThis.localStorage.getItem('vendor_user_id'))
 
     useEffect(() => {
@@ -122,7 +129,62 @@ function VendorProfile () {
         fetchVendorUserSettings();
     }, [id]);
 
-    console.log(vendorSettings)
+    useEffect(() => {
+        if (vendorId=== null) {
+            return
+        }
+        fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${vendorId}`)
+            .then(response => response.json())
+            .then(data => {
+                setAllVendorMarkets(data)
+            })
+            .catch(error => console.error('Error fetching market locations:', error));
+    }, [vendorId]);
+
+    useEffect(() => {
+            const token = localStorage.getItem('vendor_jwt-token');
+    
+            fetch("http://127.0.0.1:5555/api/market-days", {
+                method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const filteredData = data.filter(item =>
+                        allVendorMarkets.some(vendorMarket => vendorMarket.market_day_id === item.id)
+                    );
+                    setAllMarketDays(data)
+                    setFilteredMarketDays(filteredData)
+                })
+                .catch(error => console.error('Error fetching market days', error));
+        }, [allVendorMarkets]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch("http://127.0.0.1:5555/api/markets?is_visible=true");
+                const data = await response.json();
+                setAllMarkets(data);
+                if (filteredMarketDays.length > 0) {
+                    const filteredData = data.filter(item =>
+                        filteredMarketDays.some(vendorMarket => vendorMarket.market_id === item.id)
+                    );
+                    setFilteredMarkets(filteredData);
+                }
+            } catch (error) {
+                console.error("Error fetching markets:", error);
+            }
+        };
+        fetchData();
+    }, [filteredMarketDays, allMarketDays]);
 
     const handleInputChange = event => {
         const { name, value } = event.target;
@@ -363,7 +425,7 @@ function VendorProfile () {
         }
     };
     
-    const handleDeleteImage = async () => {
+    const handleDeleteProductImage = async () => {
         if (!vendorData || !vendorData.image) {
             console.log("Vendor Image URL:", vendorImageURL);
             alert('No image to delete.');
@@ -447,10 +509,17 @@ function VendorProfile () {
         setProductRequest(event.target.value);
     };
 
-    const handleDelete = (productId) => {
+    const handleDeleteProduct = (productId) => {
         setTempVendorData((prev) => ({
             ...prev,
             products: prev.products.filter((id) => id !== productId),
+        }));
+    };
+
+    const handleDeleteMarketDay = (marketDayId) => {
+        setTempVendorUserSettings((prev) => ({
+            ...prev,
+            market_locations: prev.market_locations.filter((id) => id !== marketDayId),
         }));
     };
 
@@ -460,6 +529,19 @@ function VendorProfile () {
             products: (prev.products || []).includes(Number(newProductId))
                 ? prev.products
                 : [...(prev.products || []), Number(newProductId)],
+        }));
+    };
+
+    const handleMarketDaySelect = (event) => {
+        setNewMarketDay(event.target.value)
+    }
+
+    const handleAddMarket = (newProductId) => {
+        setTempVendorUserSettings((prev) => ({
+            ...prev,
+            market_locations: (prev.market_locations || []).includes(Number(newProductId))
+                ? prev.market_locations
+                : [...(prev.market_locations || []), Number(newProductId)],
         }));
     };
 
@@ -479,6 +561,9 @@ function VendorProfile () {
         });
     };
 
+    console.log(newMarketDay)
+    console.log(tempVendorUserSettings)
+
 
     return(
         <>
@@ -486,9 +571,9 @@ function VendorProfile () {
                 <div>
                     <div className='box-bounding badge-container'>
                         <i className='icon-settings' onClick={handleSettingsToggle}>&emsp;</i>
-                        <h2 className='title margin-b-16'>Profile Information </h2>
                         {!settingsMode ? (
                             <>
+                                <h2 className='title margin-b-16'>Profile Information </h2>
                                 {editMode ? (
                                     <>
                                         <div className='form-group flex-form'>
@@ -568,6 +653,42 @@ function VendorProfile () {
                                         </Link>
                                     </div>
                                 </div>
+                                <div>
+                                    <h3 className='margin-b-12'>Locations for Notifications</h3>
+                                    <div className='form-group'>
+                                        <label>Market Locations:</label>
+                                        {filteredMarketDays.length > 0 ? (
+                                            <select id="marketSelect" name="market" onChange={(e) => handleMarketDaySelect(e)}>
+                                                <option value="">Select Market</option>
+                                                {filteredMarketDays.map((marketDay, index) => (
+                                                    <option key={index} value={marketDay.id}>
+                                                        {marketDay.markets.name} on {weekDay[marketDay.day_of_week]}s
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        ) : (
+                                            <p className='margin-t-4 margin-l-8'>No market locations...</p> // Optional: Placeholder or spinner while loading
+                                        )}
+                                        <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddMarket(newMarketDay)}>Add</button>
+                                        <Stack className='padding-4' direction="column" spacing={1}>
+                                            {tempVendorUserSettings.market_locations?.map((marketDayId) => {
+                                                const marketDay = allMarketDays.find((p) => p.id === marketDayId);
+                                                return (
+                                                    <Chip
+                                                        key={marketDayId}
+                                                        style={{
+                                                            backgroundColor: "#eee", fontSize: ".9em"
+                                                        }}
+                                                        label={`${marketDay?.markets.name}, ${weekDay[marketDay?.day_of_week]}` || 'Unknown Product'}
+                                                        size="small"
+                                                        onDelete={() => handleDeleteMarketDay(marketDayId)}
+                                                    />
+                                                );
+                                            })}
+                                        </Stack>
+                                    </div>
+                                </div>
+                                <h3>Notifications</h3>
                                 {activeTab === 'website' && (
                                     <FormGroup>
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_market_new_event} onChange={() => handleSwitchChange('site_market_new_event')} color={'secondary'} />} label="Market creates an event"/>
@@ -638,7 +759,7 @@ function VendorProfile () {
                                                         }}
                                                         label={product?.product || 'Unknown Product'}
                                                         size="small"
-                                                        onDelete={() => handleDelete(productId)}
+                                                        onDelete={() => handleDeleteProduct(productId)}
                                                     />
                                                 );
                                             })}
@@ -719,7 +840,7 @@ function VendorProfile () {
                                         )}
                                         <div className='flex-start flex-center-align'>
                                             <div className='margin-l-8'>
-                                                <button className='btn btn-small btn-blue' onClick={handleDeleteImage}>Delete Image</button>
+                                                <button className='btn btn-small btn-blue' onClick={handleDeleteProductImage}>Delete Image</button>
                                             </div>
                                             <label htmlFor='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
                                             <input
@@ -799,7 +920,15 @@ function VendorProfile () {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <VendorLocations vendorId={vendorId} vendorUserData={vendorUserData} />
+                                                <VendorLocations 
+                                                    vendorId={vendorId} 
+                                                    vendorUserData={vendorUserData} 
+                                                    allMarketDays={allMarketDays} 
+                                                    allMarkets={allMarkets} 
+                                                    filteredMarketDays={filteredMarketDays} 
+                                                    setFilteredMarketDays={setFilteredMarketDays} 
+                                                    filteredMarkets={filteredMarkets}
+                                                />
                                             </>
                                         )}
                                     </>

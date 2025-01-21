@@ -45,7 +45,7 @@ function Login({ handlePopup }) {
                 globalThis.localStorage.setItem('admin_jwt-token', data.access_token);
                 globalThis.localStorage.setItem('admin_user_id', data.admin_user_id);
     
-                console.log('Login successful:', data);
+                // console.log('Login successful:', data);
     
                 // Navigate to the user's profile or refresh the page
                 handlePopup();
