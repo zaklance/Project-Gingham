@@ -2538,29 +2538,64 @@ def send_sendgrid_email():
 # Stripe
 stripe.api_key = os.getenv('STRIPE_PY_KEY')
 
-@app.route('/api/create-checkout-session', methods=['POST'])
-def create_checkout_session():
-    try:
-        session = stripe.checkout.Session.create(
-            ui_mode = 'embedded',
-            line_items=[
-                {
-                    # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-                    'price': 'price_1QIWBN00T87Ls5h92BGgUbTz',
-                    'quantity': 1,
-                },
-            ],
-            mode='payment',
-            return_url='http://127.0.0.1:5173' + '/return?session_id={CHECKOUT_SESSION_ID}',
-        )
-    except Exception as e:
-        return str(e)
-    return jsonify(clientSecret=session.client_secret)
+# @app.route('/api/create-checkout-session', methods=['POST'])
+# def create_checkout_session():
+#     try:
+#         session = stripe.checkout.Session.create(
+#             ui_mode = 'embedded',
+#             line_items=[
+#                 {
+#                     # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
+#                     'price': 'price_1QIWBN00T87Ls5h92BGgUbTz',
+#                     'quantity': 1,
+#                 },
+#             ],
+#             mode='payment',
+#             return_url='http://127.0.0.1:5173' + '/return?session_id={CHECKOUT_SESSION_ID}',
+#         )
+#     except Exception as e:
+#         return str(e)
+#     return jsonify(clientSecret=session.client_secret)
 
-@app.route('/api/session-status', methods=['GET'])
-def session_status():
-  session = stripe.checkout.Session.retrieve(request.args.get('session_id'))
-  return jsonify(status=session.status, customer_email=session.customer_details.email)
+# @app.route('/api/session-status', methods=['GET'])
+# def session_status():
+#   session = stripe.checkout.Session.retrieve(request.args.get('session_id'))
+#   return jsonify(status=session.status, customer_email=session.customer_details.email)
+
+@app.route('/api/create-payment-intent', methods=['POST'])
+def create_payment():
+    try:
+        # Parse the JSON payload from the request
+        data = json.loads(request.data)
+        
+        # Extract totalPrice from the request data
+        total_price = data.get('totalPrice', 0)
+        print(f"Total price received: {total_price}")  # Debugging log
+
+        # Validate total price
+        if total_price <= 0:
+            return jsonify(error="Invalid total price"), 400
+
+        # Create a PaymentIntent
+        intent = stripe.PaymentIntent.create(
+            amount=int(total_price * 100),  # Convert dollars to cents
+            currency='usd',
+            automatic_payment_methods={'enabled': True},
+        )
+        print(f"PaymentIntent created with ID: {intent['id']}")  # Debugging log
+
+        # Return the client secret for the PaymentIntent
+        return jsonify({'clientSecret': intent['client_secret']})
+
+    except stripe.error.StripeError as e:
+        # Handle Stripe-specific errors
+        print(f"Stripe error: {str(e)}")  # Debugging log
+        return jsonify(error=f"Stripe error: {e.user_message or str(e)}"), 403
+
+    except Exception as e:
+        # Handle other exceptions
+        print(f"Error: {str(e)}")  # Debugging log
+        return jsonify(error=f"Server error: {str(e)}"), 500
 
 # Password reset for User
 @app.route('/api/user/password-reset-request', methods=['POST'])
