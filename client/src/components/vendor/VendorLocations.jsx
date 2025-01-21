@@ -2,22 +2,17 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { timeConverter } from '../../utils/helpers';
 import { weekDay } from '../../utils/common';
 
-function VendorLocations({ vendors, vendorId, vendorUserData }) {
+function VendorLocations({ vendors, vendorId, vendorUserData, allMarketDays, allMarkets, filteredMarketDays, setFilteredMarketDays, filteredMarkets, allVendorMarkets }) {
     const [newMarketDay, setNewMarketDay] = useState({});
     const [markets, setMarkets] = useState([]);
-    const [allVendorMarkets, setAllVendorMarkets] = useState([]);
-    const [filteredMarketDays, setFilteredMarketDays] = useState([]);
-    const [allMarketDays, setAllMarketDays] = useState([]);
-    const [allMarkets, setAllMarkets] = useState([]);
-    const [filteredMarkets, setFilteredMarkets] = useState([]);
     const [selectedMarket, setSelectedMarket] = useState(null);
     const [selectedMarketDay, setSelectedMarketDay] = useState(null);
     const [queryMarkets, setQueryMarkets] = useState("");
     const [queryMarketDays, setQueryMarketDays] = useState("");
     
     const onUpdateQueryMarkets = event => setQueryMarkets(event.target.value);
-    const filteredQueryMarkets = allMarkets.filter(market => market.name.toLowerCase().includes(queryMarkets.toLowerCase()) && market.name !== queryMarkets)
-    const matchingMarket = allMarkets.find(market => market.name.toLowerCase() === queryMarkets.toLowerCase());
+    const filteredQueryMarkets = allMarkets?.filter(market => market.name.toLowerCase().includes(queryMarkets.toLowerCase()) && market.name !== queryMarkets)
+    const matchingMarket = allMarkets?.find(market => market.name.toLowerCase() === queryMarkets.toLowerCase());
     const matchingMarketId = matchingMarket ? matchingMarket.id : null;
     
     const onUpdateQueryMarketDays = event => setQueryMarketDays(event.target.value);
@@ -30,65 +25,10 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
     const filteredQueryMarketDays = filteredQueryMarketDaysByMarket.filter(marketDay => weekDay[marketDay.day_of_week].includes(queryMarketDays) && weekDay[marketDay.day_of_week] !== queryMarketDays)
     const matchingMarketDay = filteredQueryMarketDays.find(marketDay => weekDay[marketDay.day_of_week] === queryMarketDays);
     const matchingMarketDayId = matchingMarketDay ? matchingMarketDay.id : null;
-    
+
 
     useEffect(() => {
-    
-        fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${vendorId}`)
-            .then(response => response.json())
-            .then(data => {
-                setAllVendorMarkets(data)
-            })
-            .catch(error => console.error('Error fetching market locations:', error));
-    }, [vendorId]);
-
-    useEffect(() => {
-        const token = localStorage.getItem('vendor_jwt-token');
-
-        fetch("http://127.0.0.1:5555/api/market-days", {
-            method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                const filteredData = data.filter(item =>
-                    allVendorMarkets.some(vendorMarket => vendorMarket.market_day_id === item.id)
-                );
-                setAllMarketDays(data)
-                setFilteredMarketDays(filteredData)
-            })
-            .catch(error => console.error('Error fetching market days', error));
-    }, [allVendorMarkets]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch("http://127.0.0.1:5555/api/markets?is_visible=true");
-                const data = await response.json();
-                setAllMarkets(data);
-                if (filteredMarketDays.length > 0) {
-                    const filteredData = data.filter(item =>
-                        filteredMarketDays.some(vendorMarket => vendorMarket.market_id === item.id)
-                    );
-                    setFilteredMarkets(filteredData);
-                }
-            } catch (error) {
-                console.error("Error fetching markets:", error);
-            }
-        };
-        fetchData();
-    }, [filteredMarketDays, allMarketDays]);
-
-    useEffect(() => {
-        if (allVendorMarkets.length > 0 && markets?.id) {
+        if (allVendorMarkets?.length > 0 && markets?.id) {
             setSelectedMarket(allVendorMarkets[0]);
         }
     }, [filteredMarketDays]);
@@ -139,7 +79,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData }) {
             if (response.ok) {
                 const updatedData = await response.json();
                 alert("Market Day successfully added");
-                console.log("Market Day data added successfully:", updatedData);
+                // console.log("Market Day data added successfully:", updatedData);
             } else {
                 console.error("Failed to save changes:", response.statusText);
             }

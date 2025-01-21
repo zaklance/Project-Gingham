@@ -45,7 +45,6 @@ function Login({ handlePopup }) {
             const data = await response.json();
 
             if (response.ok) {
-    
                 // Clear any existing admin or vendor_user session data
                 globalThis.localStorage.removeItem('admin_user_id');
                 globalThis.localStorage.removeItem('vendor_user_id');
@@ -56,8 +55,7 @@ function Login({ handlePopup }) {
                 globalThis.localStorage.setItem('user_jwt-token', data.access_token);
                 globalThis.localStorage.setItem('user_id', data.user_id);
     
-                console.log('Login successful:', data);
-    
+                // console.log('Login successful:', data);
                 handlePopup();
             } else {
                 alert('Login failed:' + data.error || 'Login failed');

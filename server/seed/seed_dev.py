@@ -1112,7 +1112,7 @@ def run():
     market_favs = []
     for i in range(200):
         market_id = randint(1, 40)
-        user_id = randint(1, 50)
+        user_id = randint(1, 51)
 
         mf = MarketFavorite(
             market_id=market_id,
@@ -1126,7 +1126,7 @@ def run():
     vendor_favs = []
     for i in range(400):
         vendor_id = randint(1, 150)
-        user_id = randint(1, 50)
+        user_id = randint(1, 51)
 
         vf = VendorFavorite(
             vendor_id=vendor_id,
@@ -1140,7 +1140,7 @@ def run():
     blog_favs = []
     for i in range(60):
         blog_id = randint(1, 3)
-        user_id = randint(1, 50)
+        user_id = randint(1, 51)
 
         bf = BlogFavorite(
             blog_id=blog_id,
@@ -1307,7 +1307,7 @@ def run():
     est = timezone('US/Eastern')  # Define the EST timezone.
 
     for i in range(2000):
-        rand_user = [None, randint(1, 50)]
+        rand_user = [None, randint(1, 51)]
 
         selected_vm = choice(vendor_markets)
         selected_market_day = next(item for item in market_day_list if item.id == selected_vm.market_day_id)
@@ -1366,7 +1366,7 @@ def run():
         raise
     
     for i in range(12):
-        rand_user = [None, randint(1, 50)]
+        rand_user = [None, randint(1, 51)]
 
         selected_vm = choice(vendor_markets)
         selected_market_day = next(item for item in market_day_list if item.id == selected_vm.market_day_id)
