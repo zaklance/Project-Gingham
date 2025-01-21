@@ -40,31 +40,55 @@ function Cart() {
         setAmountInCart(amountInCart - 1);
     }
 	
+    let totalPrice = 0;
+    cartItems.forEach(item => {
+      totalPrice += item.price;
+    });
+
     async function handleCheckout() {
         try {
             const userId = globalThis.localStorage.getItem('user_id');
-            if (!userId) { 
+            if (!userId) {
                 throw new Error("User is not logged in.");
             }
-
+    
+            // Send the total price to the backend to create a PaymentIntent
+            const paymentResponse = await fetch('http://127.0.0.1:5555/api/create-payment-intent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ totalPrice }),
+            });
+    
+            if (!paymentResponse.ok) {
+                throw new Error('Failed to create PaymentIntent');
+            }
+    
+            const { clientSecret } = await paymentResponse.json();
+            console.log('Received clientSecret:', clientSecret);
+    
+            // Rest of the checkout logic remains unchanged
             await Promise.all(cartItems.map(async (cartItem) => {
                 const response = await fetch(`http://127.0.0.1:5555/api/baskets/${cartItem.id}`, {
                     method: 'PATCH',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         is_sold: true,
                         user_id: userId,
-                    })
+                    }),
                 });
-
+    
                 if (!response.ok) {
                     throw new Error(`Failed to update cartItem with id: ${cartItem.id}`);
                 }
             }));
+    
+            // Generate QR codes (unchanged)
             if (cartItems.length > 0) {
-                const promises = cartItems.map(async (cartItem) => {
+                const qrPromises = cartItems.map(async (cartItem) => {
                     const hash = objectHash(`${cartItem.vendor_name} ${cartItem.location} ${cartItem.id} ${userId}`);
                     const response = await fetch('http://127.0.0.1:5555/api/qr-codes', {
                         method: 'POST',
@@ -75,27 +99,28 @@ function Cart() {
                             qr_code: hash,
                             user_id: userId,
                             basket_id: cartItem.id,
-                            vendor_id: cartItem.vendor_id
+                            vendor_id: cartItem.vendor_id,
                         }),
                     });
-
+    
                     if (!response.ok) {
                         throw new Error(`Failed to create QR code for basket ID ${cartItem.id}: ${response.statusText}`);
                     }
                     return response.json();
                 });
-                try {
-                    const results = await Promise.all(promises);
-                    console.log('All QR codes created successfully:', results);
-                } catch (error) {
-                    console.error('Error creating QR codes:', error);
-                }
+    
+                const results = await Promise.all(qrPromises);
+                console.log('All QR codes created successfully:', results);
+    
+                // Clear the cart
                 setCartItems([]);
                 setAmountInCart(0);
+    
+                // Redirect the user to the checkout page
                 navigate('/user/checkout');
             }
         } catch (error) {
-        console.error('Error during checkout:', error);
+            console.error('Error during checkout:', error);
         }
     }
 	
@@ -103,14 +128,6 @@ function Cart() {
 		console.log("Amount in cart:", amountInCart);
 		console.log("Cart items:", cartItems);
 	}, [amountInCart, cartItems]);
-	
-
-	let totalPrice = 0;
-
-	cartItems.forEach(item => {
-	  totalPrice += item.price;
-	})
-    
 
     return (
         <div>
