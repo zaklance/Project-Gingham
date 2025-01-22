@@ -98,7 +98,7 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
             if is_schedule_change:
                 notification = VendorNotification(
                     subject="Market Schedule Change",
-                    message=f"The market '{market.name}' has updated its schedule due to unforeseen circumstances.",
+                    message=f"The market '{market.name}' has updated its schedule temporarily.",
                     link=f"/user/markets/{market.id}",
                     vendor_id=vendor.id,
                     market_id=market.id,
@@ -181,7 +181,7 @@ def track_fav_vendor_event(mapper, connection, target):
             if is_schedule_change:
                 notification = UserNotification(
                     subject="Vendor Schedule Change",
-                    message=f"The vendor '{vendor.name}' has updated their schedule due to unforeseen circumstances.",
+                    message=f"The vendor '{vendor.name}' has updated their schedule temporarily.",
                     link=f"/user/vendors",
                     user_id=user.id,
                     vendor_id=vendor.id,
@@ -283,7 +283,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
 def notify_admin_vendor_review_reported(mapper, connection, target):
     if target.is_reported:
         try:
-            # print(f"Vendor Review reported: ID={target.id}, Vendor ID={target.vendor_id}")
+            print(f"Vendor Review reported: ID={target.id}, Vendor ID={target.vendor_id}")
 
             # Retrieve the vendor
             vendor = connection.execute(
@@ -311,7 +311,6 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
             # print("Admin notification created for reported Vendor Review.")
         except Exception as e:
             print(f"Error creating admin notification for Vendor Review: {e}")
-
 
 @listens_for(MarketReview, 'after_update')
 def notify_admin_market_review_reported(mapper, connection, target):

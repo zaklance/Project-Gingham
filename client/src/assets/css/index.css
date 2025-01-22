@@ -1223,6 +1223,7 @@ ul {
   height: 100%;
   width: 100%;
   letter-spacing: 2pt;
+  height: min-content;
 }
 
 .btn-clear:hover {

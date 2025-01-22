@@ -126,7 +126,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 setNotifications((prevNotifications) =>
                     prevNotifications.map((notification) =>
                         notification.id === notifId
-                            ? { ...notification, is_read: false }
+                            ? { ...notification, is_read: true }
                             : notification
                     )
                 );
@@ -179,7 +179,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
             });
             if (response.ok) {
                 const updatedData = await response.json();
-                setVendorNotifications((prev) => prev.filter((item) => item.id !== notifId))
+                setVendorNotifications((prevNotifications) =>
+                    prevNotifications.map((notification) =>
+                        notification.id === notifId
+                            ? { ...notification, is_read: true }
+                            : notification
+                    )
+                );
                 console.log('Notification updated successfully:', updatedData);
             } else {
                 console.error('Failed to update notification:', await response.text());
@@ -206,6 +212,31 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
             console.error("Error deleting notification", error);
         }
     };
+
+    const handleVendorUserNotificationClear = async () => {
+        if (confirm(`Are you sure you want to clear all your notifications?`)) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications?vendor_user_id=${vendorUserId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${vendorToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (response.ok) {
+                    const updatedData = await response.json();
+                    setVendorNotifications([]);
+                    console.log('Notification updated successfully:', updatedData);
+                    setIsNotifPopup(false)
+                    window.location.reload()
+                } else {
+                    console.error('Failed to update notification:', await response.text());
+                }
+            } catch (error) {
+                console.error('Error updating notification:', error);
+            }
+        }
+    }
     
     useEffect(() => {
         if (isAdminLoggedIn) {
@@ -224,6 +255,36 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
         }
     }, [isAdminLoggedIn]);
 
+    const handleAdminNotificationIsRead = async (notifId) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/api/admin-notifications/${notifId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${adminToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    is_read: true
+                }),
+            });
+            if (response.ok) {
+                const updatedData = await response.json();
+                setAdminNotifications((prevNotifications) =>
+                    prevNotifications.map((notification) =>
+                        notification.id === notifId
+                            ? { ...notification, is_read: true }
+                            : notification
+                    )
+                );
+                console.log('Notification updated successfully:', updatedData);
+            } else {
+                console.error('Failed to update notification:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error updating notification:', error);
+        }
+    };
+
     const handleAdminNotificationDelete = async (notifId) => {
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/admin-notifications/${notifId}`, {
@@ -241,6 +302,31 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
             console.error("Error deleting notification", error);
         }
     };
+
+    const handleAdminNotificationClear = async () => {
+        if (confirm(`Are you sure you want to clear all your notifications?`)) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5555/api/admin-notifications?admin_id=${adminUserId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (response.ok) {
+                    const updatedData = await response.json();
+                    setAdminNotifications((prev) => prev.filter((notif) => notif.subject === 'product-request'));
+                    console.log('Notification updated successfully:', updatedData);
+                    setIsNotifPopup(false)
+                    window.location.reload()
+                } else {
+                    console.error('Failed to update notification:', await response.text());
+                }
+            } catch (error) {
+                console.error('Error updating notification:', error);
+            }
+        }
+    }
 
     useEffect(() => {
         if (!adminUserId) return
@@ -268,10 +354,6 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
         };
         fetchUserData();
     }, [adminUserId]);
-
-    const handleAdminNotificationLink = () => {
-        window.location.href = "/admin/vendors?tab=products";
-    }
 
     const handleNotifPopup = () => {
         if (notifications.length > 0) {
@@ -343,16 +425,19 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             {vendorNotifications.length > 0 &&
                                 <div className={`popup-notif ${isNotifPopup ? 'popup-notif-on' : ''}`} style={{ top: window.scrollY }}>
                                     <ul className='flex-start flex-wrap ul-notif'>
+                                        <li className='btn btn-clear' onClick={handleVendorUserNotificationClear}>
+                                            Clear All Notifications
+                                        </li>
                                         {vendorNotifications
-                                            .filter(notification => !notification.is_read)
                                             .map((notification) => (
                                                 <li key={notification.id} className='li-notif'>
-                                                    <div className='flex-start'>
+                                                    <div className='flex-start badge-container'>
                                                         {notification.subject == 'team-request' ?
                                                             <button className='btn btn-unreport btn-notif' onClick={() => handleVendorNotificationIsRead(notification.id)}>o</button>
                                                             : <button className='btn btn-unreport btn-notif' onClick={() => handleVendorNotificationDelete(notification.id)}>x</button>}
-                                                        {notification.link ? <NavLink className="link-underline" to={notification.link} onClick={closePopup}>{notification.message}</NavLink>
-                                                        : <p>{notification.message}</p>}
+                                                        {notification.link ? <NavLink className="link-underline" to={notification.link} onClick={() => handleVendorNotificationIsRead(notification.id)}>{notification.message}</NavLink>
+                                                            : <p onClick={() => handleVendorNotificationIsRead(notification.id)}>{notification.message}</p>}
+                                                        {!notification.is_read && <button className='btn btn-report btn-unread'>&emsp;</button>}
                                                     </div>
                                                 </li>
                                         ))}
@@ -410,11 +495,17 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             {adminNotifications.length > 0 &&
                                 <div className={`popup-notif ${isNotifPopup ? 'popup-notif-on' : ''}`} style={{ top: window.scrollY }}>
                                     <ul className='flex-start flex-wrap ul-notif'>
+                                        <li className='btn btn-clear' onClick={handleAdminNotificationClear}>
+                                            Clear All Notifications
+                                        </li>
                                         {adminNotifications.map((notification) => (
                                             <li key={notification.id} className='li-notif'>
-                                                <div className='flex-start'>
-                                                    <button className='btn btn-unreport btn-notif' onClick={() => handleAdminNotificationDelete(notification.id)}>x</button>
-                                                    <p className='link-underline' onClick={handleAdminNotificationLink}>{notification.message}</p>
+                                                <div className='flex-start badge-container'>
+                                                    {notification.subject == 'product-request' ?
+                                                        <button className='btn btn-unreport btn-notif' onClick={() => handleAdminNotificationIsRead(notification.id)}>o</button>
+                                                        : <button className='btn btn-unreport btn-notif' onClick={() => handleAdminNotificationDelete(notification.id)}>x</button>}
+                                                    <NavLink className='link-underline' to={notification.link} onClick={() => handleAdminNotificationIsRead(notification.id)}>{notification.message}</NavLink>
+                                                    {!notification.is_read && <button className='btn btn-report btn-unread'>&emsp;</button>}
                                                 </div>
                                             </li>
                                         ))}

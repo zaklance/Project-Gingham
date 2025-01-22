@@ -264,7 +264,7 @@ const router = createBrowserRouter([
                     { path: "your-cart", element: <Cart /> },
                     { path: "pick-up", element: <UserAuthRoute><PickUp /></UserAuthRoute> },
                     { path: "help", element: <UserFAQs /> },
-                    { path: "checkout", element: <UserAuthRoute><CheckoutForm /></UserAuthRoute> },
+                    // { path: "checkout", element: <UserAuthRoute><CheckoutForm /></UserAuthRoute> },
                     { path: "check-session", element: <CheckSession /> },
                     { path: "return", element: <Return />},
                     { path: "reset-request", element: <UserResetRequest /> },

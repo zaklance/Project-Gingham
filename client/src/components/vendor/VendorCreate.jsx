@@ -190,6 +190,7 @@ function VendorCreate () {
                             subject: 'product-request',
                             vendor_id: createdVendor.id,
                             vendor_user_id: vendorUserId,
+                            link: '/admin/vendors?tab=products', 
                             message: `${vendorData.name} has requested a new Product category: ${productRequest}.`,
                         }),
                     });

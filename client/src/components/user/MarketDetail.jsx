@@ -71,19 +71,12 @@ function MarketDetail ({ match }) {
         if (!market?.id) return;
     
         const fetchData = async () => {
-            if (userId && market) {
+            if (market) {
                 try {
-                    const [marketDaysRes, vendorMarketsRes, eventsRes, marketFavsRes] = await Promise.all([
+                    const [marketDaysRes, vendorMarketsRes, eventsRes] = await Promise.all([
                         fetch(`http://127.0.0.1:5555/api/market-days?market_id=${market.id}`).then(res => res.json()),
                         fetch(`http://127.0.0.1:5555/api/vendor-markets?market_id=${market.id}`).then(res => res.json()),
-                        fetch(`http://127.0.0.1:5555/api/events?market_id=${market.id}`).then(res => res.json()),
-                        fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`, {
-                            method: "GET",
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
-                        }).then(res => res.json())
+                        fetch(`http://127.0.0.1:5555/api/events?market_id=${market.id}`).then(res => res.json()), 
                     ]);
                     
                     setMarketDays(marketDaysRes);
@@ -94,7 +87,6 @@ function MarketDetail ({ match }) {
                     }
                     setSelectedDay(marketDaysRes.length > 0 ? marketDaysRes[0] : null);
                     setEvents(eventsRes);
-                    setMarketFavs(marketFavsRes);
                 } catch (error) {
                     console.error("Error fetching data in parallel:", error);
                 }
@@ -103,6 +95,23 @@ function MarketDetail ({ match }) {
     
         fetchData();
     }, [market?.id, userId]);
+
+    useEffect(() => {
+        if (!userId) {
+            return
+        }
+        fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(res => res.json())
+        .then(data => {
+            setMarketFavs(data);
+        })
+    }, [userId]);
 
     useEffect(() => {
         const fetchVendorDetails = async () => {

@@ -8,7 +8,7 @@ function AdminVendorNotifications({ notifications, setNotifications }) {
 
     const handleApprove = async (notification, ) => {
         console.log(`Approval notification with ID: ${notification.id}`);
-        const token = localStorage.getItem('jwt-token');
+        const token = localStorage.getItem('admin_jwt-token');
 
         if (!newProduct?.product || newProduct.product.trim() === "") {
             alert("Product name cannot be empty.");
