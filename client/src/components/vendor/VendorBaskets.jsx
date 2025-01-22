@@ -118,9 +118,11 @@ function VendorBaskets({ vendorUserData }) {
             ) : (
                 <div className="box-bounding">
                     <h2>Today's Baskets:</h2>
+                        {/* <button className='btn-add nowrap'>Add A Basket for Today</button> */}
                     <br/>
                     <div className="flex flex-nowrap box-scroll-x">
                         <VendorBasketsToday vendorId={vendorId} />
+
                     </div>
                     <h2 className="margin-t-48 margin-b-16">Future Baskets:</h2>
                     <div className="flex flex-nowrap box-scroll-x">
