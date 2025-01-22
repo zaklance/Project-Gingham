@@ -35,10 +35,12 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
     }, [vendorUserData]);
 
     const handleAddTeamMember = async () => {
+        const token = localStorage.getItem('vendor_jwt-token');
 
         fetch(`http://127.0.0.1:5555/api/vendor-users?email=${encodeURIComponent(newMemberEmail)}`, {
             method: 'GET',
             headers: {
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             }
         })
@@ -46,7 +48,6 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
             if (response.ok) {
                 return response.json().then(data => {
                     console.log(data[0].id)
-                    const token = localStorage.getItem('vendor_jwt-token');
                     const response = fetch(`http://127.0.0.1:5555/api/vendor-users/${data[0].id}`, {
                         method: 'PATCH',
                         headers: {

@@ -505,7 +505,7 @@ ul {
 .li-notif {
   width: 100%;
   font-size: .66em;
-  padding: 8px 16px;
+  padding: 8px 16px 8px 8px;
   text-align: left;;
 }
 
@@ -1219,6 +1219,28 @@ ul {
   transition: .1s;
 }
 
+.btn-clear {
+  height: 100%;
+  width: 100%;
+  letter-spacing: 2pt;
+}
+
+.btn-clear:hover {
+  background-color: #ff4b5a;
+  color: #ffd1d8;
+  border-radius: 0;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.btn-clear:active {
+  background-color: #ff6786;
+  color: #ffd1d8;
+  border-radius: 0;
+  font-weight: 500;
+  transition: 0.1s;
+}
+
 .btn-nav-login {
   margin-top: -8px;
 }
@@ -1238,6 +1260,17 @@ ul {
   transition: .1s;
 }
 
+.li-notif .btn-unreport {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.li-notif:hover .btn-unreport {
+  opacity: 1;
+  visibility: visible;
+}
+
 .btn-notif {
   padding: 0px 4px;
   margin-right: 8px;
@@ -1245,6 +1278,17 @@ ul {
   /* border: #3b4752;
   border-width: .5px;
   border-style: solid; */
+}
+
+.btn-unread {
+  position: relative;
+  background-color: #007BFF;
+  height: 8px;
+  width: 8px;
+  border-radius: 8px;
+  top: -4px;
+  /* margin-right: 5px; */
+  right: -6px;
 }
 
 .btn-market-card {

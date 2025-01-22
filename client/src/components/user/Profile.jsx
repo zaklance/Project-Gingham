@@ -28,6 +28,7 @@ function Profile({ marketData }) {
     const [openBlog, setOpenBlog] = useState(null);
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'))
+    const token = localStorage.getItem('user_jwt-token');
 
     const decodeJwt = (token) => {
         try {
@@ -42,8 +43,6 @@ function Profile({ marketData }) {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const token = localStorage.getItem('user_jwt-token');
-
                 if (token) {
                     // Decode the token to extract the role
                     const decodedToken = decodeJwt(token);
@@ -86,7 +85,6 @@ function Profile({ marketData }) {
 
     useEffect(() => {
         const fetchUserSettings = async () => {
-            const token = localStorage.getItem('user_jwt-token');
             try {
                 const response = await fetch(`http://127.0.0.1:5555/api/settings-users?user_id=${id}`, {
                     method: 'GET',
@@ -132,8 +130,6 @@ function Profile({ marketData }) {
 
     const handleSaveChanges = async () => {
         let uploadedFilename = null;
-        const token = localStorage.getItem('user_jwt-token');
-        
         try {
             const apiKey = import.meta.env.VITE_RADAR_KEY;
             const query = `${tempProfileData.address_1} ${tempProfileData.city} ${tempProfileData.state} ${tempProfileData.zipcode}`;
@@ -239,7 +235,6 @@ function Profile({ marketData }) {
     };
 
     const handleSaveSettings = async () => {
-        const token = localStorage.getItem('user_jwt-token');
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/settings-users/${id}`, {
                 method: 'PATCH',
@@ -320,7 +315,13 @@ function Profile({ marketData }) {
     };
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/vendor-favorites?user_id=${userId}`)
+        fetch(`http://127.0.0.1:5555/api/vendor-favorites?user_id=${userId}`, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        })
             .then(response => response.json())
             .then(data => {
                 setVendorFavs(data);
@@ -329,7 +330,13 @@ function Profile({ marketData }) {
     }, []);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`)
+        fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        })
             .then(response => response.json())
             .then(data => {
                 setMarketFavs(data);
@@ -389,7 +396,13 @@ function Profile({ marketData }) {
     };
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/blog-favorites?user_id=${userId}`)
+        fetch(`http://127.0.0.1:5555/api/blog-favorites?user_id=${userId}`, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        })
             .then(response => response.json())
             .then(data => { setBlogFavs(data) })
             .catch(error => console.error('Error fetching blog favorites', error));

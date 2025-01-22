@@ -44,6 +44,7 @@ function VendorProfile () {
     
     const vendorUserId = parseInt(globalThis.localStorage.getItem('vendor_user_id'))
 
+
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/products")
             .then(response => response.json())
@@ -561,9 +562,6 @@ function VendorProfile () {
         });
     };
 
-    console.log(newMarketDay)
-    console.log(tempVendorUserSettings)
-
 
     return(
         <>
@@ -922,7 +920,8 @@ function VendorProfile () {
                                                 </div>
                                                 <VendorLocations 
                                                     vendorId={vendorId} 
-                                                    vendorUserData={vendorUserData} 
+                                                    vendorUserData={vendorUserData}
+                                                    allVendorMarkets={allVendorMarkets} 
                                                     allMarketDays={allMarketDays} 
                                                     allMarkets={allMarkets} 
                                                     filteredMarketDays={filteredMarketDays} 

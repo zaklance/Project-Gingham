@@ -33,6 +33,7 @@ function Markets() {
     const { handlePopup } = useOutletContext();
     
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
+    const token = localStorage.getItem('user_jwt-token');
     
     const onUpdateQuery = (event) => {
         const value = event.target.value;
@@ -195,7 +196,13 @@ function Markets() {
 
     useEffect(() => {
         if (userId && !isNaN(userId)) {
-            fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`)
+            fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`, {
+                method: "GET",
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+            })
                 .then(response => response.json())
                 .then(data => { setMarketFavs(data) })
                 .catch(error => console.error('Error fetching market favorites', error));

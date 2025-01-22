@@ -59,11 +59,14 @@ const AdminEmail = () => {
 
     const textareasRef = useRef([]);
 
+    const token = localStorage.getItem('admin_jwt-token');
+
     const previewEmail = async () => {
         try {
             const response = await fetch('http://127.0.0.1:5555/api/preview-email', {
                 method: 'POST',
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
@@ -90,6 +93,7 @@ const AdminEmail = () => {
                 const response = await fetch('http://127.0.0.1:5555/api/sendgrid-email', {
                     method: 'POST',
                     headers: {
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({

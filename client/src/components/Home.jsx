@@ -11,6 +11,7 @@ function Home() {
     const [showAlert, setShowAlert] = useState(false);
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
+    const token = localStorage.getItem('user_jwt-token');
 
     useEffect(() => {
         const anchor = window.location.hash.slice(1);
@@ -37,11 +38,18 @@ function Home() {
         }, []);
 
     useEffect(() => {
-            fetch(`http://127.0.0.1:5555/api/blog-favorites?user_id=${userId}`)
+        if (userId) {
+            fetch(`http://127.0.0.1:5555/api/blog-favorites?user_id=${userId}`, {
+                method: "GET",
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            })
                 .then(response => response.json())
                 .then(data => { setBlogFavs(data) })
                 .catch(error => console.error('Error fetching blog favorites', error));
-        }, []);
+        }
+    }, [userId]);
     
     useEffect(() => {
         if (blogs) {
@@ -51,7 +59,7 @@ function Home() {
             }, {});
             setIsClicked(updatedIsClicked);
         }
-    }, [blogs, blogFavs]);
+    }, [blogs, blogFavs, userId]);
 
     const handleClick = async (blogId) => {
         if (userId !== null) {
@@ -63,6 +71,7 @@ function Home() {
                 const response = await fetch('http://127.0.0.1:5555/api/blog-favorites', {
                     method: 'POST',
                     headers: {
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
@@ -81,6 +90,9 @@ function Home() {
                 for (const item of findBlogFavId) {
                     fetch(`http://127.0.0.1:5555/api/blog-favorites/${item.id}`, {
                         method: "DELETE",
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        }
                     }).then(() => {
                         setBlogFavs((favs) => favs.filter((fav) => fav.blog_id !== blogId));
                         setAlertMessage('removed from favorites');
