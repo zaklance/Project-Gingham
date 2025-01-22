@@ -555,6 +555,7 @@ def check_admin_session():
     return admin_user.to_dict(), 200
 
 @app.route('/api/settings-users', methods=['GET', 'POST'])
+@jwt_required()
 def post_settings_user():
 
     try:
@@ -637,6 +638,7 @@ def settings_user(id):
             return {'error': str(e)}, 500
 
 @app.route('/api/settings-vendor-users', methods=['GET', 'POST'])
+@jwt_required()
 def post_settings_vendor_user():
 
     try:
@@ -720,6 +722,7 @@ def settings_vendor_user(id):
             return {'error': str(e)}, 500
 
 @app.route('/api/settings-admins', methods=['GET', 'POST'])
+@jwt_required()
 def post_settings_admin_user():
 
     try:
@@ -907,6 +910,7 @@ def profile(id):
             return {'error': str(e)}, 500
 
 @app.route('/api/vendor-users', methods=['GET', 'PATCH'])
+@jwt_required()
 def get_vendor_users():
     if request.method =='GET':
         try:
@@ -2885,44 +2889,53 @@ def notify_me_for_more_baskets():
 #         print(f"Error deleting notification: {str(e)}")
 #         return jsonify({'message': f'Error deleting notification: {str(e)}'}), 500
 
-@app.route('/api/vendor-notifications', methods=['GET'])
+@app.route('/api/vendor-notifications', methods=['GET', 'DELETE'])
 @jwt_required()
 def fetch_vendor_notifications():
     vendor_id = request.args.get('vendor_id')
     vendor_user_id = request.args.get('vendor_user_id')
     is_read = request.args.get('is_read', None)
     subject = request.args.get('subject')
-
-    query = VendorNotification.query
-
-    if vendor_id:
-        query = query.filter_by(vendor_id=vendor_id)
-    if vendor_user_id:
-        query = query.filter_by(vendor_user_id=vendor_user_id)
-    if is_read is not None:
-        is_read_bool = is_read.lower() == 'true'
-        query = query.filter_by(is_read=is_read_bool)
-    if subject:
-        query = query.filter_by(subject=subject)
-
-
-    notifications = query.order_by(VendorNotification.created_at.desc()).all()
-
-    notifications_data = [ {
-        'id': n.id,
-        'subject': n.subject,
-        'message': n.message,
-        'link': n.link,
-        'is_read': n.is_read,
-        'user_id': n.user_id,
-        'market_id': n.market_id,
-        'vendor_id': n.vendor_id,
-        'vendor_user_id': n.vendor_user_id, 
-        'created_at': n.created_at,
-        'vendor_name': Vendor.query.get(n.vendor_id).name if Vendor.query.get(n.vendor_id) else 'Unknown Vendor',
-        } for n in notifications ]
     
-    return jsonify({'notifications': notifications_data}), 200
+    if request.method == 'GET':
+        query = VendorNotification.query
+
+        if vendor_id:
+            query = query.filter_by(vendor_id=vendor_id)
+        if vendor_user_id:
+            query = query.filter_by(vendor_user_id=vendor_user_id)
+        if is_read is not None:
+            is_read_bool = is_read.lower() == 'true'
+            query = query.filter_by(is_read=is_read_bool)
+        if subject:
+            query = query.filter_by(subject=subject)
+
+        notifications = query.order_by(VendorNotification.created_at.desc()).all()
+
+        notifications_data = [ {
+            'id': n.id,
+            'subject': n.subject,
+            'message': n.message,
+            'link': n.link,
+            'is_read': n.is_read,
+            'user_id': n.user_id,
+            'market_id': n.market_id,
+            'vendor_id': n.vendor_id,
+            'vendor_user_id': n.vendor_user_id, 
+            'created_at': n.created_at,
+            'vendor_name': Vendor.query.get(n.vendor_id).name if Vendor.query.get(n.vendor_id) else 'Unknown Vendor',
+            } for n in notifications ]
+        
+        return jsonify({'notifications': notifications_data}), 200
+    
+    if request.method == 'DELETE':
+        query = VendorNotification.query
+        if vendor_user_id:
+            query = query.filter_by(vendor_user_id=vendor_user_id)
+        
+            deleted_count = query.delete()
+            db.session.commit()
+            return jsonify({'deleted count': deleted_count}), 204
 
 @app.route('/api/vendor-notifications/<int:id>', methods=['PATCH', 'DELETE'])
 @jwt_required()
@@ -3055,6 +3068,7 @@ def create_admin_notification():
             'id': new_notification.id,
             'subject': new_notification.subject,
             'message': new_notification.message,
+            'link': new_notification.link,
             'is_read': new_notification.is_read
         }
 
@@ -3072,16 +3086,38 @@ def create_admin_notification():
         return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
 
 
-@app.route('/api/admin-notifications', methods=['GET'])
+@app.route('/api/admin-notifications', methods=['GET', 'DELETE'])
 @jwt_required()
 def get_admin_notifications():
     if request.method == 'GET':
         notifications = AdminNotification.query.all()
         return jsonify([notif.to_dict() for notif in notifications]), 200
     
-@app.route('/api/admin-notifications/<int:id>', methods=['DELETE'])
+    if request.method == 'DELETE':
+        admin_id = request.args.get('admin_id')
+        query = AdminNotification.query
+        if admin_id:
+            query = query.filter(AdminNotification.subject != "product-request")
+        
+            deleted_count = query.delete()
+            db.session.commit()
+            return jsonify({'deleted count': deleted_count}), 204
+        
+
+@app.route('/api/admin-notifications/<int:id>', methods=['PATCH', 'DELETE'])
 @jwt_required()
 def delete_admin_notifications(id):
+    if request.method == 'PATCH':
+        notification = AdminNotification.query.get(id)
+        if not notification:
+            return jsonify({'message': 'Notification not found'}), 404
+        
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(notification, key, value)
+        db.session.commit()
+        return notification.to_dict(), 202
+    
     if request.method == 'DELETE':
         notification = AdminNotification.query.filter_by(id=id).first()
 
