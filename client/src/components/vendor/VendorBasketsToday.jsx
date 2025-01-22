@@ -249,7 +249,7 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
                                     {entry.baskets.length > 0 && new Date(entry.baskets[0]?.sale_date) <= new Date() && ( <p className="badge-live">Live</p> )}
     
                                     <div className="text-center">
-                                        <h4>{entry.marketName}</h4>
+                                        <h4>{entry.baskets[0].market_day.markets.name}</h4>
                                         <h4> {entry.baskets.length > 0 ? formatBasketDate(entry.baskets[0]?.sale_date) : "No sale date available"} </h4>
                                     </div>
     
