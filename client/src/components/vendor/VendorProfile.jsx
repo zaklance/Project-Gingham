@@ -572,7 +572,7 @@ function VendorProfile () {
                         <i className='icon-settings' onClick={handleSettingsToggle}>&emsp;</i>
                         {!settingsMode ? (
                             <>
-                                <h2 className='title margin-b-16'>Profile Information </h2>
+                                <h2 className='margin-b-16'>Profile Information </h2>
                                 {editMode ? (
                                     <>
                                         <div className='form-group flex-form'>
@@ -652,6 +652,27 @@ function VendorProfile () {
                                         </Link>
                                     </div>
                                 </div>
+                                <h3>Notifications</h3>
+                                {activeTab === 'website' && (
+                                    <FormGroup>
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_market_new_event} onChange={() => handleSwitchChange('site_market_new_event')} color={'secondary'} />} label="Market creates an event"/>
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_market_schedule_change} onChange={() => handleSwitchChange('site_market_schedule_change')} color={'secondary'} />} label="Market changes schedule"/>
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_basket_sold} onChange={() => handleSwitchChange('site_basket_sold')} color={'secondary'} />} label="When a basket is sold"/>
+                                    </FormGroup>
+                                )}
+                                {activeTab === 'email' && (
+                                    <FormGroup>
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_market_new_event} onChange={() => handleSwitchChange('email_market_new_event')} color={'secondary'} />} label="Market creates an event" />
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_market_schedule_change} onChange={() => handleSwitchChange('email_market_schedule_change')} color={'secondary'} />} label="Market changes schedule" />
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_basket_sold} onChange={() => handleSwitchChange('email_basket_sold')} color={'secondary'} />} label="When a basket is sold" />
+                                    </FormGroup>
+                                )}
+                                {activeTab === 'text' && (
+                                    <FormGroup>
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.text_market_schedule_change} onChange={() => handleSwitchChange('text_market_schedule_change')} color={'secondary'} />} label="Market changes schedule" />
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.text_basket_sold} onChange={() => handleSwitchChange('text_basket_sold')} color={'secondary'} />} label="When a basket is sold" />
+                                    </FormGroup>
+                                )}
                                 <div>
                                     <h3 className='margin-b-12'>Locations for Notifications</h3>
                                     <div className='form-group'>
@@ -678,6 +699,13 @@ function VendorProfile () {
                                                         style={{
                                                             backgroundColor: "#eee", fontSize: ".9em"
                                                         }}
+                                                        sx={{
+                                                            height: 'auto',
+                                                            '& .MuiChip-label': {
+                                                                display: 'block',
+                                                                whiteSpace: 'normal',
+                                                            },
+                                                        }}
                                                         label={`${marketDay?.markets.name}, ${weekDay[marketDay?.day_of_week]}` || 'Unknown Product'}
                                                         size="small"
                                                         onDelete={() => handleDeleteMarketDay(marketDayId)}
@@ -687,38 +715,17 @@ function VendorProfile () {
                                         </Stack>
                                     </div>
                                 </div>
-                                <h3>Notifications</h3>
-                                {activeTab === 'website' && (
-                                    <FormGroup>
-                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_market_new_event} onChange={() => handleSwitchChange('site_market_new_event')} color={'secondary'} />} label="Market creates an event"/>
-                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_market_schedule_change} onChange={() => handleSwitchChange('site_market_schedule_change')} color={'secondary'} />} label="Market changes schedule"/>
-                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_basket_sold} onChange={() => handleSwitchChange('site_basket_sold')} color={'secondary'} />} label="When a basket is sold"/>
-                                    </FormGroup>
-                                )}
-                                {activeTab === 'email' && (
-                                    <FormGroup>
-                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_market_new_event} onChange={() => handleSwitchChange('email_market_new_event')} color={'secondary'} />} label="Market creates an event" />
-                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_market_schedule_change} onChange={() => handleSwitchChange('email_market_schedule_change')} color={'secondary'} />} label="Market changes schedule" />
-                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_basket_sold} onChange={() => handleSwitchChange('email_basket_sold')} color={'secondary'} />} label="When a basket is sold" />
-                                    </FormGroup>
-                                )}
-                                {activeTab === 'text' && (
-                                    <FormGroup>
-                                            <FormControlLabel control={<Switch checked={tempVendorUserSettings.text_market_schedule_change} onChange={() => handleSwitchChange('text_market_schedule_change')} color={'secondary'} />} label="Market changes schedule" />
-                                            <FormControlLabel control={<Switch checked={tempVendorUserSettings.text_basket_sold} onChange={() => handleSwitchChange('text_basket_sold')} color={'secondary'} />} label="When a basket is sold" />
-                                    </FormGroup>
-                                )}
                                 <button className='btn-edit' onClick={handleSaveSettings}>Save</button>
                             </>
                         )}
                     </div>
-                    <h2 className='title margin-t-24'>Vendor Team Management</h2>
+                    <h2 className='margin-t-24'>Vendor Team Management</h2>
                     <div className='box-bounding'>
                         <VendorTeamRequest className="margin-b-32" vendorUserId={vendorUserId} vendorUserData={vendorUserData} />
                         <VendorActiveVendor className="margin-b-32" vendorUserData={vendorUserData} setVendorUserData={setVendorUserData} />
                         <VendorTeamLeave vendorUserData={vendorUserData} setVendorUserData={setVendorUserData} />
                     </div>
-                    <h2 className='title margin-t-24'>Vendor Information</h2>
+                    <h2 className='margin-t-24'>Vendor Information</h2>
                     <div className='box-bounding'>
                         {vendorData?.id ? (
                             vendorEditMode && vendorUserData?.vendor_role[vendorUserData.active_vendor] <= 1 ? (
@@ -747,7 +754,7 @@ function VendorProfile () {
                                             ))}
                                         </select>
                                         <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddProduct(newProduct)}>Add</button>
-                                        <Stack className='padding-4' direction="row" spacing={1}>
+                                        <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
                                             {tempVendorData.products?.map((productId) => {
                                                 const product = products.find((p) => p.id === productId);
                                                 return (
@@ -795,7 +802,8 @@ function VendorProfile () {
                                             onChange={handleVendorInputChange}
                                         />
                                         <br className='m-br'/>
-                                        <select className='select-state'
+                                        <select 
+                                            className='select-state'
                                             name="state"
                                             value={tempVendorData ? tempVendorData.state : ''} 
                                             onChange={handleVendorInputChange}

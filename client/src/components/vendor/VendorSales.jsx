@@ -289,7 +289,7 @@ function VendorSales() {
         <>
             <VendorActiveVendor className={'box-bounding'} />
             <div className='flex-space-between flex-bottom-align'>
-                <h2 className='margin-t-16'>Vendor Sales</h2>
+                <h1 className='margin-t-16'>Vendor Sales</h1>
                 <select className='' value={selectedRangeGraph} onChange={handleDateChangeGraph}>
                     <option value="">Time Frame</option>
                     {Object.entries(dateRange).map(([label, value]) => (

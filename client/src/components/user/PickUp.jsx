@@ -10,10 +10,9 @@ function PickUp() {
     const [qRCodes, setQRCodes] = useState([])
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
+    const token = localStorage.getItem('user_jwt-token');
 
     useEffect(() => {
-        const userId = parseInt(globalThis.localStorage.getItem('user_id'));
-
         const today = new Date();
         const formattedDate = today.toLocaleDateString('en-CA', { // Using en-CA for correct ISO format
             year: 'numeric',
@@ -38,7 +37,7 @@ function PickUp() {
                 return response.json();
             })
             .then(data => {
-                console.log("Baskets received from API:", data);
+                // console.log("Baskets received from API:", data);
                 const filteredData = data.filter(item => item.is_grabbed === false);
                 setBaskets(filteredData);
             })
@@ -51,6 +50,7 @@ function PickUp() {
         fetch(`http://127.0.0.1:5555/api/qr-codes?user_id=${userId}`, {
             method: 'GET',
             headers: {
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             }
         })
@@ -76,7 +76,7 @@ function PickUp() {
         <>
             <div>
                 <h2 className='margin-b-24'>Baskets for Pick-Up Today</h2>
-                <div className='market-cards-container'>
+                <div className='basket-cards-container'>
                     {baskets.length > 0 ? (
                         baskets.map((basket, index) => {
                             const matchingQRCode = qRCodes.find(qRCode => qRCode.basket_id === basket.id);
@@ -86,8 +86,8 @@ function PickUp() {
                                     <div className='width-100'>
                                         {!isSelected ? (
                                             <>
-                                                <h4 className='text-center'>{basket.vendor_name}</h4>
-                                                <h4 className='text-center'> at {basket.market_name}</h4>
+                                                <h4 className='text-center'>{basket.vendor.name}</h4>
+                                                <h4 className='text-center'> at {basket.market_day.markets.name}</h4>
                                                 <table className='width-100'>
                                                     <tbody className='table-basket'>
                                                         <tr>

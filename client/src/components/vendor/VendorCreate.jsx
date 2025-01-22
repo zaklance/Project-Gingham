@@ -262,7 +262,7 @@ function VendorCreate () {
                     ))}
                 </select>
                 <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddProduct(newProducts)}>Add</button>
-                <Stack className='padding-4' direction="row" spacing={1}>
+                <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
                     {vendorData?.products?.map((productId) => {
                         const product = products.find((p) => p.id === productId);
                         return (
@@ -311,7 +311,12 @@ function VendorCreate () {
                     onChange={handleVendorInputChange} 
                 />
                 <br className='m-br'/>
-                <select className="select-state" name="state" value={vendorData?.state || ''} onChange={handleVendorInputChange}>
+                <select 
+                    className="select-state" 
+                    name="state" 
+                    value={vendorData?.state || ''} 
+                    onChange={handleVendorInputChange}
+                >
                     <option value="">Select</option>
                     {states.map((state, index) => (
                         <option key={index} value={state}>

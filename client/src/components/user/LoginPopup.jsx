@@ -304,6 +304,7 @@ function Login({ handlePopup }) {
                         <div className="form-group form-login">
                             <label>City:</label>
                             <input 
+                                className='margin-r-8'
                                 type="text"
                                 value={signupCity}
                                 placeholder='enter your city'
@@ -311,10 +312,10 @@ function Login({ handlePopup }) {
                                 required
                             />
                         </div>
-                        
                         <div className="form-group form-login">
                             <label>State:</label>
-                            <select className='select-state'
+                            <select 
+                                className='select-state margin-l-8'
                                 name="state"
                                 value={signupState}
                                 onChange={(event => setSignupState(event.target.value))}

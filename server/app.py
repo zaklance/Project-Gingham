@@ -3210,9 +3210,6 @@ def faq(id):
 @app.route('/api/blogs', methods=['GET', 'POST'])
 def blogs():
     if request.method == 'GET':
-        # blogs = Blog.query.all()
-        # return jsonify([blog.to_dict() for blog in blogs]), 200
-    
         for_user = request.args.get('for_user', None)
         for_vendor = request.args.get('for_vendor', None)
         for_admin = request.args.get('for_admin', None)
