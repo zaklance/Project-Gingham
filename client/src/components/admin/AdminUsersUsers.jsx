@@ -320,7 +320,8 @@ const AdminUsersUsers = () => {
                                     value={tempUserData ? tempUserData.city : ''}
                                     onChange={handleInputChange}
                                 />
-                                <select className='select-state'
+                                <select
+                                    className='select-state'
                                     name="state"
                                     value={tempUserData ? tempUserData.state : ''}
                                     onChange={handleInputChange}
