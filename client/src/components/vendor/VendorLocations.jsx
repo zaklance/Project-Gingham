@@ -105,6 +105,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData, allMarketDays, all
         }
     };
 
+
     return (
         <>
             <div>
