@@ -569,6 +569,14 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                                 ) : (
                                     <>
                                         <p className='margin-l-40'>{review.review_text}</p>
+                                        {review.vendor_response ? (
+                                            <div className='margin-l-56 margin-t-12 margin-b-8'>
+                                                <p className='margin-b-4 text-500'>Response from the owner:</p>
+                                                <p>{review.vendor_response}</p>
+                                            </div>
+                                        ) : (
+                                            null
+                                        )}
                                     </>
                                 )}
                                 {review.user_id === userId && editingReviewId !== review.id && (
