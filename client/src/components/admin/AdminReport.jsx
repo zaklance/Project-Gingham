@@ -5,6 +5,18 @@ function AdminReport() {
     const [vendorReported, setVendorReported] = useState([]);
 
     useEffect(() => {
+            const anchor = window.location.hash.slice(1);
+            setTimeout(() => {
+                if (anchor) {
+                    const anchorEl = document.getElementById(anchor);
+                    if (anchorEl) {
+                        anchorEl.scrollIntoView();
+                    }
+                }
+            }, 500);
+        }, []);
+        
+    useEffect(() => {
         fetch(`http://127.0.0.1:5555/api/market-reviews?is_reported=True`)
             .then(response => response.json())
             .then(data => {

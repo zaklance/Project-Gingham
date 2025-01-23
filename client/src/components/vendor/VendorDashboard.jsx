@@ -137,7 +137,7 @@ function VendorDashboard({ marketId }) {
         <>
             <VendorActiveVendor className={'box-bounding'} />
             <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap margin-t-16'>
-                <h2 className=''>Vendor Dashboard</h2>
+                <h1 className=''>Vendor Dashboard</h1>
                 {vendorUserData && vendorUserData.active_vendor !== null && vendorUserData.vendor_role[vendorUserData.active_vendor] <= 1 ? (
                     <div className='tabs margin-t-20 margin-l-24'>
                         <Link to="#" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
