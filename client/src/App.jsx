@@ -13,7 +13,6 @@ import BrowserTimezone from './components/BrowserTimezone.jsx';
 
 function App() {
     const location = useLocation();
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [isPopup, setIsPopup] = useState(false);
     const isNotUser = location.pathname.startsWith('/vendor') || location.pathname.startsWith('/admin');
     const isVendorPage = location.pathname.startsWith('/vendor');
@@ -38,14 +37,6 @@ function App() {
     const handlePopup = () => {
         setIsPopup(!isPopup);
     }
-
-    const checkAuth = () => {
-        return globalThis.localStorage.getItem('jwt-token') !== null;
-    }
-
-    useEffect(() => {
-        setIsLoggedIn(checkAuth());
-    }, []);
     
     function checkTokenExpiration(userToken, id, path) {
         const token = localStorage.getItem(`${userToken}_jwt-token`);

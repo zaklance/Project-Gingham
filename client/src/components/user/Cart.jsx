@@ -14,6 +14,7 @@ function Cart() {
     const navigate = useNavigate();
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
+    const token = localStorage.getItem('user_jwt-token');
 
     function startCartTimer() {
         if (cartTimer) {
@@ -93,6 +94,7 @@ function Cart() {
                     const response = await fetch('http://127.0.0.1:5555/api/qr-codes', {
                         method: 'POST',
                         headers: {
+                            'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({

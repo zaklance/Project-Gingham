@@ -232,10 +232,10 @@ function MarketDetail ({ match }) {
         }, 2000);
     };
 
-    // useEffect(() => {
-        // console.log("Amount in cart:", amountInCart);
-        // console.log("Cart items:", cartItems);
-    // }, [amountInCart, cartItems]);
+    useEffect(() => {
+        console.log("Amount in cart:", amountInCart);
+        console.log("Cart items:", cartItems);
+    }, [amountInCart, cartItems]);
 
     const handleBackButtonClick = () => {
         if ( isClicked ) {
