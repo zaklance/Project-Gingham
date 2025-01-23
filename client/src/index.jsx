@@ -11,7 +11,8 @@ import ErrorPage from './components/ErrorPage.jsx';
 
 // user routes
 import Cart from './components/user/Cart.jsx';
-import Checkout from './components/user/Checkout.jsx';
+import Payment from './components/user/Payment.jsx'
+import Completion from './components/user/Completion.jsx'
 import CheckSession from './components/user/CheckSession.jsx';
 import Login from './components/user/LoginPopup.jsx';
 import Markets from './components/user/Markets.jsx';
@@ -197,15 +198,15 @@ const AdminAuthRoute = ({ children }) => {
 //             });
 //     }, []);
 
-//     const options = { fetchClientSecret };
+    // const options = { fetchClientSecret };
 
-//     return (
-//         <div id="checkout">
-//             <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
-//                 <EmbeddedCheckout />
-//             </EmbeddedCheckoutProvider>
-//         </div>
-//     );
+    // return (
+    //     <div id="checkout">
+    //         <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
+    //             <EmbeddedCheckout />
+    //         </EmbeddedCheckoutProvider>
+    //     </div>
+    // );
 // };
 
 const Return = () => {
@@ -264,8 +265,9 @@ const router = createBrowserRouter([
                     { path: "your-cart", element: <Cart /> },
                     { path: "pick-up", element: <UserAuthRoute><PickUp /></UserAuthRoute> },
                     { path: "help", element: <UserFAQs /> },
-                    { path: "checkout", element: <UserAuthRoute><CheckoutForm /></UserAuthRoute> },
+                    { path: "payment", element: <Payment /> },
                     { path: "check-session", element: <CheckSession /> },
+                    { path: "completion", element: <Completion />},
                     { path: "return", element: <Return />},
                     { path: "reset-request", element: <UserResetRequest /> },
                     { path: "password-reset/:token", element: <UserPasswordReset /> },
