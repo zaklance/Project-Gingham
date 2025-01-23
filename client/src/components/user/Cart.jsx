@@ -102,8 +102,9 @@ function Cart() {
                 }
             }));
     
-            // Generate QR codes (unchanged)
+            // Generate QR codes
             if (cartItems.length > 0) {
+                console.log('Generating QR codes...');
                 const qrPromises = cartItems.map(async (cartItem) => {
                     const hash = objectHash(`${cartItem.vendor_name} ${cartItem.location} ${cartItem.id} ${userId}`);
                     const response = await fetch('http://127.0.0.1:5555/api/qr-codes', {
@@ -120,14 +121,15 @@ function Cart() {
                         }),
                     });
     
-                if (!response.ok) {
-                    throw new Error(`Failed to create QR code for basket ID ${cartItem.id}: ${response.statusText}`);
-                }
-                return response.json();
-            });
+                    if (!response.ok) {
+                        throw new Error(`Failed to create QR code for basket ID ${cartItem.id}: ${response.statusText}`);
+                    }
+                    return response.json();
+                });
     
-            const results = await Promise.all(qrPromises);
-            console.log('All QR codes created successfully:', results);
+                const results = await Promise.all(qrPromises);
+                console.log('All QR codes created successfully:', results);
+            }
     
             // Clear the cart
             // setCartItems([]);
@@ -139,19 +141,18 @@ function Cart() {
                 state: {
                     clientSecret,
                     totalPrice,
-                    cartItems
+                    cartItems,
                 },
             });
         } catch (error) {
             console.error('Error during checkout:', error);
-            // Optionally show error to the user, e.g., handlePopup(error.message)
         }
     }
-	
-	useEffect(() => {
-		console.log("Amount in cart:", amountInCart);
-		console.log("Cart items:", cartItems);
-	}, [amountInCart, cartItems]);
+    
+    useEffect(() => {
+        console.log("Amount in cart:", amountInCart);
+        console.log("Cart items:", cartItems);
+    }, [amountInCart, cartItems]);
 
     return (
         <div>
