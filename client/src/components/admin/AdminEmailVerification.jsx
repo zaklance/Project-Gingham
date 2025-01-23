@@ -10,7 +10,6 @@ const AdminUserEmailVerification = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Check if the token exists
         if (!confirmationToken) {
             setErrorMessage("No confirmation token provided.");
         }
