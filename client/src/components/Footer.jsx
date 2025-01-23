@@ -9,7 +9,6 @@ function Footer() {
     const adminUserId = globalThis.localStorage.getItem('admin_user_id');
     const isAdminLoggedIn = adminUserId;
 
-
     return (
         <>
             <br className='m-br'/>
@@ -59,7 +58,7 @@ function Footer() {
                             </li>
                         )}
                         <li className='footer-li'>
-                            &copy; Gingham, 2025
+                            <NavLink to="/about" className="link-underline">&copy; Gingham, 2025</NavLink>
                         </li>
                     </ul>
                     <img className='small-logo' src="/site-images/gingham-logo-A_3.svg" alt="Gingham Logo"></img>
