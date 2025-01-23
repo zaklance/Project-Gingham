@@ -2562,40 +2562,43 @@ stripe.api_key = os.getenv('STRIPE_PY_KEY')
 #   session = stripe.checkout.Session.retrieve(request.args.get('session_id'))
 #   return jsonify(status=session.status, customer_email=session.customer_details.email)
 
-@app.route('/api/create-payment-intent', methods=['POST'])
-def create_payment():
-    try:
-        # Parse the JSON payload from the request
-        data = json.loads(request.data)
-        
-        # Extract totalPrice from the request data
-        total_price = data.get('totalPrice', 0)
-        print(f"Total price received: {total_price}")  # Debugging log
+@app.route('/api/config', methods=['GET'])
+def get_config():
+    publishable_key = stripe.api_key
+    if not publishable_key:
+        return jsonify({'error': 'Stripe publishable key not configured'}), 500
+    return jsonify({'publishableKey': publishable_key}), 200
 
-        # Validate total price
-        if total_price <= 0:
-            return jsonify(error="Invalid total price"), 400
+@app.route('/api/create-payment-intent', methods=['POST'])
+def create_payment_intent():
+    try:
+        # Parse request data
+        data = request.get_json()
+        if not data or 'total_price' not in data:
+            return jsonify({'error': {'message': 'Invalid request: Missing total_price.'}}), 400
+
+        # Validate total_price
+        total_price = data['total_price']
+        if not isinstance(total_price, (int, float)) or total_price <= 0:
+            return jsonify({'error': {'message': "'total_price' must be a positive number."}}), 400
 
         # Create a PaymentIntent
-        intent = stripe.PaymentIntent.create(
-            amount=int(total_price * 100),  # Convert dollars to cents
+        payment_intent = stripe.PaymentIntent.create(
             currency='usd',
+            amount=int(total_price * 100),  # Convert dollars to cents
             automatic_payment_methods={'enabled': True},
         )
-        print(f"PaymentIntent created with ID: {intent['id']}")  # Debugging log
 
-        # Return the client secret for the PaymentIntent
-        return jsonify({'clientSecret': intent['client_secret']})
+        # Return the clientSecret
+        return jsonify({'clientSecret': payment_intent['client_secret']}), 200
 
     except stripe.error.StripeError as e:
-        # Handle Stripe-specific errors
-        print(f"Stripe error: {str(e)}")  # Debugging log
-        return jsonify(error=f"Stripe error: {e.user_message or str(e)}"), 403
+        # Stripe-specific error handling
+        return jsonify({'error': {'message': str(e.user_message)}}), 400
 
     except Exception as e:
-        # Handle other exceptions
-        print(f"Error: {str(e)}")  # Debugging log
-        return jsonify(error=f"Server error: {str(e)}"), 500
+        # General error handling
+        return jsonify({'error': {'message': 'An unexpected error occurred.'}}), 500
 
 # Password reset for User
 @app.route('/api/user/password-reset-request', methods=['POST'])

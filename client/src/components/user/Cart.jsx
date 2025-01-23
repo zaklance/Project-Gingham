@@ -47,28 +47,43 @@ function Cart() {
 
     async function handleCheckout() {
         try {
+            // Get user ID from localStorage
             const userId = globalThis.localStorage.getItem('user_id');
             if (!userId) {
+                console.error("User ID not found in localStorage.");
                 throw new Error("User is not logged in.");
             }
     
-            // Send the total price to the backend to create a PaymentIntent
+            // Fetch the Stripe publishable key from /api/config
+            console.log('Fetching Stripe publishable key...');
+            const configResponse = await fetch('http://127.0.0.1:5555/api/config');
+            if (!configResponse.ok) {
+                throw new Error(`Failed to fetch Stripe config: ${configResponse.statusText}`);
+            }
+            const { publishableKey } = await configResponse.json();
+            console.log('Received publishableKey:', publishableKey);
+    
+            // Create PaymentIntent
+            console.log('Sending request to create PaymentIntent...');
             const paymentResponse = await fetch('http://127.0.0.1:5555/api/create-payment-intent', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ totalPrice }),
+                body: JSON.stringify({ total_price: totalPrice }),
             });
     
             if (!paymentResponse.ok) {
-                throw new Error('Failed to create PaymentIntent');
+                const errorText = await paymentResponse.text();
+                console.error('Backend responded with error:', errorText);
+                throw new Error(`Failed to create PaymentIntent: ${paymentResponse.statusText}`);
             }
     
             const { clientSecret } = await paymentResponse.json();
             console.log('Received clientSecret:', clientSecret);
     
-            // Rest of the checkout logic remains unchanged
+            // Mark items as sold
+            console.log('Marking items as sold...');
             await Promise.all(cartItems.map(async (cartItem) => {
                 const response = await fetch(`http://127.0.0.1:5555/api/baskets/${cartItem.id}`, {
                     method: 'PATCH',
@@ -86,41 +101,48 @@ function Cart() {
                 }
             }));
     
-            // Generate QR codes (unchanged)
-            if (cartItems.length > 0) {
-                const qrPromises = cartItems.map(async (cartItem) => {
-                    const hash = objectHash(`${cartItem.vendor_name} ${cartItem.location} ${cartItem.id} ${userId}`);
-                    const response = await fetch('http://127.0.0.1:5555/api/qr-codes', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            qr_code: hash,
-                            user_id: userId,
-                            basket_id: cartItem.id,
-                            vendor_id: cartItem.vendor_id,
-                        }),
-                    });
-    
-                    if (!response.ok) {
-                        throw new Error(`Failed to create QR code for basket ID ${cartItem.id}: ${response.statusText}`);
-                    }
-                    return response.json();
+            // Generate QR codes for cart items
+            console.log('Generating QR codes...');
+            const qrPromises = cartItems.map(async (cartItem) => {
+                const hash = objectHash(`${cartItem.vendor_name} ${cartItem.location} ${cartItem.id} ${userId}`);
+                const response = await fetch('http://127.0.0.1:5555/api/qr-codes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        qr_code: hash,
+                        user_id: userId,
+                        basket_id: cartItem.id,
+                        vendor_id: cartItem.vendor_id,
+                    }),
                 });
     
-                const results = await Promise.all(qrPromises);
-                console.log('All QR codes created successfully:', results);
+                if (!response.ok) {
+                    throw new Error(`Failed to create QR code for basket ID ${cartItem.id}: ${response.statusText}`);
+                }
+                return response.json();
+            });
     
-                // Clear the cart
-                setCartItems([]);
-                setAmountInCart(0);
+            const results = await Promise.all(qrPromises);
+            console.log('All QR codes created successfully:', results);
     
-                // Redirect the user to the checkout page
-                navigate('/user/checkout');
-            }
+            // Clear the cart
+            // setCartItems([]);
+            // setAmountInCart(0);
+    
+            // Redirect to the payment page, passing clientSecret, totalPrice, and publishableKey
+            console.log('Navigating to payment page...');
+            navigate('/user/payment', {
+                state: {
+                    clientSecret,
+                    totalPrice,
+                    cartItems
+                },
+            });
         } catch (error) {
             console.error('Error during checkout:', error);
+            // Optionally show error to the user, e.g., handlePopup(error.message)
         }
     }
 	
