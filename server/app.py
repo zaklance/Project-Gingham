@@ -28,7 +28,7 @@ from random import choice
 import stripe
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import utils.events as events
-from utils.emails import send_contact_email, send_user_password_reset_email, send_vendor_password_reset_email, send_admin_password_reset_email, send_user_confirmation_email
+from utils.emails import send_contact_email, send_user_password_reset_email, send_vendor_password_reset_email, send_admin_password_reset_email, send_user_confirmation_email, send_vendor_confirmation_email, send_admin_confirmation_email
 import subprocess
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
@@ -422,34 +422,57 @@ def vendorLogin():
 @app.route('/api/vendor-signup', methods=['POST'])
 def vendorSignup():
     data = request.get_json()
+    email = data.get('email')
+    
+    if not email:
+        return {'error': 'Email is required'}, 400
+    
+    result = send_vendor_confirmation_email(email, data)
+    
+    if 'error' in result:
+        return jsonify({'error': result["error"]}), 500
+    return jsonify({'message': result['message']}), 200
 
+@app.route('/api/vendor/confirm-email/<token>', methods=['GET', 'POST'])
+def confirm_vendor_email(token):
     try:
-        vendor_user = VendorUser.query.filter(VendorUser.email == data['email']).first()
-        if vendor_user:
-            return {'error': 'Email already exists'}, 400
         
-        new_vendor_user = VendorUser(
-            email=data['email'],
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            phone=data['phone']
-        )
-        new_vendor_user.password = data['password']
+        print(f'Received token: {token}')
+        data = serializer.loads(token, salt='vendor-confirmation-salt', max_age=3600)
+        
+        if request.method == 'GET':
+            print(f"GET request: Token verified, email extracted: {data['email']}")
+            # Redirect to the frontend with the token
+            return redirect(f'http://localhost:5173/vendor/confirm-email/{token}')
+        
+        if request.method == 'POST':
+            print(f"POST request: Token verified, user data extracted: {data}")
+            
+            if VendorUser.query.filter_by(email=data['email']).first():
+                print("POST request: Email already confirmed or in use")
+                return {'error': 'Email already confirmed or in use.'}, 400
+            
+            new_vendor_user = VendorUser(
+                email=data['email'],
+                password=data['password'], 
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                phone=data['phone'],
+                email_verified=True
+            )
+            db.session.add(new_vendor_user)
+            db.session.commit()
+            
+            print("POST request: VendorUser created and committed to the database")
+            return {'message': 'Email confirmed and account created successfully.'}, 201
 
-        db.session.add(new_vendor_user)
-        db.session.commit()
-
-        return new_vendor_user.to_dict(), 201
-
-    except IntegrityError as e:
-        db.session.rollback()
-        return {'error': f'IntegrityError: {str(e)}'}, 400
-
-    except ValueError as e:
-        return {'error': f'ValueError: {str(e)}'}, 400
+    except SignatureExpired:
+        print("Request: The token has expired")
+        return {'error': 'The token has expired'}, 400
 
     except Exception as e:
-        return {'error': f'Exception: {str(e)}'}, 500
+        print(f"Request: An error occurred: {str(e)}")
+        return {'error': f'Failed to confirm email: {str(e)}'}, 500
     
 @app.route('/api/vendor/logout', methods=['DELETE'])
 def vendorLogout():
@@ -478,34 +501,65 @@ def adminLogin():
 @app.route('/api/admin-signup', methods=['POST'])
 def adminSignup():
     data = request.get_json()
+    email = data.get('email')
+    
+    if not email:
+        return {'error': 'Email is required'}, 400
+    
+    result = send_admin_confirmation_email(email, data)
+    
+    if 'error' in result:
+        return jsonify({'error': result["error"]}), 500
+    return jsonify({'message': result['message']}), 200
 
+from itsdangerous import BadSignature, SignatureExpired
+
+@app.route('/api/admin/confirm-email/<token>', methods=['GET', 'POST'])
+def confirm_admin_email(token):
     try:
-        admin_user = AdminUser.query.filter(AdminUser.email == data['email']).first()
-        if admin_user:
-            return {'error': 'email already exists'}, 400
+        print(f'Received token: {token}')
+        data = serializer.loads(token, salt='admin-confirmation-salt', max_age=3600)
+
+        if request.method == 'GET':
+            print(f"GET request: Token verified, email extracted: {data['email']}")
+            return redirect(f'http://localhost:5173/admin/confirm-email/{token}')
         
-        new_admin_user = AdminUser(
-            email=data['email'],
-            password=data['password'],
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            phone=data.get('phone'),
-        )
+        if request.method == 'POST':
+            print(f"POST request: Token verified, user data extracted: {data}")
+            
+            # Check if admin user already exists
+            if AdminUser.query.filter_by(email=data['email']).first():
+                print("POST request: Email already confirmed or in use")
+                return {'error': 'Email already confirmed or in use.'}, 400
+            
+            # Create new admin user
+            new_admin_user = AdminUser(
+                email=data['email'],
+                password=data['password'], 
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                phone=data['phone'],
+                email_verified=True
+            )
+            db.session.add(new_admin_user)
+            db.session.commit()
+            
+            print("POST request: AdminUser created and committed to the database")
+            return {'message': 'Email confirmed and account created successfully.'}, 201
 
-        db.session.add(new_admin_user)
-        db.session.commit()
+    except SignatureExpired:
+        print("Request: The token has expired")
+        return {'error': 'The token has expired'}, 400
 
-        return new_admin_user.to_dict(), 201
-
-    except IntegrityError as e:
-        db.session.rollback()
-        return {'error': f'IntegrityError: {str(e)}'}, 400
-
-    except ValueError as e:
-        return {'error': f'ValueError: {str(e)}'}, 400
+    except BadSignature:
+        print("Request: The token is invalid")
+        return {'error': 'Invalid token'}, 400
 
     except Exception as e:
-        return {'error': f'Exception: {str(e)}'}, 500
+        print(f"Request: An error occurred: {str(e)}")
+        return {'error': f'Failed to confirm email: {str(e)}'}, 500
+        
+        
     
 @app.route('/api/admin/logout', methods=['DELETE'])
 def adminLogout():
@@ -2589,40 +2643,43 @@ stripe.api_key = os.getenv('STRIPE_PY_KEY')
 #   session = stripe.checkout.Session.retrieve(request.args.get('session_id'))
 #   return jsonify(status=session.status, customer_email=session.customer_details.email)
 
-@app.route('/api/create-payment-intent', methods=['POST'])
-def create_payment():
-    try:
-        # Parse the JSON payload from the request
-        data = json.loads(request.data)
-        
-        # Extract totalPrice from the request data
-        total_price = data.get('totalPrice', 0)
-        print(f"Total price received: {total_price}")  # Debugging log
+@app.route('/api/config', methods=['GET'])
+def get_config():
+    publishable_key = stripe.api_key
+    if not publishable_key:
+        return jsonify({'error': 'Stripe publishable key not configured'}), 500
+    return jsonify({'publishableKey': publishable_key}), 200
 
-        # Validate total price
-        if total_price <= 0:
-            return jsonify(error="Invalid total price"), 400
+@app.route('/api/create-payment-intent', methods=['POST'])
+def create_payment_intent():
+    try:
+        # Parse request data
+        data = request.get_json()
+        if not data or 'total_price' not in data:
+            return jsonify({'error': {'message': 'Invalid request: Missing total_price.'}}), 400
+
+        # Validate total_price
+        total_price = data['total_price']
+        if not isinstance(total_price, (int, float)) or total_price <= 0:
+            return jsonify({'error': {'message': "'total_price' must be a positive number."}}), 400
 
         # Create a PaymentIntent
-        intent = stripe.PaymentIntent.create(
-            amount=int(total_price * 100),  # Convert dollars to cents
+        payment_intent = stripe.PaymentIntent.create(
             currency='usd',
+            amount=int(total_price * 100),  # Convert dollars to cents
             automatic_payment_methods={'enabled': True},
         )
-        print(f"PaymentIntent created with ID: {intent['id']}")  # Debugging log
 
-        # Return the client secret for the PaymentIntent
-        return jsonify({'clientSecret': intent['client_secret']})
+        # Return the clientSecret
+        return jsonify({'clientSecret': payment_intent['client_secret']}), 200
 
     except stripe.error.StripeError as e:
-        # Handle Stripe-specific errors
-        print(f"Stripe error: {str(e)}")  # Debugging log
-        return jsonify(error=f"Stripe error: {e.user_message or str(e)}"), 403
+        # Stripe-specific error handling
+        return jsonify({'error': {'message': str(e.user_message)}}), 400
 
     except Exception as e:
-        # Handle other exceptions
-        print(f"Error: {str(e)}")  # Debugging log
-        return jsonify(error=f"Server error: {str(e)}"), 500
+        # General error handling
+        return jsonify({'error': {'message': 'An unexpected error occurred.'}}), 500
 
 # Password reset for User
 @app.route('/api/user/password-reset-request', methods=['POST'])

@@ -12,7 +12,8 @@ import ErrorPage from './components/ErrorPage.jsx';
 
 // user routes
 import Cart from './components/user/Cart.jsx';
-import Checkout from './components/user/Checkout.jsx';
+import Payment from './components/user/Payment.jsx'
+import Completion from './components/user/Completion.jsx'
 import CheckSession from './components/user/CheckSession.jsx';
 import Login from './components/user/LoginPopup.jsx';
 import Markets from './components/user/Markets.jsx';
@@ -39,6 +40,7 @@ import VendorHelpCenter from './components/vendor/VendorHelpCenter.jsx';
 import VendorLoginPopup from './components/vendor/VendorLoginPopup.jsx';
 import VendorResetRequest from './components/vendor/VendorResetRequest.jsx';
 import VendorPasswordReset from './components/vendor/VendorPasswordReset.jsx';
+import VendorUserEmailVerification from './components/vendor/VendorUserEmailVerification.jsx'
 
 // admin routes
 import AdminHome from './components/admin/AdminHome.jsx';
@@ -54,6 +56,7 @@ import AdminReport from './components/admin/AdminReport.jsx';
 import AdminFAQs from './components/admin/AdminFAQs.jsx';
 import AdminResetRequest from './components/admin/AdminResetRequest.jsx';
 import AdminPasswordReset from './components/admin/AdminPasswordReset.jsx';
+import AdminEmailVerification from './components/admin/AdminEmailVerification.jsx'
 
 import { loadStripe } from '@stripe/stripe-js';
 // import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
@@ -198,15 +201,15 @@ const AdminAuthRoute = ({ children }) => {
 //             });
 //     }, []);
 
-//     const options = { fetchClientSecret };
+    // const options = { fetchClientSecret };
 
-//     return (
-//         <div id="checkout">
-//             <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
-//                 <EmbeddedCheckout />
-//             </EmbeddedCheckoutProvider>
-//         </div>
-//     );
+    // return (
+    //     <div id="checkout">
+    //         <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
+    //             <EmbeddedCheckout />
+    //         </EmbeddedCheckoutProvider>
+    //     </div>
+    // );
 // };
 
 const Return = () => {
@@ -266,8 +269,9 @@ const router = createBrowserRouter([
                     { path: "your-cart", element: <Cart /> },
                     { path: "pick-up", element: <UserAuthRoute><PickUp /></UserAuthRoute> },
                     { path: "help", element: <UserFAQs /> },
-                    // { path: "checkout", element: <UserAuthRoute><CheckoutForm /></UserAuthRoute> },
+                    { path: "payment", element: <Payment /> },
                     { path: "check-session", element: <CheckSession /> },
+                    { path: "completion", element: <Completion />},
                     { path: "return", element: <Return />},
                     { path: "reset-request", element: <UserResetRequest /> },
                     { path: "password-reset/:token", element: <UserPasswordReset /> },
@@ -289,6 +293,7 @@ const router = createBrowserRouter([
                     { path: "logout", element: <VendorLogout />},
                     { path: "reset-request", element: <VendorResetRequest /> },
                     { path: "password-reset/:token", element: <VendorPasswordReset /> },
+                    { path: "confirm-email/:token", element: <VendorUserEmailVerification /> },
                 ],
             },
             { path: "admin", element: <AdminHome /> },
@@ -307,6 +312,7 @@ const router = createBrowserRouter([
                     { path: "logout", element: <AdminLogout /> },
                     { path: "reset-request", element: <AdminResetRequest /> },
                     { path: "password-reset/:token", element: <AdminPasswordReset /> },
+                    { path: "confirm-email/:token", element: <AdminEmailVerification /> },
                 ],
             },
         ],
