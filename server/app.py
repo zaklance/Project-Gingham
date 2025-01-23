@@ -1528,6 +1528,14 @@ def vendor_review_by_id(id):
         return review.to_dict(), 200
     elif request.method == 'PATCH':
         data = request.get_json()
+        if 'response_date' in data:
+            if data['response_date'] is None:
+                data['response_date'] = None
+            else:
+                try:
+                    data['response_date'] = datetime.strptime(data['response_date'], '%Y-%m-%dT%H:%M')
+                except ValueError:
+                    return {'error': 'Invalid response_date format. Expected format: YYYY-MM-DDTHH:MM'}, 400
         for key, value in data.items():
             setattr(review, key, value)
         db.session.commit()

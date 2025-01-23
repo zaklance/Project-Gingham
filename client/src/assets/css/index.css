@@ -322,6 +322,10 @@ article {
   margin-left: 40px;
 }
 
+.margin-l-56 {
+  margin-left: 56px;
+}
+
 .margin-t--8 {
   margin-top: -4px;
 }
@@ -352,6 +356,10 @@ article {
 
 .margin-t-48 {
   margin-top: 48px;
+}
+
+.margin-b-4 {
+  margin-bottom: 4px;
 }
 
 .margin-b-8 {
@@ -894,6 +902,18 @@ ul {
   margin-right: 12px;
   margin-left: 4px;
   width: 96px;
+}
+
+.btn-add-green {
+  background-color: #69d2c2 !important;
+}
+
+.btn-add-green:hover {
+  background-color: #00bda4 !important;
+}
+
+.btn-add-green:active {
+  background-color: #28a745 !important;
 }
 
 .btn-confirm {

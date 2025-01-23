@@ -471,7 +471,7 @@ function VendorDetail() {
                                                 </span>
                                             )}
                                             {allBaskets.length > 0 ? (
-                                                <button className="btn-add nowrap" onClick={() => handleAddToCart(marketDetail)}>
+                                            <button className="btn-add btn-add-green nowrap" onClick={() => handleAddToCart(marketDetail)}>
                                                     Add to Cart
                                                 </button>
                                             ) : (

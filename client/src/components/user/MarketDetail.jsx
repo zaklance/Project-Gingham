@@ -568,7 +568,7 @@ function MarketDetail ({ match }) {
                         </div>
                         )}
                         {availableBaskets.length > 0 ? (
-                        <button className="btn-add nowrap" onClick={() => handleAddToCart(vendorId, vendorDetail, availableBaskets)}>
+                        <button className="btn-add btn-add-green color-7 nowrap" onClick={() => handleAddToCart(vendorId, vendorDetail, availableBaskets)}>
                             Add to Cart
                         </button>
                         ) : (
