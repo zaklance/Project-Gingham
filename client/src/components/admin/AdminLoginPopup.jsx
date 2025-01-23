@@ -89,7 +89,6 @@ function Login({ handlePopup }) {
         });
         if (response.ok) {
             const data = await response.json();
-            alert("Sign Up Successful. Please log in!");
             setSignupEmail('');
             setSignupConfirmEmail('');
             setSignupPassword('');
@@ -97,6 +96,7 @@ function Login({ handlePopup }) {
             setSignupFirstName('');
             setSignupLastName('');
             setSignupPhone('');
+            alert("Sign Up Successful! A confirmation email has been sent.");
         } else {
             const errorData = await response.json();
             if (errorData.error) {
