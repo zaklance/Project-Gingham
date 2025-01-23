@@ -54,16 +54,16 @@ const UserEmailVerification = () => {
 
 	return (
 		<div className="email-verification-container">
-			<h1 className="title-med text-center">Welcome to Gingham!</h1>
 			{!isConfirmed ? (
 				<div className="box-bounding text-center">
+					<h1 className="title-med text-center">Welcome to <span className="font-gingham title-small">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</span>!</h1>
 					<p className="text-500 margin-b-8">
 						Thank you for signing up. Please confirm your email to complete your
 						registration.
 					</p>
 					{errorMessage && <p className="text-error-small text-red width-fit margin-auto">{errorMessage}</p>}
 					<button
-						className="btn btn-add"
+						className="btn btn-confirm"
 						onClick={handleConfirmation}
 						disabled={isLoading || !confirmationToken}
 					>
