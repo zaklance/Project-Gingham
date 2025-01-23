@@ -28,7 +28,7 @@ from random import choice
 import stripe
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import utils.events as events
-from utils.emails import send_contact_email, send_user_password_reset_email, send_vendor_password_reset_email, send_admin_password_reset_email, send_user_confirmation_email
+from utils.emails import send_contact_email, send_user_password_reset_email, send_vendor_password_reset_email, send_admin_password_reset_email, send_user_confirmation_email, send_vendor_confirmation_email, send_admin_confirmation_email
 import subprocess
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
@@ -422,34 +422,57 @@ def vendorLogin():
 @app.route('/api/vendor-signup', methods=['POST'])
 def vendorSignup():
     data = request.get_json()
+    email = data.get('email')
+    
+    if not email:
+        return {'error': 'Email is required'}, 400
+    
+    result = send_vendor_confirmation_email(email, data)
+    
+    if 'error' in result:
+        return jsonify({'error': result["error"]}), 500
+    return jsonify({'message': result['message']}), 200
 
+@app.route('/api/vendor/confirm-email/<token>', methods=['GET', 'POST'])
+def confirm_vendor_email(token):
     try:
-        vendor_user = VendorUser.query.filter(VendorUser.email == data['email']).first()
-        if vendor_user:
-            return {'error': 'Email already exists'}, 400
         
-        new_vendor_user = VendorUser(
-            email=data['email'],
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            phone=data['phone']
-        )
-        new_vendor_user.password = data['password']
+        print(f'Received token: {token}')
+        data = serializer.loads(token, salt='vendor-confirmation-salt', max_age=3600)
+        
+        if request.method == 'GET':
+            print(f"GET request: Token verified, email extracted: {data['email']}")
+            # Redirect to the frontend with the token
+            return redirect(f'http://localhost:5173/vendor/confirm-email/{token}')
+        
+        if request.method == 'POST':
+            print(f"POST request: Token verified, user data extracted: {data}")
+            
+            if VendorUser.query.filter_by(email=data['email']).first():
+                print("POST request: Email already confirmed or in use")
+                return {'error': 'Email already confirmed or in use.'}, 400
+            
+            new_vendor_user = VendorUser(
+                email=data['email'],
+                password=data['password'], 
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                phone=data['phone'],
+                email_verified=True
+            )
+            db.session.add(new_vendor_user)
+            db.session.commit()
+            
+            print("POST request: VendorUser created and committed to the database")
+            return {'message': 'Email confirmed and account created successfully.'}, 201
 
-        db.session.add(new_vendor_user)
-        db.session.commit()
-
-        return new_vendor_user.to_dict(), 201
-
-    except IntegrityError as e:
-        db.session.rollback()
-        return {'error': f'IntegrityError: {str(e)}'}, 400
-
-    except ValueError as e:
-        return {'error': f'ValueError: {str(e)}'}, 400
+    except SignatureExpired:
+        print("Request: The token has expired")
+        return {'error': 'The token has expired'}, 400
 
     except Exception as e:
-        return {'error': f'Exception: {str(e)}'}, 500
+        print(f"Request: An error occurred: {str(e)}")
+        return {'error': f'Failed to confirm email: {str(e)}'}, 500
     
 @app.route('/api/vendor/logout', methods=['DELETE'])
 def vendorLogout():

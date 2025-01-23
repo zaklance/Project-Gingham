@@ -591,8 +591,84 @@ def send_user_confirmation_email(email, user_data):
         server.quit()
 
         print("Email sent successfully")
-        return {'message': 'Confirmation email sent successfully.', 'token': token}  # Include the token
+        return {'message': 'Confirmation email sent successfully.', 'token': token}
 
     except Exception as e:
         print(f"Error during email sending: {str(e)}")
         return {'error': f'Failed to send email: {str(e)}'}
+    
+def send_vendor_confirmation_email(email, vendor_data):
+    try:
+        token = serializer.dumps(vendor_data, salt='vendor-confirmation-salt')
+        confirmation_link = url_for('confirm_vendor_email', token=token, _external=True)
+        print(f"Generated vendor confirmation link: {confirmation_link}")
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = email
+        msg['Subject'] = 'Gingham Vendor Email Confirmation'
+
+        # Simple text body for testing
+        body = f"""
+        Please confirm your email by clicking this link: {confirmation_link}
+        """
+        msg.attach(MIMEText(body, 'plain'))
+
+        print("Attempting to send vendor email...")
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        print("Vendor email sent successfully")
+        return {'message': 'Vendor confirmation email sent successfully.', 'token': token}
+
+    except Exception as e:
+        print(f"Error during vendor email sending: {str(e)}")
+        return {'error': f'Failed to send vendor email: {str(e)}'}
+
+def send_admin_confirmation_email(email, admin_data):
+    try:
+        token = serializer.dumps(admin_data, salt='admin-confirmation-salt')
+        confirmation_link = url_for('confirm_admin_email', token=token, _external=True)
+        print(f"Generated admin confirmation link: {confirmation_link}")
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = email
+        msg['Subject'] = 'Gingham Admin Email Confirmation'
+
+        # Simple text body for testing
+        body = f"""
+        Please confirm your email by clicking this link: {confirmation_link}
+        """
+        msg.attach(MIMEText(body, 'plain'))
+
+        print("Attempting to send admin email...")
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        print("Admin email sent successfully")
+        return {'message': 'Admin confirmation email sent successfully.', 'token': token}
+
+    except Exception as e:
+        print(f"Error during admin email sending: {str(e)}")
+        return {'error': f'Failed to send admin email: {str(e)}'}
