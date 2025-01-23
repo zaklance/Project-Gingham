@@ -149,10 +149,17 @@ function AdminVendorProducts({ vendors }) {
     };
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/admin-notifications")
+        const token = localStorage.getItem('admin_jwt-token');
+        fetch("http://127.0.0.1:5555/api/admin-notifications", {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        })
             .then(response => response.json())
             .then(data => {
-                setNotifications(data);
+                setNotifications(data.filter(notification => notification.subject === 'product-request'));
             })
             .catch(error => console.error('Error fetching products', error));
     }, []);

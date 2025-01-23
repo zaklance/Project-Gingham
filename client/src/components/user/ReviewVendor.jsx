@@ -449,7 +449,7 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                                     value={true}
                                     onChange={handleFilterUp}
                                 />
-                                <label htmlFor='upVotes'>Up Votes</label>
+                                <label htmlFor='upVotes'>Up-Votes</label>
                                 <br />
                                 <input
                                     id="downVotes"
@@ -458,7 +458,7 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                                     value={true}
                                     onChange={handleFilterDown}
                                 />
-                                <label htmlFor='downVotes'>Down Votes</label>
+                                <label htmlFor='downVotes'>Down-Votes</label>
                             </div>
                         </div>
                     )}

@@ -64,7 +64,7 @@ function Home() {
                     <h2 className="box-portal-home text-blend-lighten">Sell Surplus Product instead of putting it to waste!</h2>
                 </div>
                 {currentBlog ? (
-                    <div className="box-blog margin-t-24 margin-l-48 margin-r-48 badge-container no-float" id="blog">
+                    <div className="box-blog margin-t-48 margin-l-48 margin-r-48 badge-container no-float" id="blog" style={{borderRadius: "20px"}}>
                         <div className="badge-arrows">
                             <i className="icon-arrow-l margin-r-8" onClick={() => handleNavigate('prev')}>&emsp;&thinsp;</i>
                             <i className="icon-arrow-r" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>

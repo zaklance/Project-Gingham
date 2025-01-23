@@ -28,6 +28,8 @@ function MarketDetail ({ match }) {
     
     const { handlePopup, amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
+    const token = localStorage.getItem('user_jwt-token');
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -69,30 +71,47 @@ function MarketDetail ({ match }) {
         if (!market?.id) return;
     
         const fetchData = async () => {
-            try {
-                const [marketDaysRes, vendorMarketsRes, eventsRes, marketFavsRes] = await Promise.all([
-                    fetch(`http://127.0.0.1:5555/api/market-days?market_id=${market.id}`).then(res => res.json()),
-                    fetch(`http://127.0.0.1:5555/api/vendor-markets?market_id=${market.id}`).then(res => res.json()),
-                    fetch(`http://127.0.0.1:5555/api/events?market_id=${market.id}`).then(res => res.json()),
-                    fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`).then(res => res.json())
-                ]);
-                
-                setMarketDays(marketDaysRes);
-                if (Array.isArray(vendorMarketsRes)) {
-                    const vendorIds = [...new Set(vendorMarketsRes.map(vendor => vendor.vendor_id))];
-                    setVendors(vendorIds);
-                    setVendorMarkets(vendorMarketsRes);
+            if (market) {
+                try {
+                    const [marketDaysRes, vendorMarketsRes, eventsRes] = await Promise.all([
+                        fetch(`http://127.0.0.1:5555/api/market-days?market_id=${market.id}`).then(res => res.json()),
+                        fetch(`http://127.0.0.1:5555/api/vendor-markets?market_id=${market.id}`).then(res => res.json()),
+                        fetch(`http://127.0.0.1:5555/api/events?market_id=${market.id}`).then(res => res.json()), 
+                    ]);
+                    
+                    setMarketDays(marketDaysRes);
+                    if (Array.isArray(vendorMarketsRes)) {
+                        const vendorIds = [...new Set(vendorMarketsRes.map(vendor => vendor.vendor_id))];
+                        setVendors(vendorIds);
+                        setVendorMarkets(vendorMarketsRes);
+                    }
+                    setSelectedDay(marketDaysRes.length > 0 ? marketDaysRes[0] : null);
+                    setEvents(eventsRes);
+                } catch (error) {
+                    console.error("Error fetching data in parallel:", error);
                 }
-                setSelectedDay(marketDaysRes.length > 0 ? marketDaysRes[0] : null);
-                setEvents(eventsRes);
-                setMarketFavs(marketFavsRes);
-            } catch (error) {
-                console.error("Error fetching data in parallel:", error);
             }
         };
     
         fetchData();
     }, [market?.id, userId]);
+
+    useEffect(() => {
+        if (!userId) {
+            return
+        }
+        fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(res => res.json())
+        .then(data => {
+            setMarketFavs(data);
+        })
+    }, [userId]);
 
     useEffect(() => {
         const fetchVendorDetails = async () => {
@@ -213,10 +232,10 @@ function MarketDetail ({ match }) {
         }, 2000);
     };
 
-    // useEffect(() => {
-        // console.log("Amount in cart:", amountInCart);
-        // console.log("Cart items:", cartItems);
-    // }, [amountInCart, cartItems]);
+    useEffect(() => {
+        console.log("Amount in cart:", amountInCart);
+        console.log("Cart items:", cartItems);
+    }, [amountInCart, cartItems]);
 
     const handleBackButtonClick = () => {
         if ( isClicked ) {
@@ -240,6 +259,7 @@ function MarketDetail ({ match }) {
                 const response = await fetch('http://127.0.0.1:5555/api/market-favorites', {
                     method: 'POST',
                     headers: {
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
@@ -258,6 +278,10 @@ function MarketDetail ({ match }) {
                 for (const item of findMarketFavId) {
                     fetch(`http://127.0.0.1:5555/api/market-favorites/${item.id}`, {
                         method: "DELETE",
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
                     }).then(() => {
                         setMarketFavs((favs) => favs.filter((fav) => fav.market_id !== market.id));
                         setAlertMessage('removed from favorites');

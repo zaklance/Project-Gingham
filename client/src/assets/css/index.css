@@ -180,8 +180,8 @@ p, li, div, form, input, select, button, textarea, td {
   font-size: 3em;
 }
 
-.title {
-  margin-top:16px;
+.title-small {
+  font-size: 1.6em;
 }
 
 .font-gingham {
@@ -505,7 +505,7 @@ ul {
 .li-notif {
   width: 100%;
   font-size: .66em;
-  padding: 8px 16px;
+  padding: 8px 16px 8px 8px;
   text-align: left;;
 }
 
@@ -896,6 +896,18 @@ ul {
   width: 96px;
 }
 
+.btn-confirm {
+  padding: 10px 12px;
+  border-radius: 8px;
+  height: fit-content;
+  border: none;
+  background-color: #ff9e5c;
+  margin: 12px 0px;
+  margin-right: 12px;
+  margin-left: 4px;
+  font-size: 1.2em;
+}
+
 .btn-switch {
   padding: 8px 12px;
   border-radius: 8px;
@@ -1219,6 +1231,29 @@ ul {
   transition: .1s;
 }
 
+.btn-clear {
+  height: 100%;
+  width: 100%;
+  letter-spacing: 2pt;
+  height: min-content;
+}
+
+.btn-clear:hover {
+  background-color: #ff4b5a;
+  color: #ffd1d8;
+  border-radius: 0;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.btn-clear:active {
+  background-color: #ff6786;
+  color: #ffd1d8;
+  border-radius: 0;
+  font-weight: 500;
+  transition: 0.1s;
+}
+
 .btn-nav-login {
   margin-top: -8px;
 }
@@ -1238,6 +1273,17 @@ ul {
   transition: .1s;
 }
 
+.li-notif .btn-unreport {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.li-notif:hover .btn-unreport {
+  opacity: 1;
+  visibility: visible;
+}
+
 .btn-notif {
   padding: 0px 4px;
   margin-right: 8px;
@@ -1245,6 +1291,17 @@ ul {
   /* border: #3b4752;
   border-width: .5px;
   border-style: solid; */
+}
+
+.btn-unread {
+  position: relative;
+  background-color: #007BFF;
+  height: 8px;
+  width: 8px;
+  border-radius: 8px;
+  top: -4px;
+  /* margin-right: 5px; */
+  right: -6px;
 }
 
 .btn-market-card {
@@ -1844,10 +1901,6 @@ select:hover {
   height: 48px
 }
 
-.form-group .select-state {
-  margin-left: 8px;
-}
-
 .textarea-review {
   margin-top: 16px;
   margin-bottom: 8px;
@@ -1986,16 +2039,20 @@ select:hover {
   text-align: center;
 }
 
+.basket-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  /* Adjust the gap between cards */
+  justify-content: center;
+}
+
 .basket-card {
   border: .5px solid #ccc;
   padding: 10px;
   width: 280px;
-  /* width: 100%; */
-  /* min-width: 240px; */
-  /* max-width: 300px; */
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   background-color: #fff;
-  /* text-align: center; */
 }
 
 .market-info {
@@ -2742,6 +2799,17 @@ select:hover {
   
   .column-3 {
     column-count: 2;
+  }
+
+  .li-notif .btn-unreport {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .li-notif:hover .btn-unreport {
+    opacity: 1;
+    visibility: visible;
   }
 }
 

@@ -555,6 +555,7 @@ def check_admin_session():
     return admin_user.to_dict(), 200
 
 @app.route('/api/settings-users', methods=['GET', 'POST'])
+@jwt_required()
 def post_settings_user():
 
     try:
@@ -637,6 +638,7 @@ def settings_user(id):
             return {'error': str(e)}, 500
 
 @app.route('/api/settings-vendor-users', methods=['GET', 'POST'])
+@jwt_required()
 def post_settings_vendor_user():
 
     try:
@@ -694,7 +696,7 @@ def post_settings_vendor_user():
 def settings_vendor_user(id):
     
     if not check_role('vendor') and not check_role('admin'):
-        return {'error': "Access forbidden: User only"}, 403
+        return {'error': "Access forbidden: Vendor User only"}, 403
     
     if request.method == 'GET':
         settings = SettingsVendor.query.filter_by(id=id).first()
@@ -720,6 +722,7 @@ def settings_vendor_user(id):
             return {'error': str(e)}, 500
 
 @app.route('/api/settings-admins', methods=['GET', 'POST'])
+@jwt_required()
 def post_settings_admin_user():
 
     try:
@@ -907,6 +910,7 @@ def profile(id):
             return {'error': str(e)}, 500
 
 @app.route('/api/vendor-users', methods=['GET', 'PATCH'])
+@jwt_required()
 def get_vendor_users():
     if request.method =='GET':
         try:
@@ -1709,6 +1713,7 @@ def vendor_review_rating_by_id(id):
         return {}, 204
 
 @app.route('/api/market-favorites', methods=['GET', 'POST'])
+@jwt_required()
 def all_market_favorites():
     if request.method == 'GET':
         user_id = request.args.get('user_id')
@@ -1728,6 +1733,7 @@ def all_market_favorites():
         return new_market_favorite.to_dict(), 201
     
 @app.route('/api/market-favorites/<int:id>', methods=['GET', 'DELETE'])
+@jwt_required()
 def del_market_fav(id):
     market_fav = MarketFavorite.query.filter(MarketFavorite.id == id).first()
     if not market_fav:
@@ -1740,6 +1746,7 @@ def del_market_fav(id):
         return {}, 204
 
 @app.route('/api/vendor-favorites', methods=['GET', 'POST'])
+@jwt_required()
 def all_vendor_favorites():
     if request.method == 'GET':
         user_id = request.args.get('user_id')
@@ -1760,6 +1767,7 @@ def all_vendor_favorites():
         return new_vendor_favorite.to_dict(), 201
     
 @app.route('/api/vendor-favorites/<int:id>', methods=['GET', 'DELETE'])
+@jwt_required()
 def del_vendor_fav(id):
     vendor_fav = VendorFavorite.query.filter(VendorFavorite.id == id).first()
     if not vendor_fav:
@@ -1772,6 +1780,7 @@ def del_vendor_fav(id):
         return {}, 204
 
 @app.route('/api/blog-favorites', methods=['GET', 'POST'])
+@jwt_required()
 def all_blog_favorites():
     if request.method == 'GET':
         user_id = request.args.get('user_id')
@@ -1791,6 +1800,7 @@ def all_blog_favorites():
         return new_blog_favorite.to_dict(), 201
     
 @app.route('/api/blog-favorites/<int:id>', methods=['GET', 'DELETE'])
+@jwt_required()
 def del_blog_fav(id):
     blog_fav = BlogFavorite.query.filter(BlogFavorite.id == id).first()
     if not blog_fav:
@@ -2271,6 +2281,7 @@ def product(id):
             return {'error': str(e)}, 500
 
 @app.route('/api/qr-codes', methods=['GET', 'POST'])
+@jwt_required()
 def qr_codes():
     if request.method == 'GET':
         user_id = request.args.get('user_id', type=int)
@@ -2315,6 +2326,7 @@ def qr_codes():
             return {'error': f'Failed to create QR code: {str(e)}'}, 500
 
 @app.route('/api/qr-codes/<int:id>', methods=['GET', 'DELETE'])
+@jwt_required()
 def qr_code(id):
     if request.method == 'GET':
         qr_code = QRCode.query.filter_by(id=id).first()
@@ -2355,6 +2367,7 @@ def contact():
 
 # MJML Backend
 @app.route('/api/preview-email', methods=['POST'])
+@jwt_required()
 def preview_email():
     data = request.json
     mjml_template = data.get('mjmlTemplate', '')
@@ -2378,7 +2391,11 @@ def preview_email():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/send-mjml-email', methods=['POST'])
+@jwt_required()
 def send_mjml_email():
+    if not check_role('admin'):
+        return {'error': "Access forbidden: Admin only"}, 403
+
     data = request.json
     mjml = data.get('mjml', '')
     subject = data.get('subject', '')
@@ -2439,6 +2456,7 @@ def send_mjml_email():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/send-html-email', methods=['POST'])
+@jwt_required()
 def send_html_email():
     data = request.json
     html = data.get('html', '')
@@ -2482,6 +2500,7 @@ def send_html_email():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/sendgrid-email', methods=['POST'])
+@jwt_required()
 def send_sendgrid_email():
     data = request.json
     html = data.get('html', '')
@@ -2748,10 +2767,11 @@ def admin_password_reset(token):
         except Exception as e:
             return {'error': f'Failed to reset password: {str(e)}'}, 500
 
-@app.route('/api/user-notifications', methods=['GET'])
+@app.route('/api/user-notifications', methods=['GET', 'DELETE'])
+@jwt_required()
 def get_user_notifications():
+    user_id = request.args.get('user_id')
     if request.method == 'GET':
-        user_id = request.args.get('user_id')
 
         query = UserNotification.query
         if user_id:
@@ -2762,8 +2782,29 @@ def get_user_notifications():
         # notifications = UserNotification.query.all()
         return jsonify([notif.to_dict() for notif in notifications]), 200
     
-@app.route('/api/user-notifications/<int:id>', methods=['DELETE'])
+    if request.method == 'DELETE':
+        query = UserNotification.query
+        if user_id:
+            query = query.filter_by(user_id=user_id)
+        
+            deleted_count = query.delete()
+            db.session.commit()
+            return jsonify({'deleted count': deleted_count}), 204
+    
+@app.route('/api/user-notifications/<int:id>', methods=['PATCH', 'DELETE'])
+@jwt_required()
 def delete_user_notifications(id):
+    if request.method == 'PATCH':
+        notification = UserNotification.query.get(id)
+        if not notification:
+            return jsonify({'message': 'Notification not found'}), 404
+        
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(notification, key, value)
+        db.session.commit()
+        return notification.to_dict(), 202
+    
     if request.method == 'DELETE':
         notification = UserNotification.query.filter_by(id=id).first()
 
@@ -2777,6 +2818,7 @@ def delete_user_notifications(id):
         return jsonify({'notifications': notification_data}), 204
 
 @app.route('/api/notify-me-for-more-baskets', methods=['POST'])
+@jwt_required()
 def notify_me_for_more_baskets():
     data = request.get_json()
 
@@ -2850,45 +2892,56 @@ def notify_me_for_more_baskets():
 #         print(f"Error deleting notification: {str(e)}")
 #         return jsonify({'message': f'Error deleting notification: {str(e)}'}), 500
 
-@app.route('/api/vendor-notifications', methods=['GET'])
+@app.route('/api/vendor-notifications', methods=['GET', 'DELETE'])
+@jwt_required()
 def fetch_vendor_notifications():
     vendor_id = request.args.get('vendor_id')
     vendor_user_id = request.args.get('vendor_user_id')
     is_read = request.args.get('is_read', None)
     subject = request.args.get('subject')
-
-    query = VendorNotification.query
-
-    if vendor_id:
-        query = query.filter_by(vendor_id=vendor_id)
-    if vendor_user_id:
-        query = query.filter_by(vendor_user_id=vendor_user_id)
-    if is_read is not None:
-        is_read_bool = is_read.lower() == 'true'
-        query = query.filter_by(is_read=is_read_bool)
-    if subject:
-        query = query.filter_by(subject=subject)
-
-
-    notifications = query.order_by(VendorNotification.created_at.desc()).all()
-
-    notifications_data = [ {
-        'id': n.id,
-        'subject': n.subject,
-        'message': n.message,
-        'link': n.link,
-        'is_read': n.is_read,
-        'user_id': n.user_id,
-        'market_id': n.market_id,
-        'vendor_id': n.vendor_id,
-        'vendor_user_id': n.vendor_user_id, 
-        'created_at': n.created_at,
-        'vendor_name': Vendor.query.get(n.vendor_id).name if Vendor.query.get(n.vendor_id) else 'Unknown Vendor',
-        } for n in notifications ]
     
-    return jsonify({'notifications': notifications_data}), 200
+    if request.method == 'GET':
+        query = VendorNotification.query
+
+        if vendor_id:
+            query = query.filter_by(vendor_id=vendor_id)
+        if vendor_user_id:
+            query = query.filter_by(vendor_user_id=vendor_user_id)
+        if is_read is not None:
+            is_read_bool = is_read.lower() == 'true'
+            query = query.filter_by(is_read=is_read_bool)
+        if subject:
+            query = query.filter_by(subject=subject)
+
+        notifications = query.order_by(VendorNotification.created_at.desc()).all()
+
+        notifications_data = [ {
+            'id': n.id,
+            'subject': n.subject,
+            'message': n.message,
+            'link': n.link,
+            'is_read': n.is_read,
+            'user_id': n.user_id,
+            'market_id': n.market_id,
+            'vendor_id': n.vendor_id,
+            'vendor_user_id': n.vendor_user_id, 
+            'created_at': n.created_at,
+            'vendor_name': Vendor.query.get(n.vendor_id).name if Vendor.query.get(n.vendor_id) else 'Unknown Vendor',
+            } for n in notifications ]
+        
+        return jsonify({'notifications': notifications_data}), 200
+    
+    if request.method == 'DELETE':
+        query = VendorNotification.query
+        if vendor_user_id:
+            query = query.filter_by(vendor_user_id=vendor_user_id)
+        
+            deleted_count = query.delete()
+            db.session.commit()
+            return jsonify({'deleted count': deleted_count}), 204
 
 @app.route('/api/vendor-notifications/<int:id>', methods=['PATCH', 'DELETE'])
+@jwt_required()
 def delete_notification(id):
     if request.method == 'PATCH':
         notification = VendorNotification.query.get(id)
@@ -2914,6 +2967,7 @@ def delete_notification(id):
         return jsonify({'notifications': notification_data}), 204
     
 @app.route('/api/vendor-notifications/vendor/<int:vendor_id>', methods=['GET'])
+@jwt_required()
 def get_vendor_notifications(vendor_id):
     notifications = VendorNotification.query.filter_by(vendor_id=vendor_id, is_read=False).all()
 
@@ -2921,6 +2975,7 @@ def get_vendor_notifications(vendor_id):
     return jsonify({'notifications': notifications_data}), 200
 
 @app.route('/api/vendor-notifications/vendor-user/<int:vendor_user_id>', methods=['GET'])
+@jwt_required()
 def get_vendor_user_notifications(vendor_user_id):
     is_pending = request.args.get('is_pending', None)
 
@@ -2942,6 +2997,7 @@ def get_vendor_user_notifications(vendor_user_id):
     return jsonify({'notifications': notifications_data}), 200
 
 @app.route('/api/vendor-notifications/<int:notification_id>/approve', methods=['POST'])
+@jwt_required()
 def approve_notification(notification_id):
     data = request.get_json()
     vendor_role = data.get('vendor_role')
@@ -2980,6 +3036,7 @@ def approve_notification(notification_id):
 
 
 @app.route('/api/vendor-notifications/<int:notification_id>/reject', methods=['DELETE'])
+@jwt_required()
 def reject_notification(notification_id):
     notification = VendorNotification.query.get(notification_id)
     if not notification:
@@ -3001,6 +3058,7 @@ def create_admin_notification():
         new_notification = AdminNotification(
             subject=data['subject'],
             message=data['message'],
+            link=data['link'],
             vendor_user_id=data['vendor_user_id'],
             vendor_id=data['vendor_id'],
             created_at=datetime.utcnow(),
@@ -3013,6 +3071,7 @@ def create_admin_notification():
             'id': new_notification.id,
             'subject': new_notification.subject,
             'message': new_notification.message,
+            'link': new_notification.link,
             'is_read': new_notification.is_read
         }
 
@@ -3030,14 +3089,38 @@ def create_admin_notification():
         return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
 
 
-@app.route('/api/admin-notifications', methods=['GET'])
+@app.route('/api/admin-notifications', methods=['GET', 'DELETE'])
+@jwt_required()
 def get_admin_notifications():
     if request.method == 'GET':
         notifications = AdminNotification.query.all()
         return jsonify([notif.to_dict() for notif in notifications]), 200
     
-@app.route('/api/admin-notifications/<int:id>', methods=['DELETE'])
+    if request.method == 'DELETE':
+        admin_id = request.args.get('admin_id')
+        query = AdminNotification.query
+        if admin_id:
+            query = query.filter(AdminNotification.subject != "product-request")
+        
+            deleted_count = query.delete()
+            db.session.commit()
+            return jsonify({'deleted count': deleted_count}), 204
+        
+
+@app.route('/api/admin-notifications/<int:id>', methods=['PATCH', 'DELETE'])
+@jwt_required()
 def delete_admin_notifications(id):
+    if request.method == 'PATCH':
+        notification = AdminNotification.query.get(id)
+        if not notification:
+            return jsonify({'message': 'Notification not found'}), 404
+        
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(notification, key, value)
+        db.session.commit()
+        return notification.to_dict(), 202
+    
     if request.method == 'DELETE':
         notification = AdminNotification.query.filter_by(id=id).first()
 
@@ -3130,9 +3213,6 @@ def faq(id):
 @app.route('/api/blogs', methods=['GET', 'POST'])
 def blogs():
     if request.method == 'GET':
-        # blogs = Blog.query.all()
-        # return jsonify([blog.to_dict() for blog in blogs]), 200
-    
         for_user = request.args.get('for_user', None)
         for_vendor = request.args.get('for_vendor', None)
         for_admin = request.args.get('for_admin', None)

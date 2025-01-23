@@ -5,6 +5,7 @@ import './assets/css/index.css';
 
 // main routes
 import App from './App.jsx';
+import About from './components/About.jsx';
 import Home from './components/Home.jsx';
 import Contact from './components/Contact.jsx';
 import ErrorPage from './components/ErrorPage.jsx';
@@ -251,6 +252,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
         children: [
             { path: "/", element: <Home /> },
+            { path: "about", element: <About /> },
             { path: "contact", element: <Contact /> },
             {
                 path: "user",

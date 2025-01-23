@@ -14,6 +14,7 @@ function Cart() {
     const navigate = useNavigate();
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
+    const token = localStorage.getItem('user_jwt-token');
 
     function startCartTimer() {
         if (cartTimer) {
@@ -101,22 +102,23 @@ function Cart() {
                 }
             }));
     
-            // Generate QR codes for cart items
-            console.log('Generating QR codes...');
-            const qrPromises = cartItems.map(async (cartItem) => {
-                const hash = objectHash(`${cartItem.vendor_name} ${cartItem.location} ${cartItem.id} ${userId}`);
-                const response = await fetch('http://127.0.0.1:5555/api/qr-codes', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        qr_code: hash,
-                        user_id: userId,
-                        basket_id: cartItem.id,
-                        vendor_id: cartItem.vendor_id,
-                    }),
-                });
+            // Generate QR codes (unchanged)
+            if (cartItems.length > 0) {
+                const qrPromises = cartItems.map(async (cartItem) => {
+                    const hash = objectHash(`${cartItem.vendor_name} ${cartItem.location} ${cartItem.id} ${userId}`);
+                    const response = await fetch('http://127.0.0.1:5555/api/qr-codes', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            qr_code: hash,
+                            user_id: userId,
+                            basket_id: cartItem.id,
+                            vendor_id: cartItem.vendor_id,
+                        }),
+                    });
     
                 if (!response.ok) {
                     throw new Error(`Failed to create QR code for basket ID ${cartItem.id}: ${response.statusText}`);

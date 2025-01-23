@@ -24,6 +24,7 @@ function VendorDetail() {
     const { amountInCart, setAmountInCart, cartItems, setCartItems, handlePopup } = useOutletContext();
     
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
+    const token = localStorage.getItem('user_jwt-token');
     const isUserLoggedIn = userId;
 
     const navigate = useNavigate();
@@ -158,7 +159,16 @@ function VendorDetail() {
     };
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/vendor-favorites?user_id=${userId}`)
+        if (!userId) {
+            return
+        }
+        fetch(`http://127.0.0.1:5555/api/vendor-favorites?user_id=${userId}`, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        })
             .then(response => response.json())
             .then(data => { setVendorFavs(data) })
             .catch(error => console.error('Error fetching vendor favorites', error));
@@ -177,6 +187,7 @@ function VendorDetail() {
                 const response = await fetch('http://127.0.0.1:5555/api/vendor-favorites', {
                     method: 'POST',
                     headers: {
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
@@ -195,6 +206,9 @@ function VendorDetail() {
                 for (const item of findVendorFavId) {
                     fetch(`http://127.0.0.1:5555/api/vendor-favorites/${item.id}`, {
                         method: "DELETE",
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        }
                     }).then(() => {
                         setVendorFavs((favs) => favs.filter((fav) => fav.vendor_id !== vendor.id));
                         setAlertMessage('removed from favorites');
