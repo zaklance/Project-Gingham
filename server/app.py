@@ -367,9 +367,16 @@ def confirm_email(token):
             print(f"POST request: Token verified, user data extracted: {data}")
 
             # Check if the email already exists
-            if User.query.filter_by(email=data['email']).first():
-                print("POST request: Email already confirmed or in use")
-                return {'error': 'Email already confirmed or in use.'}, 400
+            existing_user = User.query.filter_by(email=data['email']).first()
+            if existing_user:
+                if existing_user.email_verified:
+                    print("POST request: Email already confirmed")
+                    return {'message': 'Email already confirmed.', 'isNewUser': False}, 200
+                else:
+                    print("POST request: Email exists but not verified")
+                    existing_user.email_verified = True
+                    db.session.commit()
+                    return {'message': 'Email confirmed successfully.', 'isNewUser': False}, 200
 
             # Create a new user with the extracted data
             new_user = User(
@@ -390,7 +397,7 @@ def confirm_email(token):
             db.session.commit()
 
             print("POST request: User created and committed to the database")
-            return {'message': 'Email confirmed and account created successfully.'}, 201
+            return {'message': 'Email confirmed and account created successfully.', 'isNewUser': True}, 201
 
     except SignatureExpired:
         print("Request: The token has expired")
