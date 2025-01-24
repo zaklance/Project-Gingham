@@ -126,7 +126,7 @@ def send_user_password_reset_email(email):
     """
     Sends a password reset email to the given user email.
     """
-    from app import User  # Import User model here to avoid circular import
+    from server.app import User  # Import User model here to avoid circular import
     
     user = User.query.filter_by(email=email).first()
     if not user:
@@ -246,7 +246,7 @@ def send_vendor_password_reset_email(email):
     """
     Sends a password reset email to the given user email.
     """
-    from app import VendorUser  # Import User model here to avoid circular import
+    from server.app import VendorUser  # Import User model here to avoid circular import
     
     vendor_user = VendorUser.query.filter_by(email=email).first()
     if not vendor_user:
@@ -366,7 +366,7 @@ def send_admin_password_reset_email(email):
     """
     Sends a password reset email to the given user email.
     """
-    from app import AdminUser  # Import User model here to avoid circular import
+    from server.app import AdminUser  # Import User model here to avoid circular import
     
     admin_user = AdminUser.query.filter_by(email=email).first()
     if not admin_user:
