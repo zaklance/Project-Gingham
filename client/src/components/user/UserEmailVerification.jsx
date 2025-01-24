@@ -5,6 +5,7 @@ const UserEmailVerification = () => {
 	const { token: confirmationToken } = useParams();
 	const [isLoading, setIsLoading] = useState(false);
 	const [isConfirmed, setIsConfirmed] = useState(false);
+	const [isNewUser, setIsNewUser] = useState(null);
 	const [errorMessage, setErrorMessage] = useState("");
 
 	const navigate = useNavigate();
@@ -18,13 +19,13 @@ const UserEmailVerification = () => {
 
 	const handleConfirmation = async () => {
 		if (!confirmationToken) {
-		setErrorMessage("Confirmation token is missing.");
-		return;
+			setErrorMessage("Confirmation token is missing.");
+			return;
 		}
-
+	
 		setIsLoading(true);
 		setErrorMessage("");
-
+	
 		try {
 			const response = await fetch(
 				`http://127.0.0.1:5555/api/user/confirm-email/${confirmationToken}`,
@@ -35,13 +36,12 @@ const UserEmailVerification = () => {
 					},
 				}
 			);
-
+	
 			const result = await response.json();
-
+	
 			if (response.ok) {
 				setIsConfirmed(true);
-				navigate('/');
-				window.location.reload();
+				setIsNewUser(result.isNewUser);
 			} else {
 				setErrorMessage(result.error || "Failed to confirm email.");
 			}
@@ -56,11 +56,10 @@ const UserEmailVerification = () => {
 		<div className="email-verification-container">
 			{!isConfirmed ? (
 				<div className="box-bounding text-center">
-					<h1 className="title-med text-center">Welcome to <span className="font-gingham title-small">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</span>!</h1>
-					<p className="text-500 margin-b-8">
-						Thank you for signing up. Please confirm your email to complete your
-						registration.
-					</p>
+					<h1 className="title-med text-center">
+						<span className="font-gingham-large title-small">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</span>
+					</h1>
+					<p className="text-500 margin-b-8">Please confirm your email!</p>
 					{errorMessage && <p className="text-error-small text-red width-fit margin-auto">{errorMessage}</p>}
 					<button
 						className="btn btn-confirm"
@@ -70,8 +69,18 @@ const UserEmailVerification = () => {
 						{isLoading ? "Confirming..." : "Confirm Email"}
 					</button>
 				</div>
+			) : isNewUser ? (
+				<div className="box-bounding text-center">
+					<h1 className="title-med text-center">
+						Welcome to <span className="font-gingham title-small">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</span>!
+					</h1>
+					<p className="text-500 margin-b-8">Thank you for registering! Your email has been successfully confirmed. Welcome to the platform!</p>
+				</div>
 			) : (
-				<p>Your email has been successfully confirmed! You can now log in.</p>
+				<div className="box-bounding text-center">
+					<h1 className="title-med text-center">Welcome back!</h1>
+					<p className="text-500 margin-b-8">Your email has been successfully confirmed. You can now log in.</p>
+				</div>
 			)}
 		</div>
 	);

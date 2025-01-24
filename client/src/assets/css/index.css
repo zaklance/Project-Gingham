@@ -188,6 +188,12 @@ p, li, div, form, input, select, button, textarea, td {
   margin-bottom: -24px;
 }
 
+.font-gingham-large {
+	font-size: 10rem;
+  font-family: nf-le-petit-cochon;
+  margin-bottom: -24px;
+}
+
 .text-light {
   color: white !important;
 }
