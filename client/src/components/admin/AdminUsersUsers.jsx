@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { formatPhoneNumber } from '../../utils/helpers';
 import { avatars_default, states, status } from '../../utils/common';
+import { useNavigate } from 'react-router-dom';
 
 const AdminUsersUsers = () => {
     const [users, setUsers] = useState([]);
@@ -17,6 +18,7 @@ const AdminUsersUsers = () => {
     const matchingUser = users.find(user => user.email.toLowerCase() === query.toLowerCase());
     const matchingUserId = matchingUser ? matchingUser.id : null;
 
+    const navigate = useNavigate()
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/users", {
@@ -182,6 +184,7 @@ const AdminUsersUsers = () => {
                         return;
                     }
                     window.location.reload()
+                    navigate('/admin/users?tab=user')
                 }
             } catch (error) {
                 console.error('Error saving changes:', error);

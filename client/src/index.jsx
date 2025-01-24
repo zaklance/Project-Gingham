@@ -8,6 +8,8 @@ import App from './App.jsx';
 import About from './components/About.jsx';
 import Home from './components/Home.jsx';
 import Contact from './components/Contact.jsx';
+import TermsOfService from './components/TermsOfService.jsx';
+import PrivacyPolicy from './components/PrivacyPolicy.jsx';
 import ErrorPage from './components/ErrorPage.jsx';
 
 // user routes
@@ -256,6 +258,8 @@ const router = createBrowserRouter([
             { path: "/", element: <Home /> },
             { path: "about", element: <About /> },
             { path: "contact", element: <Contact /> },
+            { path: "terms-of-service", element: <TermsOfService /> },
+            { path: "privacy-policy", element: <PrivacyPolicy /> },
             {
                 path: "user",
                 children: [
