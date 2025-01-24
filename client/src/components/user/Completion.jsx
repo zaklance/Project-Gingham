@@ -1,5 +1,5 @@
 function Completion(props) {
-    return <h1>Thank you! </h1>;
+    return <div className="text-center box-bounding"><h1 className="title-big">Thank you! </h1></div>;
 }
 
 export default Completion; 
