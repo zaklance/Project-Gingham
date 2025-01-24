@@ -417,6 +417,10 @@ article {
   width: 60%;
 }
 
+.width-50 {
+  width: 50%;
+}
+
 .column-2 {
   column-count: 2;
 }
@@ -465,6 +469,7 @@ ul {
 
 .cart li {
   background-color: #d8f4fe;
+  border-radius: 8px;
   width: 100%;
 }
 
@@ -529,6 +534,13 @@ ul {
 
 .li-notif .link-underline:hover {
   text-decoration-thickness: .5px;
+}
+
+.li-cart {
+  margin-bottom: 12px;
+  background-color: #eee;
+  padding: 8px;
+  border-radius: 8px;
 }
 
 .ul-team .li-team, .li-team strong, .li-team i {
@@ -1843,6 +1855,20 @@ link {
   border: none;
   /* border-style: solid;
   border-width: 1px; */
+}
+
+.cell-title-cart {
+  padding: 1px;
+  border-radius: 12px;
+  font-weight: 600;
+  padding-right: 8px;
+  /* min-width: 124px; */
+}
+
+.cell-text {
+  width: 100%;
+  /* padding: 4px; */
+  word-wrap: break-word;
 }
 
 .table-search {

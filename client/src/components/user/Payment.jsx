@@ -8,12 +8,23 @@ function Payment() {
     const location = useLocation();
     const { clientSecret, totalPrice, cartItems } = location.state || {};
     const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_JS_KEY)
-
+    const appearance = {
+        theme: 'flat',
+        variables: {
+            colorPrimary: '#007BFF',
+            colorBackground: '#eee',
+            colorText: '#3b4752',
+            colorDanger: '#ff4b5a',
+            fontFamily: 'Lexend Deca, sans-serif',
+            spacingUnit: '2px',
+            borderRadius: '8px',
+        }
+    }
 
     return (
         <>
             {clientSecret && stripePromise ? (
-                <Elements stripe={stripePromise} options={{ clientSecret }}>
+                <Elements stripe={stripePromise} options={{ clientSecret, appearance }}>
                     <CheckoutForm totalPrice={totalPrice} cartItems={cartItems}/>
                 </Elements>
             ) : (
