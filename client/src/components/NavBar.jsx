@@ -109,7 +109,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
         }
     }, [isVendorLoggedIn, vendorUserData]);
 
-    const handleUserNotificationIsRead = async (notifId) => {
+    const handleUserNotificationIsRead = async (notifId, link) => {
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/user-notifications/${notifId}`, {
                 method: 'PATCH',
@@ -131,7 +131,9 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                     )
                 );
                 console.log('Notification updated successfully:', updatedData);
-                setIsNotifPopup(false)
+                if (link === 'link') {
+                    setIsNotifPopup(false)
+                }
             } else {
                 console.error('Failed to update notification:', await response.text());
             }
@@ -472,7 +474,9 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                     <NavLink className='nav-tab color-1 btn-nav' to={`/admin/users`} title="Users">Users</NavLink>
                                 </li>
                             </>
-                        ) : null}
+                        ) : (
+                            null
+                        )}
                         <li>
                             <NavLink className='nav-tab color-2 btn-nav' to={`/admin/help`} title="Help">Help</NavLink>
                         </li>
@@ -544,10 +548,10 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                             <li key={notification.id} className='li-notif'>
                                                 <div className='flex-start badge-container'>
                                                     <button className='btn btn-unreport btn-notif' onClick={() => handleNotificationDelete(notification.id)}>x</button>
-                                                    <NavLink className="link-underline" to={notification.link} onClick={() => handleUserNotificationIsRead(notification.id)}>
+                                                    <NavLink className="link-underline" to={notification.link} onClick={() => handleUserNotificationIsRead(notification.id, 'link')}>
                                                         {notification.message}
                                                     </NavLink>
-                                                    {!notification.is_read && <button className='btn btn-report btn-unread'>&emsp;</button>}
+                                                    {!notification.is_read && <button className='btn btn-unread' onClick={() => handleUserNotificationIsRead(notification.id)}>&emsp;</button>}
                                                 </div>
                                             </li>
                                         ))}

@@ -26,22 +26,12 @@ function Footer() {
                         </li>
                         {/* <li className='footer-li'>
                             <a href='https://www.mufo.nyc/' target='_blank' rel="noreferrer noopener">Mû.F.O. Inc</a>
-                        </li> */}
+                            </li> */}
                     </ul>
                     <ul className='ul-footer'>
-                        {/* <li className='footer-li'>
-                            <NavLink to="/">About</NavLink>
-                        </li> */}
-                        {!isNotUser && (
-                            <li className='footer-li'>
-                                <NavLink to="/contact" className="link-underline">Contact</NavLink>
-                            </li>
-                        )}
-                        {isVendorPage && (
-                            <li className='footer-li'>
-                                <NavLink to="/vendor/contact" className="link-underline">Contact</NavLink>
-                            </li>
-                        )}
+                        <li className='footer-li'>
+                            <NavLink to="/about" className="link-underline">About</NavLink>
+                        </li>
                         {!isNotUser && (
                             <li className='footer-li'>
                                 <NavLink to="/user/help" className="link-underline">User Help</NavLink>
@@ -57,11 +47,32 @@ function Footer() {
                                 <NavLink to="/admin/faqs" className="link-underline">Admin Help</NavLink>
                             </li>
                         )}
+                        {!isNotUser && (
+                            <li className='footer-li'>
+                                <NavLink to="/contact" className="link-underline">Contact</NavLink>
+                            </li>
+                        )}
+                        {isVendorPage && (
+                            <li className='footer-li'>
+                                <NavLink to="/vendor/contact" className="link-underline">Contact</NavLink>
+                            </li>
+                        )}
+                        
+                    </ul>
+                    <ul className='ul-footer'>
                         <li className='footer-li'>
-                            <NavLink to="/about" className="link-underline">&copy; Gingham, 2025</NavLink>
+                            <NavLink to="/terms-of-service" className="link-underline">Terms of Service</NavLink>
+                        </li>
+                        <li className='footer-li'>
+                            <NavLink to="/privacy-policy" className="link-underline">Privacy Policy</NavLink>
+                        </li>
+                        <li className='footer-li'>
+                            &copy; Gingham, 2025
                         </li>
                     </ul>
-                    <img className='small-logo' src="/site-images/gingham-logo-A_3.svg" alt="Gingham Logo"></img>
+                    <div>
+                        <img className='small-logo' src="/site-images/gingham-logo-A_3.svg" alt="Gingham Logo"></img>
+                    </div>
                 </div>
             </div>
         </>
