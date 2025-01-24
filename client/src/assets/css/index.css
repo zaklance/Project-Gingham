@@ -45,7 +45,6 @@ html {
   height: 100%;
 }
 
-/* Basic typography */
 body {
   margin: 0;
   /* margin-top: -15px; */
@@ -354,6 +353,10 @@ article {
   margin-top: 24px;
 }
 
+.margin-t-32 {
+  margin-top: 32px;
+}
+
 .margin-t-48 {
   margin-top: 48px;
 }
@@ -453,9 +456,11 @@ ul {
 
 .footer-li {
   color: #3b4752;
-  margin: 4px;
+  margin: 2px;
   padding: 2px;
-  font-weight: 600;
+  font-weight: 500;
+  font-size: .8em;
+  text-transform: uppercase;
 }
 
 .cart li {
@@ -501,20 +506,29 @@ ul {
   transition: .2s;
 }
 
-/* .nav-tab-wide {
+.nav-tab-wide {
   padding-left: 32px;
   padding-right: 32px;
-} */
+} 
 
-.ul-notif .li-notif:nth-child(even) {
+/* .ul-notif .li-notif:nth-child(even) {
   background-color: #dbdbdb;
-}
+} */
 
 .li-notif {
   width: 100%;
   font-size: .66em;
   padding: 8px 16px 8px 8px;
-  text-align: left;;
+  text-align: left;
+  border-bottom: solid 1px #dbdbdb;
+}
+
+.li-notif>* {
+  font-weight: 400;
+}
+
+.li-notif .link-underline:hover {
+  text-decoration-thickness: .5px;
 }
 
 .ul-team .li-team, .li-team strong, .li-team i {
@@ -1256,6 +1270,7 @@ ul {
   width: 100%;
   letter-spacing: 2pt;
   height: min-content;
+  border-bottom: 1px solid #dbdbdb;
 }
 
 .btn-clear:hover {
@@ -1319,9 +1334,14 @@ ul {
   height: 8px;
   width: 8px;
   border-radius: 8px;
-  top: -4px;
-  /* margin-right: 5px; */
+  top: 2px;
   right: -6px;
+}
+
+.btn-unread:hover {
+  background-color: #006FE6;
+  scale: 116%;
+  transition: .2s;
 }
 
 .btn-market-card {
@@ -1464,6 +1484,7 @@ link {
 
 .link-underline {
   text-decoration: none;
+  /* text-decoration-thickness: 0.75px; */
 }
 
 .link-underline:hover {
@@ -1506,7 +1527,7 @@ link {
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  margin: 8px;
+  margin: 8px 0;
   padding: 8px;
 }
 

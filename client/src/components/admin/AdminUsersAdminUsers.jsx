@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { formatPhoneNumber } from '../../utils/helpers';
+import { useNavigate } from 'react-router-dom';
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
@@ -18,7 +19,7 @@ const AdminUsers = () => {
     const matchingUser = users.find(user => user.email.toLowerCase() === query.toLowerCase());
     const matchingUserId = matchingUser ? matchingUser.id : null;
 
-
+    const navigate = useNavigate()
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/admin-users", {
@@ -133,6 +134,7 @@ const AdminUsers = () => {
                 }).then(() => {
                     setUsers((prev) => prev.filter((item) => item.id !== matchingUserId))
                     window.location.reload()
+                    navigate('/admin/users?tab=admin-user')
                 })
             } catch (error) {
                 console.error("Error deleting admin", error)
