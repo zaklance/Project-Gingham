@@ -2022,7 +2022,14 @@ select:hover {
   z-index: 6;
 }
 
-.dropdown-content {
+.dropdown-content-signup {
+  display: block;
+  position: absolute;
+  z-index: 6;
+  margin-left: 8px;
+}
+
+.dropdown-content-profile {
   display: block;
   position: absolute;
   z-index: 6;
@@ -2050,6 +2057,19 @@ select:hover {
 
 .search-results-address:hover {
   text-decoration: underline;
+}
+
+.search-results-signup {
+  background-color: #fff;
+  padding: 4px;
+  width: 280px;
+  /* opacity: .9; */
+  font-size: .72em;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+}
+
+.search-results-signup:hover {
+  background-color: #eee;
 }
 
 /* Utility classes */
