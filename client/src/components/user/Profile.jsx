@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { avatars_default, states } from '../../utils/common';
 import { timeConverter, formatPhoneNumber } from '../../utils/helpers';
@@ -17,6 +17,8 @@ function Profile({ marketData }) {
     const [tempUserSettings, setTempUserSettings] = useState(null);
     const [tempProfileData, setTempProfileData] = useState(null);
     const [editMode, setEditMode] = useState(false);
+    const [emailMode, setEmailMode] = useState(false);
+    const [passwordMode, setPasswordMode] = useState(false);
     const [settingsMode, setSettingsMode] = useState(false);
     const [vendorFavs, setVendorFavs] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
@@ -26,6 +28,16 @@ function Profile({ marketData }) {
     const [salesHistory, setSalesHistory] = useState([]);
     const [activeTab, setActiveTab] = useState('website');
     const [openBlog, setOpenBlog] = useState(null);
+    const [addressResults, setAddressResults] = useState();
+    const [showAddressDropdown, setShowAddressDropdown] = useState(false);
+    const [resultCoordinates, setResultCoordinates] = useState();
+    const [changeEmail, setChangeEmail] = useState();
+    const [changeConfirmEmail, setChangeConfirmEmail] = useState();
+    const [changePassword, setChangePassword] = useState();
+    const [changeConfirmPassword, setChangeConfirmPassword] = useState();
+
+    const dropdownAddressRef = useRef(null);
+    const debounceTimeout = useRef(null);
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'))
     const token = localStorage.getItem('user_jwt-token');
@@ -128,53 +140,94 @@ function Profile({ marketData }) {
         });
     };
 
+    const handleAddressInputChange = event => {
+        const { name, value } = event.target;
+        setTempProfileData({
+            ...tempProfileData,
+            [name]: value
+        });
+        handleAddress(event)
+    };
+
     const handleSaveChanges = async () => {
         let uploadedFilename = null;
         try {
             const apiKey = import.meta.env.VITE_RADAR_KEY;
             const query = `${tempProfileData.address_1} ${tempProfileData.city} ${tempProfileData.state} ${tempProfileData.zipcode}`;
             try {
-                const responseRadar = await fetch(`https://api.radar.io/v1/geocode/forward?query=${encodeURIComponent(query)}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': apiKey,
-                    },
-                });
-                if (responseRadar.ok) {
-                    const data = await responseRadar.json();
-                    if (data.addresses && data.addresses.length > 0) {
-                        const { latitude, longitude } = data.addresses[0];
-
-                        const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
-                            method: 'PATCH',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                first_name: tempProfileData.first_name,
-                                last_name: tempProfileData.last_name,
-                                email: tempProfileData.email,
-                                phone: tempProfileData.phone,
-                                address_1: tempProfileData.address_1,
-                                address_2: tempProfileData.address_2,
-                                city: tempProfileData.city,
-                                state: tempProfileData.state,
-                                zipcode: tempProfileData.zipcode,
-                                coordinates: { lat: latitude, lng: longitude }
-                            })
-                        });
-
-                        if (response.ok) {
-                            const updatedData = await response.json();
-                            setProfileData(updatedData);
-                            setEditMode(false);
-                            console.log('Profile data updated successfully:', updatedData);
-                        } else {
-                            console.log('Failed to save changes');
-                            console.log('Response status:', response.status);
-                            console.log('Response text:', await response.text());
+                if(!resultCoordinates && (tempProfileData.address_1 !== profileData.address_1 || tempProfileData.city !== profileData.city || tempProfileData.state !== profileData.state || tempProfileData.zipcode !== profileData.zipcode)) {
+                    const responseRadar = await fetch(`https://api.radar.io/v1/geocode/forward?query=${encodeURIComponent(query)}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': apiKey,
+                        },
+                    });
+                    if (responseRadar.ok) {
+                        const data = await responseRadar.json();
+                        if (data.addresses && data.addresses.length > 0) {
+                            const { latitude, longitude } = data.addresses[0];
+    
+                            const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
+                                method: 'PATCH',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    first_name: tempProfileData.first_name,
+                                    last_name: tempProfileData.last_name,
+                                    email: tempProfileData.email,
+                                    phone: tempProfileData.phone,
+                                    address_1: tempProfileData.address_1,
+                                    address_2: tempProfileData.address_2,
+                                    city: tempProfileData.city,
+                                    state: tempProfileData.state,
+                                    zipcode: tempProfileData.zipcode,
+                                    coordinates: { lat: latitude, lng: longitude }
+                                })
+                            });
+    
+                            if (response.ok) {
+                                const updatedData = await response.json();
+                                setProfileData(updatedData);
+                                setEditMode(false);
+                                console.log('Profile data updated successfully:', updatedData);
+                            } else {
+                                console.log('Failed to save changes');
+                                console.log('Response status:', response.status);
+                                console.log('Response text:', await response.text());
+                            }
                         }
+                    }
+                } else {
+                    const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            first_name: tempProfileData.first_name,
+                            last_name: tempProfileData.last_name,
+                            phone: tempProfileData.phone,
+                            address_1: tempProfileData.address_1,
+                            address_2: tempProfileData.address_2,
+                            city: tempProfileData.city,
+                            state: tempProfileData.state,
+                            zipcode: tempProfileData.zipcode,
+                            coordinates: { lat: tempProfileData.coordinates.lat, lng: tempProfileData.coordinates.lng }
+                        })
+                    });
+
+                    if (response.ok) {
+                        const updatedData = await response.json();
+                        setProfileData(updatedData);
+                        setEditMode(false);
+                        console.log('Profile data updated successfully:', updatedData);
+                    } else {
+                        console.log('Failed to save changes');
+                        console.log('Response status:', response.status);
+                        console.log('Response text:', await response.text());
                     }
                 }
             } catch (error) {
@@ -249,6 +302,39 @@ function Profile({ marketData }) {
                 setUserSettings(updatedData);
                 setSettingsMode(false);
                 console.log('Profile data updated successfully:', updatedData);
+            } else {
+                console.log('Failed to save changes');
+                console.log('Response status:', response.status);
+                console.log('Response text:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error saving changes:', error);
+        }
+    };
+
+    const handleSaveEmail = async () => {
+        if (changeEmail !== changeConfirmEmail) {
+            alert("Emails do not match.");
+            return;
+        }
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: changeEmail
+                })
+            });
+
+            if (response.ok) {
+                const updatedData = await response.json();
+                setChangeEmail('')
+                setChangeConfirmEmail('')
+                setEmailMode(false);
+                alert('Email will not update until you check your email and click the verify link.')
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status:', response.status);
@@ -411,6 +497,72 @@ function Profile({ marketData }) {
     const handleToggle = (name) => {
         setOpenBlog((prev) => (prev === name ? null : name));
     };
+
+    const handleAddress = (event) => {
+        const query = event.target.value;
+        // Clear the previous debounce timer
+        if (debounceTimeout.current) {
+            clearTimeout(debounceTimeout.current);
+        }
+        // Start a new debounce timer
+        debounceTimeout.current = setTimeout(() => {
+            if (query.trim() !== '') {
+                handleSearchAddress(query);
+            }
+        }, 250);
+    };
+    
+    const handleSearchAddress = async (query) => {
+        const apiKey = import.meta.env.VITE_RADAR_KEY;
+
+        try {
+            const responseRadar = await fetch(`https://api.radar.io/v1/search/autocomplete?query=${encodeURIComponent(query)}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': apiKey,
+                },
+            });
+            if (responseRadar.ok) {
+                const data = await responseRadar.json();
+                setAddressResults(data.addresses);
+                setShowAddressDropdown(true);
+
+                if (data.addresses && data.addresses.length > 0) {
+                    const { latitude, longitude } = data.addresses[0];
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching address:', error);
+        }
+    };
+
+    const handleClickOutsideAddressDropdown = (event) => {
+        if (dropdownAddressRef.current && !dropdownAddressRef.current.contains(event.target)) {
+            setShowAddressDropdown(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutsideAddressDropdown);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutsideAddressDropdown);
+        };
+    }, [showAddressDropdown]);
+
+
+    const handleEmailToggle = () => {
+        if (emailMode === false) {
+            setPasswordMode(false)
+        }
+        setEmailMode(!emailMode);
+    };
+
+    const handlePasswordToggle = () => {
+        if (passwordMode === false) {
+            setEmailMode(false)
+        }
+        setPasswordMode(!passwordMode);
+    };
     
 
     if (!profileData) {
@@ -446,7 +598,7 @@ function Profile({ marketData }) {
                                         onChange={handleInputChange}
                                     />
                                 </div>
-                                <div className="form-group">
+                                {/* <div className="form-group">
                                     <label>Email:</label>
                                     <input
                                         type="email"
@@ -454,7 +606,7 @@ function Profile({ marketData }) {
                                         value={tempProfileData ? tempProfileData.email : ''}
                                         onChange={handleInputChange}
                                     />
-                                </div>
+                                </div> */}
                                 <div className="form-group">
                                     <label>Phone:</label>
                                     <input
@@ -472,8 +624,32 @@ function Profile({ marketData }) {
                                         size="36"
                                         placeholder='Address 1'
                                         value={tempProfileData ? tempProfileData.address_1 : ''}
-                                        onChange={handleInputChange}
+                                        onChange={handleAddressInputChange}
                                     />
+                                    {showAddressDropdown && (
+                                        <ul className="dropdown-content-profile" ref={dropdownAddressRef}>
+                                            {addressResults.map(item => (
+                                                <li
+                                                    className="search-results-signup"
+                                                    key={item.formattedAddress}
+                                                    onClick={() => {
+                                                        setTempProfileData((prev) => ({
+                                                            ...prev,
+                                                            address_1: item.addressLabel,
+                                                            city: item.city,
+                                                            state: item.stateCode,
+                                                            zipcode: item.postalCode,
+                                                            coordinates: { 'lat': item.latitude, 'lng': item.longitude },
+                                                        }));
+                                                        setResultCoordinates({ 'lat': item.latitude, 'lng': item.longitude })
+                                                        setShowAddressDropdown(false);
+                                                    }}
+                                                >
+                                                    {item.formattedAddress}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
                                     <input
                                         type="text"
                                         name="address_2"
@@ -590,6 +766,66 @@ function Profile({ marketData }) {
                                             </tbody>
                                         </table>
                                         <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
+                                        <button className='btn-edit' onClick={handleEmailToggle}>Change Email</button>
+                                        <button className='btn-edit' onClick={handlePasswordToggle}>Change Password</button>
+                                        {passwordMode ? (
+                                            <div>
+                                                <h3 className='margin-b-8 margin-t-8'>Change Password</h3>
+                                                <div className="form-group">
+                                                    <label>Password: </label>
+                                                    <input
+                                                        type="password"
+                                                        value={changePassword}
+                                                        placeholder="enter your email"
+                                                        onChange={(event) => setChangePassword(event.target.value)}
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label></label>
+                                                    <input
+                                                        type="email"
+                                                        value={changeConfirmPassword}
+                                                        placeholder="re-enter your email"
+                                                        onChange={(event) => setChangeConfirmPassword(event.target.value)}
+                                                        required
+                                                    />
+                                                </div>
+                                                <button className='btn-edit' onClick={handleSavePassword}>Save Changes</button>
+                                                <button className='btn-edit' onClick={handlePasswordToggle}>Cancel</button>
+                                            </div>
+                                        ) : (
+                                            null
+                                        )}
+                                        {emailMode ? (
+                                            <div>
+                                                <h3 className='margin-b-8 margin-t-8'>Change Email</h3>
+                                                <div className="form-group">
+                                                    <label>Email: </label>
+                                                    <input
+                                                        type="email"
+                                                        value={changeEmail}
+                                                        placeholder="enter your email"
+                                                        onChange={(event) => setChangeEmail(event.target.value)}
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label></label>
+                                                    <input
+                                                        type="email"
+                                                        value={changeConfirmEmail}
+                                                        placeholder="re-enter your email"
+                                                        onChange={(event) => setChangeConfirmEmail(event.target.value)}
+                                                        required
+                                                    />
+                                                </div>
+                                                <button className='btn-edit' onClick={handleSaveEmail}>Save Changes</button>
+                                                <button className='btn-edit' onClick={handleEmailToggle}>Cancel</button>
+                                            </div>
+                                        ) : (
+                                            null
+                                        )}
                                     </div>
                                 </div>
                             </>

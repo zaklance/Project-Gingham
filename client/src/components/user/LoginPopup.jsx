@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PasswordStrengthBar from 'react-password-strength-bar';
 import { states } from '../../utils/common';
@@ -21,8 +21,13 @@ function Login({ handlePopup }) {
     const [signupState, setSignupState] = useState('');
     const [signupZipCode, setSignupZipCode] = useState('');
     const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false, pw3: false });
+    const [addressResults, setAddressResults] = useState();
+    const [showAddressDropdown, setShowAddressDropdown] = useState(false);
+    const [resultCoordinates, setResultCoordinates] = useState();
 
     const navigate = useNavigate();
+    const dropdownAddressRef = useRef(null);
+    const debounceTimeout = useRef(null);
 
     // const { password } = this.state;
     
@@ -84,42 +89,80 @@ function Login({ handlePopup }) {
         const query = `${signupAddress1} ${signupCity} ${signupState} ${signupZipCode}`;
       
         try {
-            const responseRadar = await fetch(
-                `https://api.radar.io/v1/geocode/forward?query=${encodeURIComponent(query)}`,
-                {
-                    method: "GET",
-                    headers: { Authorization: apiKey },
+            if (!resultCoordinates) {
+                const responseRadar = await fetch(
+                    `https://api.radar.io/v1/geocode/forward?query=${encodeURIComponent(query)}`,
+                    {
+                        method: "GET",
+                        headers: { Authorization: apiKey },
+                    }
+                );
+                const data = await responseRadar.json();
+                if (data.addresses && data.addresses.length > 0) {
+                    const { latitude, longitude } = data.addresses[0];
+                    setResultCoordinates({ lat: latitude, lng: longitude });
+
+                    const response = await fetch("http://127.0.0.1:5555/api/signup", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            email: signupEmail,
+                            password: signupPassword,
+                            first_name: signupFirstName,
+                            last_name: signupLastName,
+                            phone: signupPhone,
+                            address1: signupAddress1,
+                            address2: signupAddress2,
+                            city: signupCity,
+                            state: signupState,
+                            zipcode: signupZipCode,
+                            coordinates: { lat: latitude, lng: longitude },
+                        }),
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        setSignupEmail('');
+                        setSignupConfirmEmail('');
+                        setSignupPassword('');
+                        setSignupConfirmPassword('');
+                        setSignupFirstName('');
+                        setSignupLastName('');
+                        setSignupPhone('');
+                        setSignupAddress1('');
+                        setSignupAddress2('');
+                        setSignupCity('');
+                        setSignupState('');
+                        setSignupZipCode('');
+                        alert("Signup successful! A confirmation email has been sent.");
+                    } else {
+                        alert(result.error || "Signup failed.");
+                    }
+                } else {
+                    alert("Unable to geocode the address. Please try again.");
                 }
-            );
-    
-        if (responseRadar.ok) {
-            const data = await responseRadar.json();
-    
-            if (data.addresses && data.addresses.length > 0) {
-                const { latitude, longitude } = data.addresses[0];
-        
+            } else {
                 const response = await fetch("http://127.0.0.1:5555/api/signup", {
                     method: "POST",
                     headers: {
-                    "Content-Type": "application/json",
+                        "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                    email: signupEmail,
-                    password: signupPassword,
-                    first_name: signupFirstName,
-                    last_name: signupLastName,
-                    phone: signupPhone,
-                    address1: signupAddress1,
-                    address2: signupAddress2,
-                    city: signupCity,
-                    state: signupState,
-                    zipcode: signupZipCode,
-                    coordinates: { lat: latitude, lng: longitude },
+                        email: signupEmail,
+                        password: signupPassword,
+                        first_name: signupFirstName,
+                        last_name: signupLastName,
+                        phone: signupPhone,
+                        address1: signupAddress1,
+                        address2: signupAddress2,
+                        city: signupCity,
+                        state: signupState,
+                        zipcode: signupZipCode,
+                        coordinates: { lat: resultCoordinates.lat, lng: resultCoordinates.lng }, // Use existing coordinates
                     }),
                 });
-        
                 const result = await response.json();
-        
                 if (response.ok) {
                     setSignupEmail('');
                     setSignupConfirmEmail('');
@@ -137,16 +180,12 @@ function Login({ handlePopup }) {
                 } else {
                     alert(result.error || "Signup failed.");
                 }
-                } else {
-                alert("Unable to geocode the address. Please try again.");
-                }
-            } else {
-                alert("Failed to fetch geocoding information.");
             }
         } catch (error) {
-        console.error("Error during signup:", error);
-        alert("An unexpected error occurred. Please try again.");
+            console.error("Error during signup:", error);
+            alert("An unexpected error occurred. Please try again.");
         }
+
     };
 
     const togglePasswordVisibility = (field) => {
@@ -158,6 +197,57 @@ function Login({ handlePopup }) {
             setShowPassword(prev => ({ ...prev, [field]: false }));
         }, 8000);
     };
+
+    const handleAddress = (event) => {
+        const query = event.target.value;
+        // Clear the previous debounce timer
+        if (debounceTimeout.current) {
+            clearTimeout(debounceTimeout.current);
+        }
+        // Start a new debounce timer
+        debounceTimeout.current = setTimeout(() => {
+            if (query.trim() !== '') {
+                handleSearchAddress(query);
+            }
+        }, 600);
+    };
+
+    const handleSearchAddress = async (query) => {
+        const apiKey = import.meta.env.VITE_RADAR_KEY;
+
+        try {
+            const responseRadar = await fetch(`https://api.radar.io/v1/search/autocomplete?query=${encodeURIComponent(query)}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': apiKey,
+                },
+            });
+            if (responseRadar.ok) {
+                const data = await responseRadar.json();
+                setAddressResults(data.addresses);
+                setShowAddressDropdown(true);
+
+                if (data.addresses && data.addresses.length > 0) {
+                    const { latitude, longitude } = data.addresses[0];
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching address:', error);
+        }
+    };
+
+    const handleClickOutsideAddressDropdown = (event) => {
+        if (dropdownAddressRef.current && !dropdownAddressRef.current.contains(event.target)) {
+            setShowAddressDropdown(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutsideAddressDropdown);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutsideAddressDropdown);
+        };
+    }, [showAddressDropdown]);
 
 
     return (
@@ -288,9 +378,29 @@ function Login({ handlePopup }) {
                                 type="text"
                                 value={signupAddress1}
                                 placeholder='enter your address 1'
-                                onChange={(event => setSignupAddress1(event.target.value))}
+                                onChange={(event => {setSignupAddress1(event.target.value); handleAddress(event)})}
                                 required
                             />
+                            {showAddressDropdown && (
+                                <ul className="dropdown-content-signup" ref={dropdownAddressRef}>
+                                    {addressResults.map(item => (
+                                        <li
+                                            className="search-results-signup"
+                                            key={item.formattedAddress}
+                                            onClick={() => {
+                                                setSignupAddress1(item.addressLabel);
+                                                setSignupCity(item.city)
+                                                setSignupState(item.stateCode)
+                                                setSignupZipCode(item.postalCode)
+                                                setResultCoordinates({ 'lat': item.latitude, 'lng': item.longitude })
+                                                setShowAddressDropdown(false);
+                                            }}
+                                        >
+                                            {item.formattedAddress}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </div>
                         <div className="form-group form-login">
                             <label>Address 2:</label>
