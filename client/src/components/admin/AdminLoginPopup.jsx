@@ -157,7 +157,7 @@ function Login({ handlePopup }) {
                         <div className='flex-center-align flex-space-around margin-t-16'>
                             <button className='btn btn-login' type="submit">Login</button>
                             <p className="forgot-password" onClick={() => {
-                                navigate('/admin/password-reset-request');
+                                navigate('/admin/reset-request');
                                 window.location.reload();
                             }}>
                                 Forgot password?
