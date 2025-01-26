@@ -2,7 +2,7 @@ import os
 import json
 import smtplib
 from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
-from server.models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
+from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
                     VendorReview, ReportedReview, MarketReviewRating, 
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
                     VendorMarket, VendorUser, AdminUser, Basket, Event, 
@@ -27,8 +27,8 @@ from io import BytesIO
 from random import choice
 import stripe
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
-import server.utils.events as events
-from server.utils.emails import send_contact_email, send_user_password_reset_email, send_vendor_password_reset_email, send_admin_password_reset_email, send_user_confirmation_email, send_vendor_confirmation_email, send_admin_confirmation_email
+import utils.events as events
+from utils.emails import send_contact_email, send_user_password_reset_email, send_vendor_password_reset_email, send_admin_password_reset_email, send_user_confirmation_email, send_vendor_confirmation_email, send_admin_confirmation_email
 import subprocess
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail

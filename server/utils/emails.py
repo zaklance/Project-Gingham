@@ -130,7 +130,7 @@ def send_user_password_reset_email(email):
     
     user = User.query.filter_by(email=email).first()
     if not user:
-        return {'error': 'User not found'}, 404
+        return {'error': 'User not found'}
 
     # Generate token for password reset
     token = serializer.dumps(email, salt='password-reset-salt')
@@ -250,7 +250,7 @@ def send_vendor_password_reset_email(email):
     
     vendor_user = VendorUser.query.filter_by(email=email).first()
     if not vendor_user:
-        return {'error': 'Vendor not found'}, 404
+        return {'error': 'Vendor not found'}
 
     # Generate token for password reset
     token = serializer.dumps(email, salt='vendor-password-reset-salt')
@@ -370,7 +370,7 @@ def send_admin_password_reset_email(email):
     
     admin_user = AdminUser.query.filter_by(email=email).first()
     if not admin_user:
-        return {'error': 'User not found'}, 404
+        return {'error': 'User not found'}
 
     # Generate token for password reset
     token = serializer.dumps(email, salt='admin-password-reset-salt')
