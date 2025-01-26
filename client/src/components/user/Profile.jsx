@@ -7,6 +7,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import BasketSales from './BasketSales';
 import { blogTimeConverter } from "../../utils/helpers";
+import PasswordStrengthBar from 'react-password-strength-bar';
+import PasswordChecklist from "react-password-checklist"
 
 
 function Profile({ marketData }) {
@@ -33,8 +35,11 @@ function Profile({ marketData }) {
     const [resultCoordinates, setResultCoordinates] = useState();
     const [changeEmail, setChangeEmail] = useState();
     const [changeConfirmEmail, setChangeConfirmEmail] = useState();
-    const [changePassword, setChangePassword] = useState();
-    const [changeConfirmPassword, setChangeConfirmPassword] = useState();
+    const [password, setPassword] = useState('');
+    const [changePassword, setChangePassword] = useState('');
+    const [changeConfirmPassword, setChangeConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false, pw3: false });
+    const [isValid, setIsValid] = useState(false);
 
     const dropdownAddressRef = useRef(null);
     const debounceTimeout = useRef(null);
@@ -328,13 +333,51 @@ function Profile({ marketData }) {
                     email: changeEmail
                 })
             });
-
             if (response.ok) {
                 const updatedData = await response.json();
                 setChangeEmail('')
                 setChangeConfirmEmail('')
                 setEmailMode(false);
                 alert('Email will not update until you check your email and click the verify link.')
+            } else {
+                console.log('Failed to save changes');
+                console.log('Response status:', response.status);
+                console.log('Response text:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error saving changes:', error);
+        }
+    };
+
+    const handleSavePassword = async () => {
+        if (changePassword !== changeConfirmPassword) {
+            alert("Passwords do not match.");
+            return;
+        }
+        if (!isValid) {
+            alert("Password does not meet requirements.");
+            return;
+        }
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/api/users/${id}/password`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    old_password: password,
+                    new_password: changePassword
+                }),
+                credentials: 'include',
+            });
+            if (response.ok) {
+                const updatedData = await response.json();
+                setPassword('')
+                setChangePassword('')
+                setChangeConfirmPassword('')
+                setPasswordMode(false);
+                alert('Password changed')
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status:', response.status);
@@ -563,6 +606,18 @@ function Profile({ marketData }) {
         }
         setPasswordMode(!passwordMode);
     };
+
+    const togglePasswordVisibility = (field) => {
+        setShowPassword((prev) => ({
+            ...prev,
+            [field]: !prev[field],
+        }));
+        setTimeout(() => {
+            setShowPassword(prev => ({ ...prev, [field]: false }));
+        }, 8000);
+    };
+
+    console.log(isValid)
     
 
     if (!profileData) {
@@ -771,25 +826,57 @@ function Profile({ marketData }) {
                                         {passwordMode ? (
                                             <div>
                                                 <h3 className='margin-b-8 margin-t-8'>Change Password</h3>
-                                                <div className="form-group">
-                                                    <label>Password: </label>
-                                                    <input
-                                                        type="password"
-                                                        value={changePassword}
-                                                        placeholder="enter your email"
-                                                        onChange={(event) => setChangePassword(event.target.value)}
-                                                        required
-                                                    />
+                                                <div className="form-group form-group-password">
+                                                    <label>Old Password: </label>
+                                                    <div className='badge-container-strict'>
+                                                        <input
+                                                            type={showPassword.pw1 ? 'text' : 'password'}
+                                                            value={password}
+                                                            placeholder="enter your current password"
+                                                            onChange={(event) => setPassword(event.target.value)}
+                                                            required
+                                                        />
+                                                        <i className={showPassword.pw1 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw1')}>&emsp;</i>
+                                                    </div>
                                                 </div>
-                                                <div className="form-group">
+                                                <div className="form-group form-group-password">
+                                                    <label>New Password: </label>
+                                                    <div className='badge-container-strict'>
+                                                        <input
+                                                            type={showPassword.pw2 ? 'text' : 'password'}
+                                                            value={changePassword}
+                                                            placeholder="enter your new password"
+                                                            onChange={(event) => setChangePassword(event.target.value)}
+                                                            required
+                                                        />
+                                                        <i className={showPassword.pw2 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw2')}>&emsp;</i>
+                                                    </div>
+                                                </div>
+                                                <div className="form-group form-group-password">
                                                     <label></label>
-                                                    <input
-                                                        type="email"
-                                                        value={changeConfirmPassword}
-                                                        placeholder="re-enter your email"
-                                                        onChange={(event) => setChangeConfirmPassword(event.target.value)}
-                                                        required
-                                                    />
+                                                    <div className='badge-container-strict'>
+                                                        <input
+                                                            type={showPassword.pw3 ? 'text' : 'password'}
+                                                            value={changeConfirmPassword}
+                                                            placeholder="re-enter your new password"
+                                                            onChange={(event) => setChangeConfirmPassword(event.target.value)}
+                                                            required
+                                                        />
+                                                        <i className={showPassword.pw3 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw3')}>&emsp;</i>
+                                                        <PasswordChecklist
+                                                            className='password-checklist'
+                                                            style={{padding: '0 8px'}}
+                                                            rules={["minLength", "specialChar", "number", "capital", "match"]}
+                                                            minLength={5}
+                                                            value={changePassword}
+                                                            valueAgain={changeConfirmPassword}
+                                                            onChange={(isValid) => { setIsValid(isValid) }}
+                                                            iconSize={14}
+                                                            validColor='#00bda4'
+                                                            invalidColor='#ff4b5a'
+                                                        />
+                                                        <PasswordStrengthBar className='password-bar' minLength={5} password={changePassword} />
+                                                    </div>
                                                 </div>
                                                 <button className='btn-edit' onClick={handleSavePassword}>Save Changes</button>
                                                 <button className='btn-edit' onClick={handlePasswordToggle}>Cancel</button>
