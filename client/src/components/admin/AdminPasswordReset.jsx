@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-function PasswordReset({ user }) {
+function AdminPasswordReset() {
     const { token } = useParams(); // Get the token from the URL
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [status, setStatus] = useState('');
-
+    
     const navigate = useNavigate();
 
     const handlePasswordReset = async (event) => {
@@ -18,7 +18,7 @@ function PasswordReset({ user }) {
         }
 
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/${user}/password-reset/${token}`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/admin/password-reset/${token}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -31,10 +31,10 @@ function PasswordReset({ user }) {
                 setTimeout(() => {
                     setStatus();
                 }, 4000);
-                navigate(`/`);
+                navigate(`/admin`);
             } else {
                 const errorData = await response.json();
-                setStatus(errorData.error || 'Failed to reset password. Please try again.');
+                setStatus(errorData.error || 'Failed to res et password. Please try again.');
             }
         } catch (error) {
             setStatus('An error occurred. Please try again.');
@@ -43,7 +43,7 @@ function PasswordReset({ user }) {
     };
 
     return (
-        <div>
+        <div className="password-reset">
             <h2>Reset Your Password</h2>
             <form onSubmit={handlePasswordReset} className="form">
                 <div className="form-group form-reset">
@@ -73,4 +73,4 @@ function PasswordReset({ user }) {
     );
 }
 
-export default PasswordReset;
+export default AdminPasswordReset;
