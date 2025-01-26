@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-const AdminUserEmailVerification = () => {
+const EmailVerification = ({ user, path }) => {
     const { token: confirmationToken } = useParams();
     const [isLoading, setIsLoading] = useState(false);
     const [isConfirmed, setIsConfirmed] = useState(false);
@@ -10,6 +10,7 @@ const AdminUserEmailVerification = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Check if the token exists
         if (!confirmationToken) {
             setErrorMessage("No confirmation token provided.");
         }
@@ -26,7 +27,7 @@ const AdminUserEmailVerification = () => {
 
         try {
             const response = await fetch(
-                `http://127.0.0.1:5555/api/admin/confirm-email/${confirmationToken}`,
+                `http://127.0.0.1:5555/api/${user}/confirm-email/${confirmationToken}`,
                 {
                     method: "POST",
                     headers: {
@@ -39,7 +40,7 @@ const AdminUserEmailVerification = () => {
 
             if (response.ok) {
                 setIsConfirmed(true);
-                navigate('/');
+                navigate(path);
                 window.location.reload();
             } else {
                 setErrorMessage(result.error || "Failed to confirm email.");
@@ -76,4 +77,4 @@ const AdminUserEmailVerification = () => {
     );
 };
 
-export default AdminUserEmailVerification;
+export default EmailVerification;

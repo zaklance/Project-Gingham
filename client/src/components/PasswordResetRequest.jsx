@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function UserResetRequest() {
+function PasswordResetRequest({ user }) {
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState('');
 
@@ -8,12 +8,12 @@ function UserResetRequest() {
         event.preventDefault();
 
         try {
-            const response = await fetch('http://127.0.0.1:5555/api/user/password-reset-request', {
+            const response = await fetch(`http://127.0.0.1:5555/api/${user}/password-reset-request`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ email })
+                body: JSON.stringify({ email: email, })
             });
 
             if (response.ok) {
@@ -30,6 +30,7 @@ function UserResetRequest() {
             console.error('Error during password reset request:', error);
         }
     };
+    
 
     return (
         <div className="reset-request center-container">
@@ -42,17 +43,17 @@ function UserResetRequest() {
                         type="email"
                         value={email}
                         placeholder="Enter your email"
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => setEmail(e.target.value.toLowerCase())}
                         required
                     />
                 </div>
                 <div className='flex-center'>
-                    <button className="btn btn-login nowrap margin-t-12" type="submit" onClick={handlePasswordResetRequest}>Send Reset Link</button>
+                    <button className="btn btn-reset margin-t-12" type="submit" onClick={handlePasswordResetRequest}>Send Reset Link</button>
                 </div>
             </div>
-            {status && <p className="status-message margin-t-8 text-500">{status}</p>}
+            {status && <p className="status-message">{status}</p>}
         </div>
     );
 }
 
-export default UserResetRequest;
+export default PasswordResetRequest;

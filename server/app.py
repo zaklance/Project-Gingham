@@ -970,6 +970,26 @@ def profile(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
+@app.route('/api/users/<int:id>/password', methods=['PATCH'])
+@jwt_required()
+def user_password_change(id):
+    if not check_role('user') and not check_role('admin'):
+        return {'error': "Access forbidden: User only"}, 403
+    
+    if request.method == 'PATCH':
+        data = request.get_json()
+        user = User.query.filter(User.id == id).first()
+        if not user:
+            return {'error': ' User not found'}, 401
+        
+        if not user.authenticate(data['old_password']):
+            return {'error': ' Incorrect password!'}, 401
+        
+        user.password = data.get('new_password')
+        db.session.commit()
+        
+        return jsonify(user_id=user.id), 200
+
 @app.route('/api/vendor-users', methods=['GET', 'PATCH'])
 @jwt_required()
 def get_vendor_users():
