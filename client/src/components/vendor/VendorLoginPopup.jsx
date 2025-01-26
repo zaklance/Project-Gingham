@@ -153,7 +153,7 @@ function VendorLogin({ handlePopup }) {
                         <div className='flex-center-align flex-space-around margin-t-16'>
                             <button className='btn btn-login' type="submit">Login</button>
                             <p className="forgot-password" onClick={() => {
-                                navigate('/vendor/reset-request');
+                                navigate('/vendor/password-reset-request');
                                 window.location.reload();
                             }}>
                                 Forgot password?

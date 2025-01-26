@@ -126,11 +126,6 @@ def send_user_password_reset_email(email):
     """
     Sends a password reset email to the given user email.
     """
-    from server.app import User  # Import User model here to avoid circular import
-    
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        return {'error': 'User not found'}
 
     # Generate token for password reset
     token = serializer.dumps(email, salt='password-reset-salt')
@@ -246,11 +241,6 @@ def send_vendor_password_reset_email(email):
     """
     Sends a password reset email to the given user email.
     """
-    from server.app import VendorUser  # Import User model here to avoid circular import
-    
-    vendor_user = VendorUser.query.filter_by(email=email).first()
-    if not vendor_user:
-        return {'error': 'Vendor not found'}
 
     # Generate token for password reset
     token = serializer.dumps(email, salt='vendor-password-reset-salt')
@@ -366,11 +356,6 @@ def send_admin_password_reset_email(email):
     """
     Sends a password reset email to the given user email.
     """
-    from server.app import AdminUser  # Import User model here to avoid circular import
-    
-    admin_user = AdminUser.query.filter_by(email=email).first()
-    if not admin_user:
-        return {'error': 'User not found'}
 
     # Generate token for password reset
     token = serializer.dumps(email, salt='admin-password-reset-salt')
