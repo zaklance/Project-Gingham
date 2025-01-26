@@ -2716,8 +2716,12 @@ def password_reset_request():
     
     if not email:
         return {'error': 'Email is required'}, 400
-
-    result = send_user_password_reset_email(email)
+    
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 400
+    else:
+        result = send_user_password_reset_email(email)
     
     if "error" in result:
         return jsonify({"error": result["error"]}), 500
@@ -2775,7 +2779,11 @@ def vendor_password_reset_request():
     if not email:
         return {'error': 'Email is required'}, 400
 
-    result = send_vendor_password_reset_email(email)
+    vendor_user = VendorUser.query.filter_by(email=email).first()
+    if not vendor_user:
+        return jsonify({'error': 'Vendor not found'}), 400
+    else:
+        result = send_vendor_password_reset_email(email)
     
     if "error" in result:
         return jsonify({"error": result["error"]}), 500
@@ -2819,7 +2827,11 @@ def admin_password_reset_request():
     if not email:
         return {'error': 'Email is required'}, 400
 
-    result = send_admin_password_reset_email(email)
+    admin_user = AdminUser.query.filter_by(email=email).first()
+    if not admin_user:
+        return jsonify({'error': 'Admin not found'}), 400
+    else:
+        result = send_admin_password_reset_email(email)
     
     if "error" in result:
         return jsonify({"error": result["error"]}), 500
