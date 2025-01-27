@@ -70,7 +70,6 @@ const AdminEmail = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    emailAddress: emailAddress,
                     subject: newSubject,
                     mjml: newEmail
                  }),

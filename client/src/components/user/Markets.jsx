@@ -442,20 +442,20 @@ function Markets() {
                                         </div>
                                     ) : (
                                         <div className="marker-details" onClick={() => handleMarkerClickOff(market.id)}>
-                                            <div className="marker-name">{market.name}</div>
                                             <div className='text-center'>
-                                            <div className="marker-day">{market.schedule}</div>
-                                            {market.year_round ? (
-                                                <div className="marker-day">Open Year-Round</div>
-                                            ) : (
-                                                <>
-                                                    {market.season_start ? (
-                                                        <div className="marker-day">{formatDate(market.season_start)} — {formatDate(market.season_end)}</div>
-                                                    ) : (
-                                                        null
-                                                    )}
-                                                </>
-                                            )}
+                                                <div className="marker-name">{market.name}</div>
+                                                <div className="marker-day">{market.schedule}</div>
+                                                {market.year_round ? (
+                                                    <div className="marker-day">Open Year-Round</div>
+                                                ) : (
+                                                    <>
+                                                        {market.season_start ? (
+                                                            <div className="marker-day">{formatDate(market.season_start)} — {formatDate(market.season_end)}</div>
+                                                        ) : (
+                                                            null
+                                                        )}
+                                                    </>
+                                                )}
                                             </div>
                                         </div> 
                                     )}

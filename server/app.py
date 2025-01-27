@@ -2459,7 +2459,7 @@ def contact():
 @jwt_required()
 def preview_email():
     data = request.json
-    mjml_template = data.get('mjmlTemplate', '')
+    mjml_template = data.get('mjml', '')
 
     try:
         # Run MJML CLI to compile MJML to HTML
@@ -2488,7 +2488,7 @@ def send_mjml_email():
     data = request.json
     mjml = data.get('mjml', '')
     subject = data.get('subject', '')
-    email_address = data.get('emailAddress', '')
+    email_address = data.get('email_address', '')
 
     try:
         # Run MJML CLI to compile MJML to HTML
