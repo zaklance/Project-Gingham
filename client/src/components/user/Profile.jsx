@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { avatars_default, states } from '../../utils/common';
 import { timeConverter, formatPhoneNumber } from '../../utils/helpers';
@@ -20,6 +20,8 @@ function Profile({ marketData }) {
     const [tempProfileData, setTempProfileData] = useState(null);
     const [editMode, setEditMode] = useState(false);
     const [settingsMode, setSettingsMode] = useState(false);
+    const [emailMode, setEmailMode] = useState(false);
+    const [passwordMode, setPasswordMode] = useState(false);
     const [vendorFavs, setVendorFavs] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
     const [blogFavs, setBlogFavs] = useState([]);
@@ -461,6 +463,7 @@ function Profile({ marketData }) {
             .then(data => {
                 // console.log("Fetched sales history:", data);
                 setSalesHistory(data);
+                console.log(data)
             })
             .catch(error => console.error('Error fetching sales history:', error.message));
     }, []);
@@ -573,8 +576,6 @@ function Profile({ marketData }) {
             setShowPassword(prev => ({ ...prev, [field]: false }));
         }, 8000);
     };
-
-    console.log(isValid)
     
 
     if (!profileData) {
