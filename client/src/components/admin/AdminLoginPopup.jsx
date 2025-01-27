@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PasswordStrengthBar from 'react-password-strength-bar';
+import PasswordChecklist from "react-password-checklist"
 import { formatPhoneNumber } from '../../utils/helpers';
 // import '../../assets/css/index.css';
 
@@ -15,6 +16,7 @@ function Login({ handlePopup }) {
     const [signupLastName, setSignupLastName] = useState('');
     const [signupPhone, setSignupPhone] = useState('');
     const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false, pw3: false });
+    const [isValid, setIsValid] = useState(false);
 
     const navigate = useNavigate();
 
@@ -70,6 +72,11 @@ function Login({ handlePopup }) {
     
         if (signupPassword !== signupConfirmPassword) {
             alert("Passwords do not match.");
+            return;
+        }
+
+        if (!isValid) {
+            alert("Password does not meet requirements.");
             return;
         }
 
@@ -199,7 +206,6 @@ function Login({ handlePopup }) {
                                     required
                                 />
                                 <i className={showPassword.pw2 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw2')}>&emsp;</i>
-                                <PasswordStrengthBar className='password-bar' minLength={5} password={signupPassword} />
                             </div>
                         </div>
                         <div className="form-group form-login">
@@ -213,6 +219,18 @@ function Login({ handlePopup }) {
                                     required
                                 />
                                 <i className={showPassword.pw3 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw3')}>&emsp;</i>
+                                <PasswordChecklist
+                                    className='password-checklist'
+                                    style={{ padding: '0 12px' }}
+                                    rules={["minLength", "specialChar", "number", "capital", "match",]}
+                                    minLength={5}
+                                    value={signupPassword}
+                                    valueAgain={signupConfirmPassword}
+                                    onChange={(isValid) => { setIsValid(isValid) }}
+                                    iconSize={14}
+                                    validColor='#00bda4'
+                                    invalidColor='#ff4b5a'
+                                /><PasswordStrengthBar className='password-bar' minLength={5} password={signupPassword} />
                             </div>
                         </div>
                         <div className="form-group form-login">
