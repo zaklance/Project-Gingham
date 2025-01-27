@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useOutletContext } from 'react-router-dom';
+import { formatDate } from '../../utils/helpers';
 import { weekDay } from '../../utils/common';
 import { Annotation, ColorScheme, FeatureVisibility, Map, Marker } from 'mapkit-react';
 import MarketCard from './MarketCard';
-import '../../assets/css/index.css';
 
 function Markets() {
     const [user, setUser] = useState({});
@@ -185,7 +185,10 @@ function Markets() {
                         name: market.name,
                         latitude: parseFloat(market.coordinates.lat),
                         longitude: parseFloat(market.coordinates.lng),
-                        schedule: market.schedule
+                        schedule: market.schedule,
+                        season_start: market.season_start,
+                        season_end: market.season_end,
+                        year_round: market.year_round
                     }));
                 setMarketCoordinates(coordinates);
             })
@@ -440,7 +443,20 @@ function Markets() {
                                     ) : (
                                         <div className="marker-details" onClick={() => handleMarkerClickOff(market.id)}>
                                             <div className="marker-name">{market.name}</div>
+                                            <div className='text-center'>
                                             <div className="marker-day">{market.schedule}</div>
+                                            {market.year_round ? (
+                                                <div className="marker-day">Open Year-Round</div>
+                                            ) : (
+                                                <>
+                                                    {market.season_start ? (
+                                                        <div className="marker-day">{formatDate(market.season_start)} — {formatDate(market.season_end)}</div>
+                                                    ) : (
+                                                        null
+                                                    )}
+                                                </>
+                                            )}
+                                            </div>
                                         </div> 
                                     )}
                                 </Annotation>
