@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PasswordStrengthBar from 'react-password-strength-bar';
 import PasswordChecklist from "react-password-checklist"
 import { formatPhoneNumber } from '../../utils/helpers';
-// import '../../assets/css/index.css';
+import PulseLoader from 'react-spinners/PulseLoader';
 
 function Login({ handlePopup }) {
     const [loginEmail, setLoginEmail] = useState('');
@@ -17,6 +17,7 @@ function Login({ handlePopup }) {
     const [signupPhone, setSignupPhone] = useState('');
     const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false, pw3: false });
     const [isValid, setIsValid] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
 
@@ -264,7 +265,16 @@ function Login({ handlePopup }) {
                             />
                         </div>
                         <div className='flex-center margin-t-16'>
-                            <button className='btn-login' type="submit">Signup</button>
+                            {isLoading ? (
+                                <PulseLoader
+                                    color={'#ff806b'}
+                                    size={10}
+                                    aria-label="Loading Spinner"
+                                    data-testid="loader"
+                                />
+                            ) : (
+                                <button className='btn-login' type="submit">Signup</button>
+                            )}
                         </div>
                     </form>
                 </div>

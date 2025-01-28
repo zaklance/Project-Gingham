@@ -168,46 +168,6 @@ const AdminAuthRoute = ({ children }) => {
     return children;
 };
 
-// const CheckoutForm = () => {
-//     const fetchClientSecret = useCallback(() => {
-//         return fetch("http://127.0.0.1:5555/api/create-payment-intent", {
-//             method: "POST",
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify({ totalPrice: 100 }), // Example total price
-//         })
-//             .then((res) => {
-//                 if (!res.ok) {
-//                     return res.json().then((err) => {
-//                         throw new Error(err.error || "Failed to fetch client secret");
-//                     });
-//                 }
-//                 return res.json();
-//             })
-//             .then((data) => {
-//                 if (!data.clientSecret) {
-//                     throw new Error("Client secret is undefined");
-//                 }
-//                 return data.clientSecret;
-//             })
-//             .catch((error) => {
-//                 console.error("Error fetching client secret:", error.message);
-//                 throw error; // Rethrow to propagate the error
-//             });
-//     }, []);
-
-    // const options = { fetchClientSecret };
-
-    // return (
-    //     <div id="checkout">
-    //         <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
-    //             <EmbeddedCheckout />
-    //         </EmbeddedCheckoutProvider>
-    //     </div>
-    // );
-// };
-
 const Return = () => {
     const [status, setStatus] = useState(null);
     const [customerEmail, setCustomerEmail] = useState('');

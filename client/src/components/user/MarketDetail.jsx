@@ -80,6 +80,10 @@ function MarketDetail ({ match }) {
                     ]);
                     
                     setMarketDays(marketDaysRes);
+                    setAllVendorDetails(marketDaysRes
+                        .flatMap((marketDay) => marketDay.vendor_markets)
+                        .map((vendorMarket) => vendorMarket.vendor)
+                    )
                     if (Array.isArray(vendorMarketsRes)) {
                         const vendorIds = [...new Set(vendorMarketsRes.map(vendor => vendor.vendor_id))];
                         setVendors(vendorIds);
@@ -112,18 +116,6 @@ function MarketDetail ({ match }) {
             setMarketFavs(data);
         })
     }, [userId]);
-
-    useEffect(() => {
-        const fetchVendorDetails = async () => {
-            const vendorDetails = await Promise.all(
-                vendors.map(vendorId =>
-                    fetch(`http://127.0.0.1:5555/api/vendors/${vendorId}`).then(res => res.json())
-                )
-            );
-            setAllVendorDetails(vendorDetails);
-        };
-        fetchVendorDetails();
-    }, [vendors, vendorMarkets]);
 
     const handleDayChange = (event) => {
         const dayId = parseInt(event.target.value);
@@ -422,7 +414,7 @@ function MarketDetail ({ match }) {
                         <img className="img-market" src={`/market-images/_default-images/${market.image_default}`} alt="Market Image" />
                     )}
                 </div>
-                <div id='map' className='map-market-detail'>
+                <div id='map-market-detail'>
                     <Map
                         token={mapToken}
                         initialRegion={{

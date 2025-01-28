@@ -171,7 +171,6 @@ function Profile({ marketData }) {
                             body: JSON.stringify({
                                 first_name: tempProfileData.first_name,
                                 last_name: tempProfileData.last_name,
-                                email: tempProfileData.email,
                                 phone: tempProfileData.phone,
                                 address_1: tempProfileData.address_1,
                                 address_2: tempProfileData.address_2,
@@ -608,15 +607,6 @@ function Profile({ marketData }) {
                                         type="text"
                                         name="last_name"
                                         value={tempProfileData ? tempProfileData.last_name : ''}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Email:</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={tempProfileData ? tempProfileData.email : ''}
                                         onChange={handleInputChange}
                                     />
                                 </div>

@@ -350,15 +350,6 @@ function AdminProfile () {
                                             />
                                         </div>
                                         <div className='form-group'>
-                                            <label>Email:</label>
-                                            <input
-                                                type="email"
-                                                name="email"
-                                                value={tempProfileData ? tempProfileData.email : ''}
-                                                onChange={handleInputChange}
-                                            />
-                                        </div>
-                                        <div className='form-group'>
                                             <label>Phone Number:</label>
                                             <input
                                                 type="text"

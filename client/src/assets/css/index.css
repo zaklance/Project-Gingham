@@ -427,6 +427,18 @@ article {
   width: 50%;
 }
 
+.scale-102:hover {
+  display: inline-block;
+  scale: 102%;
+  transition: 0.4s;
+}
+
+.scale-108:hover {
+  display: inline-block;
+  scale: 108%;
+  transition: 0.4s;
+}
+
 .column-2 {
   column-count: 2;
 }
@@ -464,13 +476,18 @@ ul {
   margin-left: 1.3em;
 }
 
-.footer-li {
+.footer-li, .footer-li-copy {
   color: #3b4752;
   margin: 2px;
   padding: 2px;
   font-weight: 500;
   font-size: .8em;
   text-transform: uppercase;
+}
+
+.footer-li:hover {
+  scale: 108%;
+  transition: 0.4s;
 }
 
 .cart li {
@@ -535,11 +552,13 @@ ul {
 }
 
 .li-notif>* {
-  font-weight: 400;
+  font-weight: 300;
 }
 
-.li-notif .link-underline:hover {
-  text-decoration-thickness: .5px;
+.li-notif .link-plain:hover {
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  transition: 0.4s;
 }
 
 .li-cart {
@@ -818,7 +837,7 @@ ul {
   background-color: #fff;
   /* padding: 8px; */
   max-width: 140px;
-  margin-left: -92px;
+  margin-left: -102px;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
 }
 
@@ -1500,6 +1519,24 @@ link {
   text-decoration: underline;
 }
 
+.link-plain {
+  text-decoration: none;
+}
+
+.link-plain:hover {
+  background-color: transparent !important;
+}
+
+.link-scale-96:hover {
+  display: inline-block;
+  scale: 96%;
+  transition: 0.4s;
+}
+
+.link-plain {
+  text-decoration: none;
+}
+
 .link-underline {
   text-decoration: none;
   /* text-decoration-thickness: 0.75px; */
@@ -1508,6 +1545,7 @@ link {
 .link-underline:hover {
   text-decoration: underline;
   background-color: transparent !important;
+  transition: 0.4s;
 }
 
 .add-cart {
@@ -1533,7 +1571,7 @@ link {
 }
 
 .small-logo {
-  width: 96px;
+  width: 72px;
 }
 
 .cart {
@@ -1550,7 +1588,7 @@ link {
 }
 
 .cart-sidebar {
-  width: 30%;
+  width: 34%;
 }
 
 #map-container {
@@ -1561,17 +1599,24 @@ link {
   margin-bottom: 4px;
 }
 
-#map {
+#map-main {
+  overflow: hidden;
   width: 98%;
   height: 60vh;
   min-height: 400px;
   margin-left: 1%;
   margin-bottom: 4px;
+  border-radius: 20px;
 }
 
-.map-market-detail{
+#map-market-detail {
+  width: 98%;
+  height: 60vh;
   max-width: 400px;
+  min-height: 400px;
   max-height: 400px;
+  margin-left: 1%;
+  margin-bottom: 4px;
 }
 
 .map-circle {
@@ -1806,10 +1851,6 @@ link {
   padding: 4px;
 }
 
-.select-dropdown {
-  min-width: 140px;
-}
-
 .am-pm {
   min-width: 60px;
 }
@@ -1973,6 +2014,27 @@ select:hover {
   border-radius: 12px;
   height: 48px
 }
+
+.select-dropdown {
+  min-width: 140px;
+}
+
+.select-blue {
+  background-color: #eff;
+  color: #007BFF;
+}
+
+.select-blue:hover {
+  background-color: #d8f4fe;
+}
+
+.form-filters-markets input[type='radio'], .form-filters-reviews input[type='radio'] {
+  margin-right: 6px;
+}
+
+/* input[type='number'] {
+  max-width: 40px !important;
+} */
 
 .textarea-review {
   margin-top: 16px;
@@ -2888,6 +2950,14 @@ select:hover {
   #html-input {
     width: 400px;
     height: 300px;
+  }
+
+  #map-market-detail {
+    width: 100%;
+    max-width: 100%;
+    min-height: 400px;
+    max-height: 400px;
+    margin-left: 0;
   }
   
   .column-3 {
