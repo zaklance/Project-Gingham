@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
+import PulseLoader from 'react-spinners/PulseLoader';
 
 function PasswordResetRequest({ user }) {
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handlePasswordResetRequest = async (event) => {
         event.preventDefault();
 
+        if(isLoading) {
+            return
+        }
+
+        setIsLoading(true)
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/${user}/password-reset-request`, {
                 method: 'POST',
@@ -16,6 +23,7 @@ function PasswordResetRequest({ user }) {
                 body: JSON.stringify({ email: email })
             });
 
+            setIsLoading(false)
             if (response.ok) {
                 setStatus('Password reset link has been sent to your email.');
                 setTimeout(() => {
@@ -47,7 +55,16 @@ function PasswordResetRequest({ user }) {
                     />
                 </div>
                 <div className='flex-center'>
-                    <button className="btn btn-reset margin-t-12" type="submit" onClick={handlePasswordResetRequest}>Send Reset Link</button>
+                    {isLoading ? (
+                        <PulseLoader
+                            color={'#ff806b'}
+                            size={10}
+                            aria-label="Loading Spinner"
+                            data-testid="loader"
+                        />
+                    ) : (
+                        <button className="btn btn-reset margin-t-12" type="submit" onClick={handlePasswordResetRequest}>Send Reset Link</button>
+                    )}
                 </div>
             </div>
             {status && <p className="status-message">{status}</p>}

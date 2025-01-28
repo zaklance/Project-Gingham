@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import PulseLoader from 'react-spinners/PulseLoader';
 
 function PasswordReset({ user, path }) {
     const { token } = useParams(); // Get the token from the URL
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [status, setStatus] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
 
@@ -16,7 +18,11 @@ function PasswordReset({ user, path }) {
             setStatus('Passwords do not match');
             return;
         }
+        if (isLoading) {
+            return
+        }
 
+        setIsLoading(true)
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/${user}/password-reset/${token}`, {
                 method: 'POST',
@@ -26,6 +32,7 @@ function PasswordReset({ user, path }) {
                 body: JSON.stringify({ new_password: newPassword }),
             });
 
+            setIsLoading(false)
             if (response.ok) {
                 setStatus('Password successfully reset');
                 setTimeout(() => {
@@ -66,7 +73,16 @@ function PasswordReset({ user, path }) {
                         required
                     />
                 </div>
-                <button className="btn btn-login nowrap margin-t-8" type="submit">Reset Password</button>
+                {isLoading ? (
+                    <PulseLoader
+                        color={'#ff806b'}
+                        size={10}
+                        aria-label="Loading Spinner"
+                        data-testid="loader"
+                    />
+                ) : (
+                    <button className="btn btn-login nowrap margin-t-8" type="submit">Reset Password</button>
+                )}
             </form>
             {status && <p className="status-message">{status}</p>}
         </div>

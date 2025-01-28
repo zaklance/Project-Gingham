@@ -253,7 +253,7 @@ def delete_image():
                     user.avatar = None
                     db.session.commit()
 
-            return {'message': 'Image deleted successfully'}, 204
+            return {'message': 'Image deleted successfully'}, 200
         else:
             return {'error': f'File not found at path: {file_path}'}, 404
 
@@ -2195,7 +2195,7 @@ def handle_baskets():
             db.session.commit()
 
             if deleted_count > 0:
-                return jsonify({"message": f"{deleted_count} baskets deleted successfully"}), 204
+                return jsonify({"message": f"{deleted_count} baskets deleted successfully"}), 200
             else:
                 return jsonify({"message": "No baskets found with the provided IDs"}), 404
         except Exception as e:
@@ -2432,7 +2432,7 @@ def qr_code(id):
         try:
             db.session.delete(qr_code)
             db.session.commit()
-            return {'message': 'QR code deleted successfully'}, 204
+            return {'message': 'QR code deleted successfully'}, 200
         except Exception as e:
             db.session.rollback()
             return {'error': f'Failed to delete QR code: {str(e)}'}, 500
@@ -2890,7 +2890,7 @@ def get_user_notifications():
         
             deleted_count = query.delete()
             db.session.commit()
-            return jsonify({'deleted count': deleted_count}), 204
+            return jsonify({'deleted count': deleted_count}), 200
     
 @app.route('/api/user-notifications/<int:id>', methods=['PATCH', 'DELETE'])
 @jwt_required()
@@ -2916,7 +2916,7 @@ def delete_user_notifications(id):
         
         db.session.delete(notification)
         db.session.commit()
-        return jsonify({'notifications': notification_data}), 204
+        return jsonify({'notifications': notification_data}), 200
 
 @app.route('/api/notify-me-for-more-baskets', methods=['POST'])
 @jwt_required()
@@ -3035,11 +3035,14 @@ def fetch_vendor_notifications():
     if request.method == 'DELETE':
         query = VendorNotification.query
         if vendor_user_id:
-            query = query.filter_by(vendor_user_id=vendor_user_id)
+            query = query.filter(
+                VendorNotification.vendor_user_id == vendor_user_id,
+                VendorNotification.subject != 'team-request'
+            )
         
             deleted_count = query.delete()
             db.session.commit()
-            return jsonify({'deleted count': deleted_count}), 204
+            return jsonify({'deleted count': deleted_count}), 200
 
 @app.route('/api/vendor-notifications/<int:id>', methods=['PATCH', 'DELETE'])
 @jwt_required()
@@ -3065,7 +3068,7 @@ def delete_notification(id):
         
         db.session.delete(notification)
         db.session.commit()
-        return jsonify({'notifications': notification_data}), 204
+        return jsonify({'notifications': notification_data}), 200
     
 @app.route('/api/vendor-notifications/vendor/<int:vendor_id>', methods=['GET'])
 @jwt_required()
@@ -3146,7 +3149,7 @@ def reject_notification(notification_id):
     db.session.delete(notification)
     db.session.commit()
 
-    return jsonify({'message': 'Notification rejected successfully'}), 204
+    return jsonify({'message': 'Notification rejected successfully'}), 200
 
 @app.route('/api/create-admin-notification', methods=['POST'])
 def create_admin_notification():
@@ -3205,7 +3208,7 @@ def get_admin_notifications():
         
             deleted_count = query.delete()
             db.session.commit()
-            return jsonify({'deleted count': deleted_count}), 204
+            return jsonify({'deleted count': deleted_count}), 200
         
 
 @app.route('/api/admin-notifications/<int:id>', methods=['PATCH', 'DELETE'])
@@ -3232,7 +3235,7 @@ def delete_admin_notifications(id):
         
         db.session.delete(notification)
         db.session.commit()
-        return jsonify({'notifications': notification_data}), 204
+        return jsonify({'notifications': notification_data}), 200
 
 @app.route('/api/faqs', methods=['GET', 'POST'])
 def faqs():
@@ -3306,7 +3309,7 @@ def faq(id):
         try:
             db.session.delete(faq)
             db.session.commit()
-            return {'message': 'FAQ deleted successfully'}, 204
+            return {'message': 'FAQ deleted successfully'}, 200
         except Exception as e:
             db.session.rollback()
             return {'error': f'Failed to delete FAQ: {str(e)}'}, 500
@@ -3400,7 +3403,7 @@ def blog(id):
         try:
             db.session.delete(blog)
             db.session.commit()
-            return {'message': 'Blog deleted successfully'}, 204
+            return {'message': 'Blog deleted successfully'}, 200
         except Exception as e:
             db.session.rollback()
             return {'error': f'Failed to delete Blog: {str(e)}'}, 500

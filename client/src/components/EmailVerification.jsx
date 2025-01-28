@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import PulseLoader from 'react-spinners/PulseLoader';
 
 const EmailVerification = ({ user, path }) => {
     const { token: confirmationToken } = useParams();
@@ -22,6 +23,10 @@ const EmailVerification = ({ user, path }) => {
         return;
         }
 
+        if (isLoading) {
+            return
+        }
+
         setIsLoading(true);
         setErrorMessage("");
 
@@ -37,7 +42,7 @@ const EmailVerification = ({ user, path }) => {
             );
 
             const result = await response.json();
-
+            setIsLoading(false)
             if (response.ok) {
                 setIsConfirmed(true);
                 navigate(path);
@@ -62,13 +67,23 @@ const EmailVerification = ({ user, path }) => {
                         registration.
                     </p>
                     {errorMessage && <p className="text-error-small text-red width-fit margin-auto">{errorMessage}</p>}
-                    <button
-                        className="btn btn-confirm"
-                        onClick={handleConfirmation}
-                        disabled={isLoading || !confirmationToken}
-                    >
-                        {isLoading ? "Confirming..." : "Confirm Email"}
-                    </button>
+                    {isLoading ? (
+                        <PulseLoader
+                            className='margin-t-12'
+                            color={'#ff806b'}
+                            size={10}
+                            aria-label="Loading Spinner"
+                            data-testid="loader"
+                        />
+                    ) : (
+                        <button
+                            className="btn btn-confirm"
+                            onClick={handleConfirmation}
+                            disabled={isLoading || !confirmationToken}
+                        >
+                            Confirm Email
+                        </button>
+                    )}
                 </div>
             ) : (
                 <p>Your email has been successfully confirmed! You can now log in.</p>

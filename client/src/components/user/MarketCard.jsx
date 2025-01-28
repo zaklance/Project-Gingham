@@ -5,7 +5,7 @@ import { timeConverter, formatDate } from '../../utils/helpers';
 import { getRadius, zipCodeData, zipCodeDistance } from 'zipcode-city-distance';
 
 
-function MarketCard({ marketData, user, haversineDistance, resultCoordinates, filterAddress }) {
+function MarketCard({ marketData, user, haversineDistance, resultCoordinates, userCoordinates, filterAddress }) {
     const navigate = useNavigate();
 
     const handleLearnMore = () => {
@@ -34,14 +34,22 @@ function MarketCard({ marketData, user, haversineDistance, resultCoordinates, fi
                         <p><strong>Open Year Round</strong></p>
                     )
                 )}
-                {(user?.coordinates || resultCoordinates) && marketData?.coordinates ? (
+                {(user?.coordinates || resultCoordinates || userCoordinates) && marketData?.coordinates ? (
                     <p>
                         <strong>Distance:</strong> {(
                             haversineDistance(
-                                filterAddress ? resultCoordinates : user?.coordinates,
+                                filterAddress 
+                                    ? resultCoordinates 
+                                    : userCoordinates 
+                                    ? userCoordinates 
+                                    : user?.coordinates,
                                 marketData.coordinates
                             ) || 0
-                        ).toFixed(2)} miles
+                        ).toFixed(2)} miles from {filterAddress
+                            ? 'entered address'
+                            : userCoordinates
+                                ? 'your location'
+                                : 'your home address'}
                     </p>
                 ) : <></>}
             </div>

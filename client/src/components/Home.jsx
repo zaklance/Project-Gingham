@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import { blogTimeConverter } from "../utils/helpers";
 
 function Home() {
@@ -12,6 +12,9 @@ function Home() {
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const token = localStorage.getItem('user_jwt-token');
+
+    const { handlePopup } = useOutletContext();
+    
 
     useEffect(() => {
         const anchor = window.location.hash.slice(1);
@@ -62,45 +65,45 @@ function Home() {
     }, [blogs, blogFavs, userId]);
 
     const handleClick = async (blogId) => {
-        if (userId !== null) {
-            setIsClicked((prevState) => ({
-                ...prevState,
-                [blogId]: !prevState[blogId]
-            }));
-            if (isClicked[blogId] == false) {
-                const response = await fetch('http://127.0.0.1:5555/api/blog-favorites', {
-                    method: 'POST',
+        if (!userId) {
+            handlePopup()
+            return
+        }
+        setIsClicked((prevState) => ({
+            ...prevState,
+            [blogId]: !prevState[blogId]
+        }));
+        if (isClicked[blogId] == false) {
+            const response = await fetch('http://127.0.0.1:5555/api/blog-favorites', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    blog_id: blogId
+                })
+                // credentials: 'include'
+            }).then((resp) => {
+                return resp.json()
+            }).then(data => {
+                setBlogFavs([...blogFavs, data])
+                setAlertMessage('added to favorites');
+            });
+        } else {
+            const findBlogFavId = blogFavs.filter(item => item.blog_id == blogId)
+            for (const item of findBlogFavId) {
+                fetch(`http://127.0.0.1:5555/api/blog-favorites/${item.id}`, {
+                    method: "DELETE",
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        user_id: userId,
-                        blog_id: blogId
-                    })
-                    // credentials: 'include'
-                }).then((resp) => {
-                    return resp.json()
-                }).then(data => {
-                    setBlogFavs([...blogFavs, data])
-                    setAlertMessage('added to favorites');
-                });
-            } else {
-                const findBlogFavId = blogFavs.filter(item => item.blog_id == blogId)
-                for (const item of findBlogFavId) {
-                    fetch(`http://127.0.0.1:5555/api/blog-favorites/${item.id}`, {
-                        method: "DELETE",
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                        }
-                    }).then(() => {
-                        setBlogFavs((favs) => favs.filter((fav) => fav.blog_id !== blogId));
-                        setAlertMessage('removed from favorites');
-                    })
-                }
+                    }
+                }).then(() => {
+                    setBlogFavs((favs) => favs.filter((fav) => fav.blog_id !== blogId));
+                    setAlertMessage('removed from favorites');
+                })
             }
-        } else {
-            handlePopup()
         }
         setShowAlert(true);
         setTimeout(() => {
@@ -140,7 +143,6 @@ function Home() {
                     <p> Our mission: reduce waste, support vendors, and provide fresh, affordable food. Every 
                         basket purchased helps reduce waste and strengthen your community.
                     </p>
-                    <Link to={'./user/markets/1/#vendors'}>Link</Link>
                 </div>
             </div>
             {currentBlog ? (

@@ -280,7 +280,6 @@ function VendorProfile () {
             setTempVendorUserData({
                 first_name: vendorUserData.first_name,
                 last_name: vendorUserData.last_name,
-                email: vendorUserData.email,
                 phone: vendorUserData.phone,
             });
         }
@@ -693,15 +692,6 @@ function VendorProfile () {
                                                 type="text"
                                                 name="last_name"
                                                 value={tempVendorUserData ? tempVendorUserData.last_name : ''}
-                                                onChange={handleInputChange}
-                                            />
-                                        </div>
-                                        <div className='form-group flex-form'>
-                                            <label>Email:</label>
-                                            <input
-                                                type="email"
-                                                name="email"
-                                                value={tempVendorUserData ? tempVendorUserData.email : ''}
                                                 onChange={handleInputChange}
                                             />
                                         </div>
