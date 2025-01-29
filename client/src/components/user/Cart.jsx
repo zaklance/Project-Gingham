@@ -160,7 +160,7 @@ function Cart() {
             <div className='box-bounding'>
                 {cartItems.length === 0 ? (
                     <div className='text-center'>
-                        <h1 className='title-big'>Cart Empty</h1>
+                        <h1 className='title-big'>Cart is Empty</h1>
                     </div>
                 ) : (
                     <>

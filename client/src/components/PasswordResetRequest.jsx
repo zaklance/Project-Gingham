@@ -57,6 +57,7 @@ function PasswordResetRequest({ user }) {
                 <div className='flex-center'>
                     {isLoading ? (
                         <PulseLoader
+                            className='margin-t-12'
                             color={'#ff806b'}
                             size={10}
                             aria-label="Loading Spinner"
