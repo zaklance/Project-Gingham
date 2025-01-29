@@ -2726,6 +2726,10 @@ select:hover {
   text-decoration: underline;
 }
 
+.password-checklist {
+  width: 250px;
+}
+
 .faqs summary {
   background-color: #eef;
   font-size: 1.2em;
@@ -3060,7 +3064,7 @@ select:hover {
   }
 
   .title-big {
-    font-size: 5.5em;
+    font-size: 4.5em;
   }
 
   .footer {

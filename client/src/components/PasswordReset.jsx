@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import PulseLoader from 'react-spinners/PulseLoader';
+import PasswordStrengthBar from 'react-password-strength-bar';
+import PasswordChecklist from "react-password-checklist"
 
 function PasswordReset({ user, path }) {
     const { token } = useParams(); // Get the token from the URL
@@ -8,6 +10,7 @@ function PasswordReset({ user, path }) {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [status, setStatus] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isValid, setIsValid] = useState(false);
 
     const navigate = useNavigate();
 
@@ -18,6 +21,11 @@ function PasswordReset({ user, path }) {
             setStatus('Passwords do not match');
             return;
         }
+        if (!isValid) {
+            alert("Password does not meet requirements.");
+            return
+        }
+
         if (isLoading) {
             return
         }
@@ -72,9 +80,22 @@ function PasswordReset({ user, path }) {
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         required
                     />
+                    <PasswordChecklist
+                        className='password-checklist'
+                        style={{ padding: '0 12px' }}
+                        rules={["minLength", "specialChar", "number", "capital", "match",]}
+                        minLength={5}
+                        value={newPassword}
+                        valueAgain={confirmPassword}
+                        onChange={(isValid) => { setIsValid(isValid) }}
+                        iconSize={14}
+                        validColor='#00bda4'
+                        invalidColor='#ff4b5a'
+                    /><PasswordStrengthBar className='password-bar' minLength={5} password={newPassword} />
                 </div>
                 {isLoading ? (
                     <PulseLoader
+                        className='margin-t-12'
                         color={'#ff806b'}
                         size={10}
                         aria-label="Loading Spinner"

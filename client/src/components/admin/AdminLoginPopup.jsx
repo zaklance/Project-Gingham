@@ -267,6 +267,7 @@ function Login({ handlePopup }) {
                         <div className='flex-center margin-t-16'>
                             {isLoading ? (
                                 <PulseLoader
+                                    className='margin-t-12'
                                     color={'#ff806b'}
                                     size={10}
                                     aria-label="Loading Spinner"
