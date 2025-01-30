@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import PulseLoader from 'react-spinners/PulseLoader';
 
-const AdminUserEmailVerification = () => {
+const EmailVerification = ({ user, path }) => {
     const { token: confirmationToken } = useParams();
     const [isLoading, setIsLoading] = useState(false);
     const [isConfirmed, setIsConfirmed] = useState(false);
@@ -10,6 +11,7 @@ const AdminUserEmailVerification = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Check if the token exists
         if (!confirmationToken) {
             setErrorMessage("No confirmation token provided.");
         }
@@ -21,12 +23,16 @@ const AdminUserEmailVerification = () => {
         return;
         }
 
+        if (isLoading) {
+            return
+        }
+
         setIsLoading(true);
         setErrorMessage("");
 
         try {
             const response = await fetch(
-                `http://127.0.0.1:5555/api/admin/confirm-email/${confirmationToken}`,
+                `http://127.0.0.1:5555/api/${user}/confirm-email/${confirmationToken}`,
                 {
                     method: "POST",
                     headers: {
@@ -36,10 +42,10 @@ const AdminUserEmailVerification = () => {
             );
 
             const result = await response.json();
-
+            setIsLoading(false)
             if (response.ok) {
                 setIsConfirmed(true);
-                navigate('/');
+                navigate(path);
                 window.location.reload();
             } else {
                 setErrorMessage(result.error || "Failed to confirm email.");
@@ -61,13 +67,23 @@ const AdminUserEmailVerification = () => {
                         registration.
                     </p>
                     {errorMessage && <p className="text-error-small text-red width-fit margin-auto">{errorMessage}</p>}
-                    <button
-                        className="btn btn-confirm"
-                        onClick={handleConfirmation}
-                        disabled={isLoading || !confirmationToken}
-                    >
-                        {isLoading ? "Confirming..." : "Confirm Email"}
-                    </button>
+                    {isLoading ? (
+                        <PulseLoader
+                            className='margin-t-12'
+                            color={'#ff806b'}
+                            size={10}
+                            aria-label="Loading Spinner"
+                            data-testid="loader"
+                        />
+                    ) : (
+                        <button
+                            className="btn btn-confirm"
+                            onClick={handleConfirmation}
+                            disabled={isLoading || !confirmationToken}
+                        >
+                            Confirm Email
+                        </button>
+                    )}
                 </div>
             ) : (
                 <p>Your email has been successfully confirmed! You can now log in.</p>
@@ -76,4 +92,4 @@ const AdminUserEmailVerification = () => {
     );
 };
 
-export default AdminUserEmailVerification;
+export default EmailVerification;

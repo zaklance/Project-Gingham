@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { avatars_default, states } from '../../utils/common';
 import { timeConverter, formatPhoneNumber } from '../../utils/helpers';
@@ -7,6 +7,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import BasketSales from './BasketSales';
 import { blogTimeConverter } from "../../utils/helpers";
+import PasswordStrengthBar from 'react-password-strength-bar';
+import PasswordChecklist from "react-password-checklist"
 
 
 function Profile({ marketData }) {
@@ -18,6 +20,8 @@ function Profile({ marketData }) {
     const [tempProfileData, setTempProfileData] = useState(null);
     const [editMode, setEditMode] = useState(false);
     const [settingsMode, setSettingsMode] = useState(false);
+    const [emailMode, setEmailMode] = useState(false);
+    const [passwordMode, setPasswordMode] = useState(false);
     const [vendorFavs, setVendorFavs] = useState([]);
     const [marketFavs, setMarketFavs] = useState([]);
     const [blogFavs, setBlogFavs] = useState([]);
@@ -26,6 +30,19 @@ function Profile({ marketData }) {
     const [salesHistory, setSalesHistory] = useState([]);
     const [activeTab, setActiveTab] = useState('website');
     const [openBlog, setOpenBlog] = useState(null);
+    const [addressResults, setAddressResults] = useState();
+    const [showAddressDropdown, setShowAddressDropdown] = useState(false);
+    const [resultCoordinates, setResultCoordinates] = useState();
+    const [changeEmail, setChangeEmail] = useState();
+    const [changeConfirmEmail, setChangeConfirmEmail] = useState();
+    const [password, setPassword] = useState('');
+    const [changePassword, setChangePassword] = useState('');
+    const [changeConfirmPassword, setChangeConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false, pw3: false });
+    const [isValid, setIsValid] = useState(false);
+
+    const dropdownAddressRef = useRef(null);
+    const debounceTimeout = useRef(null);
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'))
     const token = localStorage.getItem('user_jwt-token');
@@ -291,6 +308,77 @@ function Profile({ marketData }) {
         }
     };
 
+    const handleSaveEmail = async () => {
+        if (changeEmail !== changeConfirmEmail) {
+            alert("Emails do not match.");
+            return;
+        }
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: changeEmail
+                })
+            });
+            if (response.ok) {
+                const updatedData = await response.json();
+                setChangeEmail('')
+                setChangeConfirmEmail('')
+                setEmailMode(false);
+                alert('Email will not update until you check your email and click the verify link.')
+            } else {
+                console.log('Failed to save changes');
+                console.log('Response status:', response.status);
+                console.log('Response text:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error saving changes:', error);
+        }
+    };
+
+    const handleSavePassword = async () => {
+        if (changePassword !== changeConfirmPassword) {
+            alert("Passwords do not match.");
+            return;
+        }
+        if (!isValid) {
+            alert("Password does not meet requirements.");
+            return;
+        }
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/api/users/${id}/password`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    old_password: password,
+                    new_password: changePassword
+                }),
+                credentials: 'include',
+            });
+            if (response.ok) {
+                const updatedData = await response.json();
+                setPassword('')
+                setChangePassword('')
+                setChangeConfirmPassword('')
+                setPasswordMode(false);
+                alert('Password changed')
+            } else {
+                console.log('Failed to save changes');
+                console.log('Response status:', response.status);
+                console.log('Response text:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error saving changes:', error);
+        }
+    };
+
     const handleDeleteImage = async () => {
         if (!profileData || !profileData.avatar) {
             alert('No image to delete.');
@@ -407,6 +495,7 @@ function Profile({ marketData }) {
             .then(data => {
                 // console.log("Fetched sales history:", data);
                 setSalesHistory(data);
+                console.log(data)
             })
             .catch(error => console.error('Error fetching sales history:', error.message));
     }, []);
@@ -443,6 +532,82 @@ function Profile({ marketData }) {
     const handleToggle = (name) => {
         setOpenBlog((prev) => (prev === name ? null : name));
     };
+
+    const handleAddress = (event) => {
+        const query = event.target.value;
+        // Clear the previous debounce timer
+        if (debounceTimeout.current) {
+            clearTimeout(debounceTimeout.current);
+        }
+        // Start a new debounce timer
+        debounceTimeout.current = setTimeout(() => {
+            if (query.trim() !== '') {
+                handleSearchAddress(query);
+            }
+        }, 250);
+    };
+    
+    const handleSearchAddress = async (query) => {
+        const apiKey = import.meta.env.VITE_RADAR_KEY;
+
+        try {
+            const responseRadar = await fetch(`https://api.radar.io/v1/search/autocomplete?query=${encodeURIComponent(query)}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': apiKey,
+                },
+            });
+            if (responseRadar.ok) {
+                const data = await responseRadar.json();
+                setAddressResults(data.addresses);
+                setShowAddressDropdown(true);
+
+                if (data.addresses && data.addresses.length > 0) {
+                    const { latitude, longitude } = data.addresses[0];
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching address:', error);
+        }
+    };
+
+    const handleClickOutsideAddressDropdown = (event) => {
+        if (dropdownAddressRef.current && !dropdownAddressRef.current.contains(event.target)) {
+            setShowAddressDropdown(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutsideAddressDropdown);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutsideAddressDropdown);
+        };
+    }, [showAddressDropdown]);
+
+
+    const handleEmailToggle = () => {
+        if (emailMode === false) {
+            setPasswordMode(false)
+        }
+        setEmailMode(!emailMode);
+    };
+
+    const handlePasswordToggle = () => {
+        if (passwordMode === false) {
+            setEmailMode(false)
+        }
+        setPasswordMode(!passwordMode);
+    };
+
+    const togglePasswordVisibility = (field) => {
+        setShowPassword((prev) => ({
+            ...prev,
+            [field]: !prev[field],
+        }));
+        setTimeout(() => {
+            setShowPassword(prev => ({ ...prev, [field]: false }));
+        }, 8000);
+    };
     
 
     if (!profileData) {
@@ -475,15 +640,6 @@ function Profile({ marketData }) {
                                         type="text"
                                         name="last_name"
                                         value={tempProfileData ? tempProfileData.last_name : ''}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Email:</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={tempProfileData ? tempProfileData.email : ''}
                                         onChange={handleInputChange}
                                     />
                                 </div>
@@ -622,6 +778,98 @@ function Profile({ marketData }) {
                                             </tbody>
                                         </table>
                                         <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
+                                        <button className='btn-edit' onClick={handleEmailToggle}>Change Email</button>
+                                        <button className='btn-edit' onClick={handlePasswordToggle}>Change Password</button>
+                                        {passwordMode ? (
+                                            <div>
+                                                <h3 className='margin-b-8 margin-t-8'>Change Password</h3>
+                                                <div className="form-group form-group-password">
+                                                    <label>Old Password: </label>
+                                                    <div className='badge-container-strict'>
+                                                        <input
+                                                            type={showPassword.pw1 ? 'text' : 'password'}
+                                                            value={password}
+                                                            placeholder="enter your current password"
+                                                            onChange={(event) => setPassword(event.target.value)}
+                                                            required
+                                                        />
+                                                        <i className={showPassword.pw1 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw1')}>&emsp;</i>
+                                                    </div>
+                                                </div>
+                                                <div className="form-group form-group-password">
+                                                    <label>New Password: </label>
+                                                    <div className='badge-container-strict'>
+                                                        <input
+                                                            type={showPassword.pw2 ? 'text' : 'password'}
+                                                            value={changePassword}
+                                                            placeholder="enter your new password"
+                                                            onChange={(event) => setChangePassword(event.target.value)}
+                                                            required
+                                                        />
+                                                        <i className={showPassword.pw2 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw2')}>&emsp;</i>
+                                                    </div>
+                                                </div>
+                                                <div className="form-group form-group-password">
+                                                    <label></label>
+                                                    <div className='badge-container-strict'>
+                                                        <input
+                                                            type={showPassword.pw3 ? 'text' : 'password'}
+                                                            value={changeConfirmPassword}
+                                                            placeholder="re-enter your new password"
+                                                            onChange={(event) => setChangeConfirmPassword(event.target.value)}
+                                                            required
+                                                        />
+                                                        <i className={showPassword.pw3 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw3')}>&emsp;</i>
+                                                        <PasswordChecklist
+                                                            className='password-checklist'
+                                                            style={{padding: '0 8px'}}
+                                                            rules={["minLength", "specialChar", "number", "capital", "match"]}
+                                                            minLength={5}
+                                                            value={changePassword}
+                                                            valueAgain={changeConfirmPassword}
+                                                            onChange={(isValid) => { setIsValid(isValid) }}
+                                                            iconSize={14}
+                                                            validColor='#00bda4'
+                                                            invalidColor='#ff4b5a'
+                                                        />
+                                                        <PasswordStrengthBar className='password-bar' minLength={5} password={changePassword} />
+                                                    </div>
+                                                </div>
+                                                <button className='btn-edit' onClick={handleSavePassword}>Save Changes</button>
+                                                <button className='btn-edit' onClick={handlePasswordToggle}>Cancel</button>
+                                            </div>
+                                        ) : (
+                                            null
+                                        )}
+                                        {emailMode ? (
+                                            <div>
+                                                <h3 className='margin-b-8 margin-t-8'>Change Email</h3>
+                                                <div className="form-group">
+                                                    <label>Email: </label>
+                                                    <input
+                                                        type="email"
+                                                        value={changeEmail}
+                                                        placeholder="enter your email"
+                                                        onChange={(event) => setChangeEmail(event.target.value)}
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label></label>
+                                                    <input
+                                                        type="email"
+                                                        value={changeConfirmEmail}
+                                                        placeholder="re-enter your email"
+                                                        onChange={(event) => setChangeConfirmEmail(event.target.value)}
+                                                        required
+                                                    />
+                                                </div>
+                                                <button className='btn-edit' onClick={handleSaveEmail}>Save Changes</button>
+                                                <button className='btn-edit' onClick={handleEmailToggle}>Cancel</button>
+                                            </div>
+                                        ) : (
+                                            null
+                                        )}
                                     </div>
                                 </div>
                             </>

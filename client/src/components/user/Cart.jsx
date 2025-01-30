@@ -157,44 +157,35 @@ function Cart() {
     return (
         <div>
             <h2>Shopping Cart</h2>
-            {cartItems.length === 0 ? (
-                <p className=''>Your cart is empty.</p>
-            ) : (
-                <>
-                    <div className='flex-space-between m-flex-wrap'>
-                        <div className="cart">
-                            <ul>
-                                {cartItems.map((item, index) => (
-                                    <li className='cart-item' key={index}>
-                                        <span><b>{item.vendor_name}</b> at <i>{item.location}</i>&ensp; {weekDay[item.day_of_week]} from {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</span>
-                                        <span><b>${item.price}</b></span>
-                                        <button className='btn-cart' onClick={() => removeFromCart(item)}>Remove</button>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className="cart-sidebar">
-                            <h3>Checkout</h3>
-                            <h3>Total: ${totalPrice}</h3> 
-                            {/* <input
-                                type="text"
-                                placeholder="Name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                />
-                            <input
-                                type="text"
-                                placeholder="Address"
-                                value={address}
-                                onChange={(e) => setAddress(e.target.value)}
-                                /> */}
-                            <button className='btn-cart' onClick={() => {globalThis.localStorage.getItem('user_id') == null ? handlePopup() : handleCheckout();}}>
-                                Checkout
-                            </button>
-                        </div>
+            <div className='box-bounding'>
+                {cartItems.length === 0 ? (
+                    <div className='text-center'>
+                        <h1 className='title-big'>Cart is Empty</h1>
                     </div>
-                </>
-            )}
+                ) : (
+                    <>
+                        <div className='flex-space-between m-flex-wrap'>
+                            <div className="cart">
+                                <ul>
+                                    {cartItems.map((item, index) => (
+                                        <li className='cart-item' key={index}>
+                                            <span><b>{item.vendor_name}</b> at <i>{item.location}</i>, {weekDay[item.day_of_week]} from {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</span>
+                                            <span><b>${item.price}</b></span>
+                                            <button className='btn-cart' onClick={() => removeFromCart(item)}>Remove</button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div className="cart-sidebar flex-start m-flex-wrap">
+                                <h1 className='margin-r-16'>Total: ${totalPrice}</h1> 
+                                <button className='btn-edit' onClick={() => {globalThis.localStorage.getItem('user_id') == null ? handlePopup() : handleCheckout();}}>
+                                    Checkout
+                                </button>
+                            </div>
+                        </div>
+                    </>
+                )}
+            </div>
         </div>
     );
 }
