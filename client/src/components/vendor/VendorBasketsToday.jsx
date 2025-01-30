@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { timeConverter, formatBasketDate } from '../../utils/helpers';
 
-function VendorBasketsToday({vendorId, marketDay, entry}) {
+function VendorBasketsToday({vendorId, todaysMarketDays, entry}) {
     const [todayBaskets, setTodayBaskets] = useState([]);
     const [startAmPm, setStartAmPm] = useState('PM');
     const [endAmPm, setEndAmPm] = useState('PM');
@@ -12,7 +12,7 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
     const [errorMessage, setErrorMessage] = useState([]);
 
     useEffect(() => {
-        if (vendorId) {   
+        if (vendorId && todaysMarketDays) {   
             const today = new Date();
             const formattedDate = today.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', }).split('/').reverse().join('-');
             console.log('Formatted date being sent:', formattedDate);
@@ -31,9 +31,9 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
                         if (Array.isArray(data)) {
                             const todayBaskets = data.filter(basket => {
                                 const basketDate = new Date(basket.sale_date).toISOString().split('T')[0];
-                                return basketDate === formattedDate;
-                            });
-
+                                return basketDate === formattedDate && todaysMarketDays.some(marketDay => marketDay.id === basket.market_day_id);
+                            });                            
+    
                             const groupedData = todayBaskets.reduce((acc, basket) => {
                                 const { market_day_id, market_name } = basket;
                                 if (!acc[market_day_id]) { acc[market_day_id] = { marketId: market_day_id, marketName: market_name, baskets: [] }; }
@@ -51,7 +51,7 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
             }    
             fetchTodaysBaskets();
         }
-    }, [vendorId]);
+    }, [vendorId, todaysMarketDays]);
     
     const toggleEditMode = (basketId) => {
         if (editingBasketId === basketId) {
@@ -218,6 +218,8 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
                     });
                     return newBaskets;
                 });
+
+                window.location.reload();
             } catch (error) {
                 console.error('Error deleting baskets:', error);
                 setErrorMessage('Failed to delete baskets. Please try again.');
@@ -240,7 +242,9 @@ function VendorBasketsToday({vendorId, marketDay, entry}) {
             <div className="flex flex-nowrap box-scroll-x">
             {
                 Array.isArray(todayBaskets) && todayBaskets.length > 0 ? (
-                    todayBaskets.map((entry, index) => {
+                    todayBaskets.filter((entry) => {
+                        return todaysMarketDays.some((marketDay) => marketDay.id === entry.baskets[0]?.market_day.id);
+                    }).map((entry, index) => {
                         const isEditing = editingBasketId === entry.baskets[0]?.id;
 
                         return (

@@ -337,6 +337,25 @@ def logout():
     session.pop('user_id', None)
     return {}, 204
 
+@app.route('/api/change-email', methods=['POST'])
+def change_email():
+    try:
+        data = request.get_json()
+
+        email = data.get('email')
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+
+        result = send_user_confirmation_email(email, data)
+
+        if 'error' in result:
+            return jsonify({"error": result["error"]}), 500
+
+        return jsonify({"message": result["message"]}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+
 @app.route('/api/signup', methods=['POST'])
 def signup():
     data = request.get_json()
@@ -351,61 +370,82 @@ def signup():
         return jsonify({"error": result["error"]}), 500
     return jsonify({"message": result["message"]}), 200
     
-@app.route('/api/user/confirm-email/<token>', methods=['GET', 'POST'])
+@app.route('/api/user/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
 def confirm_email(token):
     try:
         # Decode the token (itsdangerous generates URL-safe tokens by default)
         print(f"Received token: {token}")
         data = serializer.loads(token, salt='user-confirmation-salt', max_age=3600)
 
+        user_id = data.get('user_id')  # Extract user ID
+        email = data.get('email')  # Extract new email
+
         if request.method == 'GET':
-            print(f"GET request: Token verified, email extracted: {data['email']}")
-            # Redirect to the frontend with the token
+            print(f"GET request: Token verified, email extracted: {email}")
             return redirect(f'http://localhost:5173/user/confirm-email/{token}')
 
         if request.method == 'POST':
             print(f"POST request: Token verified, user data extracted: {data}")
 
-            # Check if the email already exists
-            existing_user = User.query.filter_by(email=data['email']).first()
-            if existing_user:
-                if existing_user.email_verified:
-                    print("POST request: Email already confirmed")
-                    return {'message': 'Email already confirmed.', 'isNewUser': False}, 200
-                else:
-                    print("POST request: Email exists but not verified")
-                    existing_user.email_verified = True
-                    db.session.commit()
-                    return {'message': 'Email confirmed successfully.', 'isNewUser': False}, 200
+            # Check if the user already exists by ID
+            existing_user = User.query.get(user_id)
 
-            # Create a new user with the extracted data
+            if existing_user:
+                # If user exists, update the email instead of creating a new account
+                print(f"POST request: User {user_id} exists, updating email to {email}")
+
+                # Prevent duplicate email usage
+                if User.query.filter(User.email == email, User.id != user_id).first():
+                    return jsonify({"error": "This email is already in use by another account."}), 400
+
+                existing_user.email = email
+                existing_user.email_verified = False  # Require re-verification
+                db.session.commit()
+
+                return jsonify({
+                    "message": "Email updated successfully. Verification required for the new email.",
+                    "isNewUser": False,
+                    "user_id": existing_user.id,
+                    "email": existing_user.email
+                }), 200
+
+            # If the user does not exist, prevent creating a new account without required fields
+            if "password" not in data:
+                print("POST request failed: Missing password field for new account creation.")
+                return jsonify({"error": "Password is required to create a new account."}), 400
+
+            # Create a new user (only if password and required fields exist)
             new_user = User(
-                email=data['email'],
-                password=data['password'], 
-                first_name=data['first_name'],
-                last_name=data['last_name'],
-                phone=data['phone'],
-                address_1=data['address1'],
-                address_2=data.get('address2', ''),
-                city=data['city'],
-                state=data['state'],
-                zipcode=data['zipcode'],
+                email=email,
+                password=data['password'],
+                first_name=data.get('first_name', ""),
+                last_name=data.get('last_name', ""),
+                phone=data.get('phone', ""),
+                address_1=data.get('address1', ""),
+                address_2=data.get('address2', ""),
+                city=data.get('city', ""),
+                state=data.get('state', ""),
+                zipcode=data.get('zipcode', ""),
                 coordinates=data.get('coordinates'),
                 email_verified=True
             )
             db.session.add(new_user)
             db.session.commit()
 
-            print("POST request: User created and committed to the database")
-            return {'message': 'Email confirmed and account created successfully.', 'isNewUser': True}, 201
+            print("POST request: New user created and committed to the database")
+            return jsonify({
+                'message': 'Email confirmed and account created successfully.',
+                'isNewUser': True,
+                'user_id': new_user.id
+            }), 201
 
     except SignatureExpired:
         print("Request: The token has expired")
-        return {'error': 'The token has expired'}, 400
+        return jsonify({'error': 'The token has expired'}), 400
 
     except Exception as e:
         print(f"Request: An error occurred: {str(e)}")
-        return {'error': f'Failed to confirm email: {str(e)}'}, 500
+        return jsonify({'error': f'Failed to confirm or update email: {str(e)}'}), 500
 
 # VENDOR PORTAL
 @app.route('/api/vendor/login', methods=['POST'])

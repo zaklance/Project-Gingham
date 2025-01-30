@@ -78,6 +78,7 @@ function Profile({ marketData }) {
                 if (response.ok) {
                     try {
                         const data = JSON.parse(text);
+                        console.log(data)
                         setProfileData({ ...data });
                     } catch (jsonError) {
                         console.error('Error parsing JSON:', jsonError);
