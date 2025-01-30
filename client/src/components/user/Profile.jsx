@@ -319,15 +319,16 @@ function Profile({ marketData }) {
             return;
         }
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
-                method: 'PATCH',
+            const emailChangeResponse = await fetch(`http://127.0.0.1:5555/api/change-email`, {
+                method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    email: changeEmail
-                })
+                    user_id: id,
+                    email: changeEmail,
+                }),
             });
             if (response.ok) {
                 const updatedData = await response.json();
