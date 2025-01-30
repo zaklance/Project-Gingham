@@ -326,6 +326,8 @@ function VendorBasketCard({ vendorId, marketDay }) {
             setIsEditing(false);
             setIsSaved(true);
             setErrorMessage('');
+
+            window.location.reload();
         } else {
             setErrorMessage('Please enter valid data for all fields.');
         }
@@ -374,11 +376,11 @@ function VendorBasketCard({ vendorId, marketDay }) {
                 try {
                     const response = await fetch(
                     `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.id}&sale_date=${formattedSaleDate}`,
-                    {
-                        method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ basket_ids: unsoldBaskets.map(basket => basket.id) }),
-                    }
+                        {
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ basket_ids: unsoldBaskets.map(basket => basket.id) }),
+                        }
                     );
             
                     if (!response.ok) {
@@ -410,12 +412,13 @@ function VendorBasketCard({ vendorId, marketDay }) {
                     console.error('Error deleting baskets:', error);
                     setErrorMessage(`An error occurred while deleting baskets: ${error.message}`);
                 }
+
+                window.location.reload();
             } else {
                 console.error('Missing vendorId, marketDay.id, or marketDay.date');
                 setErrorMessage('Missing vendor ID, market day ID, or sale date.');
             }
-      };
-      
+        };
  
     useEffect(() => {
         if (marketDay?.date) {
@@ -425,6 +428,15 @@ function VendorBasketCard({ vendorId, marketDay }) {
             setIsLive(diffInHours <= 48);
         }
     }, [marketDay]);
+
+    const today = new Date().toISOString().split('T')[0];
+
+    const shouldRenderBasket = savedBaskets.length === 0 || 
+        !savedBaskets.some(basket => basket.sale_date === today && isLive);
+
+    if (!shouldRenderBasket) {
+        return null;
+    }
 
     return (
         <div className='badge-container padding-12'>
