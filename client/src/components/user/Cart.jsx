@@ -131,17 +131,13 @@ function Cart() {
                 console.log('All QR codes created successfully:', results);
             }
     
-            // Clear the cart
-            // setCartItems([]);
-            // setAmountInCart(0);
-    
-            // Redirect to the payment page, passing clientSecret, totalPrice, and publishableKey
             console.log('Navigating to payment page...');
             navigate('/user/payment', {
                 state: {
                     clientSecret,
                     totalPrice,
                     cartItems,
+                    amountInCart
                 },
             });
         } catch (error) {
