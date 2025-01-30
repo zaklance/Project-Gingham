@@ -5,6 +5,7 @@ import { weekDay } from '../../utils/common';
 import { timeConverter, formatEventDate, formatDate, marketDateConvert, formatPickupText } from '../../utils/helpers';
 import ReviewMarket from './ReviewMarket';
 import { Annotation, ColorScheme, FeatureVisibility, Map, Marker } from 'mapkit-react'
+import { toast } from 'react-toastify';
 
 function MarketDetail ({ match }) {
     const { id } = useParams();
@@ -214,14 +215,14 @@ function MarketDetail ({ match }) {
             setAmountInCart(updatedCartItems.length);
             setMarketBaskets(prev => prev.filter(item => item.id !== basketInCart.id)
             );
-            setAlertMessage('added to cart');
+            toast.success('Added to cart!', {
+                autoClose: 2000,
+            });
         } else {
-            setAlertMessage("All baskets are sold out!");
+            toast.error('All baskets are sold out!', {
+                autoClose: 2000,
+            });
         }
-        setVendorAlertStates(prev => ({ ...prev, [vendorId]: true }));
-        setTimeout(() => {
-            setVendorAlertStates(prev => ({ ...prev, [vendorId]: false }));
-        }, 2000);
     };
 
     useEffect(() => {
@@ -263,7 +264,10 @@ function MarketDetail ({ match }) {
                     return resp.json()
                 }).then(data => {
                     setMarketFavs([...marketFavs, data]);
-                    setAlertMessage('added to favorites');
+                    // setAlertMessage('added to favorites');
+                    toast.success('Added to favorites!', {
+                        autoClose: 2000,
+                    });
                 });
             } else {
                 const findMarketFavId = marketFavs.filter(item => item.market_id == market.id)
@@ -276,17 +280,19 @@ function MarketDetail ({ match }) {
                         },
                     }).then(() => {
                         setMarketFavs((favs) => favs.filter((fav) => fav.market_id !== market.id));
-                        setAlertMessage('removed from favorites');
+                        toast.success('Removed from favorites!', {
+                            autoClose: 2000,
+                        });
                     })
                 }
             }
         } else {
             handlePopup()
         }
-        setShowAlert(true);
-        setTimeout(() => {
-            setShowAlert(false);
-        }, 1600);
+        // setShowAlert(true);
+        // setTimeout(() => {
+        //     setShowAlert(false);
+        // }, 1600);
     };
 
     useEffect(() => {
