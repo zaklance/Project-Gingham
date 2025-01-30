@@ -29,6 +29,7 @@ import Vendors from './components/user/Vendors.jsx';
 import VendorDetail from './components/user/VendorDetail.jsx';
 import UserFAQs from './components/user/UserFAQs.jsx';
 import Logout from './components/user/Logout.jsx';
+import UserEmailVerification from './components/user/UserEmailVerification.jsx';
 
 // vendor routes
 import VendorHome from './components/vendor/VendorHome.jsx';
