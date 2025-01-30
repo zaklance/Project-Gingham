@@ -47,6 +47,7 @@ const UserEmailVerification = () => {
 				if (!result.isNewUser && result.user_id) {
 					console.log(`Existing user detected: ID ${result.user_id}, Email: ${result.email}`);
 	
+					// Run PATCH request only if user ID exists
 					await updateUserEmail(result.user_id, result.email);
 				}
 			} else {
@@ -66,7 +67,7 @@ const UserEmailVerification = () => {
 		}
 	
 		try {
-			const token = localStorage.getItem("user_jwt-token");
+			const token = localStorage.getItem("user_jwt-token"); // Ensure authentication
 			const response = await fetch(`http://127.0.0.1:5555/api/users/${userId}`, {
 				method: "PATCH",
 				headers: {
@@ -111,7 +112,7 @@ const UserEmailVerification = () => {
 						Welcome to <span className="font-gingham title-small">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</span>!
 					</h1>
 					<p className="text-500 margin-b-8">Thank you for registering! Your email has been successfully confirmed. Welcome to the platform!</p>
-					<button className="btn btn-confirm" onClick={() => navigate("/user/logout")}>
+					<button className="btn btn-secondary" onClick={() => navigate("/api/logout")}>
 						Go Back
 					</button>
 				</div>
@@ -119,7 +120,7 @@ const UserEmailVerification = () => {
 				<div className="box-bounding text-center">
 					<h1 className="title-med text-center">Welcome back!</h1>
 					<p className="text-500 margin-b-8">Your email has been successfully confirmed. You can now log in.</p>
-					<button className="btn btn-confirm" onClick={() => navigate("/user/logout")}>
+					<button className="btn btn-secondary" onClick={() => navigate("/api/logout")}>
 						Go Back
 					</button>
 				</div>
