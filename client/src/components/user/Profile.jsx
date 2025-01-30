@@ -65,6 +65,7 @@ function Profile({ marketData }) {
                 if (response.ok) {
                     try {
                         const data = JSON.parse(text);
+                        console.log(data)
                         setProfileData({ ...data });
                     } catch (jsonError) {
                         console.error('Error parsing JSON:', jsonError);
@@ -144,36 +145,67 @@ function Profile({ marketData }) {
                     const data = await responseRadar.json();
                     if (data.addresses && data.addresses.length > 0) {
                         const { latitude, longitude } = data.addresses[0];
-
-                        const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
-                            method: 'PATCH',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                first_name: tempProfileData.first_name,
-                                last_name: tempProfileData.last_name,
-                                email: tempProfileData.email,
-                                phone: tempProfileData.phone,
-                                address_1: tempProfileData.address_1,
-                                address_2: tempProfileData.address_2,
-                                city: tempProfileData.city,
-                                state: tempProfileData.state,
-                                zipcode: tempProfileData.zipcode,
-                                coordinates: { lat: latitude, lng: longitude }
-                            })
-                        });
-
-                        if (response.ok) {
-                            const updatedData = await response.json();
-                            setProfileData(updatedData);
-                            setEditMode(false);
-                            console.log('Profile data updated successfully:', updatedData);
+    
+                        // Check if the email has changed
+                        if (tempProfileData.email !== profileData.email) {
+                            // Call the different endpoint for email change
+                            const emailChangeResponse = await fetch(`http://127.0.0.1:5555/api/change-email`, {
+                                method: 'POST',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    user_id: id,
+                                    email: tempProfileData.email,
+                                }),
+                            });
+    
+                            if (emailChangeResponse.ok) {
+                                alert('Email change request has been sent! Please confirm.');
+                                const emailChangeResult = await emailChangeResponse.json();
+                                setProfileData((prevData) => ({
+                                    ...prevData,
+                                    email: tempProfileData.email, // Update email locally
+                                }));
+                            } else {
+                                console.error('Email change request failed.');
+                                console.log('Response status:', emailChangeResponse.status);
+                                console.log('Response text:', await emailChangeResponse.text());
+                                return; // Stop further execution if email change fails
+                            }
                         } else {
-                            console.log('Failed to save changes');
-                            console.log('Response status:', response.status);
-                            console.log('Response text:', await response.text());
+                            // Proceed with the regular PATCH request for other updates
+                            const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
+                                method: 'PATCH',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    first_name: tempProfileData.first_name,
+                                    last_name: tempProfileData.last_name,
+                                    email: tempProfileData.email,
+                                    phone: tempProfileData.phone,
+                                    address_1: tempProfileData.address_1,
+                                    address_2: tempProfileData.address_2,
+                                    city: tempProfileData.city,
+                                    state: tempProfileData.state,
+                                    zipcode: tempProfileData.zipcode,
+                                    coordinates: { lat: latitude, lng: longitude },
+                                }),
+                            });
+    
+                            if (response.ok) {
+                                const updatedData = await response.json();
+                                setProfileData(updatedData);
+                                setEditMode(false);
+                                console.log('Profile data updated successfully:', updatedData);
+                            } else {
+                                console.error('Failed to save changes.');
+                                console.log('Response status:', response.status);
+                                console.log('Response text:', await response.text());
+                            }
                         }
                     }
                 }
