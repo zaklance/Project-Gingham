@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useOutletContext } from 'react-router-dom';
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./CheckoutForm";
 import { loadStripe } from "@stripe/stripe-js";
 
 function Payment() {
     const location = useLocation();
-    const { clientSecret, totalPrice, cartItems } = location.state || {};
+    const { clientSecret, totalPrice, cartItems, amountInCart } = location.state || {};
+    const { setCartItems, setAmountInCart } = useOutletContext();
     const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_JS_KEY)
     const appearance = {
         theme: 'flat',
@@ -25,7 +26,13 @@ function Payment() {
         <>
             {clientSecret && stripePromise ? (
                 <Elements stripe={stripePromise} options={{ clientSecret, appearance }}>
-                    <CheckoutForm totalPrice={totalPrice} cartItems={cartItems}/>
+                    <CheckoutForm 
+                        totalPrice={totalPrice} 
+                        cartItems={cartItems} 
+                        amountInCart={amountInCart} 
+                        setCartItems={setCartItems} 
+                        setAmountInCart={setAmountInCart} 
+                    />
                 </Elements>
             ) : (
                 <p>Loading payment information...</p>
