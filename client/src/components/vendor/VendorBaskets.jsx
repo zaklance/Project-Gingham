@@ -84,31 +84,38 @@ function VendorBaskets({ vendorUserData }) {
     useEffect(() => {
         const calculateNextMarketDays = () => {
             const today = new Date();
+            today.setHours(0, 0, 0, 0);
+    
             const next7Days = Array.from({ length: 7 }, (_, i) => {
                 const date = new Date(today);
                 date.setDate(today.getDate() + i);
                 return date;
             });
-
-            const nextMarketDays = filteredMarketDays
-                .map((day) => {
-                    const date = next7Days.find((d) => d.getDay() === day.day_of_week);
-                    return {
-                        ...day,
-                        date: date ? new Date(date.setHours(0, 0, 0, 0)) : null,
-                    };
-                })
-                .filter((day) => day.date && day.date.getTime() > today.getTime())
-                .sort((a, b) => a.date - b.date);
-
-            setNextMarketDays(nextMarketDays);
+    
+            const marketDaysWithDates = filteredMarketDays.map((day) => {
+                const date = next7Days.find((d) => d.getDay() === day.day_of_week);
+                return {
+                    ...day,
+                    date: date ? new Date(date.setHours(0, 0, 0, 0)) : null,
+                };
+            });
+    
+            const todaysMarketDays = marketDaysWithDates.filter(
+                (day) => day.date && day.date.getTime() === today.getTime()
+            );
+    
+            const futureMarketDays = marketDaysWithDates.filter(
+                (day) => day.date && day.date.getTime() > today.getTime()
+            ).sort((a, b) => a.date - b.date);
+    
+            setNextMarketDays({ todaysMarketDays, futureMarketDays });
         };
-
+    
         if (filteredMarketDays.length > 0) {
             calculateNextMarketDays();
         }
     }, [filteredMarketDays]);
-
+    
     return (
         <div>
             {!vendorUserData || !vendorUserData.vendor_id ? (
@@ -121,13 +128,13 @@ function VendorBaskets({ vendorUserData }) {
                         {/* <button className='btn-add nowrap'>Add A Basket for Today</button> */}
                     <br/>
                     <div className="flex flex-nowrap box-scroll-x">
-                        <VendorBasketsToday vendorId={vendorId} />
+                        <VendorBasketsToday vendorId={vendorId} todaysMarketDays={nextMarketDays?.todaysMarketDays} />
 
                     </div>
                     <h2 className="margin-t-48 margin-b-16">Future Baskets:</h2>
                     <div className="flex flex-nowrap box-scroll-x">
-                        {nextMarketDays ? (
-                            nextMarketDays.map((marketDay, index) => (
+                        {nextMarketDays?.futureMarketDays.length > 0 ? (
+                            nextMarketDays.futureMarketDays.map((marketDay, index) => (
                                 <VendorBasketCard key={index} vendorId={vendorId} marketDay={marketDay} weekDay={weekDay} />
                             ))
                         ) : (
