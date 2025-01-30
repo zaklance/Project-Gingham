@@ -323,7 +323,7 @@ function Profile({ marketData }) {
         setIsSendingEmail(true);
     
         try {
-            const emailChangeResponse = await fetch(`http://127.0.0.1:5555/api/change-email`, {
+            const response = await fetch(`http://127.0.0.1:5555/api/change-email`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -339,7 +339,7 @@ function Profile({ marketData }) {
                 setChangeEmail('');
                 setChangeConfirmEmail('');
                 setEmailMode(false);
-                alert('Email will not update until you check your email and click the verify link.');
+                alert('Email will not update until you click the verification link in the sent email.')
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status:', emailChangeResponse.status);
@@ -790,7 +790,7 @@ function Profile({ marketData }) {
                                                     <div className='badge-container-strict'>
                                                         <input
                                                             type={showPassword.pw2 ? 'text' : 'password'}
-                                                            value={changePassword}
+                                                            value={changePassword || ''}
                                                             placeholder="enter your new password"
                                                             onChange={(event) => setChangePassword(event.target.value)}
                                                             required
@@ -803,7 +803,7 @@ function Profile({ marketData }) {
                                                     <div className='badge-container-strict'>
                                                         <input
                                                             type={showPassword.pw3 ? 'text' : 'password'}
-                                                            value={changeConfirmPassword}
+                                                            value={changeConfirmPassword || ''}
                                                             placeholder="re-enter your new password"
                                                             onChange={(event) => setChangeConfirmPassword(event.target.value)}
                                                             required
@@ -837,7 +837,7 @@ function Profile({ marketData }) {
                                                     <label>Email: </label>
                                                     <input
                                                         type="email"
-                                                        value={changeEmail}
+                                                        value={changeEmail || ''}
                                                         placeholder="enter your email"
                                                         onChange={(event) => setChangeEmail(event.target.value)}
                                                         required
@@ -847,7 +847,7 @@ function Profile({ marketData }) {
                                                     <label></label>
                                                     <input
                                                         type="email"
-                                                        value={changeConfirmEmail}
+                                                        value={changeConfirmEmail || ''}
                                                         placeholder="re-enter your email"
                                                         onChange={(event) => setChangeConfirmEmail(event.target.value)}
                                                         required
