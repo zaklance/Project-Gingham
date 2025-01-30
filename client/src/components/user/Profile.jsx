@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { avatars_default, states } from '../../utils/common';
-import { timeConverter, formatPhoneNumber } from '../../utils/helpers';
+import { blogTimeConverter, formatPhoneNumber, timeConverter } from '../../utils/helpers';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import BasketSales from './BasketSales';
-import { blogTimeConverter } from "../../utils/helpers";
 import PasswordStrengthBar from 'react-password-strength-bar';
 import PasswordChecklist from "react-password-checklist"
+import ProfileFavorites from './ProfileFavorites';
 
 
 function Profile({ marketData }) {
@@ -22,14 +22,10 @@ function Profile({ marketData }) {
     const [settingsMode, setSettingsMode] = useState(false);
     const [emailMode, setEmailMode] = useState(false);
     const [passwordMode, setPasswordMode] = useState(false);
-    const [vendorFavs, setVendorFavs] = useState([]);
-    const [marketFavs, setMarketFavs] = useState([]);
-    const [blogFavs, setBlogFavs] = useState([]);
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
     const [salesHistory, setSalesHistory] = useState([]);
     const [activeTab, setActiveTab] = useState('website');
-    const [openBlog, setOpenBlog] = useState(null);
     const [addressResults, setAddressResults] = useState();
     const [showAddressDropdown, setShowAddressDropdown] = useState(false);
     const [resultCoordinates, setResultCoordinates] = useState();
@@ -145,52 +141,93 @@ function Profile({ marketData }) {
         });
     };
 
+    const handleAddressInputChange = event => {
+        const { name, value } = event.target;
+        setTempProfileData({
+            ...tempProfileData,
+            [name]: value
+        });
+        handleAddress(event)
+    };
+
     const handleSaveChanges = async () => {
         let uploadedFilename = null;
         try {
             const apiKey = import.meta.env.VITE_RADAR_KEY;
             const query = `${tempProfileData.address_1} ${tempProfileData.city} ${tempProfileData.state} ${tempProfileData.zipcode}`;
             try {
-                const responseRadar = await fetch(`https://api.radar.io/v1/geocode/forward?query=${encodeURIComponent(query)}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': apiKey,
-                    },
-                });
-                if (responseRadar.ok) {
-                    const data = await responseRadar.json();
-                    if (data.addresses && data.addresses.length > 0) {
-                        const { latitude, longitude } = data.addresses[0];
+                if (!resultCoordinates && (tempProfileData.address_1 !== profileData.address_1 || tempProfileData.city !== profileData.city || tempProfileData.state !== profileData.state || tempProfileData.zipcode !== profileData.zipcode)) {
+                    const responseRadar = await fetch(`https://api.radar.io/v1/geocode/forward?query=${encodeURIComponent(query)}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': apiKey,
+                        },
+                    });
+                    if (responseRadar.ok) {
+                        const data = await responseRadar.json();
+                        if (data.addresses && data.addresses.length > 0) {
+                            const { latitude, longitude } = data.addresses[0];
 
-                        const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
-                            method: 'PATCH',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                first_name: tempProfileData.first_name,
-                                last_name: tempProfileData.last_name,
-                                phone: tempProfileData.phone,
-                                address_1: tempProfileData.address_1,
-                                address_2: tempProfileData.address_2,
-                                city: tempProfileData.city,
-                                state: tempProfileData.state,
-                                zipcode: tempProfileData.zipcode,
-                                coordinates: { lat: latitude, lng: longitude }
-                            })
-                        });
+                            const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
+                                method: 'PATCH',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    first_name: tempProfileData.first_name,
+                                    last_name: tempProfileData.last_name,
+                                    phone: tempProfileData.phone,
+                                    address_1: tempProfileData.address_1,
+                                    address_2: tempProfileData.address_2,
+                                    city: tempProfileData.city,
+                                    state: tempProfileData.state,
+                                    zipcode: tempProfileData.zipcode,
+                                    coordinates: { lat: latitude, lng: longitude }
+                                })
+                            });
 
-                        if (response.ok) {
-                            const updatedData = await response.json();
-                            setProfileData(updatedData);
-                            setEditMode(false);
-                            console.log('Profile data updated successfully:', updatedData);
-                        } else {
-                            console.log('Failed to save changes');
-                            console.log('Response status:', response.status);
-                            console.log('Response text:', await response.text());
+                            if (response.ok) {
+                                const updatedData = await response.json();
+                                setProfileData(updatedData);
+                                setEditMode(false);
+                                console.log('Profile data updated successfully:', updatedData);
+                            } else {
+                                console.log('Failed to save changes');
+                                console.log('Response status:', response.status);
+                                console.log('Response text:', await response.text());
+                            }
                         }
+                    }
+                } else {
+                    const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            first_name: tempProfileData.first_name,
+                            last_name: tempProfileData.last_name,
+                            phone: tempProfileData.phone,
+                            address_1: tempProfileData.address_1,
+                            address_2: tempProfileData.address_2,
+                            city: tempProfileData.city,
+                            state: tempProfileData.state,
+                            zipcode: tempProfileData.zipcode,
+                            coordinates: { lat: tempProfileData.coordinates.lat, lng: tempProfileData.coordinates.lng }
+                        })
+                    });
+
+                    if (response.ok) {
+                        const updatedData = await response.json();
+                        setProfileData(updatedData);
+                        setEditMode(false);
+                        console.log('Profile data updated successfully:', updatedData);
+                    } else {
+                        console.log('Failed to save changes');
+                        console.log('Response status:', response.status);
+                        console.log('Response text:', await response.text());
                     }
                 }
             } catch (error) {
@@ -401,36 +438,6 @@ function Profile({ marketData }) {
         }
     };
 
-    useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/vendor-favorites?user_id=${userId}`, {
-            method: "GET",
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => response.json())
-            .then(data => {
-                setVendorFavs(data);
-            })
-            .catch(error => console.error('Error fetching vendor favorites', error));
-    }, []);
-
-    useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`, {
-            method: "GET",
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => response.json())
-            .then(data => {
-                setMarketFavs(data);
-            })
-            .catch(error => console.error('Error fetching market favorites', error));
-    }, []);
-
     const handleFileChange = (event) => {
         if (event.target.files) {
             setStatus('initial');
@@ -462,7 +469,7 @@ function Profile({ marketData }) {
             .then(data => {
                 // console.log("Fetched sales history:", data);
                 setSalesHistory(data);
-                console.log(data)
+                // console.log(data)
             })
             .catch(error => console.error('Error fetching sales history:', error.message));
     }, []);
@@ -481,23 +488,6 @@ function Profile({ marketData }) {
             ...tempUserSettings,
             [field]: !tempUserSettings[field]
         });
-    };
-
-    useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/blog-favorites?user_id=${userId}`, {
-            method: "GET",
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => response.json())
-            .then(data => { setBlogFavs(data) })
-            .catch(error => console.error('Error fetching blog favorites', error));
-    }, []);
-
-    const handleToggle = (name) => {
-        setOpenBlog((prev) => (prev === name ? null : name));
     };
 
     const handleAddress = (event) => {
@@ -627,8 +617,32 @@ function Profile({ marketData }) {
                                         size="36"
                                         placeholder='Address 1'
                                         value={tempProfileData ? tempProfileData.address_1 : ''}
-                                        onChange={handleInputChange}
+                                        onChange={handleAddressInputChange}
                                     />
+                                    {showAddressDropdown && (
+                                        <ul className="dropdown-content-profile" ref={dropdownAddressRef}>
+                                            {addressResults.map(item => (
+                                                <li
+                                                    className="search-results-signup"
+                                                    key={item.formattedAddress}
+                                                    onClick={() => {
+                                                        setTempProfileData((prev) => ({
+                                                            ...prev,
+                                                            address_1: item.addressLabel,
+                                                            city: item.city,
+                                                            state: item.stateCode,
+                                                            zipcode: item.postalCode,
+                                                            coordinates: { 'lat': item.latitude, 'lng': item.longitude },
+                                                        }));
+                                                        setResultCoordinates({ 'lat': item.latitude, 'lng': item.longitude })
+                                                        setShowAddressDropdown(false);
+                                                    }}
+                                                >
+                                                    {item.formattedAddress}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
                                     <input
                                         type="text"
                                         name="address_2"
@@ -912,52 +926,7 @@ function Profile({ marketData }) {
                 <BasketSales salesHistory={salesHistory} />
             </div>
             <div className='box-bounding'>
-                <h2 className='margin-b-24'>Favorites</h2>
-                <h3>Vendors</h3>
-                <ul className='favorites-list box-scroll'>
-                    {vendorFavs.length > 0 ? (
-                        vendorFavs.map((data) => (
-                            <li key={data.id}>
-                                <Link to={`/user/vendors/${data.vendor_id}`}><b>{data.vendor.name}</b> <i>of {data.vendor.city}, {data.vendor.state}</i></Link>
-                            </li>
-                        ))
-                    ) : (
-                        <p>No favorite vendors</p>
-                    )}
-                </ul>
-                <h3 className='margin-t-16'>Markets</h3>
-                <ul className='favorites-list box-scroll'>
-                    {marketFavs.length > 0 ? (
-                        marketFavs.map((data) => (
-                            <li key={data.id}>
-                                <Link to={`/user/markets/${data.market_id}`}><b>{data.market.name}</b> <i>open {data.market.schedule}</i></Link>
-                            </li>
-                        ))
-                    ) : (
-                        <p>No favorite markets</p>
-                    )}
-                </ul>
-                <h3 className='margin-t-16 margin-b-8'>Blogs</h3>
-                <div className='box-scroll'>
-                    {blogFavs.length > 0 ? (
-                        blogFavs.map((blog) => (
-                        <details 
-                            key={blog.id}
-                            className='blog-favs'
-                            open={openBlog === blog.id}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                handleToggle(blog.id);
-                            }}
-                        >
-                            <summary>{blogTimeConverter(blog.blog.post_date)}, {blog.blog.title}</summary>
-                            <p dangerouslySetInnerHTML={{ __html: blog.blog.body }} style={{ width: '100%', height: '100%' }}></p>
-                        </details>
-                        ))
-                    ) : (
-                        <p>No favorite blogs</p>
-                    )}
-                </div>
+                <ProfileFavorites />
             </div>
         </div>
     );

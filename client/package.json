@@ -13,7 +13,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@mui/material": "^6.3.1",
+    "@mui/material": "^6.4.2",
     "@stripe/react-stripe-js": "^2.8.1",
     "@stripe/stripe-js": "^4.9.0",
     "@vis.gl/react-google-maps": "^1.1.0",
@@ -33,7 +33,8 @@
     "react-password-strength-bar": "^0.4.1",
     "react-router-dom": "^6.24.1",
     "react-scripts": "^5.0.1",
-    "react-spinners": "^0.15.0"
+    "react-spinners": "^0.15.0",
+    "react-toastify": "^11.0.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

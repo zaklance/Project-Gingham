@@ -36,7 +36,7 @@ function BasketSales({ salesHistory }) {
                                                 {history.vendor_name || 'No Vendor Name'}
                                             </Link>
                                         </td>                                
-                                        <td className='table-center'>{history.sale_date || 'N/A'}</td>
+                                        <td className='table-center nowrap'>{history.sale_date || 'N/A'}</td>
                                         <td className='table-center'>${history.price ? history.price.toFixed(2) : 'N/A'}</td>
                                         <td className='table-center '><Link className='icon-file' to={`/user/profile/${userId}`} target="_blank" rel="noopener noreferrer">&emsp;</Link></td>
                                     </tr>

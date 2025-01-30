@@ -1427,7 +1427,10 @@ def market_day_by_id(id):
 @app.route('/api/vendors', methods=['GET', 'POST', 'PATCH'])
 def all_vendors():
     if request.method == 'GET':
+        market_day = request.args.get('market_day')
         vendors = Vendor.query.all()
+        if market_day:
+            vendors = Market.query.filter_by(market_day=market_day_id).all()
         return jsonify([vendor.to_dict() for vendor in vendors]), 200
 
     elif request.method == 'POST':

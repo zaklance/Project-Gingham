@@ -16,6 +16,7 @@ function Markets() {
     const [showFilters, setShowFilters] = useState(false);
     const [filterAZ, setFilterAZ] = useState(false);
     const [filterZA, setFilterZA] = useState(false);
+    const [filterLocation, setFilterLocation] = useState(false);
     const [filterAddress, setFilterAddress] = useState(false);
     const [filterRadio, setFilterRadio] = useState('az');
     const [address, setAddress] = useState("");
@@ -285,8 +286,9 @@ function Markets() {
         if (!filterAZ) {
             setFilterAZ(!filterAZ)
             setFilterZA(false)
+            setFilterLocation(false)
             setFilterAddress(false)
-            setAddress()
+            setAddress('')
             setResultCoordinates(null)
         }
     }
@@ -295,25 +297,37 @@ function Markets() {
         if (!filterZA) {
             setFilterAZ(false)
             setFilterZA(!filterZA)
+            setFilterLocation(false)
             setFilterAddress(false)
             setAddress()
             setResultCoordinates(null)
         }
     }
-
+    
+    const handleFilterLocation = (event) => {
+        setFilterAZ(false)
+        setFilterZA(false)
+        setFilterLocation(true)
+        setFilterAddress(false)
+        setAddress('')
+    }
+    
+    
     const handleFilterAddress = (event) => {
         if (!filterAddress) {
             setFilterAZ(false)
             setFilterZA(false)
+            setFilterLocation(false)
             setFilterAddress(!filterAddress)
             setResultCoordinates(null)
         }
     }
-
+    
     const toggleRadio = () => {
         if (!filterAddress) {
             setFilterAZ(false)
             setFilterZA(false)
+            setFilterLocation(false)
             setFilterAddress(true)
         }
     };
@@ -389,6 +403,20 @@ function Markets() {
         }
         else if (filterZA) {
             results.sort((a, b) => b.name.localeCompare(a.name));
+        }
+        else if (filterLocation) {
+            results = results
+                .map(market => {
+                    let distance = haversineDistance(
+                        userCoordinates,
+                        market.coordinates
+                    );
+                    if (distance === null || isNaN(distance)) {
+                        distance = Infinity;
+                    }
+                    return { ...market, distance };
+                })
+                .sort((a, b) => a.distance - b.distance);
         }
         else if (filterAddress && address) {
             results = results
@@ -512,6 +540,7 @@ function Markets() {
                                                     id="aZ"
                                                     type="radio"
                                                     name="filters"
+                                                    checked={filterAZ}
                                                     value={true}
                                                     onChange={handleFilterAZ}
                                                 />
@@ -522,10 +551,22 @@ function Markets() {
                                                     id="zA"
                                                     type="radio"
                                                     name="filters"
+                                                    checked={filterZA}
                                                     value={true}
                                                     onChange={handleFilterZA}
                                                 />
                                                 <label htmlFor='zA'>Z to A</label>
+                                            </div>
+                                            <div className='form-filters-markets'>
+                                                <input
+                                                    id="location"
+                                                    type="radio"
+                                                    name="filters"
+                                                    checked={filterLocation}
+                                                    value={true}
+                                                    onChange={handleFilterLocation}
+                                                />
+                                                <label htmlFor='location'>Location</label>
                                             </div>
                                             <div className='form-filters-markets'>
                                                 <input
