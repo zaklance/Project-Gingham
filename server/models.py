@@ -391,7 +391,7 @@ class MarketFavorite(db.Model, SerializerMixin):
     user = db.relationship('User', back_populates='market_favorites')
     market = db.relationship('Market', back_populates='market_favorites')
 
-    serialize_rules = ('-user', '-market', 'market.name', '-market.reviews', '-market.market_favorites')
+    serialize_rules = ('-user', '-market', 'market.name', '-market.reviews', '-market.market_favorites', '-market.market_days')
 
     def __repr__(self) -> str:
         return f"<MarketFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.market_id}>"
@@ -406,7 +406,7 @@ class VendorFavorite(db.Model, SerializerMixin):
     user = db.relationship('User', back_populates='vendor_favorites')
     vendor = db.relationship('Vendor', back_populates='vendor_favorites')
 
-    serialize_rules = ('-user', '-vendor', 'vendor.name', '-vendor.reviews', '-vendor.vendor_favorites')
+    serialize_rules = ('-user', '-vendor', 'vendor.name', '-vendor.reviews', '-vendor.vendor_favorites', '-vendor.vendor_markets')
 
     def __repr__(self) -> str:
         return f"<VendorFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.vendor_id}>"

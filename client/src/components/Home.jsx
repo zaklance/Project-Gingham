@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useOutletContext } from 'react-router-dom';
 import { blogTimeConverter } from "../utils/helpers";
+import { toast } from 'react-toastify';
 
 function Home() {
     const [blogs, setBlogs] = useState([]);
@@ -89,7 +90,9 @@ function Home() {
                 return resp.json()
             }).then(data => {
                 setBlogFavs([...blogFavs, data])
-                setAlertMessage('added to favorites');
+                toast.success('Added to favorites!', {
+                    autoClose: 2000,
+                });
             });
         } else {
             const findBlogFavId = blogFavs.filter(item => item.blog_id == blogId)
@@ -101,14 +104,12 @@ function Home() {
                     }
                 }).then(() => {
                     setBlogFavs((favs) => favs.filter((fav) => fav.blog_id !== blogId));
-                    setAlertMessage('removed from favorites');
+                    toast.success('Removed from favorites!', {
+                        autoClose: 2000,
+                    });
                 })
             }
         }
-        setShowAlert(true);
-        setTimeout(() => {
-            setShowAlert(false);
-        }, 1600);
     };
 
     const handleNavigate = (direction) => {

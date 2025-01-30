@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../../assets/css/index.css';
 import { timeConverter, formatDate } from '../../utils/helpers';
 
 

@@ -4,6 +4,7 @@ import { weekDay } from '../../utils/common';
 import { timeConverter, formatEventDate, marketDateConvert, formatPickupText } from '../../utils/helpers';
 import MarketCard from './MarketCard';
 import ReviewVendor from './ReviewVendor';
+import { toast } from 'react-toastify';
 
 function VendorDetail() {
     const { id } = useParams();
@@ -130,14 +131,14 @@ function VendorDetail() {
             setCartItems(updatedCartItems);
             setAmountInCart(updatedCartItems.length);
             setMarketBaskets(prevBaskets => prevBaskets.filter(item => item.id !== basketInCart.id));
-            setAlertMessage('added to cart');
+            toast.success('Added to cart!', {
+                            autoClose: 2000,
+                        });
         } else {
-            setAlertMessage("All baskets are sold out!");
+            toast.error('All baskets are sold out!', {
+                autoClose: 2000,
+            });
         }
-        setVendorAlertStates(prev => ({ ...prev, [marketDay.id]: true }));
-        setTimeout(() => {
-            setVendorAlertStates(prev => ({ ...prev, [marketDay.id]: false }));
-        }, 2000);
     };
 
     useEffect(() => {
@@ -199,7 +200,9 @@ function VendorDetail() {
                     return resp.json()
                 }).then(data => {
                     setVendorFavs([...vendorFavs, data])
-                    setAlertMessage('added to favorites');
+                    toast.success('Added to favorites!', {
+                        autoClose: 2000,
+                    });
                 });
             } else {
                 const findVendorFavId = vendorFavs.filter(item => item.vendor_id == vendor.id)
@@ -211,18 +214,15 @@ function VendorDetail() {
                         }
                     }).then(() => {
                         setVendorFavs((favs) => favs.filter((fav) => fav.vendor_id !== vendor.id));
-                        setAlertMessage('removed from favorites');
+                        toast.success('Removed from favorites!', {
+                            autoClose: 2000,
+                        });
                     })
                 }
             }
         } else {
             handlePopup()
         }
-
-        setShowAlert(true);
-        setTimeout(() => {
-            setShowAlert(false);
-        }, 1600);
     };
 
     useEffect(() => {

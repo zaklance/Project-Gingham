@@ -5,6 +5,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  --toastify-color-success: #00bda4;
+  --toastify-color-error: #ff4b5a;
 }
 
 /* Reset some default browser styles */
@@ -944,6 +946,7 @@ ul {
 }
 
 .btn-add {
+  font-size: .9em;
   padding: 10px 12px;
   border-radius: 8px;
   height: fit-content;
@@ -952,7 +955,7 @@ ul {
   margin: 12px 0px;
   margin-right: 12px;
   margin-left: 4px;
-  width: 96px;
+  width: 102px;
 }
 
 .btn-add-green {
@@ -2526,6 +2529,12 @@ select:hover {
 .badge-arrows {
   position: absolute;
   top: 12px;
+  right: 16px;
+}
+
+.badge-arrows-profile {
+  position: absolute;
+  top: -29px;
   right: 16px;
 }
 
