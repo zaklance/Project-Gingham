@@ -10,6 +10,7 @@ import VendorLoginPopup from './components/vendor/VendorLoginPopup.jsx';
 import AdminLoginPopup from './components/admin/AdminLoginPopup.jsx';
 import { jwtDecode } from 'jwt-decode';
 import BrowserTimezone from './components/BrowserTimezone.jsx';
+import { ToastContainer, Slide } from 'react-toastify';
 
 function App() {
     const location = useLocation();
@@ -90,6 +91,19 @@ function App() {
                 </main>
             </div>
             <Footer />
+            <ToastContainer
+                position="top-right"
+                autoClose={1000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                transition={Slide}
+            />
         </>
     );
 }
