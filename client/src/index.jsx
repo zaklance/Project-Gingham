@@ -10,6 +10,9 @@ import Home from './components/Home.jsx';
 import Contact from './components/Contact.jsx';
 import TermsOfService from './components/TermsOfService.jsx';
 import PrivacyPolicy from './components/PrivacyPolicy.jsx';
+import PasswordResetRequest from './components/PasswordResetRequest.jsx';
+import PasswordReset from './components/PasswordReset.jsx';
+import EmailVerification from './components/EmailVerification.jsx';
 import ErrorPage from './components/ErrorPage.jsx';
 
 // user routes
@@ -26,9 +29,6 @@ import Vendors from './components/user/Vendors.jsx';
 import VendorDetail from './components/user/VendorDetail.jsx';
 import UserFAQs from './components/user/UserFAQs.jsx';
 import Logout from './components/user/Logout.jsx';
-import UserResetRequest from './components/user/UserResetRequest.jsx';
-import UserPasswordReset from './components/user/UserPasswordReset.jsx';
-import UserEmailVerification from './components/user/UserEmailVerification.jsx';
 
 // vendor routes
 import VendorHome from './components/vendor/VendorHome.jsx';
@@ -40,9 +40,6 @@ import VendorScan from './components/vendor/VendorScan.jsx';
 import VendorProfile from './components/vendor/VendorProfile.jsx';
 import VendorHelpCenter from './components/vendor/VendorHelpCenter.jsx';
 import VendorLoginPopup from './components/vendor/VendorLoginPopup.jsx';
-import VendorResetRequest from './components/vendor/VendorResetRequest.jsx';
-import VendorPasswordReset from './components/vendor/VendorPasswordReset.jsx';
-import VendorUserEmailVerification from './components/vendor/VendorUserEmailVerification.jsx'
 
 // admin routes
 import AdminHome from './components/admin/AdminHome.jsx';
@@ -56,9 +53,6 @@ import AdminEmail from './components/admin/AdminEmail.jsx';
 import AdminBlog from './components/admin/AdminBlog.jsx';
 import AdminReport from './components/admin/AdminReport.jsx';
 import AdminFAQs from './components/admin/AdminFAQs.jsx';
-import AdminResetRequest from './components/admin/AdminResetRequest.jsx';
-import AdminPasswordReset from './components/admin/AdminPasswordReset.jsx';
-import AdminEmailVerification from './components/admin/AdminEmailVerification.jsx'
 
 import { loadStripe } from '@stripe/stripe-js';
 // import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
@@ -174,46 +168,6 @@ const AdminAuthRoute = ({ children }) => {
     return children;
 };
 
-// const CheckoutForm = () => {
-//     const fetchClientSecret = useCallback(() => {
-//         return fetch("http://127.0.0.1:5555/api/create-payment-intent", {
-//             method: "POST",
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify({ totalPrice: 100 }), // Example total price
-//         })
-//             .then((res) => {
-//                 if (!res.ok) {
-//                     return res.json().then((err) => {
-//                         throw new Error(err.error || "Failed to fetch client secret");
-//                     });
-//                 }
-//                 return res.json();
-//             })
-//             .then((data) => {
-//                 if (!data.clientSecret) {
-//                     throw new Error("Client secret is undefined");
-//                 }
-//                 return data.clientSecret;
-//             })
-//             .catch((error) => {
-//                 console.error("Error fetching client secret:", error.message);
-//                 throw error; // Rethrow to propagate the error
-//             });
-//     }, []);
-
-    // const options = { fetchClientSecret };
-
-    // return (
-    //     <div id="checkout">
-    //         <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
-    //             <EmbeddedCheckout />
-    //         </EmbeddedCheckoutProvider>
-    //     </div>
-    // );
-// };
-
 const Return = () => {
     const [status, setStatus] = useState(null);
     const [customerEmail, setCustomerEmail] = useState('');
@@ -277,9 +231,9 @@ const router = createBrowserRouter([
                     { path: "check-session", element: <CheckSession /> },
                     { path: "completion", element: <Completion />},
                     { path: "return", element: <Return />},
-                    { path: "reset-request", element: <UserResetRequest /> },
-                    { path: "password-reset/:token", element: <UserPasswordReset /> },
-                    { path: "confirm-email/:token", element: <UserEmailVerification /> },
+                    { path: "password-reset-request", element: <PasswordResetRequest user={'user'} /> },
+                    { path: "password-reset/:token", element: <PasswordReset user={'user'} path={'/'} /> },
+                    { path: "confirm-email/:token", element: <EmailVerification user={'user'} path={'/'} /> },
                 ],
             },
             { path: "vendor", element: <VendorHome /> },
@@ -295,9 +249,9 @@ const router = createBrowserRouter([
                     { path: "contact", element: <Contact /> },
                     { path: "vendor-create", element: <VendorAuthRoute><VendorCreate /></VendorAuthRoute> },
                     { path: "logout", element: <VendorLogout />},
-                    { path: "reset-request", element: <VendorResetRequest /> },
-                    { path: "password-reset/:token", element: <VendorPasswordReset /> },
-                    { path: "confirm-email/:token", element: <VendorUserEmailVerification /> },
+                    { path: "password-reset-request", element: <PasswordResetRequest user={'vendor'} /> },
+                    { path: "password-reset/:token", element: <PasswordReset user={'vendor'} path={'/vendor'} /> },
+                    { path: "confirm-email/:token", element: <EmailVerification user={'vendor'} path={'/vendor'} /> },
                 ],
             },
             { path: "admin", element: <AdminHome /> },
@@ -314,9 +268,9 @@ const router = createBrowserRouter([
                     { path: "profile/:id",element:<AdminRoute><AdminProfile /></AdminRoute>},
                     { path: "faqs", element: <AdminRoute><AdminFAQs /></AdminRoute>},
                     { path: "logout", element: <AdminLogout /> },
-                    { path: "reset-request", element: <AdminResetRequest /> },
-                    { path: "password-reset/:token", element: <AdminPasswordReset /> },
-                    { path: "confirm-email/:token", element: <AdminEmailVerification /> },
+                    { path: "password-reset-request", element: <PasswordResetRequest user={'admin'} /> },
+                    { path: "password-reset/:token", element: <PasswordReset user={'admin'} path={'/admin'} /> },
+                    { path: "confirm-email/:token", element: <EmailVerification user={'admin'} path={'/admin'} /> },
                 ],
             },
         ],

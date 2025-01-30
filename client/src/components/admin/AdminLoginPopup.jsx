@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PasswordStrengthBar from 'react-password-strength-bar';
+import PasswordChecklist from "react-password-checklist"
 import { formatPhoneNumber } from '../../utils/helpers';
-// import '../../assets/css/index.css';
+import PulseLoader from 'react-spinners/PulseLoader';
 
 function Login({ handlePopup }) {
     const [loginEmail, setLoginEmail] = useState('');
@@ -15,6 +16,8 @@ function Login({ handlePopup }) {
     const [signupLastName, setSignupLastName] = useState('');
     const [signupPhone, setSignupPhone] = useState('');
     const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false, pw3: false });
+    const [isValid, setIsValid] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
 
@@ -70,6 +73,11 @@ function Login({ handlePopup }) {
     
         if (signupPassword !== signupConfirmPassword) {
             alert("Passwords do not match.");
+            return;
+        }
+
+        if (!isValid) {
+            alert("Password does not meet requirements.");
             return;
         }
 
@@ -157,7 +165,7 @@ function Login({ handlePopup }) {
                         <div className='flex-center-align flex-space-around margin-t-16'>
                             <button className='btn btn-login' type="submit">Login</button>
                             <p className="forgot-password" onClick={() => {
-                                navigate('/admin/reset-request');
+                                navigate('/admin/password-reset-request');
                                 window.location.reload();
                             }}>
                                 Forgot password?
@@ -199,7 +207,6 @@ function Login({ handlePopup }) {
                                     required
                                 />
                                 <i className={showPassword.pw2 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw2')}>&emsp;</i>
-                                <PasswordStrengthBar className='password-bar' minLength={5} password={signupPassword} />
                             </div>
                         </div>
                         <div className="form-group form-login">
@@ -213,6 +220,18 @@ function Login({ handlePopup }) {
                                     required
                                 />
                                 <i className={showPassword.pw3 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw3')}>&emsp;</i>
+                                <PasswordChecklist
+                                    className='password-checklist'
+                                    style={{ padding: '0 12px' }}
+                                    rules={["minLength", "specialChar", "number", "capital", "match",]}
+                                    minLength={5}
+                                    value={signupPassword}
+                                    valueAgain={signupConfirmPassword}
+                                    onChange={(isValid) => { setIsValid(isValid) }}
+                                    iconSize={14}
+                                    validColor='#00bda4'
+                                    invalidColor='#ff4b5a'
+                                /><PasswordStrengthBar className='password-bar' minLength={5} password={signupPassword} />
                             </div>
                         </div>
                         <div className="form-group form-login">
@@ -246,7 +265,17 @@ function Login({ handlePopup }) {
                             />
                         </div>
                         <div className='flex-center margin-t-16'>
-                            <button className='btn-login' type="submit">Signup</button>
+                            {isLoading ? (
+                                <PulseLoader
+                                    className='margin-t-12'
+                                    color={'#ff806b'}
+                                    size={10}
+                                    aria-label="Loading Spinner"
+                                    data-testid="loader"
+                                />
+                            ) : (
+                                <button className='btn-login' type="submit">Signup</button>
+                            )}
                         </div>
                     </form>
                 </div>

@@ -126,11 +126,6 @@ def send_user_password_reset_email(email):
     """
     Sends a password reset email to the given user email.
     """
-    from server.app import User  # Import User model here to avoid circular import
-    
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        return {'error': 'User not found'}, 404
 
     # Generate token for password reset
     token = serializer.dumps(email, salt='password-reset-salt')
@@ -246,11 +241,6 @@ def send_vendor_password_reset_email(email):
     """
     Sends a password reset email to the given user email.
     """
-    from server.app import VendorUser  # Import User model here to avoid circular import
-    
-    vendor_user = VendorUser.query.filter_by(email=email).first()
-    if not vendor_user:
-        return {'error': 'Vendor not found'}, 404
 
     # Generate token for password reset
     token = serializer.dumps(email, salt='vendor-password-reset-salt')
@@ -366,11 +356,6 @@ def send_admin_password_reset_email(email):
     """
     Sends a password reset email to the given user email.
     """
-    from server.app import AdminUser  # Import User model here to avoid circular import
-    
-    admin_user = AdminUser.query.filter_by(email=email).first()
-    if not admin_user:
-        return {'error': 'User not found'}, 404
 
     # Generate token for password reset
     token = serializer.dumps(email, salt='admin-password-reset-salt')
@@ -617,8 +602,86 @@ def send_vendor_confirmation_email(email, vendor_data):
 
         # Simple text body for testing
         body = f"""
-        Please confirm your email by clicking this link: {confirmation_link}
-        """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Contact Form Submission</title>
+                <style>
+                    .email-container {{
+                        font-family: helvetica, sans-serif;
+                        line-height: 1.6;
+                        color: #3b4752;
+                        background-color: #fbf7eb;
+                        padding: 20px;
+                        border-radius: 24px;
+                    }}
+                    .header {{
+                        color: white;
+                        text-align: center;
+                        border-radius: 16px;
+                    }}
+                    .content {{
+                        padding: 20px;
+                        color: #3b4752;
+                    }}
+                    .footer {{
+                        font-size: 12px;
+                        text-align: center;
+                        margin-top: 20px;
+                        margin-bottom: -10px;
+                        color: #777;
+                    }}
+                    .button {{
+                        display: inline-block;
+                        background-color: #ff806b;
+                        color: #ffffff !important;
+                        text-decoration: none !important;
+                        padding: 8px 12px;
+                        border-radius: 5px;
+                        margin-top: 10px;
+                    }}
+                    .img-logo {{
+                        height: 120px;
+                        width: 120px;
+                    }}
+                    .img-logo-small {{
+                        height: 32px;
+                        width: 32px;
+                    }}
+                    .divider {{
+                        border: 0;
+                        border-top: 4px solid #ff806b;
+                    }}
+                    p, h1, h2, h3, h4, h5, h6 {{
+                        color: #ff806b;
+                    }}
+                    .img-hero {{
+                        width: 100%;
+                        height: auto;
+                    }}
+                    .center {{
+                        text-align: center;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div class="content center">
+                        <p><strong>Please confirm your email by clicking this link: <br/></strong> <a class="button" href={confirmation_link}>Verify Email<a/></p>
+                    </div>
+                    <div class="footer">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
+                        <p>&copy; 2024 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
         msg.attach(MIMEText(body, 'plain'))
 
         print("Attempting to send vendor email...")
@@ -654,9 +717,87 @@ def send_admin_confirmation_email(email, admin_data):
         msg['Subject'] = 'Gingham Admin Email Confirmation'
 
         # Simple text body for testing
-        body = f"""
-        Please confirm your email by clicking this link: {confirmation_link}
-        """
+        body = body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Contact Form Submission</title>
+                <style>
+                    .email-container {{
+                        font-family: helvetica, sans-serif;
+                        line-height: 1.6;
+                        color: #3b4752;
+                        background-color: #fbf7eb;
+                        padding: 20px;
+                        border-radius: 24px;
+                    }}
+                    .header {{
+                        color: white;
+                        text-align: center;
+                        border-radius: 16px;
+                    }}
+                    .content {{
+                        padding: 20px;
+                        color: #3b4752;
+                    }}
+                    .footer {{
+                        font-size: 12px;
+                        text-align: center;
+                        margin-top: 20px;
+                        margin-bottom: -10px;
+                        color: #777;
+                    }}
+                    .button {{
+                        display: inline-block;
+                        background-color: #ff806b;
+                        color: #ffffff !important;
+                        text-decoration: none !important;
+                        padding: 8px 12px;
+                        border-radius: 5px;
+                        margin-top: 10px;
+                    }}
+                    .img-logo {{
+                        height: 120px;
+                        width: 120px;
+                    }}
+                    .img-logo-small {{
+                        height: 32px;
+                        width: 32px;
+                    }}
+                    .divider {{
+                        border: 0;
+                        border-top: 4px solid #ff806b;
+                    }}
+                    p, h1, h2, h3, h4, h5, h6 {{
+                        color: #ff806b;
+                    }}
+                    .img-hero {{
+                        width: 100%;
+                        height: auto;
+                    }}
+                    .center {{
+                        text-align: center;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div class="content center">
+                        <p><strong>Please confirm your email by clicking this link: <br/></strong> <a class="button" href={confirmation_link}>Verify Email<a/></p>
+                    </div>
+                    <div class="footer">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
+                        <p>&copy; 2024 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
         msg.attach(MIMEText(body, 'plain'))
 
         print("Attempting to send admin email...")

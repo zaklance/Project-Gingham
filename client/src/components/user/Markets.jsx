@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation, useOutletContext } from 'react-router-dom';
+import { Link, useLocation, useOutletContext } from 'react-router-dom';
+import { formatDate } from '../../utils/helpers';
 import { weekDay } from '../../utils/common';
 import { Annotation, ColorScheme, FeatureVisibility, Map, Marker } from 'mapkit-react';
 import MarketCard from './MarketCard';
-import '../../assets/css/index.css';
 
 function Markets() {
     const [user, setUser] = useState({});
@@ -17,12 +17,14 @@ function Markets() {
     const [filterAZ, setFilterAZ] = useState(false);
     const [filterZA, setFilterZA] = useState(false);
     const [filterAddress, setFilterAddress] = useState(false);
+    const [filterRadio, setFilterRadio] = useState('az');
     const [address, setAddress] = useState("");
     const [selectedDay, setSelectedDay] = useState('');
     const [isInSeason, setIsInSeason] = useState(false);
     const [addressResults, setAddressResults] = useState();
     const [showAddressDropdown, setShowAddressDropdown] = useState(false);
     const [resultCoordinates, setResultCoordinates] = useState();
+    const [userCoordinates, setUserCoordinates] = useState();
     const [markerViews, setMarkerViews] = useState({});
     const [marketCoordinates, setMarketCoordinates] = useState([]);
 
@@ -185,7 +187,10 @@ function Markets() {
                         name: market.name,
                         latitude: parseFloat(market.coordinates.lat),
                         longitude: parseFloat(market.coordinates.lng),
-                        schedule: market.schedule
+                        schedule: market.schedule,
+                        season_start: market.season_start,
+                        season_end: market.season_end,
+                        year_round: market.year_round
                     }));
                 setMarketCoordinates(coordinates);
             })
@@ -407,7 +412,7 @@ function Markets() {
         <>
             <div className="markets-container">
                 <div className='header'>
-                    <div id="map">
+                    <div id="map-main">
                         <Map
                             token={mapToken}
                             initialRegion={{
@@ -420,6 +425,8 @@ function Markets() {
                             showsScale={FeatureVisibility.Visible}
                             showsUserLocation={true}
                             tracksUserLocation={true}
+                            onUserLocationChange={event => setUserCoordinates({ 'lat': event.coordinate.latitude, 'lng': event.coordinate.longitude })
+}
                         >
                             {marketCoordinates.map((market) => (
                                 <Annotation
@@ -439,8 +446,21 @@ function Markets() {
                                         </div>
                                     ) : (
                                         <div className="marker-details" onClick={() => handleMarkerClickOff(market.id)}>
-                                            <div className="marker-name">{market.name}</div>
-                                            <div className="marker-day">{market.schedule}</div>
+                                            <div className='text-center'>
+                                                <div className="marker-name"><Link className='link-underline link-scale-96' to={`/user/markets/${market.id}`}>{market.name}</Link></div>
+                                                <div className="marker-day">{market.schedule}</div>
+                                                {market.year_round ? (
+                                                    <div className="marker-day">Open Year-Round</div>
+                                                ) : (
+                                                    <>
+                                                        {market.season_start ? (
+                                                            <div className="marker-day">{formatDate(market.season_start)} — {formatDate(market.season_end)}</div>
+                                                        ) : (
+                                                            null
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
                                         </div> 
                                     )}
                                 </Annotation>
@@ -476,7 +496,6 @@ function Markets() {
                                         </ul>
                                     )}
                                 </td>
-                                {/* <td className='cell-text cell-filter m-hidden'>Filters: </td> */}
                                 <td>
                                     <button
                                         className={`btn-fav-filter ${isClicked ? 'btn-fav-filter-on' : ''}`}
@@ -490,7 +509,6 @@ function Markets() {
                                         <div className='dropdown-content box-filters'>
                                             <div className='form-filters-markets'>
                                                 <input
-                                                    className='margin-r-8'
                                                     id="aZ"
                                                     type="radio"
                                                     name="filters"
@@ -501,7 +519,6 @@ function Markets() {
                                             </div>
                                             <div className='form-filters-markets'>
                                                 <input
-                                                    className='margin-r-8'
                                                     id="zA"
                                                     type="radio"
                                                     name="filters"
@@ -512,7 +529,6 @@ function Markets() {
                                             </div>
                                             <div className='form-filters-markets'>
                                                 <input
-                                                    className='margin-r-8'
                                                     id="address"
                                                     type="radio"
                                                     name="filters"
@@ -548,7 +564,6 @@ function Markets() {
                                                     </ul>
                                                 )}
                                             </div>
-                                            
                                             <div className='form-filters'>
                                                 <label className='margin-r-26'>In Season:</label>
                                                 <input
@@ -558,7 +573,7 @@ function Markets() {
                                                     onChange={handleInSeasonChange}
                                                 />
                                             </div>
-                                            <select className='select-dropdown' value={selectedDay} onChange={handleDayChange}>
+                                            <select className='select-dropdown select-blue' value={selectedDay} onChange={handleDayChange}>
                                                 <option value="">Days Open</option>
                                                 {Array.isArray(weekDay) && weekDay.map((product, index) => (
                                                     <option key={index} value={index}>
@@ -579,7 +594,7 @@ function Markets() {
                 <div className="market-cards-container box-scroll-large margin-t-24">
                     {sortedMarketsResults
                         .map((marketData) => (
-                            <MarketCard key={marketData.id} marketData={marketData} user={user} haversineDistance={haversineDistance} resultCoordinates={resultCoordinates} filterAddress={filterAddress} />
+                            <MarketCard key={marketData.id} marketData={marketData} user={user} haversineDistance={haversineDistance} resultCoordinates={resultCoordinates} userCoordinates={userCoordinates} filterAddress={filterAddress} />
                     ))}
                 </div>
             </div>

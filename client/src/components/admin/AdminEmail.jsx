@@ -4,6 +4,7 @@ import BrowserTimezone from '../BrowserTimezone';
 const AdminEmail = () => {
     const [previewHtml, setPreviewHtml] = useState('');
     const [newSubject, setNewSubject] = useState('')
+    const [isLoading, setIsLoading] = useState(false);
     const [newEmail, setNewEmail] = useState(`<mjml>
         <mj-head>
             <mj-attributes>
@@ -70,7 +71,6 @@ const AdminEmail = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    emailAddress: emailAddress,
                     subject: newSubject,
                     mjml: newEmail
                  }),
@@ -88,6 +88,10 @@ const AdminEmail = () => {
     };
     
     const sendEmail = async () => {
+        if (isLoading) {
+            return
+        }
+        setIsLoading(true)
         if (confirm(`Are you sure you want to send ${newSubject} to all users?`)) {
             try {
                 const response = await fetch('http://127.0.0.1:5555/api/sendgrid-email', {
@@ -102,6 +106,7 @@ const AdminEmail = () => {
                      }),
                 });
                 const result = await response.json()
+                setIsLoading(false)
                 if (response.ok) {
                     alert('Message sent successfully!');
                     console.log(result)
@@ -175,7 +180,16 @@ const AdminEmail = () => {
                 </div>
                 <div className='flex-start'>
                     <button className='btn btn-small margin-t-8 margin-l-12 margin-b-16' onClick={previewEmail}>Preview Email</button>
-                    <button className='btn btn-small margin-t-8 margin-l-16 margin-b-16' onClick={sendEmail}>Send Email</button>
+                    {isLoading ? (
+                        <PulseLoader
+                            color={'#007BFF'}
+                            size={10}
+                            aria-label="Loading Spinner"
+                            data-testid="loader"
+                        />
+                    ) : (
+                        <button className='btn btn-small margin-t-8 margin-l-16 margin-b-16' onClick={sendEmail}>Send Email</button>
+                    )}
                 </div>
                 <iframe
                     title="email-preview"
