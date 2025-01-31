@@ -361,13 +361,19 @@ def signup():
     try:
         data = request.get_json()
         email = data.get('email')
+        password = data.get('password')
 
-        if not email:
-            return jsonify({'error': 'Email is required'}), 400
+        if not email or not password:
+            return jsonify({'error': 'Email and password are required'}), 400
 
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             return jsonify({'error': 'This email is already registered. Please log in or use a different email.'}), 400
+
+        all_users = User.query.all()
+        for user in all_users:
+            if bcrypt.check_password_hash(user.password, password):
+                return jsonify({'error': 'This password has already been used. Please choose a different password.'}), 400
 
         result = send_user_confirmation_email(email, data)
 
@@ -377,8 +383,7 @@ def signup():
         return jsonify({"message": result["message"]}), 200
 
     except Exception as e:
-        print(f"Error during signup: {str(e)}")
-        return jsonify({'error': 'An unexpected error occurred. Please try again later.'}), 500
+        return jsonify({"error": str(e)}), 500
     
 @app.route('/api/user/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
 def confirm_email(token):
