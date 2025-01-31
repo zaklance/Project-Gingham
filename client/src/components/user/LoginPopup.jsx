@@ -79,28 +79,28 @@ function Login({ handlePopup }) {
         event.preventDefault();
       
         if (signupEmail !== signupConfirmEmail) {
-          alert("Emails do not match.");
-          return;
+            alert("Emails do not match.");
+            return;
         }
-      
+    
         if (signupPassword !== signupConfirmPassword) {
-          alert("Passwords do not match.");
-          return;
+            alert("Passwords do not match.");
+            return;
         }
-
+    
         if (!isValid) {
             alert("Password does not meet requirements.");
             return;
         }
-        
+    
         if (isLoading) {
-            return
+            return;
         }
-      
-        setIsLoading(true)
+    
+        setIsLoading(true); // ✅ Start loading
         const apiKey = import.meta.env.VITE_RADAR_KEY;
         const query = `${signupAddress1} ${signupCity} ${signupState} ${signupZipCode}`;
-      
+    
         try {
             if (!resultCoordinates) {
                 const responseRadar = await fetch(
@@ -110,11 +110,12 @@ function Login({ handlePopup }) {
                         headers: { Authorization: apiKey },
                     }
                 );
+    
                 const data = await responseRadar.json();
                 if (data.addresses && data.addresses.length > 0) {
                     const { latitude, longitude } = data.addresses[0];
                     setResultCoordinates({ lat: latitude, lng: longitude });
-
+    
                     const response = await fetch("http://127.0.0.1:5555/api/signup", {
                         method: "POST",
                         headers: {
@@ -134,20 +135,10 @@ function Login({ handlePopup }) {
                             coordinates: { lat: latitude, lng: longitude },
                         }),
                     });
+    
                     const result = await response.json();
                     if (response.ok) {
-                        setSignupEmail('');
-                        setSignupConfirmEmail('');
-                        setSignupPassword('');
-                        setSignupConfirmPassword('');
-                        setSignupFirstName('');
-                        setSignupLastName('');
-                        setSignupPhone('');
-                        setSignupAddress1('');
-                        setSignupAddress2('');
-                        setSignupCity('');
-                        setSignupState('');
-                        setSignupZipCode('');
+                        resetSignupForm();
                         alert("Signup successful! A confirmation email has been sent.");
                     } else {
                         alert(result.error || "Signup failed.");
@@ -175,21 +166,10 @@ function Login({ handlePopup }) {
                         coordinates: { lat: resultCoordinates.lat, lng: resultCoordinates.lng }, // Use existing coordinates
                     }),
                 });
+    
                 const result = await response.json();
-                setIsLoading(false)
                 if (response.ok) {
-                    setSignupEmail('');
-                    setSignupConfirmEmail('');
-                    setSignupPassword('');
-                    setSignupConfirmPassword('');
-                    setSignupFirstName('');
-                    setSignupLastName('');
-                    setSignupPhone('');
-                    setSignupAddress1('');
-                    setSignupAddress2('');
-                    setSignupCity('');
-                    setSignupState('');
-                    setSignupZipCode('');
+                    resetSignupForm();
                     alert("Signup successful! A confirmation email has been sent.");
                 } else {
                     alert(result.error || "Signup failed.");
@@ -198,8 +178,24 @@ function Login({ handlePopup }) {
         } catch (error) {
             console.error("Error during signup:", error);
             alert("An unexpected error occurred. Please try again.");
+        } finally {
+            setIsLoading(false);
         }
-
+    };
+    
+    const resetSignupForm = () => {
+        setSignupEmail('');
+        setSignupConfirmEmail('');
+        setSignupPassword('');
+        setSignupConfirmPassword('');
+        setSignupFirstName('');
+        setSignupLastName('');
+        setSignupPhone('');
+        setSignupAddress1('');
+        setSignupAddress2('');
+        setSignupCity('');
+        setSignupState('');
+        setSignupZipCode('');
     };
 
     const togglePasswordVisibility = (field) => {
