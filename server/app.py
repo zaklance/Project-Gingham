@@ -358,17 +358,27 @@ def change_email():
 
 @app.route('/api/signup', methods=['POST'])
 def signup():
-    data = request.get_json()
-    email = data.get('email')
+    try:
+        data = request.get_json()
+        email = data.get('email')
 
-    if not email:
-        return {'error': 'Email is required'}, 400
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
 
-    result = send_user_confirmation_email(email, data)
-        
-    if 'error' in result:
-        return jsonify({"error": result["error"]}), 500
-    return jsonify({"message": result["message"]}), 200
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            return jsonify({'error': 'This email is already registered. Please log in or use a different email.'}), 400
+
+        result = send_user_confirmation_email(email, data)
+
+        if 'error' in result:
+            return jsonify({"error": result["error"]}), 500
+
+        return jsonify({"message": result["message"]}), 200
+
+    except Exception as e:
+        print(f"Error during signup: {str(e)}")
+        return jsonify({'error': 'An unexpected error occurred. Please try again later.'}), 500
     
 @app.route('/api/user/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
 def confirm_email(token):

@@ -77,7 +77,7 @@ function Login({ handlePopup }) {
 
     const handleSignup = async (event) => {
         event.preventDefault();
-      
+    
         if (signupEmail !== signupConfirmEmail) {
             alert("Emails do not match.");
             return;
@@ -97,7 +97,7 @@ function Login({ handlePopup }) {
             return;
         }
     
-        setIsLoading(true); // ✅ Start loading
+        setIsLoading(true);
         const apiKey = import.meta.env.VITE_RADAR_KEY;
         const query = `${signupAddress1} ${signupCity} ${signupState} ${signupZipCode}`;
     
@@ -116,7 +116,7 @@ function Login({ handlePopup }) {
                     const { latitude, longitude } = data.addresses[0];
                     setResultCoordinates({ lat: latitude, lng: longitude });
     
-                    const response = await fetch("http://127.0.0.1:5555/api/signup", {
+                    const signupResponse = await fetch("http://127.0.0.1:5555/api/signup", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -136,18 +136,24 @@ function Login({ handlePopup }) {
                         }),
                     });
     
-                    const result = await response.json();
-                    if (response.ok) {
-                        resetSignupForm();
-                        alert("Signup successful! A confirmation email has been sent.");
-                    } else {
-                        alert(result.error || "Signup failed.");
+                    const result = await signupResponse.json();
+    
+                    if (!signupResponse.ok) {
+                        if (signupResponse.status === 400 && result.error.includes("already registered")) {
+                            alert("This email is already registered. Please log in or use a different email.");
+                        } else {
+                            alert(result.error || "Signup failed.");
+                        }
+                        return;
                     }
+    
+                    resetSignupForm();
+                    alert("Signup successful! A confirmation email has been sent.");
                 } else {
                     alert("Unable to geocode the address. Please try again.");
                 }
             } else {
-                const response = await fetch("http://127.0.0.1:5555/api/signup", {
+                const signupResponse = await fetch("http://127.0.0.1:5555/api/signup", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -163,17 +169,23 @@ function Login({ handlePopup }) {
                         city: signupCity,
                         state: signupState,
                         zipcode: signupZipCode,
-                        coordinates: { lat: resultCoordinates.lat, lng: resultCoordinates.lng }, // Use existing coordinates
+                        coordinates: { lat: resultCoordinates.lat, lng: resultCoordinates.lng },
                     }),
                 });
     
-                const result = await response.json();
-                if (response.ok) {
-                    resetSignupForm();
-                    alert("Signup successful! A confirmation email has been sent.");
-                } else {
-                    alert(result.error || "Signup failed.");
+                const result = await signupResponse.json();
+    
+                if (!signupResponse.ok) {
+                    if (signupResponse.status === 400 && result.error.includes("already registered")) {
+                        alert("This email is already registered. Please log in or use a different email.");
+                    } else {
+                        alert(result.error || "Signup failed.");
+                    }
+                    return;
                 }
+    
+                resetSignupForm();
+                alert("Signup successful! A confirmation email has been sent.");
             }
         } catch (error) {
             console.error("Error during signup:", error);
