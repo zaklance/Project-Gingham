@@ -31,6 +31,7 @@ function Profile({ marketData }) {
     const [resultCoordinates, setResultCoordinates] = useState();
     const [changeEmail, setChangeEmail] = useState();
     const [changeConfirmEmail, setChangeConfirmEmail] = useState();
+    const [isSendingEmail, setIsSendingEmail] = useState(false);
     const [password, setPassword] = useState('');
     const [changePassword, setChangePassword] = useState('');
     const [changeConfirmPassword, setChangeConfirmPassword] = useState('');
@@ -317,6 +318,9 @@ function Profile({ marketData }) {
             alert("Emails do not match.");
             return;
         }
+    
+        setIsSendingEmail(true);
+    
         try {
             const response = await fetch(`http://127.0.0.1:5555/api/change-email`, {
                 method: 'POST',
@@ -329,19 +333,21 @@ function Profile({ marketData }) {
                     email: changeEmail,
                 }),
             });
-            if (response.ok) {
-                const updatedData = await response.json();
-                setChangeEmail('')
-                setChangeConfirmEmail('')
+    
+            if (emailChangeResponse.ok) {
+                setChangeEmail('');
+                setChangeConfirmEmail('');
                 setEmailMode(false);
                 alert('Email will not update until you click the verification link in the sent email.')
             } else {
                 console.log('Failed to save changes');
-                console.log('Response status:', response.status);
-                console.log('Response text:', await response.text());
+                console.log('Response status:', emailChangeResponse.status);
+                console.log('Response text:', await emailChangeResponse.text());
             }
         } catch (error) {
             console.error('Error saving changes:', error);
+        } finally {
+            setIsSendingEmail(false);
         }
     };
 
@@ -846,8 +852,12 @@ function Profile({ marketData }) {
                                                         required
                                                     />
                                                 </div>
-                                                <button className='btn-edit' onClick={handleSaveEmail}>Save Changes</button>
-                                                <button className='btn-edit' onClick={handleEmailToggle}>Cancel</button>
+                                                <button className='btn-edit' onClick={handleSaveEmail} disabled={isSendingEmail}>
+                                                    {isSendingEmail ? "Sending Email..." : "Save Changes"}
+                                                </button>
+                                                <button className='btn-edit' onClick={handleEmailToggle} disabled={isSendingEmail}>
+                                                    Cancel
+                                                </button>
                                             </div>
                                         ) : (
                                             null
