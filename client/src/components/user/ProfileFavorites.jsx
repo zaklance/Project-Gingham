@@ -223,7 +223,7 @@ function ProfileFavorites() {
                             <Link to={`/user/vendors/${data.vendor_id}`}><b>{data.vendor.name}</b> <i>of {data.vendor.city}, {data.vendor.state}</i></Link>
                             <button
                                 className={`btn-fav-blog margin-l-8 ${isClickedVendor[data.vendor_id] || vendorFavs.some(fav => fav.vendor_id === data.vendor_id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
-                                title="save blog as favorite"
+                                title="remove vendor from favorites"
                                 onClick={(e) => handleClickVendor(data.vendor_id)}>&emsp;
                             </button>
                         </li>
@@ -240,7 +240,7 @@ function ProfileFavorites() {
                             <Link to={`/user/markets/${data.market_id}`}><b>{data.market.name}</b> <i>open {data.market.schedule}</i></Link>
                             <button
                                 className={`btn-fav-blog margin-l-8 ${isClickedMarket[data.market_id] || marketFavs.some(fav => fav.market_id === data.market_id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
-                                title="save blog as favorite"
+                                title="remove market from favorites"
                                 onClick={(e) => handleClickMarket(data.market_id)}>&emsp;
                             </button>
                         </li>
@@ -266,7 +266,7 @@ function ProfileFavorites() {
                                 {blog?.blog ? `${blogTimeConverter(blog.blog.post_date)}, ${blog.blog.title}` : null}
                                 <button
                                     className={`btn-fav-blog margin-l-8 ${isClickedBlog[blog.blog_id] || blogFavs.some(fav => fav.blog_id === blog.blog_id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
-                                    title="save blog as favorite"
+                                    title="remove blog from favorites"
                                     onClick={(e) => handleClickBlog(blog.blog_id)}>&emsp;
                                 </button>
                             </summary>

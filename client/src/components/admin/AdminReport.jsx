@@ -156,7 +156,7 @@ function AdminReport() {
                                     )}
                                     <h4 className='margin-r-8'>{review.user ? `${review.user.first_name} ${review.user.last_name}` : 'Anonymous'}</h4>
                                     <button className='btn btn-small btn-green btn-emoji-big btn-gap margin-r-8' onClick={() => handleVendorReviewUnReport(review.id, review.user_id)}>&#9786;</button>
-                                    <button className='btn btn-small btn-red btn-admin btn-gap' onClick={() => handleMarketVendorDelete(review.id, review.user_id)}>Delete</button>
+                                    <button className='btn btn-small btn-red btn-admin btn-gap' onClick={() => handleVendorReviewDelete(review.id, review.user_id)}>Delete</button>
                                 </div>
                                 <p className='margin-l-40'>{review.review_text}</p>
                             </div>

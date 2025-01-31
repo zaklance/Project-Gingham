@@ -190,7 +190,7 @@ function AdminMarketEvents({ markets }) {
                     <div className='form-group'>
                         <label title="yyyy-mm-dd">Event Start:</label>
                         <input
-                            type="text"
+                            type="date"
                             name="start_date"
                             placeholder='yyyy-mm-dd'
                             value={newEvent.start_date || ''}
@@ -200,7 +200,7 @@ function AdminMarketEvents({ markets }) {
                     <div className='form-group'>
                         <label title="yyyy-mm-dd">Event End:</label>
                         <input
-                            type="text"
+                            type="date"
                             name="end_date"
                             placeholder='yyyy-mm-dd'
                             value={newEvent.end_date || ''}
