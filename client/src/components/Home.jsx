@@ -153,7 +153,7 @@ function Home() {
                         <i className="icon-arrow-r" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>
                         <button
                             className={`btn-fav-blog margin-l-8 ${isClicked[currentBlog.id] || blogFavs.some(fav => fav.blog_id === currentBlog.id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
-                            title="save blog as favorite"
+                            title={isClicked[currentBlog.id] || blogFavs.some(fav => fav.blog_id === currentBlog.id) ? 'remove blog from favorites' : 'save blog as favorite'}
                             onClick={(e) => handleClick(currentBlog.id)}>&emsp;
                         </button>
                     </div>
