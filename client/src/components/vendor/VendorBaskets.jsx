@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { weekDay } from '../../utils/common';
-import { timeConverter, formatBasketDate } from '../../utils/helpers';
 import VendorBasketsToday from './VendorBasketsToday';
 import VendorBasketCard from './VendorBasketCard';
 import VendorCreate from './VendorCreate';
@@ -82,16 +81,16 @@ function VendorBaskets({ vendorUserData }) {
     }, [allVendorMarkets]);
 
     useEffect(() => {
-        const calculateNextMarketDays = () => {
+        const calculateNextMarketDays = async () => {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-    
+        
             const next7Days = Array.from({ length: 7 }, (_, i) => {
                 const date = new Date(today);
                 date.setDate(today.getDate() + i);
                 return date;
             });
-    
+        
             const marketDaysWithDates = filteredMarketDays.map((day) => {
                 const date = next7Days.find((d) => d.getDay() === day.day_of_week);
                 return {
@@ -99,17 +98,27 @@ function VendorBaskets({ vendorUserData }) {
                     date: date ? new Date(date.setHours(0, 0, 0, 0)) : null,
                 };
             });
-    
-            const todaysMarketDays = marketDaysWithDates.filter(
-                (day) => day.date && day.date.getTime() === today.getTime()
-            );
-    
-            const futureMarketDays = marketDaysWithDates.filter(
-                (day) => day.date && day.date.getTime() > today.getTime()
-            ).sort((a, b) => a.date - b.date);
-    
+        
+            const savedBasketsResponse = await fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}`);
+            const savedBaskets = savedBasketsResponse.ok ? await savedBasketsResponse.json() : [];
+        
+            const todaysMarketDays = marketDaysWithDates.filter((day) => {
+                const isToday = day.date && day.date.getTime() === today.getTime();
+                return isToday;
+            });
+        
+            const futureMarketDays = marketDaysWithDates.filter((day) => {
+                const isToday = day.date && day.date.getTime() === today.getTime();
+                const hasSavedBasket = savedBaskets.some(basket => 
+                    new Date(basket.sale_date).getTime() === today.getTime()
+                );
+        
+                return !isToday || (isToday && !hasSavedBasket);
+            }).sort((a, b) => a.date - b.date);
+        
             setNextMarketDays({ todaysMarketDays, futureMarketDays });
         };
+        
     
         if (filteredMarketDays.length > 0) {
             calculateNextMarketDays();
@@ -129,7 +138,6 @@ function VendorBaskets({ vendorUserData }) {
                     <br/>
                     <div className="flex flex-nowrap box-scroll-x">
                         <VendorBasketsToday vendorId={vendorId} todaysMarketDays={nextMarketDays?.todaysMarketDays} />
-
                     </div>
                     <h2 className="margin-t-48 margin-b-16">Future Baskets:</h2>
                     <div className="flex flex-nowrap box-scroll-x">
