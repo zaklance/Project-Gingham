@@ -264,7 +264,6 @@ function MarketDetail ({ match }) {
                     return resp.json()
                 }).then(data => {
                     setMarketFavs([...marketFavs, data]);
-                    // setAlertMessage('added to favorites');
                     toast.success('Added to favorites!', {
                         autoClose: 2000,
                     });
@@ -289,10 +288,6 @@ function MarketDetail ({ match }) {
         } else {
             handlePopup()
         }
-        // setShowAlert(true);
-        // setTimeout(() => {
-        //     setShowAlert(false);
-        // }, 1600);
     };
 
     useEffect(() => {
@@ -340,24 +335,26 @@ function MarketDetail ({ match }) {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:5555/api/create-vendor-notification', {
+            const response = await fetch('http://127.0.0.1:5555/api/notify-me-for-more-baskets', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                    subject: 'basket-notify',
+                    message: `A user is interested in buying a basket at ${market.name}, consider adding more for sale.`,
                     link: "/vendor/dashboard?tab=baskets",
                     user_id: userId,
                     market_id: market.id,
                     vendor_id: vendor.id,
-                    message: `A user is interested in buying a basket, consider adding more for sale.`,
                 }),
             });
 
             if (response.ok) {
                 const responseData = await response.json();
                 alert(`Your request has been sent to ${vendor.name}!`);
+                
             } else {
                 const errorData = await response.json();
                 alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
@@ -529,7 +526,7 @@ function MarketDetail ({ match }) {
                         <span className="market-name margin-l-16">
                             <Link to={`/user/vendors/${vendorId}`} className="market-name"> {vendorDetail.name || 'Loading...'} </Link>
                             <br />
-                            <p>Products:{" "}
+                            <p><span className='m-hidden'>Products:</span>{" "}
                                 {products
                                     .filter((product) => vendorDetail.products?.includes(product.id))
                                     .map((product) => product.product)
@@ -546,7 +543,7 @@ function MarketDetail ({ match }) {
                         <span className="market-price"></span>
                         )}
                         {availableBaskets.length > 4 ? (
-                        <span className="market-baskets nowrap">
+                        <span className="market-baskets d-nowrap">
                             Baskets Available
                             <br />
                             {firstBasket && firstBasket.sale_date
@@ -554,7 +551,7 @@ function MarketDetail ({ match }) {
                             : ""}
                         </span>
                         ) : (
-                        <span className="market-baskets nowrap margin-r-8">
+                        <span className="market-baskets d-nowrap margin-r-8">
                             {availableBaskets.length > 0 ? `Available Baskets: ${availableBaskets.length}` : <a className="link-edit" onClick={() => handleNotifyMe(vendorDetail)}>Notify Me</a>}
                             <br />
                             {firstBasket && firstBasket.sale_date ? formatPickupText(firstBasket, timeConverter, marketDateConvert) : ""}
@@ -581,7 +578,7 @@ function MarketDetail ({ match }) {
                 <p>No vendors at this market</p>
             )}
             </div>
-            <ReviewMarket market={market} alertMessage={alertMessage} setAlertMessage={setAlertMessage} />
+            <ReviewMarket market={market} />
 
         </div>
     );

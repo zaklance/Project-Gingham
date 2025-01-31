@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useOutletContext } from 'react-router-dom';
 import { convertToLocalDate } from '../../utils/helpers';
+import { toast } from 'react-toastify';
 
-function ReviewMarket({ market, alertMessage, setAlertMessage }) {
-    const { id } = useParams();
-
+function ReviewMarket({ market }) {
     const [reviews, setReviews] = useState([]);
-    const [showDupeAlert, setShowDupeAlert] = useState(false);
     const [reviewMode, setReviewMode] = useState(false);
     const [reviewData, setReviewData] = useState("");
     const [editingReviewId, setEditingReviewId] = useState(null);
@@ -23,8 +21,8 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
     const [filterOld, setFilterOld] = useState(false);
     const [filterUp, setFilterUp] = useState(false);
     const [filterDown, setFilterDown] = useState(false);
-
-
+    
+    const { id } = useParams();
     const { handlePopup } = useOutletContext();
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
@@ -60,9 +58,9 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
         const existingReview = reviews.some(review => review.user_id === userId);
 
         if (existingReview) {
-            setAlertMessage('You have already submitted a review for this market.');
-            setShowDupeAlert(true);
-            setTimeout(() => setShowDupeAlert(null), 3000);
+            toast.error('You have already submitted a review for this market.', {
+                autoClose: 3000,
+            });
             return;
         }
 
@@ -118,7 +116,6 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
             fetch(`http://127.0.0.1:5555/api/market-reviews/${reviewId}`, {
                 method: "DELETE",
             }).then(() => {
-                setAlertMessage('Review deleted');
                 setReviews((prevReviews) => prevReviews.filter((review) => review.id !== reviewId))
             })
         } catch (error) {
@@ -137,7 +134,9 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                     });
         
                     if (response.ok) {
-                        alert("Review reported")
+                        toast.warning('Review reported.', {
+                            autoClose: 2000,
+                        });
                     }
                 } catch (error) {
                     console.error('Error updating review:', error);
@@ -229,7 +228,6 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                         }).then(data => {
                             setUpVoteRatings((prev) => [...prev, data])
                             setVotes((prev) => [...prev, data]);
-                            setAlertMessage('up voted successfully');
                         });
                     } else {
                         const response = await fetch(
@@ -251,7 +249,6 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                             ...prevState,
                             [reviewId]: false,
                         }));
-                        setAlertMessage('up-vote updated.');
                     }
                 } else {
                     const matchingVotes = upVoteRatings.filter((vote) => vote.review_id === reviewId);
@@ -261,7 +258,6 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                         }).then(() => {
                             setUpVoteRatings((prev) => prev.filter((vote) => vote.review_id !== reviewId));
                             setVotes((prev) => prev.filter((v) => v.id !== existingVote.id));
-                            setAlertMessage('un-voted up');
                         })
                     }
                 }
@@ -303,7 +299,6 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                         }).then(data => {
                             setDownVoteRatings((prev) => [...prev, data]);
                             setVotes((prev) => [...prev, data]);
-                            setAlertMessage('down voted successfully');
                         });
                     } else {
                         const response = await fetch(
@@ -322,7 +317,6 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                             ...prevState,
                             [reviewId]: false,
                         }));
-                        setAlertMessage('down-vote updated.');
                     }
                 } else {
                     const matchingVotes = downVoteRatings.filter((vote) => vote.review_id === reviewId);
@@ -332,7 +326,6 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                         }).then(() => {
                             setDownVoteRatings((prev) => prev.filter((vote) => vote.review_id !== reviewId));
                             setVotes((prev) => prev.filter((v) => v.id !== existingVote.id));
-                            setAlertMessage('un-voted down');
                         })
                     }
                 }
@@ -615,11 +608,6 @@ function ReviewMarket({ market, alertMessage, setAlertMessage }) {
                             </>
                         )}
                     </>
-                )}
-                {showDupeAlert && (
-                    <div className='alert-reviews float-right'>
-                        {alertMessage}
-                    </div>
                 )}
             </div>
         </>

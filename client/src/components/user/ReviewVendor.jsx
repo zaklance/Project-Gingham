@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useOutletContext } from 'react-router-dom';
 import { convertToLocalDate } from '../../utils/helpers';
+import { toast } from 'react-toastify';
 
-function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
+function ReviewVendor({ vendor }) {
     const { id } = useParams();
 
     const [reviews, setReviews] = useState([]);
-    const [showDupeAlert, setShowDupeAlert] = useState(false);
     const [reviewMode, setReviewMode] = useState(false);
     const [reviewData, setReviewData] = useState("");
     const [editingReviewId, setEditingReviewId] = useState(null);
@@ -60,9 +60,9 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
         const existingReview = reviews.some(review => review.user_id === userId);
 
         if (existingReview) {
-            setAlertMessage('You have already submitted a review for this vendor.');
-            setShowDupeAlert(true);
-            setTimeout(() => setShowDupeAlert(null), 3000);
+            toast.error('You have already submitted a review for this market.', {
+                autoClose: 3000,
+            });
             return;
         }
 
@@ -119,7 +119,6 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
             fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
                 method: "DELETE",
             }).then(() => {
-                setAlertMessage('Review deleted');
                 setReviews((prevReviews) => prevReviews.filter((review) => review.id !== reviewId))
             })
         } catch (error) {
@@ -138,7 +137,9 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                     });
         
                     if (response.ok) {
-                        alert("Review reported")
+                        toast.error('Review reported.', {
+                            autoClose: 3000,
+                        });
                     }
                 } catch (error) {
                     console.error('Error updating review:', error);
@@ -225,7 +226,6 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                         }).then(data => {
                             setUpVoteRatings((prev) => [...prev, data])
                             setVotes((prev) => [...prev, data]);
-                            setAlertMessage('up voted successfully');
                         });
                     } else {
                         const response = await fetch(
@@ -247,7 +247,6 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                             ...prevState,
                             [reviewId]: false,
                         }));
-                        setAlertMessage('upvote updated.');
                     }
                 } else {
                     const matchingVotes = upVoteRatings.filter((vote) => vote.review_id === reviewId);
@@ -257,7 +256,6 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                         }).then(() => {
                             setUpVoteRatings((prev) => prev.filter((vote) => vote.review_id !== reviewId));
                             setVotes((prev) => prev.filter((v) => v.id !== existingVote.id));
-                            setAlertMessage('un-voted up');
                         })
                     }
                 }
@@ -299,7 +297,6 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                         }).then(data => {
                             setDownVoteRatings((prev) => [...prev, data]);
                             setVotes((prev) => [...prev, data]);
-                            setAlertMessage('down voted successfully');
                         });
                     } else {
                         const response = await fetch(
@@ -318,7 +315,6 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                             ...prevState,
                             [reviewId]: false,
                         }));
-                        setAlertMessage('down-vote updated.');
                     }
                 } else {
                     const matchingVotes = downVoteRatings.filter((vote) => vote.review_id === reviewId);
@@ -328,7 +324,6 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                         }).then(() => {
                             setDownVoteRatings((prev) => prev.filter((vote) => vote.review_id !== reviewId));
                             setVotes((prev) => prev.filter((v) => v.id !== existingVote.id));
-                            setAlertMessage('un-voted down');
                         })
                     }
                 }
@@ -623,11 +618,6 @@ function ReviewVendor({ vendor, alertMessage, setAlertMessage }) {
                             </>
                         )}
                     </>
-                )}
-                {showDupeAlert && (
-                    <div className='alert-reviews float-right'>
-                        {alertMessage}
-                    </div>
                 )}
             </div>
         </>
