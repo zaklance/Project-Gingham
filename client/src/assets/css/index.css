@@ -7,6 +7,7 @@
   overflow-x: hidden;
   --toastify-color-success: #00bda4;
   --toastify-color-error: #ff4b5a;
+  --toastify-font-family: "Lexend Deca", sans-serif;
 }
 
 /* Reset some default browser styles */
@@ -62,14 +63,12 @@ body {
   background-color: #fbf7eb;
 }
 
-/* Container for centering content */
 .container {
   position: relative;
   top: 0;
   width: 90vw;
   max-width: 1200px;
   min-height: 100%;
-  /* background-color: #a7a7a7; */
   display: box;
   justify-content: space-between;
   padding: 20px 5%;
@@ -106,10 +105,6 @@ body {
 
 .vendor-wrapper {
   background-color: white;
-  /* display: flex; */
-  /* flex-direction: column;
-  justify-content: center;
-  align-items: center; */
   border-radius: 20px;
 }
 
@@ -133,9 +128,7 @@ header {
 }
 
 .header {
-  /* background-color: #d8f4fe; */
   width: 100%;
-  /* margin: 0 20px 20px 20px; */
   padding-left: 36px;
   padding-right: 36px;
 }
@@ -150,7 +143,7 @@ main {
   padding: 20px;
   background: #fff;
   border-radius: 0 0 20px 20px;
-  box-shadow: 0 0 10px #b5b5b5;
+  /* box-shadow: 0 0 10px #b5b5b5; */
   margin: 20px 0;
 }
 
@@ -405,12 +398,16 @@ article {
   padding: 12px;
 }
 
+.margin-auto {
+  margin: auto;
+}
+
 .width-fit {
   width: fit-content;
 }
 
-.margin-auto {
-  margin: auto;
+.width-max {
+  width: max-content;
 }
 
 .width-100 {
@@ -524,7 +521,6 @@ ul {
   margin: 0px 0 -20px 0;
   font-family: "Lilita One", sans-serif;
   font-weight: 400;
-  /* font-style: normal; */
 }
 
 .nav-tab:hover {
@@ -734,20 +730,11 @@ ul {
 
 .float-right {
   float: right;
-  /* margin-top: 25px;
-  margin-bottom: -25px;
-  margin-right: 10px; */
 }
 
 .no-float {
   clear:both;
 }
-
-/* .flex-form {
-  display: flex;
-  justify-content: flex-start;
-  gap: 2em;
-} */
 
 .side-select {
   margin-left: auto;
@@ -1696,13 +1683,6 @@ link {
   width: 100%;
 }
 
-/* Basic form styling */
-/* form { */
-  /* display: flex;
-  flex-direction: column; */
-  /* display: table; */
-/* } */
-
 .form input,
 .form textarea {
   /* margin-bottom: 8px; */
@@ -2189,10 +2169,11 @@ select:hover {
 
 .market-card {
   border: .5px solid #ccc;
+  border-radius: 8px;
   padding: 10px;
   width: 100%;
   max-width: 300px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); */
   background-color: #fff;
   text-align: center;
 }
@@ -2207,9 +2188,10 @@ select:hover {
 
 .basket-card {
   border: .5px solid #ccc;
+  border-radius: 8px;
   padding: 10px;
   width: 280px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); */
   background-color: #fff;
 }
 
@@ -2848,10 +2830,14 @@ select:hover {
 
 
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
-@media (min-width: 800px) {
+@media (min-width: 820px) {
   .d-flex-space-between {
       display: flex;
       justify-content: space-between;
+    }
+
+    .d-nowrap {
+      white-space: nowrap;
     }
 }
 

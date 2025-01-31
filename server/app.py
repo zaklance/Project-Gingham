@@ -2980,31 +2980,50 @@ def notify_me_for_more_baskets():
         if not user:
             return jsonify({'message': f"User with ID {data['user_id']} not found."}), 404
 
+        vendor_users = [
+            vu for vu in VendorUser.query.all()
+            if str(data['vendor_id']) in vu.vendor_id.keys()
+        ]
+
+        if not vendor_users:
+            return jsonify({'message': f"No vendor users found for vendor ID {data['vendor_id']}."}), 404
+
         # Create a notification for the vendor
-        subject = "User Request: Notify Me for More Baskets"
-        message = f"{user.first_name} {user.last_name} has requested to be notified when more baskets are available."
+        notifications = []
 
-        new_notification = VendorNotification(
-            subject=subject,
-            message=message,
-            link=f"/vendors/{vendor.id}/notifications",  # Adjust to your routing structure
-            user_id=user.id,
-            vendor_id=vendor.id,
-            created_at=datetime.utcnow(),
-            is_read=False
-        )
+        for vendor_user in vendor_users:
+            new_notification = VendorNotification(
+                subject=data.get('subject'),
+                message=data.get('message'),
+                link=data.get('link'),
+                user_id=user.id,
+                vendor_id=vendor.id,
+                vendor_user_id=vendor_user.id,
+                market_id=data.get('market_id'),
+                created_at=datetime.utcnow(),
+                is_read=False
+            )
+            notifications.append(new_notification)
 
-        db.session.add(new_notification)
+        db.session.add_all(notifications)
         db.session.commit()
 
         return jsonify({
-            'id': new_notification.id,
-            'subject': new_notification.subject,
-            'message': new_notification.message,
-            'link': new_notification.link,
-            'user_id': new_notification.user_id,
-            'vendor_id': new_notification.vendor_id,
-            'is_read': new_notification.is_read
+            'message': 'Notifications sent successfully.',
+            'notifications': [
+                {
+                    'id': n.id,
+                    'subject': n.subject,
+                    'message': n.message,
+                    'link': n.link,
+                    'user_id': n.user_id,
+                    'vendor_id': n.vendor_id,
+                    'vendor_user_id': n.vendor_user_id,
+                    'market_id': n.market_id,
+                    'is_read': n.is_read
+                }
+                for n in notifications
+            ]
         }), 201
 
     except Exception as e:

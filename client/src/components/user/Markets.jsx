@@ -305,16 +305,51 @@ function Markets() {
     }
     
     const handleFilterLocation = (event) => {
-        setFilterAZ(false)
-        setFilterZA(false)
-        setFilterLocation(true)
-        setFilterAddress(false)
-        setAddress('')
+        if (!filterLocation) {
+            setFilterAZ(false)
+            setFilterZA(false)
+            setFilterLocation(true)
+            setFilterAddress(false)
+            setAddress('')
+        }
     }
     
     
     const handleFilterAddress = (event) => {
         if (!filterAddress) {
+            setFilterAZ(false)
+            setFilterZA(false)
+            setFilterLocation(false)
+            setFilterAddress(!filterAddress)
+            setResultCoordinates(null)
+        }
+    }
+
+    const handleFiltersAll = (event) => {
+        if (event.target.value === "filterAZ") {
+            setFilterAZ(!filterAZ)
+            setFilterZA(false)
+            setFilterLocation(false)
+            setFilterAddress(false)
+            setAddress('')
+            setResultCoordinates(null)
+        }
+        if (event.target.value === "filterZA") {
+            setFilterAZ(false)
+            setFilterZA(!filterZA)
+            setFilterLocation(false)
+            setFilterAddress(false)
+            setAddress()
+            setResultCoordinates(null)
+        }
+        if (event.target.value === "filterLocation") {
+            setFilterAZ(false)
+            setFilterZA(false)
+            setFilterLocation(true)
+            setFilterAddress(false)
+            setAddress('')
+        }
+        if (event.target.value === "filterAddress") {
             setFilterAZ(false)
             setFilterZA(false)
             setFilterLocation(false)
@@ -453,8 +488,7 @@ function Markets() {
                             showsScale={FeatureVisibility.Visible}
                             showsUserLocation={true}
                             tracksUserLocation={true}
-                            onUserLocationChange={event => setUserCoordinates({ 'lat': event.coordinate.latitude, 'lng': event.coordinate.longitude })
-}
+                            onUserLocationChange={event => setUserCoordinates({ 'lat': event.coordinate.latitude, 'lng': event.coordinate.longitude })}
                         >
                             {marketCoordinates.map((market) => (
                                 <Annotation
@@ -566,7 +600,7 @@ function Markets() {
                                                     value={true}
                                                     onChange={handleFilterLocation}
                                                 />
-                                                <label htmlFor='location'>Location</label>
+                                                <label htmlFor='location'>Your Location</label>
                                             </div>
                                             <div className='form-filters-markets'>
                                                 <input
@@ -577,7 +611,7 @@ function Markets() {
                                                     value={true}
                                                     onChange={handleFilterAddress}
                                                 />
-                                                <label htmlFor='address'>By Address</label>
+                                                <label htmlFor='address'>Address</label>
                                                 <input
                                                     className='margin-r-8'
                                                     id="address-address"

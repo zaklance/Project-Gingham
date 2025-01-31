@@ -116,9 +116,9 @@ export const formatPickupText = (basket, timeConverter, marketDateConvert) => {
     if (!basket) return '';
     const { sale_date, pickup_start, pickup_end } = basket;
     if (isToday(sale_date)) {
-        return `Pick Up Today at ${timeConverter(pickup_start)}-${timeConverter(pickup_end)}`;
+        return `Pick Up Today at ${timeConverter(pickup_start)} - ${timeConverter(pickup_end)}`;
     } else {
-        return `Pick Up: ${marketDateConvert(sale_date)} at ${timeConverter(pickup_start)}-${timeConverter(pickup_end)}`;
+        return `Pick Up: ${marketDateConvert(sale_date)} at ${timeConverter(pickup_start)} - ${timeConverter(pickup_end)}`;
     }
 };
 
