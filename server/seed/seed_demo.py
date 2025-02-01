@@ -860,8 +860,8 @@ def run():
 
     blogs = [
         Blog(
-            type="recipe",
-            title="Recipe: Butternut Squash Soup",
+            type="Recipe",
+            title="Butternut Squash Soup",
             body="""
                 <div class="column-3">
                     <h5>Prep Time: 10 mins | Cook Time: 35 mins | Total: 45 mins | Serves: 6</h5>
@@ -901,7 +901,7 @@ def run():
             for_user=True
         ),
         Blog(
-            type="general",
+            type="General",
             title="What types of baskets can I purchase?",
             body="""
                 <div class="column-3">

@@ -524,7 +524,7 @@ function AdminProfile () {
                                 <i className="icon-arrow-l margin-r-8" onClick={() => handleNavigate('prev')}>&emsp;&thinsp;</i>
                                 <i className="icon-arrow-r" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>
                             </div>
-                            <h1>{currentBlog.title}</h1>
+                            <h1>{currentBlog.type === 'General' ? null : `${currentBlog.type}: `}{currentBlog.title}</h1>
                             <h6 className="margin-b-8">{blogTimeConverter(currentBlog.post_date)}</h6>
                             <div dangerouslySetInnerHTML={{ __html: currentBlog.body }} style={{ width: '100%', height: '100%' }}></div>
                         </div>

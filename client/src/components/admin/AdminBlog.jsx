@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import AdminBlogAdd from './AdminBlogAdd';
-import AdminBlogEdit from './AdminBlogEdit';
+import AdminBlogAdmin from './AdminBlogAdmin';
+import AdminBlogUser from './AdminBlogUser';
+import AdminBlogVendor from './AdminBlogVendor';
 
 const AdminBlog = () => {
     const [blogs, setBlogs] = useState([]);
-    const [activeTab, setActiveTab] = useState('add');
+    const [activeTab, setActiveTab] = useState('user');
+    const [activeTabMode, setActiveTabMode] = useState('add');
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -26,19 +28,33 @@ const AdminBlog = () => {
 
     return (
         <>
-            <div><div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
-                <h1 className='margin-b-16'>Blogs!</h1>
-                <div className='tabs margin-t-20'>
-                    <Link to="#" onClick={() => setActiveTab('add')} className={activeTab === 'add' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
-                        Add
-                    </Link>
-                    <Link to="#" onClick={() => setActiveTab('edit')} className={activeTab === 'edit' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
-                        Edit
-                    </Link>
+            <div>
+                <div className='flex-start flex-top-align flex-gap-24 m-flex-wrap'>
+                    <h1 className='margin-b-16'>Blogs!</h1>
+                    <div className='tabs margin-t-20'>
+                        <Link to="#" onClick={() => setActiveTab('user')} className={activeTab === 'user' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                            User
+                        </Link>
+                        <Link to="#" onClick={() => setActiveTab('vendor')} className={activeTab === 'vendor' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                            Vendor
+                        </Link>
+                        <Link to="#" onClick={() => setActiveTab('admin')} className={activeTab === 'admin' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                            Admin
+                        </Link>
+                    </div>
+                    <h1>|</h1>
+                    <div className='tabs margin-t-20'>
+                        <Link to="#" onClick={() => setActiveTabMode('add')} className={activeTabMode === 'add' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                            add
+                        </Link>
+                        <Link to="#" onClick={() => setActiveTabMode('edit')} className={activeTabMode === 'edit' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                            edit
+                        </Link>
+                    </div>
                 </div>
-            </div>
-                {activeTab === 'add' && <AdminBlogAdd />}
-                {activeTab === 'edit' && <AdminBlogEdit blogs={blogs} setBlogs={setBlogs} />}
+                {activeTab === 'user' && <AdminBlogUser blogs={blogs} setBlogs={setBlogs} activeTabMode={activeTabMode} />}
+                {activeTab === 'vendor' && <AdminBlogVendor blogs={blogs} setBlogs={setBlogs} activeTabMode={activeTabMode} />}
+                {activeTab === 'admin' && <AdminBlogAdmin blogs={blogs} setBlogs={setBlogs} activeTabMode={activeTabMode} />}
             </div>
         </>
     );
