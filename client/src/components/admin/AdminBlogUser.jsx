@@ -4,8 +4,8 @@ import { blogTimeConverter } from '../../utils/helpers';
 const AdminBlogUser = ({ blogs, activeTabMode }) => {
     const [newTitle, setNewTitle] = useState('');
     const [newDate, setNewDate] = useState('');
-    const [newBlogType, setNewBlogType] = useState('General');
     const [blogsFor, setBlogsFor] = useState([]);
+    const [newBlogType, setNewBlogType] = useState('General');
     const [tempBlogData, setTempBlogData] = useState(null);
     const [editingBlogId, setEditingBlogId] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);
