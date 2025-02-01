@@ -3464,13 +3464,25 @@ def blog(id):
     
     elif request.method == 'PATCH':
         data = request.get_json()
+
+        if "post_date" in data:
+            try:
+                blog.post_date = datetime.strptime(data["post_date"], "%Y-%m-%d").date()
+            except ValueError:
+                return {"error": "Invalid date format for post_date. Use YYYY-MM-DD."}, 400
+            
         for key, value in data.items():
-            if key == 'created_at' and isinstance(value, str):
+            if key == "post_date":
+                continue
+            
+            if key == "created_at" and isinstance(value, str):
                 try:
                     value = datetime.fromisoformat(value)
                 except ValueError:
-                    return {'error': 'Invalid datetime format for created_at'}, 400
+                    return {"error": "Invalid datetime format for created_at"}, 400
+            
             setattr(blog, key, value)
+
         db.session.commit()
         return blog.to_dict(), 202
 

@@ -1656,8 +1656,8 @@ def run():
 
     blogs = [
         Blog(
-            type="recipe",
-            title="Recipe: Butternut Squash Soup",
+            type="Recipe",
+            title="Butternut Squash Soup",
             body="""
                 <div class="column-3">
                     <h5>Prep Time: 10 mins | Cook Time: 35 mins | Total: 45 mins | Serves: 6</h5>
@@ -1698,7 +1698,7 @@ def run():
             for_user=True
         ),
         Blog(
-            type="general",
+            type="General",
             title="Discover Gingham: Fresh, Local, and Impactful",
             body="""
                 <div class="column-3">
@@ -1736,8 +1736,8 @@ def run():
             for_user=True
         ), 
         Blog(
-            type="market-spotlight",
-            title="Market Spotlight: Union Square Greenmarket",
+            type="Market Spotlight",
+            title="Union Square Greenmarket",
             body="""
                 <div class="column-3">
                     <article class="first-letter">

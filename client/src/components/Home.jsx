@@ -157,7 +157,7 @@ function Home() {
                             onClick={(e) => handleClick(currentBlog.id)}>&emsp;
                         </button>
                     </div>
-                    <h1>{currentBlog.title}</h1>
+                    <h1>{currentBlog.type === 'General' ? null : `${currentBlog.type}: `}{currentBlog.title}</h1>
                     <h6 className="margin-b-8">{blogTimeConverter(currentBlog.post_date)}</h6>
                     <div dangerouslySetInnerHTML={{ __html: currentBlog.body }} style={{ width: '100%', height: '100%' }}></div>
                 </div>

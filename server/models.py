@@ -762,7 +762,7 @@ class Blog(db.Model, SerializerMixin):
     type = db.Column(db.String, nullable=False, default='general')
     title = db.Column(db.String, nullable=False)
     body = db.Column(db.String, nullable=False)
-    for_user = db.Column(db.Boolean, default=True, nullable=False)
+    for_user = db.Column(db.Boolean, default=False, nullable=False)
     for_vendor = db.Column(db.Boolean, default=False, nullable=False)
     for_admin = db.Column(db.Boolean, default=False, nullable=False)
     admin_user_id = db.Column(db.Integer, db.ForeignKey('admin_users.id'), nullable=False)
@@ -770,7 +770,7 @@ class Blog(db.Model, SerializerMixin):
 
     blog_favorites = db.relationship('BlogFavorite', back_populates='blog')
 
-    serialize_rules = ('-blog_favorites.blog', '-blog_favorites.user')
+    serialize_rules = ('-blog_favorites',)
 
     def __repr__(self) -> str:
         return f"<Blog ID: {self.id}, Title: {self.title}, Body: {self.body}, Admin ID: {self.admin_user_id}, Post Date: {self.post_date}>"
