@@ -769,7 +769,7 @@ function Profile({ marketData }) {
                                         <button className='btn-edit' onClick={handleEmailToggle}>Change Email</button>
                                         <button className='btn-edit' onClick={handlePasswordToggle}>Change Password</button>
                                         {passwordMode ? (
-                                            <div>
+                                            <div className='width-min'>
                                                 <h3 className='margin-b-8 margin-t-8'>Change Password</h3>
                                                 <div className="form-group form-group-password">
                                                     <label>Old Password: </label>
@@ -810,7 +810,7 @@ function Profile({ marketData }) {
                                                         <i className={showPassword.pw3 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw3')}>&emsp;</i>
                                                         <PasswordChecklist
                                                             className='password-checklist'
-                                                            style={{padding: '0 8px'}}
+                                                            style={{ padding: '0 8px' }}
                                                             rules={["minLength", "specialChar", "number", "capital", "match"]}
                                                             minLength={5}
                                                             value={changePassword}

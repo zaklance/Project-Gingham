@@ -387,7 +387,7 @@ function AdminProfile () {
                                         <button className='btn-edit' onClick={handleEmailToggle}>Change Email</button>
                                         <button className='btn-edit' onClick={handlePasswordToggle}>Change Password</button>
                                         {passwordMode ? (
-                                            <div>
+                                            <div className='width-min'>
                                                 <h3 className='margin-b-8 margin-t-8'>Change Password</h3>
                                                 <div className="form-group form-group-password">
                                                     <label>Old Password: </label>
