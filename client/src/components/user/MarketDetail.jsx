@@ -485,7 +485,7 @@ function MarketDetail ({ match }) {
                     <h4>&ensp; {weekDay[0]}, &ensp;</h4>
                 ) : (
                     <select id="marketDaysSelect"
-                    className='margin-r-4'
+                    className='select-rounded margin-r-4'
                     name="marketDays"
                     value={selectedDay?.id || ''} 
                     onChange={handleDayChange}>
@@ -513,7 +513,10 @@ function MarketDetail ({ match }) {
             </div>
             <div id="vendors" className='flex-space-between margin-t-24'>
                 <h2>Vendors:</h2>
-                <select value={selectedProduct} onChange={handleProductChange}>
+                <select 
+                    className='select-rounded'
+                    value={selectedProduct} 
+                    onChange={handleProductChange}>
                     <option value="">All Products</option>
                     {Array.isArray(productList) && productList.map((product) => (
                         <option key={product.id} value={product.id}>
@@ -561,7 +564,7 @@ function MarketDetail ({ match }) {
                         <span className="market-price">
                             <span className="text-500">Price: ${firstBasket.price}</span>
                             <br />
-                            Value: ${firstBasket.basket_value}
+                            Value: ${firstBasket.value}
                         </span>
                         ) : (
                         <span className="market-price"></span>

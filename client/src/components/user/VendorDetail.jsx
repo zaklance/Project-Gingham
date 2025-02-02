@@ -417,7 +417,7 @@ function VendorDetail() {
                                             <span className="market-price">
                                                 <span className="text-500">Price: ${firstBasket ? firstBasket.price : ''}</span>
                                                 <br/>
-                                                Value: ${firstBasket ? firstBasket.basket_value : ''}
+                                                Value: ${firstBasket ? firstBasket.value : ''}
                                             </span>
                                         ) : (
                                             <span className="market-price">Out of Stock</span>

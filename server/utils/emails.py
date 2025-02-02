@@ -15,7 +15,7 @@ def send_contact_email(name, email, subject, message):
         recipient_email = "admin@gingham.nyc"
 
         msg = MIMEMultipart()
-        msg['From'] = sender_email
+        msg['From'] = f'Gingham NYC <{sender_email}>'
         msg['To'] = recipient_email
         msg['Subject'] = f"Gingham.nyc Contact Form Submission: {subject}"
 
@@ -137,7 +137,7 @@ def send_user_password_reset_email(email):
         recipient_email = email
 
         msg = MIMEMultipart()
-        msg['From'] = sender_email
+        msg['From'] = f'Gingham NYC <{sender_email}>'
         msg['To'] = recipient_email
         msg['Subject'] = 'Gingham Password Reset'
 
@@ -252,7 +252,7 @@ def send_vendor_password_reset_email(email):
         recipient_email = email
 
         msg = MIMEMultipart()
-        msg['From'] = sender_email
+        msg['From'] = f'Gingham NYC <{sender_email}>'
         msg['To'] = recipient_email
         msg['Subject'] = 'Gingham Password Reset'
 
@@ -367,7 +367,7 @@ def send_admin_password_reset_email(email):
         recipient_email = email
 
         msg = MIMEMultipart()
-        msg['From'] = sender_email
+        msg['From'] = f'Gingham NYC <{sender_email}>'
         msg['To'] = recipient_email
         msg['Subject'] = 'Gingham Password Reset'
 
@@ -480,7 +480,7 @@ def send_user_confirmation_email(email, user_data):
             raise ValueError("Email credentials are missing in the environment variables.")
 
         msg = MIMEMultipart()
-        msg['From'] = sender_email
+        msg['From'] = f'Gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = 'Gingham Email Confirmation'
 
@@ -596,7 +596,7 @@ def send_vendor_confirmation_email(email, vendor_data):
             raise ValueError("Email credentials are missing in the environment variables.")
 
         msg = MIMEMultipart()
-        msg['From'] = sender_email
+        msg['From'] = f'Gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = 'Gingham Vendor Email Confirmation'
 
@@ -712,7 +712,7 @@ def send_admin_confirmation_email(email, admin_data):
             raise ValueError("Email credentials are missing in the environment variables.")
 
         msg = MIMEMultipart()
-        msg['From'] = sender_email
+        msg['From'] = f'Gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = 'Gingham Admin Email Confirmation'
 

@@ -927,7 +927,7 @@ function Profile({ marketData }) {
                     </h3>
                     <h3>
                         Amount Saved: ${(
-                            salesHistory.reduce((totalBasket, sale) => totalBasket + sale.basket_value, 0) -
+                            salesHistory.reduce((totalBasket, sale) => totalBasket + sale.value, 0) -
                             salesHistory.reduce((totalPrice, sale) => totalPrice + sale.price, 0)
                         )}
                     </h3>
