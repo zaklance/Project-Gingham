@@ -300,7 +300,7 @@ def upgrade():
     sa.Column('is_sold', sa.Boolean(), nullable=True),
     sa.Column('is_grabbed', sa.Boolean(), nullable=True),
     sa.Column('price', sa.Float(), nullable=False),
-    sa.Column('basket_value', sa.Float(), nullable=True),
+    sa.Column('value', sa.Float(), nullable=True),
     sa.Column('pickup_end', sa.Time(), nullable=False),
     sa.ForeignKeyConstraint(['market_day_id'], ['market_days.id'], name=op.f('fk_baskets_market_day_id_market_days')),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_baskets_user_id_users')),
