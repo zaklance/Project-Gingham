@@ -1992,6 +1992,10 @@ select:hover {
   background-color: #fffcbe;
 }
 
+.select-rounded {
+  border-radius: 8px;
+}
+
 .select-state {
   width: fit-content;
 }
@@ -2281,6 +2285,13 @@ select:hover {
   background-repeat: no-repeat;
   background-position: right 50% top 40%;
   background-size: 1.2rem auto;
+}
+
+.icon-stats, .icon-stats:hover {
+  background-image: url('../images/icons/stats-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 46%;
+  background-size: 1.64rem auto;
 }
 
 .icon-settings {
