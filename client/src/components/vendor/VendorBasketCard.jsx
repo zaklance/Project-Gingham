@@ -78,7 +78,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
             const firstBasket = savedBaskets[0];
     
             setNumBaskets(savedBaskets.length);
-            setBasketValue(firstBasket.basket_value || '');
+            setBasketValue(firstBasket.value || '');
             setPrice(firstBasket.price || '');
     
             if (firstBasket.pickup_start) {
@@ -264,7 +264,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                             is_sold: false,
                             is_grabbed: false,
                             price: parsedPrice,
-                            basket_value: basketValue,
+                            value: basketValue,
                         }),
                     }));
                 }

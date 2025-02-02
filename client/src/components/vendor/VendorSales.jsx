@@ -381,7 +381,7 @@ function VendorSales() {
                                             </td>
                                             <td className='table-center'> {history.pickup_start ? timeConverter(history.pickup_start) : 'N/A'} </td>
                                             <td className='table-center'> {history.pickup_end ? timeConverter(history.pickup_end) : 'N/A'} </td>
-                                            <td className='table-center'> ${history.basket_value ? history.basket_value.toFixed(2) : 'N/A'} </td>
+                                            <td className='table-center'> ${history.value ? history.value.toFixed(2) : 'N/A'} </td>
                                             <td className='table-center'> ${history.price ? history.price.toFixed(2) : 'N/A'} </td>
                                             <td className='table-center'> {history.total_baskets || 0} </td>
                                             <td className='table-center'> {history.sold_baskets || 0} </td>

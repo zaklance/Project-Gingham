@@ -53,6 +53,7 @@ import AdminHelp from './components/admin/AdminHelp.jsx';
 import AdminEmail from './components/admin/AdminEmail.jsx';
 import AdminBlog from './components/admin/AdminBlog.jsx';
 import AdminReport from './components/admin/AdminReport.jsx';
+import AdminStats from './components/admin/AdminStats.jsx';
 import AdminFAQs from './components/admin/AdminFAQs.jsx';
 
 import { loadStripe } from '@stripe/stripe-js';
@@ -259,14 +260,15 @@ const router = createBrowserRouter([
             {
                 path: "admin",
                 children: [
+                    { path: "profile/:id",element:<AdminRoute><AdminProfile /></AdminRoute>},
                     { path: "markets", element: <AdminAuthRoute><AdminMarkets /></AdminAuthRoute>},
                     { path: "vendors", element: <AdminAuthRoute><AdminVendors /></AdminAuthRoute>},
                     { path: "users", element: <AdminAuthRoute><AdminUsers /></AdminAuthRoute>},
                     { path: "help", element: <AdminAuthRoute><AdminHelp /></AdminAuthRoute>},
-                    { path: "email", element: <AdminAuthRoute><AdminEmail /></AdminAuthRoute>},
                     { path: "blog", element: <AdminAuthRoute><AdminBlog /></AdminAuthRoute>},
                     { path: "report", element: <AdminAuthRoute><AdminReport /></AdminAuthRoute>},
-                    { path: "profile/:id",element:<AdminRoute><AdminProfile /></AdminRoute>},
+                    { path: "email", element: <AdminAuthRoute><AdminEmail /></AdminAuthRoute>},
+                    { path: "stats", element: <AdminAuthRoute><AdminStats /></AdminAuthRoute>},
                     { path: "faqs", element: <AdminRoute><AdminFAQs /></AdminRoute>},
                     { path: "logout", element: <AdminLogout /> },
                     { path: "password-reset-request", element: <PasswordResetRequest user={'admin'} /> },

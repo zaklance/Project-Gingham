@@ -1341,7 +1341,7 @@ def run():
         is_sold = user_id is not None
         is_grabbed = bool(fake.boolean()) if is_sold else False
         price = randint(5, 10)
-        basket_value = price + randint(2, 8)
+        value = price + randint(2, 8)
 
         bsk = Basket(
             vendor_id=selected_vm.vendor_id,
@@ -1353,7 +1353,7 @@ def run():
             is_sold=is_sold,
             is_grabbed=is_grabbed,
             price=price,
-            basket_value=basket_value
+            value=value
         )
         baskets.append(bsk)
     try:
@@ -1400,7 +1400,7 @@ def run():
         is_sold = user_id is not None
         is_grabbed = bool(fake.boolean()) if is_sold else False
         price = randint(5, 10)
-        basket_value = price + randint(2, 8)
+        value = price + randint(2, 8)
 
         bsk2 = Basket(
             vendor_id=1,
@@ -1412,7 +1412,7 @@ def run():
             is_sold=is_sold,
             is_grabbed=is_grabbed,
             price=price, 
-            basket_value=basket_value
+            value=value
         )
         baskets.append(bsk2)
 

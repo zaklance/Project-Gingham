@@ -1045,6 +1045,42 @@ def user_password_change(id):
         
         return jsonify(user_id=user.id), 200
 
+@app.route('/api/users/count', methods=['GET'])
+@jwt_required()
+def user_count():
+    status = request.args.get('status', type=str)
+    city = request.args.get('city', type=str)
+    state = request.args.get('state', type=str)
+    try:
+        count = db.session.query(User).count()
+        if status:
+            count = db.session.query(User).filter(User.status == status).count()
+        if city:
+            count = db.session.query(User).filter(User.city == city).count()
+        if state:
+            count = db.session.query(User).filter(User.state == state).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/users/top-10-cities', methods=['GET'])
+@jwt_required()
+def top_10_cities():
+    try:
+        city_counts = (
+            db.session.query(User.city, func.count(User.city).label("count"))
+            .group_by(User.city)
+            .order_by(func.count(User.city).desc())
+            .limit(10)
+            .all()
+        )
+
+        city_data = {city: count for city, count in city_counts}
+
+        return jsonify(city_data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/vendor-users', methods=['GET', 'PATCH'])
 @jwt_required()
 def get_vendor_users():
@@ -1226,6 +1262,15 @@ def get_vendor_user(id):
             app.logger.error(f"Error deleting VendorUser: {str(e)}")
             return jsonify({'error': str(e)}), 500
 
+@app.route('/api/vendor-users/count', methods=['GET'])
+@jwt_required()
+def vendor_user_count():
+    try:
+        count = db.session.query(VendorUser).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/admin-users', methods=['GET', 'POST'])
 @jwt_required()
 def handle_admin_users():
@@ -1304,6 +1349,15 @@ def handle_admin_user_by_id(id):
         except Exception as e:
             db.session.rollback()
             return {'error': f'Exception: {str(e)}'}, 500
+
+@app.route('/api/admin-users/count', methods=['GET'])
+@jwt_required()
+def admin_user_count():
+    try:
+        count = db.session.query(AdminUser).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/markets', methods=['GET', 'POST'])
 def all_markets():
@@ -1421,6 +1475,15 @@ def market_by_id(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
+@app.route('/api/markets/count', methods=['GET'])
+@jwt_required()
+def market_count():
+    try:
+        count = db.session.query(Market).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/market-days', methods=['GET', 'POST', 'DELETE'])
 def all_market_days():
     if request.method == 'GET':
@@ -1478,6 +1541,15 @@ def market_day_by_id(id):
         except Exception as e:
             db.session.rollback()
             return {'error': str(e)}, 500
+
+@app.route('/api/market-days/count', methods=['GET'])
+@jwt_required()
+def market_days_count():
+    try:
+        count = db.session.query(MarketDay).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     
 @app.route('/api/vendors', methods=['GET', 'POST', 'PATCH'])
 def all_vendors():
@@ -1590,6 +1662,15 @@ def get_vendor_image(vendor_id):
         except FileNotFoundError:
             return {'error': 'Image not found'}, 404
     return {'error': 'Vendor or image not found'}, 404
+
+@app.route('/api/vendors/count', methods=['GET'])
+@jwt_required()
+def vendor_count():
+    try:
+        count = db.session.query(Vendor).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/market-reviews', methods=['GET', 'POST', 'DELETE'])
 def all_market_reviews():
@@ -2155,11 +2236,11 @@ def handle_baskets():
                 return jsonify({'error': 'Invalid price format. Must be a positive number.'}), 400
 
             try:
-                basket_value = float(data['basket_value'])
-                if basket_value < 0:
-                    return jsonify({'error': 'basket_value must be a non-negative number'}), 400
+                value = float(data['value'])
+                if value < 0:
+                    return jsonify({'error': 'value must be a non-negative number'}), 400
             except (ValueError, TypeError):
-                return jsonify({'error': 'Invalid basket_value format. Must be a number.'}), 400
+                return jsonify({'error': 'Invalid value format. Must be a number.'}), 400
 
             new_basket = Basket(
                 vendor_id=data['vendor_id'],
@@ -2168,7 +2249,7 @@ def handle_baskets():
                 pickup_start=pickup_start,
                 pickup_end=pickup_end,
                 price=price,
-                basket_value=basket_value,
+                value=value,
                 is_sold=data.get('is_sold', False),
                 is_grabbed=data.get('is_grabbed', False)
             )
@@ -2214,8 +2295,8 @@ def handle_baskets():
                 basket.is_grabbed = data['is_grabbed']
             if 'price' in data:
                 basket.price = data['price']
-            if 'basket_value' in data:
-                basket.basket_value = data['basket_value']
+            if 'value' in data:
+                basket.value = data['value']
 
             db.session.commit()
             return jsonify(basket.to_dict()), 200
@@ -2315,7 +2396,7 @@ def get_user_sales_history():
                 "market_name": basket.market_day.markets.name,
                 "market_id": basket.market_day.markets.id,
                 "price": basket.price,
-                "basket_value": basket.basket_value,
+                "value": basket.value,
                 "baskets_count": 1
             }
             for basket in baskets or []
@@ -2348,7 +2429,7 @@ def get_vendor_sales_history():
                     "sale_date": sale_date.strftime('%Y-%m-%d'),
                     "market_name": basket.market_day.markets.name if basket.market_day else None,
                     "market_id": basket.market_day.markets.id if basket.market_day else None,
-                    "basket_value": basket.basket_value,
+                    "value": basket.value,
                     "price": basket.price,
                     "pickup_start": basket.pickup_start.strftime('%H:%M'),
                     "pickup_end": basket.pickup_end.strftime('%H:%M'),
@@ -2366,6 +2447,73 @@ def get_vendor_sales_history():
     except Exception as e:
         app.logger.error(f"Error fetching sales history: {e}")
         return {'error': f"Exception: {str(e)}"}, 500
+
+@app.route('/api/baskets/count', methods=['GET'])
+@jwt_required()
+def basket_count():
+    try:
+        count = db.session.query(Basket).count()
+        sold_count = db.session.query(Basket).filter(Basket.is_sold == True).count()
+        grabbed_count = db.session.query(Basket).filter(Basket.is_grabbed == True).count()
+        unsold_count = db.session.query(Basket).filter(Basket.is_sold == False).count()
+
+        sold_price = db.session.query(func.sum(Basket.price)).filter(Basket.is_sold == True).scalar() or 0
+        sold_value = db.session.query(func.sum(Basket.value)).filter(Basket.is_sold == True).scalar() or 0
+
+        return jsonify({
+            "count": count,
+            "sold_count": sold_count,
+            "grabbed_count": grabbed_count,
+            "unsold_count": unsold_count,
+            "sold_price": sold_price,
+            "sold_value": sold_value
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/baskets/top-10-markets', methods=['GET'])
+@jwt_required()
+def basket_top_10_markets():
+    try:
+        market_counts = (
+            db.session.query(Market.name, func.count(Basket.id).label("count"))
+            .join(MarketDay, MarketDay.id == Basket.market_day_id)
+            .join(Market, Market.id == MarketDay.market_id)
+            .group_by(Market.name)
+            .order_by(func.count(Basket.id).desc())
+            .limit(10)
+            .all()
+        )
+
+        market_data = {market: count for market, count in market_counts}
+
+        return jsonify(market_data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/baskets/top-10-users', methods=['GET'])
+@jwt_required()
+def basket_top_10_users():
+    try:
+        top_users = db.session.query(
+            User.first_name,
+            User.last_name,
+            User.email,
+            db.func.count(Basket.user_id).label('basket_count')
+        ).join(Basket, Basket.user_id == User.id).group_by(User.id).order_by(db.desc('basket_count')).limit(10).all()
+
+        users_data = [{
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "basket_count": user.basket_count
+        } for user in top_users]
+
+        return jsonify(users_data), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route('/api/products', methods=['GET', 'POST'])
 def all_products():
@@ -2568,7 +2716,7 @@ def send_mjml_email():
             recipient_email = email_address
 
             msg = MIMEMultipart()
-            msg['From'] = sender_email
+            msg['From'] = f'Gingham NYC <{sender_email}>'
             msg['To'] = recipient_email
             msg['Subject'] = subject
 
@@ -2616,7 +2764,7 @@ def send_html_email():
         recipient_email = email_address
 
         msg = MIMEMultipart()
-        msg['From'] = sender_email
+        msg['From'] = f'Gingham NYC <{sender_email}>'
         msg['To'] = recipient_email
         msg['Subject'] = subject
 
@@ -2671,20 +2819,47 @@ def send_sendgrid_email():
         return jsonify({"error": str(e)}), 500
 
     compiled_html = result.stdout.decode()
+    user_type = request.args.get('user_type')
+    single_email = request.args.get('single_email')
 
-    try:
-        users = User.query.with_entities(User.email).all()
-        email_list = [user.email for user in users]
+    if user_type == 'user':
+        try:
+            users = User.query.with_entities(User.email).all()
+            email_list = [user.email for user in users]
+            if not email_list:
+                return jsonify({"error": "No users found to send emails to."}), 404
+            
+        except Exception as e:
+            print("Database Error:", str(e))
+            return jsonify({"error": str(e)}), 500
 
-        if not email_list:
-            return jsonify({"error": "No users found to send emails to."}), 404
-        
-    except Exception as e:
-        print("Database Error:", str(e))
-        return jsonify({"error": str(e)}), 500
+    if user_type == 'vendor':
+        try:
+            users = VendorUser.query.with_entities(VendorUser.email).all()
+            email_list = [user.email for user in users]
+            if not email_list:
+                return jsonify({"error": "No vendor users found to send emails to."}), 404
+            
+        except Exception as e:
+            print("Database Error:", str(e))
+            return jsonify({"error": str(e)}), 500
+
+    if user_type == 'admin':
+        try:
+            users = AdminUser.query.with_entities(AdminUser.email).all()
+            email_list = [user.email for user in users]
+            if not email_list:
+                return jsonify({"error": "No admin users found to send emails to."}), 404
+            
+        except Exception as e:
+            print("Database Error:", str(e))
+            return jsonify({"error": str(e)}), 500
+    
+    if single_email:
+        email_list = single_email
 
     message = Mail(
-        from_email=sender_email,
+        from_email=f'Gingham NYC <{sender_email}>',
         to_emails=email_list,
         subject=subject,
         html_content=compiled_html,
@@ -2703,30 +2878,6 @@ def send_sendgrid_email():
     
 # Stripe
 stripe.api_key = os.getenv('STRIPE_PY_KEY')
-
-# @app.route('/api/create-checkout-session', methods=['POST'])
-# def create_checkout_session():
-#     try:
-#         session = stripe.checkout.Session.create(
-#             ui_mode = 'embedded',
-#             line_items=[
-#                 {
-#                     # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-#                     'price': 'price_1QIWBN00T87Ls5h92BGgUbTz',
-#                     'quantity': 1,
-#                 },
-#             ],
-#             mode='payment',
-#             return_url='http://127.0.0.1:5173' + '/return?session_id={CHECKOUT_SESSION_ID}',
-#         )
-#     except Exception as e:
-#         return str(e)
-#     return jsonify(clientSecret=session.client_secret)
-
-# @app.route('/api/session-status', methods=['GET'])
-# def session_status():
-#   session = stripe.checkout.Session.retrieve(request.args.get('session_id'))
-#   return jsonify(status=session.status, customer_email=session.customer_details.email)
 
 @app.route('/api/config', methods=['GET'])
 def get_config():
@@ -3045,30 +3196,6 @@ def notify_me_for_more_baskets():
         db.session.rollback()
         print(f"Error creating notification: {str(e)}")
         return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
-    
-# @app.route('/api/delete-vendor-notification', methods=['DELETE'])
-# def delete_notification():
-#     data = request.get_json()
-
-#     if not data or 'id' not in data:
-#         print("Received data:", data)
-#         return jsonify({'message': 'Invalid request data.'}), 400
-
-#     try:
-#         notification = VendorNotification.query.get(data['notification_id'])
-
-#         if not notification:
-#             return jsonify({'message': 'Notification not found.'}), 404
-
-#         db.session.delete(notification)
-#         db.session.commit()
-
-#         return jsonify({'message': 'Notification deleted successfully.'}), 200
-
-#     except Exception as e:
-#         db.session.rollback()
-#         print(f"Error deleting notification: {str(e)}")
-#         return jsonify({'message': f'Error deleting notification: {str(e)}'}), 500
 
 @app.route('/api/vendor-notifications', methods=['GET', 'DELETE'])
 @jwt_required()
@@ -3496,7 +3623,6 @@ def blog(id):
         except Exception as e:
             db.session.rollback()
             return {'error': f'Failed to delete Blog: {str(e)}'}, 500
-        
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

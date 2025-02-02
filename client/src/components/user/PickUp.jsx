@@ -100,7 +100,7 @@ function PickUp() {
                                                         </tr>
                                                         <tr>
                                                             <td className='nowrap'>Basket Value:</td>
-                                                            <td className='text-center'>${basket?.basket_value}</td>
+                                                            <td className='text-center'>${basket?.value}</td>
                                                         </tr>
                                                         <tr>
                                                             <td className='nowrap'>Basket Price:</td>
