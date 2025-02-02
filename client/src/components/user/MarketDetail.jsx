@@ -94,34 +94,43 @@ function MarketDetail ({ match }) {
         if (!market?.id) return;
     
         const fetchData = async () => {
-            if (market) {
-                try {
-                    const [marketDaysRes, vendorMarketsRes, eventsRes] = await Promise.all([
-                        fetch(`http://127.0.0.1:5555/api/market-days?market_id=${market.id}`).then(res => res.json()),
-                        fetch(`http://127.0.0.1:5555/api/vendor-markets?market_id=${market.id}`).then(res => res.json()),
-                        fetch(`http://127.0.0.1:5555/api/events?market_id=${market.id}`).then(res => res.json()), 
-                    ]);
-                    
-                    setMarketDays(marketDaysRes);
-                    setAllVendorDetails(marketDaysRes
-                        .flatMap((marketDay) => marketDay.vendor_markets)
-                        .map((vendorMarket) => vendorMarket.vendor)
-                    )
-                    if (Array.isArray(vendorMarketsRes)) {
-                        const vendorIds = [...new Set(vendorMarketsRes.map(vendor => vendor.vendor_id))];
-                        setVendors(vendorIds);
-                        setVendorMarkets(vendorMarketsRes);
-                    }
-                    setSelectedDay(marketDaysRes.length > 0 ? marketDaysRes[0] : null);
-                    setEvents(eventsRes);
-                } catch (error) {
-                    console.error("Error fetching data in parallel:", error);
+            try {
+                const [marketDaysRes, vendorMarketsRes, eventsRes] = await Promise.all([
+                    fetch(`http://127.0.0.1:5555/api/market-days?market_id=${market.id}`).then(res => res.json()),
+                    fetch(`http://127.0.0.1:5555/api/vendor-markets?market_id=${market.id}`).then(res => res.json()),
+                    fetch(`http://127.0.0.1:5555/api/events?market_id=${market.id}`).then(res => res.json()), 
+                ]);
+    
+                setMarketDays(marketDaysRes);
+                setAllVendorDetails(marketDaysRes
+                    .flatMap((marketDay) => marketDay.vendor_markets)
+                    .map((vendorMarket) => vendorMarket.vendor)
+                );
+    
+                if (Array.isArray(vendorMarketsRes)) {
+                    const vendorIds = [...new Set(vendorMarketsRes.map(vendor => vendor.vendor_id))];
+                    setVendors(vendorIds);
+                    setVendorMarkets(vendorMarketsRes);
                 }
+                setSelectedDay(marketDaysRes.length > 0 ? marketDaysRes[0] : null);
+    
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+    
+                const upcomingEvents = eventsRes.filter(event => {
+                    const eventEndDate = new Date(event.end_date + "T23:59:59");
+                    return eventEndDate >= today;
+                });
+    
+                setEvents(upcomingEvents);
+            } catch (error) {
+                console.error("Error fetching data in parallel:", error);
             }
         };
     
         fetchData();
     }, [market?.id, userId]);
+    
 
     useEffect(() => {
         if (!userId) {
