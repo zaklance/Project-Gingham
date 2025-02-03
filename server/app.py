@@ -2097,16 +2097,23 @@ def all_events():
     if request.method == 'GET':
         try:
             vendor_id = request.args.get('vendor_id', type=int)
+            market_id = request.args.get('market_id', type=int)
 
-            if not vendor_id:
-                return jsonify({"error": "vendor_id is required"}), 400
+            if not vendor_id and not market_id:
+                return jsonify({"error": "At least one of vendor_id or market_id is required"}), 400
 
-            events = Event.query.filter_by(vendor_id=vendor_id).all()
+            query = Event.query
+            if vendor_id:
+                query = query.filter_by(vendor_id=vendor_id)
+            if market_id:
+                query = query.filter_by(market_id=market_id)
+
+            events = query.all()
             return jsonify([event.to_dict() for event in events]), 200
         except Exception as e:
             app.logger.error(f'Error fetching events: {e}')  
             return {'error': f'Exception: {str(e)}'}, 500
-
+        
     elif request.method == 'POST':
         data = request.get_json()
 
