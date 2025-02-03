@@ -153,11 +153,11 @@ function Home() {
                         <i className="icon-arrow-r" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>
                         <button
                             className={`btn-fav-blog margin-l-8 ${isClicked[currentBlog.id] || blogFavs.some(fav => fav.blog_id === currentBlog.id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
-                            title="save blog as favorite"
+                            title={isClicked[currentBlog.id] || blogFavs.some(fav => fav.blog_id === currentBlog.id) ? 'remove blog from favorites' : 'save blog as favorite'}
                             onClick={(e) => handleClick(currentBlog.id)}>&emsp;
                         </button>
                     </div>
-                    <h1>{currentBlog.title}</h1>
+                    <h1>{currentBlog.type === 'General' ? null : `${currentBlog.type}: `}{currentBlog.title}</h1>
                     <h6 className="margin-b-8">{blogTimeConverter(currentBlog.post_date)}</h6>
                     <div dangerouslySetInnerHTML={{ __html: currentBlog.body }} style={{ width: '100%', height: '100%' }}></div>
                 </div>

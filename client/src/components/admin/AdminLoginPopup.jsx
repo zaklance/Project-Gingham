@@ -174,7 +174,7 @@ function Login({ handlePopup }) {
                     </form>
                 </div>
                 <div>
-                    <form onSubmit={handleSignup} className="form">
+                    <form onSubmit={handleSignup} className="form min-width">
                         <h2 className='margin-b-24'>Signup</h2>
                         <div className="form-group form-login">
                             <label>Email: </label>
@@ -220,19 +220,19 @@ function Login({ handlePopup }) {
                                     required
                                 />
                                 <i className={showPassword.pw3 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw3')}>&emsp;</i>
-                                <PasswordChecklist
-                                    className='password-checklist'
-                                    style={{ padding: '0 12px' }}
-                                    rules={["minLength", "specialChar", "number", "capital", "match",]}
-                                    minLength={5}
-                                    value={signupPassword}
-                                    valueAgain={signupConfirmPassword}
-                                    onChange={(isValid) => { setIsValid(isValid) }}
-                                    iconSize={14}
-                                    validColor='#00bda4'
-                                    invalidColor='#ff4b5a'
-                                /><PasswordStrengthBar className='password-bar' minLength={5} password={signupPassword} />
                             </div>
+                            <PasswordChecklist
+                                className='password-checklist'
+                                style={{ padding: '0 12px' }}
+                                rules={["minLength", "specialChar", "number", "capital", "match",]}
+                                minLength={5}
+                                value={signupPassword}
+                                valueAgain={signupConfirmPassword}
+                                onChange={(isValid) => { setIsValid(isValid) }}
+                                iconSize={14}
+                                validColor='#00bda4'
+                                invalidColor='#ff4b5a'
+                            /><PasswordStrengthBar className='password-bar' minLength={5} password={signupPassword} />
                         </div>
                         <div className="form-group form-login">
                             <label>First Name: </label>

@@ -226,11 +226,19 @@ function VendorDetail() {
         fetch(`http://127.0.0.1:5555/api/events?vendor_id=${Number(id)}`)
             .then(response => response.json())
             .then(data => {
-                // const filteredData = data.filter(item => item.vendor_id === Number(id));
-                setEvents(data)
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+    
+                const upcomingEvents = data.filter(event => {
+                    const eventEndDate = new Date(event.end_date + "T23:59:59");
+                    return eventEndDate >= today;
+                });
+    
+                setEvents(upcomingEvents);
             })
             .catch(error => console.error('Error fetching events', error));
     }, [id]);
+    
 
     useEffect(() => {
         if (!vendor?.id) return;    
@@ -417,7 +425,7 @@ function VendorDetail() {
                                             <span className="market-price">
                                                 <span className="text-500">Price: ${firstBasket ? firstBasket.price : ''}</span>
                                                 <br/>
-                                                Value: ${firstBasket ? firstBasket.basket_value : ''}
+                                                Value: ${firstBasket ? firstBasket.value : ''}
                                             </span>
                                         ) : (
                                             <span className="market-price">Out of Stock</span>

@@ -76,7 +76,6 @@ body {
   margin-bottom: 48px;
   border-radius: 20px;
   /* Adjust padding as needed */
-  /* box-shadow: 0 4px 2px -2px #ff7b8a; */
 }
 
 .wrapper {
@@ -404,6 +403,10 @@ article {
 
 .width-fit {
   width: fit-content;
+}
+
+.width-min {
+  width: min-content;
 }
 
 .width-max {
@@ -1989,6 +1992,10 @@ select:hover {
   background-color: #fffcbe;
 }
 
+.select-rounded {
+  border-radius: 8px;
+}
+
 .select-state {
   width: fit-content;
 }
@@ -2278,6 +2285,13 @@ select:hover {
   background-repeat: no-repeat;
   background-position: right 50% top 40%;
   background-size: 1.2rem auto;
+}
+
+.icon-stats, .icon-stats:hover {
+  background-image: url('../images/icons/stats-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 46%;
+  background-size: 1.64rem auto;
 }
 
 .icon-settings {
@@ -2925,7 +2939,7 @@ select:hover {
     left: 0;
     width: 100vw;
     padding: 0;
-    margin: 0px;
+    margin: 70px 0 0 0;
   }
 
   .login-bar {
@@ -3177,10 +3191,6 @@ select:hover {
     font-size: 10pt;
   }
 
-  /* .form-login label {
-    background-color: #eee;
-  } */
-
   .alert-container> .alert-favorites {
     left: -160px;
   }
@@ -3228,7 +3238,7 @@ select:hover {
 
   .column-3 {
     column-count: 1;
-  }  
+  }
 }
 
 
@@ -3237,6 +3247,10 @@ select:hover {
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 @media screen and (max-width: 444px) {
   .popup-notif-on {
-      left: 5vw;
-    }
+    left: 5vw;
+  }
+
+  .password-checklist {
+    width: 100%;
+  }
 }

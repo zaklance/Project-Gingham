@@ -196,7 +196,13 @@ class Market(db.Model, SerializerMixin):
     market_favorites = db.relationship('MarketFavorite', back_populates='market', lazy='dynamic', cascade="all, delete")
     market_days = db.relationship('MarketDay', back_populates='markets', cascade="all, delete")
 
-    serialize_rules = ('-reviews.market', '-market_favorites.market', '-vendor_markets.market', '-reviews.user.vendor_reviews', '-reviews.user.market_reviews')
+    serialize_rules = (
+        '-reviews.market', 
+        '-market_favorites.market', 
+        '-vendor_markets.market', 
+        '-reviews.user.vendor_reviews', 
+        '-reviews.user.market_reviews'
+    )
 
     # Validations
     @validates('name', 'location', 'hours')
@@ -227,7 +233,13 @@ class MarketDay(db.Model, SerializerMixin):
     markets = db.relationship('Market', back_populates='market_days')
     vendor_markets = db.relationship( 'VendorMarket', back_populates="market_day")
 
-    serialize_rules = ('-markets.market_days', '-markets.reviews', '-markets.market_favorites', '-vendor_markets.market_day', '-vendor_markets.vendor.reviews')
+    serialize_rules = (
+        '-markets.market_days', 
+        '-markets.reviews', 
+        '-markets.market_favorites', 
+        '-vendor_markets.market_day', 
+        '-vendor_markets.vendor.reviews'
+    )
 
     # Validations
     @validates('name', 'location', 'hours')
@@ -259,8 +271,12 @@ class Vendor(db.Model, SerializerMixin):
     # notifications = db.relationship('VendorNotification', back_populates='vendor', lazy='dynamic')
 
     serialize_rules = (
-        '-reviews.vendor', '-vendor_favorites.vendor', '-vendor_vendor_users.vendor', 
-        '-vendor_markets.vendor', '-reviews.user.market_reviews', '-vendor_vendor_users.email',
+        '-reviews.vendor', 
+        '-vendor_favorites.vendor', 
+        '-vendor_vendor_users.vendor', 
+        '-vendor_markets.vendor', 
+        '-reviews.user.market_reviews', 
+        '-vendor_vendor_users.email',
     )
 
     # Validations
@@ -289,7 +305,14 @@ class VendorMarket(db.Model, SerializerMixin):
     vendor = db.relationship('Vendor', back_populates='vendor_markets')
     market_day = db.relationship( 'MarketDay', back_populates="vendor_markets")
 
-    serialize_rules = ('-vendor.vendor_markets', '-market_day.vendor_markets', '-market_day.markets.market_favorites', '-vendor.vendor_favorites', 'market_day.markets.is_visible', '-vendor.reviews')
+    serialize_rules = (
+        '-vendor.vendor_markets', 
+        '-market_day.vendor_markets', 
+        '-market_day.markets.market_favorites', 
+        '-vendor.vendor_favorites', 
+        'market_day.markets.is_visible', 
+        '-vendor.reviews'
+    )
 
     def __repr__(self) -> str:
         return f"<VendorMarket Vendor ID: {self.vendor_id}, Market ID: {self.market_id}>"
@@ -309,7 +332,15 @@ class MarketReview(db.Model, SerializerMixin):
     market = db.relationship('Market', back_populates='reviews')
     user = db.relationship('User', back_populates='market_reviews')
 
-    serialize_rules = ('-user', '-market.reviews', '-market.market_favorites', '-market.vendor_markets', '-user.market_reviews', '-user.vendor_reviews', 'user.first_name')
+    serialize_rules = (
+        '-user', 
+        '-market.reviews', 
+        '-market.market_favorites', 
+        '-market.vendor_markets', 
+        '-user.market_reviews', 
+        '-user.vendor_reviews', 
+        'user.first_name'
+    )
 
     def __repr__(self) -> str:
         return f"<MarketReview {self.id}>"
@@ -337,7 +368,14 @@ class VendorReview(db.Model, SerializerMixin):
     vendor = db.relationship('Vendor', back_populates='reviews')
     user = db.relationship('User', back_populates='vendor_reviews')
 
-    serialize_rules = ('-vendor.reviews', '-vendor.vendor_favorites', '-user.vendor_reviews', '-user.market_reviews', '-vendor.vendor_markets', 'user.first_name')
+    serialize_rules = (
+        '-vendor.reviews', 
+        '-vendor.vendor_favorites', 
+        '-user.vendor_reviews', 
+        '-user.market_reviews', 
+        '-vendor.vendor_markets', 
+        'user.first_name'
+    )
 
     def __repr__(self) -> str:
         return f"<VendorReview {self.id}>"
@@ -391,7 +429,14 @@ class MarketFavorite(db.Model, SerializerMixin):
     user = db.relationship('User', back_populates='market_favorites')
     market = db.relationship('Market', back_populates='market_favorites')
 
-    serialize_rules = ('-user', '-market', 'market.name', '-market.reviews', '-market.market_favorites', '-market.market_days')
+    serialize_rules = (
+        '-user', 
+        '-market', 
+        'market.name', 
+        '-market.reviews', 
+        '-market.market_favorites', 
+        '-market.market_days'
+    )
 
     def __repr__(self) -> str:
         return f"<MarketFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.market_id}>"
@@ -406,7 +451,14 @@ class VendorFavorite(db.Model, SerializerMixin):
     user = db.relationship('User', back_populates='vendor_favorites')
     vendor = db.relationship('Vendor', back_populates='vendor_favorites')
 
-    serialize_rules = ('-user', '-vendor', 'vendor.name', '-vendor.reviews', '-vendor.vendor_favorites', '-vendor.vendor_markets')
+    serialize_rules = (
+        '-user', 
+        '-vendor', 
+        'vendor.name', 
+        '-vendor.reviews', 
+        '-vendor.vendor_favorites', 
+        '-vendor.vendor_markets'
+    )
 
     def __repr__(self) -> str:
         return f"<VendorFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.vendor_id}>"
@@ -532,14 +584,22 @@ class Basket(db.Model, SerializerMixin):
     is_sold = db.Column(db.Boolean, nullable=True)
     is_grabbed = db.Column(db.Boolean, nullable=True)
     price = db.Column(db.Float, nullable=False)
-    basket_value = db.Column(db.Float, nullable=True)
+    value = db.Column(db.Float, nullable=True)
     pickup_end = db.Column(db.Time, nullable=False)
 
     vendor = db.relationship('Vendor', lazy='joined')
     market_day = db.relationship('MarketDay', lazy='joined')
     qr_codes = db.relationship('QRCode', back_populates='baskets')
 
-    serialize_rules = ('-vendor.baskets', '-market_day.baskets', '-qr_codes.baskets')
+    serialize_rules = (
+        '-vendor.baskets', 
+        '-market_day.baskets', 
+        '-qr_codes.baskets', 
+        '-market_day.vendor_markets', 
+        '-vendor.reviews', 
+        '-vendor.vendor_markets',
+        '-vendor.vendor_favorites',
+    )
 
     # @validates('sale_date')
     # def validate_sale_date(self, key, value):
@@ -553,7 +613,7 @@ class Basket(db.Model, SerializerMixin):
             raise ValueError(f"{key} must be a boolean value")
         return value
     
-    @validates('price', 'basket_value')
+    @validates('price', 'value')
     def validate_price(self, key, value):
         if not isinstance(value, (int, float)) or value < 0:
             raise ValueError(f"{key} must be a non-negative integer")
@@ -561,7 +621,7 @@ class Basket(db.Model, SerializerMixin):
 
     def __repr__(self):
         return (f"<Basket ID: {self.id}, Vendor: {self.vendor.name}, "
-                f"Market ID: {self.market_day_id}, Sold: {self.is_sold}, Value: {self.basket_value}>")
+                f"Market ID: {self.market_day_id}, Sold: {self.is_sold}, Value: {self.value}>")
 
 class UserNotification(db.Model, SerializerMixin):
     __tablename__ = 'user_notifications'
@@ -671,7 +731,13 @@ class QRCode(db.Model, SerializerMixin):
 
     baskets = db.relationship('Basket', back_populates='qr_codes')
 
-    serialize_rules = ('-baskets.qr_codes', '-baskets.market_day', '-baskets.vendor.reviews', '-baskets.vendor.vendor_favorites', '-baskets.vendor.vendor_markets')
+    serialize_rules = (
+        '-baskets.qr_codes', 
+        '-baskets.market_day', 
+        '-baskets.vendor.reviews', 
+        '-baskets.vendor.vendor_favorites', 
+        '-baskets.vendor.vendor_markets'
+    )
 
     def __repr__(self) -> str:
         return f"<MarketFavorite ID: {self.id}, User ID: {self.user_id}, Market ID: {self.basket_id}>"
@@ -696,7 +762,7 @@ class Blog(db.Model, SerializerMixin):
     type = db.Column(db.String, nullable=False, default='general')
     title = db.Column(db.String, nullable=False)
     body = db.Column(db.String, nullable=False)
-    for_user = db.Column(db.Boolean, default=True, nullable=False)
+    for_user = db.Column(db.Boolean, default=False, nullable=False)
     for_vendor = db.Column(db.Boolean, default=False, nullable=False)
     for_admin = db.Column(db.Boolean, default=False, nullable=False)
     admin_user_id = db.Column(db.Integer, db.ForeignKey('admin_users.id'), nullable=False)
@@ -704,7 +770,7 @@ class Blog(db.Model, SerializerMixin):
 
     blog_favorites = db.relationship('BlogFavorite', back_populates='blog')
 
-    serialize_rules = ('-blog_favorites.blog', '-blog_favorites.user')
+    serialize_rules = ('-blog_favorites',)
 
     def __repr__(self) -> str:
         return f"<Blog ID: {self.id}, Title: {self.title}, Body: {self.body}, Admin ID: {self.admin_user_id}, Post Date: {self.post_date}>"
@@ -719,7 +785,12 @@ class BlogFavorite(db.Model, SerializerMixin):
     user = db.relationship('User', back_populates='blog_favorites')
     blog = db.relationship('Blog', back_populates='blog_favorites')
 
-    serialize_rules = ('-blog.blog_favorites', '-user.blog_favorites', '-user.market_reviews', '-user.vendor_reviews')
+    serialize_rules = (
+        '-blog.blog_favorites', 
+        '-user.blog_favorites', 
+        '-user.market_reviews', 
+        '-user.vendor_reviews'
+    )
 
     def __repr__(self) -> str:
         return f"<BlogFavorite ID: {self.id}, User ID: {self.user_id}, Blog ID: {self.blog_id}>"
