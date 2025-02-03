@@ -2116,6 +2116,7 @@ def all_events():
         
     elif request.method == 'POST':
         data = request.get_json()
+        print("Received Data:", data)
 
         try:
             start_date = datetime.strptime(data.get('start_date'), '%Y-%m-%d').date()
@@ -2140,13 +2141,17 @@ def all_events():
             return jsonify({"error": "Missing vendor_id or market_id"}), 400
 
         new_event = Event(
-            vendor_id=vendor_id,
-            market_id=market_id,
+            # vendor_id=vendor_id,
+            # market_id=market_id,
             title=data['title'],
             message=data['message'],
             start_date=start_date,
             end_date=end_date
         )
+        if 'vendor_id' in data:
+            new_event.vendor_id = data['vendor_id']
+        if 'market_id' in data:
+            new_event.market_id = data['market_id']
 
         db.session.add(new_event)
         db.session.commit()
