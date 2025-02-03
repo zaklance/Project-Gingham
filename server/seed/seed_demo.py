@@ -557,7 +557,7 @@ def run():
         is_sold = user_id is not None
         is_grabbed = bool(fake.boolean()) if is_sold else bool(False)
         price = int(randint(5, 10))
-        basket_value = int(price + randint(2, 8))
+        value = int(price + randint(2, 8))
 
         selected_vm = choice(vendor_markets)
 
@@ -571,7 +571,7 @@ def run():
             is_sold=is_sold,
             is_grabbed=is_grabbed,
             price=price, 
-            basket_value=basket_value
+            value=value
         )
         baskets.append(bsk)
     
@@ -603,7 +603,7 @@ def run():
         is_sold = user_id is not None
         is_grabbed = bool(fake.boolean()) if is_sold else bool(False)
         price = int(randint(5, 10))
-        basket_value = int(price + randint(2, 8))
+        value = int(price + randint(2, 8))
 
         selected_vm = choice(vendor_markets)
 
@@ -617,7 +617,7 @@ def run():
             is_sold=is_sold,
             is_grabbed=is_grabbed,
             price=price, 
-            basket_value=basket_value
+            value=value
         )
         baskets.append(bsk2)
 
@@ -860,8 +860,8 @@ def run():
 
     blogs = [
         Blog(
-            type="recipe",
-            title="Recipe: Butternut Squash Soup",
+            type="Recipe",
+            title="Butternut Squash Soup",
             body="""
                 <div class="column-3">
                     <h5>Prep Time: 10 mins | Cook Time: 35 mins | Total: 45 mins | Serves: 6</h5>
@@ -901,7 +901,7 @@ def run():
             for_user=True
         ),
         Blog(
-            type="general",
+            type="General",
             title="What types of baskets can I purchase?",
             body="""
                 <div class="column-3">

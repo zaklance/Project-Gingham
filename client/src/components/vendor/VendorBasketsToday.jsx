@@ -151,7 +151,7 @@ function VendorBasketsToday({vendorId, todaysMarketDays, entry}) {
                         is_sold: false,
                         is_grabbed: false,
                         price: parseFloat(tempBasketData.price),
-                        basket_value: entry.baskets[0]?.basket_value,
+                        value: entry.baskets[0]?.value,
                     }),
                 }));
             }
@@ -165,7 +165,7 @@ function VendorBasketsToday({vendorId, todaysMarketDays, entry}) {
                 is_sold: false,
                 is_grabbed: false,
                 price: parseFloat(tempBasketData.price),
-                basket_value: entry.baskets[0]?.basket_value,
+                value: entry.baskets[0]?.value,
             });
             
             try {
@@ -294,7 +294,7 @@ function VendorBasketsToday({vendorId, todaysMarketDays, entry}) {
                                             </tr>
                                             <tr>
                                                 <td className="nowrap">Basket Value:</td>
-                                                <td className="text-center">${entry.baskets[0]?.basket_value}</td>
+                                                <td className="text-center">${entry.baskets[0]?.value}</td>
                                             </tr>
                                             <tr>
                                                 <td className="nowrap">Basket Price:</td>

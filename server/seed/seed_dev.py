@@ -1341,7 +1341,7 @@ def run():
         is_sold = user_id is not None
         is_grabbed = bool(fake.boolean()) if is_sold else False
         price = randint(5, 10)
-        basket_value = price + randint(2, 8)
+        value = price + randint(2, 8)
 
         bsk = Basket(
             vendor_id=selected_vm.vendor_id,
@@ -1353,7 +1353,7 @@ def run():
             is_sold=is_sold,
             is_grabbed=is_grabbed,
             price=price,
-            basket_value=basket_value
+            value=value
         )
         baskets.append(bsk)
     try:
@@ -1400,7 +1400,7 @@ def run():
         is_sold = user_id is not None
         is_grabbed = bool(fake.boolean()) if is_sold else False
         price = randint(5, 10)
-        basket_value = price + randint(2, 8)
+        value = price + randint(2, 8)
 
         bsk2 = Basket(
             vendor_id=1,
@@ -1412,7 +1412,7 @@ def run():
             is_sold=is_sold,
             is_grabbed=is_grabbed,
             price=price, 
-            basket_value=basket_value
+            value=value
         )
         baskets.append(bsk2)
 
@@ -1656,8 +1656,8 @@ def run():
 
     blogs = [
         Blog(
-            type="recipe",
-            title="Recipe: Butternut Squash Soup",
+            type="Recipe",
+            title="Butternut Squash Soup",
             body="""
                 <div class="column-3">
                     <h5>Prep Time: 10 mins | Cook Time: 35 mins | Total: 45 mins | Serves: 6</h5>
@@ -1698,7 +1698,7 @@ def run():
             for_user=True
         ),
         Blog(
-            type="general",
+            type="General",
             title="Discover Gingham: Fresh, Local, and Impactful",
             body="""
                 <div class="column-3">
@@ -1736,8 +1736,8 @@ def run():
             for_user=True
         ), 
         Blog(
-            type="market-spotlight",
-            title="Market Spotlight: Union Square Greenmarket",
+            type="Market Spotlight",
+            title="Union Square Greenmarket",
             body="""
                 <div class="column-3">
                     <article class="first-letter">

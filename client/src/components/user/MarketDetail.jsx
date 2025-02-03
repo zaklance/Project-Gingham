@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useParams, Link, useNavigate, useOutletContext } from 'react-router-dom';
+import { useParams, Link, useNavigate, useOutletContext, useSearchParams } from 'react-router-dom';
 // import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
 import { weekDay } from '../../utils/common';
 import { timeConverter, formatEventDate, formatDate, marketDateConvert, formatPickupText } from '../../utils/helpers';
@@ -27,11 +27,15 @@ function MarketDetail ({ match }) {
     const [products, setProducts] = useState([]);
     const [productList, setProductList] = useState({});
     
+    const [searchParams, setSearchParams] = useSearchParams(); 
+    
     const { handlePopup, amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const token = localStorage.getItem('user_jwt-token');
 
     const navigate = useNavigate();
+    console.log(selectedDay)
+    console.log(marketDays)
 
     useEffect(() => {
         const anchor = window.location.hash.slice(1);
@@ -44,6 +48,24 @@ function MarketDetail ({ match }) {
             }
         }, 500);
     }, []);
+
+    const setDayParam = (day) => {
+        if (day) {
+            setSearchParams({ day });
+        }
+    };
+
+    useEffect(() => {            
+        const urlParams = new URLSearchParams(window.location.search);
+        const day = urlParams.get('day');
+        if (day) {
+            const selected = marketDays.find(item => item.id === Number(day));
+            console.log(day)
+            if (selected) {
+                setSelectedDay(selected);
+            }
+        }
+    }, [selectedDay]);
 
     useEffect(() => {
         fetch("http://127.0.0.1:5555/api/products")
@@ -72,34 +94,43 @@ function MarketDetail ({ match }) {
         if (!market?.id) return;
     
         const fetchData = async () => {
-            if (market) {
-                try {
-                    const [marketDaysRes, vendorMarketsRes, eventsRes] = await Promise.all([
-                        fetch(`http://127.0.0.1:5555/api/market-days?market_id=${market.id}`).then(res => res.json()),
-                        fetch(`http://127.0.0.1:5555/api/vendor-markets?market_id=${market.id}`).then(res => res.json()),
-                        fetch(`http://127.0.0.1:5555/api/events?market_id=${market.id}`).then(res => res.json()), 
-                    ]);
-                    
-                    setMarketDays(marketDaysRes);
-                    setAllVendorDetails(marketDaysRes
-                        .flatMap((marketDay) => marketDay.vendor_markets)
-                        .map((vendorMarket) => vendorMarket.vendor)
-                    )
-                    if (Array.isArray(vendorMarketsRes)) {
-                        const vendorIds = [...new Set(vendorMarketsRes.map(vendor => vendor.vendor_id))];
-                        setVendors(vendorIds);
-                        setVendorMarkets(vendorMarketsRes);
-                    }
-                    setSelectedDay(marketDaysRes.length > 0 ? marketDaysRes[0] : null);
-                    setEvents(eventsRes);
-                } catch (error) {
-                    console.error("Error fetching data in parallel:", error);
+            try {
+                const [marketDaysRes, vendorMarketsRes, eventsRes] = await Promise.all([
+                    fetch(`http://127.0.0.1:5555/api/market-days?market_id=${market.id}`).then(res => res.json()),
+                    fetch(`http://127.0.0.1:5555/api/vendor-markets?market_id=${market.id}`).then(res => res.json()),
+                    fetch(`http://127.0.0.1:5555/api/events?market_id=${market.id}`).then(res => res.json()), 
+                ]);
+    
+                setMarketDays(marketDaysRes);
+                setAllVendorDetails(marketDaysRes
+                    .flatMap((marketDay) => marketDay.vendor_markets)
+                    .map((vendorMarket) => vendorMarket.vendor)
+                );
+    
+                if (Array.isArray(vendorMarketsRes)) {
+                    const vendorIds = [...new Set(vendorMarketsRes.map(vendor => vendor.vendor_id))];
+                    setVendors(vendorIds);
+                    setVendorMarkets(vendorMarketsRes);
                 }
+                setSelectedDay(marketDaysRes.length > 0 ? marketDaysRes[0] : null);
+    
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+    
+                const upcomingEvents = eventsRes.filter(event => {
+                    const eventEndDate = new Date(event.end_date + "T23:59:59");
+                    return eventEndDate >= today;
+                });
+    
+                setEvents(upcomingEvents);
+            } catch (error) {
+                console.error("Error fetching data in parallel:", error);
             }
         };
     
         fetchData();
     }, [market?.id, userId]);
+    
 
     useEffect(() => {
         if (!userId) {
@@ -123,6 +154,7 @@ function MarketDetail ({ match }) {
         const day = marketDays.find(day => day.id === dayId);
         setSelectedDay(day);
         setSelectedProduct()
+        setDayParam(day.id)
     };
 
     const handleProductChange = (event) => {
@@ -457,13 +489,14 @@ function MarketDetail ({ match }) {
                 </div>
             </div>
             <div className='flex-start m-flex-wrap'>
-                <label><h4>Market Day:</h4></label>
+                <label><h4>Schedule:</h4></label>
                 {marketDays.length === 1 ? (
                     <h4>&ensp; {weekDay[0]}, &ensp;</h4>
                 ) : (
                     <select id="marketDaysSelect"
-                    className='margin-r-4'
+                    className='select-rounded margin-r-4'
                     name="marketDays"
+                    value={selectedDay?.id || ''} 
                     onChange={handleDayChange}>
                     {marketDays.map((day, index) => (
                         <option key={index} value={day.id}>
@@ -489,7 +522,10 @@ function MarketDetail ({ match }) {
             </div>
             <div id="vendors" className='flex-space-between margin-t-24'>
                 <h2>Vendors:</h2>
-                <select value={selectedProduct} onChange={handleProductChange}>
+                <select 
+                    className='select-rounded'
+                    value={selectedProduct} 
+                    onChange={handleProductChange}>
                     <option value="">All Products</option>
                     {Array.isArray(productList) && productList.map((product) => (
                         <option key={product.id} value={product.id}>
@@ -537,7 +573,7 @@ function MarketDetail ({ match }) {
                         <span className="market-price">
                             <span className="text-500">Price: ${firstBasket.price}</span>
                             <br />
-                            Value: ${firstBasket.basket_value}
+                            Value: ${firstBasket.value}
                         </span>
                         ) : (
                         <span className="market-price"></span>

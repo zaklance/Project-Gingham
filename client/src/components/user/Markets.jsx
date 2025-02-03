@@ -600,7 +600,7 @@ function Markets() {
                                                     value={true}
                                                     onChange={handleFilterLocation}
                                                 />
-                                                <label htmlFor='location'>Your Location</label>
+                                                <label htmlFor='location'>My Location</label>
                                             </div>
                                             <div className='form-filters-markets'>
                                                 <input
@@ -611,7 +611,7 @@ function Markets() {
                                                     value={true}
                                                     onChange={handleFilterAddress}
                                                 />
-                                                <label htmlFor='address'>Address</label>
+                                                <label htmlFor='address'>By Address</label>
                                                 <input
                                                     className='margin-r-8'
                                                     id="address-address"

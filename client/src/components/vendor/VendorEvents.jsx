@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PulseLoader from 'react-spinners/PulseLoader';
 
 function VendorEvents({ vendorId, vendorUserData }) {
     const [newEvent, setNewEvent] = useState({});
@@ -10,8 +11,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
     const [allMarketDays, setAllMarketDays] = useState([]);
     const [allMarkets, setAllMarkets] = useState([]);
     const [selectedMarket, setSelectedMarket] = useState(null);
-
-    console.log()
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         if (vendorUserData && vendorUserData.id) {
@@ -52,7 +52,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
         }
 
         try {
-            console.log(newEvent);
+            // console.log(newEvent);
             // Save market details first
             const response = await fetch(`http://127.0.0.1:5555/api/events`, {
                 method: 'POST',
@@ -64,7 +64,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
 
             if (response.ok) {
                 const createdEvent = await response.json();
-                console.log('Event data updated successfully:', createdEvent);
+                // console.log('Event data updated successfully:', createdEvent);
                 alert('Market Event successfully created')
                 setEvents((prevEvents) => [...prevEvents, createdEvent]);
                 setNewEvent({})
@@ -143,10 +143,6 @@ function VendorEvents({ vendorId, vendorUserData }) {
             .then(response => response.json())
             .then(data => {
                 setAllVendorMarkets(data)
-                // if (Array.isArray(markets)) {
-                //     const marketIds = markets.map(market => market.market_day_id);
-                //     setMarkets(marketIds);
-                // }
             })
             .catch(error => console.error('Error fetching market locations:', error));
     }, [vendorId]);
@@ -164,6 +160,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
     }, [allVendorMarkets]);
 
     useEffect(() => {
+        setIsLoading(true)
         fetch("http://127.0.0.1:5555/api/markets")
             .then(response => response.json())
             .then(data => {
@@ -171,6 +168,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
                     allMarketDays.some(vendorMarket => vendorMarket.market_id === item.id)
                 );
                 setAllMarkets(filteredData)
+                setIsLoading(false)
             })
             .catch(error => console.error('Error fetching market days', error));
     }, [allMarketDays]);
@@ -218,7 +216,15 @@ function VendorEvents({ vendorId, vendorUserData }) {
                     </div>
                     <div className='form-group'>
                         <label>Market:</label>
-                        {allMarkets.length > 0 ? (
+                        {isLoading ? (
+                            <PulseLoader
+                                className='margin-t-12'
+                                color={'#ff806b'}
+                                size={10}
+                                aria-label="Loading Spinner"
+                                data-testid="loader"
+                            />
+                        ) : allMarkets.length > 0 ? (
                             <select id="marketSelect" name="market" onChange={handleMarketChange}>
                                 {allMarkets.map((market, index) => (
                                     <option key={index} value={market.id}>
@@ -227,13 +233,13 @@ function VendorEvents({ vendorId, vendorUserData }) {
                                 ))}
                             </select>
                         ) : (
-                            <p>Loading markets...</p> // Optional: Placeholder or spinner while loading
+                            <p>No markets available.</p>
                         )}
                     </div>
                     <div className='form-group'>
                         <label title="yyyy-mm-dd">Event Start:</label>
                         <input
-                            type="text"
+                            type="date"
                             name="start_date"
                             placeholder='yyyy-mm-dd'
                             value={newEvent.start_date || ''}
@@ -243,7 +249,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
                     <div className='form-group'>
                         <label title="yyyy-mm-dd">Event End:</label>
                         <input
-                            type="text"
+                            type="date"
                             name="end_date"
                             placeholder='yyyy-mm-dd'
                             value={newEvent.end_date || ''}
