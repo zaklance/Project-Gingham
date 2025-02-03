@@ -34,8 +34,6 @@ function MarketDetail ({ match }) {
     const token = localStorage.getItem('user_jwt-token');
 
     const navigate = useNavigate();
-    console.log(selectedDay)
-    console.log(marketDays)
 
     useEffect(() => {
         const anchor = window.location.hash.slice(1);
@@ -60,7 +58,6 @@ function MarketDetail ({ match }) {
         const day = urlParams.get('day');
         if (day) {
             const selected = marketDays.find(item => item.id === Number(day));
-            console.log(day)
             if (selected) {
                 setSelectedDay(selected);
             }

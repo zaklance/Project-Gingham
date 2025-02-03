@@ -58,10 +58,11 @@ CORS(app, supports_credentials=True)
 jwt = JWTManager(app)
 
 avatars = [
-        "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage-1.jpg",
+        "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-cabbage-1.jpg", 
         "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime-1.jpg", "avatar-melon-1.jpg",
-        "avatar-nectarine-1.jpg", "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg",
-        "avatar-peach-1.jpg", "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
+        "avatar-mangosteen-1.jpg", "avatar-mangosteen-2.jpg", "avatar-nectarine-1.jpg", 
+        "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg", "avatar-peach-1.jpg", 
+        "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
         "avatar-watermelon-1.jpg"
     ]
 
@@ -325,7 +326,9 @@ def login():
     if not user.authenticate(data['password']):
         return {'error': ' Incorrect email or password—or both!'}, 401
     
-    user.last_log_on = datetime.utcnow()
+    user.last_login = datetime.utcnow()
+    user.login_count = (user.login_count or 0) + 1
+
     db.session.commit()
     
     access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "user"})
@@ -474,7 +477,9 @@ def vendorLogin():
     if not vendor_user.authenticate(data['password']):
         return {'error': ' Incorrect email or password—or both!'}, 401
     
-    vendor_user.last_log_on = datetime.utcnow()
+    vendor_user.last_login = datetime.utcnow()
+    vendor_user.login_count = (vendor_user.login_count or 0) + 1
+
     db.session.commit()
     
     access_token = create_access_token(identity=vendor_user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "vendor"})
@@ -553,7 +558,9 @@ def adminLogin():
     if not admin_user.authenticate(data['password']):
         return {'error': ' Incorrect email or password—or both!'}, 401
     
-    admin_user.last_log_on = datetime.utcnow()
+    admin_user.last_login = datetime.utcnow()
+    admin_user.login_count = (admin_user.login_count or 0) + 1
+
     db.session.commit()
     
     access_token = create_access_token(identity=admin_user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "admin"})
@@ -1330,7 +1337,7 @@ def handle_admin_user_by_id(id):
     elif request.method == 'PATCH':
         try:
             data = request.get_json()
-            data.pop('last_log_on', None)
+            data.pop('last_login', None)
             for key, value in data.items():
                 setattr(admin_user, key, value)
             db.session.commit()
@@ -1557,7 +1564,7 @@ def all_vendors():
         market_day = request.args.get('market_day')
         vendors = Vendor.query.all()
         if market_day:
-            vendors = Market.query.filter_by(market_day=market_day_id).all()
+            vendors = Market.query.filter_by(market_day=market_day).all()
         return jsonify([vendor.to_dict() for vendor in vendors]), 200
 
     elif request.method == 'POST':

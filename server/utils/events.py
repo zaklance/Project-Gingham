@@ -263,7 +263,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
             notifications.append({
                 "subject": "New Vendor in Your Favorite Market!",
                 "message": f"The vendor '{vendor.name}' has been added to your favorite market '{market.name}'.",
-                "link": f"/user/markets/{market.id}#vendors",
+                "link": f"/user/markets/{market.id}?day={market_day.id}#vendors",
                 "user_id": user.id,
                 "market_id": market.id,
                 "vendor_id": vendor.id,

@@ -184,6 +184,7 @@ function Profile({ marketData }) {
                                     city: tempProfileData.city,
                                     state: tempProfileData.state,
                                     zipcode: tempProfileData.zipcode,
+                                    avatar_default: tempProfileData.avatar_default,
                                     coordinates: { lat: latitude, lng: longitude }
                                 })
                             });
@@ -216,6 +217,7 @@ function Profile({ marketData }) {
                             city: tempProfileData.city,
                             state: tempProfileData.state,
                             zipcode: tempProfileData.zipcode,
+                            avatar_default: tempProfileData.avatar_default,
                             coordinates: { lat: tempProfileData.coordinates.lat, lng: tempProfileData.coordinates.lng }
                         })
                     });

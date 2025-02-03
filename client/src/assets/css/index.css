@@ -55,7 +55,7 @@ body {
   min-height: 100vh;
   background-image: url('../images/backgrounds/gingham_seamless-strawberry-01.svg');
   background-size: auto;
-  moz-box-sizing: border-box;
+  -moz-box-sizing: border-box;
   box-sizing: border-box;
   position: relative;
   min-height: 100%;
@@ -110,7 +110,7 @@ body {
 .strawberry-wrapper {
   background-image: url('../images/backgrounds/gingham_seamless-strawberry-02.svg');
   background-size: auto;
-  moz-box-sizing: border-box;
+  -moz-box-sizing: border-box;
   box-sizing: border-box;
   position: relative;
 }
@@ -747,7 +747,7 @@ ul {
 .box-strawberry {
   background-image: url('../images/backgrounds/LzYeux_120719_0036_1800px.jpg');
   background-size: auto;
-  moz-box-sizing: border-box;
+  -moz-box-sizing: border-box;
   box-sizing: border-box;
   position: relative;
 }
@@ -1298,9 +1298,13 @@ ul {
 .btn-clear {
   height: 100%;
   width: 100%;
-  letter-spacing: 2pt;
   height: min-content;
+  padding: 2px 0;
+  letter-spacing: 2pt;
   border-bottom: 1px solid #dbdbdb;
+  /* position: sticky;
+  top: 0;
+  z-index: 5; */
 }
 
 .btn-clear:hover {
@@ -2587,11 +2591,8 @@ select:hover {
 .popup-notif-on {
   display: block;
   position: fixed;
-  /* top: auto; */
-  /* left: 48px; */
-  /* width: 90%; */
   width: 360px;
-  max-height: 400px;
+  max-height: 4600px;
   overflow-y: auto;
   max-width: 400px;
   /* height: fit-content; */
@@ -2658,7 +2659,6 @@ select:hover {
 }
 
 .footer {
-  /* justify-self: flex-end; */
   position: absolute;
   background-color: white;
   margin-top: 48px;
@@ -2722,8 +2722,6 @@ select:hover {
   color: #007BFF;
   cursor: pointer;         
   text-decoration: none;
-  /* margin-bottom: 20px;
-  margin-top: 20px; */
   width:max-content
 }
 
