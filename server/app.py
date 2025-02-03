@@ -2096,41 +2096,54 @@ def delete_vendor_market(id):
 def all_events():
     if request.method == 'GET':
         try:
-            market_id = request.args.get('market_id', type=int)
             vendor_id = request.args.get('vendor_id', type=int)
-            query = Event.query
-            if vendor_id:
-                query = query.filter_by(vendor_id=vendor_id)
-            if market_id:
-                query = query.filter_by(market_id=market_id)
-            events = query.all()
+
+            if not vendor_id:
+                return jsonify({"error": "vendor_id is required"}), 400
+
+            events = Event.query.filter_by(vendor_id=vendor_id).all()
             return jsonify([event.to_dict() for event in events]), 200
         except Exception as e:
             app.logger.error(f'Error fetching events: {e}')  
             return {'error': f'Exception: {str(e)}'}, 500
-        
+
     elif request.method == 'POST':
         data = request.get_json()
-        print("Received data:", data)
+
         try:
             start_date = datetime.strptime(data.get('start_date'), '%Y-%m-%d').date()
             end_date = datetime.strptime(data.get('end_date'), '%Y-%m-%d').date()
         except ValueError as e:
             return jsonify({"error": f"Invalid time format: {str(e)}"}), 400
-        
+
+        vendor_id = data.get('vendor_id')
+        if isinstance(vendor_id, dict):
+            try:
+                vendor_id = int(list(vendor_id.keys())[0])
+            except (ValueError, IndexError):
+                return jsonify({"error": "Invalid vendor_id format"}), 400
+        else:
+            try:
+                vendor_id = int(vendor_id)
+            except (TypeError, ValueError):
+                return jsonify({"error": "Invalid vendor_id"}), 400
+
+        market_id = data.get('market_id')
+        if not vendor_id or not market_id:
+            return jsonify({"error": "Missing vendor_id or market_id"}), 400
+
         new_event = Event(
+            vendor_id=vendor_id,
+            market_id=market_id,
             title=data['title'],
             message=data['message'],
             start_date=start_date,
             end_date=end_date
         )
-        if 'vendor_id' in data:
-            new_event.vendor_id = data['vendor_id']
-        if 'market_id' in data:
-            new_event.market_id = data['market_id']
-        
+
         db.session.add(new_event)
         db.session.commit()
+
         return new_event.to_dict(), 201
 
 @app.route('/api/events/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
@@ -2150,9 +2163,9 @@ def event_by_id(id):
             event.schedule_change=data.get('schedule_change') in [True, 'true', 'True']
             print(event.schedule_change)
             if data.get('start_date'):
-                event.season_start = datetime.strptime(data.get('start_date'), '%Y-%m-%d').date()
+                event.start_date = datetime.strptime(data.get('start_date'), '%Y-%m-%d').date()
             if data.get('end_date'):
-                event.season_end = datetime.strptime(data.get('end_date'), '%Y-%m-%d').date()            
+                event.end_date = datetime.strptime(data.get('end_date'), '%Y-%m-%d').date()            
             if 'vendor_id' in data:
                 event.vendor_id = data['vendor_id']
             if 'market_id' in data:
