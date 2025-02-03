@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from 'react-router-dom';
 import { PaymentElement } from "@stripe/react-stripe-js";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
@@ -13,42 +13,39 @@ export default function CheckoutForm({ totalPrice, cartItems, setCartItems, amou
     const [isProcessing, setIsProcessing] = useState(false);
     const [paymentSuccess, setPaymentSuccess] = useState(false);
 
-	console.log(amountInCart)
-	console.log(cartItems)
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         if (!stripe || !elements) return;
-
+    
         setIsProcessing(true);
-
+    
         const { error, paymentIntent } = await stripe.confirmPayment({
             elements,
             confirmParams: {
-                return_url: `${window.location.origin}/user/completion`,
+                return_url: window.location.href, 
             },
+            redirect: "if_required",
         });
-
+    
         if (error?.type === "card_error" || error?.type === "validation_error") {
             setMessage(error.message);
             setIsProcessing(false);
         } else if (paymentIntent?.status === "succeeded") {
-            setPaymentSuccess(true);
+            console.log("✅ Payment successful! Clearing cart...");
+            
+            localStorage.setItem("cartItems", JSON.stringify([]));
+            localStorage.setItem("amountInCart", JSON.stringify(0));
+            setCartItems([]);
+            setAmountInCart(0);
+    
             setMessage("Payment successful!");
+            setPaymentSuccess(true);
         } else {
-            setMessage(error.message);
+            setMessage("An unexpected error occurred.");
             setIsProcessing(false);
         }
     };
-
-    useEffect(() => {
-        if (paymentSuccess) {
-            setCartItems([]);
-            setAmountInCart(0);
-            setIsProcessing(false);
-        }
-    }, [paymentSuccess, setCartItems, setAmountInCart]);
 
     return (
         <>
@@ -87,12 +84,20 @@ export default function CheckoutForm({ totalPrice, cartItems, setCartItems, amou
                     <h1>Total Price: ${totalPrice.toFixed(2)}</h1>
                 </div>
                 <div className="width-50">
-                    <PaymentElement id="payment-element" options={{ layout: 'accordion' }}/>
-                    <button className="btn btn-add" disabled={isProcessing || !stripe || !elements} id="submit">
-                        <span id="button-text">
-                            {isProcessing ? "Processing ... " : "Pay now"}
-                        </span>
-                    </button>
+                    <PaymentElement id="payment-element" options={{ layout: 'accordion' }} />
+                    
+                    {!paymentSuccess ? (
+                        <button className="btn btn-add" disabled={isProcessing || !stripe || !elements} id="submit">
+                            <span id="button-text">
+                                {isProcessing ? "Processing ..." : "Pay now"}
+                            </span>
+                        </button>
+                    ) : (
+                        <button className="btn btn-add" onClick={() => window.open('/user/receipt', '_blank')}>
+                            View Receipt
+                        </button>
+                    )}
+
                     {message && <div id="payment-message">{message}</div>}
                 </div>
             </form>
