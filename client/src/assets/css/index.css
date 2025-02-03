@@ -1926,23 +1926,27 @@ link {
   width: 100%
 }
 
-.table-history thead {
+.table-history thead, .table-stats thead {
   position: sticky;
   top: -2px;
 }
 
-.table-history th {
+.table-history th, .table-stats th {
   background-color: #007BFF;
   color: white;
   padding: 4px;
 }
 
-.table-history tr:nth-child(even) {
+.table-history tr:nth-child(even), .table-stats tr:nth-child(even) {
   background-color: #eee;
 }
 
-.table-history td {
+.table-history td, .table-stats td {
   padding: 4px;
+}
+
+.table-stats {
+  width: 100%;
 }
 
 .table-profile {

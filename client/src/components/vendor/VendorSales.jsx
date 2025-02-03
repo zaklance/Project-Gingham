@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { timeConverter } from '../../utils/helpers';
 import Chart from 'chart.js/auto';
+import PulseLoader from 'react-spinners/PulseLoader';
 import VendorActiveVendor from './VendorActiveVendor';
 
 function VendorSales() {
@@ -304,7 +305,13 @@ function VendorSales() {
                     {baskets ? (
                         <canvas id="chart-baskets"></canvas>
                     ) : (
-                        <h2>Loading...</h2>
+                        <PulseLoader
+                            className='margin-t-12'
+                            color={'#ff806b'}
+                            size={10}
+                            aria-label="Loading Spinner"
+                            data-testid="loader"
+                        />
                     )}
                 </div>
                 <div className='box-bounding text-center'>
