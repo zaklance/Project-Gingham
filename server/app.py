@@ -2431,11 +2431,12 @@ def get_user_sales_history():
 @jwt_required()
 def get_vendor_sales_history():
     try:
-        current_vendor_id = get_jwt_identity()
-        if not current_vendor_id:
+        vendor_id = request.args.get('vendor_id', type=str)
+
+        if not vendor_id:
             return {'error': 'User not logged in'}, 401
 
-        baskets = Basket.query.filter_by(vendor_id=current_vendor_id).all()
+        baskets = Basket.query.filter_by(vendor_id=vendor_id).all()
 
         sales_history = {}
         for basket in baskets:

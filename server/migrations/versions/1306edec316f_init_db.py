@@ -1,8 +1,8 @@
-"""initialization
+"""init db
 
-Revision ID: cc95e58c46b9
+Revision ID: 1306edec316f
 Revises: 
-Create Date: 2025-01-16 13:18:27.743818
+Create Date: 2025-02-03 14:06:58.741020
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ from sqlalchemy import Text
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'cc95e58c46b9'
+revision = '1306edec316f'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,13 +22,14 @@ def upgrade():
     op.create_table('admin_users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),
-    sa.Column('email_verified', sa.Boolean(), nullable=True),
     sa.Column('_password', sa.String(), nullable=False),
     sa.Column('first_name', sa.String(), nullable=False),
     sa.Column('last_name', sa.String(), nullable=False),
     sa.Column('phone', sa.String(), nullable=True),
     sa.Column('admin_role', sa.Integer(), nullable=True),
-    sa.Column('last_log_on', sa.DateTime(), nullable=True),
+    sa.Column('login_count', sa.Integer(), nullable=True),
+    sa.Column('last_login', sa.DateTime(), nullable=True),
+    sa.Column('join_date', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_admin_users')),
     sa.UniqueConstraint('email', name=op.f('uq_admin_users_email'))
     )
@@ -64,7 +65,6 @@ def upgrade():
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),
-    sa.Column('email_verified', sa.Boolean(), nullable=True),
     sa.Column('_password', sa.String(), nullable=False),
     sa.Column('first_name', sa.String(), nullable=False),
     sa.Column('last_name', sa.String(), nullable=False),
@@ -78,14 +78,15 @@ def upgrade():
     sa.Column('avatar', sa.String(), nullable=True),
     sa.Column('avatar_default', sa.String(), nullable=False),
     sa.Column('status', sa.String(length=10), nullable=False),
-    sa.Column('last_log_on', sa.DateTime(), nullable=True),
+    sa.Column('login_count', sa.Integer(), nullable=True),
+    sa.Column('last_login', sa.DateTime(), nullable=True),
+    sa.Column('join_date', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_users')),
     sa.UniqueConstraint('email', name=op.f('uq_users_email'))
     )
     op.create_table('vendor_users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),
-    sa.Column('email_verified', sa.Boolean(), nullable=True),
     sa.Column('_password', sa.String(), nullable=False),
     sa.Column('first_name', sa.String(), nullable=False),
     sa.Column('last_name', sa.String(), nullable=False),
@@ -93,7 +94,9 @@ def upgrade():
     sa.Column('active_vendor', sa.Integer(), nullable=True),
     sa.Column('vendor_id', postgresql.JSON(astext_type=Text()), nullable=True),
     sa.Column('vendor_role', postgresql.JSON(astext_type=Text()), nullable=True),
-    sa.Column('last_log_on', sa.DateTime(), nullable=True),
+    sa.Column('login_count', sa.Integer(), nullable=True),
+    sa.Column('last_login', sa.DateTime(), nullable=True),
+    sa.Column('join_date', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_vendor_users')),
     sa.UniqueConstraint('email', name=op.f('uq_vendor_users_email'))
     )
@@ -104,6 +107,7 @@ def upgrade():
     sa.Column('state', sa.String(length=2), nullable=True),
     sa.Column('products', sa.JSON(), nullable=False),
     sa.Column('bio', sa.String(), nullable=True),
+    sa.Column('website', sa.String(), nullable=True),
     sa.Column('image', sa.String(), nullable=True),
     sa.Column('image_default', sa.String(), nullable=False),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_vendors'))
@@ -123,8 +127,12 @@ def upgrade():
     )
     op.create_table('blogs',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('type', sa.String(), nullable=False),
     sa.Column('title', sa.String(), nullable=False),
     sa.Column('body', sa.String(), nullable=False),
+    sa.Column('for_user', sa.Boolean(), nullable=False),
+    sa.Column('for_vendor', sa.Boolean(), nullable=False),
+    sa.Column('for_admin', sa.Boolean(), nullable=False),
     sa.Column('admin_user_id', sa.Integer(), nullable=False),
     sa.Column('post_date', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['admin_user_id'], ['admin_users.id'], name=op.f('fk_blogs_admin_user_id_admin_users')),
@@ -186,7 +194,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_reported_reviews_user_id_users')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_reported_reviews'))
     )
-    op.create_table('settings-admins',
+    op.create_table('settings_admins',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('admin_id', sa.Integer(), nullable=False),
     sa.Column('site_report_review', sa.Boolean(), nullable=False),
@@ -195,10 +203,10 @@ def upgrade():
     sa.Column('email_product_request', sa.Boolean(), nullable=False),
     sa.Column('text_report_review', sa.Boolean(), nullable=False),
     sa.Column('text_product_request', sa.Boolean(), nullable=False),
-    sa.ForeignKeyConstraint(['admin_id'], ['admin_users.id'], name=op.f('fk_settings-admins_admin_id_admin_users')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_settings-admins'))
+    sa.ForeignKeyConstraint(['admin_id'], ['admin_users.id'], name=op.f('fk_settings_admins_admin_id_admin_users')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_settings_admins'))
     )
-    op.create_table('settings-users',
+    op.create_table('settings_users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('site_fav_market_new_event', sa.Boolean(), nullable=False),
@@ -209,6 +217,7 @@ def upgrade():
     sa.Column('site_fav_vendor_schedule_change', sa.Boolean(), nullable=False),
     sa.Column('site_fav_vendor_new_basket', sa.Boolean(), nullable=False),
     sa.Column('site_basket_pickup_time', sa.Boolean(), nullable=False),
+    sa.Column('site_vendor_review_response', sa.Boolean(), nullable=False),
     sa.Column('email_fav_market_new_event', sa.Boolean(), nullable=False),
     sa.Column('email_fav_market_schedule_change', sa.Boolean(), nullable=False),
     sa.Column('email_fav_market_new_vendor', sa.Boolean(), nullable=False),
@@ -217,26 +226,32 @@ def upgrade():
     sa.Column('email_fav_vendor_schedule_change', sa.Boolean(), nullable=False),
     sa.Column('email_fav_vendor_new_basket', sa.Boolean(), nullable=False),
     sa.Column('email_basket_pickup_time', sa.Boolean(), nullable=False),
+    sa.Column('email_vendor_review_response', sa.Boolean(), nullable=False),
     sa.Column('text_fav_market_schedule_change', sa.Boolean(), nullable=False),
     sa.Column('text_fav_market_new_basket', sa.Boolean(), nullable=False),
     sa.Column('text_fav_vendor_schedule_change', sa.Boolean(), nullable=False),
     sa.Column('text_basket_pickup_time', sa.Boolean(), nullable=False),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_settings-users_user_id_users')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_settings-users'))
+    sa.Column('text_vendor_review_response', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_settings_users_user_id_users')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_settings_users'))
     )
-    op.create_table('settings-vendors',
+    op.create_table('settings_vendors',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('vendor_user_id', sa.Integer(), nullable=False),
+    sa.Column('market_locations', postgresql.JSON(astext_type=Text()), nullable=True),
     sa.Column('site_market_new_event', sa.Boolean(), nullable=False),
     sa.Column('site_market_schedule_change', sa.Boolean(), nullable=False),
     sa.Column('site_basket_sold', sa.Boolean(), nullable=False),
+    sa.Column('site_new_review', sa.Boolean(), nullable=False),
     sa.Column('email_market_new_event', sa.Boolean(), nullable=False),
     sa.Column('email_market_schedule_change', sa.Boolean(), nullable=False),
     sa.Column('email_basket_sold', sa.Boolean(), nullable=False),
+    sa.Column('email_new_review', sa.Boolean(), nullable=False),
     sa.Column('text_market_schedule_change', sa.Boolean(), nullable=False),
     sa.Column('text_basket_sold', sa.Boolean(), nullable=False),
-    sa.ForeignKeyConstraint(['vendor_user_id'], ['vendor_users.id'], name=op.f('fk_settings-vendors_vendor_user_id_vendor_users')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_settings-vendors'))
+    sa.Column('text_new_review', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['vendor_user_id'], ['vendor_users.id'], name=op.f('fk_settings_vendors_vendor_user_id_vendor_users')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_settings_vendors'))
     )
     op.create_table('user_notifications',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -284,6 +299,8 @@ def upgrade():
     sa.Column('vendor_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('post_date', sa.Date(), nullable=False),
+    sa.Column('vendor_response', sa.String(), nullable=True),
+    sa.Column('response_date', sa.Date(), nullable=True),
     sa.Column('is_reported', sa.Boolean(), nullable=True),
     sa.Column('is_approved', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_vendor_reviews_user_id_users')),
@@ -306,6 +323,14 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_baskets_user_id_users')),
     sa.ForeignKeyConstraint(['vendor_id'], ['vendors.id'], name=op.f('fk_baskets_vendor_id_vendors')),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_baskets'))
+    )
+    op.create_table('blog_favorites',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('blog_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['blog_id'], ['blogs.id'], name=op.f('fk_blog_favorites_blog_id_blogs')),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_blog_favorites_user_id_users')),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_blog_favorites'))
     )
     op.create_table('market_review_ratings',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -355,14 +380,15 @@ def downgrade():
     op.drop_table('vendor_review_ratings')
     op.drop_table('vendor_markets')
     op.drop_table('market_review_ratings')
+    op.drop_table('blog_favorites')
     op.drop_table('baskets')
     op.drop_table('vendor_reviews')
     op.drop_table('vendor_notifications')
     op.drop_table('vendor_favorites')
     op.drop_table('user_notifications')
-    op.drop_table('settings-vendors')
-    op.drop_table('settings-users')
-    op.drop_table('settings-admins')
+    op.drop_table('settings_vendors')
+    op.drop_table('settings_users')
+    op.drop_table('settings_admins')
     op.drop_table('reported_reviews')
     op.drop_table('receipts')
     op.drop_table('market_reviews')
