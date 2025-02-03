@@ -460,12 +460,10 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             </li>
                         ) : null}
                         {adminUserData && adminUserData.admin_role <= 3 ? (
-                            <li>
-                                <NavLink className='nav-tab color-4 btn-nav' to={`/admin/vendors`} title="Vendors">Vendors</NavLink>
-                            </li>
-                        ) : null}
-                        {adminUserData && adminUserData.admin_role <= 3 ? (
                             <>
+                                <li>
+                                    <NavLink className='nav-tab color-4 btn-nav' to={`/admin/vendors`} title="Vendors">Vendors</NavLink>
+                                </li>
                                 <li>
                                     <NavLink className='nav-tab color-1 btn-nav' to={`/admin/users`} title="Users">Users</NavLink>
                                 </li>
@@ -485,9 +483,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li>
                             <NavLink className='nav-tab color-4 btn-nav icon-email' to={`/admin/email`} title="Email">&emsp;</NavLink>
                         </li>
-                        <li>
-                            <NavLink className='nav-tab color-2 btn-nav icon-stats' to={`/admin/stats`} title="Stats">&emsp;</NavLink>
-                        </li>
+                        {adminUserData && adminUserData.admin_role <= 2 ? (
+                            <li>
+                                <NavLink className='nav-tab color-2 btn-nav icon-stats' to={`/admin/stats`} title="Stats">&emsp;</NavLink>
+                            </li>
+                        ) : (
+                            null
+                        )}
                         {adminNotifications.length > 0 &&
                             <li className='notification' onClick={handleAdminNotifPopup}>
                                 <a className='nav-tab color-2 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>

@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import PulseLoader from 'react-spinners/PulseLoader';
+import Chart from 'chart.js/auto';
 
 function AdminStats() {
     const [userCount, setUserCount] = useState(null)
@@ -12,6 +14,10 @@ function AdminStats() {
     const [basketCount, setBasketCount] = useState(null)
     const [top10Markets, setTop10Markets] = useState(null)
     const [top10Users, setTop10Users] = useState(null)
+    const [baskets, setBaskets] = useState([]);
+    const [selectedRangeGraph, setSelectedRangeGraph] = useState(7);
+
+    const chartRef = useRef();
 
     const token = localStorage.getItem('admin_jwt-token');
 
@@ -169,13 +175,216 @@ function AdminStats() {
             .catch(error => console.error('Error fetching market data:', error));
     }, []);
 
+    const dateRange = {
+        "Next Week": -7,
+        "Week": 7,
+        "Month": 31,
+        "3 Months": 91,
+        "6 Months": 183,
+        "Year": 365,
+    }
+
+    function getDatesForRange(range = 31, baskets = []) {
+        const dates = [];
+        const today = new Date();
+
+        if (range < 0) {
+            // Future range (moving forward in time)
+            for (let i = 0; i < Math.abs(range); i++) {
+                const currentDate = new Date(today);
+                currentDate.setDate(today.getDate() + i);
+                dates.push(currentDate.toDateString()); // Use full date format
+            }
+        } else {
+            // Past range (moving backward in time)
+            for (let i = 0; i < range; i++) {
+                const currentDate = new Date(today);
+                currentDate.setDate(today.getDate() - i);
+                dates.push(currentDate.toDateString()); // Use full date format
+            }
+            dates.reverse(); // Reverse to keep chronological order
+        }
+        return dates;
+    }
+
+    function convertToLocalDate(gmtDateString) {
+        const gmtDate = new Date(gmtDateString);
+        const localDate = gmtDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
+        return localDate;
+    }
+
+    useEffect(() => {
+        fetch('http://127.0.0.1:5555/api/baskets')
+            .then(response => response.json())
+            .then(data => {
+                setBaskets(data)
+            })
+            .catch(error => console.error('Error fetching baskets', error));
+    }, []);
+
+    const handleDateChangeGraph = (event) => {
+        setSelectedRangeGraph(event.target.value);
+    };
+
+    useEffect(() => {
+            const ctx = document.getElementById(`chart-baskets`);
+    
+            if (chartRef.current) {
+                chartRef.current.destroy();
+            }
+    
+            // Process baskets and filter based on the selected date range
+            function processBaskets(baskets) {
+                const isFuture = selectedRangeGraph < 0;
+    
+                // Get allowed dates based on the range
+                const allowedDates = getDatesForRange(selectedRangeGraph).map((date) =>
+                    new Date(date).toDateString()
+                );
+    
+                // Filter baskets based on allowed dates
+                const filteredBaskets = baskets.filter((basket) => {
+                    const basketDate = new Date(basket.sale_date).toDateString();
+                    return allowedDates.includes(basketDate);
+                });
+    
+                const soldData = {};
+                const unsoldData = {};
+    
+                // Group baskets by sale_date and categorize into sold/unsold
+                filteredBaskets.forEach((basket) => {
+                    const basketDate = new Date(basket.sale_date).toDateString(); // Normalize date
+                    if (basket.is_sold) {
+                        soldData[basketDate] = (soldData[basketDate] || 0) + 1;
+                    } else {
+                        unsoldData[basketDate] = (unsoldData[basketDate] || 0) + 1;
+                    }
+                });
+    
+                return { soldData, unsoldData };
+            }
+            
+            const { soldData, unsoldData } = processBaskets(baskets);
+            
+            const data = {
+                labels: getDatesForRange(selectedRangeGraph),
+                datasets: [
+                    {
+                        label: 'Sold Baskets',
+                        data: getDatesForRange(selectedRangeGraph).map(date => soldData[date] || 0),
+                        borderColor: "#007BFF",
+                        backgroundColor: "#6c7ae0",
+                        borderWidth: 2,
+                        borderRadius: 2,
+                        borderSkipped: false,
+                    },
+                    {
+                        label: 'Unsold Baskets',
+                        data: getDatesForRange(selectedRangeGraph).map(date => unsoldData[date] || 0),
+                        borderColor: "#ff6699",
+                        backgroundColor: "#ff806b",
+                        borderWidth: 2,
+                        borderRadius: 2,
+                        borderSkipped: false,
+                    }
+                ]
+            };
+    
+            chartRef.current = new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: {
+                    scales: {
+                        x: {
+                            stacked: true,
+                        },
+                        y: {
+                            stacked: true,
+                            min: 0,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    }
+                }
+            });
+    
+            return () => {
+                if (chartRef.current) {
+                    chartRef.current.destroy();
+                }
+            };
+        }, [baskets, selectedRangeGraph]);
+
 
     return (
         <>
             <h1>Admin Statistics</h1>
             <div className='box-bounding'>
+                <div className='flex-space-between flex-bottom-align'>
+                    <h1 className='margin-t-16'>Basket Sales</h1>
+                    <select className='' value={selectedRangeGraph} onChange={handleDateChangeGraph}>
+                        <option value="">Time Frame</option>
+                        {Object.entries(dateRange).map(([label, value]) => (
+                            <option key={value} value={value}>
+                                {label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div>
+                    <div className='box-bounding'>
+                        {baskets ? (
+                            <canvas id="chart-baskets"></canvas>
+                        ) : (
+                            <PulseLoader
+                                className='margin-t-12'
+                                color={'#ff806b'}
+                                size={10}
+                                aria-label="Loading Spinner"
+                                data-testid="loader"
+                            />
+                        )}
+                    </div>
+                </div>
+                <h3 className='margin-t-16'>Basket Details</h3>
+                <table className='table-stats'>
+                    <thead>
+                        <tr>
+                            <th>&emsp;</th>
+                            <th>Baskets</th>
+                            <th>Sold</th>
+                            <th>Grabbed</th>
+                            <th>Unsold</th>
+                            <th>Sold Price</th>
+                            <th>Sold Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>Total:</th>
+                            <td className='table-center'>{basketCount?.count}</td>
+                            <td className='table-center'>{basketCount?.sold_count}</td>
+                            <td className='table-center'>{basketCount?.grabbed_count}</td>
+                            <td className='table-center'>{basketCount?.unsold_count}</td>
+                            <td className='table-center'>${basketCount?.sold_price}</td>
+                            <td className='table-center'>${basketCount?.sold_value}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div className='box-bounding'>
                 <h3>General Count</h3>
-                <table className='table-history'>
+                <table className='table-stats'>
                     <thead>
                         <tr>
                             <th>&emsp;</th>
@@ -194,7 +403,7 @@ function AdminStats() {
                     </tbody>
                 </table>
                 <h3 className='margin-t-16'>User Totals</h3>
-                <table className='table-history'>
+                <table className='table-stats'>
                     <thead>
                         <tr>
                             <th>&emsp;</th>
@@ -222,7 +431,7 @@ function AdminStats() {
                     </tbody>
                 </table>
                 <h3 className='margin-t-16'>Top 10 Users</h3>
-                <table className='table-history'>
+                <table className='table-stats'>
                     <thead>
                         <tr>
                             <th>&emsp;</th>
@@ -245,7 +454,7 @@ function AdminStats() {
                     </tbody>
                 </table>
                 <h3 className='margin-t-16'>Top 10 Cities</h3>
-                <table className='table-history'>
+                <table className='table-stats'>
                     <thead>
                         <tr>
                             <th>&emsp;</th>
@@ -265,33 +474,8 @@ function AdminStats() {
                         ))}
                     </tbody>
                 </table>
-                <h3 className='margin-t-16'>Basket Details</h3>
-                <table className='table-history'>
-                    <thead>
-                        <tr>
-                            <th>&emsp;</th>
-                            <th>Baskets</th>
-                            <th>Sold</th>
-                            <th>Grabbed</th>
-                            <th>Unsold</th>
-                            <th>Sold Price</th>
-                            <th>Sold Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>Total:</th>
-                            <td className='table-center'>{basketCount?.count}</td>
-                            <td className='table-center'>{basketCount?.sold_count}</td>
-                            <td className='table-center'>{basketCount?.grabbed_count}</td>
-                            <td className='table-center'>{basketCount?.unsold_count}</td>
-                            <td className='table-center'>${basketCount?.sold_price}</td>
-                            <td className='table-center'>${basketCount?.sold_value}</td>
-                        </tr>
-                    </tbody>
-                </table>
                 <h3 className='margin-t-16'>Top 10 Markets</h3>
-                <table className='table-history'>
+                <table className='table-stats'>
                     <thead>
                         <tr>
                             <th>&emsp;</th>

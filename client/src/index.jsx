@@ -269,7 +269,7 @@ const router = createBrowserRouter([
                     { path: "report", element: <AdminAuthRoute><AdminReport /></AdminAuthRoute>},
                     { path: "email", element: <AdminAuthRoute><AdminEmail /></AdminAuthRoute>},
                     { path: "stats", element: <AdminAuthRoute><AdminStats /></AdminAuthRoute>},
-                    { path: "faqs", element: <AdminRoute><AdminFAQs /></AdminRoute>},
+                    { path: "faqs", element: <AdminAuthRoute><AdminFAQs /></AdminAuthRoute>},
                     { path: "logout", element: <AdminLogout /> },
                     { path: "password-reset-request", element: <PasswordResetRequest user={'admin'} /> },
                     { path: "password-reset/:token", element: <PasswordReset user={'admin'} path={'/admin'} /> },
