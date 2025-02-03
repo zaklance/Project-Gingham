@@ -128,7 +128,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             : notification
                     )
                 );
-                console.log('Notification updated successfully:', updatedData);
+                // console.log('Notification updated successfully:', updatedData);
                 if (link === 'link') {
                     setIsNotifPopup(false)
                 }

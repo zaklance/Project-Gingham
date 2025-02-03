@@ -121,6 +121,8 @@ const AdminEmail = () => {
                 } catch (error) {
                     console.error('Error generating preview:', error);
                 }
+            } else {
+                setIsLoading(false)
             }
         } else {
             if (confirm(`Are you sure you want to send ${newSubject} to all ${userType} users?`)) {
@@ -147,6 +149,8 @@ const AdminEmail = () => {
                 } catch (error) {
                     console.error('Error generating preview:', error);
                 }
+            } else {
+                setIsLoading(false)
             }
         }
     };
@@ -198,8 +202,8 @@ const AdminEmail = () => {
                         value={isSingleEmail}
                         onChange={(e) => setIsSingleEmail(e.target.value)}
                     >
-                        <option value={true}>true</option>
-                        <option value={false}>false</option>
+                        <option value={true}>Yes</option>
+                        <option value={false}>No</option>
                     </select>
                 </div>
                 {isSingleEmail === 'true' ? (

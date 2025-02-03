@@ -990,15 +990,16 @@ def run():
          ]
     apartment = ['Apt', 'Suite', 'Floor', 'Building']
     avatars = [
-        "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-avocado-2.jpg", "avatar-cabbage-1.jpg",
+        "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-cabbage-1.jpg", 
         "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime-1.jpg", "avatar-melon-1.jpg",
-        "avatar-nectarine-1.jpg", "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg",
-        "avatar-peach-1.jpg", "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
+        "avatar-mangosteen-1.jpg", "avatar-mangosteen-2.jpg", "avatar-nectarine-1.jpg", 
+        "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg", "avatar-peach-1.jpg", 
+        "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
         "avatar-watermelon-1.jpg"
     ]
 
     for i in range(50):
-        email = fake.ascii_free_email()
+        email = fake.ascii_safe_email()
         # password = fake.password()
         password = "lol"
         first_name = fake.first_name()
@@ -1174,7 +1175,7 @@ def run():
     vendor_users_settings = []
     for i in range(50):
         rand_vendor_id = randint(1, 150)
-        email = fake.ascii_free_email()
+        email = fake.ascii_safe_email()
         # password = fake.password()
         password = "lol"
         first_name = fake.first_name()

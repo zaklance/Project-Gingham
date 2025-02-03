@@ -35,12 +35,13 @@ export const status = {
 
 export const avatars_default = {
     "Apricot": "avatar-apricot-1.jpg",
-    "Avocado 1": "avatar-avocado-1.jpg",
-    "Avocado 2": "avatar-avocado-2.jpg",
+    "Avocado": "avatar-avocado-1.jpg",
     "Cabbage": "avatar-cabbage-1.jpg",
     "Kiwi 1": "avatar-kiwi-1.jpg", 
     "Kiwi 2": "avatar-kiwi-2.jpg", 
     "Lime": "avatar-lime-1.jpg", 
+    "Mangosteen 1": "avatar-mangosteen-1.jpg",
+    "Mangosteen 2": "avatar-mangosteen-2.jpg",
     "Melon": "avatar-melon-1.jpg",
     "Nectarine": "avatar-nectarine-1.jpg", 
     "Onion 1": "avatar-onion-1.jpg", 

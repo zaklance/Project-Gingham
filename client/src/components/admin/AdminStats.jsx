@@ -6,7 +6,6 @@ function AdminStats() {
     const [vendorUserCount, setVendorUserCount] = useState(null)
     const [adminUserCount, setAdminUserCount] = useState(null)
     const [top10Cities, setTop10Cities] = useState(null)
-    const [userCountNYState, setUserCountNYState] = useState(null)
     const [marketCount, setMarketCount] = useState(null)
     const [marketDayCount, setMarketDayCount] = useState(null)
     const [vendorCount, setVendorCount] = useState(null)
@@ -169,12 +168,6 @@ function AdminStats() {
             })
             .catch(error => console.error('Error fetching market data:', error));
     }, []);
-
-    console.log(userCount)
-    console.log(vendorUserCount)
-    console.log(adminUserCount)
-    console.log(top10Cities)
-    console.log(top10Users)
 
 
     return (

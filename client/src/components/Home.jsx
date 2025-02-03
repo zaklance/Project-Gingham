@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useOutletContext } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import { blogTimeConverter } from "../utils/helpers";
 import { toast } from 'react-toastify';
 
