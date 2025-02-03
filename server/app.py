@@ -2097,18 +2097,26 @@ def all_events():
     if request.method == 'GET':
         try:
             vendor_id = request.args.get('vendor_id', type=int)
+            market_id = request.args.get('market_id', type=int)
 
-            if not vendor_id:
-                return jsonify({"error": "vendor_id is required"}), 400
+            if not vendor_id and not market_id:
+                return jsonify({"error": "At least one of vendor_id or market_id is required"}), 400
 
-            events = Event.query.filter_by(vendor_id=vendor_id).all()
+            query = Event.query
+            if vendor_id:
+                query = query.filter_by(vendor_id=vendor_id)
+            if market_id:
+                query = query.filter_by(market_id=market_id)
+
+            events = query.all()
             return jsonify([event.to_dict() for event in events]), 200
         except Exception as e:
             app.logger.error(f'Error fetching events: {e}')  
             return {'error': f'Exception: {str(e)}'}, 500
-
+        
     elif request.method == 'POST':
         data = request.get_json()
+        print("Received Data:", data)
 
         try:
             start_date = datetime.strptime(data.get('start_date'), '%Y-%m-%d').date()
@@ -2133,13 +2141,17 @@ def all_events():
             return jsonify({"error": "Missing vendor_id or market_id"}), 400
 
         new_event = Event(
-            vendor_id=vendor_id,
-            market_id=market_id,
+            # vendor_id=vendor_id,
+            # market_id=market_id,
             title=data['title'],
             message=data['message'],
             start_date=start_date,
             end_date=end_date
         )
+        if 'vendor_id' in data:
+            new_event.vendor_id = data['vendor_id']
+        if 'market_id' in data:
+            new_event.market_id = data['market_id']
 
         db.session.add(new_event)
         db.session.commit()
