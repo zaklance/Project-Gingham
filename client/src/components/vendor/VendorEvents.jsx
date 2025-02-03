@@ -4,6 +4,7 @@ import PulseLoader from 'react-spinners/PulseLoader';
 function VendorEvents({ vendorId, vendorUserData }) {
     const [newEvent, setNewEvent] = useState({});
     const [events, setEvents] = useState([]);
+    const [pastEvents, setPastEvents] = useState([]);
     const [editingEventId, setEditingEventId] = useState(null);
     const [editedEventData, setEditedEventData] = useState({});
     const [markets, setMarkets] = useState([]);
@@ -13,14 +14,16 @@ function VendorEvents({ vendorId, vendorUserData }) {
     const [selectedMarket, setSelectedMarket] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    const activeVendorId = vendorUserData?.active_vendor;
+
     useEffect(() => {
-        if (vendorUserData && vendorUserData.id) {
+        if (activeVendorId) {
             setNewEvent((prevEvent) => ({
                 ...prevEvent,
-                vendor_id: vendorUserData.id,
+                vendor_id: activeVendorId,
             }));
         }
-    }, [vendorUserData]);
+    }, [activeVendorId]);
 
     const handleInputEventChange = (event) => {
         const { name, value } = event.target;
@@ -45,29 +48,58 @@ function VendorEvents({ vendorId, vendorUserData }) {
     };
 
     const handleSaveNewEvent = async () => {
-
-        if (newEvent.title && newEvent.title.length > 24) {
+        if (!newEvent.title || !newEvent.message || !newEvent.start_date || !newEvent.end_date) {
+            alert("All fields are required.");
+            return;
+        }
+    
+        if (newEvent.title.length > 24) {
             alert('Title cannot exceed 24 characters.');
             return;
         }
-
+    
+        if (!newEvent.market_id) {
+            alert("Please select a market.");
+            return;
+        }
+    
+        let vendorId = vendorUserData.vendor_id;
+        if (typeof vendorId === 'object' && vendorId !== null) {
+            vendorId = Object.keys(vendorId)[0];
+            vendorId = Number(vendorId);
+        }
+        
+        if (!vendorId) {
+            alert("Invalid vendor ID. Please try again.");
+            return;
+        }
+    
         try {
-            // console.log(newEvent);
-            // Save market details first
+            console.log("Sending event data:", { vendor_id: vendorId, market_id: newEvent.market_id, title: newEvent.title, message: newEvent.message, start_date: newEvent.start_date, end_date: newEvent.end_date, schedule_change: newEvent.schedule_change });
+            
             const response = await fetch(`http://127.0.0.1:5555/api/events`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(newEvent),
+                body: JSON.stringify({
+                    vendor_id: vendorId,
+                    market_id: newEvent.market_id,
+                    title: newEvent.title,
+                    message: newEvent.message,
+                    start_date: newEvent.start_date,
+                    end_date: newEvent.end_date,
+                    schedule_change: newEvent.schedule_change
+                }),
             });
-
+    
             if (response.ok) {
                 const createdEvent = await response.json();
-                // console.log('Event data updated successfully:', createdEvent);
-                alert('Market Event successfully created')
+                console.log("Created Event:", createdEvent);
+                alert('Market Event successfully created');
+    
                 setEvents((prevEvents) => [...prevEvents, createdEvent]);
-                setNewEvent({})
+                setNewEvent({});
             } else {
                 console.log('Failed to save event details');
                 console.log('Response status:', response.status);
@@ -77,26 +109,33 @@ function VendorEvents({ vendorId, vendorUserData }) {
             console.error('Error saving event details:', error);
         }
     };
-
+    
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/events")
+        if (!vendorId) return;
+    
+        fetch(`http://127.0.0.1:5555/api/events?vendor_id=${activeVendorId}`)
             .then(response => response.json())
             .then(data => {
+    
                 const today = new Date();
-                const sevenDaysFromNow = new Date();
-                sevenDaysFromNow.setDate(today.getDate() + 30);
-
-                const filteredData = data.filter(item => {
-                    const startDate = new Date(item.start_date);
-                    const endDate = new Date(item.end_date);
-                    return item.vendor_id === Number(vendorUserData.id) &&
-                        // Check if today is within range or start_date is within 7 days from now
-                        (today >= startDate && today <= endDate || startDate <= sevenDaysFromNow);
+                const upcoming = [];
+                const past = [];
+    
+                data.forEach(event => {
+                    const endDate = new Date(event.end_date);
+                    
+                    if (endDate >= today) {
+                        upcoming.push(event);
+                    } else {
+                        past.push(event);
+                    }
                 });
-                setEvents(filteredData);
+    
+                setEvents(upcoming);
+                setPastEvents(past);
             })
             .catch(error => console.error('Error fetching events', error));
-    }, [vendorUserData.id]);
+    }, [activeVendorId]);
 
     const handleEventUpdate = async (eventId) => {
         try {
@@ -366,7 +405,31 @@ function VendorEvents({ vendorId, vendorUserData }) {
                     )}
                 </div>
             </div>
+            <div className='box-bounding'>
+                <h2>Past Events</h2>
+                <div className='flex-wrap'>
+                    {pastEvents.length > 0 ? (
+                        pastEvents.map((event, index) => (
+                            <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
+                                <div className='flex-start flex-center-align flex-gap-16 m-flex-wrap'>
+                                    <p className='text-italic nowrap'>
+                                        {event.start_date}
+                                        {event.end_date !== event.start_date && ` - `}
+                                        <br />
+                                        {event.end_date !== event.start_date && `${event.end_date}`}
+                                    </p>
+                                    <h3 className='nowrap'>{event.title ? event.title : 'Loading...'}:</h3>
+                                    <p>{event.message}</p>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <></>
+                    )}
+                </div>
+            </div>
         </>
     )
 }
+
 export default VendorEvents;
