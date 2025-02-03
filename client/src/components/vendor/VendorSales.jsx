@@ -119,7 +119,7 @@ function VendorSales() {
                 return;
             }
             try {
-                const response = await fetch('http://127.0.0.1:5555/api/baskets/vendor-sales-history', {
+                const response = await fetch(`http://127.0.0.1:5555/api/baskets/vendor-sales-history?vendor_id=${vendorId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
