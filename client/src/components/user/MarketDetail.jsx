@@ -65,7 +65,7 @@ function MarketDetail ({ match }) {
     }, [selectedDay]);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/products")
+        fetch("/api/products")
             .then(response => response.json())
             .then(data => {
                 const sortedProducts = data.sort((a, b) => {
@@ -79,7 +79,7 @@ function MarketDetail ({ match }) {
     }, []);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/markets/${id}`)
+        fetch(`/api/markets/${id}`)
             .then(response => response.json())
             .then(data => {
                 setMarket(data);
@@ -93,9 +93,9 @@ function MarketDetail ({ match }) {
         const fetchData = async () => {
             try {
                 const [marketDaysRes, vendorMarketsRes, eventsRes] = await Promise.all([
-                    fetch(`http://127.0.0.1:5555/api/market-days?market_id=${market.id}`).then(res => res.json()),
-                    fetch(`http://127.0.0.1:5555/api/vendor-markets?market_id=${market.id}`).then(res => res.json()),
-                    fetch(`http://127.0.0.1:5555/api/events?market_id=${market.id}`).then(res => res.json()), 
+                    fetch(`/api/market-days?market_id=${market.id}`).then(res => res.json()),
+                    fetch(`/api/vendor-markets?market_id=${market.id}`).then(res => res.json()),
+                    fetch(`/api/events?market_id=${market.id}`).then(res => res.json()), 
                 ]);
     
                 setMarketDays(marketDaysRes);
@@ -133,7 +133,7 @@ function MarketDetail ({ match }) {
         if (!userId) {
             return
         }
-        fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`, {
+        fetch(`/api/market-favorites?user_id=${userId}`, {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -278,7 +278,7 @@ function MarketDetail ({ match }) {
         if (globalThis.localStorage.getItem('user_id') !== null) {
             setIsClicked((isClick) => !isClick);
             if (isClicked == false) {
-                const response = await fetch('http://127.0.0.1:5555/api/market-favorites', {
+                const response = await fetch('/api/market-favorites', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -300,7 +300,7 @@ function MarketDetail ({ match }) {
             } else {
                 const findMarketFavId = marketFavs.filter(item => item.market_id == market.id)
                 for (const item of findMarketFavId) {
-                    fetch(`http://127.0.0.1:5555/api/market-favorites/${item.id}`, {
+                    fetch(`/api/market-favorites/${item.id}`, {
                         method: "DELETE",
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -321,7 +321,7 @@ function MarketDetail ({ match }) {
 
     useEffect(() => {
         if (!selectedDay?.id) return;
-        fetch(`http://127.0.0.1:5555/api/baskets?market_day_id=${selectedDay.id}`)
+        fetch(`/api/baskets?market_day_id=${selectedDay.id}`)
             .then(response => response.json())
             .then(data => {
                 const today = new Date();
@@ -364,7 +364,7 @@ function MarketDetail ({ match }) {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:5555/api/notify-me-for-more-baskets', {
+            const response = await fetch('/api/notify-me-for-more-baskets', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,

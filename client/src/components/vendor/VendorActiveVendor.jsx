@@ -13,7 +13,7 @@ const VendorActiveVendor = ({ className }) => {
             const fetchVendorUserData = async () => {
                 try {
                     const token = localStorage.getItem('vendor_jwt-token');
-                    const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
+                    const response = await fetch(`/api/vendor-users/${vendorUserId}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -49,7 +49,7 @@ const VendorActiveVendor = ({ className }) => {
     const handleSaveChanges = async () => {
         try {
             const token = localStorage.getItem('vendor_jwt-token');
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
+            const response = await fetch(`/api/vendor-users/${vendorUserId}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -78,7 +78,7 @@ const VendorActiveVendor = ({ className }) => {
             try {
                 const vendorIds = Object.values(vendorUserData.vendor_id);
                 const vendorRequests = vendorIds.map((id) =>
-                    fetch(`http://127.0.0.1:5555/api/vendors/${id}`)
+                    fetch(`/api/vendors/${id}`)
                         .then((response) => {
                             if (response.ok) {
                                 return response.json();

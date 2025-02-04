@@ -79,7 +79,7 @@ function VendorSales() {
         }
         try {
             const token = localStorage.getItem('vendor_jwt-token');
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
+            const response = await fetch(`/api/vendor-users/${vendorUserId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -103,7 +103,7 @@ function VendorSales() {
 
     useEffect(() => {
         if (vendorId) {
-            fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}`)
+            fetch(`/api/baskets?vendor_id=${vendorId}`)
                 .then(response => response.json())
                 .then(data => {
                     setBaskets(data)
@@ -120,7 +120,7 @@ function VendorSales() {
                 return;
             }
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/baskets/vendor-sales-history?vendor_id=${vendorId}`, {
+                const response = await fetch(`/api/baskets/vendor-sales-history?vendor_id=${vendorId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,

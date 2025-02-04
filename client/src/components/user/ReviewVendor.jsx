@@ -30,7 +30,7 @@ function ReviewVendor({ vendor }) {
 
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/vendor-reviews?vendor_id=${vendor.id}`)
+        fetch(`/api/vendor-reviews?vendor_id=${vendor.id}`)
             .then(response => response.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -67,7 +67,7 @@ function ReviewVendor({ vendor }) {
         }
 
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews`, {
+            const response = await fetch(`/api/vendor-reviews`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -95,7 +95,7 @@ function ReviewVendor({ vendor }) {
 
     const handleReviewUpdate = async (reviewId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
+            const response = await fetch(`/api/vendor-reviews/${reviewId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ review_text: editedReviewData })
@@ -116,7 +116,7 @@ function ReviewVendor({ vendor }) {
     const handleReviewDelete = async (reviewId) => {
         try {
 
-            fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
+            fetch(`/api/vendor-reviews/${reviewId}`, {
                 method: "DELETE",
             }).then(() => {
                 setReviews((prevReviews) => prevReviews.filter((review) => review.id !== reviewId))
@@ -130,7 +130,7 @@ function ReviewVendor({ vendor }) {
         if (globalThis.localStorage.getItem('user_id') !== null) {
             if (confirm(`Are you sure you want to report the review?`)) {
                 try {
-                    const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
+                    const response = await fetch(`/api/vendor-reviews/${reviewId}`, {
                         method: 'PATCH',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ is_reported: true })
@@ -152,7 +152,7 @@ function ReviewVendor({ vendor }) {
 
     // Ratings
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/vendor-review-ratings`)
+        fetch(`/api/vendor-review-ratings`)
             .then(response => response.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -210,7 +210,7 @@ function ReviewVendor({ vendor }) {
                 );
                 if (!currentClickedState) {
                     if (!existingVote) {
-                        const response = await fetch('http://127.0.0.1:5555/api/vendor-review-ratings', {
+                        const response = await fetch('/api/vendor-review-ratings', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -229,7 +229,7 @@ function ReviewVendor({ vendor }) {
                         });
                     } else {
                         const response = await fetch(
-                            `http://127.0.0.1:5555/api/vendor-review-ratings/${existingVote.id}`,
+                            `/api/vendor-review-ratings/${existingVote.id}`,
                             {
                                 method: 'PATCH',
                                 headers: { 'Content-Type': 'application/json' },
@@ -251,7 +251,7 @@ function ReviewVendor({ vendor }) {
                 } else {
                     const matchingVotes = upVoteRatings.filter((vote) => vote.review_id === reviewId);
                     for (const vote of matchingVotes) {
-                        fetch(`http://127.0.0.1:5555/api/vendor-review-ratings/${existingVote.id}`, {
+                        fetch(`/api/vendor-review-ratings/${existingVote.id}`, {
                             method: "DELETE",
                         }).then(() => {
                             setUpVoteRatings((prev) => prev.filter((vote) => vote.review_id !== reviewId));
@@ -281,7 +281,7 @@ function ReviewVendor({ vendor }) {
                 );
                 if (!currentClickedState) {
                     if (!existingVote) {
-                        const response = await fetch('http://127.0.0.1:5555/api/vendor-review-ratings', {
+                        const response = await fetch('/api/vendor-review-ratings', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -300,7 +300,7 @@ function ReviewVendor({ vendor }) {
                         });
                     } else {
                         const response = await fetch(
-                            `http://127.0.0.1:5555/api/vendor-review-ratings/${existingVote.id}`,
+                            `/api/vendor-review-ratings/${existingVote.id}`,
                             {
                                 method: 'PATCH',
                                 headers: { 'Content-Type': 'application/json' },
@@ -319,7 +319,7 @@ function ReviewVendor({ vendor }) {
                 } else {
                     const matchingVotes = downVoteRatings.filter((vote) => vote.review_id === reviewId);
                     for (const vote of matchingVotes) {
-                        fetch(`http://127.0.0.1:5555/api/vendor-review-ratings/${existingVote.id}`, {
+                        fetch(`/api/vendor-review-ratings/${existingVote.id}`, {
                             method: "DELETE",
                         }).then(() => {
                             setDownVoteRatings((prev) => prev.filter((vote) => vote.review_id !== reviewId));
@@ -337,7 +337,7 @@ function ReviewVendor({ vendor }) {
 
     useEffect(() => {
         if (!userId) return;
-        fetch(`http://127.0.0.1:5555/api/reported-reviews?user_id=${userId}`)
+        fetch(`/api/reported-reviews?user_id=${userId}`)
             .then(response => response.json())
             .then(data => {
                 setReports(data);
@@ -349,7 +349,7 @@ function ReviewVendor({ vendor }) {
     useEffect(() => {
         const fetchTopReviews = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:5555/api/top-vendor-reviews');
+                const response = await fetch('/api/top-vendor-reviews');
                 if (!response.ok) {
                     throw new Error('Failed to fetch reviews');
                 }

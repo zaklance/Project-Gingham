@@ -45,7 +45,7 @@ function AdminVendorEvents({ vendors }) {
         try {
             console.log(newEvent);
             // Save market details first
-            const response = await fetch(`http://127.0.0.1:5555/api/events`, {
+            const response = await fetch(`/api/events`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -70,7 +70,7 @@ function AdminVendorEvents({ vendors }) {
     };
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/events")
+        fetch("/api/events")
             .then(response => response.json())
             .then(data => {
                 const today = new Date();
@@ -91,7 +91,7 @@ function AdminVendorEvents({ vendors }) {
 
     const handleEventUpdate = async (eventId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/events/${eventId}`, {
+            const response = await fetch(`/api/events/${eventId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -118,7 +118,7 @@ function AdminVendorEvents({ vendors }) {
         if (confirm(`Are you sure you want to delete this event?`)) {
             try {
     
-                fetch(`http://127.0.0.1:5555/api/events/${eventId}`, {
+                fetch(`/api/events/${eventId}`, {
                     method: "DELETE",
                 }).then(() => {
                     setEvents((prevEvents) => prevEvents.filter((review) => review.id !== eventId))

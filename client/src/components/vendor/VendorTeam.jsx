@@ -14,7 +14,7 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
             if (vendorUserData && vendorUserData.vendor_id) {
                 try {
                     const token = localStorage.getItem('vendor_jwt-token');
-                    const response = await fetch(`http://127.0.0.1:5555/api/vendor-users?vendor_id=${vendorUserData.vendor_id[vendorUserData.active_vendor]}`, {
+                    const response = await fetch(`/api/vendor-users?vendor_id=${vendorUserData.vendor_id[vendorUserData.active_vendor]}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -37,7 +37,7 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
     const handleAddTeamMember = async () => {
         const token = localStorage.getItem('vendor_jwt-token');
 
-        fetch(`http://127.0.0.1:5555/api/vendor-users?email=${encodeURIComponent(newMemberEmail)}`, {
+        fetch(`/api/vendor-users?email=${encodeURIComponent(newMemberEmail)}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -48,7 +48,7 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
             if (response.ok) {
                 return response.json().then(data => {
                     console.log(data[0].id)
-                    const response = fetch(`http://127.0.0.1:5555/api/vendor-users/${data[0].id}`, {
+                    const response = fetch(`/api/vendor-users/${data[0].id}`, {
                         method: 'PATCH',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -67,7 +67,7 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
             } else {
                 try {
                     const token = localStorage.getItem('vendor_jwt-token');
-                    const response = fetch('http://127.0.0.1:5555/api/vendor-users', {
+                    const response = fetch('/api/vendor-users', {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -107,7 +107,7 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
         if (confirm(`Are you sure you want to delete this team member?`)) {
             try {
                 const token = localStorage.getItem('vendor_jwt-token');
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${memberId}?delete_vendor_id=${vendorId}`, {
+                const response = await fetch(`/api/vendor-users/${memberId}?delete_vendor_id=${vendorId}`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -147,7 +147,7 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
         }
         try {
             const token = localStorage.getItem('vendor_jwt-token');
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${member.id}`, {
+            const response = await fetch(`/api/vendor-users/${member.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,

@@ -14,7 +14,7 @@ function AdminVendorDelete({ vendors }) {
     const matchingVendorId = matchingVendor ? matchingVendor.id : null;
 
     useEffect(() => {
-            fetch("http://127.0.0.1:5555/api/products")
+            fetch("/api/products")
                 .then(response => response.json())
                 .then(data => {
                     const sortedProducts = data.sort((a, b) => {
@@ -32,7 +32,7 @@ function AdminVendorDelete({ vendors }) {
             try {
                 const token = localStorage.getItem('admin_jwt-token');
                 // console.log('JWT Token:', token);
-                const response = await fetch(`http://127.0.0.1:5555/api/vendors/${matchingVendorId}`, {
+                const response = await fetch(`/api/vendors/${matchingVendorId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -62,7 +62,7 @@ function AdminVendorDelete({ vendors }) {
             const token = localStorage.getItem('admin_jwt-token');
 
             try {
-                await fetch(`http://127.0.0.1:5555/api/vendors/${matchingVendorId}`, {
+                await fetch(`/api/vendors/${matchingVendorId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -78,7 +78,7 @@ function AdminVendorDelete({ vendors }) {
             }
             try {
                 const token = localStorage.getItem('vendor_jwt-token');
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users?delete_vendor_id=${matchingVendorId}`, {
+                const response = await fetch(`/api/vendor-users?delete_vendor_id=${matchingVendorId}`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${token}`,

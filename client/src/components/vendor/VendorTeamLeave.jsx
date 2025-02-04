@@ -13,7 +13,7 @@ const VendorTeamLeave = ({ className, vendorUserData, setVendorUserData }) => {
             try {
                 const vendorIds = Object.values(vendorUserData.vendor_id);
                 const vendorRequests = vendorIds.map((id) =>
-                    fetch(`http://127.0.0.1:5555/api/vendors/${id}`)
+                    fetch(`/api/vendors/${id}`)
                         .then((response) => {
                             if (response.ok) {
                                 return response.json();
@@ -49,7 +49,7 @@ const VendorTeamLeave = ({ className, vendorUserData, setVendorUserData }) => {
         if (confirm(`Are you sure you want to leave this team?`)) {
             try {
                 const token = localStorage.getItem('vendor_jwt-token');
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}?delete_vendor_id=${vendorId}`, {
+                const response = await fetch(`/api/vendor-users/${vendorUserId}?delete_vendor_id=${vendorId}`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${token}`,

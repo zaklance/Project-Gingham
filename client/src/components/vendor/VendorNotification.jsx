@@ -10,7 +10,7 @@ function VendorNotification({ notifications, setNotifications, teamMembers, setT
         const token = localStorage.getItem('vendor_jwt-token');
     
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${notification.id}/approve`, {
+            const response = await fetch(`/api/vendor-notifications/${notification.id}/approve`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`, 
@@ -19,7 +19,7 @@ function VendorNotification({ notifications, setNotifications, teamMembers, setT
                 body: JSON.stringify({ vendor_role: vendor_role }),
             });
             if (response.ok) {
-                const vendorUserResponse = await fetch(`http://127.0.0.1:5555/api/vendor-users?vendor_id=${vendorUserData.vendor_id[vendorUserData.active_vendor]}`, {
+                const vendorUserResponse = await fetch(`/api/vendor-users?vendor_id=${vendorUserData.vendor_id[vendorUserData.active_vendor]}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -50,7 +50,7 @@ function VendorNotification({ notifications, setNotifications, teamMembers, setT
     const handleReject = async (notificationId) => {
         const token = localStorage.getItem('jwt-token');
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${notificationId}/reject`, {
+            const response = await fetch(`/api/vendor-notifications/${notificationId}/reject`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,

@@ -9,7 +9,7 @@ function CheckSession() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/api/check_user_session', {
+        fetch('/api/check_user_session', {
             method: 'GET',
             credentials: 'include'
         })

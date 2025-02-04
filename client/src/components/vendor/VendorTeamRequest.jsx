@@ -10,7 +10,7 @@ const VendorTeamRequest = ({ className, vendorUserId, vendorUserData }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/vendors")
+        fetch("/api/vendors")
             .then((response) => {
                 if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -32,7 +32,7 @@ const VendorTeamRequest = ({ className, vendorUserId, vendorUserData }) => {
                 return;
             }
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/vendor-user/${vendorUserId}`, {
+                const response = await fetch(`/api/vendor-notifications/vendor-user/${vendorUserId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -68,7 +68,7 @@ const VendorTeamRequest = ({ className, vendorUserId, vendorUserData }) => {
 
     const fetchVendorDetails = async (vendorId) => {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendors/${vendorId}`);
+                const response = await fetch(`/api/vendors/${vendorId}`);
                 if (response.ok) {
                     const vendorData = await response.json();
                     setSelectedVendor({ id: vendorData.id, name: vendorData.name });
@@ -94,7 +94,7 @@ const VendorTeamRequest = ({ className, vendorUserId, vendorUserData }) => {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:5555/api/create-vendor-notification', {
+            const response = await fetch('/api/create-vendor-notification', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -135,7 +135,7 @@ const VendorTeamRequest = ({ className, vendorUserId, vendorUserData }) => {
         const notificationArray = Array.isArray(notifications) ? notifications : [notifications];
         try {
             for (const notification of notificationArray) {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${notification.id}`, {
+                const response = await fetch(`/api/vendor-notifications/${notification.id}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,

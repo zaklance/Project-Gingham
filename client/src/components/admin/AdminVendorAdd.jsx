@@ -16,7 +16,7 @@ function AdminVendorEdit({ vendors }) {
     
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/products")
+        fetch("/api/products")
             .then(response => response.json())
             .then(data => {
                 const sortedProducts = data.sort((a, b) => {
@@ -43,7 +43,7 @@ function AdminVendorEdit({ vendors }) {
         formData.append('vendor_id', vendorId);
     
         try {
-            const response = await fetch('http://127.0.0.1:5555/api/upload', {
+            const response = await fetch('/api/upload', {
                 method: 'POST',
                 body: formData,
             });
@@ -65,7 +65,7 @@ function AdminVendorEdit({ vendors }) {
         try {
             console.log('Vendor Data:', vendorData);
     
-            const response = await fetch(`http://127.0.0.1:5555/api/vendors`, {
+            const response = await fetch(`/api/vendors`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

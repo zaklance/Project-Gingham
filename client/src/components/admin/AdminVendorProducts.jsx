@@ -11,7 +11,7 @@ function AdminVendorProducts({ vendors }) {
     
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/products")
+        fetch("/api/products")
             .then(response => response.json())
             .then(data => {
                 const sortedProducts = data.sort((a, b) => {
@@ -34,7 +34,7 @@ function AdminVendorProducts({ vendors }) {
         }
 
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/products`, {
+            const response = await fetch(`/api/products`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -62,7 +62,7 @@ function AdminVendorProducts({ vendors }) {
     const handleProductUpdate = async () => {
         console.log(selectedProduct)
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/products/${selectedProduct.id}`, {
+            const response = await fetch(`/api/products/${selectedProduct.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ function AdminVendorProducts({ vendors }) {
         if (confirm(`Are you sure you want to delete this event?`)) {
             try {
 
-                fetch(`http://127.0.0.1:5555/api/products/${selectedProduct.id}`, {
+                fetch(`/api/products/${selectedProduct.id}`, {
                     method: "DELETE",
                 }).then(() => {
                     setProducts((prev) => prev.filter((item) => item.id !== selectedProduct.id))
@@ -150,7 +150,7 @@ function AdminVendorProducts({ vendors }) {
 
     useEffect(() => {
         const token = localStorage.getItem('admin_jwt-token');
-        fetch("http://127.0.0.1:5555/api/admin-notifications", {
+        fetch("/api/admin-notifications", {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,

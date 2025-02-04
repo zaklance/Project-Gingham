@@ -20,7 +20,7 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
             try {
                 const token = localStorage.getItem('admin_jwt-token');
                 // console.log('JWT Token:', token);
-                const response = await fetch(`http://127.0.0.1:5555/api/markets/${matchingMarketId}`, {
+                const response = await fetch(`/api/markets/${matchingMarketId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -46,7 +46,7 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
     }, [matchingMarketId]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/market-days?market_id=${matchingMarketId}`)
+        fetch(`/api/market-days?market_id=${matchingMarketId}`)
             .then(response => response.json())
             .then(data => {
                 setMarketDays(data)
@@ -60,7 +60,7 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
 
             try {
                 for (const day of marketDays) {
-                    await fetch(`http://127.0.0.1:5555/api/market-days/${day.id}`, {
+                    await fetch(`/api/market-days/${day.id}`, {
                         method: 'DELETE',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -68,7 +68,7 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
                         },
                     });
                 }
-                await fetch(`http://127.0.0.1:5555/api/markets/${matchingMarketId}`, {
+                await fetch(`/api/markets/${matchingMarketId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,

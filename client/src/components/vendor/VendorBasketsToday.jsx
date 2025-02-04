@@ -23,7 +23,7 @@ function VendorBasketsToday({vendorId, todaysMarketDays, entry}) {
             async function fetchTodaysBaskets() {
                 try {
                     const response = await fetch(
-                        `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&date=${formattedDate}`
+                        `/api/baskets?vendor_id=${vendorId}&date=${formattedDate}`
                     );
     
                     if (response.ok) {
@@ -139,7 +139,7 @@ function VendorBasketsToday({vendorId, todaysMarketDays, entry}) {
         if (additionalBaskets > 0) {
             const promises = [];
             for (let i = 0; i < additionalBaskets; i++) {
-                promises.push(fetch('http://127.0.0.1:5555/api/baskets', {
+                promises.push(fetch('/api/baskets', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -171,7 +171,7 @@ function VendorBasketsToday({vendorId, todaysMarketDays, entry}) {
             try {
                 await Promise.all(promises);
         
-                const updatedBasketsResponse = await fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${entry.marketId}&sale_date=${formattedSaleDate}`);
+                const updatedBasketsResponse = await fetch(`/api/baskets?vendor_id=${vendorId}&market_day_id=${entry.marketId}&sale_date=${formattedSaleDate}`);
                 const updatedBaskets = await updatedBasketsResponse.json();
         
                 setTodayBaskets(prevBaskets => {
@@ -200,13 +200,13 @@ function VendorBasketsToday({vendorId, todaysMarketDays, entry}) {
             const basketIdsToDelete = unsoldBaskets.slice(0, numberOfBasketsToDelete).map(basket => basket.id);
             
             try {
-                await fetch('http://127.0.0.1:5555/api/baskets', {
+                await fetch('/api/baskets', {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ basket_ids: basketIdsToDelete }),
                 });
 
-                const updatedBasketsResponse = await fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${entry.marketId}&sale_date=${formattedSaleDate}`);
+                const updatedBasketsResponse = await fetch(`/api/baskets?vendor_id=${vendorId}&market_day_id=${entry.marketId}&sale_date=${formattedSaleDate}`);
                 const updatedBaskets = await updatedBasketsResponse.json();
 
                 setTodayBaskets(prevBaskets => {

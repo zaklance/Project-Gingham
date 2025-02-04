@@ -28,7 +28,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
 
     useEffect(() => {
     if (isUserLoggedIn) {
-        fetch(`http://127.0.0.1:5555/api/user-notifications?user_id=${userId}`, {
+        fetch(`/api/user-notifications?user_id=${userId}`, {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${userToken}`,
@@ -45,7 +45,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
 
     const handleNotificationDelete = async (notifId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/user-notifications/${notifId}`, {
+            const response = await fetch(`/api/user-notifications/${notifId}`, {
                 method: "DELETE",
                 headers: {
                     'Authorization': `Bearer ${userToken}`,
@@ -65,7 +65,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     //     const fetchVendorUserData = async () => {
     //         if (vendorUserId) {
     //             try {
-    //                 const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
+    //                 const response = await fetch(`/api/vendor-users/${vendorUserId}`, {
     //                     method: 'GET',
     //                     headers: {
     //                         'Authorization': `Bearer ${vendorToken}`,
@@ -92,7 +92,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
 
     useEffect(() => {
         if (isVendorLoggedIn) {
-            fetch(`http://127.0.0.1:5555/api/vendor-notifications?vendor_user_id=${vendorUserId}`, {
+            fetch(`/api/vendor-notifications?vendor_user_id=${vendorUserId}`, {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${vendorToken}`,
@@ -109,7 +109,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
 
     const handleUserNotificationIsRead = async (notifId, link) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/user-notifications/${notifId}`, {
+            const response = await fetch(`/api/user-notifications/${notifId}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${userToken}`, 
@@ -143,7 +143,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const handleUserNotificationClear = async () => {
         if (confirm(`Are you sure you want to clear all your notifications?`)) {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/user-notifications?user_id=${userId}`, {
+                const response = await fetch(`/api/user-notifications?user_id=${userId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${userToken}`,
@@ -166,7 +166,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
 
     const handleVendorNotificationIsRead = async (notifId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${notifId}`, {
+            const response = await fetch(`/api/vendor-notifications/${notifId}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${vendorToken}`,
@@ -196,7 +196,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
 
     const handleVendorNotificationDelete = async (notifId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications/${notifId}`, {
+            const response = await fetch(`/api/vendor-notifications/${notifId}`, {
                 method: "DELETE",
                 headers: {
                     'Authorization': `Bearer ${vendorToken}`,
@@ -215,7 +215,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const handleVendorUserNotificationClear = async () => {
         if (confirm(`Are you sure you want to clear all your notifications?`)) {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications?vendor_user_id=${vendorUserId}`, {
+                const response = await fetch(`/api/vendor-notifications?vendor_user_id=${vendorUserId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${vendorToken}`,
@@ -238,7 +238,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     
     useEffect(() => {
         if (isAdminLoggedIn) {
-            fetch("http://127.0.0.1:5555/api/admin-notifications", {
+            fetch("/api/admin-notifications", {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${adminToken}`,
@@ -255,7 +255,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
 
     const handleAdminNotificationIsRead = async (notifId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/admin-notifications/${notifId}`, {
+            const response = await fetch(`/api/admin-notifications/${notifId}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${adminToken}`,
@@ -285,7 +285,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
 
     const handleAdminNotificationDelete = async (notifId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/admin-notifications/${notifId}`, {
+            const response = await fetch(`/api/admin-notifications/${notifId}`, {
                 method: "DELETE",
                 headers: {
                     'Authorization': `Bearer ${adminToken}`,
@@ -304,7 +304,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const handleAdminNotificationClear = async () => {
         if (confirm(`Are you sure you want to clear all your notifications?`)) {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/admin-notifications?admin_id=${adminUserId}`, {
+                const response = await fetch(`/api/admin-notifications?admin_id=${adminUserId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${adminToken}`,
@@ -330,7 +330,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
         if (!adminUserId) return
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/admin-users/${adminUserId}`, {
+                const response = await fetch(`/api/admin-users/${adminUserId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${adminToken}`,
@@ -481,11 +481,14 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             <NavLink className='nav-tab color-3 btn-nav icon-report' to={`/admin/report`} title="Reported Reviews">&emsp;</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav icon-email' to={`/admin/email`} title="Email">&emsp;</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav icon-email-bulk' to={`/admin/email-bulk`} title="Email, Bulk">&emsp;</NavLink>
+                        </li>
+                        <li>
+                            <NavLink className='nav-tab color-2 btn-nav icon-email' to={`/admin/email`} title="Email">&emsp;</NavLink>
                         </li>
                         {adminUserData && adminUserData.admin_role <= 2 ? (
                             <li>
-                                <NavLink className='nav-tab color-2 btn-nav icon-stats' to={`/admin/stats`} title="Stats">&emsp;</NavLink>
+                                <NavLink className='nav-tab color-1 btn-nav icon-stats' to={`/admin/stats`} title="Stats">&emsp;</NavLink>
                             </li>
                         ) : (
                             null

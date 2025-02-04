@@ -71,7 +71,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData, allMarketDays, all
             return;
         }
         try {
-            const response = await fetch("http://127.0.0.1:5555/api/vendor-markets", {
+            const response = await fetch("/api/vendor-markets", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newMarketDay),
@@ -92,7 +92,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData, allMarketDays, all
         if (confirm(`Are you sure you want to delete the chosen Market?`)) {
             // event.preventDefault()
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-markets/${Number(selectedMarketDay)}`, {
+                const response = await fetch(`/api/vendor-markets/${Number(selectedMarketDay)}`, {
                     method: "DELETE",
                 });
                 if (!response.ok) {

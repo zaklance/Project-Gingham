@@ -23,7 +23,7 @@ function VendorCreate () {
 
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/products")
+        fetch("/api/products")
             .then(response => response.json())
             .then(data => {
                 const sortedProducts = data.sort((a, b) => {
@@ -51,7 +51,7 @@ function VendorCreate () {
 
             try {
                 const token = localStorage.getItem('vendor_jwt-token');
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${id}`, {
+                const response = await fetch(`/api/vendor-users/${id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -120,7 +120,7 @@ function VendorCreate () {
         const newVendorData = { name: vendorData.name, city: vendorData.city, state: vendorData.state, bio: vendorData.bio, products: vendorData.products, image: vendorImageURL, };
 
         try {
-            const vendorResponse = await fetch('http://127.0.0.1:5555/api/vendors', {
+            const vendorResponse = await fetch('/api/vendors', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -161,7 +161,7 @@ function VendorCreate () {
                 return;
             }
     
-            const userResponse = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserData.id}`, {
+            const userResponse = await fetch(`/api/vendor-users/${vendorUserData.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -181,7 +181,7 @@ function VendorCreate () {
             }
             if (Array.isArray(newProducts) && newProducts.includes(1) && productRequest.trim() !== '') {
                 try {
-                    const response = await fetch('http://127.0.0.1:5555/api/create-admin-notification', {
+                    const response = await fetch('/api/create-admin-notification', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

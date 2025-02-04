@@ -38,7 +38,7 @@ function Login({ handlePopup }) {
         event.preventDefault();
     
         try {
-            const response = await fetch('http://127.0.0.1:5555/api/login', {
+            const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ function Login({ handlePopup }) {
                     const { latitude, longitude } = data.addresses[0];
                     setResultCoordinates({ lat: latitude, lng: longitude });
     
-                    const signupResponse = await fetch("http://127.0.0.1:5555/api/signup", {
+                    const signupResponse = await fetch("/api/signup", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -153,7 +153,7 @@ function Login({ handlePopup }) {
                     alert("Unable to geocode the address. Please try again.");
                 }
             } else {
-                const signupResponse = await fetch("http://127.0.0.1:5555/api/signup", {
+                const signupResponse = await fetch("/api/signup", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

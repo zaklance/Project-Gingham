@@ -22,7 +22,7 @@ const AdminUsersVendorUsers = () => {
 
 
     useEffect(() => {
-            fetch("http://127.0.0.1:5555/api/vendor-users", {
+            fetch("/api/vendor-users", {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -43,7 +43,7 @@ const AdminUsersVendorUsers = () => {
         if (!matchingUserId) return
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${matchingUserId}`, {
+                const response = await fetch(`/api/vendor-users/${matchingUserId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -69,7 +69,7 @@ const AdminUsersVendorUsers = () => {
     const handleSaveChanges = async () => {
         if (confirm(`Are you sure you want to edit ${userData.first_name}'s account?`)) {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${userData.id}?admin_patch=true`, {
+                const response = await fetch(`/api/vendor-users/${userData.id}?admin_patch=true`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${token}`,

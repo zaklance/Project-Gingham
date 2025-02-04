@@ -18,7 +18,7 @@ function VendorScan() {
             }
             try {
                 const token = localStorage.getItem('vendor_jwt-token');
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
+                const response = await fetch(`/api/vendor-users/${vendorUserId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -42,13 +42,13 @@ function VendorScan() {
 
     const handleScan = (result) => {
         console.log(result[0].rawValue);
-        fetch(`http://127.0.0.1:5555/api/qr-codes?vendor_id=${vendorId}&qr_code=${result[0].rawValue}`)
+        fetch(`/api/qr-codes?vendor_id=${vendorId}&qr_code=${result[0].rawValue}`)
             .then(response => response.json())
             .then(async (data) => {
                 console.log(result);
                 console.log(data);
                 try {
-                    const response = await fetch(`http://127.0.0.1:5555/api/baskets/${data.basket_id}`, {
+                    const response = await fetch(`/api/baskets/${data.basket_id}`, {
                         method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ function VendorScan() {
                         const updatedData = await response.json();
                         console.log('Vendor data updated successfully:', updatedData);
                         alert("Basket successfully picked up");
-                        fetch(`http://127.0.0.1:5555/api/qr-codes/${data.id}`, {
+                        fetch(`/api/qr-codes/${data.id}`, {
                             method: 'DELETE',
                             headers: {
                                 'Content-Type': 'application/json',

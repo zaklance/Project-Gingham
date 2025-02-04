@@ -16,7 +16,7 @@ function AdminVendorNotifications({ notifications, setNotifications }) {
         }
 
         try {
-            const productResponse = await fetch(`http://127.0.0.1:5555/api/products`, {
+            const productResponse = await fetch(`/api/products`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -26,7 +26,7 @@ function AdminVendorNotifications({ notifications, setNotifications }) {
             if (productResponse.ok) {
                 const newProductData = await productResponse.json();
 
-                const vendorResponse = await fetch(`http://127.0.0.1:5555/api/vendors/${notification.vendor_id}`);
+                const vendorResponse = await fetch(`/api/vendors/${notification.vendor_id}`);
                 if (!vendorResponse.ok) {
                     throw new Error('Failed to fetch vendor data');
                 }
@@ -39,7 +39,7 @@ function AdminVendorNotifications({ notifications, setNotifications }) {
 
                 console.log(updatedProducts)
                 
-                const updateVendorResponse = await fetch(`http://127.0.0.1:5555/api/vendors/${notification.vendor_id}`, {
+                const updateVendorResponse = await fetch(`/api/vendors/${notification.vendor_id}`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -62,7 +62,7 @@ function AdminVendorNotifications({ notifications, setNotifications }) {
                 alert(responseData.message || 'Something went wrong');
             }
 
-            const adminResponse = await fetch(`http://127.0.0.1:5555/api/admin-notifications/${notification.id}`, {
+            const adminResponse = await fetch(`/api/admin-notifications/${notification.id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -87,7 +87,7 @@ function AdminVendorNotifications({ notifications, setNotifications }) {
     const handleReject = async (notificationId) => {
         const token = localStorage.getItem('jwt-token');
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/admin-notifications/${notificationId}`, {
+            const response = await fetch(`/api/admin-notifications/${notificationId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,

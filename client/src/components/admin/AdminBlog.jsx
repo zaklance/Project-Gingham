@@ -16,7 +16,7 @@ const AdminBlog = () => {
     }, []);
 
     useEffect(() => {
-            fetch("http://127.0.0.1:5555/api/blogs")
+            fetch("/api/blogs")
                 .then(response => response.json())
                 .then(data => {
                     const sortedData = data.sort((a, b) => new Date(b.post_date) - new Date(a.post_date));

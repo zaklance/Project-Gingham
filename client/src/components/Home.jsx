@@ -30,7 +30,7 @@ function Home() {
     }, []);
 
     useEffect(() => {
-            fetch("http://127.0.0.1:5555/api/blogs?for_user=true")
+            fetch("/api/blogs?for_user=true")
                 .then(response => response.json())
                 .then(data => {
                     const now = new Date();
@@ -43,7 +43,7 @@ function Home() {
 
     useEffect(() => {
         if (userId) {
-            fetch(`http://127.0.0.1:5555/api/blog-favorites?user_id=${userId}`, {
+            fetch(`/api/blog-favorites?user_id=${userId}`, {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -75,7 +75,7 @@ function Home() {
             [blogId]: !prevState[blogId]
         }));
         if (isClicked[blogId] == false) {
-            const response = await fetch('http://127.0.0.1:5555/api/blog-favorites', {
+            const response = await fetch('/api/blog-favorites', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -97,7 +97,7 @@ function Home() {
         } else {
             const findBlogFavId = blogFavs.filter(item => item.blog_id == blogId)
             for (const item of findBlogFavId) {
-                fetch(`http://127.0.0.1:5555/api/blog-favorites/${item.id}`, {
+                fetch(`/api/blog-favorites/${item.id}`, {
                     method: "DELETE",
                     headers: {
                         'Authorization': `Bearer ${token}`,

@@ -22,7 +22,7 @@ function AdminUsers() {
         if (!adminUserId) return
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/admin-users/${adminUserId}`, {
+                const response = await fetch(`/api/admin-users/${adminUserId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,

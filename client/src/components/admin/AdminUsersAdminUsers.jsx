@@ -22,7 +22,7 @@ const AdminUsers = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/admin-users", {
+        fetch("/api/admin-users", {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -43,7 +43,7 @@ const AdminUsers = () => {
             if (!adminUserId) return
             const fetchUserData = async () => {
                 try {
-                    const response = await fetch(`http://127.0.0.1:5555/api/admin-users/${adminUserId}`, {
+                    const response = await fetch(`/api/admin-users/${adminUserId}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -70,7 +70,7 @@ const AdminUsers = () => {
         if (!matchingUserId) return
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/admin-users/${matchingUserId}`, {
+                const response = await fetch(`/api/admin-users/${matchingUserId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -96,7 +96,7 @@ const AdminUsers = () => {
     const handleSaveChanges = async () => {
         if (confirm(`Are you sure you want to edit ${userData.first_name}'s account?`)) {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/admin-users/${userData.id}`, {
+                const response = await fetch(`/api/admin-users/${userData.id}`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -126,7 +126,7 @@ const AdminUsers = () => {
         if (confirm(`Are you sure you want to delete this admin?`)) {
             try {
 
-                fetch(`http://127.0.0.1:5555/api/admin-users/${matchingUserId}`, {
+                fetch(`/api/admin-users/${matchingUserId}`, {
                     method: "DELETE",
                     headers: {
                         'Authorization': `Bearer ${token}`,
