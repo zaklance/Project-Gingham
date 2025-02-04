@@ -77,7 +77,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
         try {
             console.log("Sending event data:", { vendor_id: vendorId, market_id: newEvent.market_id, title: newEvent.title, message: newEvent.message, start_date: newEvent.start_date, end_date: newEvent.end_date, schedule_change: newEvent.schedule_change });
             
-            const response = await fetch(`http://127.0.0.1:5555/api/events`, {
+            const response = await fetch(`/api/events`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -113,7 +113,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
     useEffect(() => {
         if (!vendorId) return;
     
-        fetch(`http://127.0.0.1:5555/api/events?vendor_id=${activeVendorId}`)
+        fetch(`/api/events?vendor_id=${activeVendorId}`)
             .then(response => response.json())
             .then(data => {
     
@@ -139,7 +139,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
 
     const handleEventUpdate = async (eventId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/events/${eventId}`, {
+            const response = await fetch(`/api/events/${eventId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -166,7 +166,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
         if (confirm(`Are you sure you want to delete this event?`)) {
             try {
 
-                fetch(`http://127.0.0.1:5555/api/events/${eventId}`, {
+                fetch(`/api/events/${eventId}`, {
                     method: "DELETE",
                 }).then(() => {
                     setEvents((prevEvents) => prevEvents.filter((review) => review.id !== eventId))
@@ -178,7 +178,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
     }
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${vendorId}`)
+        fetch(`/api/vendor-markets?vendor_id=${vendorId}`)
             .then(response => response.json())
             .then(data => {
                 setAllVendorMarkets(data)
@@ -187,7 +187,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
     }, [vendorId]);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/market-days")
+        fetch("/api/market-days")
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item =>
@@ -200,7 +200,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
 
     useEffect(() => {
         setIsLoading(true)
-        fetch("http://127.0.0.1:5555/api/markets")
+        fetch("/api/markets")
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item =>

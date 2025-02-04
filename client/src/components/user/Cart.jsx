@@ -57,7 +57,7 @@ function Cart() {
     
             // Fetch the Stripe publishable key from /api/config
             console.log('Fetching Stripe publishable key...');
-            const configResponse = await fetch('http://127.0.0.1:5555/api/config');
+            const configResponse = await fetch('/api/config');
             if (!configResponse.ok) {
                 throw new Error(`Failed to fetch Stripe config: ${configResponse.statusText}`);
             }
@@ -66,7 +66,7 @@ function Cart() {
     
             // Create PaymentIntent
             console.log('Sending request to create PaymentIntent...');
-            const paymentResponse = await fetch('http://127.0.0.1:5555/api/create-payment-intent', {
+            const paymentResponse = await fetch('/api/create-payment-intent', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ function Cart() {
             // Mark items as sold
             console.log('Marking items as sold...');
             await Promise.all(cartItems.map(async (cartItem) => {
-                const response = await fetch(`http://127.0.0.1:5555/api/baskets/${cartItem.id}`, {
+                const response = await fetch(`/api/baskets/${cartItem.id}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ function Cart() {
                 console.log('Generating QR codes...');
                 const qrPromises = cartItems.map(async (cartItem) => {
                     const hash = objectHash(`${cartItem.vendor_name} ${cartItem.location} ${cartItem.id} ${userId}`);
-                    const response = await fetch('http://127.0.0.1:5555/api/qr-codes', {
+                    const response = await fetch('/api/qr-codes', {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`,

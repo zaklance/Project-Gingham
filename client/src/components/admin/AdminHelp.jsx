@@ -10,7 +10,7 @@ const AdminHelp = () => {
 
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/faqs")
+        fetch("/api/faqs")
             .then(response => response.json())
             .then(data => {
                 setUserFAQs(data.filter((faq) => faq.for_user === true));

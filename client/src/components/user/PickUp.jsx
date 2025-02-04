@@ -23,7 +23,7 @@ function PickUp() {
         const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         console.log('Browser timezone:', browserTimezone);
 
-        fetch(`http://127.0.0.1:5555/api/baskets?user_id=${userId}&sale_date=${formattedDate}`, {
+        fetch(`/api/baskets?user_id=${userId}&sale_date=${formattedDate}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ function PickUp() {
     }, [userId, qRCodes]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/qr-codes?user_id=${userId}`, {
+        fetch(`/api/qr-codes?user_id=${userId}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,

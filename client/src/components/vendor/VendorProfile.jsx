@@ -58,7 +58,7 @@ function VendorProfile () {
 
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/products")
+        fetch("/api/products")
             .then(response => response.json())
             .then(data => {
                 const sortedProducts = data.sort((a, b) => {
@@ -79,7 +79,7 @@ function VendorProfile () {
     useEffect(() => {
         const fetchVendorUserData = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${id}`, {
+                const response = await fetch(`/api/vendor-users/${id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -115,7 +115,7 @@ function VendorProfile () {
     useEffect(() => {
         const fetchVendorUserSettings = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/settings-vendor-users?vendor_user_id=${id}`, {
+                const response = await fetch(`/api/settings-vendor-users?vendor_user_id=${id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -144,7 +144,7 @@ function VendorProfile () {
         if (vendorId=== null) {
             return
         }
-        fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${vendorId}`)
+        fetch(`/api/vendor-markets?vendor_id=${vendorId}`)
             .then(response => response.json())
             .then(data => {
                 setAllVendorMarkets(data)
@@ -158,7 +158,7 @@ function VendorProfile () {
             return;
         }
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
+            const response = await fetch(`/api/users/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -194,7 +194,7 @@ function VendorProfile () {
             return;
         }
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/users/${id}/password`, {
+            const response = await fetch(`/api/users/${id}/password`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -224,7 +224,7 @@ function VendorProfile () {
     };
 
     useEffect(() => {
-            fetch("http://127.0.0.1:5555/api/market-days", {
+            fetch("/api/market-days", {
                 method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -250,7 +250,7 @@ function VendorProfile () {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://127.0.0.1:5555/api/markets?is_visible=true");
+                const response = await fetch("/api/markets?is_visible=true");
                 const data = await response.json();
                 setAllMarkets(data);
                 if (filteredMarketDays.length > 0) {
@@ -300,7 +300,7 @@ function VendorProfile () {
     const handleSaveChanges = async () => {
         try {
             const token = localStorage.getItem('vendor_jwt-token');
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${id}`, {
+            const response = await fetch(`/api/vendor-users/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -327,12 +327,12 @@ function VendorProfile () {
             if (!vendorUserData || !vendorUserData.vendor_id) return;
     
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendors/${vendorUserData.vendor_id[vendorUserData.active_vendor]}`);
+                const response = await fetch(`/api/vendors/${vendorUserData.vendor_id[vendorUserData.active_vendor]}`);
                 if (response.ok) {
                     const data = await response.json();
                     setVendorData(data);
                     if (data.image) {
-                        setVendorImageURL(`http://127.0.0.1:5555/api/vendors/${vendorUserData.vendor_id[vendorUserData.active_vendor]}/image`);
+                        setVendorImageURL(`/api/vendors/${vendorUserData.vendor_id[vendorUserData.active_vendor]}/image`);
                     }
                 } else {
                     console.error('Failed to fetch vendor data:', response.status);
@@ -389,7 +389,7 @@ function VendorProfile () {
             }
     
             try {
-                const result = await fetch('http://127.0.0.1:5555/api/upload', {
+                const result = await fetch('/api/upload', {
                     method: 'POST',
                     body: formData,
                 });
@@ -424,7 +424,7 @@ function VendorProfile () {
         }
         
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendors/${vendorId}`, {
+            const response = await fetch(`/api/vendors/${vendorId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -448,7 +448,7 @@ function VendorProfile () {
             }
             if (tempVendorData.products.includes(1) && productRequest.trim() !== '') {
                 try {
-                    const response = await fetch('http://127.0.0.1:5555/api/create-admin-notification', {
+                    const response = await fetch('/api/create-admin-notification', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -482,7 +482,7 @@ function VendorProfile () {
     const handleSaveSettings = async () => {
         const token = localStorage.getItem('vendor_jwt-token');
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/settings-vendor-users/${id}`, {
+            const response = await fetch(`/api/settings-vendor-users/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -515,7 +515,7 @@ function VendorProfile () {
         try {
             console.log('Attempting to delete image:', vendorData.image);
     
-            const response = await fetch(`http://127.0.0.1:5555/api/delete-image`, {
+            const response = await fetch(`/api/delete-image`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -555,7 +555,7 @@ function VendorProfile () {
             const fetchMarketDetails = async () => {
                 const promises = locations.map(async marketId => {
                     try {
-                        const response = await fetch(`http://127.0.0.1:5555/api/markets/${marketId}`);
+                        const response = await fetch(`/api/markets/${marketId}`);
                         if (response.ok) {
                             const marketData = await response.json();
                             return { id: marketId, name: marketData.name };

@@ -15,7 +15,7 @@ function AdminVendors () {
 
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/vendors")
+        fetch("/api/vendors")
             .then(response => response.json())
             .then(vendors => setVendors(vendors))
             .catch(error => console.error('Error fetching vendors', error));
@@ -30,7 +30,7 @@ function AdminVendors () {
         if (!adminUserId) return
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/admin-users/${adminUserId}`, {
+                const response = await fetch(`/api/admin-users/${adminUserId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,

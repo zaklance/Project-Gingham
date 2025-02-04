@@ -29,7 +29,7 @@ const AdminHelpTab = ({ fAQs, setFAQs, forUser, forVendor, forAdmin, userType })
 
     const handleSaveNewFAQ = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:5555/api/faqs', {
+            const response = await fetch('/api/faqs', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -54,7 +54,7 @@ const AdminHelpTab = ({ fAQs, setFAQs, forUser, forVendor, forAdmin, userType })
 
     const handleFAQUpdate = async (fAQId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/faqs/${fAQId}`, {
+            const response = await fetch(`/api/faqs/${fAQId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ const AdminHelpTab = ({ fAQs, setFAQs, forUser, forVendor, forAdmin, userType })
         if (confirm(`Are you sure you want to delete this FAQ?`)) {
             try {
 
-                fetch(`http://127.0.0.1:5555/api/faqs/${id}`, {
+                fetch(`/api/faqs/${id}`, {
                     method: "DELETE",
                 }).then(() => {
                     setFAQs((prev) => prev.filter((item) => item.id !== id))

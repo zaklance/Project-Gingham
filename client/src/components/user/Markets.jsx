@@ -108,7 +108,7 @@ function Markets() {
                         if (decodedToken && decodedToken.role) {
                         }
                     }
-                    const response = await fetch(`http://127.0.0.1:5555/api/users/${userId}`, {
+                    const response = await fetch(`/api/users/${userId}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -144,7 +144,7 @@ function Markets() {
         if (location.state?.resetFilters) {
             setIsClicked(false);
         }
-        fetch("http://127.0.0.1:5555/api/markets")
+        fetch("/api/markets")
             .then(response => response.json())
             .then(markets => {
                 if (userId & markets.length > 0) {
@@ -169,7 +169,7 @@ function Markets() {
     }, [location.state, user]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/market-days`)
+        fetch(`/api/market-days`)
             .then(response => response.json())
             .then(data => {
                 setMarketDays(data);
@@ -178,7 +178,7 @@ function Markets() {
     }, []);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/markets") 
+        fetch("/api/markets") 
             .then((response) => response.json())
             .then((markets) => {
                 const coordinates = markets
@@ -202,7 +202,7 @@ function Markets() {
 
     useEffect(() => {
         if (userId && !isNaN(userId)) {
-            fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`, {
+            fetch(`/api/market-favorites?user_id=${userId}`, {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${token}`,

@@ -52,7 +52,7 @@ function Vendors() {
     }, [vendors, products]);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/products")
+        fetch("/api/products")
             .then(response => response.json())
             .then(data => {
                 const sortedProducts = data.sort((a, b) => {
@@ -72,7 +72,7 @@ function Vendors() {
             setIsClicked(location.state.isClicked);
         }
 
-        fetch("http://127.0.0.1:5555/api/vendors")
+        fetch("/api/vendors")
             .then(response => response.json())
             .then(data => setVendors(data))
     }, [location.state]);
@@ -83,7 +83,7 @@ function Vendors() {
             setIsClicked(false);
         }
         
-        fetch("http://127.0.0.1:5555/api/vendors")
+        fetch("/api/vendors")
             .then(response => response.json())
             .then(data => setVendors(data))
     }, [location.state]);
@@ -92,7 +92,7 @@ function Vendors() {
     useEffect(() => {
         const token = localStorage.getItem('user_jwt-token');
         if (userId && !isNaN(userId)) {
-            fetch(`http://127.0.0.1:5555/api/vendor-favorites?user_id=${userId}`, {
+            fetch(`/api/vendor-favorites?user_id=${userId}`, {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${token}`,

@@ -21,7 +21,7 @@ const AdminUsersUsers = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/users", {
+        fetch("/api/users", {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -42,7 +42,7 @@ const AdminUsersUsers = () => {
             if (!matchingUserId) return
             const fetchUserData = async () => {
                 try {
-                    const response = await fetch(`http://127.0.0.1:5555/api/users/${matchingUserId}`, {
+                    const response = await fetch(`/api/users/${matchingUserId}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -80,7 +80,7 @@ const AdminUsersUsers = () => {
             console.log('Deleting image with filename:', userData.avatar);
             console.log('User ID:', userData.id);
 
-            const response = await fetch(`http://127.0.0.1:5555/api/delete-image`, {
+            const response = await fetch(`/api/delete-image`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ const AdminUsersUsers = () => {
         
         if (confirm(`Are you sure you want to edit ${userData.first_name}'s account?`)) {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/users/${userData.id}`, {
+                const response = await fetch(`/api/users/${userData.id}`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -159,7 +159,7 @@ const AdminUsersUsers = () => {
                     }
 
                     try {
-                        const result = await fetch('http://127.0.0.1:5555/api/upload', {
+                        const result = await fetch('/api/upload', {
                             method: 'POST',
                             body: formData,
                         });

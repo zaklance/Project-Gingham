@@ -2295,6 +2295,13 @@ select:hover {
   background-size: 1.2rem auto;
 }
 
+.icon-email-bulk, .icon-email-bulk:hover {
+  background-image: url('../images/icons/mass-mailing-icon-vector.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 46%;
+  background-size: 2.8rem auto;
+}
+
 .icon-stats, .icon-stats:hover {
   background-image: url('../images/icons/stats-svgrepo-com.svg');
   background-repeat: no-repeat;

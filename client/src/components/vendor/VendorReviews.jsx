@@ -20,7 +20,7 @@ function VendorReviews() {
             }
             try {
                 const token = localStorage.getItem('vendor_jwt-token');
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
+                const response = await fetch(`/api/vendor-users/${vendorUserId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -46,7 +46,7 @@ function VendorReviews() {
     }, [vendorUserId]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/vendor-reviews?vendor_id=${vendorId}`)
+        fetch(`/api/vendor-reviews?vendor_id=${vendorId}`)
             .then(response => response.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -62,7 +62,7 @@ function VendorReviews() {
     const handleReviewReport = async (reviewId) => {
         if (confirm(`Are you sure you want to report the review?`)) {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
+                const response = await fetch(`/api/vendor-reviews/${reviewId}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ is_reported: true })
@@ -79,7 +79,7 @@ function VendorReviews() {
 
     const handleReviewReply = async (reviewId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
+            const response = await fetch(`/api/vendor-reviews/${reviewId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -101,7 +101,7 @@ function VendorReviews() {
 
     const handleReviewReplyUpdate = async (reviewId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
+            const response = await fetch(`/api/vendor-reviews/${reviewId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -122,7 +122,7 @@ function VendorReviews() {
 
     const handleReviewDelete = async (reviewId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
+            const response = await fetch(`/api/vendor-reviews/${reviewId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 

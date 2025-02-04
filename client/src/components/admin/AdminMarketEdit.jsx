@@ -20,7 +20,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const matchingMarketId = matchingMarket ? matchingMarket.id : null;
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/market-days?market_id=${matchingMarketId}`)
+        fetch(`/api/market-days?market_id=${matchingMarketId}`)
             .then(response => response.json())
             .then(data => {
                 setMarketDays(data)
@@ -40,7 +40,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
             const fetchAdminMarketData = async () => {
                 try {
                     const token = localStorage.getItem('admin_jwt-token');
-                    const response = await fetch(`http://127.0.0.1:5555/api/markets/${matchingMarketId}`, {
+                    const response = await fetch(`/api/markets/${matchingMarketId}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -75,7 +75,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         formData.append('market_id', marketId);
     
         try {
-            const response = await fetch('http://127.0.0.1:5555/api/upload', {
+            const response = await fetch('/api/upload', {
                 method: 'POST',
                 body: formData,
             });
@@ -111,7 +111,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         try {
             console.log('Deleting image:', adminMarketData.image);
     
-            const response = await fetch('http://127.0.0.1:5555/api/delete-image', {
+            const response = await fetch('/api/delete-image', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -189,7 +189,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const handleSaveChanges = async (event) => {
         if (confirm(`Are you sure you want to edit ${adminMarketData.name}'s account?`)) {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/markets/${matchingMarketId}`, {
+                const response = await fetch(`/api/markets/${matchingMarketId}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
@@ -217,7 +217,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
 
     const handleSaveDayChanges = async (event) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/market-days/${selectedDay.id}`, {
+            const response = await fetch(`/api/market-days/${selectedDay.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'

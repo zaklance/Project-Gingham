@@ -50,6 +50,7 @@ import AdminMarkets from './components/admin/AdminMarkets.jsx';
 import AdminVendors from './components/admin/AdminVendors.jsx';
 import AdminUsers from './components/admin/AdminUsers.jsx';
 import AdminHelp from './components/admin/AdminHelp.jsx';
+import AdminEmailBulk from './components/admin/AdminEmailBulk.jsx';
 import AdminEmail from './components/admin/AdminEmail.jsx';
 import AdminBlog from './components/admin/AdminBlog.jsx';
 import AdminReport from './components/admin/AdminReport.jsx';
@@ -267,6 +268,7 @@ const router = createBrowserRouter([
                     { path: "help", element: <AdminAuthRoute><AdminHelp /></AdminAuthRoute>},
                     { path: "blog", element: <AdminAuthRoute><AdminBlog /></AdminAuthRoute>},
                     { path: "report", element: <AdminAuthRoute><AdminReport /></AdminAuthRoute>},
+                    { path: "email-bulk", element: <AdminAuthRoute><AdminEmailBulk /></AdminAuthRoute>},
                     { path: "email", element: <AdminAuthRoute><AdminEmail /></AdminAuthRoute>},
                     { path: "stats", element: <AdminAuthRoute><AdminStats /></AdminAuthRoute>},
                     { path: "faqs", element: <AdminAuthRoute><AdminFAQs /></AdminAuthRoute>},

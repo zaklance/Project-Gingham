@@ -1,23 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PulseLoader from 'react-spinners/PulseLoader';
 
-const AdminEmail = () => {
+const AdminEmailBulk = () => {
     const [previewHtml, setPreviewHtml] = useState('');
-    const [bodyType, setBodyType] = useState('plain')
-    const [password, setPassword] = useState('')
-    const [showPassword, setShowPassword] = useState(false)
     const [newSubject, setNewSubject] = useState('')
+    const [userType, setUserType] = useState('user')
     const [singleEmail, setSingleEmail] = useState('')
+    const [isSingleEmail, setIsSingleEmail] = useState(false)
     const [isLoading, setIsLoading] = useState(false);
-    const [adminUserData, setAdminUserData] = useState(null);
-    const [newEmail, setNewEmail] = useState('');
-
-    const textareasRef = useRef([]);
-
-    const adminId = localStorage.getItem('admin_user_id');
-    const token = localStorage.getItem('admin_jwt-token');
-
-    const mjmlEmail = `<mjml>
+    const [newEmail, setNewEmail] = useState(`<mjml>
         <mj-head>
             <mj-attributes>
             <mj-text font-size="16px" color="#ff806b" />
@@ -34,9 +25,7 @@ const AdminEmail = () => {
                     <mj-image width="120px" src="https://www.gingham.nyc/public/gingham-logo-A_3.png"></mj-image>
                     
                     <mj-divider></mj-divider>
-                    <mj-text>
-                        Dear,
-                    </mj-text>
+                    
                     <mj-text>
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at mauris luctus, 
                         euismod enim nec, dignissim nisi. Duis sit amet lobortis turpis, sed scelerisque 
@@ -54,48 +43,27 @@ const AdminEmail = () => {
                         lacus fermentum finibus.
                     </mj-text>
                     <mj-text>
-                    </mj-text>
-                    <mj-text>
                         —The Gingham Team
                     </mj-text>
-                    <mj-text>
-                    </mj-text>
+                    <mj-image width="400px" src="https://www.gingham.nyc/public/GINGHAM_VENDOR_FARMERSMARKET.png"></mj-image>
+                    <mj-section padding="0px">
+                        <mj-section mj-class="footer">
+                            <mj-navbar>
+                                <mj-navbar-link href="https://www.gingham.nyc/" >Home</mj-navbar-link>
+                                <mj-navbar-link href="https://www.gingham.nyc/vendor" >Vendor Home</mj-navbar-link>
+                                <mj-navbar-link href="mailto:hello@gingham.nyc" >Contact Us</mj-navbar-link>
+                            </mj-navbar>
+                        </mj-section>
+                    </mj-section>
                 </mj-column>
             </mj-section>
         </mj-body>
     </mjml>
-    `
+    `);
 
-    useEffect(() => {
-            const fetchAdminUserData = async () => {
-                try {
-                    if (!token) {
-                        console.error('Token missing, redirecting to login.');
-                        // Redirect to login page or unauthorized page
-                        return;
-                    }
-                    const response = await fetch(`/api/admin-users/${adminId}`, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    if (response.ok) {
-                        const data = await response.json();
-                        setAdminUserData(data);
-                    } else if (response.status === 403) {
-                        console.error('Access forbidden: Admin role required');
-                        // Redirect to unauthorized page or show an error
-                    } else {
-                        console.error(`Error fetching profile: ${response.status}`);
-                    }
-                } catch (error) {
-                    console.error('Error fetching profile data:', error);
-                }
-            };
-            fetchAdminUserData();
-        }, [adminId]);
+    const textareasRef = useRef([]);
+
+    const token = localStorage.getItem('admin_jwt-token');
     
     const previewEmail = async () => {
         try {
@@ -127,34 +95,62 @@ const AdminEmail = () => {
             return
         }
         setIsLoading(true)
-        if (confirm(`Are you sure you want to send ${newSubject} to ${singleEmail}?`)) {
-            try {
-                const response = await fetch('/api/sendgrid-email-client', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        from_email: adminUserData.email,
-                        to_email: singleEmail,
-                        subject: newSubject,
-                        body_type: bodyType,
-                        body: newEmail
-                        }),
-                });
-                const result = await response.json()
-                if (response.ok) {
+        if (singleEmail) {
+            if (confirm(`Are you sure you want to send ${newSubject} to ${singleEmail}?`)) {
+                try {
+                    const response = await fetch(`/api/sendgrid-email?single_email=${singleEmail}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            subject: newSubject,
+                            html: newEmail
+                         }),
+                    });
+                    const result = await response.json()
                     setIsLoading(false)
-                    alert('Message sent successfully!');
-                    console.log(result)
+                    if (response.ok) {
+                        alert('Message sent successfully!');
+                        console.log(result)
+                    } else {
+                        alert('Error sending message:', result.error);
+                    }
+                } catch (error) {
+                    console.error('Error generating preview:', error);
                 }
-            } catch (error) {
+            } else {
                 setIsLoading(false)
-                alert('Error sending email, make sure your email is verified on sendgrid (contact Zak)', error);
             }
         } else {
-            setIsLoading(false)
+            if (confirm(`Are you sure you want to send ${newSubject} to all ${userType} users?`)) {
+                try {
+                    const response = await fetch(`/api/sendgrid-email?user_type=${userType}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            subject: newSubject,
+                            html: newEmail
+                         }),
+                    });
+                    const result = await response.json()
+                    setIsLoading(false)
+                    if (response.ok) {
+                        alert('Message sent successfully!');
+                        console.log(result)
+                    } else {
+                        alert('Error sending message:', result.error);
+                    }
+                } catch (error) {
+                    console.error('Error generating preview:', error);
+                }
+            } else {
+                setIsLoading(false)
+            }
         }
     };
 
@@ -190,62 +186,59 @@ const AdminEmail = () => {
         }
     };
 
-    const togglePasswordVisibility = (field) => {
-        setShowPassword(true);
-        setTimeout(() => {
-            setShowPassword(false);
-        }, 8000);
-    };
-
-    const handleBodyType = (event) => {
-        setBodyType(event)
-        if (event === 'plain') {
-            setNewEmail('')
-        } else {
-            setNewEmail(mjmlEmail)
-        }
-    }
-
 
     return (
         <>
             <div>
-                <h1 className='margin-b-16'>Your Email</h1>
-                <h3 className='margin-b-8'>Send from {adminUserData?.email}</h3>
+                <h1 className='margin-b-16'>Bulk Email</h1>
+                <h3 className='margin-b-8'>Send from no-reply@gingham.nyc</h3>
                 <h3 className='margin-r-8 margin-b-16'>How-to guide: <a className='link-underline' href="https://documentation.mjml.io/#standard-body-components" target="_blank">mjml.io</a></h3>
                 <div className='form-group'>
-                    <label>Plain or HTML:</label>
+                    <label title="true or false">Single Email:</label>
                     <select
-                        name="body_type"
-                        value={bodyType}
-                        onChange={(e) => handleBodyType(e.target.value)}
+                        name="isSingleEmail"
+                        value={isSingleEmail}
+                        onChange={(e) => setIsSingleEmail(e.target.value)}
                     >
-                        <option value={'plain'}>Plain</option>
-                        <option value={'html'}>HTML/MJML</option>
+                        <option value={true}>Yes</option>
+                        <option value={false}>No</option>
                     </select>
                 </div>
-                <div className='form-group'>
-                    <label>Sending Email:</label>
-                    <p className='margin-l-8'>{adminUserData?.email}</p>
-                </div>
-                <div className='form-group'>
-                    <label>Receiving Email:</label>
-                    <input
-                        type="text"
-                        name="singleEmail"
-                        placeholder='hello@gingham.nyc'
-                        value={singleEmail || ''}
-                        onChange={(e) => setSingleEmail(e.target.value)}
-                        required
-                    />
-                </div>
+                {isSingleEmail === 'true' ? (
+                    <>
+                        <div className='form-group'>
+                            <label>Email Address:</label>
+                            <input
+                                type="text"
+                                name="singleEmail"
+                                placeholder='hello@gingham.nyc'
+                                value={singleEmail || ''}
+                                onChange={(e) => setSingleEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+                    </>
+                ) : (
+                    <div className='form-group'>
+                        <label>Email All:</label>
+                        <select className='select-state'
+                            name="userType"
+                            value={userType}
+                            onChange={(e) => setUserType(e.target.value)}
+                        >
+                            <option value={'user'}>Users</option>
+                            <option value={'vendor'}>Vendor Users</option>
+                            <option value={'admin'}>Admins</option>
+                        </select>
+                    </div>
+                )}
                 <div className='form-group'>
                     <label>Subject:</label>
                     <input
                         id="subject-input"
                         value={newSubject}
                         onChange={(e) => setNewSubject(e.target.value)}
-                        placeholder="Witty Subject"
+                        placeholder="Witty Newsletter Title"
                     />
                 </div>
                 <div className='form-group'>
@@ -282,4 +275,4 @@ const AdminEmail = () => {
     );
 };
 
-export default AdminEmail;
+export default AdminEmailBulk;

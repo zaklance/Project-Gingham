@@ -49,15 +49,13 @@ function AdminProfile () {
                     // Redirect to login page or unauthorized page
                     return;
                 }
-    
-                const response = await fetch(`http://127.0.0.1:5555/api/admin-users/${id}`, {
+                const response = await fetch(`/api/admin-users/${id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });
-    
                 if (response.ok) {
                     const data = await response.json();
                     setAdminUserData(data);
@@ -71,7 +69,6 @@ function AdminProfile () {
                 console.error('Error fetching profile data:', error);
             }
         };
-    
         fetchAdminUserData();
     }, [id]);
 
@@ -79,7 +76,7 @@ function AdminProfile () {
             const fetchUserSettings = async () => {
                 const token = localStorage.getItem('admin_jwt-token');
                 try {
-                    const response = await fetch(`http://127.0.0.1:5555/api/settings-admins?admin_id=${id}`, {
+                    const response = await fetch(`/api/settings-admins?admin_id=${id}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -130,7 +127,7 @@ function AdminProfile () {
 
     const handleSaveChanges = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/admin-users/${id}`, {
+            const response = await fetch(`/api/admin-users/${id}`, {
                 method: 'PATCH', 
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -158,7 +155,7 @@ function AdminProfile () {
     const handleSaveSettings = async () => {
         const token = localStorage.getItem('admin_jwt-token');
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/settings-admins/${id}`, {
+            const response = await fetch(`/api/settings-admins/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -187,7 +184,7 @@ function AdminProfile () {
             return;
         }
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
+            const response = await fetch(`/api/users/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -223,7 +220,7 @@ function AdminProfile () {
             return;
         }
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/users/${id}/password`, {
+            const response = await fetch(`/api/users/${id}/password`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -295,7 +292,7 @@ function AdminProfile () {
     }, []);
     
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/blogs?for_admin=true")
+        fetch("/api/blogs?for_admin=true")
             .then(response => response.json())
             .then(data => {
                 const now = new Date();

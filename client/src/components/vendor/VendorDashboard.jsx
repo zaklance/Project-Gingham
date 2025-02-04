@@ -29,7 +29,7 @@ function VendorDashboard({ marketId }) {
             }
             try {
                 const token = localStorage.getItem('vendor_jwt-token');
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
+                const response = await fetch(`/api/vendor-users/${vendorUserId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -74,7 +74,7 @@ function VendorDashboard({ marketId }) {
             }
 
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-notifications?vendor_id=${vendorId}&subject=team-request`, {
+                const response = await fetch(`/api/vendor-notifications?vendor_id=${vendorId}&subject=team-request`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,

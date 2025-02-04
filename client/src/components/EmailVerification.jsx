@@ -29,7 +29,7 @@ const UserEmailVerification = () => {
 	
 		try {
 			const response = await fetch(
-				`http://127.0.0.1:5555/api/user/confirm-email/${confirmationToken}`,
+				`/api/user/confirm-email/${confirmationToken}`,
 				{
 					method: "POST",
 					headers: {
@@ -68,7 +68,7 @@ const UserEmailVerification = () => {
 	
 		try {
 			const token = localStorage.getItem("user_jwt-token"); // Ensure authentication
-			const response = await fetch(`http://127.0.0.1:5555/api/users/${userId}`, {
+			const response = await fetch(`/api/users/${userId}`, {
 				method: "PATCH",
 				headers: {
 					"Authorization": `Bearer ${token}`,

@@ -21,7 +21,7 @@ function AdminVendorEdit({ vendors }) {
 
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/products")
+        fetch("/api/products")
             .then(response => response.json())
             .then(data => {
                 const sortedProducts = data.sort((a, b) => {
@@ -45,7 +45,7 @@ function AdminVendorEdit({ vendors }) {
             try {
                 const token = localStorage.getItem('admin_jwt-token');
                 // console.log('JWT Token:', token);
-                const response = await fetch(`http://127.0.0.1:5555/api/vendors/${matchingVendorId}`, {
+                const response = await fetch(`/api/vendors/${matchingVendorId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -79,7 +79,7 @@ function AdminVendorEdit({ vendors }) {
         formData.append('vendor_id', vendorId);
     
         try {
-            const response = await fetch('http://127.0.0.1:5555/api/upload', {
+            const response = await fetch('/api/upload', {
                 method: 'POST',
                 body: formData,
             });
@@ -108,7 +108,7 @@ function AdminVendorEdit({ vendors }) {
         }
     
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/delete-image`, {
+            const response = await fetch(`/api/delete-image`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -165,7 +165,7 @@ function AdminVendorEdit({ vendors }) {
     const handleSaveChanges = async () => {
         if (confirm(`Are you sure you want to edit ${vendorData.name}'s account?`)) {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/vendors/${matchingVendorId}`, {
+                const response = await fetch(`/api/vendors/${matchingVendorId}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',

@@ -16,7 +16,7 @@ function Contact() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await fetch('http://127.0.0.1:5555/api/contact', {
+            const response = await fetch('/api/contact', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -17,7 +17,7 @@ function AdminReport() {
         }, []);
         
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/market-reviews?is_reported=True`)
+        fetch(`/api/market-reviews?is_reported=True`)
             .then(response => response.json())
             .then(data => {
                 setMarketReported(data)
@@ -28,7 +28,7 @@ function AdminReport() {
     const handleMarketReviewDelete = async (reviewId, userId) => {
         try {
 
-            fetch(`http://127.0.0.1:5555/api/market-reviews/${reviewId}`, {
+            fetch(`/api/market-reviews/${reviewId}`, {
                 method: "DELETE",
             }).then(() => {
                 setMarketReported((prevReviews) => prevReviews.filter((review) => review.id !== reviewId))
@@ -36,7 +36,7 @@ function AdminReport() {
         } catch (error) {
             console.error("Error deleting review", error)
         }
-        fetch(`http://127.0.0.1:5555/api/reported-reviews`, {
+        fetch(`/api/reported-reviews`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -49,7 +49,7 @@ function AdminReport() {
 
     const handleMarketReviewUnReport = async (reviewId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/market-reviews/${reviewId}`, {
+            const response = await fetch(`/api/market-reviews/${reviewId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ is_reported: false })
@@ -65,7 +65,7 @@ function AdminReport() {
     };
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/vendor-reviews?is_reported=True")
+        fetch("/api/vendor-reviews?is_reported=True")
             .then(response => response.json())
             .then(data => {
                 setVendorReported(data)
@@ -77,7 +77,7 @@ function AdminReport() {
         console.log(userId)
         try {
 
-            fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
+            fetch(`/api/vendor-reviews/${reviewId}`, {
                 method: "DELETE",
             }).then(() => {
                 setVendorReported((prevReviews) => prevReviews.filter((review) => review.id !== reviewId))
@@ -85,7 +85,7 @@ function AdminReport() {
         } catch (error) {
             console.error("Error deleting review", error)
         }
-        fetch(`http://127.0.0.1:5555/api/reported-reviews`, {
+        fetch(`/api/reported-reviews`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -98,7 +98,7 @@ function AdminReport() {
 
     const handleVendorReviewUnReport = async (reviewId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/vendor-reviews/${reviewId}`, {
+            const response = await fetch(`/api/vendor-reviews/${reviewId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ is_reported: false })

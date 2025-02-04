@@ -16,7 +16,7 @@ function ProfileFavorites() {
     const token = localStorage.getItem('user_jwt-token');
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/vendor-favorites?user_id=${userId}`, {
+        fetch(`/api/vendor-favorites?user_id=${userId}`, {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -31,7 +31,7 @@ function ProfileFavorites() {
     }, []);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/market-favorites?user_id=${userId}`, {
+        fetch(`/api/market-favorites?user_id=${userId}`, {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -46,7 +46,7 @@ function ProfileFavorites() {
         }, []);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/blog-favorites?user_id=${userId}`, {
+        fetch(`/api/blog-favorites?user_id=${userId}`, {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -88,7 +88,7 @@ function ProfileFavorites() {
             [marketId]: !prevState[marketId]
         }));
         if (isClickedMarket[marketId] == false) {
-            const response = await fetch('http://127.0.0.1:5555/api/market-favorites', {
+            const response = await fetch('/api/market-favorites', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -110,7 +110,7 @@ function ProfileFavorites() {
         } else {
             const findFavId = marketFavs.filter(item => item.market_id == marketId)
             for (const item of findFavId) {
-                fetch(`http://127.0.0.1:5555/api/market-favorites/${item.id}`, {
+                fetch(`/api/market-favorites/${item.id}`, {
                     method: "DELETE",
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -131,7 +131,7 @@ function ProfileFavorites() {
             [vendorId]: !prevState[vendorId]
         }));
         if (isClickedVendor[vendorId] == false) {
-            const response = await fetch('http://127.0.0.1:5555/api/vendor-favorites', {
+            const response = await fetch('/api/vendor-favorites', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -153,7 +153,7 @@ function ProfileFavorites() {
         } else {
             const findFavId = vendorFavs.filter(item => item.vendor_id == vendorId)
             for (const item of findFavId) {
-                fetch(`http://127.0.0.1:5555/api/vendor-favorites/${item.id}`, {
+                fetch(`/api/vendor-favorites/${item.id}`, {
                     method: "DELETE",
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -174,7 +174,7 @@ function ProfileFavorites() {
             [blogId]: !prevState[blogId]
         }));
         if (isClickedBlog[blogId] == false) {
-            const response = await fetch('http://127.0.0.1:5555/api/blog-favorites', {
+            const response = await fetch('/api/blog-favorites', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -196,7 +196,7 @@ function ProfileFavorites() {
         } else {
             const findBlogFavId = blogFavs.filter(item => item.blog_id == blogId)
             for (const item of findBlogFavId) {
-                fetch(`http://127.0.0.1:5555/api/blog-favorites/${item.id}`, {
+                fetch(`/api/blog-favorites/${item.id}`, {
                     method: "DELETE",
                     headers: {
                         'Authorization': `Bearer ${token}`,

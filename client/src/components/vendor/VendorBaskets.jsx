@@ -19,7 +19,7 @@ function VendorBaskets({ vendorUserData }) {
             }
             try {
                 const token = localStorage.getItem('vendor_jwt-token');
-                const response = await fetch(`http://127.0.0.1:5555/api/vendor-users/${vendorUserId}`, {
+                const response = await fetch(`/api/vendor-users/${vendorUserId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -43,7 +43,7 @@ function VendorBaskets({ vendorUserData }) {
 
     useEffect(() => {
         if (vendorId) {
-            fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${vendorId}`)
+            fetch(`/api/vendor-markets?vendor_id=${vendorId}`)
                 .then((response) => response.json())
                 .then((data) => setAllVendorMarkets(data))
                 .catch((error) => console.error('Error fetching vendor markets:', error));
@@ -53,7 +53,7 @@ function VendorBaskets({ vendorUserData }) {
     useEffect(() => {
         if (allVendorMarkets.length > 0) {
             const token = localStorage.getItem('vendor_jwt-token');
-            fetch('http://127.0.0.1:5555/api/market-days', {
+            fetch('/api/market-days', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -99,7 +99,7 @@ function VendorBaskets({ vendorUserData }) {
                 };
             });
         
-            const savedBasketsResponse = await fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}`);
+            const savedBasketsResponse = await fetch(`/api/baskets?vendor_id=${vendorId}`);
             const savedBaskets = savedBasketsResponse.ok ? await savedBasketsResponse.json() : [];
         
             const todaysMarketDays = marketDaysWithDates.filter((day) => {

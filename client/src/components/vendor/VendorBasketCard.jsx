@@ -32,7 +32,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                     async function fetchSavedBaskets() {
                         try {
                             const response = await fetch(
-                                `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDayId}&sale_date=${formattedMarketDate}`
+                                `/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDayId}&sale_date=${formattedMarketDate}`
                             );
     
                             if (response.ok) {
@@ -153,7 +153,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
         async function fetchMarketName(marketId) {
             if (marketId) {
                 try {
-                    const response = await fetch(`http://127.0.0.1:5555/api/markets/${marketId}`);
+                    const response = await fetch(`/api/markets/${marketId}`);
                     if (response.ok) {
                         const data = await response.json();
                         setMarketName(data.name);
@@ -250,7 +250,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
     
             if (additionalBaskets > 0) {
                 for (let i = 0; i < additionalBaskets; i++) {
-                    promises.push(fetch('http://127.0.0.1:5555/api/baskets', {
+                    promises.push(fetch('/api/baskets', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -283,7 +283,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
                 const basketIdsToDelete = availableBasketsToDelete.map(basket => basket.id);
     
                 try {
-                    const response = await fetch('http://127.0.0.1:5555/api/baskets', {
+                    const response = await fetch('/api/baskets', {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
@@ -314,7 +314,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
             await Promise.all(promises);
 
             try {
-                const fetchResponse = await fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.id}&sale_date=${formattedSaleDate}`);
+                const fetchResponse = await fetch(`/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.id}&sale_date=${formattedSaleDate}`);
                 const updatedBaskets = await fetchResponse.json();
                 setSavedBaskets(updatedBaskets);
             } catch (error) {
@@ -375,7 +375,7 @@ function VendorBasketCard({ vendorId, marketDay }) {
             const formattedSaleDate = new Date(marketDay.date).toISOString().split('T')[0];
                 try {
                     const response = await fetch(
-                    `http://127.0.0.1:5555/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.id}&sale_date=${formattedSaleDate}`,
+                    `/api/baskets?vendor_id=${vendorId}&market_day_id=${marketDay.id}&sale_date=${formattedSaleDate}`,
                         {
                             method: 'DELETE',
                             headers: { 'Content-Type': 'application/json' },

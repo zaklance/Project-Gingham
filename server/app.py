@@ -2909,6 +2909,65 @@ def send_sendgrid_email():
         print(e.message)
         return jsonify({"error": str(e)}), 500
     
+@app.route('/api/sendgrid-email-client', methods=['POST'])
+@jwt_required()
+def send_sendgrid_email_client():
+    data = request.json
+    subject = data.get('subject', '')
+    body_type = data.get('body_type', '')
+    body = data.get('body', '')
+    from_email = data.get('from_email', '')
+    to_email = data.get('to_email', '')
+    
+    if body_type == 'plain':
+        compiled_html = body
+
+    if body_type == 'html':
+        try:
+            # Run MJML CLI to compile MJML to HTML
+            result = subprocess.run(
+                ['mjml', '--stdin'],
+                input=body.encode(),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+
+            if result.returncode != 0:
+                return jsonify({'error': result.stderr.decode()}), 400
+        
+        except Exception as e: 
+            print("Error occured:", str(e))
+            return jsonify({"error": str(e)}), 500
+
+        compiled_html = result.stdout.decode()
+    
+    if body_type == 'plain':
+        message = Mail(
+            from_email=from_email,
+            to_emails=to_email,
+            subject=subject,
+            plain_text_content=compiled_html,
+            )
+    if body_type == 'html':
+        message = Mail(
+            from_email=from_email,
+            to_emails=to_email,
+            subject=subject,
+            html_content=compiled_html,
+            )
+
+    try:
+        sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+        print(os.environ.get('SENDGRID_API_KEY'))
+        response = sg.send(message)
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
+        return jsonify({"message": "Email sent successfully", "status_code": response.status_code}), 202
+    except Exception as e:
+        print(e.message)
+        return jsonify({"error": str(e)}), 500
+    
 # Stripe
 stripe.api_key = os.getenv('STRIPE_PY_KEY')
 
@@ -3658,4 +3717,5 @@ def blog(id):
             return {'error': f'Failed to delete Blog: {str(e)}'}, 500
 
 if __name__ == '__main__':
+    # app.run(host="0.0.0.0", port=5555, debug=True)
     app.run(port=5555, debug=True)

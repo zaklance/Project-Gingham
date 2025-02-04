@@ -28,7 +28,7 @@ function ReviewMarket({ market }) {
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/market-reviews?market_id=${id}`)
+        fetch(`/api/market-reviews?market_id=${id}`)
             .then(response => response.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -65,7 +65,7 @@ function ReviewMarket({ market }) {
         }
 
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/market-reviews`, {
+            const response = await fetch(`/api/market-reviews`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -93,7 +93,7 @@ function ReviewMarket({ market }) {
 
     const handleReviewUpdate = async (reviewId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/market-reviews/${reviewId}`, {
+            const response = await fetch(`/api/market-reviews/${reviewId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ review_text: editedReviewData })
@@ -113,7 +113,7 @@ function ReviewMarket({ market }) {
 
     const handleReviewDelete = async (reviewId) => {
         try {
-            fetch(`http://127.0.0.1:5555/api/market-reviews/${reviewId}`, {
+            fetch(`/api/market-reviews/${reviewId}`, {
                 method: "DELETE",
             }).then(() => {
                 setReviews((prevReviews) => prevReviews.filter((review) => review.id !== reviewId))
@@ -127,7 +127,7 @@ function ReviewMarket({ market }) {
         if (globalThis.localStorage.getItem('user_id') !== null) {
             if (confirm(`Are you sure you want to report the review?`)) {
                 try {
-                    const response = await fetch(`http://127.0.0.1:5555/api/market-reviews/${reviewId}`, {
+                    const response = await fetch(`/api/market-reviews/${reviewId}`, {
                         method: 'PATCH',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ is_reported: true })
@@ -154,7 +154,7 @@ function ReviewMarket({ market }) {
 
     // Ratings
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/market-review-ratings`)
+        fetch(`/api/market-review-ratings`)
             .then(response => response.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -212,7 +212,7 @@ function ReviewMarket({ market }) {
                 );
                 if (!currentClickedState) {
                     if (!existingVote) {
-                        const response = await fetch('http://127.0.0.1:5555/api/market-review-ratings', {
+                        const response = await fetch('/api/market-review-ratings', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -231,7 +231,7 @@ function ReviewMarket({ market }) {
                         });
                     } else {
                         const response = await fetch(
-                            `http://127.0.0.1:5555/api/market-review-ratings/${existingVote.id}`,
+                            `/api/market-review-ratings/${existingVote.id}`,
                             {
                                 method: 'PATCH',
                                 headers: { 'Content-Type': 'application/json' },
@@ -253,7 +253,7 @@ function ReviewMarket({ market }) {
                 } else {
                     const matchingVotes = upVoteRatings.filter((vote) => vote.review_id === reviewId);
                     for (const vote of matchingVotes) {
-                        fetch(`http://127.0.0.1:5555/api/market-review-ratings/${existingVote.id}`, {
+                        fetch(`/api/market-review-ratings/${existingVote.id}`, {
                             method: "DELETE",
                         }).then(() => {
                             setUpVoteRatings((prev) => prev.filter((vote) => vote.review_id !== reviewId));
@@ -283,7 +283,7 @@ function ReviewMarket({ market }) {
                 );
                 if (!currentClickedState) {
                     if (!existingVote) {
-                        const response = await fetch('http://127.0.0.1:5555/api/market-review-ratings', {
+                        const response = await fetch('/api/market-review-ratings', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -302,7 +302,7 @@ function ReviewMarket({ market }) {
                         });
                     } else {
                         const response = await fetch(
-                            `http://127.0.0.1:5555/api/market-review-ratings/${existingVote.id}`,
+                            `/api/market-review-ratings/${existingVote.id}`,
                             {
                                 method: 'PATCH',
                                 headers: { 'Content-Type': 'application/json' },
@@ -321,7 +321,7 @@ function ReviewMarket({ market }) {
                 } else {
                     const matchingVotes = downVoteRatings.filter((vote) => vote.review_id === reviewId);
                     for (const vote of matchingVotes) {
-                        fetch(`http://127.0.0.1:5555/api/market-review-ratings/${existingVote.id}`, {
+                        fetch(`/api/market-review-ratings/${existingVote.id}`, {
                             method: "DELETE",
                         }).then(() => {
                             setDownVoteRatings((prev) => prev.filter((vote) => vote.review_id !== reviewId));
@@ -339,7 +339,7 @@ function ReviewMarket({ market }) {
 
     useEffect(() => {
         if (!userId) return;
-        fetch(`http://127.0.0.1:5555/api/reported-reviews?user_id=${userId}`)
+        fetch(`/api/reported-reviews?user_id=${userId}`)
             .then(response => response.json())
             .then(data => {
                 setReports(data);
@@ -350,7 +350,7 @@ function ReviewMarket({ market }) {
     useEffect(() => {
         const fetchTopReviews = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:5555/api/top-market-reviews');
+                const response = await fetch('/api/top-market-reviews');
                 if (!response.ok) {
                     throw new Error('Failed to fetch reviews');
                 }

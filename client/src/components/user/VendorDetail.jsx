@@ -42,7 +42,7 @@ function VendorDetail() {
     }, []);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/vendors/${id}`)
+        fetch(`/api/vendors/${id}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -57,7 +57,7 @@ function VendorDetail() {
 
     useEffect(() => {
         if (vendor) {
-            fetch(`http://127.0.0.1:5555/api/products`)
+            fetch(`/api/products`)
                 .then(response => response.json())
                 .then(data => setProducts(data))
         }
@@ -73,7 +73,7 @@ function VendorDetail() {
         }, [vendor, products]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/vendor-markets?vendor_id=${id}&is_visible=true`)
+        fetch(`/api/vendor-markets?vendor_id=${id}&is_visible=true`)
             .then(response => response.json())
             .then(markets => {
                 if (Array.isArray(markets)) {
@@ -90,7 +90,7 @@ function VendorDetail() {
     
             const details = await Promise.all(markets.map(async (market) => {
                 try {
-                    const response = await fetch(`http://127.0.0.1:5555/api/market-days/${market.market_day_id}`);
+                    const response = await fetch(`/api/market-days/${market.market_day_id}`);
                     if (!response.ok) throw new Error(`Failed to fetch market ${market.market_day_id}`);
                     return await response.json();
                 } catch (error) {
@@ -160,7 +160,7 @@ function VendorDetail() {
         if (!userId) {
             return
         }
-        fetch(`http://127.0.0.1:5555/api/vendor-favorites?user_id=${userId}`, {
+        fetch(`/api/vendor-favorites?user_id=${userId}`, {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -182,7 +182,7 @@ function VendorDetail() {
         if (globalThis.localStorage.getItem('user_id') !== null) {
             setIsClicked((isClick) => !isClick);
             if (isClicked == false) {
-                const response = await fetch('http://127.0.0.1:5555/api/vendor-favorites', {
+                const response = await fetch('/api/vendor-favorites', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -204,7 +204,7 @@ function VendorDetail() {
             } else {
                 const findVendorFavId = vendorFavs.filter(item => item.vendor_id == vendor.id)
                 for (const item of findVendorFavId) {
-                    fetch(`http://127.0.0.1:5555/api/vendor-favorites/${item.id}`, {
+                    fetch(`/api/vendor-favorites/${item.id}`, {
                         method: "DELETE",
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -223,7 +223,7 @@ function VendorDetail() {
     };
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:5555/api/events?vendor_id=${Number(id)}`)
+        fetch(`/api/events?vendor_id=${Number(id)}`)
             .then(response => response.json())
             .then(data => {
                 const today = new Date();
@@ -242,7 +242,7 @@ function VendorDetail() {
 
     useEffect(() => {
         if (!vendor?.id) return;    
-        fetch(`http://127.0.0.1:5555/api/baskets?vendor_id=${vendor.id}`)
+        fetch(`/api/baskets?vendor_id=${vendor.id}`)
             .then((response) => response.json())
             .then((data) => {
                 const today = new Date();
@@ -279,7 +279,7 @@ function VendorDetail() {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:5555/api/notify-me-for-more-baskets', {
+            const response = await fetch('/api/notify-me-for-more-baskets', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,

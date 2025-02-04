@@ -22,7 +22,7 @@ function AdminStats() {
     const token = localStorage.getItem('admin_jwt-token');
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/api/users/count', {
+        fetch('/api/users/count', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -36,7 +36,7 @@ function AdminStats() {
     }, []);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/api/vendor-users/count', {
+        fetch('/api/vendor-users/count', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -50,7 +50,7 @@ function AdminStats() {
     }, []);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/api/admin-users/count', {
+        fetch('/api/admin-users/count', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -64,7 +64,7 @@ function AdminStats() {
     }, []);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/api/users/count?status=banned', {
+        fetch('/api/users/count?status=banned', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -78,7 +78,7 @@ function AdminStats() {
     }, []);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/api/users/top-10-cities', {
+        fetch('/api/users/top-10-cities', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -92,7 +92,7 @@ function AdminStats() {
     }, []);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/api/markets/count', {
+        fetch('/api/markets/count', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -106,7 +106,7 @@ function AdminStats() {
     }, []);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/api/market-days/count', {
+        fetch('/api/market-days/count', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -120,7 +120,7 @@ function AdminStats() {
     }, []);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/api/vendors/count', {
+        fetch('/api/vendors/count', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -134,7 +134,7 @@ function AdminStats() {
     }, []);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/api/baskets/count', {
+        fetch('/api/baskets/count', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -148,7 +148,7 @@ function AdminStats() {
     }, []);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/api/baskets/top-10-markets', {
+        fetch('/api/baskets/top-10-markets', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -162,7 +162,7 @@ function AdminStats() {
     }, []);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/api/baskets/top-10-users', {
+        fetch('/api/baskets/top-10-users', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -218,7 +218,7 @@ function AdminStats() {
     }
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5555/api/baskets')
+        fetch('/api/baskets')
             .then(response => response.json())
             .then(data => {
                 setBaskets(data)

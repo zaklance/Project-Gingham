@@ -25,7 +25,7 @@ function Login({ handlePopup }) {
         event.preventDefault();
     
         try {
-            const response = await fetch('http://127.0.0.1:5555/api/admin/login', {
+            const response = await fetch('/api/admin/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -81,7 +81,7 @@ function Login({ handlePopup }) {
             return;
         }
 
-        const response = await fetch('http://127.0.0.1:5555/api/admin-signup', {
+        const response = await fetch('/api/admin-signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

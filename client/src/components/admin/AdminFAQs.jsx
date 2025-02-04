@@ -5,7 +5,7 @@ function AdminFAQs() {
     const [fAQs, setFAQs] = useState([]);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5555/api/faqs?for_admin=True")
+        fetch("/api/faqs?for_admin=True")
             .then(response => response.json())
             .then(data => {
                 setFAQs(data);

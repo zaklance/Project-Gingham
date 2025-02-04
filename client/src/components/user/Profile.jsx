@@ -65,7 +65,7 @@ function Profile({ marketData }) {
                     }
                 }
                 
-                const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
+                const response = await fetch(`/api/users/${id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -100,7 +100,7 @@ function Profile({ marketData }) {
     useEffect(() => {
         const fetchUserSettings = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:5555/api/settings-users?user_id=${id}`, {
+                const response = await fetch(`/api/settings-users?user_id=${id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -169,7 +169,7 @@ function Profile({ marketData }) {
                         if (data.addresses && data.addresses.length > 0) {
                             const { latitude, longitude } = data.addresses[0];
 
-                            const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
+                            const response = await fetch(`/api/users/${id}`, {
                                 method: 'PATCH',
                                 headers: {
                                     'Authorization': `Bearer ${token}`,
@@ -202,7 +202,7 @@ function Profile({ marketData }) {
                         }
                     }
                 } else {
-                    const response = await fetch(`http://127.0.0.1:5555/api/users/${id}`, {
+                    const response = await fetch(`/api/users/${id}`, {
                         method: 'PATCH',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -256,7 +256,7 @@ function Profile({ marketData }) {
                 }
 
                 try {
-                    const result = await fetch('http://127.0.0.1:5555/api/upload', {
+                    const result = await fetch('/api/upload', {
                         method: 'POST',
                         body: formData,
                     });
@@ -292,7 +292,7 @@ function Profile({ marketData }) {
 
     const handleSaveSettings = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/settings-users/${id}`, {
+            const response = await fetch(`/api/settings-users/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -324,7 +324,7 @@ function Profile({ marketData }) {
         setIsSendingEmail(true);
     
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/change-email`, {
+            const response = await fetch(`/api/change-email`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -363,7 +363,7 @@ function Profile({ marketData }) {
             return;
         }
         try {
-            const response = await fetch(`http://127.0.0.1:5555/api/users/${id}/password`, {
+            const response = await fetch(`/api/users/${id}/password`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -413,7 +413,7 @@ function Profile({ marketData }) {
             console.log('Deleting image with filename:', profileData.avatar);
             console.log('User ID:', userId);
     
-            const response = await fetch(`http://127.0.0.1:5555/api/delete-image`, {
+            const response = await fetch(`/api/delete-image`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -462,7 +462,7 @@ function Profile({ marketData }) {
             return;
         }
 
-        fetch('http://127.0.0.1:5555/api/baskets/user-sales-history', {
+        fetch('/api/baskets/user-sales-history', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,

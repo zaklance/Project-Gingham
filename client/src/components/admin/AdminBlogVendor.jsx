@@ -61,7 +61,7 @@ const AdminBlogVendor = ({ blogs, activeTabMode }) => {
         if (confirm(`Are you sure you want to post the blog "${newTitle}" to the site?`)) {
             try {
                 const postedAt = newDate;
-                const response = await fetch('http://127.0.0.1:5555/api/blogs', {
+                const response = await fetch('/api/blogs', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -129,7 +129,7 @@ const AdminBlogVendor = ({ blogs, activeTabMode }) => {
                 post_date: tempBlogData.post_date ? tempBlogData.post_date.split(" ")[0] : "",
             };
             
-            const response = await fetch(`http://127.0.0.1:5555/api/blogs/${blogId}`, {
+            const response = await fetch(`/api/blogs/${blogId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -156,7 +156,7 @@ const AdminBlogVendor = ({ blogs, activeTabMode }) => {
         if (confirm(`Are you sure you want to delete this Blog?`)) {
             try {
 
-                fetch(`http://127.0.0.1:5555/api/blogs/${id}`, {
+                fetch(`/api/blogs/${id}`, {
                     method: "DELETE",
                 }).then(() => {
                     setBlogsFor((prev) => prev.filter((item) => item.id !== id))
