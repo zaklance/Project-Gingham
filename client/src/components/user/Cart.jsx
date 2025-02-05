@@ -82,55 +82,7 @@ function Cart() {
     
             const { clientSecret } = await paymentResponse.json();
             console.log('Received clientSecret:', clientSecret);
-    
-            // Mark items as sold
-            console.log('Marking items as sold...');
-            await Promise.all(cartItems.map(async (cartItem) => {
-                const response = await fetch(`/api/baskets/${cartItem.id}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        is_sold: true,
-                        user_id: userId,
-                    }),
-                });
-    
-                if (!response.ok) {
-                    throw new Error(`Failed to update cartItem with id: ${cartItem.id}`);
-                }
-            }));
-    
-            // Generate QR codes
-            if (cartItems.length > 0) {
-                console.log('Generating QR codes...');
-                const qrPromises = cartItems.map(async (cartItem) => {
-                    const hash = objectHash(`${cartItem.vendor_name} ${cartItem.location} ${cartItem.id} ${userId}`);
-                    const response = await fetch('/api/qr-codes', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            qr_code: hash,
-                            user_id: userId,
-                            basket_id: cartItem.id,
-                            vendor_id: cartItem.vendor_id,
-                        }),
-                    });
-    
-                    if (!response.ok) {
-                        throw new Error(`Failed to create QR code for basket ID ${cartItem.id}: ${response.statusText}`);
-                    }
-                    return response.json();
-                });
-    
-                const results = await Promise.all(qrPromises);
-                console.log('All QR codes created successfully:', results);
-            }
-    
+      
             console.log('Navigating to payment page...');
             navigate('/user/payment', {
                 state: {

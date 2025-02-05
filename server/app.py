@@ -1088,10 +1088,10 @@ def top_10_cities():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/vendor-users', methods=['GET', 'PATCH'])
+@app.route('/api/vendor-users', methods=['GET', 'POST', 'PATCH'])
 @jwt_required()
 def get_vendor_users():
-    if request.method =='GET':
+    if request.method == 'GET':
         try:
             vendor_id = request.args.get('vendor_id', type=int)
             email = request.args.get('email', type=str)
@@ -1105,68 +1105,80 @@ def get_vendor_users():
                 ]
             elif email is not None:
                 vendor_users = VendorUser.query.filter_by(email=email).all()
+                if not vendor_users:
+                    return jsonify([]), 200  # Return empty list instead of 404
             else:
                 vendor_users = query.all()
 
-            if not vendor_users:
-                return jsonify({'message': 'No team members found for this vendor'}), 404
-
-            return jsonify([{
-                'id': vendor_user.id,
-                'first_name': vendor_user.first_name,
-                'last_name': vendor_user.last_name,
-                'email': vendor_user.email,
-                'phone': vendor_user.phone,
-                'vendor_id': vendor_user.vendor_id,
-                'vendor_role': vendor_user.vendor_role,
-                'active_vendor': vendor_user.active_vendor
-            } for vendor_user in vendor_users]), 200
+            return jsonify([user.to_dict() for user in vendor_users]), 200
 
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-    
+
+    elif request.method == 'POST':
+        try:
+            data = request.get_json()
+            email = data.get('email')
+            vendor_id = data.get('vendor_id')
+            role = data.get('role')
+            password = data.get('password', 'temporary_password')
+
+            if not email or not vendor_id:
+                return jsonify({'error': 'Email and vendor_id are required'}), 400
+            
+            vendor_id_dict = {str(vendor_id): vendor_id}
+            vendor_role_dict = {str(vendor_id): role}
+            
+            new_user = VendorUser(
+                email=email,
+                vendor_id=vendor_id_dict,
+                vendor_role=vendor_role_dict,
+                active_vendor=vendor_id,
+                password=password, 
+                first_name="Pending",
+                last_name="Pending",
+                phone="0000000000"
+            )
+            db.session.add(new_user)
+            db.session.commit()
+
+            return jsonify(new_user.to_dict()), 201 
+
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'error': str(e)}), 500
+
     elif request.method == 'PATCH':
         try:
             delete_vendor_id = request.args.get('delete_vendor_id', type=int)
             if delete_vendor_id:
-                if not delete_vendor_id:
-                    return jsonify({'message': 'delete_vendor_id parameter is required'}), 400
-                
                 vendor_users = VendorUser.query.all()
+                vendor_id_str = str(delete_vendor_id)
 
                 for vendor_user in vendor_users:
-                    vendor_id_str = str(delete_vendor_id)
-                    
                     if isinstance(vendor_user.vendor_role, dict) and vendor_id_str in vendor_user.vendor_role:
-                        vendor_user.vendor_role.pop(vendor_id_str)
+                        vendor_user.vendor_role.pop(vendor_id_str, None)
                     if isinstance(vendor_user.vendor_id, dict) and vendor_id_str in vendor_user.vendor_id:
-                        vendor_user.vendor_id.pop(vendor_id_str)
+                        vendor_user.vendor_id.pop(vendor_id_str, None)
 
                         remaining_keys = list(vendor_user.vendor_id.keys())
-                        if remaining_keys:
-                            vendor_user.active_vendor = int(remaining_keys[0])
-                        else:
-                            vendor_user.active_vendor = None
-                    
+                        vendor_user.active_vendor = int(remaining_keys[0]) if remaining_keys else None
+
                     db.session.commit()
 
                 return jsonify({'message': 'Vendor updated successfully'}), 200
-        
+
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-    
+
 @app.route('/api/vendor-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 @jwt_required()
 def get_vendor_user(id):
-    if not check_role('vendor') and not check_role('admin'):
-        return {'error': "Access forbidden: Vendor only"}, 403
-    
     if request.method == 'GET':
         vendor_user = VendorUser.query.get(id)
         if not vendor_user:
             return jsonify({'error': 'User not found'}), 404
-        profile_data = vendor_user.to_dict()
-        return jsonify(profile_data), 200
+        return jsonify(vendor_user.to_dict()), 200
 
     elif request.method == 'PATCH':
         vendor_user = VendorUser.query.get(id)
@@ -1183,13 +1195,9 @@ def get_vendor_user(id):
                     vendor_user.vendor_role.pop(delete_vendor_id_str, None)
                 if isinstance(vendor_user.vendor_id, dict):
                     vendor_user.vendor_id.pop(delete_vendor_id_str, None)
-                
+
                 remaining_keys = list(vendor_user.vendor_id.keys())
-                if remaining_keys:
-                    first_key = next(iter(vendor_user.vendor_id))
-                    vendor_user.active_vendor = int(first_key)
-                else:
-                    vendor_user.active_vendor = None
+                vendor_user.active_vendor = int(remaining_keys[0]) if remaining_keys else None
 
                 db.session.commit()
                 return jsonify({'message': 'Vendor updated successfully'}), 200
@@ -1208,16 +1216,13 @@ def get_vendor_user(id):
                     vendor_user.vendor_role = data['vendor_role']
                 if 'vendor_id' in data:
                     vendor_user.vendor_id = data['vendor_id']
+
                 remaining_keys = list(vendor_user.vendor_id.keys())
-                if remaining_keys:
-                    first_key = next(iter(vendor_user.vendor_id))
-                    vendor_user.active_vendor = int(first_key)
-                else:
-                    vendor_user.active_vendor = None
+                vendor_user.active_vendor = int(remaining_keys[0]) if remaining_keys else None
 
                 db.session.commit()
                 return jsonify(vendor_user.to_dict()), 200                
-                    
+
             if not delete_vendor_id and not admin_patch:
                 if 'first_name' in data:
                     vendor_user.first_name = data['first_name']
@@ -1251,7 +1256,6 @@ def get_vendor_user(id):
 
         except Exception as e:
             db.session.rollback()
-            app.logger.error(f"Error updating VendorUser: {str(e)}")
             return jsonify({'error': str(e)}), 500
 
     elif request.method == 'DELETE':
@@ -1266,7 +1270,6 @@ def get_vendor_user(id):
         
         except Exception as e:
             db.session.rollback()
-            app.logger.error(f"Error deleting VendorUser: {str(e)}")
             return jsonify({'error': str(e)}), 500
 
 @app.route('/api/vendor-users/count', methods=['GET'])
@@ -2114,7 +2117,7 @@ def all_events():
             app.logger.error(f'Error fetching events: {e}')  
             return {'error': f'Exception: {str(e)}'}, 500
         
-    elif request.method == 'POST':
+    if request.method == 'POST':
         data = request.get_json()
         print("Received Data:", data)
 
@@ -2125,36 +2128,32 @@ def all_events():
             return jsonify({"error": f"Invalid time format: {str(e)}"}), 400
 
         vendor_id = data.get('vendor_id')
-        if isinstance(vendor_id, dict):
+        if isinstance(vendor_id, dict): 
             try:
                 vendor_id = int(list(vendor_id.keys())[0])
             except (ValueError, IndexError):
                 return jsonify({"error": "Invalid vendor_id format"}), 400
         else:
             try:
-                vendor_id = int(vendor_id)
+                vendor_id = int(vendor_id) if vendor_id is not None else None
             except (TypeError, ValueError):
                 return jsonify({"error": "Invalid vendor_id"}), 400
 
         market_id = data.get('market_id')
-        if not vendor_id or not market_id:
-            return jsonify({"error": "Missing vendor_id or market_id"}), 400
 
         new_event = Event(
-            # vendor_id=vendor_id,
-            # market_id=market_id,
+            vendor_id=vendor_id,
+            market_id=market_id,
             title=data['title'],
             message=data['message'],
             start_date=start_date,
             end_date=end_date
         )
-        if 'vendor_id' in data:
-            new_event.vendor_id = data['vendor_id']
-        if 'market_id' in data:
-            new_event.market_id = data['market_id']
 
         db.session.add(new_event)
         db.session.commit()
+
+        return new_event.to_dict(), 201
 
         return new_event.to_dict(), 201
 
