@@ -2958,7 +2958,6 @@ def send_sendgrid_email_client():
 
     try:
         sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
-        print(os.environ.get('SENDGRID_API_KEY'))
         response = sg.send(message)
         print(response.status_code)
         print(response.body)
@@ -3717,5 +3716,5 @@ def blog(id):
             return {'error': f'Failed to delete Blog: {str(e)}'}, 500
 
 if __name__ == '__main__':
-    # app.run(host="0.0.0.0", port=5555, debug=True)
-    app.run(port=5555, debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5555)), debug=True)
+    # app.run(port=5555, debug=True)
