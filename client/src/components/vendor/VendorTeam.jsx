@@ -8,47 +8,54 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
     const [confirmMemberEmail, setConfirmMemberEmail] = useState('');
     const [newMemberRole, setNewMemberRole] = useState(true); 
 
+    const fetchTeamMembers = async () => {
+        if (vendorUserData && vendorUserData.vendor_id) {
+            try {
+                const token = localStorage.getItem('vendor_jwt-token');
+                const response = await fetch(`/api/vendor-users?vendor_id=${vendorUserData.vendor_id[vendorUserData.active_vendor]}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setTeamMembers(data);
+                }
+            } catch (error) {
+                console.error('Error fetching team members:', error);
+            }
+        }
+    };
 
     useEffect(() => {
-        const fetchTeamMembers = async () => {
-            if (vendorUserData && vendorUserData.vendor_id) {
-                try {
-                    const token = localStorage.getItem('vendor_jwt-token');
-                    const response = await fetch(`/api/vendor-users?vendor_id=${vendorUserData.vendor_id[vendorUserData.active_vendor]}`, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        setTeamMembers(data);
-                    }
-                } catch (error) {
-                    console.error('Error fetching team members:', error);
-                }
-            }
-        };
         fetchTeamMembers();
     }, [vendorUserData]);
 
     const handleAddTeamMember = async () => {
+        if (newMemberEmail !== confirmMemberEmail) {
+            alert("Emails do not match");
+            return;
+        }
+    
         const token = localStorage.getItem('vendor_jwt-token');
-
-        fetch(`/api/vendor-users?email=${encodeURIComponent(newMemberEmail)}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.json().then(data => {
-                    console.log(data[0].id)
-                    const response = fetch(`/api/vendor-users/${data[0].id}`, {
+    
+        try {
+            const checkResponse = await fetch(`/api/vendor-users?email=${encodeURIComponent(newMemberEmail)}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            if (checkResponse.ok) {
+                const existingUser = await checkResponse.json();
+                if (existingUser.length > 0) {
+                    const userId = existingUser[0].id;
+                    const patchResponse = await fetch(`/api/vendor-users/${userId}`, {
                         method: 'PATCH',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -60,49 +67,57 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                             vendor_role: newMemberRole
                         }),
                     });
-                    if (response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                })
-            } else {
-                try {
-                    const token = localStorage.getItem('vendor_jwt-token');
-                    const response = fetch('/api/vendor-users', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            email: newMemberEmail,
-                            role: newMemberRole,
-                            vendor_id: vendorUserData.vendor_id
-                        })
-                    });
-
-                    if (response.ok) {
-                        const addedMember = response.json();
-                        setTeamMembers([...teamMembers, addedMember]);
+    
+                    if (patchResponse.ok) {
+                        alert("User added to vendor successfully");
                         setNewMemberEmail('');
-                        setNewMemberRole('Employee');
+                        setConfirmMemberEmail('');
+                        setNewMemberRole(2);
+
+                        fetchTeamMembers();
+                        return;
                     } else {
-                        console.error('Error adding team member');
+                        console.error('Error updating existing user:', await patchResponse.json());
+                        alert('Failed to update existing user.');
+                        return;
                     }
-                } catch (error) {
-                    console.error('Error adding team member:', error);
                 }
             }
-            return response.json();
-        })
-        .then(data => console.log(data))
-        .catch(error => console.error('Error fetching users:', error));
+    
+            const createResponse = await fetch('/api/vendor-users', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: newMemberEmail,
+                    role: newMemberRole,
+                    vendor_id: { [vendorUserData.vendor_id[vendorUserData.active_vendor]]: vendorUserData.vendor_id[vendorUserData.active_vendor] },
+                    active_vendor: vendorUserData.vendor_id[vendorUserData.active_vendor]
+                })
+            });
+    
+            if (createResponse.ok) {
+                const addedMember = await createResponse.json();
+                setTeamMembers([...teamMembers, addedMember]);
+                setNewMemberEmail('');
+                setConfirmMemberEmail('');
+                setNewMemberRole(2);
+                alert("New user invited successfully");
 
-        if (newMemberEmail !== confirmMemberEmail) {
-            alert("Emails do not match")
-            return;
+                fetchTeamMembers();
+            } else {
+                console.error('Error adding new team member:', await createResponse.json());
+                alert('Failed to add new user.');
+            }
+            window.location.reload();
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while adding the team member.');
         }
     };
-
+    
     const handleDeleteTeamMember = async (memberId) => {
         if (confirm(`Are you sure you want to delete this team member?`)) {
             try {
@@ -214,7 +229,7 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                         />
                     </div>
                     <div className='form-group'>
-                        <label>Email:</label>
+                        <label>Confirm Email:</label>
                         <input
                             type="email"
                             value={confirmMemberEmail}
@@ -228,8 +243,8 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                             value={newMemberRole}
                             onChange={e => setNewMemberRole(e.target.value)}
                         >
-                            <option value={true}>Admin</option>
-                            <option value={false}>Employee</option>
+                            <option value={1}>Admin</option>
+                            <option value={2}>Employee</option>
                         </select>
                     </div>
                     <button className="btn-edit" onClick={handleAddTeamMember}>Add Team Member</button>
