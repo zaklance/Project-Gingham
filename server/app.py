@@ -2117,7 +2117,7 @@ def all_events():
             app.logger.error(f'Error fetching events: {e}')  
             return {'error': f'Exception: {str(e)}'}, 500
         
-    elif request.method == 'POST':
+    if request.method == 'POST':
         data = request.get_json()
         print("Received Data:", data)
 
@@ -2128,36 +2128,32 @@ def all_events():
             return jsonify({"error": f"Invalid time format: {str(e)}"}), 400
 
         vendor_id = data.get('vendor_id')
-        if isinstance(vendor_id, dict):
+        if isinstance(vendor_id, dict): 
             try:
                 vendor_id = int(list(vendor_id.keys())[0])
             except (ValueError, IndexError):
                 return jsonify({"error": "Invalid vendor_id format"}), 400
         else:
             try:
-                vendor_id = int(vendor_id)
+                vendor_id = int(vendor_id) if vendor_id is not None else None
             except (TypeError, ValueError):
                 return jsonify({"error": "Invalid vendor_id"}), 400
 
         market_id = data.get('market_id')
-        if not vendor_id or not market_id:
-            return jsonify({"error": "Missing vendor_id or market_id"}), 400
 
         new_event = Event(
-            # vendor_id=vendor_id,
-            # market_id=market_id,
+            vendor_id=vendor_id,
+            market_id=market_id,
             title=data['title'],
             message=data['message'],
             start_date=start_date,
             end_date=end_date
         )
-        if 'vendor_id' in data:
-            new_event.vendor_id = data['vendor_id']
-        if 'market_id' in data:
-            new_event.market_id = data['market_id']
 
         db.session.add(new_event)
         db.session.commit()
+
+        return new_event.to_dict(), 201
 
         return new_event.to_dict(), 201
 
