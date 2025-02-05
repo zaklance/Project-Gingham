@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import { PaymentElement } from "@stripe/react-stripe-js";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 import { timeConverter } from "../../utils/helpers";
+import objectHash from 'object-hash';
 
-export default function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAmountInCart }) {
-
+function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAmountInCart }) {
     const stripe = useStripe();
     const elements = useElements();
 
@@ -13,13 +13,16 @@ export default function CheckoutForm({ totalPrice, cartItems, setCartItems, amou
     const [isProcessing, setIsProcessing] = useState(false);
     const [paymentSuccess, setPaymentSuccess] = useState(false);
 
+    const userId = parseInt(globalThis.localStorage.getItem('user_id'));
+    const token = localStorage.getItem('user_jwt-token');
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         if (!stripe || !elements) return;
-    
+
         setIsProcessing(true);
-    
+
         const { error, paymentIntent } = await stripe.confirmPayment({
             elements,
             confirmParams: {
@@ -27,20 +30,71 @@ export default function CheckoutForm({ totalPrice, cartItems, setCartItems, amou
             },
             redirect: "if_required",
         });
-    
+
         if (error?.type === "card_error" || error?.type === "validation_error") {
             setMessage(error.message);
             setIsProcessing(false);
         } else if (paymentIntent?.status === "succeeded") {
-            console.log("✅ Payment successful! Clearing cart...");
-            
-            localStorage.setItem("cartItems", JSON.stringify([]));
-            localStorage.setItem("amountInCart", JSON.stringify(0));
-            setCartItems([]);
-            setAmountInCart(0);
-    
-            setMessage("Payment successful!");
-            setPaymentSuccess(true);
+            console.log("Payment successful! Marking items as sold...");
+
+            try {
+                // Mark items as sold
+                await Promise.all(cartItems.map(async (cartItem) => {
+                    const response = await fetch(`/api/baskets/${cartItem.id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ is_sold: true, user_id: userId }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Failed to update cartItem with id: ${cartItem.id}`);
+                    }
+                }));
+
+                console.log("Items marked as sold!");
+
+                // Generate QR codes
+                if (cartItems.length > 0) {
+                    console.log("Generating QR codes...");
+
+                    const qrPromises = cartItems.map(async (cartItem) => {
+                        const hash = objectHash(`${cartItem.vendor_name} ${cartItem.location} ${cartItem.id} ${userId}`);
+                        const response = await fetch('/api/qr-codes', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                qr_code: hash,
+                                user_id: userId,
+                                basket_id: cartItem.id,
+                                vendor_id: cartItem.vendor_id,
+                            }),
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`Failed to create QR code for basket ID ${cartItem.id}: ${response.statusText}`);
+                        }
+                        return response.json();
+                    });
+
+                    await Promise.all(qrPromises);
+                    console.log("All QR codes created successfully!");
+                }
+
+                // Clear cart
+                localStorage.setItem("cartItems", JSON.stringify([]));
+                localStorage.setItem("amountInCart", JSON.stringify(0));
+                setCartItems([]);
+                setAmountInCart(0);
+
+                setMessage("Payment successful!");
+                setPaymentSuccess(true);
+            } catch (error) {
+                console.error("Error processing post-payment actions:", error);
+                setMessage("An error occurred after payment.");
+            }
         } else {
             setMessage("An unexpected error occurred.");
             setIsProcessing(false);
@@ -104,3 +158,5 @@ export default function CheckoutForm({ totalPrice, cartItems, setCartItems, amou
         </>
     );
 }
+
+export default CheckoutForm;

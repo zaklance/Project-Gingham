@@ -62,6 +62,9 @@ import { loadStripe } from '@stripe/stripe-js';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_JS_KEY);
 
+console.log(import.meta.env.VITE_STRIPE_JS_KEY); 
+console.log(import.meta.env);
+
 const UserRoute = ({ children }) => {
     const token = localStorage.getItem("user_jwt-token");
     const storedId = localStorage.getItem("user_id");
