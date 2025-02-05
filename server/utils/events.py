@@ -1,7 +1,8 @@
-from sqlalchemy import event
+from sqlalchemy import event, func
 from sqlalchemy.orm import Session
 from sqlalchemy.event import listens_for
 from datetime import datetime
+import json
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
                     VendorReview, ReportedReview, MarketReviewRating, 
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
@@ -51,78 +52,95 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
 #     except Exception as e:
 #         print(f"Error in track_vendor_favorite: {e}")
 
+import json
+
 @listens_for(Event, 'after_insert')
 def vendor_market_event_or_schedule_change(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        # print(f"Market Event detected: ID={target.id}, Title='{target.title}', Market ID={target.market_id}")
-
         # Retrieve the market
         market = session.query(Market).get(target.market_id)
         if not market:
             print(f"Market with ID {target.market_id} not found. Aborting notification creation.")
             return
-        # print(f"Market found: ID={market.id}, Name='{market.name}'")
 
         # Retrieve vendors associated with the market
         vendors = session.query(Vendor).join(VendorMarket).join(MarketDay).filter(
             MarketDay.market_id == market.id
         ).all()
-        # print(f"Vendors associated with Market ID {market.id}: {len(vendors)} vendors found.")
 
         if not vendors:
             print(f"No vendors found for Market ID {market.id}. No notifications will be created.")
             return
 
-#         # Check if the event is a schedule change
         is_schedule_change = target.schedule_change
 
-        # Prepare notifications for vendors
+        # Prepare notifications for each vendor user
         notifications = []
         for vendor in vendors:
-            existing_notification = session.query(VendorNotification).filter(
-                VendorNotification.vendor_id == vendor.id,
-                VendorNotification.market_id == market.id,
-                VendorNotification.created_at >= datetime.utcnow().date(),
-                VendorNotification.subject.in_([
-                    "New Event in Your Market!",
-                    "Market Schedule Change"
-                ])
-            ).first()
+            # Retrieve all VendorUsers
+            vendor_users = session.query(VendorUser).all()
 
-            if existing_notification:
-                # print(f"Notification already exists for Vendor ID={vendor.id}, Market ID={market.id}. Skipping.")
+            # Filter VendorUsers where vendor_id in JSON matches vendor.id
+            matched_vendor_users = []
+            for vendor_user in vendor_users:
+                try:
+                    vendor_json = vendor_user.vendor_id  # This should be stored as a dict
+                    if isinstance(vendor_json, str):  # Ensure it's parsed correctly
+                        vendor_json = json.loads(vendor_json)
+                    
+                    # Extract the first key's value (since it's stored as {"1": 1})
+                    extracted_vendor_id = next(iter(vendor_json.values()), None)
+
+                    if extracted_vendor_id == vendor.id:
+                        matched_vendor_users.append(vendor_user)
+
+                except Exception as e:
+                    print(f"Error processing vendor_user {vendor_user.id}: {e}")
+
+            if not matched_vendor_users:
+                print(f"No vendor users found for Vendor ID={vendor.id}, skipping notification.")
                 continue
 
-            if is_schedule_change:
+            for vendor_user in matched_vendor_users:
+                # Assign vendor_user.id as vendor_user_id in notification
+                vendor_user_id = vendor_user.id
+
+                # Check if a notification already exists for this vendor user
+                existing_notification = session.query(VendorNotification).filter(
+                    VendorNotification.vendor_user_id == vendor_user_id,  # Using extracted vendor_user_id
+                    VendorNotification.vendor_id == vendor.id,
+                    VendorNotification.market_id == market.id,
+                    VendorNotification.created_at >= datetime.utcnow().date(),
+                    VendorNotification.subject.in_([
+                        "New Event in Your Market!",
+                        "Market Schedule Change"
+                    ])
+                ).first()
+
+                if existing_notification:
+                    continue
+
+                # Create a separate notification for each vendor user
                 notification = VendorNotification(
-                    subject="Market Schedule Change",
-                    message=f"The market '{market.name}' has updated its schedule temporarily.",
+                    subject="Market Schedule Change" if is_schedule_change else "New Event in Your Market!",
+                    message=f"The market '{market.name}' has updated its schedule temporarily."
+                    if is_schedule_change
+                    else f"The market '{market.name}' has added a new event: {target.title}.",
                     link=f"/user/markets/{market.id}",
                     vendor_id=vendor.id,
-                    market_id=market.id,
-                    created_at=datetime.utcnow(),
-                    is_read=False
-                )
-            else:
-                notification = VendorNotification(
-                    subject="New Event in Your Market!",
-                    message=f"The market '{market.name}' has added a new event: {target.title}.",
-                    link=f"/user/markets/{market.id}",
-                    vendor_id=vendor.id,
+                    vendor_user_id=vendor_user_id,  # Assigning correct vendor_user_id
                     market_id=market.id,
                     created_at=datetime.utcnow(),
                     is_read=False
                 )
 
-            notifications.append(notification)
-            # print(f"Prepared notification for Vendor ID={vendor.id}, Name='{vendor.name}'")
+                notifications.append(notification)
 
-        # Save notifications
         if notifications:
             session.bulk_save_objects(notifications)
             session.commit()
-            # print(f"Successfully created {len(notifications)} notifications for Market ID={market.id}")
+            print(f"Successfully created {len(notifications)} vendor notifications.")
 
     except Exception as e:
         session.rollback()
