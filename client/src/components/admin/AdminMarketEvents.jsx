@@ -41,51 +41,77 @@ function AdminMarketEvents({ markets }) {
     };
 
     const handleSaveNewEvent = async () => {
+        if (!newEvent.market_id) {
+            console.error("Market ID is missing. Cannot save event.");
+            alert("Please select a valid market before saving the event.");
+            return;
+        }
+    
+        const formattedEvent = {
+            ...newEvent,
+            vendor_id: null,
+        };
+    
         try {
-            console.log(newEvent);
-            // Save market details first
+            console.log("Saving event with formatted data:", formattedEvent);
+    
             const response = await fetch(`/api/events`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(newEvent),
+                body: JSON.stringify(formattedEvent),
             });
-
+    
             if (response.ok) {
                 const createdEvent = await response.json();
-                console.log('Event data updated successfully:', createdEvent);
-                alert('Market Event successfully created')
+                console.log('Event created successfully:', createdEvent);
+                alert('Market Event successfully created');
                 setEvents((prevEvents) => [...prevEvents, createdEvent]);
-                setNewEvent({})
+                setNewEvent({});
             } else {
-                console.log('Failed to save event details');
-                console.log('Response status:', response.status);
-                console.log('Response text:', await response.text());
+                const errorMessage = await response.text();
+                console.error('Failed to save event:', errorMessage);
             }
         } catch (error) {
-            console.error('Error saving event details:', error);
+            console.error('Error saving event:', error);
         }
     };
 
     useEffect(() => {
-        fetch("/api/events")
+        fetch(`/api/events?market_id=${matchingMarketId}`)
             .then(response => response.json())
             .then(data => {
+    
+                if (data.error) {
+                    setEvents([]);
+                    return;
+                }
+    
+                if (!Array.isArray(data)) {
+                    console.error("Unexpected response format. Expected an array but got:", data);
+                    setEvents([]);  // Reset to an empty array
+                    return;
+                }
+    
                 const today = new Date();
                 const sevenDaysFromNow = new Date();
                 sevenDaysFromNow.setDate(today.getDate() + 30);
-
+    
                 const filteredData = data.filter(item => {
                     const startDate = new Date(item.start_date);
                     const endDate = new Date(item.end_date);
                     return item.market_id === Number(matchingMarketId) &&
-                        // Check if today is within range or start_date is within 7 days from now
                         (today >= startDate && today <= endDate || startDate <= sevenDaysFromNow);
                 });
+    
                 setEvents(filteredData);
             })
-            .catch(error => console.error('Error fetching events', error));
+            .catch(error => {
+                console.error('Error fetching events:', error);
+                setEvents([]);  // Reset to avoid undefined issues
+            });
+    
     }, [matchingMarketId]);
 
     const handleEventUpdate = async (eventId) => {
