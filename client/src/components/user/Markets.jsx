@@ -144,7 +144,7 @@ function Markets() {
         if (location.state?.resetFilters) {
             setIsClicked(false);
         }
-        fetch("/api/markets")
+        fetch("/api/markets?is_visible=true")
             .then(response => response.json())
             .then(markets => {
                 if (userId & markets.length > 0) {
@@ -164,23 +164,6 @@ function Markets() {
                 } else {
                     setMarkets(markets)
                 }
-            })
-            .catch(error => console.error('Error fetching markets', error));
-    }, [location.state, user]);
-
-    useEffect(() => {
-        fetch(`/api/market-days`)
-            .then(response => response.json())
-            .then(data => {
-                setMarketDays(data);
-            })
-            .catch(error => console.error('Error fetching market data:', error));
-    }, []);
-
-    useEffect(() => {
-        fetch("/api/markets") 
-            .then((response) => response.json())
-            .then((markets) => {
                 const coordinates = markets
                     .filter((market) => market.coordinates)
                     .map((market) => ({
@@ -195,9 +178,16 @@ function Markets() {
                     }));
                 setMarketCoordinates(coordinates);
             })
-            .catch((error) => {
-                console.error("Error fetching markets:", error);
-            });
+            .catch(error => console.error('Error fetching markets', error));
+    }, [location.state, user]);
+
+    useEffect(() => {
+        fetch(`/api/market-days`)
+            .then(response => response.json())
+            .then(data => {
+                setMarketDays(data);
+            })
+            .catch(error => console.error('Error fetching market data:', error));
     }, []);
 
     useEffect(() => {
