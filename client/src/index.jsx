@@ -57,11 +57,6 @@ import AdminReport from './components/admin/AdminReport.jsx';
 import AdminStats from './components/admin/AdminStats.jsx';
 import AdminFAQs from './components/admin/AdminFAQs.jsx';
 
-import { loadStripe } from '@stripe/stripe-js';
-// import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_JS_KEY);
-
 const UserRoute = ({ children }) => {
     const token = localStorage.getItem("user_jwt-token");
     const storedId = localStorage.getItem("user_id");
