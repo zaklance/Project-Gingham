@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import { PaymentElement } from "@stripe/react-stripe-js";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
+import { toast } from 'react-toastify';
 import { timeConverter } from "../../utils/helpers";
 import objectHash from 'object-hash';
 
@@ -88,15 +89,20 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 localStorage.setItem("amountInCart", JSON.stringify(0));
                 setCartItems([]);
                 setAmountInCart(0);
-
-                setMessage("Payment successful!");
+                // setMessage("Payment successful!");
+                toast.success('Payment successful!', {
+                    autoClose: 4000,
+                });
                 setPaymentSuccess(true);
             } catch (error) {
                 console.error("Error processing post-payment actions:", error);
                 setMessage("An error occurred after payment.");
             }
         } else {
-            setMessage("An unexpected error occurred.");
+            // setMessage("An unexpected error occurred.");
+            toast.error('An unexpected error occurred.', {
+                autoClose: 4000,
+            });
             setIsProcessing(false);
         }
     };
@@ -139,7 +145,6 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 </div>
                 <div className="width-50">
                     <PaymentElement id="payment-element" options={{ layout: 'accordion' }} />
-                    
                     {!paymentSuccess ? (
                         <button className="btn btn-add" disabled={isProcessing || !stripe || !elements} id="submit">
                             <span id="button-text">
@@ -151,8 +156,6 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                             View Receipt
                         </button>
                     )}
-
-                    {message && <div id="payment-message">{message}</div>}
                 </div>
             </form>
         </>
