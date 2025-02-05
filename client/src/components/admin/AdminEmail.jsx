@@ -259,7 +259,7 @@ const AdminEmail = () => {
                     />
                 </div>
                 <div className='flex-start'>
-                    <button className='btn btn-small margin-t-8 margin-l-12 margin-b-16' onClick={previewEmail}>Preview Email</button>
+                    {bodyType == 'html' && <button className='btn btn-small margin-t-8 margin-l-12 margin-b-16' onClick={previewEmail}>Preview Email</button>}
                     {isLoading ? (
                         <PulseLoader
                             className='margin-l-24 margin-t-12'
@@ -272,11 +272,13 @@ const AdminEmail = () => {
                         <button className='btn btn-small margin-t-8 margin-l-16 margin-b-16' onClick={sendEmail}>Send Email</button>
                     )}
                 </div>
-                <iframe
-                    title="email-preview"
-                    srcDoc={previewHtml}
-                    style={{ width: '100%', height: '600px', border: '1px solid grey' }}
-                />
+                {bodyType === 'html' && (
+                    <iframe
+                        title="email-preview"
+                        srcDoc={previewHtml}
+                        style={{ width: '100%', height: '600px', border: '1px solid grey' }}
+                    />
+                )}
             </div>
         </>
     );

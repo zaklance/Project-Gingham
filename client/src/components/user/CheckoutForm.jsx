@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from 'react-router-dom';
 import { PaymentElement } from "@stripe/react-stripe-js";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
+import { toast } from 'react-toastify';
 import { timeConverter } from "../../utils/helpers";
 
 export default function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAmountInCart }) {
@@ -39,10 +40,16 @@ export default function CheckoutForm({ totalPrice, cartItems, setCartItems, amou
             setCartItems([]);
             setAmountInCart(0);
     
-            setMessage("Payment successful!");
+            toast.success('Payment successful!', {
+                autoClose: 4000,
+            });
+            // setMessage("Payment successful!");
             setPaymentSuccess(true);
         } else {
-            setMessage("An unexpected error occurred.");
+            // setMessage("An unexpected error occurred.");
+            toast.error('An unexpected error occurred.', {
+                autoClose: 4000,
+            });
             setIsProcessing(false);
         }
     };
@@ -85,7 +92,6 @@ export default function CheckoutForm({ totalPrice, cartItems, setCartItems, amou
                 </div>
                 <div className="width-50">
                     <PaymentElement id="payment-element" options={{ layout: 'accordion' }} />
-                    
                     {!paymentSuccess ? (
                         <button className="btn btn-add" disabled={isProcessing || !stripe || !elements} id="submit">
                             <span id="button-text">
@@ -97,8 +103,6 @@ export default function CheckoutForm({ totalPrice, cartItems, setCartItems, amou
                             View Receipt
                         </button>
                     )}
-
-                    {message && <div id="payment-message">{message}</div>}
                 </div>
             </form>
         </>
