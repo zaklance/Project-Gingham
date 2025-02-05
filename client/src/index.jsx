@@ -25,6 +25,7 @@ import Markets from './components/user/Markets.jsx';
 import MarketDetail from './components/user/MarketDetail.jsx';
 import PickUp from './components/user/PickUp.jsx';
 import Profile from './components/user/Profile.jsx';
+import ReceiptPdf from './components/user/Receipt.jsx';
 import Vendors from './components/user/Vendors.jsx';
 import VendorDetail from './components/user/VendorDetail.jsx';
 import UserFAQs from './components/user/UserFAQs.jsx';
@@ -232,6 +233,7 @@ const router = createBrowserRouter([
                     { path: "password-reset-request", element: <PasswordResetRequest user={'user'} /> },
                     { path: "password-reset/:token", element: <PasswordReset user={'user'} path={'/'} /> },
                     { path: "confirm-email/:token", element: <EmailVerification user={'user'} path={'/'} /> },
+                    { path: "receipt-pdf/:id", element: <ReceiptPdf />}
                 ],
             },
             { path: "vendor", element: <VendorHome /> },
