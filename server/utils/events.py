@@ -529,8 +529,6 @@ def vendor_market_new_event(mapper, connection, target):
 def vendor_basket_sold(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        # print(f"Checking basket status: ID={target.id}, Vendor ID={target.vendor_id}, Is Sold={target.is_sold}")
-
         # Only notify if the basket was just marked as sold
         if target.is_sold:
             # Retrieve the vendor
@@ -538,24 +536,50 @@ def vendor_basket_sold(mapper, connection, target):
             if not vendor:
                 print(f"Vendor not found for Vendor ID: {target.vendor_id}")
                 return
-            # print(f"Vendor found: ID={vendor.id}, Name='{vendor.name}'")
 
-            # Create vendor notification
-            notification = VendorNotification(
-                subject="Basket Sold!",
-                message=f"One of your baskets has been sold for ${target.price:.2f}.",
-                link=f"/vendor/dashboard",  # Adjust link as per your routing
-                vendor_id=vendor.id,
-                created_at=datetime.utcnow(),
-                is_read=False
-            )
+            # Retrieve all vendor users associated with this vendor
+            vendor_users = session.query(VendorUser).all()
 
-            # Save the notification
-            session.add(notification)
-            session.commit()
-            # print(f"Notification created for Vendor ID={vendor.id}, Basket ID={target.id}")
-        # else:
-        #     print(f"Basket ID={target.id} is not sold. No notification created.")
+            # Filter VendorUsers where vendor_id in JSON matches target.vendor_id
+            matched_vendor_users = []
+            for vendor_user in vendor_users:
+                try:
+                    vendor_json = vendor_user.vendor_id  # JSON field
+                    if isinstance(vendor_json, str):  # Parse if stored as string
+                        vendor_json = json.loads(vendor_json)
+                    
+                    # Extract the first key's value (since it's stored as {"1": 1})
+                    extracted_vendor_id = next(iter(vendor_json.values()), None)
+
+                    if extracted_vendor_id == vendor.id:
+                        matched_vendor_users.append(vendor_user)
+
+                except Exception as e:
+                    print(f"Error processing vendor_user {vendor_user.id}: {e}")
+
+            if not matched_vendor_users:
+                print(f"No vendor users found for Vendor ID={vendor.id}, skipping notification.")
+                return
+
+            # Prepare notifications for all vendor users
+            notifications = []
+            for vendor_user in matched_vendor_users:
+                notification = VendorNotification(
+                    subject="Basket Sold!",
+                    message=f"One of your baskets has been sold for ${target.price:.2f}.",
+                    link=f"/vendor/dashboard",
+                    vendor_id=vendor.id,
+                    vendor_user_id=vendor_user.id,  # Assign vendor_user_id
+                    created_at=datetime.utcnow(),
+                    is_read=False
+                )
+                notifications.append(notification)
+
+            # Save all notifications in bulk
+            if notifications:
+                session.bulk_save_objects(notifications)
+                session.commit()
+                print(f"Successfully created {len(notifications)} vendor notifications for basket sale.")
 
     except Exception as e:
         session.rollback()
