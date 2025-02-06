@@ -16,7 +16,6 @@ const styles = StyleSheet.create({
     footer: { position: "absolute", bottom: 30 },
 });
 
-
 const ReceiptDocument = ({ receipt }) => {
     // console.log("Receipt Data:", receipt); // ✅ Debugging: Check fetched data in console
     
@@ -34,7 +33,9 @@ const ReceiptDocument = ({ receipt }) => {
                 <View style={styles.section}>
                     <View style={styles.row}>
                         <Text><Text style={styles.bold}>Receipt ID:</Text> {receipt.id}</Text>
-                        <Text>{receipt.user.first_name} {receipt.user.last_name}</Text>
+                        <Text>
+                            {receipt.user?.first_name || "N/A"} {receipt.user?.last_name || ""}
+                        </Text>
                     </View>
                     <View style={styles.row}>
                         <Text><Text style={styles.bold}>Purchase Date:</Text> {receiptDateConverter(receipt.created_at)}</Text>
@@ -42,7 +43,9 @@ const ReceiptDocument = ({ receipt }) => {
                     </View>
                     <View style={styles.row}>
                         <Text>&emsp;</Text>
-                        <Text>{receipt.user.city}, {receipt.user.state} {receipt.user.zipcode}</Text>
+                        <Text>
+                            {receipt.user?.city || "N/A"}, {receipt.user?.state || "N/A"} {receipt.user?.zipcode || "N/A"}
+                        </Text>
                     </View>
                 </View>
 
@@ -85,7 +88,6 @@ const ReceiptDocument = ({ receipt }) => {
 };
 
 const ReceiptPdf = ({ receiptId }) => {
-    const { id } = useParams();
     const [receipt, setReceipt] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -100,7 +102,7 @@ const ReceiptPdf = ({ receiptId }) => {
         fetch(`/api/receipts/${receiptId}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log("Fetched Receipt Data:", data); // ✅ Debugging: Log fetched data
+                console.log("Fetched Receipt Data:", data);
                 if (data.error) {
                     setError(data.error);
                 } else {
@@ -108,8 +110,8 @@ const ReceiptPdf = ({ receiptId }) => {
                 }
                 setLoading(false);
             })
-            .catch(() => {
-                setError("Failed to load receipt.");
+            .catch((err) => {
+                console.error("Failed to fetch receipt:", err);
                 setLoading(false);
             });
     }, [id]);
