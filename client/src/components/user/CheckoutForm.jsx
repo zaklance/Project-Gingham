@@ -84,7 +84,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
 
 
                 console.log("Creating receipt...");
-                const receiptResponse = await fetch('/api/receipt', {
+                const receiptResponse = await fetch('/api/receipts', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -97,8 +97,11 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                             name: item.name,
                             price: item.price,
                             quantity: item.quantity,
+                            location: item.location,
+                            vendor_id: item.vendor_id,
                             vendor_name: item.vendor_name,
-                            market_name: item.location,
+                            pickup_start: item.pickup_start,
+                            pickup_end: item.pickup_end,
                             sale_date: item.sale_date
                         }))
                     }),
@@ -129,6 +132,9 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
             setIsProcessing(false);
         }
     };
+
+    console.log(cartItems)
+
 
     return (
         <>
