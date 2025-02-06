@@ -3740,16 +3740,18 @@ def create_receipt():
             if not data or 'user_id' not in data or 'baskets' not in data:
                 return jsonify({"error": "Missing required fields: 'user_id' and 'baskets'"}), 400
 
-            # Ensure the user exists
+             # Ensure the user exists
             user = User.query.get(data['user_id'])
             if not user:
                 return jsonify({"error": "User not found"}), 404
+
+            created_at = datetime.utcnow().date()
 
             # Create a new receipt
             new_receipt = Receipt(
                 user_id=data['user_id'],
                 baskets=data['baskets'],
-                created_at=datetime.utcnow()
+                created_at=created_at
             )
 
             db.session.add(new_receipt)
@@ -3774,4 +3776,3 @@ def get_receipt(receipt_id):
 if __name__ == '__main__':
     # app.run(host="0.0.0.0", port=5555, debug=True)
     app.run(port=5555, debug=True)
-    

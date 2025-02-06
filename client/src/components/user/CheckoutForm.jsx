@@ -5,12 +5,12 @@ import { useStripe, useElements } from "@stripe/react-stripe-js";
 import { toast } from 'react-toastify';
 import { timeConverter } from "../../utils/helpers";
 import objectHash from 'object-hash';
+import ReceiptPdf from "./Receipt";
 
 function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAmountInCart }) {
     const stripe = useStripe();
     const elements = useElements();
 
-    const [message, setMessage] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [paymentSuccess, setPaymentSuccess] = useState(false);
     const [receiptId, setReceiptId] = useState(null);
@@ -32,7 +32,6 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
         });
     
         if (error?.type === "card_error" || error?.type === "validation_error") {
-            setMessage(error.message);
             setIsProcessing(false);
         } else if (paymentIntent?.status === "succeeded") {
             console.log("Payment successful! Marking items as sold...");
@@ -125,15 +124,12 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 setPaymentSuccess(true);
             } catch (error) {
                 console.error("Error processing post-payment actions:", error);
-                setMessage("An error occurred after payment.");
             }
         } else {
             toast.error('An unexpected error occurred.', { autoClose: 4000 });
             setIsProcessing(false);
         }
     };
-
-    console.log(cartItems)
 
 
     return (
@@ -181,18 +177,21 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                             </span>
                         </button>
                     ) : (
-                        <button 
-                            className="btn btn-add" 
-                            onClick={() => {
-                                if (receiptId) {
-                                    window.open(`/user/receipt-pdf/${receiptId}`, '_blank');
-                                } else {
-                                    console.error("Receipt ID is missing.");
-                                }
-                            }}
-                        >
-                            View Receipt
-                        </button>
+                        // <button 
+                        //     className="btn btn-add" 
+                        //     onClick={() => {
+                        //         if (receiptId) {
+                        //             window.open(`/user/receipt-pdf/${receiptId}`, '_blank');
+                        //         } else {
+                        //             console.error("Receipt ID is missing.");
+                        //         }
+                        //     }}
+                        // >
+                        //     View Receipt
+                        // </button>
+                        <div className="margin-t-16">
+                            <ReceiptPdf receiptId={receiptId} />
+                        </div>
                     )}
                 </div>
             </form>

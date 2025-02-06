@@ -1,30 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { PDFViewer, Document, Image, Page, Text, View, StyleSheet, PDFDownloadLink } from "@react-pdf/renderer";
-import { convertToLocalDate } from "../../utils/helpers";
+import { formatBasketDate, timeConverter, receiptDateConverter } from "../../utils/helpers";
 
 const styles = StyleSheet.create({
-    page: { padding: 30, fontSize: 12, fontFamily: 'Helvetica', color: "#ff806b", backgroundColor: '#fbf7eb' },
+    page: { padding: 30, fontSize: 12, fontFamily: 'Helvetica', color: "#3b4752", backgroundColor: '#fbf7eb' },
     header: { fontSize: 18, textAlign: "center", marginBottom: 0 },
     image: { margin: "0 auto", height: "80px", width: "80px" },
     section: { marginBottom: 20 },
     row: { flexDirection: "row", justifyContent: "space-between" },
-    rowItem: { flexDirection: "row", justifyContent: "space-between", marginBottom: 5 },
-    bold: { fontWeight: "bold" },
-    divider: { borderBottom: "2px solid #ff806b", marginVertical: 5 },
+    rowItem: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
+    rowFooter: { flexDirection: "row", justifyContent: "space-between", gap: 360 },
+    bold: { fontFamily: "Helvetica-Bold", fontWeight: "bold" },
+    divider: { borderBottom: "2px solid #3b4752", marginVertical: 4 },
+    footer: { position: "absolute", bottom: 30 },
 });
 
 
 const ReceiptDocument = ({ receipt }) => {
-    console.log("Receipt Data:", receipt); // ✅ Debugging: Check fetched data in console
+    // console.log("Receipt Data:", receipt); // ✅ Debugging: Check fetched data in console
     
     const basketItems = Array.isArray(receipt?.baskets) ? receipt.baskets : []; // ✅ Ensure it's always an array
-    console.log(basketItems)
+
     return (
         <Document>
-            <Page size="LETTER" style={styles.page}>
-                <Image style={styles.image} src="/site-images/gingham-logo-A_3.png"></Image>
-                <View style={styles.divider} />
+            <Page size="LETTER" style={styles.page} wrap={true}>
+                <View fixed>
+                    <Image style={styles.image} src="/site-images/gingham-logo-A_2.png"></Image>
+                    <View style={styles.divider} />
+                </View>
                 {/* <Text style={styles.header}>Receipt</Text> */}
                 
                 <View style={styles.section}>
@@ -33,7 +37,7 @@ const ReceiptDocument = ({ receipt }) => {
                         <Text>{receipt.user.first_name} {receipt.user.last_name}</Text>
                     </View>
                     <View style={styles.row}>
-                        <Text><Text style={styles.bold}>Purchase Date:</Text> {convertToLocalDate(receipt.created_at)}</Text>
+                        <Text><Text style={styles.bold}>Purchase Date:</Text> {receiptDateConverter(receipt.created_at)}</Text>
                         <Text>{receipt.user.address_1}{receipt.user.address_2 && ", "}{receipt.user.address_2}</Text>
                     </View>
                     <View style={styles.row}>
@@ -46,50 +50,54 @@ const ReceiptDocument = ({ receipt }) => {
                 <View style={styles.divider} />
 
                 {/* ✅ Prevent mapping error by ensuring `basketItems` is always an array */}
-                {basketItems.length > 0 ? (
+                {basketItems.length > 0 && (
                     basketItems.map((item, index) => (
                         <View key={index}>
                             <View style={styles.row}>
                                 <Text>Basket ID: {item.id}</Text>
-                                <Text>Vendor ID: {item.vendor_name}</Text>
-                                <Text>Price: ${item.price.toFixed(2)}</Text>
+                                <Text>Pickup Date: {receiptDateConverter(item.sale_date)}</Text>
+                                <Text>Pickup Time: {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</Text>
                             </View>
                             <View style={styles.rowItem}>
-                                <Text>Pickup Date: {item.sale_date}</Text>
-                                <Text>Pickup Start: {item.pickup_start}</Text>
-                                <Text>Pickup End: {item.pickup_end}</Text>
+                                <Text>Price: ${item.price.toFixed(2)}</Text>
+                                <Text>{item.vendor_name}</Text>
+                                <Text>{item.location}</Text>
                             </View>
                         </View>
                     ))
-                ) : (
-                    <Text>No items found in receipt.</Text>
                 )}
 
                 <View style={styles.divider} />
 
                 <Text style={[styles.bold, styles.row]}>
-                    <Text>Total:</Text>
+                    <Text>Total: </Text>
                     <Text>${basketItems.reduce((acc, item) => acc + item.price, 0).toFixed(2)}</Text>
                 </Text>
+                <View style={styles.footer}>
+                    <View style={styles.rowFooter}>
+                        <Text style={styles.bold}>Gingham 2025 &copy;</Text>
+                        <Text style={styles.bold}>www.gingham.nyc</Text>
+                    </View>
+                </View>
             </Page>
         </Document>
     );
 };
 
-const ReceiptPdf = () => {
+const ReceiptPdf = ({ receiptId }) => {
     const { id } = useParams();
     const [receipt, setReceipt] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (!id) {
+        if (!receiptId) {
             setError("Invalid receipt ID.");
             setLoading(false);
             return;
         }
 
-        fetch(`/api/receipts/${id}`)
+        fetch(`/api/receipts/${receiptId}`)
             .then((res) => res.json())
             .then((data) => {
                 console.log("Fetched Receipt Data:", data); // ✅ Debugging: Log fetched data
@@ -112,21 +120,17 @@ const ReceiptPdf = () => {
 
     return (
         <div>
-            <h2 className="text-center">Receipt Preview</h2>
-            
-            {/* Inline PDF Viewer */}
+            {/* <h2 className="text-center">Receipt Preview</h2>
             <PDFViewer style={{ width: '100%', height: '600px' }}>
                 <ReceiptDocument receipt={receipt} />
-            </PDFViewer>
-
-            {/* Download Button */}
-            <div className="text-center margin-t-20">
+            </PDFViewer> */}
+            <div className="text-center">
                 <PDFDownloadLink 
                     document={<ReceiptDocument receipt={receipt} />} 
                     fileName={`receipt_${receipt.id}.pdf`}
                     className="btn btn-add"
                 >
-                    {({ loading }) => (loading ? "Preparing download..." : "Download PDF")}
+                    {({ loading }) => (loading ? "Preparing download..." : "Download Receipt")}
                 </PDFDownloadLink>
             </div>
         </div>

@@ -134,6 +134,12 @@ export function formatEventDate(dateString) {
     });
 }
 
+export function receiptDateConverter(gmtDateString) {
+    const date = new Date(gmtDateString);
+    const localDate = date.toLocaleDateString('en-CA');
+    return localDate;
+}
+
 // Input Conversions and Formatting
 export const formatPhoneNumber = (phone) => {
     const cleaned = ('' + phone).replace(/\D/g, '');
