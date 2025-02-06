@@ -83,6 +83,8 @@ function Markets() {
 
     const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
 
+    console.log("MapKit Token:", import.meta.env.VITE_MAPKIT_TOKEN);
+
     const handleMarkerClickOn = (marketId) => {
         setMarkerViews((prev) => ({
             ...prev,
