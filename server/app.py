@@ -3726,6 +3726,25 @@ def get_receipt(receipt_id):
     except Exception as e:
         return jsonify({"error": f"Error fetching receipt: {str(e)}"}), 500
 
+@app.route('/api/receipt', methods=['GET'])
+def get_user_receipts():
+    try:
+        user_id = request.args.get("user_id", type=int)
+        if not user_id:
+            return jsonify({"error": "Missing user_id parameter"}), 400
+
+        # Ensure the user exists
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        # Fetch all receipts for the given user
+        receipts = Receipt.query.filter_by(user_id=user_id).order_by(Receipt.created_at.desc()).all()
+
+        return jsonify([receipt.to_dict() for receipt in receipts]), 200
+    except Exception as e:
+        return jsonify({"error": f"Error fetching receipts: {str(e)}"}), 500
+
 @app.route('/api/receipt', methods=['POST'])
 def create_receipt():
     try:
