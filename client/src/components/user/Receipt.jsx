@@ -11,7 +11,6 @@ const styles = StyleSheet.create({
     row: { flexDirection: "row", justifyContent: "space-between" },
     rowItem: { flexDirection: "row", justifyContent: "space-between", marginBottom: 5 },
     bold: { fontWeight: "bold" },
-    divider: { borderBottom: "2px solid #ff806b", marginVertical: 5 },
     divider: { borderBottom: "1px solid black", marginVertical: 5 },
     tableHeader: { flexDirection: "row", borderBottom: "1px solid black", paddingBottom: 5, marginBottom: 5 },
     tableRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 5 },
@@ -19,32 +18,46 @@ const styles = StyleSheet.create({
     totalRow: { marginTop: 10, flexDirection: "row", justifyContent: "space-between" },
 });
 
-
 const ReceiptDocument = ({ receipt }) => {
-    console.log("Receipt Data:", receipt);
+    console.log("✅ Receipt Data:", receipt);
 
-    const basketItems = Array.isArray(receipt?.baskets) ? receipt.baskets : [];
-    const totalPrice = basketItems.reduce((acc, item) => acc + item.price, 0).toFixed(2);
+    // Ensure `baskets` is always an array
+    let basketItems = [];
+    try {
+        basketItems = Array.isArray(receipt?.baskets) ? receipt.baskets : JSON.parse(receipt.baskets);
+    } catch (error) {
+        console.error("❌ Error parsing baskets:", error);
+    }
+
+    console.log("✅ Basket Items:", basketItems);
+
+    // ✅ Ensure `totalPrice` is always defined
+    const totalPrice = basketItems.reduce((acc, item) => acc + (item.price || 0), 0).toFixed(2);
 
     return (
         <Document>
             <Page size="LETTER" style={styles.page}>
-                <Image style={styles.image} src="/site-images/gingham-logo-A_3.png"></Image>
+                <Image style={styles.image} src="/site-images/gingham-logo-A_3.png" />
                 <View style={styles.divider} />
-                {/* <Text style={styles.header}>Receipt</Text> */}
-                
+
                 <View style={styles.section}>
                     <View style={styles.row}>
                         <Text><Text style={styles.bold}>Receipt ID:</Text> {receipt.id}</Text>
-                        <Text>{receipt.user.first_name} {receipt.user.last_name}</Text>
+                        <Text>
+                            {receipt.user?.first_name || "N/A"} {receipt.user?.last_name || ""}
+                        </Text>
                     </View>
                     <View style={styles.row}>
                         <Text><Text style={styles.bold}>Purchase Date:</Text> {convertToLocalDate(receipt.created_at)}</Text>
-                        <Text>{receipt.user.address_1}{receipt.user.address_2 && ", "}{receipt.user.address_2}</Text>
+                        <Text>
+                            {receipt.user?.address_1 || "N/A"}{receipt.user?.address_2 ? `, ${receipt.user.address_2}` : ""}
+                        </Text>
                     </View>
                     <View style={styles.row}>
                         <Text>&emsp;</Text>
-                        <Text>{receipt.user.city}, {receipt.user.state} {receipt.user.zipcode}</Text>
+                        <Text>
+                            {receipt.user?.city || "N/A"}, {receipt.user?.state || "N/A"} {receipt.user?.zipcode || "N/A"}
+                        </Text>
                     </View>
                 </View>
 
@@ -65,13 +78,13 @@ const ReceiptDocument = ({ receipt }) => {
                         <View key={index}>
                             <View style={styles.row}>
                                 <Text>Basket ID: {item.id}</Text>
-                                <Text>Vendor ID: {item.vendor_name}</Text>
-                                <Text>Price: ${item.price.toFixed(2)}</Text>
+                                <Text>Vendor: {item.vendor_name || "N/A"}</Text>
+                                <Text>Price: ${item.price ? item.price.toFixed(2) : "N/A"}</Text>
                             </View>
                             <View style={styles.rowItem}>
-                                <Text>Pickup Date: {item.sale_date}</Text>
-                                <Text>Pickup Start: {item.pickup_start}</Text>
-                                <Text>Pickup End: {item.pickup_end}</Text>
+                                <Text>Pickup Date: {item.sale_date || "N/A"}</Text>
+                                <Text>Pickup Start: {item.pickup_start || "N/A"}</Text>
+                                <Text>Pickup End: {item.pickup_end || "N/A"}</Text>
                             </View>
                         </View>
                     ))
@@ -107,7 +120,7 @@ const ReceiptPdf = () => {
         fetch(`/api/receipts/${id}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log("Fetched Receipt Data:", data);
+                console.log("✅ Fetched Receipt Data:", data);
                 if (data.error) {
                     setError(data.error);
                 } else {
@@ -115,8 +128,8 @@ const ReceiptPdf = () => {
                 }
                 setLoading(false);
             })
-            .catch(() => {
-                setError("Failed to load receipt.");
+            .catch((err) => {
+                console.error("❌ Failed to fetch receipt:", err);
                 setLoading(false);
             });
     }, [id]);

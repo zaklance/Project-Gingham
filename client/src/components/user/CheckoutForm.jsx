@@ -97,7 +97,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                             name: item.name,
                             price: item.price,
                             quantity: item.quantity,
-                            location: item.location,
+                            market_location: item.location,
                             vendor_id: item.vendor_id,
                             vendor_name: item.vendor_name,
                             pickup_start: item.pickup_start,
