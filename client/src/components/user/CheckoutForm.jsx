@@ -81,8 +81,8 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                     await Promise.all(qrPromises);
                     console.log("All QR codes created successfully!");
                 }
-    
-                // 🆕 Call the `/api/receipt` endpoint
+
+
                 console.log("Creating receipt...");
                 const receiptResponse = await fetch('/api/receipt', {
                     method: 'POST',
@@ -97,7 +97,9 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                             name: item.name,
                             price: item.price,
                             quantity: item.quantity,
-                            vendor_id: item.vendor_id
+                            vendor_name: item.vendor_name,
+                            market_name: item.location,
+                            sale_date: item.sale_date
                         }))
                     }),
                 });

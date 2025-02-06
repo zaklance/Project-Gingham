@@ -9,18 +9,23 @@ const styles = StyleSheet.create({
     row: { flexDirection: "row", justifyContent: "space-between", marginBottom: 5 },
     bold: { fontWeight: "bold" },
     divider: { borderBottom: "1px solid black", marginVertical: 5 },
+    tableHeader: { flexDirection: "row", borderBottom: "1px solid black", paddingBottom: 5, marginBottom: 5 },
+    tableRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 5 },
+    tableColumn: { width: "25%" },
+    totalRow: { marginTop: 10, flexDirection: "row", justifyContent: "space-between" },
 });
 
 const ReceiptDocument = ({ receipt }) => {
-    console.log("Receipt Data:", receipt); // ✅ Debugging: Check fetched data in console
+    console.log("Receipt Data:", receipt);
 
-    const basketItems = Array.isArray(receipt?.baskets) ? receipt.baskets : []; // ✅ Ensure it's always an array
+    const basketItems = Array.isArray(receipt?.baskets) ? receipt.baskets : [];
+    const totalPrice = basketItems.reduce((acc, item) => acc + item.price, 0).toFixed(2);
 
     return (
         <Document>
             <Page size="A4" style={styles.page}>
                 <Text style={styles.header}>Purchase Receipt</Text>
-                
+
                 <View style={styles.section}>
                     <Text><Text style={styles.bold}>Receipt ID:</Text> {receipt.id}</Text>
                     <Text><Text style={styles.bold}>User ID:</Text> {receipt.user_id}</Text>
@@ -30,13 +35,22 @@ const ReceiptDocument = ({ receipt }) => {
                 <Text style={styles.bold}>Items Purchased:</Text>
                 <View style={styles.divider} />
 
-                {/* ✅ Prevent mapping error by ensuring `basketItems` is always an array */}
+                {/* ✅ Table Header */}
+                <View style={styles.tableHeader}>
+                    <Text style={[styles.bold, styles.tableColumn]}>Market</Text>
+                    <Text style={[styles.bold, styles.tableColumn]}>Vendor</Text>
+                    <Text style={[styles.bold, styles.tableColumn]}>Item ID</Text>
+                    <Text style={[styles.bold, styles.tableColumn]}>Price</Text>
+                </View>
+
+                {/* ✅ Table Data */}
                 {basketItems.length > 0 ? (
                     basketItems.map((item, index) => (
-                        <View key={index} style={styles.row}>
-                            <Text>Item ID: {item.id}</Text>
-                            <Text>Vendor ID: {item.vendor_id}</Text>
-                            <Text>Price: ${item.price.toFixed(2)}</Text>
+                        <View key={index} style={styles.tableRow}>
+                            <Text style={styles.tableColumn}>{item.market_name || "N/A"}</Text>
+                            <Text style={styles.tableColumn}>{item.vendor_name || "N/A"}</Text>
+                            <Text style={styles.tableColumn}>{item.id}</Text>
+                            <Text style={styles.tableColumn}>${item.price.toFixed(2)}</Text>
                         </View>
                     ))
                 ) : (
@@ -45,10 +59,11 @@ const ReceiptDocument = ({ receipt }) => {
 
                 <View style={styles.divider} />
 
-                <Text style={[styles.bold, styles.row]}>
-                    <Text>Total:</Text>
-                    <Text>${basketItems.reduce((acc, item) => acc + item.price, 0).toFixed(2)}</Text>
-                </Text>
+                {/* ✅ Total Amount */}
+                <View style={styles.totalRow}>
+                    <Text style={styles.bold}>Total:</Text>
+                    <Text style={styles.bold}>${totalPrice}</Text>
+                </View>
             </Page>
         </Document>
     );
@@ -70,7 +85,7 @@ const ReceiptPdf = () => {
         fetch(`/api/receipt/${id}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log("Fetched Receipt Data:", data); // ✅ Debugging: Log fetched data
+                console.log("Fetched Receipt Data:", data);
                 if (data.error) {
                     setError(data.error);
                 } else {
