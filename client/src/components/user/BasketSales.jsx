@@ -14,7 +14,7 @@ function BasketSales() {
             return;
         }
 
-        fetch(`/api/receipt?user_id=${userId}`)
+        fetch(`/api/receipts?user_id=${userId}`)
             .then((res) => res.json())
             .then((data) => {
                 console.log("✅ Fetched Receipts:", data);
