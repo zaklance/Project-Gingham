@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
 });
 
 const ReceiptDocument = ({ receipt }) => {
-    console.log("✅ Receipt Data:", receipt);
+    console.log("Receipt Data:", receipt);
 
     // Ensure `baskets` is always an array
     let basketItems = [];
@@ -29,9 +29,9 @@ const ReceiptDocument = ({ receipt }) => {
         console.error("❌ Error parsing baskets:", error);
     }
 
-    console.log("✅ Basket Items:", basketItems);
+    console.log("Basket Items:", basketItems);
 
-    // ✅ Ensure `totalPrice` is always defined
+    //Ensure `totalPrice` is always defined
     const totalPrice = basketItems.reduce((acc, item) => acc + (item.price || 0), 0).toFixed(2);
 
     return (
@@ -64,7 +64,7 @@ const ReceiptDocument = ({ receipt }) => {
                 <Text style={styles.bold}>Items Purchased:</Text>
                 <View style={styles.divider} />
 
-                {/* ✅ Table Header */}
+                {/* Table Header */}
                 <View style={styles.tableHeader}>
                     <Text style={[styles.bold, styles.tableColumn]}>Market</Text>
                     <Text style={[styles.bold, styles.tableColumn]}>Vendor</Text>
@@ -72,7 +72,7 @@ const ReceiptDocument = ({ receipt }) => {
                     <Text style={[styles.bold, styles.tableColumn]}>Price</Text>
                 </View>
 
-                {/* ✅ Table Data */}
+                {/* Table Data */}
                 {basketItems.length > 0 ? (
                     basketItems.map((item, index) => (
                         <View key={index}>
@@ -94,7 +94,7 @@ const ReceiptDocument = ({ receipt }) => {
 
                 <View style={styles.divider} />
 
-                {/* ✅ Total Amount */}
+                {/* Total Amount */}
                 <View style={styles.totalRow}>
                     <Text style={styles.bold}>Total:</Text>
                     <Text style={styles.bold}>${totalPrice}</Text>
@@ -120,7 +120,7 @@ const ReceiptPdf = () => {
         fetch(`/api/receipts/${id}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log("✅ Fetched Receipt Data:", data);
+                console.log("Fetched Receipt Data:", data);
                 if (data.error) {
                     setError(data.error);
                 } else {
@@ -129,7 +129,7 @@ const ReceiptPdf = () => {
                 setLoading(false);
             })
             .catch((err) => {
-                console.error("❌ Failed to fetch receipt:", err);
+                console.error("Failed to fetch receipt:", err);
                 setLoading(false);
             });
     }, [id]);

@@ -17,7 +17,7 @@ function BasketSales() {
         fetch(`/api/receipts?user_id=${userId}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log("✅ Fetched Receipts:", data);
+                console.log("Fetched Receipts:", data);
                 if (data.error) {
                     setError(data.error);
                 } else {
@@ -26,11 +26,33 @@ function BasketSales() {
                 setLoading(false);
             })
             .catch((err) => {
-                console.error("❌ Failed to fetch receipts:", err);
+                console.error("Failed to fetch receipts:", err);
                 setError("Failed to load receipt data.");
                 setLoading(false);
             });
     }, [userId]);
+
+    const addToCalendar = (basket) => {
+        if (!basket) return;
+
+        const { market_location, vendor_name, sale_date, pickup_start, pickup_end } = basket;
+        if (!sale_date || !pickup_start || !pickup_end) return;
+
+        const startDateTime = new Date(sale_date);
+        startDateTime.setHours(...pickup_start.split(":"));
+        const endDateTime = new Date(sale_date);
+        endDateTime.setHours(...pickup_end.split(":"));
+
+        const startISO = startDateTime.toISOString().replace(/-|:|\.\d+/g, "");
+        const endISO = endDateTime.toISOString().replace(/-|:|\.\d+/g, "");
+
+        const eventTitle = `Pickup from ${vendor_name}`;
+        const eventDetails = `Pickup your order from ${vendor_name} at ${market_location}.`;
+
+        const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&details=${encodeURIComponent(eventDetails)}&location=${encodeURIComponent(market_location)}&dates=${startISO}/${endISO}`;
+
+        window.open(googleCalUrl, "_blank");
+    };
 
     if (loading) return <p>Loading sales history...</p>;
     if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
@@ -60,32 +82,39 @@ function BasketSales() {
 
                                     return (
                                         <tr key={index}>
-                                            {/* ✅ Use market_location from API response */}
+                                
                                             <td>{firstBasket?.market_location || 'Unknown Market'}</td>  
 
-                                            {/* ✅ Use vendor_name from API response */}
                                             <td>{firstBasket?.vendor_name || 'Unknown Vendor'}</td>  
 
-                                            {/* ✅ Pickup Date */}
                                             <td className='table-center nowrap'>
                                                 {firstBasket?.sale_date 
                                                     ? new Date(firstBasket.sale_date).toLocaleDateString() 
                                                     : 'N/A'}
                                             </td>
 
-                                            {/* ✅ Pickup Time (Start - End) */}
+                                            {/* Google Calendar Link */}
                                             <td className='table-center nowrap'>
-                                                {firstBasket?.pickup_start && firstBasket?.pickup_end
-                                                    ? `${firstBasket.pickup_start} - ${firstBasket.pickup_end}`
-                                                    : 'N/A'}
+                                                {firstBasket?.pickup_start && firstBasket?.pickup_end ? (
+                                                    <a
+                                                        href="#"
+                                                        className="link-edit"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            addToCalendar(firstBasket);
+                                                        }}
+                                                    >
+                                                        {firstBasket.pickup_start} - {firstBasket.pickup_end}
+                                                    </a>
+                                                ) : 'N/A'}
                                             </td>
 
-                                            {/* ✅ Total Price Calculation */}
+                                            {/* Total Price Calculation */}
                                             <td className='table-center'>
                                                 ${receipt.baskets.reduce((total, item) => total + (item.price * (item.quantity || 1)), 0).toFixed(2)}
                                             </td>
 
-                                            {/* ✅ Receipt PDF Download */}
+                                            {/* Receipt PDF Download */}
                                             <td className='table-center'>
                                                 {receipt.id ? (
                                                     <Link 
