@@ -8,19 +8,25 @@ function BasketSales() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        if (!userId || isNaN(userId)) {
+            setError("Invalid user ID.");
+            setLoading(false);
+            return;
+        }
+
         fetch(`/api/receipt?user_id=${userId}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log("Fetched Receipts:", data); // Debugging
+                console.log("✅ Fetched Receipts:", data);
                 if (data.error) {
                     setError(data.error);
                 } else {
-                    setReceipts(data);
+                    setReceipts(Array.isArray(data) ? data : []);
                 }
                 setLoading(false);
             })
             .catch((err) => {
-                console.error("Failed to fetch receipts:", err);
+                console.error("❌ Failed to fetch receipts:", err);
                 setError("Failed to load receipt data.");
                 setLoading(false);
             });
@@ -39,7 +45,8 @@ function BasketSales() {
                         <tr>
                             <th>Market</th>
                             <th>Vendor</th>
-                            <th>Sale Date</th>
+                            <th>Pickup Date</th>
+                            <th>Pickup Time</th>
                             <th>Price</th>
                             <th>Receipt</th>
                         </tr>
@@ -53,26 +60,32 @@ function BasketSales() {
 
                                     return (
                                         <tr key={index}>
-                                            <td>
-                                                {firstBasket ? (
-                                                    <Link className='btn-nav' to={`/user/markets/${firstBasket.market_id}`}>
-                                                        {firstBasket.market_name || 'Unknown Market'}
-                                                    </Link>
-                                                ) : 'N/A'}
-                                            </td>                                
-                                            <td>
-                                                {firstBasket ? (
-                                                    <Link className='btn-nav' to={`/user/vendors/${firstBasket.vendor_id}`}>
-                                                        {firstBasket.vendor_name || 'Unknown Vendor'}
-                                                    </Link>
-                                                ) : 'N/A'}
-                                            </td>                                
+                                            {/* ✅ Use market_location from API response */}
+                                            <td>{firstBasket?.market_location || 'Unknown Market'}</td>  
+
+                                            {/* ✅ Use vendor_name from API response */}
+                                            <td>{firstBasket?.vendor_name || 'Unknown Vendor'}</td>  
+
+                                            {/* ✅ Pickup Date */}
                                             <td className='table-center nowrap'>
-                                                {new Date(receipt.created_at).toLocaleDateString()}
+                                                {firstBasket?.sale_date 
+                                                    ? new Date(firstBasket.sale_date).toLocaleDateString() 
+                                                    : 'N/A'}
                                             </td>
+
+                                            {/* ✅ Pickup Time (Start - End) */}
+                                            <td className='table-center nowrap'>
+                                                {firstBasket?.pickup_start && firstBasket?.pickup_end
+                                                    ? `${firstBasket.pickup_start} - ${firstBasket.pickup_end}`
+                                                    : 'N/A'}
+                                            </td>
+
+                                            {/* ✅ Total Price Calculation */}
                                             <td className='table-center'>
-                                                ${receipt.baskets.reduce((total, item) => total + item.price, 0).toFixed(2)}
+                                                ${receipt.baskets.reduce((total, item) => total + (item.price * (item.quantity || 1)), 0).toFixed(2)}
                                             </td>
+
+                                            {/* ✅ Receipt PDF Download */}
                                             <td className='table-center'>
                                                 {receipt.id ? (
                                                     <Link 
@@ -92,7 +105,7 @@ function BasketSales() {
                                 })
                         ) : (
                             <tr>
-                                <td colSpan="5">No sales history available</td>
+                                <td colSpan="6">No sales history available</td>
                             </tr>
                         )}
                     </tbody>
