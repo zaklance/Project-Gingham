@@ -1,30 +1,45 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { PDFViewer, Document, Page, Text, View, StyleSheet, PDFDownloadLink } from "@react-pdf/renderer";
+import { PDFViewer, Document, Image, Page, Text, View, StyleSheet, PDFDownloadLink } from "@react-pdf/renderer";
+import { convertToLocalDate } from "../../utils/helpers";
 
 const styles = StyleSheet.create({
-    page: { padding: 30, fontSize: 12, fontFamily: 'Helvetica' },
-    header: { fontSize: 18, textAlign: "center", marginBottom: 20 },
-    section: { marginBottom: 10 },
-    row: { flexDirection: "row", justifyContent: "space-between", marginBottom: 5 },
+    page: { padding: 30, fontSize: 12, fontFamily: 'Helvetica', color: "#ff806b", backgroundColor: '#fbf7eb' },
+    header: { fontSize: 18, textAlign: "center", marginBottom: 0 },
+    image: { margin: "0 auto", height: "80px", width: "80px" },
+    section: { marginBottom: 20 },
+    row: { flexDirection: "row", justifyContent: "space-between" },
+    rowItem: { flexDirection: "row", justifyContent: "space-between", marginBottom: 5 },
     bold: { fontWeight: "bold" },
-    divider: { borderBottom: "1px solid black", marginVertical: 5 },
+    divider: { borderBottom: "2px solid #ff806b", marginVertical: 5 },
 });
+
 
 const ReceiptDocument = ({ receipt }) => {
     console.log("Receipt Data:", receipt); // ✅ Debugging: Check fetched data in console
-
+    
     const basketItems = Array.isArray(receipt?.baskets) ? receipt.baskets : []; // ✅ Ensure it's always an array
-
+    console.log(basketItems)
     return (
         <Document>
-            <Page size="A4" style={styles.page}>
-                <Text style={styles.header}>Purchase Receipt</Text>
+            <Page size="LETTER" style={styles.page}>
+                <Image style={styles.image} src="/site-images/gingham-logo-A_3.png"></Image>
+                <View style={styles.divider} />
+                {/* <Text style={styles.header}>Receipt</Text> */}
                 
                 <View style={styles.section}>
-                    <Text><Text style={styles.bold}>Receipt ID:</Text> {receipt.id}</Text>
-                    <Text><Text style={styles.bold}>User ID:</Text> {receipt.user_id}</Text>
-                    <Text><Text style={styles.bold}>Date:</Text> {new Date(receipt.created_at).toLocaleString()}</Text>
+                    <View style={styles.row}>
+                        <Text><Text style={styles.bold}>Receipt ID:</Text> {receipt.id}</Text>
+                        <Text>{receipt.user.first_name} {receipt.user.last_name}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text><Text style={styles.bold}>Purchase Date:</Text> {convertToLocalDate(receipt.created_at)}</Text>
+                        <Text>{receipt.user.address_1}{receipt.user.address_2 && ", "}{receipt.user.address_2}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text>&emsp;</Text>
+                        <Text>{receipt.user.city}, {receipt.user.state} {receipt.user.zipcode}</Text>
+                    </View>
                 </View>
 
                 <Text style={styles.bold}>Items Purchased:</Text>
@@ -33,10 +48,17 @@ const ReceiptDocument = ({ receipt }) => {
                 {/* ✅ Prevent mapping error by ensuring `basketItems` is always an array */}
                 {basketItems.length > 0 ? (
                     basketItems.map((item, index) => (
-                        <View key={index} style={styles.row}>
-                            <Text>Item ID: {item.id}</Text>
-                            <Text>Vendor ID: {item.vendor_id}</Text>
-                            <Text>Price: ${item.price.toFixed(2)}</Text>
+                        <View key={index}>
+                            <View style={styles.row}>
+                                <Text>Basket ID: {item.id}</Text>
+                                <Text>Vendor ID: {item.vendor_name}</Text>
+                                <Text>Price: ${item.price.toFixed(2)}</Text>
+                            </View>
+                            <View style={styles.rowItem}>
+                                <Text>Pickup Date: {item.sale_date}</Text>
+                                <Text>Pickup Start: {item.pickup_start}</Text>
+                                <Text>Pickup End: {item.pickup_end}</Text>
+                            </View>
                         </View>
                     ))
                 ) : (
@@ -67,7 +89,7 @@ const ReceiptPdf = () => {
             return;
         }
 
-        fetch(`/api/receipt/${id}`)
+        fetch(`/api/receipts/${id}`)
             .then((res) => res.json())
             .then((data) => {
                 console.log("Fetched Receipt Data:", data); // ✅ Debugging: Log fetched data
