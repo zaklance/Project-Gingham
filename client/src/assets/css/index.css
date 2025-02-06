@@ -1557,7 +1557,7 @@ link {
   margin-bottom: -6px;
 }
 
-.btn-home:active {
+.logo:active {
   scale: 120%;
   transition: .4s;
 }
@@ -2322,10 +2322,15 @@ select:hover {
 }
 
 .icon-settings:hover {
+  transform: rotate(360deg);
+  transition: 3.4s;
+}
+
+/* .icon-settings:hover {
   background-image: url('../images/icons/icons8-settings.gif');
   background-position: right 50% top 40%;
   background-size: 1.74rem auto;
-}
+} */
 
 .icon-eye, .icon-eye-alt {
   position: absolute;

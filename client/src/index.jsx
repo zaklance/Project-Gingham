@@ -70,7 +70,7 @@ const UserRoute = ({ children }) => {
     if (!token || !storedId) {
         return (
             <div className='wrapper-error text-error margin-t-24'>
-                <h1 className='text-red'>Protected route: User not authenticated.</h1>
+                <h1 className='text-red'>Please login again: User not authenticated.</h1>
             </div>
         );
     }
@@ -133,7 +133,7 @@ const UserAuthRoute = ({ children }) => {
     if (!token || !id) {
         return (
             <div className='wrapper-error text-error margin-t-24'>
-                <h1 className='text-red'>Protected route: User not authenticated.</h1>
+                <h1 className='text-red'>Please login again: User not authenticated.</h1>
             </div>
         );
     }
@@ -148,7 +148,7 @@ const VendorAuthRoute = ({ children }) => {
     if (!token || !id) {
         return (
             <div className='wrapper-error text-error margin-t-24'>
-                <h1 className='text-red'>Protected route: Vendor User not authenticated.</h1>
+                <h1 className='text-red'>Please login again: Vendor User not authenticated.</h1>
             </div>
         );
     }
@@ -163,7 +163,7 @@ const AdminAuthRoute = ({ children }) => {
     if (!token || !id) {
         return (
             <div className='wrapper-error text-error margin-t-24'>
-                <h1 className='text-red'>Protected route: Admin User not authenticated.</h1>
+                <h1 className='text-red'>Please login again: Admin User not authenticated</h1>
             </div>
         );
     }
