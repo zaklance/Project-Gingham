@@ -82,7 +82,7 @@ class User(db.Model, SerializerMixin):
     market_favorites = db.relationship('MarketFavorite', back_populates='user')
     vendor_favorites = db.relationship('VendorFavorite', back_populates='user')
     blog_favorites = db.relationship('BlogFavorite', back_populates='user')
-
+    receipts = db.relationship('Receipt', back_populates='user', cascade="all, delete-orphan")
 
     serialize_rules = (
         '-_password',
@@ -806,6 +806,30 @@ class Receipt(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     baskets = db.Column(db.JSON, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationships
+    user = db.relationship('User', back_populates='receipts')
+
+    serialize_rules = (
+        '-user.receipts',
+    )
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'baskets': self.baskets,
+            'created_at': self.created_at,
+            'user': {
+                'first_name': self.user.first_name,
+                'last_name': self.user.last_name,
+                'address_1': self.user.address_1,
+                'address_2': self.user.address_2,
+                'city': self.user.city,
+                'state': self.user.state,
+                'zipcode': self.user.zipcode
+            }
+        }
 
     def __repr__(self) -> str:
         return f"<Receipt ID: {self.id}, User ID: {self.user_id}, Baskets: {self.baskets}, Created At: {self.created_at}>"

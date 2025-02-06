@@ -3715,7 +3715,52 @@ def blog(id):
             db.session.rollback()
             return {'error': f'Failed to delete Blog: {str(e)}'}, 500
 
-@app.route('/api/receipt/<int:receipt_id>', methods=['GET'])
+@app.route('/api/receipts', methods=['GET', 'POST'])
+def create_receipt():
+    if request.method == 'GET':
+        receipts = Receipt.query.all()
+        return jsonify([item.to_dict() for item in receipts]), 200
+    
+    if request.method == 'POST':
+        try:
+            # Check if request data exists
+            if not request.data:
+                return jsonify({"error": "Empty request body"}), 400
+            
+            # Debugging: Print raw data received
+            print("Raw request data:", request.data)
+
+            # Attempt to parse JSON
+            data = request.get_json()
+            
+            # Debugging: Print parsed JSON
+            print("Parsed JSON data:", data)
+
+            # Validate required fields
+            if not data or 'user_id' not in data or 'baskets' not in data:
+                return jsonify({"error": "Missing required fields: 'user_id' and 'baskets'"}), 400
+
+            # Ensure the user exists
+            user = User.query.get(data['user_id'])
+            if not user:
+                return jsonify({"error": "User not found"}), 404
+
+            # Create a new receipt
+            new_receipt = Receipt(
+                user_id=data['user_id'],
+                baskets=data['baskets'],
+                created_at=datetime.utcnow()
+            )
+
+            db.session.add(new_receipt)
+            db.session.commit()
+
+            return jsonify(new_receipt.to_dict()), 201
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": f"Error creating receipt: {str(e)}"}), 500
+
+@app.route('/api/receipts/<int:receipt_id>', methods=['GET'])
 def get_receipt(receipt_id):
     try:
         receipt = Receipt.query.get(receipt_id)
@@ -3725,46 +3770,6 @@ def get_receipt(receipt_id):
         return jsonify(receipt.to_dict()), 200
     except Exception as e:
         return jsonify({"error": f"Error fetching receipt: {str(e)}"}), 500
-
-@app.route('/api/receipt', methods=['POST'])
-def create_receipt():
-    try:
-        # Check if request data exists
-        if not request.data:
-            return jsonify({"error": "Empty request body"}), 400
-        
-        # Debugging: Print raw data received
-        print("Raw request data:", request.data)
-
-        # Attempt to parse JSON
-        data = request.get_json()
-        
-        # Debugging: Print parsed JSON
-        print("Parsed JSON data:", data)
-
-        # Validate required fields
-        if not data or 'user_id' not in data or 'baskets' not in data:
-            return jsonify({"error": "Missing required fields: 'user_id' and 'baskets'"}), 400
-
-        # Ensure the user exists
-        user = User.query.get(data['user_id'])
-        if not user:
-            return jsonify({"error": "User not found"}), 404
-
-        # Create a new receipt
-        new_receipt = Receipt(
-            user_id=data['user_id'],
-            baskets=data['baskets'],
-            created_at=datetime.utcnow()
-        )
-
-        db.session.add(new_receipt)
-        db.session.commit()
-
-        return jsonify(new_receipt.to_dict()), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": f"Error creating receipt: {str(e)}"}), 500
 
 if __name__ == '__main__':
     # app.run(host="0.0.0.0", port=5555, debug=True)
