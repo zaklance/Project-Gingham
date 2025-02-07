@@ -39,6 +39,14 @@ export function convertToLocalDate(gmtDateString) {
     });
 }
 
+export function formatToLocalDateString(date) {
+    return new Date(date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+    });
+}
+
 export const formatTime = (time) => {
     const [hour, minute] = time.split(':');
     const formattedHour = hour.padStart(2, '0');

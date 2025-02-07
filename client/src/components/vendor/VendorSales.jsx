@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { timeConverter, convertToLocalDate, formatDate } from '../../utils/helpers';
+import { timeConverter, convertToLocalDate, formatToLocalDateString } from '../../utils/helpers';
 import Chart from 'chart.js/auto';
 import PulseLoader from 'react-spinners/PulseLoader';
 import VendorActiveVendor from './VendorActiveVendor';
@@ -31,29 +31,18 @@ function VendorSales() {
         "Year": 365,
     }
 
-    function getDatesForRange(range = 31, baskets = []) {
+    function getDatesForRange(range = 31) {
         const dates = [];
         const today = new Date();
-
-        if (range < 0) {
-            // Future range (moving forward in time)
-            for (let i = 0; i < Math.abs(range); i++) {
-                const currentDate = new Date(today);
-                currentDate.setDate(today.getDate() + i);
-                dates.push(currentDate.toDateString()); // Use full date format
-            }
-        } else {
-            // Past range (moving backward in time)
-            for (let i = 0; i < range; i++) {
-                const currentDate = new Date(today);
-                currentDate.setDate(today.getDate() - i);
-                dates.push(currentDate.toDateString()); // Use full date format
-            }
-            dates.reverse(); // Reverse to keep chronological order
+    
+        for (let i = 0; i < range; i++) {
+            const currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+            dates.push(formatToLocalDateString(currentDate)); // Use new formatting function
         }
-
-        return dates;
+    
+        return dates.reverse(); // Keep chronological order
     }
+    
 
     const fetchVendorId = async () => {
         if (!vendorUserId) {
@@ -139,45 +128,48 @@ function VendorSales() {
             chartRef.current.destroy();
         }
 
-        // Process baskets and filter based on the selected date range
         function processBaskets(baskets) {
-            const isFuture = selectedRangeGraph < 0;
-
-            // Get allowed dates based on the range
-            const allowedDates = getDatesForRange(selectedRangeGraph).map((date) =>
-                new Date(date).toDateString()
-            );
-
-            // Filter baskets based on allowed dates
+            const allowedDates = getDatesForRange(selectedRangeGraph);
+        
+            console.log("Allowed Dates:", allowedDates);
+        
             const filteredBaskets = baskets.filter((basket) => {
-                const basketDate = new Date(basket.sale_date).toDateString();
+                const basketDate = formatToLocalDateString(basket.sale_date);
+                console.log("Checking Sale Date:", basketDate, "Allowed?", allowedDates.includes(basketDate));
                 return allowedDates.includes(basketDate);
             });
-
+        
+            console.log("Filtered Baskets:", filteredBaskets);
+        
             const soldData = {};
             const unsoldData = {};
-
-            // Group baskets by sale_date and categorize into sold/unsold
+        
             filteredBaskets.forEach((basket) => {
-                const basketDate = new Date(basket.sale_date).toDateString(); // Normalize date
+                const basketDate = formatToLocalDateString(basket.sale_date);
                 if (basket.is_sold) {
                     soldData[basketDate] = (soldData[basketDate] || 0) + 1;
                 } else {
                     unsoldData[basketDate] = (unsoldData[basketDate] || 0) + 1;
                 }
             });
-
+        
             return { soldData, unsoldData };
         }
         
         const { soldData, unsoldData } = processBaskets(baskets);
+
+        const xAxisLabels = getDatesForRange(selectedRangeGraph).map(date => {
+            const d = new Date(date);
+            d.setDate(d.getDate() - 1);
+            return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        });        
         
         const data = {
             labels: getDatesForRange(selectedRangeGraph),
             datasets: [
                 {
                     label: 'Sold Baskets',
-                    data: getDatesForRange(selectedRangeGraph).map(date => soldData[date] || 0),
+                    data: xAxisLabels.map(date => soldData[date] || 0),
                     borderColor: "#007BFF",
                     backgroundColor: "#6c7ae0",
                     borderWidth: 2,
@@ -186,7 +178,7 @@ function VendorSales() {
                 },
                 {
                     label: 'Unsold Baskets',
-                    data: getDatesForRange(selectedRangeGraph).map(date => unsoldData[date] || 0),
+                    data: xAxisLabels.map(date => unsoldData[date] || 0),
                     borderColor: "#ff6699",
                     backgroundColor: "#ff806b",
                     borderWidth: 2,
