@@ -64,7 +64,7 @@ const ReceiptDocument = ({ receipt, page }) => {
                             <View style={styles.rowItem}>
                                 <Text>Price: ${item.price.toFixed(2)}</Text>
                                 <Text>{item.vendor_name}</Text>
-                                <Text>{item.location}</Text>
+                                <Text>{item.market_location}</Text>
                             </View>
                         </View>
                     ))

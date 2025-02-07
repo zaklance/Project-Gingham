@@ -3,7 +3,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { receiptDateConverter } from '../../utils/helpers';
 import Receipt from './Receipt';
 
-function BasketSales({ salesHistitemory }) {
+function BasketSales() {
     const [receipts, setReceipts] = useState(null);
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'))
