@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect,useState } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 
-function BasketSales() {
-    const userId = parseInt(localStorage.getItem('user_id'));
-    const [receipts, setReceipts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+function BasketSales({ salesHistory }) {
+    const [receipts, setReceipts] = useState(null);
+
+    const userId = parseInt(globalThis.localStorage.getItem('user_id'))
 
     useEffect(() => {
         if (!userId || isNaN(userId)) {
@@ -32,31 +31,6 @@ function BasketSales() {
             });
     }, [userId]);
 
-    const addToCalendar = (basket) => {
-        if (!basket) return;
-
-        const { market_location, vendor_name, sale_date, pickup_start, pickup_end } = basket;
-        if (!sale_date || !pickup_start || !pickup_end) return;
-
-        const startDateTime = new Date(sale_date);
-        startDateTime.setHours(...pickup_start.split(":"));
-        const endDateTime = new Date(sale_date);
-        endDateTime.setHours(...pickup_end.split(":"));
-
-        const startISO = startDateTime.toISOString().replace(/-|:|\.\d+/g, "");
-        const endISO = endDateTime.toISOString().replace(/-|:|\.\d+/g, "");
-
-        const eventTitle = `Pickup from ${vendor_name}`;
-        const eventDetails = `Pickup your order from ${vendor_name} at ${market_location}.`;
-
-        const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&details=${encodeURIComponent(eventDetails)}&location=${encodeURIComponent(market_location)}&dates=${startISO}/${endISO}`;
-
-        window.open(googleCalUrl, "_blank");
-    };
-
-    if (loading) return <p>Loading sales history...</p>;
-    if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
-
     return (
         <div>
             <h2>Basket History</h2>
@@ -67,74 +41,35 @@ function BasketSales() {
                         <tr>
                             <th>Market</th>
                             <th>Vendor</th>
-                            <th>Pickup Date</th>
-                            <th>Pickup Time</th>
+                            <th>Sale Date</th>
                             <th>Price</th>
                             <th>Receipt</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {receipts.length > 0 ? (
-                            receipts
-                                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-                                .map((receipt, index) => {
-                                    const firstBasket = receipt.baskets.length > 0 ? receipt.baskets[0] : null;
-
-                                    return (
-                                        <tr key={index}>
-                                
-                                            <td>{firstBasket?.market_location || 'Unknown Market'}</td>  
-
-                                            <td>{firstBasket?.vendor_name || 'Unknown Vendor'}</td>  
-
-                                            <td className='table-center nowrap'>
-                                                {firstBasket?.sale_date 
-                                                    ? new Date(firstBasket.sale_date).toLocaleDateString() 
-                                                    : 'N/A'}
-                                            </td>
-
-                                            {/* Google Calendar Link */}
-                                            <td className='table-center nowrap'>
-                                                {firstBasket?.pickup_start && firstBasket?.pickup_end ? (
-                                                    <a
-                                                        href="#"
-                                                        className="link-edit"
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            addToCalendar(firstBasket);
-                                                        }}
-                                                    >
-                                                        {firstBasket.pickup_start} - {firstBasket.pickup_end}
-                                                    </a>
-                                                ) : 'N/A'}
-                                            </td>
-
-                                            {/* Total Price Calculation */}
-                                            <td className='table-center'>
-                                                ${receipt.baskets.reduce((total, item) => total + (item.price * (item.quantity || 1)), 0).toFixed(2)}
-                                            </td>
-
-                                            {/* Receipt PDF Download */}
-                                            <td className='table-center'>
-                                                {receipt.id ? (
-                                                    <Link 
-                                                        className='icon-file' 
-                                                        to={`/user/receipt-pdf/${receipt.id}`} 
-                                                        target="_blank" 
-                                                        rel="noopener noreferrer"
-                                                    >
-                                                        📄
-                                                    </Link>
-                                                ) : (
-                                                    <span>No Receipt</span>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    );
-                                })
+                        {salesHistory.length > 0 ? (
+                            salesHistory
+                                .sort((a, b) => new Date(b.sale_date) - new Date(a.sale_date))
+                                .map((history, index) => (
+                                    <tr key={index}>
+                                        <td>
+                                            <Link className='btn-nav' to={`/user/markets/${history.market_id}`}>
+                                                {history.market_name || 'No Market Name'}
+                                            </Link>
+                                        </td>
+                                        <td>
+                                            <Link className='btn-nav' to={`/user/vendors/${history.vendor_id}`}>
+                                                {history.vendor_name || 'No Vendor Name'}
+                                            </Link>
+                                        </td>
+                                        <td className='table-center nowrap'>{history.sale_date || 'N/A'}</td>
+                                        <td className='table-center'>${history.price ? history.price.toFixed(2) : 'N/A'}</td>
+                                        <td className='table-center'><Link className='icon-file' to={`/user/profile/${userId}`} target="_blank" rel="noopener noreferrer">&emsp;</Link></td>
+                                    </tr>
+                                ))
                         ) : (
                             <tr>
-                                <td colSpan="6">No sales history available</td>
+                                <td colSpan="4">No sales history available</td>
                             </tr>
                         )}
                     </tbody>
@@ -145,3 +80,4 @@ function BasketSales() {
 }
 
 export default BasketSales;
+
