@@ -1355,6 +1355,7 @@ ul {
   visibility: visible;
 }
 
+
 .btn-notif {
   padding: 0px 4px;
   margin-right: 8px;
@@ -1364,14 +1365,18 @@ ul {
   border-style: solid; */
 }
 
+div:has(.btn-unread)>.btn-notif {
+  margin-top: 6px;
+}
+
 .btn-unread {
   position: relative;
   background-color: #007BFF;
   height: 8px;
   width: 8px;
   border-radius: 8px;
-  top: 2px;
-  right: -6px;
+  top: -5px;
+  right: 96.75%;
 }
 
 .btn-unread:hover {
@@ -3294,5 +3299,15 @@ select:hover {
 
   .password-checklist {
     width: 100%;
+  }
+
+  .btn-unread {
+    position: relative;
+    background-color: #007BFF;
+    height: 8px;
+    width: 8px;
+    border-radius: 8px;
+    top: -5px;
+    right: 96%;
   }
 }

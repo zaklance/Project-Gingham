@@ -54,6 +54,7 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
 
 import json
 
+# User - New Event in Fav Market 
 @listens_for(Event, 'after_insert')
 def vendor_market_event_or_schedule_change(mapper, connection, target):
     session = Session(bind=connection)
@@ -147,7 +148,8 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
         print(f"Error in vendor_market_event_or_schedule_change: {e}")
     finally:
         session.close()
-        
+
+# User - New Event for Fav Vendor
 @listens_for(Event, 'after_insert')
 def track_fav_vendor_event(mapper, connection, target):
     if not target.vendor_id:  # Ensure the event is associated with a vendor
@@ -199,7 +201,7 @@ def track_fav_vendor_event(mapper, connection, target):
                 notification = UserNotification(
                     subject="Vendor Schedule Change",
                     message=f"The vendor '{vendor.name}' has updated their schedule temporarily.",
-                    link=f"/user/vendors",
+                    link=f"/user/vendors/{vendor.id}",
                     user_id=user.id,
                     vendor_id=vendor.id,
                     created_at=datetime.utcnow(),
@@ -231,6 +233,7 @@ def track_fav_vendor_event(mapper, connection, target):
     finally:
         session.close()
 
+# User - New Vendor in Fav Market
 @listens_for(VendorMarket, 'after_insert')
 def notify_new_vendor_in_favorite_market(mapper, connection, target):
     try:
@@ -280,7 +283,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
             notifications.append({
                 "subject": "New Vendor in Your Favorite Market!",
                 "message": f"The vendor '{vendor.name}' has been added to your favorite market '{market.name}'.",
-                "link": f"/user/markets/{market.id}#vendors",
+                "link": f"/user/markets/{market.id}?day={market_day.id}",
                 "user_id": user.id,
                 "market_id": market.id,
                 "vendor_id": vendor.id,
@@ -295,7 +298,8 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
 
     except Exception as e:
         print(f"Error in notify_new_vendor_in_favorite_market: {e}")
-        
+
+# Admin - Reported Vendor Review
 @listens_for(VendorReview, 'after_update')
 def notify_admin_vendor_review_reported(mapper, connection, target):
     if target.is_reported:
@@ -329,6 +333,7 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
         except Exception as e:
             print(f"Error creating admin notification for Vendor Review: {e}")
 
+# Admin - Reported Market Review
 @listens_for(MarketReview, 'after_update')
 def notify_admin_market_review_reported(mapper, connection, target):
     if target.is_reported:
@@ -362,6 +367,7 @@ def notify_admin_market_review_reported(mapper, connection, target):
         except Exception as e:
             print(f"Error creating admin notification for Market Review: {e}")
 
+# # User Fav Vendor Added Baskets
 # @listens_for(Basket, 'after_insert')
 # def fav_vendor_new_baskets(mapper, connection, target):
 #     session = Session(bind=connection)
@@ -436,6 +442,7 @@ def notify_admin_market_review_reported(mapper, connection, target):
 #     finally:
 #         session.close()
 
+# User - New Blog Post
 @listens_for(Blog, 'after_insert')
 def notify_users_new_blog(mapper, connection, target):
     session = Session(bind=connection)
@@ -474,7 +481,8 @@ def notify_users_new_blog(mapper, connection, target):
         print(f"Error in notify_users_new_blog: {e}")
     finally:
         session.close()
-        
+
+# Vendor User - New Market Event     
 @listens_for(Event, 'after_insert')
 def vendor_market_new_event(mapper, connection, target):
     session = Session(bind=connection)
@@ -524,7 +532,8 @@ def vendor_market_new_event(mapper, connection, target):
         print(f"Error in vendor_market_new_event: {e}")
     finally:
         session.close()
-        
+
+# Vendor User - Basket Sold   
 @listens_for(Basket, 'after_update')
 def vendor_basket_sold(mapper, connection, target):
     session = Session(bind=connection)
