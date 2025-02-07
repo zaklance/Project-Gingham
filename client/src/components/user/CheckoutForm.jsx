@@ -5,7 +5,7 @@ import { useStripe, useElements } from "@stripe/react-stripe-js";
 import { toast } from 'react-toastify';
 import { timeConverter } from "../../utils/helpers";
 import objectHash from 'object-hash';
-import ReceiptPdf from "./Receipt";
+import Receipt from "./Receipt";
 
 function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAmountInCart }) {
     const stripe = useStripe();
@@ -96,12 +96,13 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                             name: item.name,
                             price: item.price,
                             quantity: item.quantity,
+                            market_id: item.market_id,
                             market_location: item.location,
                             vendor_id: item.vendor_id,
                             vendor_name: item.vendor_name,
                             pickup_start: item.pickup_start,
                             pickup_end: item.pickup_end,
-                            sale_date: item.sale_date
+                            sale_date: item.sale_date,
                         }))
                     }),
                 });
@@ -136,7 +137,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
         <>
             <div className="flex-space-between flex-bottom-align">
                 <h1 className="title-med">Payments</h1>
-                <button className="btn btn-cart"><Link to="/user/your-cart">Back</Link></button>
+                <button className="btn btn-cart"><Link to="/user/cart">Back</Link></button>
             </div>
             <form id="payment-form" className="flex-space-between box-bounding" onSubmit={handleSubmit}>
                 <div className="width-fit">
@@ -190,7 +191,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                         //     View Receipt
                         // </button>
                         <div className="margin-t-16">
-                            <ReceiptPdf receiptId={receiptId} />
+                            <Receipt receiptId={receiptId} page={"checkout"} />
                         </div>
                     )}
                 </div>

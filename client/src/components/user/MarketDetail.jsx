@@ -232,6 +232,7 @@ function MarketDetail ({ match }) {
             const updatedCartItems = [...cartItems, {
                 vendor_name: vendorName,
                 vendor_id: vendorId,
+                market_id: market.id,
                 location: market.name,
                 id: basketInCart.id,
                 price: basketInCart.price,

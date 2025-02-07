@@ -117,6 +117,7 @@ function VendorDetail() {
             const updatedCartItems = [...cartItems, {
                 vendor_name: vendor.name,
                 vendor_id: vendor.id,
+                market_id: marketDay.markets.id,
                 location: marketDay.markets.name,
                 id: basketInCart.id,
                 price: basketInCart.price,
