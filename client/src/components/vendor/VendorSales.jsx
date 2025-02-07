@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { timeConverter } from '../../utils/helpers';
+import { timeConverter, convertToLocalDate, formatDate } from '../../utils/helpers';
 import Chart from 'chart.js/auto';
 import PulseLoader from 'react-spinners/PulseLoader';
 import VendorActiveVendor from './VendorActiveVendor';
@@ -55,23 +55,6 @@ function VendorSales() {
         return dates;
     }
 
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        const day = date.getDate();
-        const month = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date);
-        return `${month} ${day}`;
-    }
-
-    function convertToLocalDate(gmtDateString) {
-        const gmtDate = new Date(gmtDateString);
-        const localDate = gmtDate.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-        return localDate;
-    }
-
     const fetchVendorId = async () => {
         if (!vendorUserId) {
             console.error("No vendor user ID found in local storage");
@@ -114,6 +97,7 @@ function VendorSales() {
 
     useEffect(() => {
         const fetchSalesHistory = async () => {
+            if (!vendorId) return;
             const token = localStorage.getItem('vendor_jwt-token');
             if (!token) {
                 console.error('JWT token not found in localStorage');
@@ -138,7 +122,7 @@ function VendorSales() {
             }
         };
         fetchSalesHistory();
-    }, []);
+    }, [vendorId]);
 
     const handleDateChangeGraph = (event) => {
         setSelectedRangeGraph(event.target.value);
@@ -352,8 +336,7 @@ function VendorSales() {
                             <tr>
                                 <th>Sale Date</th>
                                 <th>Market</th>
-                                <th>Pick Up Start</th>
-                                <th>Pick Up End</th>
+                                <th>Pick Up Duration</th>
                                 <th>Basket Value</th>
                                 <th>Price</th>
                                 <th>Total</th>
@@ -386,8 +369,7 @@ function VendorSales() {
                                                     {history.market_name || 'No Market Name'}
                                                 </Link>
                                             </td>
-                                            <td className='table-center'> {history.pickup_start ? timeConverter(history.pickup_start) : 'N/A'} </td>
-                                            <td className='table-center'> {history.pickup_end ? timeConverter(history.pickup_end) : 'N/A'} </td>
+                                            <td className='table-center'> {history.pickup_start ? timeConverter(history.pickup_start) : 'N/A'} - {history.pickup_end ? timeConverter(history.pickup_end) : 'N/A'} </td>
                                             <td className='table-center'> ${history.value ? history.value.toFixed(2) : 'N/A'} </td>
                                             <td className='table-center'> ${history.price ? history.price.toFixed(2) : 'N/A'} </td>
                                             <td className='table-center'> {history.total_baskets || 0} </td>
