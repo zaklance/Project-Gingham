@@ -392,7 +392,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             <NavLink className='nav-tab color-3 btn-nav' to="/user/vendors" state={{ resetFilters: true }} title="Vendors">Vendors</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav nowrap' to="/user/your-cart" title="Cart">Cart {amountInCart > 0 ? `(${amountInCart})` : null}</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav nowrap' to="/user/cart" title="Cart">Cart {amountInCart > 0 ? `(${amountInCart})` : null}</NavLink>
                         </li>
                     </>
                 )}

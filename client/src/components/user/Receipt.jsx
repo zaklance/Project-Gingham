@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     footer: { position: "absolute", bottom: 30 },
 });
 
-const ReceiptDocument = ({ receipt }) => {
+const ReceiptDocument = ({ receipt, page }) => {
     // console.log("Receipt Data:", receipt); // ✅ Debugging: Check fetched data in console
     
     const basketItems = Array.isArray(receipt?.baskets) ? receipt.baskets : []; // ✅ Ensure it's always an array
@@ -87,7 +87,7 @@ const ReceiptDocument = ({ receipt }) => {
     );
 };
 
-const ReceiptPdf = ({ receiptId }) => {
+const Receipt = ({ receiptId, page }) => {
     const [receipt, setReceipt] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -114,29 +114,40 @@ const ReceiptPdf = ({ receiptId }) => {
                 console.error("Failed to fetch receipt:", err);
                 setLoading(false);
             });
-    }, [id]);
+    }, [receiptId]);
 
     if (loading) return <p>Loading receipt...</p>;
     if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
     if (!receipt) return <p>No receipt found.</p>;
 
     return (
-        <div>
+        <>
             {/* <h2 className="text-center">Receipt Preview</h2>
             <PDFViewer style={{ width: '100%', height: '600px' }}>
                 <ReceiptDocument receipt={receipt} />
             </PDFViewer> */}
-            <div className="text-center">
-                <PDFDownloadLink 
-                    document={<ReceiptDocument receipt={receipt} />} 
+            {page === 'checkout' && (
+                <div className="text-center">
+                    <PDFDownloadLink 
+                        document={<ReceiptDocument receipt={receipt} />} 
+                        fileName={`receipt_${receipt.id}.pdf`}
+                        className="btn btn-add"
+                    >
+                        {({ loading }) => (loading ? "Preparing download..." : "Download Receipt")}
+                    </PDFDownloadLink>
+                </div>
+            )}
+            {page === 'profile' && (
+                <PDFDownloadLink
+                    document={<ReceiptDocument receipt={receipt} />}
                     fileName={`receipt_${receipt.id}.pdf`}
-                    className="btn btn-add"
-                >
-                    {({ loading }) => (loading ? "Preparing download..." : "Download Receipt")}
+                    className="icon-file"
+                >                        
+                    &emsp;
                 </PDFDownloadLink>
-            </div>
-        </div>
+            )}
+        </>
     );
 };
 
-export default ReceiptPdf;
+export default Receipt;

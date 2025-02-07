@@ -221,7 +221,7 @@ const router = createBrowserRouter([
                     { path: "markets/:id", element: <MarketDetail /> },
                     { path: "vendors", element: <Vendors /> },
                     { path: "vendors/:id", element: <VendorDetail /> },
-                    { path: "your-cart", element: <Cart /> },
+                    { path: "cart", element: <Cart /> },
                     { path: "pick-up", element: <UserAuthRoute><PickUp /></UserAuthRoute> },
                     { path: "help", element: <UserFAQs /> },
                     { path: "payment", element: <Payment /> },

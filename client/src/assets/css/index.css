@@ -1980,6 +1980,31 @@ link {
   height: 20px;
 }
 
+.table-history {
+  border-collapse: collapse;
+}
+
+.group-bar {
+  width: 8px;
+  background-color: #b5b5b5;
+  border-left: 0px solid #b5b5b5;
+}
+
+.group-bar-first {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.group-bar-last {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.spacer-row td {
+  height: 4px;
+  background: transparent;
+}
+
 select {
   background: #fffa9c;
   /* -webkit-appearance: none; */
@@ -2358,6 +2383,7 @@ select:hover {
 
 .icon-file:hover {
   background-image: url('../images/icons/icons8-document.gif');
+  background-color: transparent;
 }
 
 .icon-report, .icon-report:hover {
