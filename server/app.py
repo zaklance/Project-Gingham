@@ -3715,6 +3715,58 @@ def blog(id):
             db.session.rollback()
             return {'error': f'Failed to delete Blog: {str(e)}'}, 500
 
+@app.route('/api/receipts', methods=['GET', 'POST'])
+def get_user_receipts():
+    if request.method == 'GET':
+        try:
+            user_id = request.args.get("user_id", type=int)
+            if not user_id:
+                return jsonify({"error": "Missing user_id parameter"}), 400
+
+            user = User.query.get(user_id)
+            if not user:
+                return jsonify({"error": "User not found"}), 404
+
+            receipts = Receipt.query.filter_by(user_id=user_id).order_by(Receipt.created_at.desc()).all()
+
+            return jsonify([receipt.to_dict() for receipt in receipts]), 200
+        except Exception as e:
+            return jsonify({"error": f"Error fetching receipts: {str(e)}"}), 500
+
+    if request.method == 'POST':
+        try:
+            if not request.data:
+                return jsonify({"error": "Empty request body"}), 400
+
+            print("Raw request data:", request.data)
+
+            data = request.get_json()
+
+            print("Parsed JSON data:", data)
+
+            if not data or 'user_id' not in data or 'baskets' not in data:
+                return jsonify({"error": "Missing required fields: 'user_id' and 'baskets'"}), 400
+
+            user = User.query.get(data['user_id'])
+            if not user:
+                return jsonify({"error": "User not found"}), 404
+
+            created_at = datetime.utcnow().date()
+
+            new_receipt = Receipt(
+                user_id=data['user_id'],
+                baskets=data['baskets'],
+                created_at=created_at
+            )
+
+            db.session.add(new_receipt)
+            db.session.commit()
+
+            return jsonify(new_receipt.to_dict()), 201
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": f"Error creating receipt: {str(e)}"}), 500
+
 @app.route('/api/receipts/<int:receipt_id>', methods=['GET'])
 def get_receipt(receipt_id):
     try:
@@ -3725,67 +3777,6 @@ def get_receipt(receipt_id):
         return jsonify(receipt.to_dict()), 200
     except Exception as e:
         return jsonify({"error": f"Error fetching receipt: {str(e)}"}), 500
-
-@app.route('/api/receipts', methods=['GET'])
-def get_user_receipts():
-    try:
-        user_id = request.args.get("user_id", type=int)
-        if not user_id:
-            return jsonify({"error": "Missing user_id parameter"}), 400
-
-        # Ensure the user exists
-        user = User.query.get(user_id)
-        if not user:
-            return jsonify({"error": "User not found"}), 404
-
-        # Fetch all receipts for the given user
-        receipts = Receipt.query.filter_by(user_id=user_id).order_by(Receipt.created_at.desc()).all()
-
-        return jsonify([receipt.to_dict() for receipt in receipts]), 200
-    except Exception as e:
-        return jsonify({"error": f"Error fetching receipts: {str(e)}"}), 500
-
-@app.route('/api/receipts', methods=['POST'])
-def create_receipt():
-    try:
-        # Check if request data exists
-        if not request.data:
-            return jsonify({"error": "Empty request body"}), 400
-
-        # Debugging: Print raw data received
-        print("Raw request data:", request.data)
-
-        # Attempt to parse JSON
-        data = request.get_json()
-
-        # Debugging: Print parsed JSON
-        print("Parsed JSON data:", data)
-
-        # Validate required fields
-        if not data or 'user_id' not in data or 'baskets' not in data:
-            return jsonify({"error": "Missing required fields: 'user_id' and 'baskets'"}), 400
-
-             # Ensure the user exists
-            user = User.query.get(data['user_id'])
-            if not user:
-                return jsonify({"error": "User not found"}), 404
-
-            created_at = datetime.utcnow().date()
-
-            # Create a new receipt
-            new_receipt = Receipt(
-                user_id=data['user_id'],
-                baskets=data['baskets'],
-                created_at=created_at
-            )
-
-        db.session.add(new_receipt)
-        db.session.commit()
-
-        return jsonify(new_receipt.to_dict()), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": f"Error creating receipt: {str(e)}"}), 500
 
 if __name__ == '__main__':
     # app.run(host="0.0.0.0", port=5555, debug=True)
