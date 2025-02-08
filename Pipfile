@@ -22,6 +22,7 @@ pyjwt = "*"
 python-dotenv = "*"
 flask-jwt-extended = "*"
 sendgrid = "*"
+twilio = "*"
 
 [dev-packages]
 
