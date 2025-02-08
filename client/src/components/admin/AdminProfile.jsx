@@ -6,6 +6,7 @@ import PasswordChecklist from "react-password-checklist"
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import { toast } from 'react-toastify';
 
 
 function AdminProfile () {
@@ -180,7 +181,10 @@ function AdminProfile () {
 
     const handleSaveEmail = async () => {
         if (changeEmail !== changeConfirmEmail) {
-            alert("Emails do not match.");
+            // alert("Emails do not match.");
+            toast.error('Emails do not match.', {
+                autoClose: 4000,
+            });
             return;
         }
         try {
@@ -199,24 +203,36 @@ function AdminProfile () {
                 setChangeEmail('')
                 setChangeConfirmEmail('')
                 setEmailMode(false);
-                alert('Email will not update until you check your email and click the verify link.')
+                // alert('Email will not update until you check your email and click the verify link.')
+                toast.warning('Email will not update until you check your email and click the verify link.', {
+                    autoClose: 8000,
+                });
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status:', response.status);
                 console.log('Response text:', await response.text());
             }
         } catch (error) {
-            console.error('Error saving changes:', error);
+            // console.error('Error saving changes:', error);
+            toast.error(`Error saving changes: ${error}`, {
+                autoClose: 5000,
+            });
         }
     };
 
     const handleSavePassword = async () => {
         if (changePassword !== changeConfirmPassword) {
-            alert("Passwords do not match.");
+            // alert("Passwords do not match.");
+            toast.error('Passwords do not match.', {
+                autoClose: 4000,
+            });
             return;
         }
         if (!isValid) {
-            alert("Password does not meet requirements.");
+            // alert("Password does not meet requirements.");
+            toast.error('Password does not meet requirements.', {
+                autoClose: 4000,
+            });
             return;
         }
         try {
@@ -245,7 +261,10 @@ function AdminProfile () {
                 console.log('Response text:', await response.text());
             }
         } catch (error) {
-            console.error('Error saving changes:', error);
+            // console.error('Error saving changes:', error);
+            toast.error(`Error saving changes: ${error}`, {
+                autoClose: 5000,
+            });
         }
     };
 
@@ -511,7 +530,6 @@ function AdminProfile () {
                                     <FormGroup>
                                         <FormControlLabel control={<Switch checked={tempAdminSettings.text_report_review} onChange={() => handleSwitchChange('text_report_review')} color={'secondary'} />} label="Review is reported"/>
                                         <FormControlLabel control={<Switch checked={tempAdminSettings.text_product_request} onChange={() => handleSwitchChange('text_product_request')} color={'secondary'} />} label="Vendor requests new product category" />
-                                        <FormControlLabel control={<Switch checked={tempAdminSettings.text_new_blog} onChange={() => handleSwitchChange('text_new_blog')} color={'secondary'} />} label="A new blog has been posted" />
                                     </FormGroup>
                                 )}
                                 <button className='btn-edit' onClick={handleSaveSettings}>Save</button>

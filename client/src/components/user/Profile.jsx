@@ -9,6 +9,8 @@ import BasketSales from './BasketSales';
 import PasswordStrengthBar from 'react-password-strength-bar';
 import PasswordChecklist from "react-password-checklist"
 import ProfileFavorites from './ProfileFavorites';
+import { toast } from 'react-toastify';
+import PulseLoader from 'react-spinners/PulseLoader';
 
 
 function Profile({ marketData }) {
@@ -317,10 +319,12 @@ function Profile({ marketData }) {
 
     const handleSaveEmail = async () => {
         if (changeEmail !== changeConfirmEmail) {
-            alert("Emails do not match.");
+            // alert("Emails do not match.");
+            toast.error('Emails do not match.', {
+                autoClose: 4000,
+            });
             return;
         }
-    
         setIsSendingEmail(true);
     
         try {
@@ -336,18 +340,24 @@ function Profile({ marketData }) {
                 }),
             });
     
-            if (emailChangeResponse.ok) {
+            if (response.ok) {
                 setChangeEmail('');
                 setChangeConfirmEmail('');
                 setEmailMode(false);
-                alert('Email will not update until you click the verification link in the sent email.')
+                // alert('Email will not update until you click the verification link in the sent email.')
+                toast.warning('Email will not update until you check your email and click the verify link.', {
+                    autoClose: 8000,
+                });
             } else {
                 console.log('Failed to save changes');
-                console.log('Response status:', emailChangeResponse.status);
-                console.log('Response text:', await emailChangeResponse.text());
+                console.log('Response status:', response.status);
+                console.log('Response text:', await response.text());
             }
         } catch (error) {
-            console.error('Error saving changes:', error);
+            // console.error('Error saving changes:', error);
+            toast.error(`Error saving changes: ${error}`, {
+                autoClose: 5000,
+            });
         } finally {
             setIsSendingEmail(false);
         }
@@ -355,11 +365,17 @@ function Profile({ marketData }) {
 
     const handleSavePassword = async () => {
         if (changePassword !== changeConfirmPassword) {
-            alert("Passwords do not match.");
+            // alert("Passwords do not match.");
+            toast.error('Passwords do not match.', {
+                autoClose: 4000,
+            });
             return;
         }
         if (!isValid) {
-            alert("Password does not meet requirements.");
+            // alert("Password does not meet requirements.");
+            toast.error('Password does not meet requirements.', {
+                autoClose: 4000,
+            });
             return;
         }
         try {
@@ -388,7 +404,10 @@ function Profile({ marketData }) {
                 console.log('Response text:', await response.text());
             }
         } catch (error) {
-            console.error('Error saving changes:', error);
+            // console.error('Error saving changes:', error);
+            toast.error(`Error saving changes: ${error}`, {
+                autoClose: 5000,
+            });
         }
     };
 
@@ -854,9 +873,19 @@ function Profile({ marketData }) {
                                                         required
                                                     />
                                                 </div>
-                                                <button className='btn-edit' onClick={handleSaveEmail} disabled={isSendingEmail}>
-                                                    {isSendingEmail ? "Sending Email..." : "Save Changes"}
-                                                </button>
+                                                {isSendingEmail ? (
+                                                    <PulseLoader
+                                                        className='margin-t-16'
+                                                        color={'#ff806b'}
+                                                        size={10}
+                                                        aria-label="Loading Spinner"
+                                                        data-testid="loader"
+                                                    />
+                                                ) : (
+                                                    <button className='btn-edit' onClick={handleSaveEmail} disabled={isSendingEmail}>
+                                                        Save Changes
+                                                    </button>
+                                                )}
                                                 <button className='btn-edit' onClick={handleEmailToggle} disabled={isSendingEmail}>
                                                     Cancel
                                                 </button>
@@ -917,7 +946,6 @@ function Profile({ marketData }) {
                                 <FormControlLabel control={<Switch checked={tempUserSettings.text_fav_market_new_basket} onChange={() => handleSwitchChange('text_fav_market_new_basket')} color={'secondary'} />} label="New basket for sale by a favorited market" />
                                 <FormControlLabel control={<Switch checked={tempUserSettings.text_fav_vendor_schedule_change} onChange={() => handleSwitchChange('text_fav_vendor_schedule_change')} color={'secondary'} />} label="Favorite vendor changes schedule" />
                                 <FormControlLabel control={<Switch checked={tempUserSettings.text_basket_pickup_time} onChange={() => handleSwitchChange('text_basket_pickup_time')} color={'secondary'} />} label="It is pickup time for a basket you purchased" />
-                                <FormControlLabel control={<Switch checked={tempUserSettings.text_new_blog} onChange={() => handleSwitchChange('text_new_blog')} color={'secondary'} />} label="A new blog has been posted" />
                             </FormGroup>
                         )}
                         <button className='btn-edit' onClick={handleSaveSettings}>Save</button>

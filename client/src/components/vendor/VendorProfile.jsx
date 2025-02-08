@@ -14,6 +14,7 @@ import VendorLocations from './VendorLocations';
 import VendorTeamRequest from './VendorTeamRequest';
 import VendorActiveVendor from './VendorActiveVendor';
 import VendorTeamLeave from './VendorTeamLeave';
+import { toast } from 'react-toastify';
 
 function VendorProfile () {
     const { id } = useParams();
@@ -154,7 +155,10 @@ function VendorProfile () {
 
     const handleSaveEmail = async () => {
         if (changeEmail !== changeConfirmEmail) {
-            alert("Emails do not match.");
+            // alert("Emails do not match.");
+            toast.error('Emails do not match.', {
+                autoClose: 4000,
+            });
             return;
         }
         try {
@@ -173,28 +177,40 @@ function VendorProfile () {
                 setChangeEmail('')
                 setChangeConfirmEmail('')
                 setEmailMode(false);
-                alert('Email will not update until you check your email and click the verify link.')
+                // alert('Email will not update until you check your email and click the verify link.')
+                toast.warning('Email will not update until you check your email and click the verify link.', {
+                    autoClose: 8000,
+                });
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status:', response.status);
                 console.log('Response text:', await response.text());
             }
         } catch (error) {
-            console.error('Error saving changes:', error);
+            // console.error('Error saving changes:', error);
+            toast.error(`Error saving changes: ${error}`, {
+                autoClose: 5000,
+            });
         }
     };
 
     const handleSavePassword = async () => {
         if (changePassword !== changeConfirmPassword) {
-            alert("Passwords do not match.");
+            // alert("Passwords do not match.");
+            toast.error('Passwords do not match.', {
+                autoClose: 4000,
+            });
             return;
         }
         if (!isValid) {
-            alert("Password does not meet requirements.");
+            // alert("Password does not meet requirements.");
+            toast.error('Password does not meet requirements.', {
+                autoClose: 4000,
+            });
             return;
         }
         try {
-            const response = await fetch(`/api/users/${id}/password`, {
+            const response = await fetch(`/api/vendor-users/${id}/password`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -212,14 +228,19 @@ function VendorProfile () {
                 setChangePassword('')
                 setChangeConfirmPassword('')
                 setPasswordMode(false);
-                alert('Password changed')
+                toast.success('Password changed', {
+                    autoClose: 2000,
+                });
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status:', response.status);
                 console.log('Response text:', await response.text());
             }
         } catch (error) {
-            console.error('Error saving changes:', error);
+            // console.error('Error saving changes:', error);
+            toast.error(`Error saving changes: ${error}`, {
+                autoClose: 5000,
+            });
         }
     };
 
@@ -858,7 +879,6 @@ function VendorProfile () {
                                     <FormGroup>
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.text_market_schedule_change} onChange={() => handleSwitchChange('text_market_schedule_change')} color={'secondary'} />} label="Market changes schedule" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.text_basket_sold} onChange={() => handleSwitchChange('text_basket_sold')} color={'secondary'} />} label="When a basket is sold" />
-                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.text_new_blog} onChange={() => handleSwitchChange('text_new_blog')} color={'secondary'} />} label="A new blog has been posted" />
                                     </FormGroup>
                                 )}
                                 <div>
