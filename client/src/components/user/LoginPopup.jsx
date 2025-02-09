@@ -189,6 +189,7 @@ function Login({ handlePopup }) {
             }
         } catch (error) {
             console.error("Error during signup:", error);
+            setIsLoading(false);
             alert("An unexpected error occurred. Please try again.");
         } finally {
             setIsLoading(false);

@@ -412,7 +412,7 @@ function VendorDetail() {
                             return (
                                 <div key={index} className="market-item" >
                                     <span className='width-40'>
-                                        <Link to={`/user/markets/${market.market_day.market_id}`} className="market-name">
+                                        <Link to={`/user/markets/${market.market_day.market_id}?day=${market.market_day.id}`} className="market-name">
                                             {marketDetail?.markets?.name || 'Loading...'}
                                         </Link>
                                         <br/>

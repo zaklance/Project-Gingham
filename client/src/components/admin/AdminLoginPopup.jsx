@@ -80,7 +80,8 @@ function Login({ handlePopup }) {
             alert("Password does not meet requirements.");
             return;
         }
-
+        
+        setIsLoading(true);
         const response = await fetch('/api/admin-signup', {
             method: 'POST',
             headers: {
@@ -117,7 +118,9 @@ function Login({ handlePopup }) {
             } else {
                 alert("Signup failed. Please check your details and try again.")
             }
+            setIsLoading(false);
         }
+        setIsLoading(false);
     };
 
     const togglePasswordVisibility = (field) => {

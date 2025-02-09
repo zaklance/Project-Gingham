@@ -94,7 +94,7 @@ const VendorTeamRequest = ({ className, vendorUserId, vendorUserData }) => {
         }
 
         try {
-            const response = await fetch('/api/create-vendor-notification', {
+            const response = await fetch('/api/vendor-notifications', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -166,7 +166,7 @@ const VendorTeamRequest = ({ className, vendorUserId, vendorUserData }) => {
     return (
         <div className={className || ''}>
             <div>
-                {notifications.length !== 0 ? (
+                {notifications?.some(notification => notification.subject === 'team-request') ? (
                     <div className="notification">
                         <p>Your request has been sent to the admins of <strong>{notifications.vendor_name}</strong> for approval.</p>
                         <button className="btn-edit" onClick={handleCancelRequest}>

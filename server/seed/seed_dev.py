@@ -1111,7 +1111,7 @@ def run():
     db.session.commit()
 
     market_favs = []
-    for i in range(200):
+    for i in range(300):
         market_id = randint(1, 40)
         user_id = randint(1, 51)
 
@@ -1341,8 +1341,8 @@ def run():
         user_id = choice(rand_user)
         is_sold = user_id is not None
         is_grabbed = bool(fake.boolean()) if is_sold else False
-        price = randint(5, 10)
-        value = price + randint(2, 8)
+        price = randint(6, 20)
+        value = price + randint(4, 8)
 
         bsk = Basket(
             vendor_id=selected_vm.vendor_id,

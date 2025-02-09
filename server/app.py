@@ -3328,7 +3328,7 @@ def notify_me_for_more_baskets():
         print(f"Error creating notification: {str(e)}")
         return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
 
-@app.route('/api/vendor-notifications', methods=['GET', 'DELETE'])
+@app.route('/api/vendor-notifications', methods=['GET', 'POST', 'DELETE'])
 @jwt_required()
 def fetch_vendor_notifications():
     vendor_id = request.args.get('vendor_id')
@@ -3367,6 +3367,44 @@ def fetch_vendor_notifications():
         
         return jsonify({'notifications': notifications_data}), 200
     
+    if request.method == 'POST':
+        data = request.get_json()
+
+        if not data or 'message' not in data or 'vendor_id' not in data:
+            return jsonify({'message': 'Invalid request data.'}), 400
+
+        try:
+            new_notification = VendorNotification(
+                subject=data['subject'],
+                message=data['message'],
+                link=data['link'],
+                user_id=data.get('user_id'),
+                market_id=data.get('market_id'),
+                vendor_id=data['vendor_id'],
+                vendor_user_id=data.get('vendor_user_id'),
+                created_at=datetime.utcnow(),
+                is_read=False
+            )
+            db.session.add(new_notification)
+            db.session.commit()
+
+            return jsonify({
+                'id': new_notification.id,
+                'subject': new_notification.subject,
+                'message': new_notification.message,
+                'link': new_notification.link,
+                'user_id': new_notification.user_id,
+                'market_id': new_notification.market_id,
+                'vendor_id': new_notification.vendor_id,
+                'vendor_user_id': new_notification.vendor_user_id,
+                'is_read': new_notification.is_read
+            }), 201
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error creating notification: {str(e)}")
+            return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
+
     if request.method == 'DELETE':
         query = VendorNotification.query
         if vendor_user_id:

@@ -489,7 +489,7 @@ function MarketDetail ({ match }) {
             <div className='flex-start m-flex-wrap'>
                 <label><h4>Schedule:</h4></label>
                 {marketDays.length === 1 ? (
-                    <h4>&ensp; {weekDay[0]}, &ensp;</h4>
+                    <h4>&ensp; {weekDay[marketDays[0].day_of_week]}, &ensp;</h4>
                 ) : (
                     <select id="marketDaysSelect"
                     className='select-rounded margin-r-4'

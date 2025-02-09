@@ -80,6 +80,7 @@ function VendorLogin({ handlePopup }) {
             return;
         }
 
+        setIsLoading(true);
         try {
             const response = await fetch('/api/vendor-signup', {
                 method: 'POST',
@@ -113,7 +114,9 @@ function VendorLogin({ handlePopup }) {
         } catch (error) {
             console.error('Error during signup:', error);
             alert('An error occurred. Please try again.');
+            setIsLoading(false);
         }
+        setIsLoading(false);
     };
 
     const togglePasswordVisibility = (field) => {
