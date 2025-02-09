@@ -1621,6 +1621,8 @@ link {
   max-height: 400px;
   margin-left: 1%;
   margin-bottom: 4px;
+  overflow: hidden;
+  border-radius: 16px;
 }
 
 .map-circle {
@@ -2252,6 +2254,7 @@ select:hover {
   height: 400px;
   object-fit: cover;
   max-width: 1120px;
+  border-radius: 16px;
 }
 
 .img-market-card {

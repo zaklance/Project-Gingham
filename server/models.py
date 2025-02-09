@@ -649,6 +649,7 @@ class VendorNotification(db.Model, SerializerMixin):
     subject = db.Column(db.String, nullable=False)
     message = db.Column(db.String, nullable=False)
     link = db.Column(db.String, nullable=True)
+    data = db.Column(db.String, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
     market_day_id = db.Column(db.Integer, db.ForeignKey('market_days.id'), nullable=True)
@@ -660,7 +661,7 @@ class VendorNotification(db.Model, SerializerMixin):
     # vendor = db.relationship('Vendor', back_populates='notifications')
     # vendor_user = db.relationship('VendorUser', back_populates='notifications')
 
-    serialize_rules = ('vendor_user.first_name', 'vendor_user.last_name')
+    # serialize_rules = ('vendor_user.first_name', 'vendor_user.last_name')
 
     def get_vendor_name(self):
         return Vendor.query.filter_by(id=self.vendor_id).first().name

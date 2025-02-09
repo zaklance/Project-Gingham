@@ -682,7 +682,7 @@ def send_vendor_confirmation_email(email, vendor_data):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'plain'))
+        msg.attach(MIMEText(body, 'html'))
 
         print("Attempting to send vendor email...")
         server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
@@ -798,7 +798,7 @@ def send_admin_confirmation_email(email, admin_data):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'plain'))
+        msg.attach(MIMEText(body, 'html'))
 
         print("Attempting to send admin email...")
         server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
