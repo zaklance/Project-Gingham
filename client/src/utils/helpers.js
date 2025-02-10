@@ -142,11 +142,18 @@ export function formatEventDate(dateString) {
     });
 }
 
-export function receiptDateConverter(gmtDateString) {
-    const date = new Date(gmtDateString);
-    const localDate = date.toLocaleDateString('en-CA');
-    return localDate;
+export function receiptDateConverter(dateString) {
+    if (!dateString) return "N/A"; 
+    
+    let date = new Date(dateString);
+    
+    if (isNaN(date.getTime())) {
+        date = new Date(dateString + "T00:00:00");
+    }
+
+    return isNaN(date.getTime()) ? "Invalid Date" : date.toLocaleDateString('en-CA');
 }
+
 
 // Input Conversions and Formatting
 export const formatPhoneNumber = (phone) => {

@@ -822,7 +822,7 @@ class Receipt(db.Model, SerializerMixin):
             'id': self.id,
             'user_id': self.user_id,
             'baskets': self.baskets,
-            'created_at': self.created_at,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
             'user': {
                 'first_name': self.user.first_name,
                 'last_name': self.user.last_name,
