@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-
 function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
     const [query, setQuery] = useState("");
     const [adminMarketData, setAdminMarketData] = useState(null);
@@ -113,7 +112,7 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
                     <tbody>
                         <tr>
                             <td className='cell-title'>Image:</td>
-                            <td className='cell-text'>{adminMarketData ? <img className='img-market' src={`/market-images/${adminMarketData.image}`} alt="Market Image" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
+                            <td className='cell-text'>{adminMarketData ? <img className='img-market' src={adminMarketData.image ? `/market-images/${adminMarketData.image}` : `/market-images/_default-images/${adminMarketData.image_default}`} alt="Market Image" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
                         </tr>
                         <tr>
                             <td className='cell-title'>ID:</td>

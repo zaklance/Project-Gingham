@@ -116,7 +116,7 @@ const AdminUsersVendorUsers = () => {
     };
 
     const handleRoleToggle = (key, value) => {
-        console.log(key)
+        // console.log(key)
         setTempUserData((prevData) => ({
             ...prevData,
             vendor_role: {
@@ -125,8 +125,6 @@ const AdminUsersVendorUsers = () => {
             },
         }));
     };
-
-    console.log(tempUserData?.vendor_role)
 
     const handleDelete = (key) => {
         setTempUserData((prevData) => {
@@ -143,6 +141,9 @@ const AdminUsersVendorUsers = () => {
     };
 
     const handleAddVendor = () => {
+        if (!newVendor) {
+            return
+        }
         setTempUserData((prevData) => ({
             ...prevData,
             vendor_id: {
@@ -151,7 +152,7 @@ const AdminUsersVendorUsers = () => {
             },
             vendor_role: {
                 ...prevData.vendor_role,
-                [newVendor]: true,
+                [newVendor]: 2,
             },
         }));
         setNewVendor(null)

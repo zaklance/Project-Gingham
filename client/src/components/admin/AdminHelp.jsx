@@ -10,6 +10,17 @@ const AdminHelp = () => {
 
 
     useEffect(() => {
+        fetch("/api/vendors")
+            .then(response => response.json())
+            .then(vendors => setVendors(vendors))
+            .catch(error => console.error('Error fetching vendors', error));
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab) setActiveTab(tab);
+    }, []);
+    
+    useEffect(() => {
         fetch("/api/faqs")
             .then(response => response.json())
             .then(data => {
@@ -30,13 +41,13 @@ const AdminHelp = () => {
             <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
                 <h1>Admin Help Center</h1>
                 <div className='tabs margin-t-20'>
-                    <Link to="#" onClick={() => setActiveTab('user')} className={activeTab === 'user' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                    <Link to="/admin/help?tab=user" onClick={() => setActiveTab('user')} className={activeTab === 'user' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                         User
                     </Link>
-                    <Link to="#" onClick={() => setActiveTab('vendor')} className={activeTab === 'vendor' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                    <Link to="/admin/help?tab=vendor" onClick={() => setActiveTab('vendor')} className={activeTab === 'vendor' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                         Vendor
                     </Link>
-                    <Link to="#" onClick={() => setActiveTab('admin')} className={activeTab === 'admin' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                    <Link to="/admin/help?tab=admin" onClick={() => setActiveTab('admin')} className={activeTab === 'admin' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                         Admin
                     </Link>
                 </div>

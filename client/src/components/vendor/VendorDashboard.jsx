@@ -109,19 +109,19 @@ function VendorDashboard({ marketId }) {
                 <h1 className=''>Vendor Dashboard</h1>
                 {vendorUserData && vendorUserData.active_vendor !== null && vendorUserData.vendor_role[vendorUserData.active_vendor] <= 1 ? (
                     <div className='tabs margin-t-20 margin-l-24'>
-                        <Link to="#" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                        <Link to="/vendor/dashboard?tab=baskets" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                             Baskets
                         </Link>
                         {vendorUserData?.vendor_role[vendorUserData.active_vendor] <= 1 && (
                             <>
-                                <Link to="#" onClick={() => setActiveTab('events')} className={activeTab === 'events' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                                <Link to="/vendor/dashboard?tab=events" onClick={() => setActiveTab('events')} className={activeTab === 'events' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                                     Events
                                 </Link>
-                                <Link to="#" onClick={() => setActiveTab('team')} className={activeTab === 'team' ? 'notification active-tab btn btn-reset btn-tab margin-r-24' : 'notification btn btn-reset btn-tab margin-r-24'}>
+                                <Link to="/vendor/dashboard?tab=team" onClick={() => setActiveTab('team')} className={activeTab === 'team' ? 'notification active-tab btn btn-reset btn-tab margin-r-24' : 'notification btn btn-reset btn-tab margin-r-24'}>
                                     Team
                                     {notifications.length > 0 && <p className='badge'>{notifications.length}</p>}
                                 </Link>
-                                <Link to="#" onClick={() => setActiveTab('reviews')} className={activeTab === 'reviews' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                                <Link to="/vendor/dashboard?tab=reviews" onClick={() => setActiveTab('reviews')} className={activeTab === 'reviews' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                                     Reviews
                                 </Link>
                             </>

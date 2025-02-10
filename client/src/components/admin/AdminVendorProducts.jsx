@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminVendorNotifications from './AdminVendorNotifications';
+import { useNavigate } from 'react-router-dom';
 
 function AdminVendorProducts({ vendors }) {
     const [products, setProducts] = useState([]);
@@ -9,6 +10,7 @@ function AdminVendorProducts({ vendors }) {
     const [newProduct, setNewProduct] = useState(null);
     const [notifications, setNotifications] = useState(null);
     
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch("/api/products")
@@ -47,9 +49,10 @@ function AdminVendorProducts({ vendors }) {
             if (response.ok) {
                 const newData = await response.json();
                 setProducts((prev) => [...prev, newData])
-
                 alert('Product successfully created');
-                console.log('Product data created successfully:', newData);
+                window.location.reload()
+                navigate('/admin/vendors?tab=products')
+                // console.log('Product data created successfully:', newData);
             } else {
                 console.error('Failed to create product');
                 console.error('Response:', await response.text());

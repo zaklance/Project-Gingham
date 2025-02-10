@@ -7,13 +7,14 @@ function AdminStats() {
     const [userCountBanned, setUserCountBanned] = useState(null)
     const [vendorUserCount, setVendorUserCount] = useState(null)
     const [adminUserCount, setAdminUserCount] = useState(null)
-    const [top10Cities, setTop10Cities] = useState(null)
     const [marketCount, setMarketCount] = useState(null)
     const [marketDayCount, setMarketDayCount] = useState(null)
     const [vendorCount, setVendorCount] = useState(null)
     const [basketCount, setBasketCount] = useState(null)
     const [top10Markets, setTop10Markets] = useState(null)
+    const [top10Vendors, setTop10Vendors] = useState(null)
     const [top10Users, setTop10Users] = useState(null)
+    const [top10Cities, setTop10Cities] = useState(null)
     const [baskets, setBaskets] = useState([]);
     const [selectedRangeGraph, setSelectedRangeGraph] = useState(7);
 
@@ -159,6 +160,20 @@ function AdminStats() {
                 setTop10Markets(data);
             })
             .catch(error => console.error('Error fetching market data:', error));
+    }, []);
+
+    useEffect(() => {
+        fetch('/api/baskets/top-10-vendors', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                setTop10Vendors(data);
+            })
+            .catch(error => console.error('Error fetching vendor data:', error));
     }, []);
 
     useEffect(() => {
@@ -430,6 +445,27 @@ function AdminStats() {
                         </tr>
                     </tbody>
                 </table>
+                <h3 className='margin-t-16'>Top 10 User Cities</h3>
+                <table className='table-stats'>
+                    <thead>
+                        <tr>
+                            <th>&emsp;</th>
+                            <th>City</th>
+                            <th>Total Users</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {top10Cities && Object.entries(top10Cities)
+                            .sort(([, countA], [, countB]) => countB - countA)
+                            .map(([city, count], index) => (
+                                <tr key={index}>
+                                    <th>{index + 1}</th>
+                                    <td className='table-center'>{city}</td>
+                                    <td className='table-center'>{count}</td>
+                                </tr>
+                            ))}
+                    </tbody>
+                </table>
                 <h3 className='margin-t-16'>Top 10 Users</h3>
                 <table className='table-stats'>
                     <thead>
@@ -453,27 +489,6 @@ function AdminStats() {
                             ))}
                     </tbody>
                 </table>
-                <h3 className='margin-t-16'>Top 10 Cities</h3>
-                <table className='table-stats'>
-                    <thead>
-                        <tr>
-                            <th>&emsp;</th>
-                            <th>City</th>
-                            <th>Total Users</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {top10Cities && Object.entries(top10Cities)
-                            .sort(([, countA], [, countB]) => countB - countA)
-                            .map(([city, count], index) => (
-                                <tr key={index}>
-                                    <th>{index + 1}</th>
-                                    <td className='table-center'>{city}</td>
-                                    <td className='table-center'>{count}</td>
-                                </tr>
-                        ))}
-                    </tbody>
-                </table>
                 <h3 className='margin-t-16'>Top 10 Markets</h3>
                 <table className='table-stats'>
                     <thead>
@@ -490,6 +505,27 @@ function AdminStats() {
                                 <tr key={index}>
                                     <th>{index + 1}</th>
                                     <td>{market}</td>
+                                    <td className='table-center'>{count}</td>
+                                </tr>
+                        ))}
+                    </tbody>
+                </table>
+                <h3 className='margin-t-16'>Top 10 Vendors</h3>
+                <table className='table-stats'>
+                    <thead>
+                        <tr>
+                            <th>&emsp;</th>
+                            <th>Vendor</th>
+                            <th>Baskets Sold</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {top10Vendors && Object.entries(top10Vendors)
+                            .sort(([, countA], [, countB]) => countB - countA)
+                            .map(([vendor, count], index) => (
+                                <tr key={index}>
+                                    <th>{index + 1}</th>
+                                    <td>{vendor}</td>
                                     <td className='table-center'>{count}</td>
                                 </tr>
                         ))}
