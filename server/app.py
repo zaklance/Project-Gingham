@@ -1280,17 +1280,17 @@ def vendor_user_password_change(id):
     
     if request.method == 'PATCH':
         data = request.get_json()
-        user = User.query.filter(User.id == id).first()
-        if not user:
+        vendor_user = VendorUser.query.filter(VendorUser.id == id).first()
+        if not vendor_user:
             return {'error': ' User not found'}, 401
         
-        if not user.authenticate(data['old_password']):
+        if not vendor_user.authenticate(data['old_password']):
             return {'error': ' Incorrect password!'}, 401
         
-        user.password = data.get('new_password')
+        vendor_user.password = data.get('new_password')
         db.session.commit()
         
-        return jsonify(user_id=user.id), 200
+        return jsonify(id=vendor_user.id), 200
 
 @app.route('/api/vendor-users/count', methods=['GET'])
 @jwt_required()
