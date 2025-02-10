@@ -7,7 +7,7 @@ from itsdangerous import URLSafeTimedSerializer
 
 serializer = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
 
-# Email Form
+# Email Contact Form
 def send_contact_email(name, email, subject, message): 
     try: 
         sender_email = os.getenv('EMAIL_USER')
@@ -470,7 +470,7 @@ def send_user_confirmation_email(email, user_data):
     try:
         token = serializer.dumps(user_data, salt='user-confirmation-salt')  # Generate the token
         confirmation_link = url_for('confirm_email', token=token, _external=True)
-        print(f"Generated confirmation link: {confirmation_link}")
+        # print(f"Generated confirmation link: {confirmation_link}")
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -568,14 +568,14 @@ def send_user_confirmation_email(email, user_data):
             """
         msg.attach(MIMEText(body, 'html'))
 
-        print("Attempting to send email...")
+        # print("Attempting to send email...")
         server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
         server.quit()
 
-        print("Email sent successfully")
+        # print("Email sent successfully")
         return {'message': 'Confirmation email sent successfully.', 'token': token}
 
     except Exception as e:
@@ -586,7 +586,7 @@ def send_vendor_confirmation_email(email, vendor_data):
     try:
         token = serializer.dumps(vendor_data, salt='vendor-confirmation-salt')
         confirmation_link = url_for('confirm_vendor_email', token=token, _external=True)
-        print(f"Generated vendor confirmation link: {confirmation_link}")
+        # print(f"Generated vendor confirmation link: {confirmation_link}")
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -684,14 +684,14 @@ def send_vendor_confirmation_email(email, vendor_data):
             """
         msg.attach(MIMEText(body, 'html'))
 
-        print("Attempting to send vendor email...")
+        # print("Attempting to send vendor email...")
         server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
         server.quit()
 
-        print("Vendor email sent successfully")
+        # print("Vendor email sent successfully")
         return {'message': 'Vendor confirmation email sent successfully.', 'token': token}
 
     except Exception as e:
@@ -702,7 +702,7 @@ def send_admin_confirmation_email(email, admin_data):
     try:
         token = serializer.dumps(admin_data, salt='admin-confirmation-salt')
         confirmation_link = url_for('confirm_admin_email', token=token, _external=True)
-        print(f"Generated admin confirmation link: {confirmation_link}")
+        # print(f"Generated admin confirmation link: {confirmation_link}")
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -800,14 +800,14 @@ def send_admin_confirmation_email(email, admin_data):
             """
         msg.attach(MIMEText(body, 'html'))
 
-        print("Attempting to send admin email...")
+        # print("Attempting to send admin email...")
         server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
         server.quit()
 
-        print("Admin email sent successfully")
+        # print("Admin email sent successfully")
         return {'message': 'Admin confirmation email sent successfully.', 'token': token}
 
     except Exception as e:
