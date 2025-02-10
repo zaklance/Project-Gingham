@@ -1,9 +1,45 @@
 import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 function VendorNotification({ notifications, setNotifications, teamMembers, setTeamMembers, vendorUserData }) {
+    const [teamNotifications, setTeamNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     
+    const vendorUserId = parseInt(globalThis.localStorage.getItem('vendor_user_id'))
+
+    useEffect(() => {
+        if (!vendorUserId) return;
+
+        const fetchTeamNotifications = async () => {
+            const token = localStorage.getItem('vendor_jwt-token');;
+            if (!token) {
+                console.error("Token missing");
+                setIsLoading(false);
+                return;
+            }
+            try {
+                const response = await fetch(`/api/vendor-notifications?subject=team-request&data=${vendorUserId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Notifications fetched:', data);
+                    setTeamNotifications(data.notifications || []);
+                } else {
+                    setTeamNotifications([]);
+                }
+            } catch (error) {
+                console.error('Error fetching notifications:', error);
+                setTeamNotifications([]);
+            }
+        };
+        fetchTeamNotifications();
+    }, [vendorUserId]);
 
     const handleApprove = async (notification, vendor_role) => {
         console.log(`Approval notification with ID: ${notification.id}`);
@@ -35,7 +71,33 @@ function VendorNotification({ notifications, setNotifications, teamMembers, setT
                 setNotifications((prevNotifications) => 
                     prevNotifications.filter((notif) => notif.id !== notification.id)
                 );
-                alert('Notification approved and user updated successfully');
+                toast.success('Notification approved and user updated successfully', {
+                    autoClose: 3000,
+                });
+                try {
+                    const response = await fetch(`/api/vendor-notifications?subject=team-request&data=${notification.data}&vendor_id=${notification.vendor_id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        console.error(`Error deleting notification:`, errorData.message || 'Unknown error');
+                    }
+                    if (response.ok) {
+                        setTeamNotifications([]);
+                        setNotifications((prevNotifications) =>
+                            prevNotifications.filter((notif) => notif.id !== notification.id)
+                        );
+                    }
+                } catch (error) {
+                    console.error('Error canceling request:', error);
+                    toast.error('An error occurred while canceling the request. Please try again later.', {
+                        autoClose: 4000,
+                    });
+                }
             } else {
                 console.error('Failed to approve request');
                 const responseData = await response.json();
@@ -47,25 +109,37 @@ function VendorNotification({ notifications, setNotifications, teamMembers, setT
     };
     
 
-    const handleReject = async (notificationId) => {
-        const token = localStorage.getItem('jwt-token');
+    const handleReject = async (notificationData) => {
+        const token = localStorage.getItem('vendor_jwt-token');
         try {
-            const response = await fetch(`/api/vendor-notifications/${notificationId}/reject`, {
+            const response = await fetch(`/api/vendor-notifications?subject=team-request&data=${notificationData.data}&vendor_id=${notificationData.vendor_id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                },
+                    'Content-Type': 'application/json',
+                }
             });
-
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error(`Error deleting notification:`, errorData.message || 'Unknown error');
+                toast.error(`Error rejecting request: ${errorData.message || 'Unknown error'}`, {
+                    autoClose: 4000,
+                });
+            }
             if (response.ok) {
-                setNotifications((prevNotifications) => 
-                    prevNotifications.filter((notif) => notif.id !== notificationId)
+                setTeamNotifications([]);
+                setNotifications((prevNotifications) =>
+                    prevNotifications.filter((notif) => notif.id !== notificationData.id)
                 );
-            } else {
-                console.error('Failed to reject request');
+                toast.success('Your request has been canceled', {
+                    autoClose: 3000,
+                });
             }
         } catch (error) {
-            console.error('Error rejecting request', error);
+            console.error('Error canceling request:', error);
+            toast.error('An error occurred while rejecting the request. Please try again later.', {
+                autoClose: 4000,
+            });
         }
     };
 
@@ -82,7 +156,7 @@ function VendorNotification({ notifications, setNotifications, teamMembers, setT
                             <button className='btn-edit' onClick={() => handleApprove(notification, 2)}>
                                 Approve as Employee
                             </button>
-                            <button className='btn-edit' onClick={() => handleReject(notification.id)}>
+                            <button className='btn-edit' onClick={() => handleReject(notification)}>
                                 Reject
                             </button>
                         </li>
