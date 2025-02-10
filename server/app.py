@@ -11,7 +11,7 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
                     bcrypt )
 from dotenv import load_dotenv
-from sqlalchemy import func, desc
+from sqlalchemy import cast, desc, func, Integer
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.dialects.postgresql import JSONB
@@ -3335,6 +3335,8 @@ def fetch_vendor_notifications():
     vendor_user_id = request.args.get('vendor_user_id')
     is_read = request.args.get('is_read', None)
     subject = request.args.get('subject')
+    data = request.args.get('data')
+    vendor_id = request.args.get('vendor_id')
     
     if request.method == 'GET':
         query = VendorNotification.query
@@ -3348,6 +3350,10 @@ def fetch_vendor_notifications():
             query = query.filter_by(is_read=is_read_bool)
         if subject:
             query = query.filter_by(subject=subject)
+        if data:
+            query = query.filter_by(data=data)
+        if vendor_id:
+            query = query.filter_by(data=vendor_id)
 
         notifications = query.order_by(VendorNotification.created_at.desc()).all()
 
@@ -3356,6 +3362,7 @@ def fetch_vendor_notifications():
             'subject': n.subject,
             'message': n.message,
             'link': n.link,
+            'data': n.data,
             'is_read': n.is_read,
             'user_id': n.user_id,
             'market_id': n.market_id,
@@ -3370,35 +3377,65 @@ def fetch_vendor_notifications():
     if request.method == 'POST':
         data = request.get_json()
 
+        vendor_role_arg = request.args.get('vendor_role', type=int)
+
         if not data or 'message' not in data or 'vendor_id' not in data:
             return jsonify({'message': 'Invalid request data.'}), 400
 
         try:
-            new_notification = VendorNotification(
-                subject=data['subject'],
-                message=data['message'],
-                link=data['link'],
-                user_id=data.get('user_id'),
-                market_id=data.get('market_id'),
-                vendor_id=data['vendor_id'],
-                vendor_user_id=data.get('vendor_user_id'),
-                created_at=datetime.utcnow(),
-                is_read=False
-            )
-            db.session.add(new_notification)
+            vendor_id_str = str(data['vendor_id'])
+            vendor_user_id = int(data['data'])
+    
+            vendor_user = VendorUser.query.get(vendor_user_id)
+
+            if not vendor_user:
+                return jsonify({'message': 'Vendor user not found.'}), 404
+
+            if isinstance(vendor_user.vendor_id, dict) and vendor_id_str in vendor_user.vendor_id:
+                return jsonify({'message': 'Vendor team request already sent.'}), 400
+            
+            vendor_users = VendorUser.query.filter(
+                VendorUser.vendor_id.contains({vendor_id_str: int(data['vendor_id'])}),
+                VendorUser.vendor_role[vendor_id_str].as_integer() <= vendor_role_arg
+            ).all()
+            
+            print(f"Found vendor_users: {vendor_users}")
+
+            if not vendor_users:
+                return jsonify({'message': 'No matching vendor users found.'}), 404
+
+            notifications = []
+
+            for vendor_user in vendor_users:
+                new_notification = VendorNotification(
+                    subject=data['subject'],
+                    message=data['message'],
+                    link=data['link'],
+                    data=data['data'],
+                    user_id=data.get('user_id'),
+                    market_id=data.get('market_id'),
+                    vendor_id=data['vendor_id'],
+                    vendor_user_id=vendor_user.id,
+                    created_at=datetime.utcnow(),
+                    is_read=False
+                )
+                db.session.add(new_notification)
+                notifications.append(new_notification)
+
             db.session.commit()
 
-            return jsonify({
-                'id': new_notification.id,
-                'subject': new_notification.subject,
-                'message': new_notification.message,
-                'link': new_notification.link,
-                'user_id': new_notification.user_id,
-                'market_id': new_notification.market_id,
-                'vendor_id': new_notification.vendor_id,
-                'vendor_user_id': new_notification.vendor_user_id,
-                'is_read': new_notification.is_read
-            }), 201
+            return jsonify([{
+                'id': n.id,
+                'subject': n.subject,
+                'message': n.message,
+                'link': n.link,
+                'data': n.data,
+                'user_id': n.user_id,
+                'market_id': n.market_id,
+                'vendor_id': n.vendor_id,
+                'vendor_user_id': n.vendor_user_id,
+                'is_read': n.is_read
+            } for n in notifications]), 201
 
         except Exception as e:
             db.session.rollback()
@@ -3406,11 +3443,12 @@ def fetch_vendor_notifications():
             return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
 
     if request.method == 'DELETE':
-        query = VendorNotification.query
-        if vendor_user_id:
+        if subject == 'team-request':
+            query = VendorNotification.query
             query = query.filter(
-                VendorNotification.vendor_user_id == vendor_user_id,
-                VendorNotification.subject != 'team-request'
+                VendorNotification.data == int(data),
+                VendorNotification.subject == subject,
+                VendorNotification.vendor_id ==int(vendor_id)
             )
         
             deleted_count = query.delete()
@@ -3483,10 +3521,10 @@ def approve_notification(notification_id):
     if not notification:
         return jsonify({'message': 'Notification not found'}), 404
 
-    if not notification.vendor_user_id:
+    if not notification.data:
         return jsonify({'message': 'No vendor user associated with this notification'}), 400
 
-    user = VendorUser.query.get(notification.vendor_user_id)
+    user = VendorUser.query.get(int(notification.data))
     if not user:
         return jsonify({'message': 'Vendor user not found'}), 404
 
@@ -3506,7 +3544,12 @@ def approve_notification(notification_id):
     notification.is_read = True
     db.session.commit()
 
-    db.session.delete(notification)
+    VendorNotification.query.filter_by(
+        subject=notification.subject,
+        vendor_id=notification.vendor_id,
+        data=notification.data
+    ).delete()
+
     db.session.commit()
 
     return jsonify({'message': 'Notification approved and user updated successfully'}), 200
@@ -3519,7 +3562,11 @@ def reject_notification(notification_id):
     if not notification:
         return jsonify({'message': 'Notification not found'}), 404
 
-    db.session.delete(notification)
+    VendorNotification.query.filter_by(
+        subject=notification.subject,
+        vendor_id=notification.vendor_id,
+        data=notification.data
+    ).delete()
     db.session.commit()
 
     return jsonify({'message': 'Notification rejected successfully'}), 200

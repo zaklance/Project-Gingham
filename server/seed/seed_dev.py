@@ -1175,6 +1175,10 @@ def run():
     vendor_users_settings = []
     for i in range(50):
         rand_vendor_id = randint(1, 150)
+        rand_vendor_id_2 = randint(1, 150)
+        choice_num = choice([0, 1])
+        choice_id = [{ rand_vendor_id: rand_vendor_id}, { rand_vendor_id: rand_vendor_id, rand_vendor_id_2: rand_vendor_id_2}]
+        choice_role = [{ rand_vendor_id: randint(0, 1)}, { rand_vendor_id: randint(0, 1), rand_vendor_id_2: randint(0, 1)}]
         email = fake.ascii_safe_email()
         # password = fake.password()
         password = "lol"
@@ -1183,8 +1187,8 @@ def run():
         # phone = fake.phone_number()
         phone = str(randint(1000000000,9999999999))
         active_vendor = rand_vendor_id
-        vendor_id = { rand_vendor_id: rand_vendor_id}
-        vendor_role = {rand_vendor_id: randint(0, 1)}
+        vendor_id = choice_id[choice_num]
+        vendor_role = choice_role[choice_num]
 
 
         vu = VendorUser(
@@ -1219,13 +1223,60 @@ def run():
         vendor_id={1:1},
         vendor_role={1:0}
     )
-
     vendor_user_settings_demo = SettingsVendor(
-            vendor_user_id=51
-        )
+        vendor_user_id=51
+    )
+    
+    vendor_user_demo_2 = VendorUser(
+        email="zak@mufo.nyc",
+        password="lol",
+        first_name="Zak",
+        last_name="Lance",
+        phone="2095553880",
+        active_vendor=2,
+        vendor_id={2:2},
+        vendor_role={2:1}
+    )
+    vendor_user_settings_demo_2 = SettingsVendor(
+        vendor_user_id=52
+    )
+    
+    vendor_user_demo_3 = VendorUser(
+        email="sandro@mufo.nyc",
+        password="lol",
+        first_name="Sand",
+        last_name="Man",
+        phone="2095553880",
+        active_vendor=1,
+        vendor_id={1:1},
+        vendor_role={1:1}
+    )
+    vendor_user_settings_demo_3 = SettingsVendor(
+        vendor_user_id=53
+    )
+    
+    vendor_user_demo_4 = VendorUser(
+        email="vinh@mufo.nyc",
+        password="lol",
+        first_name="Vinh",
+        last_name="Cent",
+        phone="2095553880",
+        active_vendor=2,
+        vendor_id={2:2},
+        vendor_role={2:1}
+    )
+    vendor_user_settings_demo_4 = SettingsVendor(
+        vendor_user_id=54
+    )
 
     db.session.add(vendor_user_demo)
     db.session.add(vendor_user_settings_demo)
+    db.session.add(vendor_user_demo_2)
+    db.session.add(vendor_user_settings_demo_2)
+    db.session.add(vendor_user_demo_3)
+    db.session.add(vendor_user_settings_demo_3)
+    db.session.add(vendor_user_demo_4)
+    db.session.add(vendor_user_settings_demo_4)
     db.session.commit()
 
     admin_user_demo = [
