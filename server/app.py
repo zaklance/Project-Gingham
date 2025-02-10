@@ -1388,17 +1388,17 @@ def admin_user_password_change(id):
     
     if request.method == 'PATCH':
         data = request.get_json()
-        user = User.query.filter(User.id == id).first()
-        if not user:
+        admin_user = AdminUser.query.filter(AdminUser.id == id).first()
+        if not admin_user:
             return {'error': ' User not found'}, 401
         
-        if not user.authenticate(data['old_password']):
+        if not admin_user.authenticate(data['old_password']):
             return {'error': ' Incorrect password!'}, 401
         
-        user.password = data.get('new_password')
+        admin_user.password = data.get('new_password')
         db.session.commit()
         
-        return jsonify(user_id=user.id), 200
+        return jsonify(id=admin_user.id), 200
 
 @app.route('/api/admin-users/count', methods=['GET'])
 @jwt_required()
