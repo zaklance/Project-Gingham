@@ -74,7 +74,7 @@ function VendorDashboard({ marketId }) {
             }
 
             try {
-                const response = await fetch(`/api/vendor-notifications?vendor_id=${vendorId}&subject=team-request`, {
+                const response = await fetch(`/api/vendor-notifications?vendor_user_id=${vendorUserId}&subject=team-request`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
