@@ -196,15 +196,13 @@ function VendorProfile () {
 
     const handleSavePassword = async () => {
         if (changePassword !== changeConfirmPassword) {
-            // alert("Passwords do not match.");
-            toast.error('Passwords do not match.', {
+            console.log('Passwords do not match.', {
                 autoClose: 4000,
             });
             return;
         }
         if (!isValid) {
-            // alert("Password does not meet requirements.");
-            toast.error('Password does not meet requirements.', {
+            console.log('Password does not meet requirements.', {
                 autoClose: 4000,
             });
             return;
@@ -222,23 +220,34 @@ function VendorProfile () {
                 }),
                 credentials: 'include',
             });
+    
+            const data = await response.json();
+            
+            if (response.status === 401) {
+                console.log(data.error, {
+                    autoClose: 4000,
+                });
+                return;
+            }
+            
+            if (response.status === 403) {
+                toast.error('Access forbidden: Vendor User only', {
+                    autoClose: 4000,
+                });
+                return;
+            }
+    
             if (response.ok) {
-                const updatedData = await response.json();
-                setPassword('')
-                setChangePassword('')
-                setChangeConfirmPassword('')
+                setPassword('');
+                setChangePassword('');
+                setChangeConfirmPassword('');
                 setPasswordMode(false);
                 toast.success('Password changed', {
                     autoClose: 2000,
                 });
-            } else {
-                console.log('Failed to save changes');
-                console.log('Response status:', response.status);
-                console.log('Response text:', await response.text());
             }
         } catch (error) {
-            // console.error('Error saving changes:', error);
-            toast.error(`Error saving changes: ${error}`, {
+            toast.error('Error saving changes', {
                 autoClose: 5000,
             });
         }
