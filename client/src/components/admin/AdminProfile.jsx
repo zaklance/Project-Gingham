@@ -236,7 +236,7 @@ function AdminProfile () {
             return;
         }
         try {
-            const response = await fetch(`/api/users/${id}/password`, {
+            const response = await fetch(`/api/admin-users/${id}/password`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
