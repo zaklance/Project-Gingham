@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import VendorNotification from './VendorNotification';
+import { toast } from 'react-toastify';
 
 function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications }) {
     const [isLoading, setIsLoading] = useState(true);
@@ -135,6 +136,9 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
     
                 if (response.ok) {
                     setTeamMembers(teamMembers.filter(member => member.id !== memberId));
+                    toast.success('Successfully deleted team member', {
+                        autoClose: 4000,
+                    });
                 } else {
                     const errorData = await response.json();
                     console.error('Error updating team member:', errorData);
@@ -192,11 +196,15 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                     )
                 );
 
-                alert(`Successfully updated role to ${newRole  == 1 ? 'Admin' : 'Employee'}`);
+                toast.success(`Successfully updated role to ${newRole == 1 ? 'Admin' : 'Employee'}`, {
+                    autoClose: 5000,
+                });
             } else {
                 const responseData = await response.json();
                 console.error('Error updating role:', responseData.message || response.statusText);
-                alert(responseData.message || 'Failed to update the role. Please try again.');
+                toast.error(responseData.message || 'Failed to update the role. Please try again.', {
+                    autoClose: 5000,
+                });
             }
         } catch (error) {
             console.error('Error updating role:', error);
