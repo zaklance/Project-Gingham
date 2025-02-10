@@ -35,14 +35,17 @@ function VendorSales() {
         const dates = [];
         const today = new Date();
     
-        for (let i = 0; i < range; i++) {
+        // Determine the start and end points for the range
+        const startOffset = range < 0 ? 0 : range - 1;
+        const endOffset = range < 0 ? Math.abs(range) : 0;
+    
+        for (let i = startOffset; i >= -endOffset; i--) {
             const currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
-            dates.push(formatToLocalDateString(currentDate)); // Use new formatting function
+            dates.push(formatToLocalDateString(currentDate));
         }
     
-        return dates.reverse(); // Keep chronological order
+        return dates;
     }
-    
 
     const fetchVendorId = async () => {
         if (!vendorUserId) {
