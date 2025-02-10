@@ -153,6 +153,23 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         }));
     };
 
+    const handleCoordinatesInputChange = (event) => {
+        const { name, value } = event.target;
+        setTempMarketData((prevData) => {
+            const newCoordinates = { ...prevData.coordinates };
+            if (name === "coordinates_lat") {
+                newCoordinates.lat = value;
+            } else if (name === "coordinates_lng") {
+                newCoordinates.lng = value;
+            }
+
+            return {
+                ...prevData,
+                coordinates: newCoordinates
+            };
+        });
+    };
+
     const handleInputMarketDayChange = (event) => {
         setSelectedDay({
             ...selectedDay,
@@ -309,7 +326,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     type="text"
                                     name="coordinates_lat"
                                     value={tempMarketData?.coordinates?.lat || ''} 
-                                    onChange={handleInputChange}
+                                    onChange={handleCoordinatesInputChange}
                                 />
                             </div>
                             <div className='form-group'>
@@ -318,7 +335,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     type="text"
                                     name="coordinates_lng"
                                     value={tempMarketData?.coordinates?.lng || ''} 
-                                    onChange={handleInputChange}
+                                    onChange={handleCoordinatesInputChange}
                                 />
                             </div>
                             <div className='form-group'>
@@ -337,12 +354,11 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     value={tempMarketData ? tempMarketData.year_round : ''}
                                     onChange={handleInputChange}
                                 >
-                                    <option value="">Select</option>
                                     <option value={true}>true</option>
                                     <option value={false}>false</option>
                                 </select>
                             </div>
-                            {tempMarketData?.year_round === 'false' && (
+                            {tempMarketData?.year_round === false && (
                                 <>
                                     <div className='form-group'>
                                         <label title="yyyy-mm-dd">Season Start:</label>
@@ -430,7 +446,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 <tbody>
                                     <tr>
                                         <td className='cell-title'>Image:</td>
-                                            <td className='cell-text'>{adminMarketData ? <img className='img-market' src={adminMarketData.image ? `/market-images/${adminMarketData.image}` : `/market-images/_default-images/${adminMarketData.image_default}`} alt="Market Image" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
+                                        <td className='cell-text'>{adminMarketData ? <img className='img-market' src={adminMarketData.image ? `/market-images/${adminMarketData.image}` : `/market-images/_default-images/${adminMarketData.image_default}`} alt="Market Image" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title'>ID:</td>

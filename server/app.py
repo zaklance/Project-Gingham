@@ -61,7 +61,7 @@ avatars = [
         "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-cabbage-1.jpg", 
         "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime-1.jpg", "avatar-melon-1.jpg",
         "avatar-mangosteen-1.jpg", "avatar-mangosteen-2.jpg", "avatar-nectarine-1.jpg", 
-        "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg", "avatar-peach-1.jpg", 
+        "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-peach-1.jpg", 
         "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
         "avatar-watermelon-1.jpg"
     ]
@@ -331,7 +331,11 @@ def login():
 
     db.session.commit()
     
-    access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "user"})
+    access_token = create_access_token(
+        identity=user.id, 
+        expires_delta=timedelta(hours=12), 
+        additional_claims={"role": "user"}
+    )
     
     return jsonify(access_token=access_token, user_id=user.id), 200
 
@@ -482,7 +486,11 @@ def vendorLogin():
 
     db.session.commit()
     
-    access_token = create_access_token(identity=vendor_user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "vendor"})
+    access_token = create_access_token(
+        identity=vendor_user.id, 
+        expires_delta=timedelta(hours=12), 
+        additional_claims={"role": "vendor"}
+    )
 
     return jsonify(access_token=access_token, vendor_user_id=vendor_user.id), 200
 
@@ -563,7 +571,11 @@ def adminLogin():
 
     db.session.commit()
     
-    access_token = create_access_token(identity=admin_user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "admin"})
+    access_token = create_access_token(
+        identity=admin_user.id, 
+        expires_delta=timedelta(hours=12), 
+        additional_claims={"role": "admin"}
+    )
 
     return jsonify(access_token=access_token, admin_user_id=admin_user.id), 200
 
@@ -1052,42 +1064,6 @@ def user_password_change(id):
         
         return jsonify(user_id=user.id), 200
 
-@app.route('/api/users/count', methods=['GET'])
-@jwt_required()
-def user_count():
-    status = request.args.get('status', type=str)
-    city = request.args.get('city', type=str)
-    state = request.args.get('state', type=str)
-    try:
-        count = db.session.query(User).count()
-        if status:
-            count = db.session.query(User).filter(User.status == status).count()
-        if city:
-            count = db.session.query(User).filter(User.city == city).count()
-        if state:
-            count = db.session.query(User).filter(User.state == state).count()
-        return jsonify({"count": count}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/users/top-10-cities', methods=['GET'])
-@jwt_required()
-def top_10_cities():
-    try:
-        city_counts = (
-            db.session.query(User.city, func.count(User.city).label("count"))
-            .group_by(User.city)
-            .order_by(func.count(User.city).desc())
-            .limit(10)
-            .all()
-        )
-
-        city_data = {city: count for city, count in city_counts}
-
-        return jsonify(city_data), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
 @app.route('/api/vendor-users', methods=['GET', 'POST', 'PATCH'])
 @jwt_required()
 def get_vendor_users():
@@ -1250,6 +1226,10 @@ def get_vendor_user(id):
                     vendor_user.vendor_id[vendor_id_key] = vendor_id_value
                 if 'active_vendor' in data:
                     vendor_user.active_vendor = data['active_vendor']
+                if 'join_date' in data:
+                    data['join_date'] = datetime.strptime(data['join_date'], "%Y-%m-%d %H:%M:%S")
+                if 'last_login' in data:
+                    data['last_login'] = datetime.strptime(data['last_login'], "%Y-%m-%d %H:%M:%S")
                     
                 db.session.commit()
                 return jsonify(vendor_user.to_dict()), 200
@@ -1291,15 +1271,6 @@ def vendor_user_password_change(id):
         db.session.commit()
         
         return jsonify(user_id=user.id), 200
-
-@app.route('/api/vendor-users/count', methods=['GET'])
-@jwt_required()
-def vendor_user_count():
-    try:
-        count = db.session.query(VendorUser).count()
-        return jsonify({"count": count}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/admin-users', methods=['GET', 'POST'])
 @jwt_required()
@@ -1360,7 +1331,19 @@ def handle_admin_user_by_id(id):
     elif request.method == 'PATCH':
         try:
             data = request.get_json()
-            data.pop('last_login', None)
+
+            if 'join_date' in data:
+                try:
+                    data['join_date'] = datetime.strptime(data['join_date'], "%Y-%m-%d %H:%M:%S")
+                except ValueError:
+                    return jsonify({'error': 'Invalid date format for join_date. Expected YYYY-MM-DD HH:MM:SS'}), 400
+
+            if 'last_login' in data:
+                try:
+                    data['last_login'] = datetime.strptime(data['last_login'], "%Y-%m-%d %H:%M:%S")
+                except ValueError:
+                    return jsonify({'error': 'Invalid date format for last_login. Expected YYYY-MM-DD HH:MM:SS'}), 400
+
             for key, value in data.items():
                 setattr(admin_user, key, value)
             db.session.commit()
@@ -1399,15 +1382,6 @@ def admin_user_password_change(id):
         db.session.commit()
         
         return jsonify(user_id=user.id), 200
-
-@app.route('/api/admin-users/count', methods=['GET'])
-@jwt_required()
-def admin_user_count():
-    try:
-        count = db.session.query(AdminUser).count()
-        return jsonify({"count": count}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/markets', methods=['GET', 'POST'])
 def all_markets():
@@ -1485,7 +1459,12 @@ def market_by_id(id):
             if 'schedule' in data:
                 market.schedule = data['schedule']
             if 'year_round' in data:
-                market.year_round = data['year_round']
+                if isinstance(data['year_round'], bool):
+                    market.year_round = data['year_round']
+                elif isinstance(data['year_round'], str):
+                    market.year_round = data['year_round'].lower() == 'true'
+                else:
+                    return {'error': 'Invalid value for year_round. Must be a boolean or "true"/"false" string.'}, 400
             if 'is_visible' in data:
                 if isinstance(data['is_visible'], bool):
                     market.is_visible = data['is_visible']
@@ -1524,15 +1503,6 @@ def market_by_id(id):
         except Exception as e:
             db.session.rollback()
             return {'error': str(e)}, 500
-
-@app.route('/api/markets/count', methods=['GET'])
-@jwt_required()
-def market_count():
-    try:
-        count = db.session.query(Market).count()
-        return jsonify({"count": count}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/market-days', methods=['GET', 'POST', 'DELETE'])
 def all_market_days():
@@ -1591,15 +1561,6 @@ def market_day_by_id(id):
         except Exception as e:
             db.session.rollback()
             return {'error': str(e)}, 500
-
-@app.route('/api/market-days/count', methods=['GET'])
-@jwt_required()
-def market_days_count():
-    try:
-        count = db.session.query(MarketDay).count()
-        return jsonify({"count": count}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
     
 @app.route('/api/vendors', methods=['GET', 'POST', 'PATCH'])
 def all_vendors():
@@ -1712,15 +1673,6 @@ def get_vendor_image(vendor_id):
         except FileNotFoundError:
             return {'error': 'Image not found'}, 404
     return {'error': 'Vendor or image not found'}, 404
-
-@app.route('/api/vendors/count', methods=['GET'])
-@jwt_required()
-def vendor_count():
-    try:
-        count = db.session.query(Vendor).count()
-        return jsonify({"count": count}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/market-reviews', methods=['GET', 'POST', 'DELETE'])
 def all_market_reviews():
@@ -2520,73 +2472,6 @@ def get_vendor_sales_history():
         app.logger.error(f"Error fetching sales history: {e}")
         return {'error': f"Exception: {str(e)}"}, 500
 
-@app.route('/api/baskets/count', methods=['GET'])
-@jwt_required()
-def basket_count():
-    try:
-        count = db.session.query(Basket).count()
-        sold_count = db.session.query(Basket).filter(Basket.is_sold == True).count()
-        grabbed_count = db.session.query(Basket).filter(Basket.is_grabbed == True).count()
-        unsold_count = db.session.query(Basket).filter(Basket.is_sold == False).count()
-
-        sold_price = db.session.query(func.sum(Basket.price)).filter(Basket.is_sold == True).scalar() or 0
-        sold_value = db.session.query(func.sum(Basket.value)).filter(Basket.is_sold == True).scalar() or 0
-
-        return jsonify({
-            "count": count,
-            "sold_count": sold_count,
-            "grabbed_count": grabbed_count,
-            "unsold_count": unsold_count,
-            "sold_price": sold_price,
-            "sold_value": sold_value
-        }), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/baskets/top-10-markets', methods=['GET'])
-@jwt_required()
-def basket_top_10_markets():
-    try:
-        market_counts = (
-            db.session.query(Market.name, func.count(Basket.id).label("count"))
-            .join(MarketDay, MarketDay.id == Basket.market_day_id)
-            .join(Market, Market.id == MarketDay.market_id)
-            .group_by(Market.name)
-            .order_by(func.count(Basket.id).desc())
-            .limit(10)
-            .all()
-        )
-
-        market_data = {market: count for market, count in market_counts}
-
-        return jsonify(market_data), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/baskets/top-10-users', methods=['GET'])
-@jwt_required()
-def basket_top_10_users():
-    try:
-        top_users = db.session.query(
-            User.first_name,
-            User.last_name,
-            User.email,
-            db.func.count(Basket.user_id).label('basket_count')
-        ).join(Basket, Basket.user_id == User.id).group_by(User.id).order_by(db.desc('basket_count')).limit(10).all()
-
-        users_data = [{
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "email": user.email,
-            "basket_count": user.basket_count
-        } for user in top_users]
-
-        return jsonify(users_data), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
 @app.route('/api/products', methods=['GET', 'POST'])
 def all_products():
     if request.method == 'GET':
@@ -2699,12 +2584,12 @@ def qr_code(id):
         qr_code = QRCode.query.filter_by(id=id).first()
         if not qr_code:
             return {'error': 'QR code not found'}, 404
-        qr_code_data = qr_code.to_dict()  # Fixed variable name
+        qr_code_data = qr_code.to_dict()
         return jsonify(qr_code_data), 200
 
     elif request.method == 'DELETE':
         qr_code = QRCode.query.filter_by(id=id).first()
-        if not qr_code:  # Fixed variable name
+        if not qr_code:
             return {'error': 'QR code not found'}, 404
         
         try:
@@ -3902,6 +3787,173 @@ def get_receipt(receipt_id):
         return jsonify(receipt.to_dict()), 200
     except Exception as e:
         return jsonify({"error": f"Error fetching receipt: {str(e)}"}), 500
+
+@app.route('/api/users/count', methods=['GET'])
+@jwt_required()
+def user_count():
+    status = request.args.get('status', type=str)
+    city = request.args.get('city', type=str)
+    state = request.args.get('state', type=str)
+    try:
+        count = db.session.query(User).count()
+        if status:
+            count = db.session.query(User).filter(User.status == status).count()
+        if city:
+            count = db.session.query(User).filter(User.city == city).count()
+        if state:
+            count = db.session.query(User).filter(User.state == state).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/users/top-10-cities', methods=['GET'])
+@jwt_required()
+def top_10_cities():
+    try:
+        city_counts = (
+            db.session.query(User.city, func.count(User.city).label("count"))
+            .group_by(User.city)
+            .order_by(func.count(User.city).desc())
+            .limit(10)
+            .all()
+        )
+
+        city_data = {city: count for city, count in city_counts}
+
+        return jsonify(city_data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/vendor-users/count', methods=['GET'])
+@jwt_required()
+def vendor_user_count():
+    try:
+        count = db.session.query(VendorUser).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/admin-users/count', methods=['GET'])
+@jwt_required()
+def admin_user_count():
+    try:
+        count = db.session.query(AdminUser).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/markets/count', methods=['GET'])
+@jwt_required()
+def market_count():
+    try:
+        count = db.session.query(Market).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/api/market-days/count', methods=['GET'])
+@jwt_required()
+def market_days_count():
+    try:
+        count = db.session.query(MarketDay).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/vendors/count', methods=['GET'])
+@jwt_required()
+def vendor_count():
+    try:
+        count = db.session.query(Vendor).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/baskets/count', methods=['GET'])
+@jwt_required()
+def basket_count():
+    try:
+        count = db.session.query(Basket).count()
+        sold_count = db.session.query(Basket).filter(Basket.is_sold == True).count()
+        grabbed_count = db.session.query(Basket).filter(Basket.is_grabbed == True).count()
+        unsold_count = db.session.query(Basket).filter(Basket.is_sold == False).count()
+
+        sold_price = db.session.query(func.sum(Basket.price)).filter(Basket.is_sold == True).scalar() or 0
+        sold_value = db.session.query(func.sum(Basket.value)).filter(Basket.is_sold == True).scalar() or 0
+
+        return jsonify({
+            "count": count,
+            "sold_count": sold_count,
+            "grabbed_count": grabbed_count,
+            "unsold_count": unsold_count,
+            "sold_price": sold_price,
+            "sold_value": sold_value
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/baskets/top-10-markets', methods=['GET'])
+@jwt_required()
+def basket_top_10_markets():
+    try:
+        market_counts = (
+            db.session.query(Market.name, func.count(Basket.id).label("count"))
+            .join(MarketDay, MarketDay.id == Basket.market_day_id)
+            .join(Market, Market.id == MarketDay.market_id)
+            .group_by(Market.name)
+            .order_by(func.count(Basket.id).desc())
+            .limit(10)
+            .all()
+        )
+
+        market_data = {market: count for market, count in market_counts}
+
+        return jsonify(market_data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/baskets/top-10-vendors', methods=['GET'])
+@jwt_required()
+def basket_top_10_vendors():
+    try:
+        vendor_counts = (
+            db.session.query(Vendor.name, func.count(Basket.id).label("count"))
+            .join(Vendor, Vendor.id == Basket.vendor_id)
+            .group_by(Vendor.name)
+            .order_by(func.count(Basket.id).desc())
+            .limit(10)
+            .all()
+        )
+
+        vendor_data = {vendor: count for vendor, count in vendor_counts}
+
+        return jsonify(vendor_data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/baskets/top-10-users', methods=['GET'])
+@jwt_required()
+def basket_top_10_users():
+    try:
+        top_users = db.session.query(
+            User.first_name,
+            User.last_name,
+            User.email,
+            db.func.count(Basket.user_id).label('basket_count')
+        ).join(Basket, Basket.user_id == User.id).group_by(User.id).order_by(db.desc('basket_count')).limit(10).all()
+
+        users_data = [{
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "basket_count": user.basket_count
+        } for user in top_users]
+
+        return jsonify(users_data), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     # app.run(host="0.0.0.0", port=5555, debug=True)

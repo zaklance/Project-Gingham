@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 function AdminVendorEvents({ vendors }) {
     const [newEvent, setNewEvent] = useState({});
@@ -43,8 +44,7 @@ function AdminVendorEvents({ vendors }) {
 
     const handleSaveNewEvent = async () => {
         try {
-            console.log(newEvent);
-            // Save market details first
+            // console.log(newEvent);
             const response = await fetch(`/api/events`, {
                 method: 'POST',
                 headers: {
@@ -55,8 +55,10 @@ function AdminVendorEvents({ vendors }) {
 
             if (response.ok) {
                 const createdEvent = await response.json();
-                console.log('Event data updated successfully:', createdEvent);
-                alert('Market Event successfully created')
+                // console.log('Event data updated successfully:', createdEvent);
+                toast.success('Vendor Event successfully created', {
+                    autoClose: 4000,
+                });
                 setEvents((prevEvents) => [...prevEvents, createdEvent]);
                 setNewEvent({})
             } else {

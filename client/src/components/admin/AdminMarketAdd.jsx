@@ -354,7 +354,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                             />
                         </div>
                         <div className='form-group'>
-                            <label>Location:</label>
+                            <label>Hour End:</label>
                             <input
                                 type="text"
                                 name="hour_end"

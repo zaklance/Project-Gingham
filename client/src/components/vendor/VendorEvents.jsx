@@ -272,7 +272,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
                                 ))}
                             </select>
                         ) : (
-                            <p>No markets available.</p>
+                            <p className='margin-l-8'>Refresh if you expect to see markets</p>
                         )}
                     </div>
                     <div className='form-group'>
