@@ -1227,56 +1227,56 @@ def run():
         vendor_user_id=51
     )
     
-    vendor_user_demo_2 = VendorUser(
-        email="zak@mufo.nyc",
-        password="lol",
-        first_name="Zak",
-        last_name="Lance",
-        phone="2095553880",
-        active_vendor=2,
-        vendor_id={2:2},
-        vendor_role={2:1}
-    )
-    vendor_user_settings_demo_2 = SettingsVendor(
-        vendor_user_id=52
-    )
+    # vendor_user_demo_2 = VendorUser(
+    #     email="zak@mufo.nyc",
+    #     password="lol",
+    #     first_name="Zak",
+    #     last_name="Lance",
+    #     phone="2095553880",
+    #     active_vendor=2,
+    #     vendor_id={2:2},
+    #     vendor_role={2:1}
+    # )
+    # vendor_user_settings_demo_2 = SettingsVendor(
+    #     vendor_user_id=52
+    # )
     
-    vendor_user_demo_3 = VendorUser(
-        email="sandro@mufo.nyc",
-        password="lol",
-        first_name="Sand",
-        last_name="Man",
-        phone="2095553880",
-        active_vendor=1,
-        vendor_id={1:1},
-        vendor_role={1:1}
-    )
-    vendor_user_settings_demo_3 = SettingsVendor(
-        vendor_user_id=53
-    )
+    # vendor_user_demo_3 = VendorUser(
+    #     email="sandro@mufo.nyc",
+    #     password="lol",
+    #     first_name="Sand",
+    #     last_name="Man",
+    #     phone="2095553880",
+    #     active_vendor=1,
+    #     vendor_id={1:1},
+    #     vendor_role={1:1}
+    # )
+    # vendor_user_settings_demo_3 = SettingsVendor(
+    #     vendor_user_id=53
+    # )
     
-    vendor_user_demo_4 = VendorUser(
-        email="vinh@mufo.nyc",
-        password="lol",
-        first_name="Vinh",
-        last_name="Cent",
-        phone="2095553880",
-        active_vendor=2,
-        vendor_id={2:2},
-        vendor_role={2:1}
-    )
-    vendor_user_settings_demo_4 = SettingsVendor(
-        vendor_user_id=54
-    )
+    # vendor_user_demo_4 = VendorUser(
+    #     email="vinh@mufo.nyc",
+    #     password="lol",
+    #     first_name="Vinh",
+    #     last_name="Cent",
+    #     phone="2095553880",
+    #     active_vendor=2,
+    #     vendor_id={2:2},
+    #     vendor_role={2:1}
+    # )
+    # vendor_user_settings_demo_4 = SettingsVendor(
+    #     vendor_user_id=54
+    # )
 
     db.session.add(vendor_user_demo)
     db.session.add(vendor_user_settings_demo)
-    db.session.add(vendor_user_demo_2)
-    db.session.add(vendor_user_settings_demo_2)
-    db.session.add(vendor_user_demo_3)
-    db.session.add(vendor_user_settings_demo_3)
-    db.session.add(vendor_user_demo_4)
-    db.session.add(vendor_user_settings_demo_4)
+    # db.session.add(vendor_user_demo_2)
+    # db.session.add(vendor_user_settings_demo_2)
+    # db.session.add(vendor_user_demo_3)
+    # db.session.add(vendor_user_settings_demo_3)
+    # db.session.add(vendor_user_demo_4)
+    # db.session.add(vendor_user_settings_demo_4)
     db.session.commit()
 
     admin_user_demo = [
