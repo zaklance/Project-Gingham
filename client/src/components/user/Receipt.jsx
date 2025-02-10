@@ -20,6 +20,7 @@ const ReceiptDocument = ({ receipt, page }) => {
     // console.log("Receipt Data:", receipt); // ✅ Debugging: Check fetched data in console
     
     const basketItems = Array.isArray(receipt?.baskets) ? receipt.baskets : []; // ✅ Ensure it's always an array
+    
 
     return (
         <Document>
@@ -58,7 +59,7 @@ const ReceiptDocument = ({ receipt, page }) => {
                         <View key={index}>
                             <View style={styles.row}>
                                 <Text>Basket ID: {item.id}</Text>
-                                <Text>Pickup Date: {receiptDateConverter(item.sale_date)}</Text>
+                                <Text>Pickup Date: {formatBasketDate(item.sale_date)}</Text>
                                 <Text>Pickup Time: {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</Text>
                             </View>
                             <View style={styles.rowItem}>
