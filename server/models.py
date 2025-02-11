@@ -611,6 +611,10 @@ class Basket(db.Model, SerializerMixin):
     #         raise ValueError("Sale date cannot be in the past")
     #     return value
 
+    @hybrid_property
+    def sale_date_str(self):
+        return self.sale_date.strftime('%Y-%m-%d') if self.sale_date else None
+
     @validates('is_sold', 'is_grabbed')
     def validate_boolean(self, key, value):
         if not isinstance(value, bool):
@@ -836,6 +840,22 @@ class Receipt(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<Receipt ID: {self.id}, User ID: {self.user_id}, Baskets: {self.baskets}, Created At: {self.created_at}>"
+    
+# class PickUpProblem(db.Model, SerializerMixin): 
+#     __tablename__ = 'pickup_problems'
+
+#     id = db.Column(db.Integer, primary_key=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+#     basket_id = db.Column(db.Integer, db.ForeignKey('baskets.id'), nullable=False)
+#     issue = db.Column(db.String, nullable=False)
+#     comments = db.Column(db.String, nullable=False)
+#     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+#     user = db.relationship('User', back_populates='pickup_problems')
+#     basket = db.relationship('Baskets', back_populates='pickup_problems')
+    
+#     def __repr__(self) -> str: 
+#         return f"<Basket Issues ID: {self.id}, User ID: {self.user_id}, Basket ID: {self.basket_id}>"
 
 class SettingsUser(db.Model, SerializerMixin):
     __tablename__ = 'settings_users'
