@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 function AdminVendorNotifications({ notifications, setNotifications }) {
     // const [notifications, setNotifications] = useState([]);
@@ -11,7 +12,9 @@ function AdminVendorNotifications({ notifications, setNotifications }) {
         const token = localStorage.getItem('admin_jwt-token');
 
         if (!newProduct?.product || newProduct.product.trim() === "") {
-            alert("Product name cannot be empty.");
+            toast.warning('Product name cannot be empty.', {
+                autoClose: 4000,
+            });
             return;
         }
 
@@ -50,16 +53,22 @@ function AdminVendorNotifications({ notifications, setNotifications }) {
                     }),
                 });
                 if (updateVendorResponse.ok) {
-                    alert('Vendor product updated successfully');
+                    toast.success('Vendor product updated successfully.', {
+                        autoClose: 4000,
+                    });
                 } else {
                     console.error('Failed to update vendor');
                     const responseData = await updateVendorResponse.json();
-                    alert(responseData.message || 'Something went wrong');
+                    toast.error(responseData.message || 'Something went wrong', {
+                        autoClose: 4000,
+                    });
                 }
             } else {
                 console.error('Failed to create product');
                 const responseData = await productResponse.json();
-                alert(responseData.message || 'Something went wrong');
+                toast.error(responseData.message || 'Something went wrong', {
+                    autoClose: 4000,
+                });
             }
 
             const adminResponse = await fetch(`/api/admin-notifications/${notification.id}`, {
@@ -73,11 +82,15 @@ function AdminVendorNotifications({ notifications, setNotifications }) {
                 setNotifications((prev) =>
                     prev.filter((item) => item.id !== notification.id)
                 );
-                alert('Notification approved and product updated successfully');
+                toast.success('Notification approved and product updated successfully', {
+                    autoClose: 4000,
+                });
             } else {
                 console.error('Failed to delete notification');
                 const responseData = await adminResponse.json();
-                alert(responseData.message || 'Something went wrong');
+                toast.error(responseData.message || 'Something went wrong', {
+                    autoClose: 4000,
+                });
             }
         } catch (error) {
             console.error('Error approving request', error);

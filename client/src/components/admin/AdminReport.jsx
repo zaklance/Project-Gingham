@@ -57,7 +57,6 @@ function AdminReport() {
 
             if (response.ok) {
                 setMarketReported((prevReviews) => prevReviews.filter((review) => review.id !== reviewId));
-                // alert("Review un-reported")
             }
         } catch (error) {
             console.error('Error updating review:', error);
@@ -106,7 +105,6 @@ function AdminReport() {
 
             if (response.ok) {
                 setVendorReported((prevReviews) => prevReviews.filter((review) => review.id !== reviewId));
-                // alert("Review un-reported")
             }
         } catch (error) {
             console.error('Error updating review:', error);

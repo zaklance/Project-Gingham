@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
     const [query, setQuery] = useState("");
@@ -75,11 +76,15 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
                     },
                 });
 
-                alert(`Market "${matchingMarket.name}" and its associated days were successfully deleted.`);
+                toast.success(`Market "${matchingMarket.name}" and its associated days were successfully deleted.`, {
+                    autoClose: 6000,
+                });
                 window.location.href = "/admin/markets?tab=delete";
             } catch (error) {
                 console.error('Error deleting market or associated days:', error);
-                alert('An error occurred while deleting the market and its associated days.');
+                toast.error('An error occurred while deleting the market and its associated days.', {
+                    autoClose: 6000,
+                });
             }
         } else {
             setQuery('');

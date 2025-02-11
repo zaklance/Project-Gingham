@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 function AdminMarketEvents({ markets }) {
     const [newEvent, setNewEvent] = useState({});
@@ -43,7 +44,9 @@ function AdminMarketEvents({ markets }) {
     const handleSaveNewEvent = async () => {
         if (!newEvent.market_id) {
             console.error("Market ID is missing. Cannot save event.");
-            alert("Please select a valid market before saving the event.");
+            toast.success('Please select a valid market before saving the event.', {
+                autoClose: 5000,
+            });
             return;
         }
     
@@ -66,7 +69,9 @@ function AdminMarketEvents({ markets }) {
             if (response.ok) {
                 const createdEvent = await response.json();
                 console.log('Event created successfully:', createdEvent);
-                alert('Market Event successfully created');
+                toast.success('Market Event successfully created.', {
+                    autoClose: 4000,
+                });
                 setEvents((prevEvents) => [...prevEvents, createdEvent]);
                 setNewEvent({});
             } else {

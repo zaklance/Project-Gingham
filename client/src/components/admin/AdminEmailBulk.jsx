@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PulseLoader from 'react-spinners/PulseLoader';
+import { toast } from 'react-toastify';
 
 const AdminEmailBulk = () => {
     const [previewHtml, setPreviewHtml] = useState('');
@@ -112,10 +113,14 @@ const AdminEmailBulk = () => {
                     const result = await response.json()
                     setIsLoading(false)
                     if (response.ok) {
-                        alert('Message sent successfully!');
-                        console.log(result)
+                        toast.success('Message sent successfully!', {
+                            autoClose: 4000,
+                        });
+                        // console.log(result)
                     } else {
-                        alert('Error sending message:', result.error);
+                        toast.error('Error sending message:', result.error, {
+                            autoClose: 4000,
+                        });
                     }
                 } catch (error) {
                     console.error('Error generating preview:', error);
@@ -140,10 +145,14 @@ const AdminEmailBulk = () => {
                     const result = await response.json()
                     setIsLoading(false)
                     if (response.ok) {
-                        alert('Message sent successfully!');
-                        console.log(result)
+                        toast.success('Message sent successfully!', {
+                            autoClose: 4000,
+                        });
+                        // console.log(result)
                     } else {
-                        alert('Error sending message:', result.error);
+                        toast.error('Error sending message:', result.error, {
+                            autoClose: 4000,
+                        });
                     }
                 } catch (error) {
                     console.error('Error generating preview:', error);

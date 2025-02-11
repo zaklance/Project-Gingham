@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import PulseLoader from 'react-spinners/PulseLoader';
 import PasswordStrengthBar from 'react-password-strength-bar';
 import PasswordChecklist from "react-password-checklist"
+import { toast } from 'react-toastify';
 
 function PasswordReset({ user, path }) {
     const { token } = useParams(); // Get the token from the URL
@@ -22,7 +23,9 @@ function PasswordReset({ user, path }) {
             return;
         }
         if (!isValid) {
-            alert("Password does not meet requirements.");
+            toast.warning('Password does not meet requirements.', {
+                autoClose: 4000,
+            });
             return
         }
 
@@ -42,17 +45,26 @@ function PasswordReset({ user, path }) {
 
             setIsLoading(false)
             if (response.ok) {
-                setStatus('Password successfully reset');
+                // setStatus('Password successfully reset');
+                toast.success('Password successfully reset', {
+                    autoClose: 3000,
+                });
                 setTimeout(() => {
                     setStatus();
                 }, 4000);
                 navigate(path);
             } else {
                 const errorData = await response.json();
-                setStatus(errorData.error || 'Failed to res et password. Please try again.');
+                // setStatus(errorData.error || 'Failed to reset password. Please try again.');
+                toast.error(errorData.error || 'Failed to reset password. Please try again.', {
+                    autoClose: 6000,
+                });
             }
         } catch (error) {
-            setStatus('An error occurred. Please try again.');
+            // setStatus('An error occurred. Please try again.');
+            toast.error('An error occurred. Please try again.', {
+                autoClose: 4000,
+            });
             console.error('Error during password reset:', error);
         }
     };
@@ -105,7 +117,7 @@ function PasswordReset({ user, path }) {
                     <button className="btn btn-login nowrap margin-t-8" type="submit">Reset Password</button>
                 )}
             </form>
-            {status && <p className="status-message">{status}</p>}
+            {/* {status && <p className="status-message">{status}</p>} */}
         </div>
     );
 }

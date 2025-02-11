@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PulseLoader from 'react-spinners/PulseLoader';
+import { toast } from 'react-toastify';
 
 const AdminEmail = () => {
     const [previewHtml, setPreviewHtml] = useState('');
@@ -146,12 +147,16 @@ const AdminEmail = () => {
                 const result = await response.json()
                 if (response.ok) {
                     setIsLoading(false)
-                    alert('Message sent successfully!');
-                    console.log(result)
+                    toast.success('Message sent successfully!', {
+                        autoClose: 4000,
+                    });
+                    // console.log(result)
                 }
             } catch (error) {
                 setIsLoading(false)
-                alert('Error sending email, make sure your email is verified on sendgrid (contact Zak)', error);
+                toast.error('Error sending email, make sure your email is verified on sendgrid (contact Zak)', error, {
+                    autoClose: 4000,
+                });
             }
         } else {
             setIsLoading(false)

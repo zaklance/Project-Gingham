@@ -181,7 +181,6 @@ function AdminProfile () {
 
     const handleSaveEmail = async () => {
         if (changeEmail !== changeConfirmEmail) {
-            // alert("Emails do not match.");
             toast.error('Emails do not match.', {
                 autoClose: 4000,
             });
@@ -203,7 +202,6 @@ function AdminProfile () {
                 setChangeEmail('')
                 setChangeConfirmEmail('')
                 setEmailMode(false);
-                // alert('Email will not update until you check your email and click the verify link.')
                 toast.warning('Email will not update until you check your email and click the verify link.', {
                     autoClose: 8000,
                 });
@@ -222,14 +220,12 @@ function AdminProfile () {
 
     const handleSavePassword = async () => {
         if (changePassword !== changeConfirmPassword) {
-            // alert("Passwords do not match.");
             toast.error('Passwords do not match.', {
                 autoClose: 4000,
             });
             return;
         }
         if (!isValid) {
-            // alert("Password does not meet requirements.");
             toast.error('Password does not meet requirements.', {
                 autoClose: 4000,
             });
@@ -254,7 +250,9 @@ function AdminProfile () {
                 setChangePassword('')
                 setChangeConfirmPassword('')
                 setPasswordMode(false);
-                alert('Password changed')
+                toast.success('Password changed.', {
+                    autoClose: 4000,
+                });
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status:', response.status);
