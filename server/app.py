@@ -1,7 +1,8 @@
 import os
 import json
 import smtplib
-from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
+import csv
+from flask import Flask, Response, request, jsonify, session, send_from_directory, redirect, url_for
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
                     VendorReview, ReportedReview, MarketReviewRating, 
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
@@ -23,12 +24,15 @@ from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
 from datetime import datetime, date, time, timedelta
 from PIL import Image
-from io import BytesIO
+from io import BytesIO, StringIO
 from random import choice
 import stripe
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import utils.events as events
-from utils.emails import send_contact_email, send_user_password_reset_email, send_vendor_password_reset_email, send_admin_password_reset_email, send_user_confirmation_email, send_vendor_confirmation_email, send_admin_confirmation_email
+from utils.emails import ( send_contact_email, send_user_password_reset_email, 
+                          send_vendor_password_reset_email, send_admin_password_reset_email, 
+                          send_user_confirmation_email, send_vendor_confirmation_email, 
+                          send_admin_confirmation_email )
 import subprocess
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
@@ -65,6 +69,24 @@ avatars = [
         "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
         "avatar-watermelon-1.jpg"
     ]
+
+def generate_csv(model, fields, filename_prefix):
+    """Helper function to generate CSV from a model."""
+    try:
+        today_date = datetime.today().strftime("%Y-%m-%d")
+        filename = f"{filename_prefix}_{today_date}.csv"
+
+        csv_data = ",".join(fields) + "\n"
+
+        records = model.query.all()
+        for record in records:
+            row = [str(getattr(record, field, "")) for field in fields]
+            csv_data += ",".join(row) + "\n"
+
+        return jsonify({"filename": filename, "data": csv_data})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -3996,6 +4018,21 @@ def user_issues():
         db.session.commit()
 
         return jsonify({"message": "Issue created successfully", "issue_id": new_issue.id}), 201        
+
+@app.route('/api/export/users', methods=['GET'])
+def export_users():
+    fields = ["id", "email", "first_name", "last_name", "phone", "address_1", "address_2", "city", "state", "zipcode", "coordinates", "avatar_default", "status", "login_count", "last_login", "join_date"]
+    return generate_csv(User, fields, "database_export_users")
+
+@app.route('/api/export/vendors', methods=['GET'])
+def export_vendors():
+    fields = ["id", "name", "city", "state", "products", "bio", "website", "image_default"]
+    return generate_csv(Vendor, fields, "database_export_vendors")
+
+@app.route('/api/export/baskets', methods=['GET'])
+def export_baskets():
+    fields = ["id", "vendor_id", "market_day_id", "sale_date", "pickup_start", "pickup_end", "user_id", "is_sold", "is_grabbed", "price", "value"]
+    return generate_csv(Basket, fields, "database_export_baskets")
 
 if __name__ == '__main__':
     # app.run(host="0.0.0.0", port=5555, debug=True)
