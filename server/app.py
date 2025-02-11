@@ -9,7 +9,7 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     Product, UserNotification, VendorNotification, 
                     AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
                     Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
-                    bcrypt )
+                    UserIssue, bcrypt )
 from dotenv import load_dotenv
 from sqlalchemy import cast, desc, func, Integer
 from sqlalchemy.exc import IntegrityError
@@ -3062,8 +3062,6 @@ def admin_password_reset_request():
         return jsonify({"error": result["error"]}), 500
     return jsonify({"message": result["message"]}), 200
     
-
-
 @app.route('/api/admin/password-reset/<token>', methods=['GET', 'POST'])
 def admin_password_reset(token):
     if request.method == 'GET':
@@ -3824,7 +3822,6 @@ def top_10_cities():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @app.route('/api/vendor-users/count', methods=['GET'])
 @jwt_required()
 def vendor_user_count():
@@ -3954,6 +3951,51 @@ def basket_top_10_users():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/api/user_issues', methods=['GET', 'POST'])
+@jwt_required()
+def user_issues():
+    if request.method == 'GET':
+        user_id = request.args.get('user_id')
+        if not user_id:
+            return jsonify({"error": "User ID is required"}), 400
+        
+        issues = UserIssue.query.filter_by(user_id=user_id).all()
+        return jsonify([
+            {
+                "id": issue.id,
+                "user_id": issue.user_id,
+                "basket_id": issue.basket_id,
+                "issue_type": issue.issue_type,
+                "issue_subtype": issue.issue_subtype,
+                "body": issue.body,
+                "status": issue.status,
+                "created_at": issue.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            }
+            for issue in issues
+        ]), 200
+
+    elif request.method == 'POST':
+        data = request.get_json()
+
+        required_fields = ['user_id', 'issue_type', 'issue_subtype', 'body']
+        for field in required_fields:
+            if field not in data or not data[field]:
+                return jsonify({"error": f"{field} is required"}), 400
+
+        new_issue = UserIssue(
+            user_id=data['user_id'],
+            basket_id=data.get('basket_id'),
+            issue_type=data['issue_type'],
+            issue_subtype=data['issue_subtype'],
+            body=data['body'],
+            status="Pending"
+        )
+
+        db.session.add(new_issue)
+        db.session.commit()
+
+        return jsonify({"message": "Issue created successfully", "issue_id": new_issue.id}), 201        
 
 if __name__ == '__main__':
     # app.run(host="0.0.0.0", port=5555, debug=True)
