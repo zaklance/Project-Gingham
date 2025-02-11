@@ -1,24 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { timeConverter, formatBasketDate } from '../../utils/helpers';
+import { timeConverter } from '../../utils/helpers';
 import { QRCodeSVG } from 'qrcode.react';
+import UserIssues from './UserIssues';
 
 function PickUp() {
     const [baskets, setBaskets] = useState([])
     const [isPickUp, setIsPickUp] = useState(false);
     const [selectedBasketId, setSelectedBasketId] = useState(null);
-    const [qRCodes, setQRCodes] = useState([])
+    const [qRCodes, setQRCodes] = useState([]);
+    const [showQR, setShowQR] = useState(null);
+    const [showPopup, setShowPopup] = useState(false);
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const token = localStorage.getItem('user_jwt-token');
 
+    const handleIssuePopup = (event, basketId) => {
+        event.stopPropagation();
+        setSelectedBasketId(basketId);
+        setShowPopup(true);
+    };
+
+    const handleCloseIssuePopup = () => {
+        setShowPopup(false);
+        setSelectedBasketId(null);
+    };
+
     useEffect(() => {
         const today = new Date();
-        const formattedDate = today.toLocaleDateString('en-CA', { // Using en-CA for correct ISO format
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-        }).split('/').reverse().join('-');
+        const formattedDate = today.toISOString().split('T')[0];
         console.log('Formatted date being sent:', formattedDate);
         const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         console.log('Browser timezone:', browserTimezone);
@@ -68,10 +78,33 @@ function PickUp() {
             });
     }, [userId]);
 
-    const handlePickUp = (basketId) => {
-        setSelectedBasketId(prevId => (prevId === basketId ? null : basketId));
+    const handlePickUp = (event, basketId) => {
+        event.stopPropagation();
+        setShowQR(prevId => (prevId === basketId ? null : basketId));
     };
 
+    const isPickupTime = (pickupStart, pickupEnd) => {
+        const now = new Date();
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    
+        const todayDate = new Date().toISOString().split('T')[0];
+    
+        const startString = `${todayDate} ${pickupStart}`;
+        const endString = `${todayDate} ${pickupEnd}`;
+    
+        const start = new Date(startString);
+        const end = new Date(endString);
+    
+        // console.log("Current Local Time:", now.toLocaleString('en-US', { timeZone }));
+        // console.log("Pickup Start (Local):", isNaN(start) ? "Invalid Time" : start.toLocaleString('en-US', { timeZone }));
+        // console.log("Pickup End (Local):", isNaN(end) ? "Invalid Time" : end.toLocaleString('en-US', { timeZone }));
+    
+        const isWithinTime = now >= start && now <= end;
+        // console.log("In Pickup Window:", isWithinTime);
+    
+        return isWithinTime;
+    };
+    
     return (
         <>
             <div>
@@ -81,7 +114,8 @@ function PickUp() {
                         {baskets.length > 0 ? (
                             baskets.map((basket, index) => {
                                 const matchingQRCode = qRCodes.find(qRCode => qRCode.basket_id === basket.id);
-                                const isSelected = selectedBasketId === basket.id;
+                                const isSelected = showQR === basket.id;
+                                const inPickupWindow = isPickupTime(basket.pickup_start, basket.pickup_end);
                                 return (
                                     <div key={index} className='basket-card'>
                                         <div className='width-100'>
@@ -110,8 +144,13 @@ function PickUp() {
                                                         </tbody>
                                                     </table>
                                                     <div className='flex-center'>
-                                                        <button className="btn-basket-save" onClick={() => handlePickUp(basket.id)}>Pick Up Basket</button>
+                                                        <button className="btn-basket-save" onClick={(event) => handlePickUp(event, basket.id)}>Pick Up Basket</button>
                                                     </div>
+                                                    {inPickupWindow && (
+                                                        <div className='flex-center'>
+                                                            <a className="link-edit" onClick={(event) => handleIssuePopup(event, basket.id)}>Problems with pickup?</a>
+                                                        </div>
+                                                    )}
                                                 </>
                                             ) : (
                                                 <>
@@ -124,7 +163,7 @@ function PickUp() {
                                                             />
                                                         </div>
                                                         <div className='text-center margin-t-16'>
-                                                                <button className="btn-basket-save" onClick={() => handlePickUp(basket.id)}>Cancel</button>
+                                                                <button className="btn-basket-save" onClick={(event) => handlePickUp(event, basket.id)}>Cancel</button>
                                                         </div>
                                                     </div>
                                                 </>
@@ -144,6 +183,7 @@ function PickUp() {
                     </>
                 )}
             </div>
+            {showPopup && <UserIssues basketId={selectedBasketId} onClose={handleCloseIssuePopup} />}
         </>
     );
 }

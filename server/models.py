@@ -83,6 +83,7 @@ class User(db.Model, SerializerMixin):
     vendor_favorites = db.relationship('VendorFavorite', back_populates='user')
     blog_favorites = db.relationship('BlogFavorite', back_populates='user')
     receipts = db.relationship('Receipt', back_populates='user', cascade="all, delete-orphan")
+    user_issues = db.relationship('UserIssue', back_populates='user', cascade="all, delete-orphan")
 
     serialize_rules = (
         '-_password',
@@ -91,6 +92,7 @@ class User(db.Model, SerializerMixin):
         '-market_favorites',
         '-vendor_favorites',
         '-blog_favorites',
+        '-user_issues.user'
     )
 
     @validates('first_name')
@@ -594,6 +596,7 @@ class Basket(db.Model, SerializerMixin):
     vendor = db.relationship('Vendor', lazy='joined')
     market_day = db.relationship('MarketDay', lazy='joined')
     qr_codes = db.relationship('QRCode', back_populates='baskets')
+    user_issues = db.relationship('UserIssue', back_populates='basket', cascade="all, delete-orphan")
 
     serialize_rules = (
         '-vendor.baskets', 
@@ -603,6 +606,7 @@ class Basket(db.Model, SerializerMixin):
         '-vendor.reviews', 
         '-vendor.vendor_markets',
         '-vendor.vendor_favorites',
+        '-user_issues.basket'
     )
 
     # @validates('sale_date')
@@ -841,21 +845,25 @@ class Receipt(db.Model, SerializerMixin):
     def __repr__(self) -> str:
         return f"<Receipt ID: {self.id}, User ID: {self.user_id}, Baskets: {self.baskets}, Created At: {self.created_at}>"
     
-# class PickUpProblem(db.Model, SerializerMixin): 
-#     __tablename__ = 'pickup_problems'
+class UserIssue(db.Model, SerializerMixin): 
+    __tablename__ = 'user_issues'
 
-#     id = db.Column(db.Integer, primary_key=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-#     basket_id = db.Column(db.Integer, db.ForeignKey('baskets.id'), nullable=False)
-#     issue = db.Column(db.String, nullable=False)
-#     comments = db.Column(db.String, nullable=False)
-#     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    basket_id = db.Column(db.Integer, db.ForeignKey('baskets.id'), nullable=True)
+    issue_type = db.Column(db.String, nullable=False)
+    issue_subtype = db.Column(db.String, nullable=False)
+    body = db.Column(db.String, nullable=False)
+    status = db.Column(db.String, default="Pending")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-#     user = db.relationship('User', back_populates='pickup_problems')
-#     basket = db.relationship('Baskets', back_populates='pickup_problems')
+    user = db.relationship('User', back_populates='user_issues')
+    basket = db.relationship('Basket', back_populates='user_issues')
+
+    serialize_rules = ('-user.user_issues', '-basket.user_issues')
     
-#     def __repr__(self) -> str: 
-#         return f"<Basket Issues ID: {self.id}, User ID: {self.user_id}, Basket ID: {self.basket_id}>"
+    def __repr__(self) -> str: 
+        return f"<User Issues ID: {self.id}, User ID: {self.user_id}>"
 
 class SettingsUser(db.Model, SerializerMixin):
     __tablename__ = 'settings_users'
