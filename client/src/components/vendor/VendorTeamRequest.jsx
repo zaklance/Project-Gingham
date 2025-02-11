@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const VendorTeamRequest = ({ className, vendorUserId, vendorUserData }) => {
@@ -10,6 +10,7 @@ const VendorTeamRequest = ({ className, vendorUserId, vendorUserData }) => {
     const [selectedVendor, setSelectedVendor] = useState(null);
 
     const navigate = useNavigate();
+    const { handlePopup } = useOutletContext();
 
     useEffect(() => {
         fetch("/api/vendors")
@@ -115,17 +116,16 @@ const VendorTeamRequest = ({ className, vendorUserId, vendorUserData }) => {
         }
     };
 
-    console.log(selectedVendor)
     const handleRequestJoin = async (event) => {
         event.preventDefault();
 
         if (!selectedVendor || !vendorUserId) {
-            alert('Please select a vendor and ensure you are logged in.');
+            handlePopup();
             return;
         }
         const token = localStorage.getItem('vendor_jwt-token');
         if (!token) {
-            alert('Authorization token is missing. Please log in.');
+            handlePopup();
             return;
         }
 
@@ -171,7 +171,9 @@ const VendorTeamRequest = ({ className, vendorUserId, vendorUserData }) => {
         const token = localStorage.getItem('vendor_jwt-token');
         if (!notifications) {
             console.error("No notifications found to cancel.");
-            alert("No pending requests to cancel.");
+            toast.warning('No pending requests to cancel.', {
+                autoClose: 4000,
+            });
             return;
         }
         // const notificationArray = Array.isArray(teamNotifications) ? teamNotifications : [teamNotifications];
@@ -196,7 +198,9 @@ const VendorTeamRequest = ({ className, vendorUserId, vendorUserData }) => {
                     });
                 } else {
                     const errorData = await response.json();
-                    alert(`Error canceling request: ${errorData.message || 'Unknown error'}`);
+                    toast.error(`Error canceling request: ${errorData.message || 'Unknown error'}`, {
+                        autoClose: 4000,
+                    });
                 }
             // }
         } catch (error) {

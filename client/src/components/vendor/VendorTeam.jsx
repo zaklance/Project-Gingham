@@ -37,7 +37,9 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
 
     const handleAddTeamMember = async () => {
         if (newMemberEmail !== confirmMemberEmail) {
-            alert("Emails do not match");
+            toast.warning('Emails do not match.', {
+                autoClose: 4000,
+            });
             return;
         }
     
@@ -70,7 +72,9 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                     });
     
                     if (patchResponse.ok) {
-                        alert("User added to vendor successfully");
+                        toast.success('User added to vendor successfully!', {
+                            autoClose: 4000,
+                        });
                         setNewMemberEmail('');
                         setConfirmMemberEmail('');
                         setNewMemberRole(2);
@@ -79,7 +83,9 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                         return;
                     } else {
                         console.error('Error updating existing user:', await patchResponse.json());
-                        alert('Failed to update existing user.');
+                        toast.error('Failed to update existing user.', {
+                            autoClose: 4000,
+                        });
                         return;
                     }
                 }
@@ -105,17 +111,23 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                 setNewMemberEmail('');
                 setConfirmMemberEmail('');
                 setNewMemberRole(2);
-                alert("New user invited successfully");
+                toast.success('New user invited successfully!', {
+                    autoClose: 4000,
+                });
 
                 fetchTeamMembers();
             } else {
                 console.error('Error adding new team member:', await createResponse.json());
-                alert('Failed to add new user.');
+                toast.error('Failed to add new user.', {
+                    autoClose: 4000,
+                });
             }
             window.location.reload();
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred while adding the team member.');
+            toast.error('An error occurred while adding the team member.', {
+                autoClose: 4000,
+            });
         }
     };
     
@@ -161,7 +173,9 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
         }
     
         if (!member) {
-            alert("Member not found");
+            toast.warning('Member not found.', {
+                autoClose: 4000,
+            });
             return;
         }
         try {
@@ -208,7 +222,9 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
             }
         } catch (error) {
             console.error('Error updating role:', error);
-            alert('An error occurred while updating the role. Please try again.');
+            toast.error('An error occurred while updating the role. Please try again.', {
+                autoClose: 6000,
+            });
         }
     };
     

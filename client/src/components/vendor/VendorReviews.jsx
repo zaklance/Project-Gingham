@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { convertToLocalDate } from '../../utils/helpers';
+import { toast } from 'react-toastify';
 
 function VendorReviews() {
     const [reviews, setReviews] = useState([]);
@@ -69,7 +70,9 @@ function VendorReviews() {
                 });
 
                 if (response.ok) {
-                    alert("Review reported")
+                    toast.success('Review reported.', {
+                        autoClose: 4000,
+                    });
                 }
             } catch (error) {
                 console.error('Error updating review:', error);

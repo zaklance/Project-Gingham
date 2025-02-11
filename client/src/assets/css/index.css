@@ -2267,7 +2267,7 @@ select:hover {
   width: 100%;
   /* max-width: 1120px; */
   object-fit: cover;
-  /* padding-right: 24px; */
+  border-radius: 16px
 }
 
 .img-portal {
