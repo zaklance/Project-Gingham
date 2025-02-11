@@ -3809,14 +3809,16 @@ def get_receipt(receipt_id):
         return jsonify({"error": f"Error fetching receipt: {str(e)}"}), 500
 
 @app.route('/api/user-issues', methods=['GET', 'POST'])
-@jwt_required()
+# @jwt_required()
 def user_issues():
     if request.method == 'GET':
         user_id = request.args.get('user_id')
-        if not user_id:
-            return jsonify({"error": "User ID is required"}), 400
         
-        issues = UserIssue.query.filter_by(user_id=user_id).all()
+        if user_id:
+            issues = UserIssue.query.filter_by(user_id=user_id).all()
+        else:
+            issues = UserIssue.query.all()
+            
         return jsonify([
             {
                 "id": issue.id,
@@ -3852,6 +3854,7 @@ def user_issues():
         db.session.commit()
 
         return jsonify({"message": "Issue created successfully", "issue_id": new_issue.id}), 201
+
 
 @app.route('/api/users/count', methods=['GET'])
 @jwt_required()

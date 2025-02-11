@@ -860,7 +860,17 @@ class UserIssue(db.Model, SerializerMixin):
     user = db.relationship('User', back_populates='user_issues')
     basket = db.relationship('Basket', back_populates='user_issues')
 
-    serialize_rules = ('-user.user_issues', '-basket.user_issues')
+    serialize_rules = (
+        '-user.user_issues',
+        '-basket.user_issues',
+        '-user.blog_favorites', 
+        '-user.market_reviews', 
+        '-user.vendor_reviews',
+        '-baskets.market_day', 
+        '-baskets.vendor.reviews', 
+        '-baskets.vendor.vendor_favorites', 
+        '-baskets.vendor.vendor_markets'
+    )
     
     def __repr__(self) -> str: 
         return f"<User Issues ID: {self.id}, User ID: {self.user_id}>"
