@@ -18,6 +18,80 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const token = localStorage.getItem('user_jwt-token');
 
+    const formatDate = (timeString) => {
+        if (!timeString) {
+            console.error("Invalid time:", timeString);
+            return null;
+        }
+    
+        // Get today's date in YYYY-MM-DD format
+        const today = new Date();
+        const currentDate = today.toISOString().split('T')[0]; // "YYYY-MM-DD"
+    
+        // Combine with provided time (HH:mm) to form full datetime
+        const dateTimeString = `${currentDate}T${timeString}:00`; // Add seconds
+    
+        const dateObject = new Date(dateTimeString);
+    
+        if (isNaN(dateObject.getTime())) {
+            console.error("Invalid date conversion:", timeString);
+            return null;
+        }
+    
+        return dateObject.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+
+    const generateICSFile = (cartItems) => {
+        console.log("Generating ICS file for cart items:", cartItems);
+        
+        let icsContent = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Gingham//EN\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\n`;
+    
+        cartItems.forEach(item => {
+            if (!item.vendor_name || !item.pickup_start || !item.pickup_end) {
+                console.warn(`Skipping event for basket ${item.id} due to missing data.`, item);
+                return;
+            }
+    
+            const startDate = formatDate(item.pickup_start);
+            const endDate = formatDate(item.pickup_end);
+    
+            if (!startDate || !endDate) {
+                console.warn(`Skipping event for basket ${item.id} due to invalid date format.`);
+                return;
+            }
+    
+            icsContent += `BEGIN:VEVENT\n`;
+            icsContent += `UID:${item.id}@gingham.com\n`;
+            icsContent += `SUMMARY:Pick up your order from ${item.vendor_name}\n`;
+            icsContent += `DESCRIPTION:Pick up your order from ${item.vendor_name} at ${item.location}\n`;
+            icsContent += `LOCATION:${item.location}\n`;
+            icsContent += `DTSTART:${startDate}\n`;
+            icsContent += `DTEND:${endDate}\n`;
+            icsContent += `STATUS:CONFIRMED\n`;
+            icsContent += `END:VEVENT\n`;
+        });
+    
+        icsContent += `END:VCALENDAR`;
+    
+        console.log("ICS content successfully generated:\n", icsContent);
+    
+        try {
+            const blob = new Blob([icsContent], { type: 'text/calendar' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pickup_schedule.ics';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+    
+            console.log("ICS file download triggered successfully.");
+        } catch (error) {
+            console.error("Error generating ICS file:", error);
+            toast.error('An unexpected error occurred while generating the calendar file.', { autoClose: 4000 });
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
     
@@ -178,20 +252,14 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                             </span>
                         </button>
                     ) : (
-                        // <button 
-                        //     className="btn btn-add" 
-                        //     onClick={() => {
-                        //         if (receiptId) {
-                        //             window.open(`/user/receipt-pdf/${receiptId}`, '_blank');
-                        //         } else {
-                        //             console.error("Receipt ID is missing.");
-                        //         }
-                        //     }}
-                        // >
-                        //     View Receipt
-                        // </button>
                         <div className="margin-t-16">
                             <Receipt receiptId={receiptId} page={"checkout"} />
+                            <button 
+                                className="btn btn-add margin-t-8" 
+                                onClick={() => generateICSFile(cartItems)}
+                            >
+                                Add to Calendar
+                            </button>
                         </div>
                     )}
                 </div>

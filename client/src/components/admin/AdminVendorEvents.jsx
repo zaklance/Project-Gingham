@@ -72,7 +72,10 @@ function AdminVendorEvents({ vendors }) {
     };
 
     useEffect(() => {
-        fetch("/api/events")
+        if (!matchingVendorId) {
+            return
+        }
+        fetch(`/api/events?vendor_id=${matchingVendorId}`)
             .then(response => response.json())
             .then(data => {
                 const today = new Date();

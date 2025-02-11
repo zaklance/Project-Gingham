@@ -158,6 +158,7 @@ h2 {
   background-color: #d8f4fe;
   padding: 2px 6px;
   width: fit-content;
+  border-radius: 8px;
 }
 
 p, li, div, form, input, select, button, textarea, td {
@@ -2261,6 +2262,7 @@ select:hover {
   width: 260px;
   height: 174px;
   object-fit: cover;
+  border-radius: 6px;
 }
 
 .img-vendor {
@@ -2714,7 +2716,7 @@ select:hover {
   position: absolute;
   background-color: white;
   margin-top: 48px;
-  margin-bottom: 0;
+  margin-bottom: 0px;
   margin-left: auto;
   margin-right: auto;
   border-radius: 20px 20px 0 0;
@@ -2724,6 +2726,7 @@ select:hover {
   left: 0;
   width: 80%;
   max-width: 1056px;
+  overflow: hidden;
 } 
 
 .market-item {
