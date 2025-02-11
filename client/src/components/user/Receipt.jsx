@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { PDFViewer, Document, Image, Page, Text, View, StyleSheet, PDFDownloadLink } from "@react-pdf/renderer";
-import { formatBasketDate, timeConverter, receiptDateConverter } from "../../utils/helpers";
+import { formatBasketDate, convertToLocalDate, timeConverter, receiptDateConverter } from "../../utils/helpers";
 
 const styles = StyleSheet.create({
     page: { padding: 30, fontSize: 12, fontFamily: 'Helvetica', color: "#3b4752", backgroundColor: '#fbf7eb' },
@@ -20,7 +20,6 @@ const ReceiptDocument = ({ receipt, page }) => {
     // console.log("Receipt Data:", receipt); // ✅ Debugging: Check fetched data in console
     
     const basketItems = Array.isArray(receipt?.baskets) ? receipt.baskets : []; // ✅ Ensure it's always an array
-    
 
     return (
         <Document>
