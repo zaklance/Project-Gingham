@@ -1,6 +1,6 @@
 import React, { useEffect,useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { receiptDateConverter } from '../../utils/helpers';
+import { receiptDateConverter, formatBasketDate } from '../../utils/helpers';
 import Receipt from './Receipt';
 
 function BasketSales() {
@@ -76,7 +76,7 @@ function BasketSales() {
                                                                 {item.vendor_name || 'No Vendor Name'}
                                                             </Link>
                                                         </td>
-                                                        <td className='table-center nowrap'>{receiptDateConverter(item.sale_date) || 'N/A'}</td>
+                                                        <td className='table-center nowrap'>{formatBasketDate(item.sale_date) || 'N/A'}</td>
                                                         <td className='table-center'>${item.price ? item.price.toFixed(2) : 'N/A'}</td>
                                                         <td className='table-center' style={{height: '48px'}}>
                                                             {isFirst && <Receipt receiptId={receipt.id} page={"profile"} />}

@@ -68,44 +68,31 @@ export function formatDate(dateString) {
 }
 
 export function formatBasketDate(dateInput) {
-    try {
-        if (!dateInput) {
-            console.warn('Invalid date input:', dateInput);
-            return 'Invalid Date';
-        }
+    if (!dateInput) return "Invalid Date";
 
-        let date;
-        if (dateInput instanceof Date) {
-            date = dateInput;
-        } else if (typeof dateInput === 'string') {
-            const dateParts = dateInput.split('-');
-            if (dateParts.length !== 3) {
-                console.error('Invalid date string format:', dateInput);
-                return 'Invalid Date';
-            }
-            date = new Date(`${dateParts[0]}-${dateParts[1]}-${dateParts[2]}T00:00:00`);
+    let date;
+    if (dateInput instanceof Date) {
+        date = dateInput;
+    } else if (typeof dateInput === "string") {
+        const dateParts = dateInput.split("T")[0].split("-");
+        if (dateParts.length === 3) {
+            const [year, month, day] = dateParts.map(Number);
+            date = new Date(year, month - 1, day);
         } else {
-            console.error('Unsupported date format:', dateInput);
-            return 'Invalid Date';
+            return "Invalid Date";
         }
-
-        if (isNaN(date.getTime())) {
-            console.error('Invalid date:', dateInput);
-            return 'Invalid Date';
-        }
-
-        const formattedDate = date.toLocaleString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
-
-        return formattedDate;
-    } catch (error) {
-        console.error('Error converting date:', error);
-        return 'Invalid Date';
+    } else {
+        return "Invalid Date";
     }
+
+    if (isNaN(date.getTime())) return "Invalid Date";
+
+    return date.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    });
 }
 
 export const isToday = (date) => {
