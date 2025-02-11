@@ -190,6 +190,39 @@ function AdminStats() {
             .catch(error => console.error('Error fetching market data:', error));
     }, []);
 
+    const handleDownloadCSV = async (route) => {
+        try {
+            const response = await fetch(`/api/export/${route}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to download file');
+            }
+
+            const json = await response.json();
+            const filename = json.filename || "export.csv";
+            const csvData = json.data;
+
+            const blob = new Blob([csvData], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.setAttribute('download', filename);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error downloading file:', error);
+        }
+    };
+
     const dateRange = {
         "Next Week": -7,
         "Week": 7,
@@ -220,16 +253,6 @@ function AdminStats() {
             dates.reverse(); // Reverse to keep chronological order
         }
         return dates;
-    }
-
-    function convertToLocalDate(gmtDateString) {
-        const gmtDate = new Date(gmtDateString);
-        const localDate = gmtDate.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-        return localDate;
     }
 
     useEffect(() => {
@@ -344,6 +367,27 @@ function AdminStats() {
     return (
         <>
             <h1>Admin Statistics</h1>
+            <div className='box-bounding'>
+                <h2>Export Database</h2>
+                <div className='flex-space-between flex-wrap'>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td><p>Export Users table as CSV &emsp;</p></td>
+                                <td><button className='btn btn-add' onClick={() => handleDownloadCSV("users")}>Download</button></td>
+                            </tr>
+                            <tr>
+                                <td><p>Export Vendors table as CSV &emsp;</p></td>
+                                <td><button className='btn btn-add' onClick={() => handleDownloadCSV('vendors')}>Download</button></td>
+                            </tr>
+                            <tr>
+                                <td><p>Export Baskets table as CSV &emsp;</p></td>
+                                <td><button className='btn btn-add' onClick={() => handleDownloadCSV("baskets")}>Download</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             <div className='box-bounding'>
                 <div className='flex-space-between flex-bottom-align'>
                     <h1 className='margin-t-16'>Basket Sales</h1>

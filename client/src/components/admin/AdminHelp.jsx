@@ -10,11 +10,6 @@ const AdminHelp = () => {
 
 
     useEffect(() => {
-        fetch("/api/vendors")
-            .then(response => response.json())
-            .then(vendors => setVendors(vendors))
-            .catch(error => console.error('Error fetching vendors', error));
-
         const urlParams = new URLSearchParams(window.location.search);
         const tab = urlParams.get('tab');
         if (tab) setActiveTab(tab);
