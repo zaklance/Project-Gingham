@@ -3808,6 +3808,51 @@ def get_receipt(receipt_id):
     except Exception as e:
         return jsonify({"error": f"Error fetching receipt: {str(e)}"}), 500
 
+@app.route('/api/user-issues', methods=['GET', 'POST'])
+@jwt_required()
+def user_issues():
+    if request.method == 'GET':
+        user_id = request.args.get('user_id')
+        if not user_id:
+            return jsonify({"error": "User ID is required"}), 400
+        
+        issues = UserIssue.query.filter_by(user_id=user_id).all()
+        return jsonify([
+            {
+                "id": issue.id,
+                "user_id": issue.user_id,
+                "basket_id": issue.basket_id,
+                "issue_type": issue.issue_type,
+                "issue_subtype": issue.issue_subtype,
+                "body": issue.body,
+                "status": issue.status,
+                "created_at": issue.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            }
+            for issue in issues
+        ]), 200
+
+    elif request.method == 'POST':
+        data = request.get_json()
+
+        required_fields = ['user_id', 'issue_type', 'issue_subtype', 'body']
+        for field in required_fields:
+            if field not in data or not data[field]:
+                return jsonify({"error": f"{field} is required"}), 400
+
+        new_issue = UserIssue(
+            user_id=data['user_id'],
+            basket_id=data.get('basket_id'),
+            issue_type=data['issue_type'],
+            issue_subtype=data['issue_subtype'],
+            body=data['body'],
+            status="Pending"
+        )
+
+        db.session.add(new_issue)
+        db.session.commit()
+
+        return jsonify({"message": "Issue created successfully", "issue_id": new_issue.id}), 201
+
 @app.route('/api/users/count', methods=['GET'])
 @jwt_required()
 def user_count():
@@ -3954,52 +3999,7 @@ def basket_top_10_users():
         return jsonify(users_data), 200
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
-@app.route('/api/user_issues', methods=['GET', 'POST'])
-@jwt_required()
-def user_issues():
-    if request.method == 'GET':
-        user_id = request.args.get('user_id')
-        if not user_id:
-            return jsonify({"error": "User ID is required"}), 400
-        
-        issues = UserIssue.query.filter_by(user_id=user_id).all()
-        return jsonify([
-            {
-                "id": issue.id,
-                "user_id": issue.user_id,
-                "basket_id": issue.basket_id,
-                "issue_type": issue.issue_type,
-                "issue_subtype": issue.issue_subtype,
-                "body": issue.body,
-                "status": issue.status,
-                "created_at": issue.created_at.strftime('%Y-%m-%d %H:%M:%S')
-            }
-            for issue in issues
-        ]), 200
-
-    elif request.method == 'POST':
-        data = request.get_json()
-
-        required_fields = ['user_id', 'issue_type', 'issue_subtype', 'body']
-        for field in required_fields:
-            if field not in data or not data[field]:
-                return jsonify({"error": f"{field} is required"}), 400
-
-        new_issue = UserIssue(
-            user_id=data['user_id'],
-            basket_id=data.get('basket_id'),
-            issue_type=data['issue_type'],
-            issue_subtype=data['issue_subtype'],
-            body=data['body'],
-            status="Pending"
-        )
-
-        db.session.add(new_issue)
-        db.session.commit()
-
-        return jsonify({"message": "Issue created successfully", "issue_id": new_issue.id}), 201        
+        return jsonify({"error": str(e)}), 500        
 
 @app.route('/api/export/users', methods=['GET'])
 def export_users():
