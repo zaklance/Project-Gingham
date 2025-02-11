@@ -155,7 +155,6 @@ function VendorProfile () {
 
     const handleSaveEmail = async () => {
         if (changeEmail !== changeConfirmEmail) {
-            // alert("Emails do not match.");
             toast.error('Emails do not match.', {
                 autoClose: 4000,
             });
@@ -177,7 +176,6 @@ function VendorProfile () {
                 setChangeEmail('')
                 setChangeConfirmEmail('')
                 setEmailMode(false);
-                // alert('Email will not update until you check your email and click the verify link.')
                 toast.warning('Email will not update until you check your email and click the verify link.', {
                     autoClose: 8000,
                 });
@@ -403,7 +401,9 @@ function VendorProfile () {
         if (image) {
             const maxFileSize = 25 * 1024 * 1024;
             if (image.size > maxFileSize) {
-                alert("File size exceeds 25 MB. Please upload a smaller file.");
+                toast.warning('File size exceeds 25 MB. Please upload a smaller file.', {
+                    autoClose: 4000,
+                });
                 return;
             }
     
@@ -494,14 +494,20 @@ function VendorProfile () {
                     if (response.ok) {
                         const responseData = await response.json();
                         setProductRequest('')
-                        alert(`Your product request has been sent to the admins for approval, if approved your product will be automatically changed!`);
+                        toast.success('Your product request has been sent to the admins for approval, if approved your product will be automatically changed.', {
+                            autoClose: 6000,
+                        });
                     } else {
                         const errorData = await response.json();
-                        alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
+                        toast.error(`Error sending request: ${errorData.message || 'Unknown error'}`, {
+                            autoClose: 4000,
+                        });
                     }
                 } catch (error) {
                     console.error('Error sending request:', error);
-                    alert('An error occurred while sending the request. Please try again later.');
+                    toast.error('An error occurred while sending the request. Please try again later.', {
+                        autoClose: 4000,
+                    });
                 }
             }
         } catch (error) {
@@ -538,7 +544,9 @@ function VendorProfile () {
     const handleDeleteProductImage = async () => {
         if (!vendorData || !vendorData.image) {
             console.log("Vendor Image URL:", vendorImageURL);
-            alert('No image to delete.');
+            toast.warning('No image to delete.', {
+                autoClose: 4000,
+            });
             return;
         }
     
@@ -568,15 +576,21 @@ function VendorProfile () {
                 }));
     
                 setVendorImageURL(null);
-                alert('Image deleted successfully.');
+                toast.success('Image deleted successfully!', {
+                    autoClose: 4000,
+                });
             } else {
                 const errorText = await response.text();
                 console.error('Failed to delete image:', errorText);
-                alert(`Failed to delete the image`);
+                toast.error('Failed to delete the image', {
+                    autoClose: 4000,
+                });
             }
         } catch (error) {
             console.error('Error deleting image:', error);
-            alert('An unexpected error occurred while deleting the image.');
+            toast.error('An unexpected error occurred while deleting the image.', {
+                autoClose: 5000,
+            });
         }
     };
 

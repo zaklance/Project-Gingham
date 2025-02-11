@@ -101,7 +101,9 @@ function VendorNotification({ notifications, setNotifications, teamMembers, setT
             } else {
                 console.error('Failed to approve request');
                 const responseData = await response.json();
-                alert(responseData.message || 'Something went wrong');
+                toast.error(responseData.message || 'Something went wrong', {
+                    autoClose: 4000,
+                });
             }
         } catch (error) {
             console.error('Error approving request', error);

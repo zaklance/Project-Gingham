@@ -15,6 +15,8 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
 
+    const { handlePopup } = useOutletContext();
+
     const onUpdateQuery = event => setQuery(event.target.value);
     const filteredMarkets = markets.filter(market => market.name.toLowerCase().includes(query.toLowerCase()) && market.name !== query)
     const matchingMarket = markets.find(market => market.name.toLowerCase() === query.toLowerCase());
@@ -105,7 +107,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const handleImageDelete = async () => {
         const token = localStorage.getItem('admin_jwt-token');
         if (!token) {
-            alert('Admin is not authenticated. Please log in again.');
+            handlePopup();
             return;
         }
     

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import VendorActiveVendor from './VendorActiveVendor';
+import { toast } from 'react-toastify';
 
 function VendorScan() {
     const [qRCode, setQRCode] = useState(null);
@@ -60,7 +61,9 @@ function VendorScan() {
                     if (response.ok) {
                         const updatedData = await response.json();
                         console.log('Vendor data updated successfully:', updatedData);
-                        alert("Basket successfully picked up");
+                        toast.success('Basket successfully picked up!', {
+                            autoClose: 4000,
+                        });
                         fetch(`/api/qr-codes/${data.id}`, {
                             method: 'DELETE',
                             headers: {
@@ -70,11 +73,15 @@ function VendorScan() {
                     }
                 } catch (error) {
                     console.error('Error patching basket:', error);
-                    alert("Error, no QR code found!");
+                    toast.error('Error, no QR code found!', {
+                        autoClose: 4000,
+                    });
                 }
             })
-            .catch(error => {
-                alert("Error in QR code scanning:", error);
+            .catch(error => {;
+                toast.error('Error in QR code scanning:', error, {
+                    autoClose: 4000,
+                });
             });
     };
 
