@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 
-
 function UserIssues({ basketId, onClose }) {
     const [formData, setFormData] = useState({
         issueType: '',
@@ -14,7 +13,7 @@ function UserIssues({ basketId, onClose }) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        fetch('/api/user_issues', {
+        fetch('/api/user-issues', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -26,7 +25,7 @@ function UserIssues({ basketId, onClose }) {
                 issue_type: 'Pickup Issue',
                 issue_subtype: formData.issueType,
                 body: formData.comments,
-                status: 'Pending'
+                status: 'pending'
             })
         })
         .then(response => response.json())
@@ -63,6 +62,7 @@ function UserIssues({ basketId, onClose }) {
                                     <option value="Unable to Pick Up">Unable to Pick Up</option>
                                     <option value="Vendor Not in Market">Vendor Not in Market</option>
                                     <option value="Market Closed Early">Market Closed Early</option>
+                                    <option value="Other">Other</option>
                                 </select>
                             </div>
                             <div className="form-group form-contact">
