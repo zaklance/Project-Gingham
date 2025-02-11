@@ -161,12 +161,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
     };
 
     const handleWeekDayChange = (event) => {
-        const dayValue = weekDayReverse[event.target.value.toLowerCase()];
-        // if (dayValue === undefined) {
-        //     alert("Invalid day of the week. Please enter a valid day.");
-        //     return;
-        // }
-    
+        const dayValue = weekDayReverse[event.target.value.toLowerCase()];    
         setNewMarketDay({
             ...newMarketDay,
             day_of_week: dayValue,

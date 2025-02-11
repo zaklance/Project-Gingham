@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { states } from '../../utils/common';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import VendorTeamRequest from './VendorTeamRequest';
+import { toast } from 'react-toastify';
 
 function VendorCreate () {
     const [vendorEditMode, setVendorEditMode] = useState(false);
@@ -20,6 +21,7 @@ function VendorCreate () {
 
     const navigate = useNavigate();
     const location = useLocation();
+    const { handlePopup } = useOutletContext();
 
 
     useEffect(() => {
@@ -157,7 +159,7 @@ function VendorCreate () {
 
             const token = localStorage.getItem('vendor_jwt-token');
             if (!token) {
-                alert('Authorization token is missing. Please log in.');
+                handlePopup();
                 return;
             }
     
@@ -172,8 +174,9 @@ function VendorCreate () {
 
             if (userResponse.ok) {
                 const updatedUser = await userResponse.json();
-                alert('Vendor created and user updated with vendor_id');
-
+                toast.success('Vendor created and user updated with Vendor ID.', {
+                    autoClose: 4000,
+                });
                 setVendorEditMode(false);
                 setNewVendor(false);
             } else {
@@ -196,16 +199,22 @@ function VendorCreate () {
                     });
                     if (response.ok) {
                         const responseData = await response.json();
-                        alert(`Your product request has been sent to the admins for approval. If approved, your product will be automatically changed!`);
+                        toast.success('Your product request has been sent to the admins for approval. If approved, your product will be automatically changed.', {
+                            autoClose: 6000,
+                        });
                         // window.location.reload();
                         // navigate('/vendor/dashboard');
                     } else {
                         const errorData = await response.json();
-                        alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
+                        toast.error(`Error sending request: ${errorData.message || 'Unknown error'}`, {
+                            autoClose: 5000,
+                        });
                     }
                 } catch (error) {
                     console.error('Error sending request:', error);
-                    alert('An error occurred while sending the request. Please try again later.');
+                    toast.error('An error occurred while sending the request. Please try again later.', {
+                        autoClose: 5000,
+                    });
                 }
             }
             navigate('/vendor/dashboard');
