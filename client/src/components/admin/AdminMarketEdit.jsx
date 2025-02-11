@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { markets_default } from '../../utils/common';
+import { toast } from 'react-toastify';
 
 function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const [marketDayDetails, setMarketDayDetails] = useState([])
@@ -133,15 +134,21 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                     image: null,
                 }));
     
-                alert('Image deleted successfully.');
+                toast.success('Image deleted successfully.', {
+                    autoClose: 4000,
+                });
             } else {
                 const errorText = await response.text();
                 console.error('Failed to delete image:', errorText);
-                alert(`Failed to delete the image: ${JSON.parse(errorText).error}`);
+                toast.success(`Failed to delete the image: ${JSON.parse(errorText).error}`, {
+                    autoClose: 6000,
+                });
             }
         } catch (error) {
             console.error('Error deleting image:', error);
-            alert('An unexpected error occurred while deleting the image.');
+            toast.success('An unexpected error occurred while deleting the image.', {
+                autoClose: 5000,
+            });
         }
     };
 
@@ -218,7 +225,9 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                     const updatedData = await response.json();
                     setAdminMarketData(updatedData);
                     setEditMode(false);
-                    alert('Market details updated successfully.');
+                    toast.success('Market details updated successfully.', {
+                        autoClose: 5000,
+                    });
         
                     if (image) {
                         await handleImageUpload(matchingMarketId);

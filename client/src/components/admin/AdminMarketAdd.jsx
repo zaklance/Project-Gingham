@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 function AdminMarketAdd({ markets, weekDayReverse }) {
     const [marketDays, setMarketDays] = useState([])
@@ -85,8 +86,9 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
             if (response.ok) {
                 const updatedData = await response.json();
                 console.log('Market data updated successfully:', updatedData);
-                alert('Market successfully created');
-    
+                toast.success('Market successfully created!', {
+                    autoClose: 4000,
+                });
                 if (image) {
                     await handleImageUpload(updatedData.id);
                 }
@@ -127,7 +129,9 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
         event.preventDefault();
         try {
             if (!newMarketDay.market_id || !newMarketDay.day_of_week) {
-                alert("Market ID and Day of Week are required.");
+                toast.warning('Market ID and Day of Week are required.', {
+                    autoClose: 4000,
+                });
                 return;
             }
     
@@ -143,7 +147,9 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
     
             if (response.ok) {
                 const updatedData = await response.json();
-                alert('Market Day successfully created');
+                toast.success('Market Day successfully created!', {
+                    autoClose: 4000,
+                });
                 console.log('Market Day data created successfully:', updatedData);
             } else {
                 console.error('Failed to save changes');
@@ -173,7 +179,9 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
             const maxFileSize = 5 * 1024 * 1024; // 5 MB limit
     
             if (file.size > maxFileSize) {
-                alert("File size exceeds 5 MB. Please upload a smaller file.");
+                toast.warning('File size exceeds 5 MB. Please upload a smaller file', {
+                    autoClose: 4000,
+                });
                 return;
             }
     

@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { states } from '../../utils/common';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-
+import { toast } from 'react-toastify';
 
 function AdminVendorEdit({ vendors }) {
     const [vendorData, setVendorData] = useState({});
@@ -75,7 +75,9 @@ function AdminVendorEdit({ vendors }) {
     
             if (response.ok) {
                 const updatedData = await response.json();
-                alert("Vendor Created");
+                toast.success('Vendor created!', {
+                    autoClose: 4000,
+                });
                 console.log('Vendor data posted successfully:', updatedData);
     
                 if (image) {

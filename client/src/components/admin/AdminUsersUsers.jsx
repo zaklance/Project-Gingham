@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { formatPhoneNumber } from '../../utils/helpers';
 import { avatars_default, states, status } from '../../utils/common';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const AdminUsersUsers = () => {
     const [users, setUsers] = useState([]);
@@ -67,12 +68,16 @@ const AdminUsersUsers = () => {
 
     const handleDeleteImage = async () => {
         if (!userData || !userData.avatar) {
-            alert('No image to delete.');
+            toast.warning('No image to delete.', {
+                autoClose: 4000,
+            });
             return;
         }
 
         if (!userData.id) {
-            alert('User ID is not defined.');
+            toast.warning('User ID is not defined', {
+                autoClose: 4000,
+            });
             return;
         }
 
@@ -102,15 +107,21 @@ const AdminUsersUsers = () => {
                     avatar: null,
                 }));
 
-                alert('Image deleted successfully.');
+                toast.success('Image deleted successfully.', {
+                    autoClose: 4000,
+                });
             } else {
                 const errorText = await response.text();
                 console.error('Failed to delete image:', errorText);
-                alert(`Failed to delete the image: ${JSON.parse(errorText).error}`);
+                toast.success(`Failed to delete the image: ${JSON.parse(errorText).error}`, {
+                    autoClose: 4000,
+                });
             }
         } catch (error) {
             console.error('Error deleting image:', error);
-            alert('An unexpected error occurred while deleting the image.');
+            toast.success('An unexpected error occurred while deleting the image.', {
+                autoClose: 4000,
+            });
         }
     };
 
@@ -144,7 +155,9 @@ const AdminUsersUsers = () => {
 
                     const maxFileSize = 25 * 1024 * 1024
                     if (image.size > maxFileSize) {
-                        alert("File size exceeds 25 MB. Please upload a smaller file.");
+                        toast.success('File size exceeds 25 MB. Please upload a smaller file.', {
+                            autoClose: 4000,
+                        });
                         return;
                     }
 

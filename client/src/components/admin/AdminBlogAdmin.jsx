@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { blogTimeConverter } from '../../utils/helpers';
+import { toast } from 'react-toastify';
 
 const AdminBlogAdmin = ({ blogs, activeTabMode }) => {
     const [newTitle, setNewTitle] = useState('');
@@ -52,10 +53,14 @@ const AdminBlogAdmin = ({ blogs, activeTabMode }) => {
 
     const postBlog = async () => {
         if (!newTitle) {
-            return alert('No blog title!')
+            return (toast.warning('No blog title.', {
+                autoClose: 4000,
+            }))
         }
         if (!newDate) {
-            return alert('No blog date!')
+            return (toast.warning('No blog date', {
+                autoClose: 4000,
+            }))
         }
 
         if (confirm(`Are you sure you want to post the blog "${newTitle}" to the site?`)) {
@@ -79,10 +84,14 @@ const AdminBlogAdmin = ({ blogs, activeTabMode }) => {
                 });
                 const result = await response.json();
                 if (response.ok) {
-                    alert('Blog posted successfully!');
-                    console.log(result);
+                    toast.success('Blog posted successfully!', {
+                        autoClose: 4000,
+                    });
+                    // console.log(result);
                 } else {
-                    alert('Error posting blog:', result.error);
+                    toast.error('Error posting blog', result.error, {
+                        autoClose: 4000,
+                    });
                 }
             } catch (error) {
                 console.error('Error sending blog:', error);

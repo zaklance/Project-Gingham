@@ -242,7 +242,9 @@ function Profile({ marketData }) {
 
                 const maxFileSize = 25 * 1024 * 1024
                 if (image.size > maxFileSize) {
-                    alert("File size exceeds 25 MB. Please upload a smaller file.");
+                    toast.warning('File size exceeds 25 MB. Please upload a smaller file.', {
+                        autoClose: 6000,
+                    });
                     return;
                 }
 
@@ -319,7 +321,6 @@ function Profile({ marketData }) {
 
     const handleSaveEmail = async () => {
         if (changeEmail !== changeConfirmEmail) {
-            // alert("Emails do not match.");
             toast.error('Emails do not match.', {
                 autoClose: 4000,
             });
@@ -344,7 +345,6 @@ function Profile({ marketData }) {
                 setChangeEmail('');
                 setChangeConfirmEmail('');
                 setEmailMode(false);
-                // alert('Email will not update until you click the verification link in the sent email.')
                 toast.warning('Email will not update until you check your email and click the verify link.', {
                     autoClose: 8000,
                 });
@@ -365,14 +365,12 @@ function Profile({ marketData }) {
 
     const handleSavePassword = async () => {
         if (changePassword !== changeConfirmPassword) {
-            // alert("Passwords do not match.");
             toast.error('Passwords do not match.', {
                 autoClose: 4000,
             });
             return;
         }
         if (!isValid) {
-            // alert("Password does not meet requirements.");
             toast.error('Password does not meet requirements.', {
                 autoClose: 4000,
             });
@@ -397,14 +395,16 @@ function Profile({ marketData }) {
                 setChangePassword('')
                 setChangeConfirmPassword('')
                 setPasswordMode(false);
-                alert('Password changed')
+                toast.success('Password changed.', {
+                    autoClose: 4000,
+                });
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status:', response.status);
                 console.log('Response text:', await response.text());
             }
         } catch (error) {
-            // console.error('Error saving changes:', error);
+            console.error('Error saving changes:', error);
             toast.error(`Error saving changes: ${error}`, {
                 autoClose: 5000,
             });
@@ -413,18 +413,24 @@ function Profile({ marketData }) {
 
     const handleDeleteImage = async () => {
         if (!profileData || !profileData.avatar) {
-            alert('No image to delete.');
+            toast.warning('No image to delete.', {
+                autoClose: 4000,
+            });
             return;
         }
     
         if (!userId) {
-            alert('User ID is not defined.');
+            toast.warning('User ID is not defined.', {
+                autoClose: 4000,
+            });
             return;
         }
     
         const token = localStorage.getItem('user_jwt-token');
         if (!token) {
-            alert('User is not authenticated. Please log in again.');
+            toast.warning('User is not authenticated. Please log in again.', {
+                autoClose: 4000,
+            });
             return;
         }
     
@@ -453,16 +459,21 @@ function Profile({ marketData }) {
                     ...prevData,
                     avatar: null,
                 }));
-    
-                alert('Image deleted successfully.');
+                toast.success('Image deleted successfully.', {
+                    autoClose: 4000,
+                });
             } else {
                 const errorText = await response.text();
                 console.error('Failed to delete image:', errorText);
-                alert(`Failed to delete the image: ${JSON.parse(errorText).error}`);
+                toast.error(`Failed to delete the image: ${JSON.parse(errorText).error}`, {
+                    autoClose: 4000,
+                });
             }
         } catch (error) {
             console.error('Error deleting image:', error);
-            alert('An unexpected error occurred while deleting the image.');
+            toast.warning('An unexpected error occurred while deleting the image.', {
+                autoClose: 4000,
+            });
         }
     };
 

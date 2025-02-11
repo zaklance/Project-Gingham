@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function AdminVendorDelete({ vendors }) {
     const [query, setQuery] = useState("");
@@ -70,11 +71,15 @@ function AdminVendorDelete({ vendors }) {
                     },
                 });
 
-                alert(`Market "${matchingVendor.name}" was successfully deleted.`);
+                toast.success(`Market "${matchingVendor.name}" was successfully deleted.`, {
+                    autoClose: 4000,
+                });
                 window.location.href = "/admin/vendors?tab=delete";
             } catch (error) {
                 console.error('Error deleting market or associated days:', error);
-                alert('An error occurred while deleting the market and its associated days.');
+                toast.error('An error occurred while deleting the market and its associated days.', {
+                    autoClose: 6000,
+                });
             }
             try {
                 const token = localStorage.getItem('vendor_jwt-token');
