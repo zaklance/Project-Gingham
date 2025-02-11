@@ -726,6 +726,10 @@ ul {
   flex-wrap: nowrap !important;
 }
 
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
 .float-left {
   float: left;
 }
@@ -1936,6 +1940,10 @@ link {
   width: 100%
 }
 
+.table-stats {
+  width: 100%;
+}
+
 .table-history thead, .table-stats thead {
   position: sticky;
   top: -2px;
@@ -1953,10 +1961,6 @@ link {
 
 .table-history td, .table-stats td {
   padding: 4px;
-}
-
-.table-stats {
-  width: 100%;
 }
 
 .table-profile {

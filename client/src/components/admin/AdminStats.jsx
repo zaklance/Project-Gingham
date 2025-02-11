@@ -13,6 +13,8 @@ function AdminStats() {
     const [basketCount, setBasketCount] = useState(null)
     const [top10Markets, setTop10Markets] = useState(null)
     const [top10Vendors, setTop10Vendors] = useState(null)
+    const [top10MarketFavs, setTop10MarketFavs] = useState(null)
+    const [top10VendorFavs, setTop10VendorFavs] = useState(null)
     const [top10Users, setTop10Users] = useState(null)
     const [top10Cities, setTop10Cities] = useState(null)
     const [baskets, setBaskets] = useState([]);
@@ -173,7 +175,7 @@ function AdminStats() {
             .then(data => {
                 setTop10Vendors(data);
             })
-            .catch(error => console.error('Error fetching vendor data:', error));
+            .catch(error => console.error('Error fetching basket vendor data:', error));
     }, []);
 
     useEffect(() => {
@@ -187,12 +189,40 @@ function AdminStats() {
             .then(data => {
                 setTop10Users(data);
             })
+            .catch(error => console.error('Error fetching basket user data:', error));
+    }, []);
+
+    useEffect(() => {
+        fetch('/api/market-favorites/top-10-markets', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                setTop10MarketFavs(data);
+            })
             .catch(error => console.error('Error fetching market data:', error));
+    }, []);
+
+    useEffect(() => {
+        fetch('/api/vendor-favorites/top-10-vendors', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                setTop10VendorFavs(data);
+            })
+            .catch(error => console.error('Error fetching vendor data:', error));
     }, []);
 
     const handleDownloadCSV = async (route) => {
         try {
-            const response = await fetch(`/api/export/${route}`, {
+            const response = await fetch(`/api/export-csv/${route}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -205,8 +235,13 @@ function AdminStats() {
             }
 
             const json = await response.json();
+
+            if (!json.csv) {
+                throw new Error('Invalid CSV data received');
+            }
+
             const filename = json.filename || "export.csv";
-            const csvData = json.data;
+            const csvData = json.csv;
 
             const blob = new Blob([csvData], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
@@ -238,7 +273,7 @@ function AdminStats() {
 
         if (range < 0) {
             // Future range (moving forward in time)
-            for (let i = 0; i < Math.abs(range); i++) {
+            for (let i = 1; i < Math.abs(range); i++) {
                 const currentDate = new Date(today);
                 currentDate.setDate(today.getDate() + i);
                 dates.push(currentDate.toDateString()); // Use full date format
@@ -377,12 +412,28 @@ function AdminStats() {
                                 <td><button className='btn btn-add' onClick={() => handleDownloadCSV("users")}>Download</button></td>
                             </tr>
                             <tr>
+                                <td><p>Export Markets table as CSV &emsp;</p></td>
+                                <td><button className='btn btn-add' onClick={() => handleDownloadCSV('markets')}>Download</button></td>
+                            </tr>
+                            <tr>
                                 <td><p>Export Vendors table as CSV &emsp;</p></td>
                                 <td><button className='btn btn-add' onClick={() => handleDownloadCSV('vendors')}>Download</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td><p>Export Vendor Users table as CSV &emsp;</p></td>
+                                <td><button className='btn btn-add' onClick={() => handleDownloadCSV("vendor-users")}>Download</button></td>
                             </tr>
                             <tr>
                                 <td><p>Export Baskets table as CSV &emsp;</p></td>
                                 <td><button className='btn btn-add' onClick={() => handleDownloadCSV("baskets")}>Download</button></td>
+                            </tr>
+                            <tr>
+                                <td><p>Export Products table as CSV &emsp;</p></td>
+                                <td><button className='btn btn-add' onClick={() => handleDownloadCSV("products")}>Download</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -489,92 +540,154 @@ function AdminStats() {
                         </tr>
                     </tbody>
                 </table>
-                <h3 className='margin-t-16'>Top 10 User Cities</h3>
-                <table className='table-stats'>
-                    <thead>
-                        <tr>
-                            <th>&emsp;</th>
-                            <th>City</th>
-                            <th>Total Users</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {top10Cities && Object.entries(top10Cities)
-                            .sort(([, countA], [, countB]) => countB - countA)
-                            .map(([city, count], index) => (
-                                <tr key={index}>
-                                    <th>{index + 1}</th>
-                                    <td className='table-center'>{city}</td>
-                                    <td className='table-center'>{count}</td>
+                <div className='flex-space-between flex-gap-16 m-flex-wrap'>
+                    <div className='flex-grow-1'>
+                        <h3 className='margin-t-16'>Top 10 User Cities</h3>
+                        <table className='table-stats'>
+                            <thead>
+                                <tr>
+                                    <th>&emsp;</th>
+                                    <th>City</th>
+                                    <th>State</th>
+                                    <th>Total Users</th>
                                 </tr>
-                            ))}
-                    </tbody>
-                </table>
-                <h3 className='margin-t-16'>Top 10 Users</h3>
-                <table className='table-stats'>
-                    <thead>
-                        <tr>
-                            <th>&emsp;</th>
-                            <th>Name</th>
-                            <th>Baskets Bought</th>
-                            <th>Email</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {top10Users && top10Users
-                            .sort((userA, userB) => userB.basket_count - userA.basket_count) // Sort by basket_count descending
-                            .map((user, index) => (
-                                <tr key={index}>
-                                    <th>{index + 1}</th>
-                                    <td className='table-center'>{user.first_name} {user.last_name}</td>
-                                    <td className='table-center'>{user.basket_count}</td>
-                                    <td>{user.email}</td>
+                            </thead>
+                            <tbody>
+                                {top10Cities && top10Cities
+                                    .sort((a, b) => b.count - a.count)
+                                    .map((item, index) => (
+                                        <tr key={index}>
+                                            <th>{index + 1}</th>
+                                            <td>{item.city}</td>
+                                            <td>{item.state}</td>
+                                            <td className='table-center'>{item.count}</td>
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className='flex-grow-1'>
+                        <h3 className='margin-t-16'>Top 10 Users</h3>
+                        <table className='table-stats'>
+                            <thead>
+                                <tr>
+                                    <th>&emsp;</th>
+                                    <th>Name</th>
+                                    <th>Baskets Bought</th>
+                                    <th>Email</th>
                                 </tr>
-                            ))}
-                    </tbody>
-                </table>
-                <h3 className='margin-t-16'>Top 10 Markets</h3>
-                <table className='table-stats'>
-                    <thead>
-                        <tr>
-                            <th>&emsp;</th>
-                            <th>Market</th>
-                            <th>Baskets Sold</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {top10Markets && Object.entries(top10Markets)
-                            .sort(([, countA], [, countB]) => countB - countA)
-                            .map(([market, count], index) => (
-                                <tr key={index}>
-                                    <th>{index + 1}</th>
-                                    <td>{market}</td>
-                                    <td className='table-center'>{count}</td>
+                            </thead>
+                            <tbody>
+                                {top10Users && top10Users
+                                    .sort((userA, userB) => userB.basket_count - userA.basket_count) // Sort by basket_count descending
+                                    .map((user, index) => (
+                                        <tr key={index}>
+                                            <th>{index + 1}</th>
+                                            <td className='table-center'>{user.first_name} {user.last_name}</td>
+                                            <td className='table-center'>{user.basket_count}</td>
+                                            <td>{user.email}</td>
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div className='flex-space-between flex-gap-16 m-flex-wrap'>
+                    <div className='flex-grow-1'>
+                        <h3 className='margin-t-16'>Top 10 Markets</h3>
+                        <table className='table-stats'>
+                            <thead>
+                                <tr>
+                                    <th>&emsp;</th>
+                                    <th>Market</th>
+                                    <th>Baskets Sold</th>
                                 </tr>
-                        ))}
-                    </tbody>
-                </table>
-                <h3 className='margin-t-16'>Top 10 Vendors</h3>
-                <table className='table-stats'>
-                    <thead>
-                        <tr>
-                            <th>&emsp;</th>
-                            <th>Vendor</th>
-                            <th>Baskets Sold</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {top10Vendors && Object.entries(top10Vendors)
-                            .sort(([, countA], [, countB]) => countB - countA)
-                            .map(([vendor, count], index) => (
-                                <tr key={index}>
-                                    <th>{index + 1}</th>
-                                    <td>{vendor}</td>
-                                    <td className='table-center'>{count}</td>
+                            </thead>
+                            <tbody>
+                                {top10Markets && Object.entries(top10Markets)
+                                    .sort(([, countA], [, countB]) => countB - countA)
+                                    .map(([market, count], index) => (
+                                        <tr key={index}>
+                                            <th>{index + 1}</th>
+                                            <td>{market}</td>
+                                            <td className='table-center'>{count}</td>
+                                        </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className='flex-grow-1'>
+                        <h3 className='margin-t-16'>Top 10 Favorite Markets</h3>
+                        <table className='table-stats'>
+                            <thead>
+                                <tr>
+                                    <th>&emsp;</th>
+                                    <th>Market</th>
+                                    <th>Times Favorited</th>
                                 </tr>
-                        ))}
-                    </tbody>
-                </table>
+                            </thead>
+                            <tbody>
+                                {top10MarketFavs && top10MarketFavs
+                                    .sort((a, b) => b.favorite_count - a.favorite_count)
+                                    .map((item, index) => (
+                                        <tr key={index}>
+                                            <th>{index + 1}</th>
+                                            <td>{item.market_name}</td>
+                                            <td className='table-center'>{item.favorite_count}</td>
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div className='flex-space-between flex-gap-16 m-flex-wrap'>
+                    <div className='flex-grow-1'>
+                        <h3 className='margin-t-16'>Top 10 Vendors</h3>
+                        <table className='table-stats'>
+                            <thead>
+                                <tr>
+                                    <th>&emsp;</th>
+                                    <th>Vendor</th>
+                                    <th>Baskets Sold</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {top10Vendors && Object.entries(top10Vendors)
+                                    .sort(([, countA], [, countB]) => countB - countA)
+                                    .map(([vendor, count], index) => (
+                                        <tr key={index}>
+                                            <th>{index + 1}</th>
+                                            <td>{vendor}</td>
+                                            <td className='table-center'>{count}</td>
+                                        </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className='flex-grow-1'>
+                        <h3 className='margin-t-16'>Top 10 Favorite Vendors</h3>
+                        <table className='table-stats'>
+                            <thead>
+                                <tr>
+                                    <th>&emsp;</th>
+                                    <th>Vendor</th>
+                                    <th>Times Favorited</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {top10VendorFavs && top10VendorFavs
+                                    .sort((a, b) => b.favorite_count - a.favorite_count)
+                                    .map((item, index) => (
+                                        <tr key={index}>
+                                            <th>{index + 1}</th>
+                                            <td>{item.vendor_name}</td>
+                                            <td className='table-center'>{item.favorite_count}</td>
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </>
     );
