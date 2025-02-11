@@ -270,12 +270,12 @@ function VendorDetail() {
     const handleNotifyMe = async (market) => {
 
         if (!userId) {
-            alert('Please ensure you are logged in.');
+            handlePopup();
             return;
         }
         const token = localStorage.getItem('user_jwt-token');
         if (!token) {
-            alert('Authorization token is missing. Please log in.');
+            handlePopup();
             return;
         }
 
@@ -298,14 +298,20 @@ function VendorDetail() {
 
             if (response.ok) {
                 const responseData = await response.json();
-                alert(`Your request has been sent to ${vendor.name}!`);
+                toast.success(`Your request has been sent to ${vendor.name}!`, {
+                    autoClose: 5000,
+                });
             } else {
                 const errorData = await response.json();
-                alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
+                toast.error(`Error sending request: ${errorData.message || 'Unknown error'}`, {
+                    autoClose: 6000,
+                });
             }
         } catch (error) {
             console.error('Error sending request:', error);
-            alert('An error occurred while sending the request. Please try again later.');
+            toast.error('An error occurred while sending the request. Please try again later.', {
+                autoClose: 5000,
+            });
         }
     };
 

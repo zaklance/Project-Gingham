@@ -316,7 +316,7 @@ function MarketDetail ({ match }) {
                 }
             }
         } else {
-            handlePopup()
+            handlePopup();
         }
     };
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { timeConverter } from '../../utils/helpers';
 import { weekDay } from '../../utils/common';
+import { toast } from 'react-toastify';
 
 function VendorLocations({ vendors, vendorId, vendorUserData, allMarketDays, allMarkets, filteredMarketDays, setFilteredMarketDays, filteredMarkets, allVendorMarkets }) {
     const [newMarketDay, setNewMarketDay] = useState({});
@@ -60,14 +61,18 @@ function VendorLocations({ vendors, vendorId, vendorUserData, allMarketDays, all
 
     const handleAddVendorMarket = async () => {
         if (!newMarketDay.market_day_id) {
-            alert("Please select a market day.");
+            toast.warning('Please select a market day.', {
+                autoClose: 4000,
+            });
             return;
         }
         const existingVendorMarket = allVendorMarkets.find(
             vm => vm.vendor_id === newMarketDay.vendor_id && vm.market_day_id === newMarketDay.market_day_id
         );
         if (existingVendorMarket) {
-            alert("This vendor is already assigned to this market day.");
+            toast.warning('This vendor is already assigned to this market day.', {
+                autoClose: 5000,
+            });
             return;
         }
         try {
@@ -78,7 +83,9 @@ function VendorLocations({ vendors, vendorId, vendorUserData, allMarketDays, all
             });
             if (response.ok) {
                 const updatedData = await response.json();
-                alert("Market Day successfully added");
+                toast.success('Market Day successfully added!', {
+                    autoClose: 4000,
+                });
                 // console.log("Market Day data added successfully:", updatedData);
             } else {
                 console.error("Failed to save changes:", response.statusText);
