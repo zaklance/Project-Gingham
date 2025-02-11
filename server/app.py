@@ -3828,25 +3828,6 @@ def user_count():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/users/top-10-cities', methods=['GET'])
-@jwt_required()
-def top_10_cities():
-    try:
-        city_counts = (
-            db.session.query(User.city, func.count(User.city).label("count"))
-            .group_by(User.city)
-            .order_by(func.count(User.city).desc())
-            .limit(10)
-            .all()
-        )
-
-        city_data = {city: count for city, count in city_counts}
-
-        return jsonify(city_data), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
 @app.route('/api/vendor-users/count', methods=['GET'])
 @jwt_required()
 def vendor_user_count():
@@ -3976,21 +3957,276 @@ def basket_top_10_users():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/api/users/top-10-cities', methods=['GET'])
+@jwt_required()
+def top_10_cities():
+    try:
+        city_state_counts = (
+            db.session.query(User.city, User.state, func.count().label("count"))
+            .group_by(User.city, User.state)
+            .order_by(func.count().desc())
+            .limit(10)
+            .all()
+        )
 
-@app.route('/api/export/users', methods=['GET'])
-def export_users():
-    fields = ["id", "email", "first_name", "last_name", "phone", "address_1", "address_2", "city", "state", "zipcode", "coordinates", "avatar_default", "status", "login_count", "last_login", "join_date"]
-    return generate_csv(User, fields, "database_export_users")
+        city_data = [
+            {"city": city, "state": state, "count": count}
+            for city, state, count in city_state_counts
+        ]
 
-@app.route('/api/export/vendors', methods=['GET'])
-def export_vendors():
-    fields = ["id", "name", "city", "state", "products", "bio", "website", "image_default"]
-    return generate_csv(Vendor, fields, "database_export_vendors")
+        return jsonify(city_data), 200
 
-@app.route('/api/export/baskets', methods=['GET'])
-def export_baskets():
-    fields = ["id", "vendor_id", "market_day_id", "sale_date", "pickup_start", "pickup_end", "user_id", "is_sold", "is_grabbed", "price", "value"]
-    return generate_csv(Basket, fields, "database_export_baskets")
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/market-favorites/top-10-markets', methods=['GET'])
+def get_top_favorited_markets():
+    try:
+        top_markets = (
+            db.session.query(
+                MarketFavorite.market_id,
+                Market.name,
+                func.count(MarketFavorite.id).label("favorite_count")
+            )
+            .join(Market, Market.id == MarketFavorite.market_id)
+            .group_by(MarketFavorite.market_id, Market.name)
+            .order_by(func.count(MarketFavorite.id).desc())
+            .limit(10)
+            .all()
+        )
+
+        result = [
+            {"market_id": market_id, "market_name": name, "favorite_count": favorite_count}
+            for market_id, name, favorite_count in top_markets
+        ]
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/vendor-favorites/top-10-vendors', methods=['GET'])
+def get_top_favorited_vendors():
+    try:
+        top_vendors = (
+            db.session.query(
+                VendorFavorite.vendor_id,
+                Vendor.name,
+                func.count(VendorFavorite.id).label("favorite_count")
+            )
+            .join(Vendor, Vendor.id == VendorFavorite.vendor_id)
+            .group_by(VendorFavorite.vendor_id, Vendor.name)
+            .order_by(func.count(VendorFavorite.id).desc())
+            .limit(10)
+            .all()
+        )
+
+        result = [
+            {"vendor_id": vendor_id, "vendor_name": name, "favorite_count": favorite_count}
+            for vendor_id, name, favorite_count in top_vendors
+        ]
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/export-csv/users', methods=['GET'])
+def export_csv_users():
+    try:
+        users = User.query.all()
+        csv_data = []
+
+        headers = ["id", "email", "first_name", "last_name", "phone", "address_1", "address_2", 
+                   "city", "state", "zipcode", "coordinates", "avatar_default", "status", 
+                   "login_count", "last_login", "join_date"]
+
+        for user in users:
+            csv_data.append([
+                user.id, user.email, user.first_name, user.last_name, user.phone,
+                user.address_1, user.address_2, user.city, user.state, user.zipcode,
+                user.coordinates, user.avatar_default, user.status,
+                user.login_count, user.last_login, user.join_date
+            ])
+
+        output = StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+        writer.writerow(headers)
+        writer.writerows(csv_data)
+
+        csv_content = output.getvalue()
+        output.close()
+
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        filename = f"database_export_users_{today_date}.csv"
+
+        response = Response(csv_content, mimetype="text/csv")
+        response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+
+        return jsonify({"csv": csv_content, "filename": filename})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/export-csv/vendor-users', methods=['GET'])
+def export_csv_vendor_users():
+    try:
+        vendor_users = VendorUser.query.all()
+        csv_data = []
+
+        headers = ["id", "email", "first_name", "last_name", "phone", 
+                   "vendor_id", "vendor_role", "login_count", "last_login", "join_date"]
+
+        for user in vendor_users:
+            csv_data.append([
+                user.id, user.email, user.first_name, user.last_name, user.phone,
+                json.dumps(user.vendor_id),
+                json.dumps(user.vendor_role),
+                user.login_count, user.last_login, user.join_date
+            ])
+
+        output = StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+        writer.writerow(headers)
+        writer.writerows(csv_data)
+
+        csv_content = output.getvalue()
+        output.close()
+
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        filename = f"database_export_vendor_users_{today_date}.csv"
+
+        return jsonify({"csv": csv_content, "filename": filename})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/export-csv/markets', methods=['GET'])
+def export_csv_markets():
+    try:
+        markets = Market.query.all()
+        csv_data = []
+
+        headers = ["id", "name", "image_default", "location", "zipcode", 
+                   "coordinates", "schedule", "year_round", "season_start", 
+                   "season_end", "is_visible"]
+
+        for market in markets:
+            csv_data.append([
+                market.id, market.name, market.image_default, market.location,
+                market.zipcode, json.dumps(market.coordinates),
+                market.schedule, market.year_round, market.season_start,
+                market.season_end, market.is_visible
+            ])
+
+        output = StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+        writer.writerow(headers)
+        writer.writerows(csv_data)
+
+        csv_content = output.getvalue()
+        output.close()
+
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        filename = f"database_export_markets_{today_date}.csv"
+
+        return jsonify({"csv": csv_content, "filename": filename})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/export-csv/vendors', methods=['GET'])
+def export_csv_vendors():
+    try:
+        vendors = Vendor.query.all()
+        csv_data = []
+
+        headers = ["id", "name", "city", "state", "products", "bio", "website", "image_default"]
+
+        for vendor in vendors:
+            csv_data.append([
+                vendor.id, vendor.name, vendor.city, vendor.state,
+                json.dumps(vendor.products), vendor.bio, vendor.website, vendor.image_default
+            ])
+
+        output = StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+        writer.writerow(headers)
+        writer.writerows(csv_data)
+
+        csv_content = output.getvalue()
+        output.close()
+
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        filename = f"database_export_vendors_{today_date}.csv"
+
+        return jsonify({"csv": csv_content, "filename": filename})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/export-csv/baskets', methods=['GET'])
+def export_csv_baskets():
+    try:
+        baskets = Basket.query.all()
+        csv_data = []
+
+        headers = ["id", "vendor_id", "market_day_id", "sale_date", "pickup_start", "pickup_end", 
+                   "user_id", "is_sold", "is_grabbed", "price", "value"]
+
+        for basket in baskets:
+            csv_data.append([
+                basket.id, basket.vendor_id, basket.market_day_id, basket.sale_date, 
+                basket.pickup_start, basket.pickup_end, basket.user_id, 
+                basket.is_sold, basket.is_grabbed, basket.price, basket.value
+            ])
+
+        output = StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+        writer.writerow(headers)
+        writer.writerows(csv_data)
+
+        csv_content = output.getvalue()
+        output.close()
+
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        filename = f"database_export_baskets_{today_date}.csv"
+
+        return jsonify({"csv": csv_content, "filename": filename})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/export-csv/products', methods=['GET'])
+def export_csv_products():
+    try:
+        products = Product.query.all()
+        csv_data = []
+
+        headers = ["id", "product"]
+
+        for product in products:
+            csv_data.append([
+                product.id, product.product
+            ])
+
+        output = StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+        writer.writerow(headers)
+        writer.writerows(csv_data)
+
+        csv_content = output.getvalue()
+        output.close()
+
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        filename = f"database_export_products_{today_date}.csv"
+
+        return jsonify({"csv": csv_content, "filename": filename})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     # app.run(host="0.0.0.0", port=5555, debug=True)
