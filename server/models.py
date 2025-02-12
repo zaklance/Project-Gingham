@@ -121,7 +121,7 @@ class User(db.Model, SerializerMixin):
 
     @validates('phone')
     def validate_phone(self, key, value):
-        cleaned_phone = re.sub(r'\D', '', value)  # Remove non-digit characters
+        cleaned_phone = re.sub(r'\D', '', value)
         if len(cleaned_phone) != 10:
             raise ValueError("Phone number must contain exactly 10 digits")
         return cleaned_phone
@@ -562,9 +562,10 @@ class AdminUser(db.Model, SerializerMixin):
 
     @validates('phone')
     def validate_phone(self, key, value):
-        if value and len(value) > 15:
-            raise ValueError("Phone number cannot be longer than 15 characters")
-        return value
+        cleaned_phone = re.sub(r'\D', '', value)
+        if len(cleaned_phone) != 10:
+            raise ValueError("Phone number must contain exactly 10 digits")
+        return cleaned_phone
 
     @hybrid_property
     def password(self):

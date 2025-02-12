@@ -15,9 +15,6 @@ function MarketDetail ({ match }) {
     const [vendorDetailsMap, setVendorDetailsMap] = useState({});
     const [marketFavs, setMarketFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
-    const [alertMessage, setAlertMessage] = useState(null);
-    const [showAlert, setShowAlert] = useState(false);
-    const [vendorAlertStates, setVendorAlertStates] = useState({});
     const [selectedProduct, setSelectedProduct] = useState("");
     const [marketDays, setMarketDays] = useState([]);
     const [selectedDay, setSelectedDay] = useState(null);
@@ -480,16 +477,10 @@ function MarketDetail ({ match }) {
                 <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}, {market.city}, {market.state}
                 </a></h4>
-                <div className='flex-start alert-container'>
-                    <button
-                        className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
-                        onClick={handleClick}>&emsp;</button>
-                    {showAlert && (
-                        <div className={`alert alert-favorites ${!showAlert ? 'alert-favorites-hidden' : ''}`}>
-                            {alertMessage}
-                        </div>
-                    )}
-                </div>
+                <button
+                    className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
+                    onClick={handleClick}>&emsp;
+                </button>
             </div>
             <div className='flex-start m-flex-wrap'>
                 <label><h4>Schedule:</h4></label>
@@ -595,11 +586,6 @@ function MarketDetail ({ match }) {
                             <br />
                             {firstBasket && firstBasket.sale_date ? formatPickupText(firstBasket, timeConverter, marketDateConvert) : ""}
                         </span>
-                        )}
-                        {vendorAlertStates[vendorId] && (
-                        <div className={`alert alert-cart-vendor`}>
-                            {alertMessage}
-                        </div>
                         )}
                         {availableBaskets.length > 0 ? (
                         <button className="btn-add btn-add-green color-7 nowrap" onClick={() => handleAddToCart(vendorId, vendorDetail, availableBaskets)}>
