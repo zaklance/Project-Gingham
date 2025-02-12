@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { states } from '../../utils/common';
 
 function AdminMarketAdd({ markets, weekDayReverse }) {
     const [marketDays, setMarketDays] = useState([])
@@ -86,9 +87,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
             if (response.ok) {
                 const updatedData = await response.json();
                 console.log('Market data updated successfully:', updatedData);
-                toast.success('Market successfully created!', {
-                    autoClose: 4000,
-                });
+                alert('Market successfully created!');
                 if (image) {
                     await handleImageUpload(updatedData.id);
                 }
@@ -202,6 +201,16 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                             />
                         </div>
                         <div className='form-group'>
+                            <label>Bio:</label>
+                            <textarea
+                                className='textarea-edit'
+                                type="text"
+                                name="bio"
+                                value={newMarket.bio || ''}
+                                onChange={handleInputMarketChange}
+                            />
+                        </div>
+                        <div className='form-group'>
                             <label>Location:</label>
                             <input
                                 type="text"
@@ -210,6 +219,32 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                                 value={newMarket ? newMarket.location : ''}
                                 onChange={handleInputMarketChange}
                             />
+                        </div>
+                        <div className='form-group'>
+                            <label>City:</label>
+                            <input
+                                type="text"
+                                name="city"
+                                placeholder='New York'
+                                value={newMarket ? newMarket.city : ''}
+                                onChange={handleInputMarketChange}
+                            />
+                        </div>
+                        <div className='form-group'>
+                            <label>State:</label>
+                            <select
+                                className='select-state'
+                                name="state"
+                                value={newMarket ? newMarket.state : ''}
+                                onChange={handleInputMarketChange}
+                            >
+                                <option value="">Select</option>
+                                {states.map((state, index) => (
+                                    <option key={index} value={state}>
+                                        {state}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                         <div className='form-group'>
                             <label>Zipcode:</label>
@@ -259,8 +294,8 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                                 onChange={handleInputMarketChange}
                             >
                                 <option value="">Select</option>
-                                <option value={true}>true</option>
-                                <option value={false}>false</option>
+                                <option value={true}>Yes</option>
+                                <option value={false}>No</option>
                             </select>
                         </div>
                         {newMarket?.year_round === 'false' && (

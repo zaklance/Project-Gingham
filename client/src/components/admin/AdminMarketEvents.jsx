@@ -246,8 +246,8 @@ function AdminMarketEvents({ markets }) {
                             onChange={handleInputEventChange}
                         >
                             <option value="">Select</option>
-                            <option value={true}>true</option>
-                            <option value={false}>false</option>
+                            <option value={true}>Yes</option>
+                            <option value={false}>No</option>
                         </select>
                     </div>
                     <button className='btn-edit' onClick={handleSaveNewEvent}>Create Event</button>

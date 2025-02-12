@@ -478,7 +478,7 @@ function MarketDetail ({ match }) {
             <p>{market.description}</p>
             <div className='flex-start market-details margin-t-8'>
                 <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
-                    {market.location}
+                    {market.location}, {market.city}, {market.state}
                 </a></h4>
                 <div className='flex-start alert-container'>
                     <button

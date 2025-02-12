@@ -50,6 +50,8 @@ def run():
         Market(
             name='175th Street Greenmarket',
             location='W. 175th St. bet. Wadsworth Ave. & Broadway',
+            city="New York",
+            state="NY",
             zipcode='10033',
             coordinates={"lat": "40.84607450953993", "lng": "-73.93808039940272"},
             schedule='Thursday (8 a.m. - 4 p.m.)',
@@ -61,6 +63,8 @@ def run():
         Market(
             name='57th Street Greenmarket',
             location='W. 57th St. & 10th Ave.',
+            city="New York",
+            state="NY",
             zipcode='10019',
             coordinates={"lat": "40.769140743893075", "lng": "-73.98836576430834"},
             schedule='Saturday (8 a.m. - 3 p.m.)',
@@ -72,6 +76,8 @@ def run():
         Market(
             name='79th Street Greenmarket',
             location='79th St. & Columbus Ave.',
+            city="New York",
+            state="NY",
             zipcode='10024',
             coordinates={"lat": "40.782040858828", "lng": "-73.9759752811397"},
             schedule='Sunday (9 a.m. - 4 p.m.)',
@@ -81,6 +87,8 @@ def run():
         Market(
             name='82nd Street Greenmarket',
             location=' 82nd St. bet. 1st & York Aves.',
+            city="New York",
+            state="NY",
             zipcode='10028',
             coordinates={"lat": "40.77397099020891", "lng": "-73.95064361322936"},
             schedule='Saturday (9 a.m. - 2:30 p.m.)',
@@ -90,6 +98,8 @@ def run():
         Market(
             name='94th Street Greenmarket',
             location='E. 94th St. & 1st Ave.',
+            city="New York",
+            state="NY",
             zipcode='10128',
             coordinates={"lat": "40.78180268440337", "lng": "-73.94555998335593"},
             schedule='Sunday (9 a.m. - 4 p.m.)',
@@ -101,6 +111,8 @@ def run():
         Market(
             name='97th Street Greenmarket',
             location='W. 97th St. bet. Columbus & Amsterdam Aves.',
+            city="New York",
+            state="NY",
             zipcode='10025',
             coordinates={"lat": "40.79433392796688", "lng": "-73.96852339557134"},
             schedule='Friday (8 a.m. - 2 p.m.)',
@@ -110,6 +122,8 @@ def run():
         Market(
             name='Abingdon Square Greenmarket',
             location='Hudson St. & W. 12th St.',
+            city="New York",
+            state="NY",
             zipcode='10014',
             coordinates={"lat": "40.737268845844085", "lng": "-74.00531736212757"},
             schedule='Saturday (8 a.m. - 2 p.m.)',
@@ -119,6 +133,8 @@ def run():
         Market(
             name='Astor Place Greenmarket',
             location='E. 8th St. & Lafayette St.',
+            city="New York",
+            state="NY",
             zipcode='10003',
             coordinates={"lat": "40.729830818573944", "lng": "-73.99109568735417"},
             schedule='Tuesday (8 a.m. - 5 p.m.)',
@@ -130,6 +146,8 @@ def run():
         Market(
             name='Bowling Green Greenmarket',
             location='Broadway & Battery Pl.',
+            city="New York",
+            state="NY",
             zipcode='10004',
             coordinates={"lat": "40.704724320402526", "lng": "-74.01342009247573"},
             schedule='Tuesday & Thursday (8 a.m. - 2 p.m.)',
@@ -141,6 +159,8 @@ def run():
         Market(
             name='Bro Sis Green Youth Market',
             location='Amsterdam Ave. bet. W. 143rd & 144th Sts. (Johnny Hartman Plaza)',
+            city="New York",
+            state="NY",
             zipcode='10031',
             coordinates={"lat": "40.824268847996954", "lng": "-73.94880767347686"},
             schedule='Wednesday (10:30 a.m. - 6 p.m.)',
@@ -152,6 +172,8 @@ def run():
         Market(
             name="Chelsea’s Down to Earth Farmers Market",
             location='W. 23rd St. bet. 8th & 9th Aves.',
+            city="New York",
+            state="NY",
             zipcode='10011',
             coordinates={"lat": "40.74610601822501", "lng": "-74.00012495281699"},
             schedule='Saturday (9 a.m. - 2 p.m.)',
@@ -163,6 +185,8 @@ def run():
         Market(
             name="Children’s Aid Go!Healthy Food Box + Farmstand - Milbank Center",
             location='14-32 W. 118th St.',
+            city="New York",
+            state="NY",
             zipcode='10026',
             coordinates={"lat": "40.80245205041825", "lng": "-73.94675905810875"},
             schedule='Wednesday (2 - 4:30 p.m.)',
@@ -174,6 +198,8 @@ def run():
         Market(
             name='Columbia Greenmarket',
             location='Broadway & 114th St.',
+            city="New York",
+            state="NY",
             zipcode='10025',
             coordinates={"lat": "40.80711550674964", "lng": "-73.9643334908912"},
             schedule='Thursday & Sunday (8 a.m. - 4 p.m.)',
@@ -183,6 +209,8 @@ def run():
         Market(
             name='Dag Hammarskjold Greenmarket',
             location='E. 47th St. & 2nd Ave.',
+            city="New York",
+            state="NY",
             zipcode='10017',
             coordinates={"lat": "40.752106980482026", "lng": "-73.96813449641382"},
             schedule='Wednesday (8 a.m. - 3 p.m.)',
@@ -192,6 +220,8 @@ def run():
         Market(
             name='Fort Washington Greenmarket',
             location='W. 168th St. & Ft. Washington Ave.',
+            city="New York",
+            state="NY",
             zipcode='10032',
             coordinates={"lat": "40.842308310821956", "lng": "-73.94211665674466"},
             schedule='Tuesday (8 a.m. - 4 p.m.)',
@@ -203,6 +233,8 @@ def run():
         Market(
             name='Fulton Stall Market (Indoor Farmers Market)',
             location='91 South St.',
+            city="New York",
+            state="NY",
             zipcode='10038',
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
             schedule='Monday - Saturday (11:30 a.m. - 5 p.m.)',
@@ -212,6 +244,8 @@ def run():
         Market(
             name='Gouverneur Health Farmstand',
             location='Madison St. bet. Clinton & Jefferson Sts.',
+            city="New York",
+            state="NY",
             zipcode='10002',
             coordinates={"lat": "40.71266393582476", "lng": "-73.98847487671178"},
             schedule='Thursday (9 a.m. - 2 p.m.)',
@@ -223,6 +257,8 @@ def run():
         Market(
             name='Grass Roots Farmers Market',
             location='W. 145th St. bet. Edgecombe & Bradhurst Aves. (Jackie Robinson Park)',
+            city="New York",
+            state="NY",
             zipcode='10039',
             coordinates={"lat": "40.82373611412579", "lng": "-73.9435495760123"},
             schedule='Tuesday & Saturday (9 a.m. - 4 p.m.)',
@@ -232,6 +268,8 @@ def run():
         Market(
             name='Greenmarket at the Oculus',
             location='Church & Fulton Sts. (Oculus Plaza)',
+            city="New York",
+            state="NY",
             zipcode='10006',
             coordinates={"lat": "40.71142490993184", "lng": "-74.01076962766949"},
             schedule='Tuesday (8 a.m. - 5 p.m.)',
@@ -243,6 +281,8 @@ def run():
         Market(
             name='Harlem Meer Farmstand',
             location='Central Park N. & Malcom X Blvd.',
+            city="New York",
+            state="NY",
             zipcode='10026',
             coordinates={"lat": "40.79815888129796", "lng": "-73.95254032492262"},
             schedule='Saturday (10 a.m. - 2 p.m.)',
@@ -254,6 +294,8 @@ def run():
         Market(
             name='Harvest Home East Harlem Farmers Market',
             location='E. 104th St. & 3rd Ave.',
+            city="New York",
+            state="NY",
             zipcode='10029',
             coordinates={"lat": "40.79001677902627", "lng": "-73.94559282721028"},
             schedule='Thursday (8 a.m. - 3 p.m.)',
@@ -265,6 +307,8 @@ def run():
         Market(
             name='Harvest Home Harlem Hospital Farmers Market',
             location='W. 137th St. & Lenox Ave.',
+            city="New York",
+            state="NY",
             zipcode='10030',
             coordinates={"lat": "40.81542139191092", "lng": "-73.93994201397497"},
             schedule='Friday (8 a.m. - 3 p.m.)',
@@ -276,6 +320,8 @@ def run():
         Market(
             name='Harvest Home Lenox Avenue Farm Stand',
             location='Lenox Ave. bet. W. 117th & 118th Sts.',
+            city="New York",
+            state="NY",
             zipcode='10026',
             coordinates={"lat": "40.80272354850676", "lng": "-73.94895981440956"},
             schedule='Saturday (8 a.m. - 3 p.m.)',
@@ -287,6 +333,8 @@ def run():
         Market(
             name='Harvest Home Metropolitan Hospital Farmers Market',
             location='97th St. & 2nd Ave.',
+            city="New York",
+            state="NY",
             zipcode='10029',
             coordinates={"lat": "40.784947665352576", "lng": "-73.94660106093569"},
             schedule='Friday (8 a.m. - 3 p.m.)',
@@ -298,6 +346,8 @@ def run():
         Market(
             name='Inwood Park Greenmarket',
             location='Isham St. bet. Seaman Ave. & Cooper St.',
+            city="New York",
+            state="NY",
             zipcode='10034',
             coordinates={"lat": "40.86911825882977", "lng": "-73.92025906885881"},
             schedule='Saturday (8 a.m. - 3 p.m.)',
@@ -307,6 +357,8 @@ def run():
         Market(
             name='Lower East Side Farmstand',
             location='Grand St. bet. Pitt & Willett Sts. (outside of Abrons Arts Center)',
+            city="New York",
+            state="NY",
             zipcode='10002',
             coordinates={"lat": "40.715117290409026", "lng": "-73.98348650666313"},
             schedule='Thursday (8:30 a.m. - 3 p.m.)',
@@ -318,6 +370,8 @@ def run():
         Market(
             name='Morningside Park’s Down to Earth Farmers Market',
             location='W. 110th St. & Manhattan Ave.',
+            city="New York",
+            state="NY",
             zipcode='10026',
             coordinates={"lat": "40.801382884379336", "lng": "-73.95970142371496"},
             schedule='Saturday (9 a.m. - 2 p.m.)',
@@ -327,6 +381,8 @@ def run():
         Market(
             name='Mount Sinai Greenmarket',
             location='Madison Ave. & 99th St.',
+            city="New York",
+            state="NY",
             zipcode='10029',
             coordinates={"lat": "40.78944510836953", "lng": "-73.95271330705022"},
             schedule='Wednesday (8 a.m. - 3 p.m.)',
@@ -338,6 +394,8 @@ def run():
         Market(
             name='NYP Youth Market - Audoban',
             location='21 Audoban Ave.',
+            city="New York",
+            state="NY",
             zipcode='10032',
             coordinates={"lat": "40.839630140355446", "lng": "-73.93889062898364"},
             schedule='Thursday (9 a.m. - 3 p.m.)',
@@ -347,6 +405,8 @@ def run():
         Market(
             name='NYP Youth Market - Broadway',
             location='4781-4783 Broadway',
+            city="New York",
+            state="NY",
             zipcode='10034',
             coordinates={"lat": "40.86600006214813", "lng": "-73.9263264427691"},
             schedule='Wednesday (9 a.m. - 3 p.m.)',
@@ -356,6 +416,8 @@ def run():
         Market(
             name='Project EATS Farm Stand at Essex Crossing',
             location='115 Delancey St.',
+            city="New York",
+            state="NY",
             zipcode='10002',
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
             schedule='Wednesday-Sunday (11 a.m. - 7 p.m.)',
@@ -365,6 +427,8 @@ def run():
         Market(
             name='P.S. 11 Farm Market',
             location='320 W. 21st St.',
+            city="New York",
+            state="NY",
             zipcode='10011',
             coordinates={"lat": "40.74443551076143", "lng": "-74.00056543152783"},
             schedule='Wednesday (8 a.m. - 10 a.m.)',
@@ -376,6 +440,8 @@ def run():
         Market(
             name='P.S. 57 Farmstand',
             location='115th St. & 3rd Ave. (SW corner)',
+            city="New York",
+            state="NY",
             zipcode='10029',
             coordinates={"lat": "40.797300330819134", "lng": "-73.94074817230118"},
             schedule='Wednesday (9:30 a.m. - 3 p.m.)',
@@ -387,6 +453,8 @@ def run():
         Market(
             name='Stuyvesant Town Greenmarket',
             location='South end of Stuyvesant Town Oval',
+            city="New York",
+            state="NY",
             zipcode='10009',
             coordinates={"lat": "40.73200566470982", "lng": "-73.97761240821589"},
             schedule='Sunday (9:30 a.m. - 4 p.m.)',
@@ -398,6 +466,8 @@ def run():
         Market(
             name='Tompkins Square Greenmarket',
             location='E. 7th St. & Avenue A',
+            city="New York",
+            state="NY",
             zipcode='10003',
             coordinates={"lat": "40.72606737678102", "lng": "-73.98333751481684"},
             schedule='Sunday (9 a.m. - 4 p.m.)',
@@ -407,6 +477,8 @@ def run():
         Market(
             name='Tribeca Greenmarket',
             location='Greenwich & Chambers Sts.',
+            city="New York",
+            state="NY",
             zipcode='10013',
             coordinates={"lat": "40.71690089948348", "lng": "-74.01090464424209"},
             schedule='Wednesday & Saturday (8 a.m. - 2 p.m.)',
@@ -418,6 +490,8 @@ def run():
         Market(
             name='Tucker Square Greenmarket',
             location='Columbus Ave. & 66th St.',
+            city="New York",
+            state="NY",
             zipcode='10023',
             coordinates={"lat": "40.77367979894632", "lng": "-73.9819555713842"},
             schedule='Thursday (8 a.m. - 3 p.m.); Saturday (8 a.m. - 4 p.m.)',
@@ -427,6 +501,8 @@ def run():
         Market(
             name='Two Bridges Youth Market',
             location='50 Madison St.',
+            city="New York",
+            state="NY",
             zipcode='10010',
             coordinates={"lat": "40.71160138343196", "lng": "-73.99773475060357"},
             schedule='Sunday (10:30 a.m. - 3:30 p.m.)',
@@ -438,6 +514,8 @@ def run():
         Market(
             name='Union Square Greenmarket',
             location='E. 17th St. & Union Square W.',
+            city="New York",
+            state="NY",
             zipcode='10003',
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
             schedule='Monday, Wednesday, Friday & Saturday (8 a.m. - 6 p.m.)',
@@ -447,6 +525,8 @@ def run():
         Market(
             name='Uptown Good Food Farm Stand',
             location='330 St. Nicholas Ave. (St. Nicholas Miracle Garden)',
+            city="New York",
+            state="NY",
             zipcode='10027',
             coordinates={"lat": "40.811760800653175", "lng": "-73.95159181329969"},
             schedule='Thursday (4 - 7 p.m.)',

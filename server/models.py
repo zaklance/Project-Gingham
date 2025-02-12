@@ -184,9 +184,12 @@ class Market(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
+    bio = db.Column(db.String, nullable=True)
     image = db.Column(db.String, nullable=True)
     image_default = db.Column(db.String, nullable=False, default=random_market)
     location = db.Column(db.String, nullable=False)
+    city = db.Column(db.String, nullable=False)
+    state = db.Column(db.String, nullable=False)
     zipcode = db.Column(db.String, nullable=True)
     coordinates = db.Column(db.JSON, nullable=True)
     schedule = db.Column(db.String, nullable=True)
@@ -894,20 +897,19 @@ class SettingsUser(db.Model, SerializerMixin):
     
     email_fav_market_new_event = db.Column(db.Boolean, default=True, nullable=False)
     email_fav_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
-    email_fav_market_new_vendor = db.Column(db.Boolean, default=True, nullable=False)
+    email_fav_market_new_vendor = db.Column(db.Boolean, default=False, nullable=False)
     email_fav_market_new_basket = db.Column(db.Boolean, default=False, nullable=False)
-    email_fav_vendor_new_event = db.Column(db.Boolean, default=True, nullable=False)
-    email_fav_vendor_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
-    email_fav_vendor_new_basket = db.Column(db.Boolean, default=True, nullable=False)
-    email_basket_pickup_time = db.Column(db.Boolean, default=True, nullable=False)
+    email_fav_vendor_new_event = db.Column(db.Boolean, default=False, nullable=False)
+    email_fav_vendor_schedule_change = db.Column(db.Boolean, default=False, nullable=False)
+    email_fav_vendor_new_basket = db.Column(db.Boolean, default=False, nullable=False)
+    email_basket_pickup_time = db.Column(db.Boolean, default=False, nullable=False)
     email_vendor_review_response = db.Column(db.Boolean, default=False, nullable=False)
     email_new_blog = db.Column(db.Boolean, default=True, nullable=False)
     
     text_fav_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
     text_fav_market_new_basket = db.Column(db.Boolean, default=False, nullable=False)
-    text_fav_vendor_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
+    text_fav_vendor_schedule_change = db.Column(db.Boolean, default=False, nullable=False)
     text_basket_pickup_time = db.Column(db.Boolean, default=True, nullable=False)
-    text_vendor_review_response = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self) -> str:
         return f"<User Settings ID: {self.id}, User ID: {self.user_id}>"

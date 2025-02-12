@@ -514,7 +514,7 @@ function AdminProfile () {
                                     <FormGroup>
                                         <FormControlLabel control={<Switch checked={tempAdminSettings.site_report_review} onChange={() => handleSwitchChange('site_report_review')} color={'secondary'} />} label="Review is reported"/>
                                         <FormControlLabel control={<Switch checked={tempAdminSettings.site_product_request} onChange={() => handleSwitchChange('site_product_request')} color={'secondary'} />} label="Vendor requests new product category"/>
-                                        <FormControlLabel control={<Switch checked={tempAdminSettings.site_new_blog} onChange={() => handleSwitchChange('site_new_blog')} color={'secondary'} />} label="A new blog has been posted"/>
+                                        {/* <FormControlLabel control={<Switch checked={tempAdminSettings.site_new_blog} onChange={() => handleSwitchChange('site_new_blog')} color={'secondary'} />} label="A new blog has been posted"/> */}
                                     </FormGroup>
                                 )}
                                 {activeTab === 'email' && (

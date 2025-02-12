@@ -76,9 +76,7 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
                     },
                 });
 
-                toast.success(`Market "${matchingMarket.name}" and its associated days were successfully deleted.`, {
-                    autoClose: 6000,
-                });
+                alert(`Market "${matchingMarket.name}" and its associated days were successfully deleted.`);
                 window.location.href = "/admin/markets?tab=delete";
             } catch (error) {
                 console.error('Error deleting market or associated days:', error);
@@ -128,8 +126,20 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
                             <td className='cell-text'>{adminMarketData ? `${adminMarketData.name}` : ''}</td>
                         </tr>
                         <tr>
+                            <td className='cell-title'>Bio:</td>
+                            <td className='cell-text'>{adminMarketData ? adminMarketData.bio : ''}</td>
+                        </tr>
+                        <tr>
                             <td className='cell-title'>Location:</td>
                             <td className='cell-text'>{adminMarketData ? adminMarketData.location : ''}</td>
+                        </tr>
+                        <tr>
+                            <td className='cell-title'>City:</td>
+                            <td className='cell-text'>{adminMarketData ? adminMarketData.city : ''}</td>
+                        </tr>
+                        <tr>
+                            <td className='cell-title'>State:</td>
+                            <td className='cell-text'>{adminMarketData ? adminMarketData.state : ''}</td>
                         </tr>
                         <tr>
                             <td className='cell-title'>Zipcode:</td>
@@ -151,14 +161,18 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
                             <td className='cell-title' title="true or false">Year Round:</td>
                             <td className='cell-text'>{adminMarketData ? `${adminMarketData.year_round}` : ''}</td>
                         </tr>
-                        <tr>
-                            <td className='cell-title' title="yyyy-mm-dd">Season Start:</td>
-                            <td className='cell-text'>{adminMarketData ? adminMarketData.season_start : ''}</td>
-                        </tr>
-                        <tr>
-                            <td className='cell-title' title="yyyy-mm-dd">Season End:</td>
-                            <td className='cell-text'>{adminMarketData ? adminMarketData.season_end : ''}</td>
-                        </tr>
+                        {String(adminMarketData?.year_round) === 'false' && (
+                            <>
+                                <tr>
+                                    <td className='cell-title' title="yyyy-mm-dd">Season Start:</td>
+                                    <td className='cell-text'>{adminMarketData ? adminMarketData.season_start : ''}</td>
+                                </tr>
+                                <tr>
+                                    <td className='cell-title' title="yyyy-mm-dd">Season End:</td>
+                                    <td className='cell-text'>{adminMarketData ? adminMarketData.season_end : ''}</td>
+                                </tr>
+                            </>
+                        )}
                     </tbody>
                 </table>
                 <button className='btn-edit' onClick={handleDelete}>Delete</button>
