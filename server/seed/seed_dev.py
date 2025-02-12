@@ -1547,6 +1547,63 @@ def run():
             value=value
         )
         baskets.append(bsk2)
+    
+    bsk3 = Basket(
+        vendor_id=1,
+        market_day_id=1,
+        sale_date=date(2024, 12, 15),
+        pickup_start=time(14, 0, 0),
+        pickup_end=time(18, 0, 0),
+        user_id=1,
+        is_sold=True,
+        is_grabbed=True,
+        price=16.5, 
+        value=24
+    )
+    baskets.append(bsk3)
+    
+    bsk4 = Basket(
+        vendor_id=1,
+        market_day_id=1,
+        sale_date=date(2025, 1, 15),
+        pickup_start=time(14, 0, 0),
+        pickup_end=time(18, 0, 0),
+        user_id=1,
+        is_sold=True,
+        is_grabbed=True,
+        price=16.5, 
+        value=24
+    )
+    baskets.append(bsk4)
+    
+    bsk5 = Basket(
+        vendor_id=1,
+        market_day_id=1,
+        sale_date=date(2025, 3, 15),
+        pickup_start=time(14, 0, 0),
+        pickup_end=time(18, 0, 0),
+        user_id=1,
+        is_sold=True,
+        is_grabbed=True,
+        price=16.5, 
+        value=24
+    )
+    baskets.append(bsk5)
+    
+    bsk6 = Basket(
+        vendor_id=1,
+        market_day_id=1,
+        sale_date=date(2025, 4, 15),
+        pickup_start=time(14, 0, 0),
+        pickup_end=time(18, 0, 0),
+        user_id=1,
+        is_sold=True,
+        is_grabbed=True,
+        price=16.5, 
+        value=24
+    )
+    baskets.append(bsk6)
+    
 
     db.session.add_all(baskets)
     db.session.commit()

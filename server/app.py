@@ -2,7 +2,7 @@ import os
 import json
 import smtplib
 import csv
-from flask import Flask, Response, request, jsonify, session, send_from_directory, redirect, url_for
+from flask import Flask, Response, request, jsonify, session, send_from_directory, send_file, redirect, url_for
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
                     VendorReview, ReportedReview, MarketReviewRating, 
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
@@ -12,7 +12,7 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
                     UserIssue, bcrypt )
 from dotenv import load_dotenv
-from sqlalchemy import cast, desc, func, Integer
+from sqlalchemy import cast, desc, extract, func, Integer
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.dialects.postgresql import JSONB
@@ -2306,7 +2306,7 @@ def handle_baskets():
                 price=price,
                 value=value,
                 is_sold=data.get('is_sold', False),
-                is_grabbed=data.get('is_grabbed', False)
+                is_grabbed=data.get('is_grabbed', False),
             )
 
             db.session.add(new_basket)
@@ -2348,6 +2348,8 @@ def handle_baskets():
                 basket.is_sold = data['is_sold']
             if 'is_grabbed' in data:
                 basket.is_grabbed = data['is_grabbed']
+            if 'is_refunded' in data:
+                basket.is_refunded = data['is_refunded']
             if 'price' in data:
                 basket.price = data['price']
             if 'value' in data:
@@ -2491,6 +2493,8 @@ def get_vendor_sales_history():
                     "pickup_end": basket.pickup_end.strftime('%H:%M'),
                     "total_baskets": 0,
                     "sold_baskets": 0,
+                    "fee_gingham": basket.fee_gingham,
+                    "is_refunded": basket.is_refunded
                 }
 
             sales_history[(sale_date, market_day_id)]["total_baskets"] += 1
@@ -2939,8 +2943,26 @@ def incoming_sms():
     resp = MessagingResponse()
 
     # Determine the right reply for this message
-    if body.lower() == 'stop':
-        resp.message("You have been unsubscribed from this notification type ;)")
+    if body == 'stop':
+        try:
+            user = User.query.filter_by(phone=sender_phone).first()
+            if user:
+                settings = SettingsUser.query.filter_by(user_id=user.id).first()
+                if settings:
+                    settings.text_fav_market_schedule_change = False
+                    settings.text_fav_market_new_basket = False
+                    settings.text_fav_vendor_schedule_change = False
+                    settings.text_basket_pickup_time = False
+                    db.session.commit()
+                    resp.message("You have been unsubscribed from all text notifications ;)")
+                else:
+                    resp.message("Error unsubscribing from text all notifications. Please turn them off on the website. ¯\_(ツ)_/¯")
+            else:
+                print("No user found with this phone number.")
+                resp.message("Error unsubscribing from all text notifications. Please turn them off on the website. ¯\_(ツ)_/¯")
+        except Exception as e:
+            db.session.rollback()
+            print(f"An error occurred: {str(e)}")
     else:
         resp.message("I didn't understand that prompt :/")
 
@@ -4258,13 +4280,14 @@ def export_csv_baskets():
         csv_data = []
 
         headers = ["id", "vendor_id", "market_day_id", "sale_date", "pickup_start", "pickup_end", 
-                   "user_id", "is_sold", "is_grabbed", "price", "value"]
+                   "user_id", "is_sold", "is_grabbed", "is_refunded", "price", "value", "fee_gingham"]
 
         for basket in baskets:
             csv_data.append([
                 basket.id, basket.vendor_id, basket.market_day_id, basket.sale_date, 
                 basket.pickup_start, basket.pickup_end, basket.user_id, 
-                basket.is_sold, basket.is_grabbed, basket.price, basket.value
+                basket.is_sold, basket.is_grabbed, basket.is_refunded, basket.price, 
+                basket.value, basket.fee_gingham
             ])
 
         output = StringIO()
@@ -4311,6 +4334,59 @@ def export_csv_products():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/api/export-csv/for-vendor/baskets', methods=['GET'])
+def export_vendor_baskets():
+    vendor_id = request.args.get('vendor_id', type=int)
+    month = request.args.get('month', type=int)
+    year = request.args.get('year', type=int)
+    
+    if not all([vendor_id, month, year]):
+        return jsonify({'error': 'Missing required parameters'}), 400
+    
+    # Query baskets for given vendor and month/year
+    baskets = Basket.query.filter(
+        Basket.vendor_id == vendor_id,
+        extract('month', Basket.sale_date) == month,
+        extract('year', Basket.sale_date) == year
+    ).all()
+    
+    # Create CSV in memory
+    output = StringIO()
+    writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+    
+    # Write headers
+    headers = ['ID', 'Sale Date', 'Pickup Start', 'Pickup End', 'Price', 
+              'Value', 'Fee', 'Is Sold', 'Is Grabbed', "Is Refunded"]
+    writer.writerow(headers)
+    
+    # Write data
+    for basket in baskets:
+        writer.writerow([
+            basket.id,
+            basket.sale_date.strftime('%Y-%m-%d') if basket.sale_date else '',
+            basket.pickup_start.strftime('%H:%M') if basket.pickup_start else '',
+            basket.pickup_end.strftime('%H:%M') if basket.pickup_end else '',
+            basket.price,
+            basket.value,
+            basket.fee_gingham,
+            'Yes' if basket.is_sold else 'No',
+            'Yes' if basket.is_grabbed else 'No',
+            'Yes' if basket.is_refunded else 'No'
+        ])
+    
+    # Convert to BytesIO for send_file
+    mem = BytesIO()
+    mem.write(output.getvalue().encode('utf-8'))
+    mem.seek(0)
+    output.close()
+    
+    return send_file(
+        mem,
+        mimetype='text/csv',
+        as_attachment=True,
+        download_name=f'baskets_{year}-{month:02d}.csv'
+    )
 
 if __name__ == '__main__':
     # app.run(host="0.0.0.0", port=5555, debug=True)
