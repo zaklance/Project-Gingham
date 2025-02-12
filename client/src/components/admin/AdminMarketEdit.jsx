@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { markets_default } from '../../utils/common';
+import { markets_default, states } from '../../utils/common';
 import { toast } from 'react-toastify';
 
 function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
@@ -315,6 +315,16 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 />
                             </div>
                             <div className='form-group'>
+                                <label>Bio:</label>
+                                <textarea
+                                    className='textarea-edit'
+                                    type="text"
+                                    name="bio"
+                                    value={tempMarketData ? tempMarketData.bio : ''}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                            <div className='form-group'>
                                 <label>Location:</label>
                                 <input
                                     type="text"
@@ -322,6 +332,32 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     value={tempMarketData ? tempMarketData.location : ''}
                                     onChange={handleInputChange}
                                 />
+                            </div>
+                            <div className='form-group'>
+                                <label>City:</label>
+                                <input
+                                    type="text"
+                                    name="city"
+                                    placeholder='New York'
+                                    value={tempMarketData ? tempMarketData.city : ''}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                            <div className='form-group'>
+                                <label>State:</label>
+                                <select
+                                    className='select-state'
+                                    name="state"
+                                    value={tempMarketData ? tempMarketData.state : ''}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="">Select</option>
+                                    {states.map((state, index) => (
+                                        <option key={index} value={state}>
+                                            {state}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             <div className='form-group'>
                                 <label>Zipcode:</label>
@@ -469,8 +505,20 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                         <td className='cell-text'>{adminMarketData ? `${adminMarketData.name}` : ''}</td>
                                     </tr>
                                     <tr>
+                                        <td className='cell-title'>Bio:</td>
+                                        <td className='cell-text'>{adminMarketData ? adminMarketData.bio : ''}</td>
+                                    </tr>
+                                    <tr>
                                         <td className='cell-title'>Location:</td>
                                         <td className='cell-text'>{adminMarketData ? adminMarketData.location : ''}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='cell-title'>City:</td>
+                                        <td className='cell-text'>{adminMarketData ? adminMarketData.city : ''}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='cell-title'>State:</td>
+                                        <td className='cell-text'>{adminMarketData ? adminMarketData.state : ''}</td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title'>Zipcode:</td>

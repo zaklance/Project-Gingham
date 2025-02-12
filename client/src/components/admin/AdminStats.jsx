@@ -19,10 +19,39 @@ function AdminStats() {
     const [top10Cities, setTop10Cities] = useState(null)
     const [baskets, setBaskets] = useState([]);
     const [selectedRangeGraph, setSelectedRangeGraph] = useState(7);
+    const [userData, setUserData] = useState(null);
 
     const chartRef = useRef();
 
+    const adminUserId = localStorage.getItem('admin_user_id')
     const token = localStorage.getItem('admin_jwt-token');
+
+    useEffect(() => {
+        if (!adminUserId) return
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch(`/api/admin-users/${adminUserId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setUserData(data);
+                } else {
+                    console.error('Error fetching profile:', response.status);
+                    if (response.status === 401) {
+                        console.error('Unauthorized: Token may be missing or invalid');
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching vendor data:', error);
+            }
+        };
+        fetchUserData();
+    }, [adminUserId]);
 
     useEffect(() => {
         fetch('/api/users/count', {
@@ -402,96 +431,100 @@ function AdminStats() {
     return (
         <>
             <h1>Admin Statistics</h1>
-            <div className='box-bounding'>
-                <h2>Export Database</h2>
-                <div className='flex-space-between flex-wrap'>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td><p>Export Users table as CSV &emsp;</p></td>
-                                <td><button className='btn btn-add' onClick={() => handleDownloadCSV("users")}>Download</button></td>
-                            </tr>
-                            <tr>
-                                <td><p>Export Markets table as CSV &emsp;</p></td>
-                                <td><button className='btn btn-add' onClick={() => handleDownloadCSV('markets')}>Download</button></td>
-                            </tr>
-                            <tr>
-                                <td><p>Export Vendors table as CSV &emsp;</p></td>
-                                <td><button className='btn btn-add' onClick={() => handleDownloadCSV('vendors')}>Download</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td><p>Export Vendor Users table as CSV &emsp;</p></td>
-                                <td><button className='btn btn-add' onClick={() => handleDownloadCSV("vendor-users")}>Download</button></td>
-                            </tr>
-                            <tr>
-                                <td><p>Export Baskets table as CSV &emsp;</p></td>
-                                <td><button className='btn btn-add' onClick={() => handleDownloadCSV("baskets")}>Download</button></td>
-                            </tr>
-                            <tr>
-                                <td><p>Export Products table as CSV &emsp;</p></td>
-                                <td><button className='btn btn-add' onClick={() => handleDownloadCSV("products")}>Download</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div className='box-bounding'>
-                <div className='flex-space-between flex-bottom-align'>
-                    <h1 className='margin-t-16'>Basket Sales</h1>
-                    <select className='' value={selectedRangeGraph} onChange={handleDateChangeGraph}>
-                        <option value="">Time Frame</option>
-                        {Object.entries(dateRange).map(([label, value]) => (
-                            <option key={value} value={value}>
-                                {label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div>
+            {userData?.admin_role <= 3 && (
+                <>
                     <div className='box-bounding'>
-                        {baskets ? (
-                            <canvas id="chart-baskets"></canvas>
-                        ) : (
-                            <PulseLoader
-                                className='margin-t-12'
-                                color={'#ff806b'}
-                                size={10}
-                                aria-label="Loading Spinner"
-                                data-testid="loader"
-                            />
-                        )}
+                        <h2>Export Database</h2>
+                        <div className='flex-space-between flex-wrap'>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td><p>Export Users table as CSV &emsp;</p></td>
+                                        <td><button className='btn btn-add' onClick={() => handleDownloadCSV("users")}>Download</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><p>Export Markets table as CSV &emsp;</p></td>
+                                        <td><button className='btn btn-add' onClick={() => handleDownloadCSV('markets')}>Download</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><p>Export Vendors table as CSV &emsp;</p></td>
+                                        <td><button className='btn btn-add' onClick={() => handleDownloadCSV('vendors')}>Download</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td><p>Export Vendor Users table as CSV &emsp;</p></td>
+                                        <td><button className='btn btn-add' onClick={() => handleDownloadCSV("vendor-users")}>Download</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><p>Export Baskets table as CSV &emsp;</p></td>
+                                        <td><button className='btn btn-add' onClick={() => handleDownloadCSV("baskets")}>Download</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><p>Export Products table as CSV &emsp;</p></td>
+                                        <td><button className='btn btn-add' onClick={() => handleDownloadCSV("products")}>Download</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-                <h3 className='margin-t-16'>Basket Details</h3>
-                <table className='table-stats'>
-                    <thead>
-                        <tr>
-                            <th>&emsp;</th>
-                            <th>Baskets</th>
-                            <th>Sold</th>
-                            <th>Grabbed</th>
-                            <th>Unsold</th>
-                            <th>Sold Price</th>
-                            <th>Sold Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>Total:</th>
-                            <td className='table-center'>{basketCount?.count}</td>
-                            <td className='table-center'>{basketCount?.sold_count}</td>
-                            <td className='table-center'>{basketCount?.grabbed_count}</td>
-                            <td className='table-center'>{basketCount?.unsold_count}</td>
-                            <td className='table-center'>${basketCount?.sold_price}</td>
-                            <td className='table-center'>${basketCount?.sold_value}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                    <div className='box-bounding'>
+                        <div className='flex-space-between flex-bottom-align'>
+                            <h2 className='margin-t-16'>Basket Sales</h2>
+                            <select className='' value={selectedRangeGraph} onChange={handleDateChangeGraph}>
+                                {/* <option value="">Time Frame</option> */}
+                                {Object.entries(dateRange).map(([label, value]) => (
+                                    <option key={value} value={value}>
+                                        {label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <div className='box-bounding'>
+                                {baskets ? (
+                                    <canvas id="chart-baskets"></canvas>
+                                ) : (
+                                    <PulseLoader
+                                        className='margin-t-12'
+                                        color={'#ff806b'}
+                                        size={10}
+                                        aria-label="Loading Spinner"
+                                        data-testid="loader"
+                                    />
+                                )}
+                            </div>
+                        </div>
+                        <h3 className='margin-t-16'>Basket Details</h3>
+                        <table className='table-stats'>
+                            <thead>
+                                <tr>
+                                    <th>&emsp;</th>
+                                    <th>Baskets</th>
+                                    <th>Sold</th>
+                                    <th>Grabbed</th>
+                                    <th>Unsold</th>
+                                    <th>Sold Price</th>
+                                    <th>Sold Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>Total:</th>
+                                    <td className='table-center'>{basketCount?.count}</td>
+                                    <td className='table-center'>{basketCount?.sold_count}</td>
+                                    <td className='table-center'>{basketCount?.grabbed_count}</td>
+                                    <td className='table-center'>{basketCount?.unsold_count}</td>
+                                    <td className='table-center'>${basketCount?.sold_price}</td>
+                                    <td className='table-center'>${basketCount?.sold_value}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </>
+            )}
             <div className='box-bounding'>
                 <h3>General Count</h3>
                 <table className='table-stats'>

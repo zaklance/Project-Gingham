@@ -33,6 +33,7 @@ from utils.emails import ( send_contact_email, send_user_password_reset_email,
                           send_vendor_password_reset_email, send_admin_password_reset_email, 
                           send_user_confirmation_email, send_vendor_confirmation_email, 
                           send_admin_confirmation_email )
+from utils.sms import incoming_sms
 import subprocess
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
@@ -1435,7 +1436,10 @@ def all_markets():
 
         new_market = Market(
             name=data.get('name'),
+            bio=data.get('bio'),
             location=data.get('location'),
+            city=data.get('city'),
+            state=data.get('state'),
             zipcode=data.get('zipcode'),
             coordinates=data.get('coordinates'),
             schedule=data.get('schedule'),
@@ -1472,8 +1476,14 @@ def market_by_id(id):
                 market.image = data['image']
             if 'image_default' in data:
                 market.image_default = data['image_default']
+            if 'bio' in data:
+                market.bio = data['bio']
             if 'location' in data:
                 market.location = data['location']
+            if 'city' in data:
+                market.city = data['city']
+            if 'state' in data:
+                market.state = data['state']
             if 'zipcode' in data:
                 market.zipcode = data['zipcode']
             if 'coordinates' in data:
@@ -2913,7 +2923,17 @@ def send_sendgrid_email_client():
     except Exception as e:
         print(e.message)
         return jsonify({"error": str(e)}), 500
+
+@app.route("/api/sms", methods=['GET', 'POST'])
+def respond_incoming_sms():
+
+    result = incoming_sms()
     
+    if "error" in result:
+        print("error responding to message")
+        return jsonify({"error responding to message"}), 500
+    return result
+
 # Stripe
 stripe.api_key = os.getenv('STRIPE_PY_KEY')
 
@@ -3809,7 +3829,7 @@ def get_receipt(receipt_id):
         return jsonify({"error": f"Error fetching receipt: {str(e)}"}), 500
 
 @app.route('/api/user-issues', methods=['GET', 'POST'])
-# @jwt_required()
+@jwt_required()
 def user_issues():
     if request.method == 'GET':
         user_id = request.args.get('user_id')
@@ -4159,14 +4179,15 @@ def export_csv_markets():
         markets = Market.query.all()
         csv_data = []
 
-        headers = ["id", "name", "image_default", "location", "zipcode", 
-                   "coordinates", "schedule", "year_round", "season_start", 
-                   "season_end", "is_visible"]
+        headers = ["id", "name", "image_default", "location", "city",
+                   "state", "zipcode", "coordinates", "schedule", 
+                   "year_round", "season_start", "season_end", 
+                   "is_visible"]
 
         for market in markets:
             csv_data.append([
                 market.id, market.name, market.image_default, market.location,
-                market.zipcode, json.dumps(market.coordinates),
+                market.city, market.state, market.zipcode, json.dumps(market.coordinates),
                 market.schedule, market.year_round, market.season_start,
                 market.season_end, market.is_visible
             ])

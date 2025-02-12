@@ -8,7 +8,6 @@ const AdminUsers = () => {
     const [editMode, setEditMode] = useState(false);
     const [userData, setUserData] = useState(null);
     const [tempUserData, setTempUserData] = useState(null);
-    const [image, setImage] = useState(null);
     const [adminUserData, setAdminUserData] = useState(null);
 
     const token = localStorage.getItem('admin_jwt-token');
