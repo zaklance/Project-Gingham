@@ -33,10 +33,10 @@ from utils.emails import ( send_contact_email, send_user_password_reset_email,
                           send_vendor_password_reset_email, send_admin_password_reset_email, 
                           send_user_confirmation_email, send_vendor_confirmation_email, 
                           send_admin_confirmation_email )
-from utils.sms import incoming_sms
 import subprocess
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+from twilio.twiml.messaging_response import MessagingResponse
 
 load_dotenv()
 
@@ -2925,14 +2925,26 @@ def send_sendgrid_email_client():
         return jsonify({"error": str(e)}), 500
 
 @app.route("/api/sms", methods=['GET', 'POST'])
-def respond_incoming_sms():
+def incoming_sms():
+    # Get the message the user sent our Twilio number
+    body = request.values.get('Body', None)
+    sender_phone = request.values.get('From', None)
 
-    result = incoming_sms()
-    
-    if "error" in result:
-        print("error responding to message")
-        return jsonify({"error responding to message"}), 500
-    return result
+    if sender_phone.startswith("+1"):
+        sender_phone = sender_phone[2:]
+    elif sender_phone.startswith("+"):
+        sender_phone = sender_phone[1:]
+
+    # Start our TwiML response
+    resp = MessagingResponse()
+
+    # Determine the right reply for this message
+    if body.lower() == 'stop':
+        resp.message("You have been unsubscribed from this notification type ;)")
+    else:
+        resp.message("I didn't understand that prompt :/")
+
+    return str(resp)
 
 # Stripe
 stripe.api_key = os.getenv('STRIPE_PY_KEY')
