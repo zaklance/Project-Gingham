@@ -1,5 +1,6 @@
 import {
   Children,
+  FunctionComponent,
   PropsWithChildren,
   useContext,
   useEffect,
@@ -12,12 +13,12 @@ import {logErrorOnce} from '../libraries/errors';
 /**
  * Props for the Pin component
  */
-export type PinProps = google.maps.marker.PinElementOptions;
+export type PinProps = PropsWithChildren<google.maps.marker.PinElementOptions>;
 
 /**
  * Component to configure the appearance of an AdvancedMarker
  */
-export const Pin = (props: PropsWithChildren<PinProps>) => {
+export const Pin: FunctionComponent<PinProps> = props => {
   const advancedMarker = useContext(AdvancedMarkerContext)?.marker;
   const glyphContainer = useMemo(() => document.createElement('div'), []);
 
@@ -58,7 +59,18 @@ export const Pin = (props: PropsWithChildren<PinProps>) => {
     }
 
     // Set content of Advanced Marker View to the Pin View element
-    advancedMarker.content = pinElement.element;
+    // Here we are selecting the anchor container.
+    // The hierarchy is as follows:
+    // "advancedMarker.content" (from google) -> "pointer events reset div" -> "anchor container"
+    const markerContent = advancedMarker.content?.firstChild?.firstChild;
+
+    while (markerContent?.firstChild) {
+      markerContent.removeChild(markerContent.firstChild);
+    }
+
+    if (markerContent) {
+      markerContent.appendChild(pinElement.element);
+    }
   }, [advancedMarker, glyphContainer, props]);
 
   return createPortal(props.children, glyphContainer);

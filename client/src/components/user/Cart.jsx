@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import objectHash from 'object-hash';
-import { weekDay } from '../../utils/common';
-import { timeConverter } from '../../utils/helpers';
+import { timeConverter, formatBasketDate } from '../../utils/helpers';
 
 function Cart() {
     const { handlePopup, cartItems, setCartItems, amountInCart, setAmountInCart } = useOutletContext();
@@ -117,7 +116,7 @@ function Cart() {
                                 <ul>
                                     {cartItems.map((item, index) => (
                                         <li className='cart-item' key={index}>
-                                            <span><b>{item.vendor_name}</b> at <i>{item.location}</i>, {weekDay[item.day_of_week]} from {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</span>
+                                            <span><b>{item.vendor_name}</b> at <i>{item.location}</i>, {formatBasketDate(item.sale_date)} from {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</span>
                                             <span><b>${item.price}</b></span>
                                             <button className='btn-cart' onClick={() => removeFromCart(item)}>Remove</button>
                                         </li>
