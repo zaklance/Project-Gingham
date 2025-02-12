@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {FunctionComponent, PropsWithChildren} from 'react';
 import {render, screen, waitFor} from '@testing-library/react';
 import {initialize, mockInstances} from '@googlemaps/jest-mocks';
 import '@testing-library/jest-dom';
@@ -9,7 +9,7 @@ import {APILoadingStatus} from '../../libraries/api-loading-status';
 
 jest.mock('../../libraries/google-maps-api-loader');
 
-let wrapper: ({children}: {children: React.ReactNode}) => JSX.Element | null;
+let wrapper: FunctionComponent<PropsWithChildren>;
 let mockContextValue: jest.MockedObject<APIProviderContextValue>;
 let createMapSpy: jest.Mock<
   void,
@@ -29,7 +29,7 @@ beforeEach(() => {
     clearMapInstances: jest.fn()
   };
 
-  wrapper = ({children}: {children: React.ReactNode}) => (
+  wrapper = ({children}) => (
     <APIProviderContext.Provider value={mockContextValue}>
       {children}
     </APIProviderContext.Provider>
@@ -110,7 +110,7 @@ describe('creating and updating map instance', () => {
 
     const [actualEl, actualOptions] = createMapSpy.mock.lastCall!;
     expect(screen.getByTestId('map')).toContainElement(actualEl);
-    expect(actualOptions).toMatchObject({
+    expect(actualOptions).toStrictEqual({
       center: {lat: 53.55, lng: 10.05},
       zoom: 12,
       mapId: 'mymapid'
@@ -156,6 +156,55 @@ describe('creating and updating map instance', () => {
     const [, options] = createMapSpy.mock.lastCall!;
     expect(options).toMatchObject({mapId: 'othermapid'});
   });
+
+  test('recreates the map when the colorScheme is changed', () => {
+    createMapSpy.mockReset();
+    rerender(
+      <GoogleMap
+        id={'mymap'}
+        mapId={'mymapid'}
+        center={center}
+        zoom={14}
+        colorScheme={'DARK'}
+      />
+    );
+
+    expect(createMapSpy).toHaveBeenCalled();
+
+    const [, options] = createMapSpy.mock.lastCall!;
+    expect(options).toMatchObject({colorScheme: 'DARK'});
+  });
+
+  test('recreates the map when the renderingType is changed', () => {
+    createMapSpy.mockReset();
+    rerender(
+      <GoogleMap
+        id={'mymap'}
+        mapId={'mymapid'}
+        center={center}
+        zoom={14}
+        renderingType={'VECTOR'}
+      />
+    );
+
+    expect(createMapSpy).toHaveBeenCalled();
+
+    const [, options] = createMapSpy.mock.lastCall!;
+    expect(options).toMatchObject({renderingType: 'VECTOR'});
+  });
+});
+
+describe('map instance caching', () => {
+  test.todo(
+    "map isn't recreated when unmounting and remounting with the same props"
+  );
+  test.todo(
+    'map is recreated when unmounting and remounting with changed mapId'
+  );
+  test.todo(
+    "map isn't recreated when unmounting and remounting with regular changed options"
+  );
+  test.todo('removed options are handled correctly');
 });
 
 describe('camera configuration', () => {

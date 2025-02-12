@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import React, {
-  ComponentType,
   CSSProperties,
+  FunctionComponent,
   PropsWithChildren,
   ReactNode,
   useEffect,
@@ -15,6 +15,7 @@ import {useMapsEventListener} from '../hooks/use-maps-event-listener';
 import {setValueForStyles} from '../libraries/set-value-for-styles';
 import {useMapsLibrary} from '../hooks/use-maps-library';
 import {useDeepCompareEffect} from '../libraries/use-deep-compare-effect';
+import {CustomMarkerContent, isAdvancedMarker} from './advanced-marker';
 
 export type InfoWindowProps = Omit<
   google.maps.InfoWindowOptions,
@@ -34,7 +35,9 @@ export type InfoWindowProps = Omit<
 /**
  * Component to render an Info Window with the Maps JavaScript API
  */
-export const InfoWindow = (props: PropsWithChildren<InfoWindowProps>) => {
+export const InfoWindow: FunctionComponent<
+  PropsWithChildren<InfoWindowProps>
+> = props => {
   const {
     // content options
     children,
@@ -169,7 +172,7 @@ export const InfoWindow = (props: PropsWithChildren<InfoWindowProps>) => {
 
   // ## open info window when content and map are available
   const map = useMap();
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     // `anchor === null` means an anchor is defined but not ready yet.
     if (!map || !infoWindow || anchor === null) return;
 
@@ -177,6 +180,41 @@ export const InfoWindow = (props: PropsWithChildren<InfoWindowProps>) => {
     const openOptions: google.maps.InfoWindowOpenOptions = {map};
     if (anchor) {
       openOptions.anchor = anchor;
+
+      // Only do the infowindow adjusting when dealing with an AdvancedMarker
+      if (isAdvancedMarker(anchor) && anchor.content instanceof Element) {
+        const wrapper = anchor.content as CustomMarkerContent;
+        const wrapperBcr = wrapper?.getBoundingClientRect();
+
+        // This checks whether or not the anchor has custom content with our own
+        // div wrapper. If not, that means we have a regular AdvancedMarker without any children.
+        // In that case we do not want to adjust the infowindow since it is all handled correctly
+        // by the Google Maps API.
+        if (wrapperBcr && wrapper?.isCustomMarker) {
+          // We can safely typecast here since we control that element and we know that
+          // it is a div
+          const anchorDomContent = anchor.content.firstElementChild
+            ?.firstElementChild as Element;
+
+          const contentBcr = anchorDomContent?.getBoundingClientRect();
+
+          // center infowindow above marker
+          const anchorOffsetX =
+            contentBcr.x -
+            wrapperBcr.x +
+            (contentBcr.width - wrapperBcr.width) / 2;
+          const anchorOffsetY = contentBcr.y - wrapperBcr.y;
+
+          const opts: google.maps.InfoWindowOptions = infoWindowOptions;
+
+          opts.pixelOffset = new google.maps.Size(
+            pixelOffset ? pixelOffset[0] + anchorOffsetX : anchorOffsetX,
+            pixelOffset ? pixelOffset[1] + anchorOffsetY : anchorOffsetY
+          );
+
+          infoWindow.setOptions(opts);
+        }
+      }
     }
 
     if (shouldFocus !== undefined) {
@@ -194,7 +232,7 @@ export const InfoWindow = (props: PropsWithChildren<InfoWindowProps>) => {
 
       infoWindow.close();
     };
-  }, [infoWindow, anchor, map, shouldFocus]);
+  }, [infoWindow, anchor, map, shouldFocus, infoWindowOptions, pixelOffset]);
 
   return (
     <>
