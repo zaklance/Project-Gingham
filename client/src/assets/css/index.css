@@ -746,6 +746,12 @@ ul {
   clear:both;
 }
 
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
 .side-select {
   margin-left: auto;
   margin-right: 0;
@@ -2792,7 +2798,7 @@ select:hover {
   width: 250px;
 }
 
-.faqs summary {
+.faqs summary, .details-basket-sales summary {
   background-color: #eef;
   font-size: 1.2em;
   font-weight: 600;
@@ -2810,6 +2816,11 @@ select:hover {
 
 .faqs ul li {
   margin-bottom: -12px;
+}
+
+.details-basket-sales>div {
+  padding: 8px 8px 16px 28px;
+  border: solid 6px #eef;
 }
 
 .blog-favs summary {
@@ -3043,6 +3054,12 @@ select:hover {
   .li-notif:hover .btn-unreport {
     opacity: 1;
     visibility: visible;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
 }
 
@@ -3295,6 +3312,12 @@ select:hover {
 
   .column-3 {
     column-count: 1;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1rem;
   }
 }
 

@@ -4,11 +4,13 @@ import { timeConverter, convertToLocalDate, formatToLocalDateString } from '../.
 import Chart from 'chart.js/auto';
 import PulseLoader from 'react-spinners/PulseLoader';
 import VendorActiveVendor from './VendorActiveVendor';
+import { months } from '../../utils/common.js'
 
 function VendorSales() {
     const chartRef = useRef();
     const [vendorId, setVendorId] = useState(null);
     const [baskets, setBaskets] = useState([]);
+    const [monthlyBaskets, setMonthlyBaskets] = useState({});
     const [salesHistory, setSalesHistory] = useState([]);
     const [marketNames, setMarketNames] = useState([]);
     const [selectedMarket, setSelectedMarket] = useState("");
@@ -18,10 +20,11 @@ function VendorSales() {
     const [totalPrice, setTotalPrice] = useState(0);
     const [totalBasketCount, setTotalBasketCount] = useState(0);
     const [totalBasketSold, setTotalBasketSold] = useState(0);
+    const [openDetail, setOpenDetail] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     const vendorUserId = localStorage.getItem('vendor_user_id');
 
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     const dateRange = {
         "Next Week": -7,
         "Week": 7,
@@ -82,6 +85,7 @@ function VendorSales() {
                 .then(response => response.json())
                 .then(data => {
                     setBaskets(data)
+                    organizeByMonth(data);
                 })
                 .catch(error => console.error('Error fetching market days', error));
         }
@@ -264,6 +268,53 @@ function VendorSales() {
         }
     }, [salesHistory]);
 
+    const organizeByMonth = (baskets) => {
+        const monthlyData = {};
+        baskets.forEach(basket => {
+            if (basket.sale_date) {
+                const date = new Date(basket.sale_date);
+                const key = `${date.getFullYear()}-${date.getMonth() + 1}`;
+                if (!monthlyData[key]) {
+                    monthlyData[key] = [];
+                }
+                monthlyData[key].push(basket);
+            }
+        });
+        setMonthlyBaskets(monthlyData);
+    };
+
+    const sortedYears = Object.entries(
+        Object.keys(monthlyBaskets)
+            .map(monthKey => {
+                const [year, month] = monthKey.split('-');
+                return { year, month, monthKey, count: monthlyBaskets[monthKey].length };
+            })
+            .sort((a, b) => {
+                return b.year - a.year || a.month - b.month;
+            })
+            .reduce((years, { year, month, monthKey, count }) => {
+                if (!years[year]) {
+                    years[year] = [];
+                }
+                years[year].push({ month, monthKey, count });
+                return years;
+            }, {})
+    ).sort(([yearA], [yearB]) => yearB - yearA);
+
+    const downloadCSV = (year, month) => {
+        const url = `/api/export-csv/for-vendor/baskets?vendor_id=${vendorId}&year=${year}&month=${month}`;
+        window.open(url, '_blank');
+    };
+
+    const handleToggle = (name) => {
+        setOpenDetail((prev) => (prev === name ? null : name));
+    };
+
+    setTimeout(() => {
+        setOpenDetail(sortedYears.length > 0 ? sortedYears[0][0] : null)
+        setLoading(false)
+    }, 400);
+
 
     return (
         <>
@@ -300,86 +351,150 @@ function VendorSales() {
                         <h3> Baskets Sold: {totalBasketSold}</h3>
                     </div>
                 </div>
-                <div className='flex-space-between flex-bottom-align'>
-                    <h3 className='margin-t-16'>Sales History:</h3>
-                    <div className='form-group'>
-                        <select className='' value={selectedRangeTable} onChange={handleDateChangeTable}>
-                            <option value="">Time Frame</option>
-                            {Object.entries(dateRange).map(([label, value]) => (
-                                <option key={value} value={value}>
-                                    {label}
-                                </option>
-                            ))}
-                        </select>
-                        <select
-                            name="market"
-                            value={selectedMarket || ''}
-                            onChange={handleMarketChange}
-                        >
-                            <option value="">Select Market</option>
-                            {marketNames.map((market, index) => (
-                                <option key={index} value={market}>
-                                    {market}
-                                </option>
-                            ))}
-                        </select>
+                <div className='box-bounding'>
+                    <div className='flex-space-between flex-bottom-align'>
+                        <h3>Sales History:</h3>
+                        <div className='form-group'>
+                            <select className='' value={selectedRangeTable} onChange={handleDateChangeTable}>
+                                <option value="">Time Frame</option>
+                                {Object.entries(dateRange).map(([label, value]) => (
+                                    <option key={value} value={value}>
+                                        {label}
+                                    </option>
+                                ))}
+                            </select>
+                            <select
+                                name="market"
+                                value={selectedMarket || ''}
+                                onChange={handleMarketChange}
+                            >
+                                <option value="">Select Market</option>
+                                {marketNames.map((market, index) => (
+                                    <option key={index} value={market}>
+                                        {market}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                    <div className='box-scroll'>
+                        <table className='table-history width-100'>
+                            <thead>
+                                <tr>
+                                    <th>Sale Date</th>
+                                    <th>Market</th>
+                                    <th>Pick Up Duration</th>
+                                    <th>Basket Value</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                    <th>Sold</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {salesHistory.length > 0 ? (
+                                    salesHistory
+                                        .filter((history) => {
+                                            // Filter by selected market if specified
+                                            const isMarketMatch =
+                                                selectedMarket && selectedMarket !== ""
+                                                    ? history.market_name === selectedMarket
+                                                    : true;
+                                            // Filter by selected date range
+                                            const today = new Date();
+                                            const historyDate = new Date(history.sale_date);
+                                            const isWithinDateRange = selectedRangeTable
+                                                ? historyDate >= new Date(today.setDate(today.getDate() - selectedRangeTable))
+                                                : true;
+                                            return isMarketMatch && isWithinDateRange;
+                                        })
+                                        .sort((a, b) => new Date(b.sale_date) - new Date(a.sale_date))
+                                        .map((history, index) => (
+                                            <tr key={index}>
+                                                <td className='table-center nowrap m-wrap'>{convertToLocalDate(history.sale_date) || 'N/A'}</td>
+                                                <td>
+                                                    <Link className='btn-nav' to={`/user/markets/${history.market_id}`}>
+                                                        {history.market_name || 'No Market Name'}
+                                                    </Link>
+                                                </td>
+                                                <td className='table-center'> {history.pickup_start ? timeConverter(history.pickup_start) : 'N/A'} - {history.pickup_end ? timeConverter(history.pickup_end) : 'N/A'} </td>
+                                                <td className='table-center'> ${history.value ? history.value.toFixed(2) : 'N/A'} </td>
+                                                <td className='table-center'> ${history.price ? history.price.toFixed(2) : 'N/A'} </td>
+                                                <td className='table-center'> {history.total_baskets || 0} </td>
+                                                <td className='table-center'> {history.sold_baskets || 0} </td>
+                                            </tr>
+                                        ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="8">No sales history available</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <div className='box-scroll'>
-                    <table className='table-history width-100'>
-                        <thead>
-                            <tr>
-                                <th>Sale Date</th>
-                                <th>Market</th>
-                                <th>Pick Up Duration</th>
-                                <th>Basket Value</th>
-                                <th>Price</th>
-                                <th>Total</th>
-                                <th>Sold</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {salesHistory.length > 0 ? (
-                                salesHistory
-                                    .filter((history) => {
-                                        // Filter by selected market if specified
-                                        const isMarketMatch =
-                                            selectedMarket && selectedMarket !== ""
-                                                ? history.market_name === selectedMarket
-                                                : true;
-                                        // Filter by selected date range
-                                        const today = new Date();
-                                        const historyDate = new Date(history.sale_date);
-                                        const isWithinDateRange = selectedRangeTable
-                                            ? historyDate >= new Date(today.setDate(today.getDate() - selectedRangeTable))
-                                            : true;
-                                        return isMarketMatch && isWithinDateRange;
-                                    })
-                                    .sort((a, b) => new Date(b.sale_date) - new Date(a.sale_date))
-                                    .map((history, index) => (
-                                        <tr key={index}>
-                                            <td className='table-center nowrap m-wrap'>{convertToLocalDate(history.sale_date) || 'N/A'}</td>
-                                            <td>
-                                                <Link className='btn-nav' to={`/user/markets/${history.market_id}`}>
-                                                    {history.market_name || 'No Market Name'}
-                                                </Link>
-                                            </td>
-                                            <td className='table-center'> {history.pickup_start ? timeConverter(history.pickup_start) : 'N/A'} - {history.pickup_end ? timeConverter(history.pickup_end) : 'N/A'} </td>
-                                            <td className='table-center'> ${history.value ? history.value.toFixed(2) : 'N/A'} </td>
-                                            <td className='table-center'> ${history.price ? history.price.toFixed(2) : 'N/A'} </td>
-                                            <td className='table-center'> {history.total_baskets || 0} </td>
-                                            <td className='table-center'> {history.sold_baskets || 0} </td>
-                                        </tr>
-                                    ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="8">No sales history available</td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
             </div>
+            {baskets && !loading && (
+                <div className='box-bounding box-scroll'>
+                    <h3 className='margin-b-16'>Monthly Statements</h3>
+                    {Object.entries(
+                        Object.keys(monthlyBaskets)
+                            .map(monthKey => {
+                                const [year, month] = monthKey.split('-');
+                                return { year, month, monthKey, count: monthlyBaskets[monthKey].length };
+                            })
+                            .sort((a, b) => {
+                                return b.year - a.year || a.month - b.month;
+                            })
+                            .reduce((years, { year, month, monthKey, count }) => {
+                                if (!years[year]) {
+                                    years[year] = [];
+                                }
+                                years[year].push({ month, monthKey, count });
+                                return years;
+                            }, {})
+                        ).sort(([yearA], [yearB]) => yearB - yearA)
+                        .map(([year, monthsInYear]) => (
+                            <details 
+                                key={year} 
+                                className='details-basket-sales'
+                                open={openDetail === year}
+                            >
+                                <summary 
+                                    className="text-500"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleToggle(year);
+                                    }}
+                                >{year}</summary>
+                                <div className="grid-3">
+                                    {monthsInYear.sort((a, b) => {
+                                        const monthA = parseInt(a.month, 10);
+                                        const monthB = parseInt(b.month, 10);
+                                        return monthA - monthB;
+                                    }).map(monthData => {
+                                        const month = monthData.month;
+                                        const monthKey = monthData.monthKey;
+                                        const count = monthlyBaskets[monthKey].length;
+                                        return (
+                                            <div key={monthKey} className="flex-start flex-center-align">
+                                                <div className='margin-r-16'>
+                                                    <p className='text-500'>{months[parseInt(month) - 1]} {year} &emsp;</p>
+                                                    <p>Baskets: {count}</p>
+                                                </div>
+                                                <button
+                                                    onClick={() => downloadCSV(year, month)}
+                                                    className="btn btn-edit"
+                                                >
+                                                    Download CSV
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </details>
+                    ))}
+                </div>
+            )}
         </>
     )
 }

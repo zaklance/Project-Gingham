@@ -590,12 +590,14 @@ class Basket(db.Model, SerializerMixin):
     market_day_id = db.Column(db.Integer, db.ForeignKey('market_days.id'), nullable=True)
     sale_date = db.Column(db.Date, nullable=True)
     pickup_start = db.Column(db.Time, nullable=False)
+    pickup_end = db.Column(db.Time, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    is_sold = db.Column(db.Boolean, nullable=True)
-    is_grabbed = db.Column(db.Boolean, nullable=True)
+    is_sold = db.Column(db.Boolean, nullable=False, default=False)
+    is_grabbed = db.Column(db.Boolean, nullable=False, default=False)
+    is_refunded = db.Column(db.Boolean, nullable=False, default=False)
     price = db.Column(db.Float, nullable=False)
     value = db.Column(db.Float, nullable=True)
-    pickup_end = db.Column(db.Time, nullable=False)
+    fee_gingham = db.Column(db.Float, nullable=False, default=0)
 
     vendor = db.relationship('Vendor', lazy='joined')
     market_day = db.relationship('MarketDay', lazy='joined')
@@ -629,8 +631,15 @@ class Basket(db.Model, SerializerMixin):
             raise ValueError(f"{key} must be a boolean value")
         return value
     
-    @validates('price', 'value')
-    def validate_price(self, key, value):
+    @validates('price')
+    def set_fee_gingham(self, key, price):
+        if not isinstance(price, (int, float)) or price < 0:
+            raise ValueError(f"{key} must be a non-negative integer")
+        self.fee_gingham = round(min(price * 0.2, 3), 2)
+        return price
+    
+    @validates('value')
+    def validate_value(self, key, value):
         if not isinstance(value, (int, float)) or value < 0:
             raise ValueError(f"{key} must be a non-negative integer")
         return value
