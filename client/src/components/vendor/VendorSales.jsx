@@ -283,24 +283,6 @@ function VendorSales() {
         setMonthlyBaskets(monthlyData);
     };
 
-    const sortedYears = Object.entries(
-        Object.keys(monthlyBaskets)
-            .map(monthKey => {
-                const [year, month] = monthKey.split('-');
-                return { year, month, monthKey, count: monthlyBaskets[monthKey].length };
-            })
-            .sort((a, b) => {
-                return b.year - a.year || a.month - b.month;
-            })
-            .reduce((years, { year, month, monthKey, count }) => {
-                if (!years[year]) {
-                    years[year] = [];
-                }
-                years[year].push({ month, monthKey, count });
-                return years;
-            }, {})
-    ).sort(([yearA], [yearB]) => yearB - yearA);
-
     const downloadCSV = (year, month) => {
         const url = `/api/export-csv/for-vendor/baskets?vendor_id=${vendorId}&year=${year}&month=${month}`;
         window.open(url, '_blank');
@@ -310,10 +292,30 @@ function VendorSales() {
         setOpenDetail((prev) => (prev === name ? null : name));
     };
 
-    setTimeout(() => {
-        setOpenDetail(sortedYears.length > 0 ? sortedYears[0][0] : null)
-        setLoading(false)
-    }, 400);
+    useEffect(() => {
+        const sortedYears = Object.entries(
+            Object.keys(monthlyBaskets)
+                .map(monthKey => {
+                    const [year, month] = monthKey.split('-');
+                    return { year, month, monthKey, count: monthlyBaskets[monthKey].length };
+                })
+                .sort((a, b) => {
+                    return b.year - a.year || a.month - b.month;
+                })
+                .reduce((years, { year, month, monthKey, count }) => {
+                    if (!years[year]) {
+                        years[year] = [];
+                    }
+                    years[year].push({ month, monthKey, count });
+                    return years;
+                }, {})
+        ).sort(([yearA], [yearB]) => yearB - yearA);
+
+        setTimeout(() => {
+            setOpenDetail(sortedYears.length > 0 ? sortedYears[0][0] : null)
+            setLoading(false)
+        }, 400);
+    }, [monthlyBaskets]);
 
 
     return (
