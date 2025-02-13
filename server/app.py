@@ -4336,7 +4336,7 @@ def export_csv_products():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/export-csv/for-vendor/baskets', methods=['GET'])
-def export_vendor_baskets():
+def export_csv_vendor_baskets():
     vendor_id = request.args.get('vendor_id', type=int)
     month = request.args.get('month', type=int)
     year = request.args.get('year', type=int)
@@ -4387,6 +4387,28 @@ def export_vendor_baskets():
         as_attachment=True,
         download_name=f'baskets_{year}-{month:02d}.csv'
     )
+
+@app.route('/api/export-pdf/for-vendor/baskets', methods=['GET'])
+def export_pdf_vendor_baskets():
+    vendor_id = request.args.get('vendor_id', type=int)
+    month = request.args.get('month', type=int)
+    year = request.args.get('year', type=int)
+    
+    if not all([vendor_id, month, year]):
+        return jsonify({'error': 'Missing required parameters'}), 400
+    
+    try:
+        # Query baskets for given vendor and month/year
+        baskets = Basket.query.filter(
+            Basket.vendor_id == vendor_id,
+            extract('month', Basket.sale_date) == month,
+            extract('year', Basket.sale_date) == year
+        ).all()
+        
+        return jsonify([basket.to_dict() for basket in baskets]), 200
+    
+    except Exception as e:
+        return jsonify({"error": f"Error fetching baskets: {str(e)}"}), 500
 
 if __name__ == '__main__':
     # app.run(host="0.0.0.0", port=5555, debug=True)
