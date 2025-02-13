@@ -69,8 +69,11 @@ const ReceiptDocument = ({ filteredBaskets, year, month }) => {
 
                 <Text style={[styles.bold, styles.row]}>
                     <Text>Total Payout: </Text>
-                    <Text>${filteredBaskets.reduce((acc, item) => acc + item.price - item.fee_gingham, 0).toFixed(2)}</Text>
-                </Text>
+                    <Text>
+                        ${filteredBaskets
+                            .reduce((acc, item) => acc + (item.is_refunded ? 0 : item.price - item.fee_gingham), 0)
+                            .toFixed(2)}
+                    </Text>                </Text>
                 <View style={styles.footer} fixed>
                     <View style={styles.rowFooter}>
                         <Text style={styles.bold}>Gingham 2025 &copy;</Text>
