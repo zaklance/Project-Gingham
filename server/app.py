@@ -27,7 +27,7 @@ from PIL import Image
 from io import BytesIO, StringIO
 from random import choice
 import stripe
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 import utils.events as events
 from utils.emails import ( send_contact_email, send_user_password_reset_email, 
                           send_vendor_password_reset_email, send_admin_password_reset_email, 
@@ -418,7 +418,6 @@ def signup():
 @app.route('/api/user/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
 def confirm_email(token):
     try:
-        # Decode the token (itsdangerous generates URL-safe tokens by default)
         print(f"Received token: {token}")
         data = serializer.loads(token, salt='user-confirmation-salt', max_age=3600)
 
@@ -432,19 +431,15 @@ def confirm_email(token):
         if request.method == 'POST':
             print(f"POST request: Token verified, user data extracted: {data}")
 
-            # Check if the user already exists by ID
             existing_user = User.query.get(user_id)
 
             if existing_user:
-                # If user exists, update the email instead of creating a new account
                 print(f"POST request: User {user_id} exists, updating email to {email}")
 
-                # Prevent duplicate email usage
                 if User.query.filter(User.email == email, User.id != user_id).first():
                     return jsonify({"error": "This email is already in use by another account."}), 400
 
                 existing_user.email = email
-                existing_user.email_verified = False  # Require re-verification
                 db.session.commit()
 
                 return jsonify({
@@ -454,7 +449,6 @@ def confirm_email(token):
                     "email": existing_user.email
                 }), 200
 
-            # If the user does not exist, prevent creating a new account without required fields
             if "password" not in data:
                 print("POST request failed: Missing password field for new account creation.")
                 return jsonify({"error": "Password is required to create a new account."}), 400
@@ -471,8 +465,7 @@ def confirm_email(token):
                 city=data.get('city', ""),
                 state=data.get('state', ""),
                 zipcode=data.get('zipcode', ""),
-                coordinates=data.get('coordinates'),
-                email_verified=True
+                coordinates=data.get('coordinates')
             )
             db.session.add(new_user)
             db.session.commit()
@@ -531,53 +524,94 @@ def vendorSignup():
         return jsonify({'error': result["error"]}), 500
     return jsonify({'message': result['message']}), 200
 
-@app.route('/api/vendor/confirm-email/<token>', methods=['GET', 'POST'])
+@app.route('/api/change-vendor-email', methods=['POST'])
+def change_vendor_email():
+    try:
+        data = request.get_json()
+
+        email = data.get('email')
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+
+        result = send_vendor_confirmation_email(email, data)
+
+        if 'error' in result:
+            return jsonify({"error": result["error"]}), 500
+
+        return jsonify({"message": result["message"]}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+
+@app.route('/api/vendor/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
 def confirm_vendor_email(token):
     try:
-        
         print(f'Received token: {token}')
         data = serializer.loads(token, salt='vendor-confirmation-salt', max_age=3600)
-        
+
+        vendor_id = data.get('vendor_id')
+        email = data.get('email')
+
         if request.method == 'GET':
-            print(f"GET request: Token verified, email extracted: {data['email']}")
-            # Redirect to the frontend with the token
+            print(f"GET request: Token verified, email extracted: {email}")
             return redirect(f'http://localhost:5173/vendor/confirm-email/{token}')
         
         if request.method == 'POST':
             print(f"POST request: Token verified, user data extracted: {data}")
             
-            if VendorUser.query.filter_by(email=data['email']).first():
-                print("POST request: Email already confirmed or in use")
-                return {'error': 'Email already confirmed or in use.'}, 400
+            existing_vendor = VendorUser.query.get(vendor_id)
             
+            if existing_vendor:
+                print(f"POST request: User {vendor_id} exists, updating email to {email}")
+                
+                if VendorUser.query.filter(VendorUser.email == email, VendorUser.id != vendor_id).first():
+                    return jsonify({"error": "This email is already in use by another account."}), 400
+                
+                existing_vendor.email = email
+                db.session.commit()
+                
+                return jsonify({
+                    "message": "Email updated successfully. Verification required for the new email.",
+                    "isNewUser": False,
+                    "user_id": existing_vendor.id,
+                    "email": existing_vendor.email
+                }), 200
+            
+            if "password" not in data:
+                print("POST request failed: Missing password field for new account creation.")
+                return jsonify({"error": "Password is required to create a new account."}), 400
+
             new_vendor_user = VendorUser(
-                email=data['email'],
+                email=email,
                 password=data['password'], 
                 first_name=data['first_name'],
                 last_name=data['last_name'],
                 phone=data['phone'],
-                email_verified=True
             )
             db.session.add(new_vendor_user)
             db.session.commit()
-            
+
             print("POST request: VendorUser created and committed to the database")
-            return {'message': 'Email confirmed and account created successfully.'}, 201
+            return jsonify({
+                'message': 'Email confirmed and account created successfully.', 
+                'isNewVendor': True, 
+                'vendor_id': new_vendor_user.id
+            }), 201
 
     except SignatureExpired:
         print("Request: The token has expired")
-        return {'error': 'The token has expired'}, 400
+        return jsonify({'error': 'The token has expired'}), 400
 
     except Exception as e:
         print(f"Request: An error occurred: {str(e)}")
-        return {'error': f'Failed to confirm email: {str(e)}'}, 500
+        return jsonify({'error': f'Failed to confirm or update email: {str(e)}'}), 500
     
 @app.route('/api/vendor/logout', methods=['DELETE'])
 def vendorLogout():
     session.pop('vendor_user_id', None)
     return {}, 204
     
-    # ADMIN PORTAL
+# ADMIN PORTAL
 @app.route('/api/admin/login', methods=['POST'])
 def adminLogin():
 
@@ -616,55 +650,88 @@ def adminSignup():
         return jsonify({'error': result["error"]}), 500
     return jsonify({'message': result['message']}), 200
 
-from itsdangerous import BadSignature, SignatureExpired
+@app.route('/api/change-admin-email', methods=['POST'])
+def change_admin_email():
+    try:
+        data = request.get_json()
 
-@app.route('/api/admin/confirm-email/<token>', methods=['GET', 'POST'])
+        email = data.get('email')
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+
+        result = send_admin_confirmation_email(email, data)
+
+        if 'error' in result:
+            return jsonify({"error": result["error"]}), 500
+
+        return jsonify({"message": result["message"]}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+
+@app.route('/api/admin/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
 def confirm_admin_email(token):
     try:
         print(f'Received token: {token}')
         data = serializer.loads(token, salt='admin-confirmation-salt', max_age=3600)
 
+        admin_id = data.get('admin_id')
+        email = data.get('email')
+
         if request.method == 'GET':
-            print(f"GET request: Token verified, email extracted: {data['email']}")
+            print(f"GET request: Token verified, email extracted: {email}")
             return redirect(f'http://localhost:5173/admin/confirm-email/{token}')
         
         if request.method == 'POST':
             print(f"POST request: Token verified, user data extracted: {data}")
             
-            # Check if admin user already exists
-            if AdminUser.query.filter_by(email=data['email']).first():
-                print("POST request: Email already confirmed or in use")
-                return {'error': 'Email already confirmed or in use.'}, 400
+            existing_admin = AdminUser.query.get(admin_id)
             
-            # Create new admin user
+            if existing_admin:
+                print(f"POST request: User {admin_id} exists, updating email to {email}")
+                
+                if AdminUser.query.filter(AdminUser.email == email, AdminUser.id != admin_id).first():
+                    return jsonify({"error": "This email is already in use by another account."}), 400
+                
+                existing_admin.email = email
+                db.session.commit()
+                
+                return jsonify({
+                    "message": "Email updated successfully. Verification required for the new email.",
+                    "isNewUser": False,
+                    "user_id": existing_admin.id,
+                    "email": existing_admin.email
+                }), 200
+            
+            if "password" not in data:
+                print("POST request failed: Missing password field for new account creation.")
+                return jsonify({"error": "Password is required to create a new account."}), 400
+
             new_admin_user = AdminUser(
-                email=data['email'],
+                email=email,
                 password=data['password'], 
                 first_name=data['first_name'],
                 last_name=data['last_name'],
                 phone=data['phone'],
-                email_verified=True
             )
             db.session.add(new_admin_user)
             db.session.commit()
-            
-            print("POST request: AdminUser created and committed to the database")
-            return {'message': 'Email confirmed and account created successfully.'}, 201
+
+            print("POST request: VendorUser created and committed to the database")
+            return jsonify({
+                'message': 'Email confirmed and account created successfully.', 
+                'isNewVendor': True, 
+                'vendor_id': new_admin_user.id
+            }), 201
 
     except SignatureExpired:
         print("Request: The token has expired")
-        return {'error': 'The token has expired'}, 400
-
-    except BadSignature:
-        print("Request: The token is invalid")
-        return {'error': 'Invalid token'}, 400
+        return jsonify({'error': 'The token has expired'}), 400
 
     except Exception as e:
         print(f"Request: An error occurred: {str(e)}")
-        return {'error': f'Failed to confirm email: {str(e)}'}, 500
-        
-        
-    
+        return jsonify({'error': f'Failed to confirm or update email: {str(e)}'}), 500
+
 @app.route('/api/admin/logout', methods=['DELETE'])
 def adminLogout():
     session.pop('admin_user_id', None)

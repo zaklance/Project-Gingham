@@ -29,6 +29,7 @@ function AdminProfile () {
     const [changeConfirmPassword, setChangeConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false, pw3: false });
     const [isValid, setIsValid] = useState(false);
+    const [isSendingEmail, setIsSendingEmail] = useState(false);
 
     const token = localStorage.getItem('admin_jwt-token');
 
@@ -186,21 +187,28 @@ function AdminProfile () {
             });
             return;
         }
+        setIsSendingEmail(true);
+    
         try {
-            const response = await fetch(`/api/users/${id}`, {
-                method: 'PATCH',
+            const response = await fetch(`/api/change-admin-email`, {
+                method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    email: changeEmail
-                })
+                    admin_id: id,
+                    email: changeEmail,
+                }),
             });
+    
+            const responseData = await response.json();
+    
+            console.log("Response Data:", responseData);
+    
             if (response.ok) {
-                const updatedData = await response.json();
-                setChangeEmail('')
-                setChangeConfirmEmail('')
+                setChangeEmail('');
+                setChangeConfirmEmail('');
                 setEmailMode(false);
                 toast.warning('Email will not update until you check your email and click the verify link.', {
                     autoClose: 8000,
@@ -208,13 +216,14 @@ function AdminProfile () {
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status:', response.status);
-                console.log('Response text:', await response.text());
+                console.log('Response text:', responseData);
             }
         } catch (error) {
-            // console.error('Error saving changes:', error);
             toast.error(`Error saving changes: ${error}`, {
                 autoClose: 5000,
             });
+        } finally {
+            setIsSendingEmail(false);
         }
     };
 
