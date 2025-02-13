@@ -5,7 +5,7 @@ import { useStripe, useElements } from "@stripe/react-stripe-js";
 import { toast } from 'react-toastify';
 import { timeConverter } from "../../utils/helpers";
 import objectHash from 'object-hash';
-import Receipt from "./Receipt";
+import ReceiptPDF from "./ReceiptPDF";
 
 function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAmountInCart }) {
     const stripe = useStripe();
@@ -253,7 +253,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                         </button>
                     ) : (
                         <div className="margin-t-16">
-                            <Receipt receiptId={receiptId} page={"checkout"} />
+                            <ReceiptPDF receiptId={receiptId} page={"checkout"} />
                             <button 
                                 className="btn btn-add margin-t-8" 
                                 onClick={() => generateICSFile(cartItems)}
