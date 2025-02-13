@@ -10,13 +10,13 @@ const styles = StyleSheet.create({
     section: { marginBottom: 20 },
     row: { flexDirection: "row", justifyContent: "space-between" },
     rowItem: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
-    rowFooter: { flexDirection: "row", justifyContent: "space-between", gap: 360 },
+    rowFooter: { flexDirection: "row", justifyContent: "space-between", gap: 172 },
     bold: { fontFamily: "Helvetica-Bold", fontWeight: "bold" },
     divider: { borderBottom: "2px solid #3b4752", marginVertical: 4 },
-    footer: { position: "absolute", bottom: 30 },
+    footer: { position: "absolute", bottom: 24 },
 });
 
-const ReceiptDocument = ({ receipt, page }) => {
+const ReceiptDocument = ({ receipt }) => {
     // console.log("Receipt Data:", receipt); // ✅ Debugging: Check fetched data in console
     
     const basketItems = Array.isArray(receipt?.baskets) ? receipt.baskets : []; // ✅ Ensure it's always an array
@@ -55,7 +55,7 @@ const ReceiptDocument = ({ receipt, page }) => {
                 {/* ✅ Prevent mapping error by ensuring `basketItems` is always an array */}
                 {basketItems.length > 0 && (
                     basketItems.map((item, index) => (
-                        <View key={index}>
+                        <View key={index} wrap={false}>
                             <View style={styles.row}>
                                 <Text>Basket ID: {item.id}</Text>
                                 <Text>Pickup Date: {formatBasketDate(item.sale_date)}</Text>
@@ -76,9 +76,10 @@ const ReceiptDocument = ({ receipt, page }) => {
                     <Text>Total: </Text>
                     <Text>${basketItems.reduce((acc, item) => acc + item.price, 0).toFixed(2)}</Text>
                 </Text>
-                <View style={styles.footer}>
+                <View style={styles.footer} fixed>
                     <View style={styles.rowFooter}>
                         <Text style={styles.bold}>Gingham 2025 &copy;</Text>
+                        <Text style={styles.bold} render={({ pageNumber }) => (`${pageNumber}`)}></Text>
                         <Text style={styles.bold}>www.gingham.nyc</Text>
                     </View>
                 </View>
@@ -117,7 +118,7 @@ const Receipt = ({ receiptId, page }) => {
     }, [receiptId]);
 
     if (loading) return <p>Loading receipt...</p>;
-    if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
+    if (error) return <p style={{ color: "#ff4b5a" }}>Error: {error}</p>;
     if (!receipt) return <p>No receipt found.</p>;
 
     return (

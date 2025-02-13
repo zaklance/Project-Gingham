@@ -1,7 +1,7 @@
 import React, { useEffect,useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { receiptDateConverter, formatBasketDate } from '../../utils/helpers';
-import Receipt from './Receipt';
+import ReceiptPDF from './ReceiptPDF';
 
 function BasketSales() {
     const [receipts, setReceipts] = useState(null);
@@ -79,7 +79,7 @@ function BasketSales() {
                                                         <td className='table-center nowrap'>{formatBasketDate(item.sale_date) || 'N/A'}</td>
                                                         <td className='table-center'>${item.price ? item.price.toFixed(2) : 'N/A'}</td>
                                                         <td className='table-center' style={{height: '48px'}}>
-                                                            {isFirst && <Receipt receiptId={receipt.id} page={"profile"} />}
+                                                        {isFirst && <ReceiptPDF receiptId={receipt.id} page={"profile"} />}
                                                         </td>
                                                     </tr>
                                                 )}

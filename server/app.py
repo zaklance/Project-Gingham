@@ -2978,35 +2978,42 @@ def get_config():
         return jsonify({'error': 'Stripe publishable key not configured'}), 500
     return jsonify({'publishableKey': publishable_key}), 200
 
+def get_vendor_stripe_account(vendor_id):
+    vendor = Vendor.query.get(vendor_id)
+    if vendor and vendor.stripe_account_id:
+        return vendor.stripe_account_id
+    return None
+
 @app.route('/api/create-payment-intent', methods=['POST'])
 def create_payment_intent():
     try:
-        # Parse request data
         data = request.get_json()
-        if not data or 'total_price' not in data:
-            return jsonify({'error': {'message': 'Invalid request: Missing total_price.'}}), 400
+        if not data or 'baskets' not in data:
+            return jsonify({'error': {'message': 'Missing baskets data.'}}), 400
 
-        # Validate total_price
-        total_price = data['total_price']
-        if not isinstance(total_price, (int, float)) or total_price <= 0:
-            return jsonify({'error': {'message': "'total_price' must be a positive number."}}), 400
+        total_price = sum(basket['price'] for basket in data['baskets'])
+        total_fee = sum(basket['fee_gingham'] for basket in data['baskets'])  
 
-        # Create a PaymentIntent
+        vendor_id = data['baskets'][0]['vendor_id']
+        vendor_account_id = get_vendor_stripe_account(vendor_id)
+
+        if not vendor_account_id:
+            return jsonify({'error': {'message': 'Vendor Stripe account not found. Please update in admin panel.'}}), 400
+
         payment_intent = stripe.PaymentIntent.create(
             currency='usd',
-            amount=int(total_price * 100),  # Convert dollars to cents
+            amount=int(total_price * 100),
             automatic_payment_methods={'enabled': True},
+            transfer_data={"destination": vendor_account_id},
+            application_fee_amount=int(total_fee * 100)
         )
 
-        # Return the clientSecret
         return jsonify({'clientSecret': payment_intent['client_secret']}), 200
 
     except stripe.error.StripeError as e:
-        # Stripe-specific error handling
         return jsonify({'error': {'message': str(e.user_message)}}), 400
 
     except Exception as e:
-        # General error handling
         return jsonify({'error': {'message': 'An unexpected error occurred.'}}), 500
 
 # Password reset for User
@@ -4336,7 +4343,7 @@ def export_csv_products():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/export-csv/for-vendor/baskets', methods=['GET'])
-def export_vendor_baskets():
+def export_csv_vendor_baskets():
     vendor_id = request.args.get('vendor_id', type=int)
     month = request.args.get('month', type=int)
     year = request.args.get('year', type=int)
@@ -4387,6 +4394,28 @@ def export_vendor_baskets():
         as_attachment=True,
         download_name=f'baskets_{year}-{month:02d}.csv'
     )
+
+@app.route('/api/export-pdf/for-vendor/baskets', methods=['GET'])
+def export_pdf_vendor_baskets():
+    vendor_id = request.args.get('vendor_id', type=int)
+    month = request.args.get('month', type=int)
+    year = request.args.get('year', type=int)
+    
+    if not all([vendor_id, month, year]):
+        return jsonify({'error': 'Missing required parameters'}), 400
+    
+    try:
+        # Query baskets for given vendor and month/year
+        baskets = Basket.query.filter(
+            Basket.vendor_id == vendor_id,
+            extract('month', Basket.sale_date) == month,
+            extract('year', Basket.sale_date) == year
+        ).all()
+        
+        return jsonify([basket.to_dict() for basket in baskets]), 200
+    
+    except Exception as e:
+        return jsonify({"error": f"Error fetching baskets: {str(e)}"}), 500
 
 if __name__ == '__main__':
     # app.run(host="0.0.0.0", port=5555, debug=True)

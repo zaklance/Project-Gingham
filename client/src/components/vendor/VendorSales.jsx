@@ -5,6 +5,7 @@ import Chart from 'chart.js/auto';
 import PulseLoader from 'react-spinners/PulseLoader';
 import VendorActiveVendor from './VendorActiveVendor';
 import { months } from '../../utils/common.js'
+import VendorExportMonthlyBasketsPDF from './VendorExportMonthlyBasketsPDF.jsx';
 
 function VendorSales() {
     const chartRef = useRef();
@@ -87,7 +88,7 @@ function VendorSales() {
                     setBaskets(data)
                     organizeByMonth(data);
                 })
-                .catch(error => console.error('Error fetching market days', error));
+                .catch(error => console.error('Error fetching baskets', error));
         }
     }, [vendorId]);
 
@@ -283,24 +284,6 @@ function VendorSales() {
         setMonthlyBaskets(monthlyData);
     };
 
-    const sortedYears = Object.entries(
-        Object.keys(monthlyBaskets)
-            .map(monthKey => {
-                const [year, month] = monthKey.split('-');
-                return { year, month, monthKey, count: monthlyBaskets[monthKey].length };
-            })
-            .sort((a, b) => {
-                return b.year - a.year || a.month - b.month;
-            })
-            .reduce((years, { year, month, monthKey, count }) => {
-                if (!years[year]) {
-                    years[year] = [];
-                }
-                years[year].push({ month, monthKey, count });
-                return years;
-            }, {})
-    ).sort(([yearA], [yearB]) => yearB - yearA);
-
     const downloadCSV = (year, month) => {
         const url = `/api/export-csv/for-vendor/baskets?vendor_id=${vendorId}&year=${year}&month=${month}`;
         window.open(url, '_blank');
@@ -310,10 +293,30 @@ function VendorSales() {
         setOpenDetail((prev) => (prev === name ? null : name));
     };
 
-    setTimeout(() => {
-        setOpenDetail(sortedYears.length > 0 ? sortedYears[0][0] : null)
-        setLoading(false)
-    }, 400);
+    useEffect(() => {
+        const sortedYears = Object.entries(
+            Object.keys(monthlyBaskets)
+                .map(monthKey => {
+                    const [year, month] = monthKey.split('-');
+                    return { year, month, monthKey, count: monthlyBaskets[monthKey].length };
+                })
+                .sort((a, b) => {
+                    return b.year - a.year || a.month - b.month;
+                })
+                .reduce((years, { year, month, monthKey, count }) => {
+                    if (!years[year]) {
+                        years[year] = [];
+                    }
+                    years[year].push({ month, monthKey, count });
+                    return years;
+                }, {})
+        ).sort(([yearA], [yearB]) => yearB - yearA);
+
+        setTimeout(() => {
+            setOpenDetail(sortedYears.length > 0 ? sortedYears[0][0] : null)
+            setLoading(false)
+        }, 400);
+    }, [monthlyBaskets]);
 
 
     return (
@@ -481,12 +484,15 @@ function VendorSales() {
                                                     <p className='text-500'>{months[parseInt(month) - 1]} {year} &emsp;</p>
                                                     <p>Baskets: {count}</p>
                                                 </div>
-                                                <button
-                                                    onClick={() => downloadCSV(year, month)}
-                                                    className="btn btn-edit"
-                                                >
-                                                    Download CSV
-                                                </button>
+                                                <div className='flex-column flex-space-between'>
+                                                    <VendorExportMonthlyBasketsPDF monthlyBaskets={monthlyBaskets} year={year} month={month} vendorId={vendorId} />
+                                                    <button
+                                                        onClick={() => downloadCSV(year, month)}
+                                                        className="btn btn-file"
+                                                    >
+                                                        Download CSV
+                                                    </button>
+                                                </div>
                                             </div>
                                         );
                                     })}
