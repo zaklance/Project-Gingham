@@ -40,10 +40,15 @@ function Cart() {
         setAmountInCart(amountInCart - 1);
     }
 	
-    let totalPrice = 0;
+    let subtotal = 0;
+    let transactionFees = 0;
+
     cartItems.forEach(item => {
-      totalPrice += item.price;
+        subtotal += item.price;
+        transactionFees += item.fee_user || 0;
     });
+
+    const totalPrice = subtotal + transactionFees;
 
     async function handleCheckout() {
         try {
@@ -56,25 +61,22 @@ function Cart() {
             if (cartItems.length === 0) {
                 throw new Error("Cart is empty.");
             }
+
+            // Fetch the Stripe publishable key from /api/config
+            console.log('Fetching Stripe publishable key...');
+            const configResponse = await fetch('/api/config');
+            if (!configResponse.ok) {
+                throw new Error(`Failed to fetch Stripe config: ${configResponse.statusText}`);
+            }
+            const { publishableKey } = await configResponse.json();
+            console.log('Received publishableKey:', publishableKey);
     
-            console.log("🛒 Cart items before checkout:", cartItems);
-    
-            const formattedCartItems = cartItems.map(item => {
-                if (item.fee_gingham === undefined) {
-                    console.warn(`⚠️ fee_gingham missing for item ID ${item.id}, check API response.`);
-                }
-                return {
-                    ...item,
-                    fee_gingham: item.fee_gingham || 0
-                };
-            });
-    
-            console.log("Formatted cart items for checkout:", formattedCartItems);
-    
-            const paymentResponse = await fetch('/api/create-payment-intent', {
+            // Create PaymentIntent
+            console.log('Sending request to create PaymentIntent...');
+                const paymentResponse = await fetch('/api/create-payment-intent', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ baskets: formattedCartItems }),
+                body: JSON.stringify({ baskets: cartItems }),
             });
     
             if (!paymentResponse.ok) {
@@ -121,10 +123,16 @@ function Cart() {
                                 </ul>
                             </div>
                             <div className="cart-sidebar flex-start m-flex-wrap">
-                                <h1 className='margin-r-16'>Total: ${totalPrice}</h1> 
-                                <button className='btn-edit' onClick={() => {globalThis.localStorage.getItem('user_id') == null ? handlePopup() : handleCheckout();}}>
-                                    Checkout
-                                </button>
+                                <ul>
+                                    <h3 className='margin-r-16'>Subtotal: ${subtotal.toFixed(2)}</h3>
+                                    <h3 className='margin-r-16'>Transaction Fees: ${transactionFees.toFixed(2)}</h3>
+                                    <h2 className='margin-r-16'>Total: ${totalPrice.toFixed(2)}</h2> 
+                                    <button className='btn-edit' onClick={() => {
+                                        globalThis.localStorage.getItem('user_id') == null ? handlePopup() : handleCheckout();
+                                    }}>
+                                        Checkout
+                                    </button>
+                                </ul>
                             </div>
                         </div>
                     </>
