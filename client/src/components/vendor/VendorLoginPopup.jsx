@@ -16,6 +16,7 @@ function VendorLogin({ handlePopup }) {
     const [signupLastName, setSignupLastName] = useState('');
     const [signupPhone, setSignupPhone] = useState('');
     const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false, pw3: false });
+    const [termsConditions, setTermsConditions] = useState(false);
     const [isValid, setIsValid] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -69,17 +70,22 @@ function VendorLogin({ handlePopup }) {
             alert("Emails do not match.");
             return;
         }
-    
         if (signupPassword !== signupConfirmPassword) {
             alert("Passwords do not match.");
             return;
         }
-
         if (!isValid) {
             alert("Password does not meet requirements.");
             return;
         }
-
+        if (!termsConditions) {
+            alert("You must agree to Terms & Conditions to signup.");
+            return;
+        }
+        if (isLoading) {
+            return;
+        }
+        
         setIsLoading(true);
         try {
             const response = await fetch('/api/vendor-signup', {
@@ -275,7 +281,24 @@ function VendorLogin({ handlePopup }) {
                                     data-testid="loader"
                                 />
                             ) : (
-                                <button className='btn-login' type="submit">Signup</button>
+                                <div className='flex-center-align flex-space-around margin-t-16 flex-gap-16'>
+                                    <button className='btn-login' type="submit">Signup</button>
+                                    <div className='flex-start flex-center-align'>
+                                        <input
+                                            type='checkbox'
+                                            name="terms"
+                                            value={termsConditions}
+                                            onChange={(event) => setTermsConditions(!termsConditions)}
+                                            className='scale-fix-120'
+                                        />
+                                        <p className="forgot-password" onClick={() => {
+                                            navigate('/terms-service');
+                                            window.location.reload();
+                                        }}>
+                                            Terms & Conditions
+                                        </p>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     </form>

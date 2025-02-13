@@ -91,10 +91,18 @@ const VendorExportMonthlyBasketsPDF = ({ monthlyBaskets, year, month, vendorId }
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const token = localStorage.getItem('vendor_jwt-token');
+
+
     useEffect(() => {
         if (year && month) {
             try {
-                fetch(`/api/export-pdf/for-vendor/baskets?vendor_id=${vendorId}&year=${year}&month=${month}`)
+                fetch(`/api/export-pdf/for-vendor/baskets?vendor_id=${vendorId}&year=${year}&month=${month}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                })
                     .then(response => response.json())
                     .then(data => {
                         const filteredData = data.filter(basket => basket.is_sold === true);

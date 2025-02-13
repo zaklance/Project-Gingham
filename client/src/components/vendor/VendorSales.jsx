@@ -146,8 +146,7 @@ function VendorSales() {
                 console.log("Checking Sale Date:", basketDate, "Allowed?", allowedDates.includes(basketDate));
                 return allowedDates.includes(basketDate);
             });
-        
-            console.log("Filtered Baskets:", filteredBaskets);
+            // console.log("Filtered Baskets:", filteredBaskets);
         
             const soldData = {};
             const unsoldData = {};
@@ -479,7 +478,13 @@ function VendorSales() {
                                         const monthKey = monthData.monthKey;
                                         const count = monthlyBaskets[monthKey].length;
                                         return (
-                                            <div key={monthKey} className="flex-start flex-center-align">
+                                            <div 
+                                                key={monthKey} 
+                                                className="flex-start flex-center-align"
+                                                style={{ display: (new Date().getFullYear() === parseInt(year) && new Date().getMonth() === parseInt(month) 
+                                                    && new Date().getDate() > 9) || (new Date().getFullYear() > parseInt(year) || (new Date().getFullYear() === parseInt(year)
+                                                    && new Date().getMonth() > parseInt(month))) ? 'flex' : 'none' }}
+                                            >
                                                 <div>
                                                     <p className='text-500'>{months[parseInt(month) - 1]} {year} &emsp;</p>
                                                     <p>Baskets: {count}</p>

@@ -1490,6 +1490,7 @@ button:active {
 }
 
 .btn-file {
+  text-align: center;
   font-weight: 200 !important;
   padding: .4em .8em !important;
   font-size: .75em !important;
@@ -3065,6 +3066,10 @@ select:hover {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
+
+  .title-med, .font-gingham-large {
+    font-size: 2.8em;
+  }
 }
 
 
@@ -3323,6 +3328,10 @@ select:hover {
     grid-template-columns: repeat(1, 1fr);
     gap: 1rem;
   }
+
+  .title-med, .font-gingham-large {
+    font-size: 2.4em;
+  }
 }
 
 .modal {
@@ -3357,5 +3366,9 @@ select:hover {
     border-radius: 8px;
     top: -5px;
     right: 96%;
+  }
+  
+  .title-med, .font-gingham-large {
+    font-size: 2.2em;
   }
 }

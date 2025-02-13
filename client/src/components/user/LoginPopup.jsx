@@ -85,22 +85,18 @@ function Login({ handlePopup }) {
             alert("Emails do not match.");
             return;
         }
-    
         if (signupPassword !== signupConfirmPassword) {
             alert("Passwords do not match.");
             return;
         }
-    
         if (!isValid) {
             alert("Password does not meet requirements.");
             return;
         }
-    
         if (!termsConditions) {
             alert("You must agree to Terms & Conditions to signup.");
             return;
         }
-    
         if (isLoading) {
             return;
         }

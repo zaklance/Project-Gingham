@@ -163,13 +163,29 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
 
     const handleToggleRole = async (member, currentRole) => {
         let newRole;
-        if (currentRole == 1) {
-            newRole = 2;
-        } else if (currentRole == 2) {
-            newRole = 1;
+        if (vendorUserData.vendor_role[vendorUserData.active_vendor] === 0) {
+            if (currentRole == 1) {
+                newRole = 0;
+            } else if (currentRole == 2) {
+                newRole = 1;
+            } else if (currentRole == 0) {
+                newRole = 2;
+            } else {
+                console.error('Invalid role');
+                return;
+            }
         } else {
-            console.error('Invalid role');
-            return;
+            if (currentRole == 1) {
+                newRole = 2;
+            } else if (currentRole == 2) {
+                newRole = 1;
+            } else {
+                console.error('Invalid role');
+                toast.error("Cannot change owner's role.", {
+                    autoClose: 4000,
+                });
+                return;
+            }
         }
     
         if (!member) {
@@ -227,7 +243,7 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
             });
         }
     };
-    
+
     
     return (
         <>
@@ -296,11 +312,27 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                                         {member.id !== vendorUserData.id && (
                                             <>
                                                 <div className='flex-end flex-center-align'>
-                                                    <button className="btn btn-small btn-white margin-r-8" 
-                                                        onClick={() => handleToggleRole(member, member.vendor_role[vendorId])}>
-                                                            Switch to {member.vendor_role[vendorId] === 1 ? 'Employee' : 'Admin'}
-                                                    </button>
-                                                    <button className="btn btn-small btn-unreport" onClick={() => handleDeleteTeamMember(member.id)} > Remove from Team</button>
+                                                    <>
+                                                        {vendorUserData.vendor_role[vendorId] > 0 && member.vendor_role[vendorId] !== 0 ? (
+                                                            <>
+                                                                <button className="btn btn-small btn-white margin-r-8" 
+                                                                    onClick={() => handleToggleRole(member, member.vendor_role[vendorId])}>
+                                                                        Switch to {member.vendor_role[vendorId] === 1 ? 'Employee' : 'Admin'}
+                                                                </button>
+                                                                <button className="btn btn-small btn-unreport" onClick={() => handleDeleteTeamMember(member.id)} > Remove from Team</button>
+                                                            </>
+                                                        ) : vendorUserData.vendor_role[vendorId] === 0 ? (
+                                                            <>
+                                                                <button className="btn btn-small btn-white margin-r-8" 
+                                                                    onClick={() => handleToggleRole(member, member.vendor_role[vendorId])}>
+                                                                        Switch to {member.vendor_role[vendorId] === 1 ? 'Owner' : member.vendor_role[vendorId] === 0 ? 'Employee' : 'Admin'}
+                                                                </button>
+                                                                <button className="btn btn-small btn-unreport" onClick={() => handleDeleteTeamMember(member.id)} > Remove from Team</button>
+                                                            </>
+                                                        ) : (
+                                                            null
+                                                        )}
+                                                    </>
                                                 </div> 
                                             </>
                                         )}
