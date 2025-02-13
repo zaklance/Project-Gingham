@@ -638,7 +638,7 @@ class Basket(db.Model, SerializerMixin):
         if not isinstance(price, (int, float)) or price < 0:
             raise ValueError(f"{key} must be a non-negative integer")
         self.fee_gingham = round(min(price * 0.2, 3), 2)
-        self.fee_user = round(min(price * 0.029, 3), 2) + .30
+        self.fee_user = round(min(price * 0.029, 3) + .30, 2)
         return price
     
     @validates('value')
