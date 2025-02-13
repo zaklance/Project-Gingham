@@ -2560,7 +2560,7 @@ def get_vendor_sales_history():
                     "pickup_end": basket.pickup_end.strftime('%H:%M'),
                     "total_baskets": 0,
                     "sold_baskets": 0,
-                    "fee_gingham": basket.fee_gingham,
+                    "fee_vendor": basket.fee_vendor,
                     "is_refunded": basket.is_refunded
                 }
 
@@ -3055,7 +3055,7 @@ def create_payment_intent():
 
         # Calculate total amounts
         total_price = sum(basket['price'] for basket in data['baskets'])
-        total_fee_gingham = sum(basket['fee_gingham'] for basket in data['baskets'])
+        total_fee_vendor = sum(basket['fee_vendor'] for basket in data['baskets'])
         total_fee_user = sum(basket['fee_user'] for basket in data['baskets'])
 
         vendor_id = data['baskets'][0]['vendor_id']
@@ -3064,7 +3064,7 @@ def create_payment_intent():
         if not vendor_account_id:
             return jsonify({'error': {'message': 'Vendor Stripe account not found. Please update in admin panel.'}}), 400
 
-        total_application_fee = total_fee_gingham + total_fee_user
+        total_application_fee = total_fee_vendor + total_fee_user
 
         payment_intent = stripe.PaymentIntent.create(
             currency='usd',
@@ -4353,14 +4353,14 @@ def export_csv_baskets():
         csv_data = []
 
         headers = ["id", "vendor_id", "market_day_id", "sale_date", "pickup_start", "pickup_end", 
-                   "user_id", "is_sold", "is_grabbed", "is_refunded", "price", "value", "fee_gingham"]
+                   "user_id", "is_sold", "is_grabbed", "is_refunded", "price", "value", "fee_vendor"]
 
         for basket in baskets:
             csv_data.append([
                 basket.id, basket.vendor_id, basket.market_day_id, basket.sale_date, 
                 basket.pickup_start, basket.pickup_end, basket.user_id, 
                 basket.is_sold, basket.is_grabbed, basket.is_refunded, basket.price, 
-                basket.value, basket.fee_gingham
+                basket.value, basket.fee_vendor
             ])
 
         output = StringIO()
@@ -4442,7 +4442,7 @@ def export_csv_vendor_baskets():
             basket.pickup_end.strftime('%H:%M') if basket.pickup_end else '',
             basket.price,
             basket.value,
-            basket.fee_gingham,
+            basket.fee_vendor,
             'Yes' if basket.is_sold else 'No',
             'Yes' if basket.is_grabbed else 'No',
             'Yes' if basket.is_refunded else 'No'
