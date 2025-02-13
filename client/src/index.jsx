@@ -12,7 +12,7 @@ import TermsOfService from './components/TermsOfService.jsx';
 import PrivacyPolicy from './components/PrivacyPolicy.jsx';
 import PasswordResetRequest from './components/PasswordResetRequest.jsx';
 import PasswordReset from './components/PasswordReset.jsx';
-import EmailVerification from './components/EmailVerification.jsx';
+// import EmailVerification from './components/EmailVerification.jsx';
 import ErrorPage from './components/ErrorPage.jsx';
 
 // user routes
@@ -28,6 +28,7 @@ import Profile from './components/user/Profile.jsx';
 import Vendors from './components/user/Vendors.jsx';
 import VendorDetail from './components/user/VendorDetail.jsx';
 import UserFAQs from './components/user/UserFAQs.jsx';
+import UserEmailVerification from './components/user/UserEmailVerification.jsx';
 import Logout from './components/user/Logout.jsx';
 
 // vendor routes
@@ -40,6 +41,7 @@ import VendorScan from './components/vendor/VendorScan.jsx';
 import VendorProfile from './components/vendor/VendorProfile.jsx';
 import VendorHelpCenter from './components/vendor/VendorHelpCenter.jsx';
 import VendorLoginPopup from './components/vendor/VendorLoginPopup.jsx';
+import VendorEmailVerification from './components/vendor/VendorEmailVerification.jsx';
 
 // admin routes
 import AdminHome from './components/admin/AdminHome.jsx';
@@ -54,6 +56,7 @@ import AdminEmail from './components/admin/AdminEmail.jsx';
 import AdminBlog from './components/admin/AdminBlog.jsx';
 import AdminReport from './components/admin/AdminReport.jsx';
 import AdminStats from './components/admin/AdminStats.jsx';
+import AdminEmailVerification from './components/admin/AdminEmailVerification.jsx';
 import AdminFAQs from './components/admin/AdminFAQs.jsx';
 
 const UserRoute = ({ children }) => {
@@ -230,7 +233,7 @@ const router = createBrowserRouter([
                     { path: "return", element: <Return />},
                     { path: "password-reset-request", element: <PasswordResetRequest user={'user'} /> },
                     { path: "password-reset/:token", element: <PasswordReset user={'user'} path={'/'} /> },
-                    { path: "confirm-email/:token", element: <EmailVerification user={'user'} path={'/'} /> },
+                    { path: "confirm-email/:token", element: <UserEmailVerification user={'user'} path={'/'} /> },
                 ],
             },
             { path: "vendor", element: <VendorHome /> },
@@ -248,7 +251,7 @@ const router = createBrowserRouter([
                     { path: "logout", element: <VendorLogout />},
                     { path: "password-reset-request", element: <PasswordResetRequest user={'vendor'} /> },
                     { path: "password-reset/:token", element: <PasswordReset user={'vendor'} path={'/vendor'} /> },
-                    { path: "confirm-email/:token", element: <EmailVerification user={'vendor'} path={'/vendor'} /> },
+                    { path: "confirm-email/:token", element: <VendorEmailVerification user={'vendor'} path={'/vendor'} /> },
                 ],
             },
             { path: "admin", element: <AdminHome /> },
@@ -269,7 +272,7 @@ const router = createBrowserRouter([
                     { path: "logout", element: <AdminLogout /> },
                     { path: "password-reset-request", element: <PasswordResetRequest user={'admin'} /> },
                     { path: "password-reset/:token", element: <PasswordReset user={'admin'} path={'/admin'} /> },
-                    { path: "confirm-email/:token", element: <EmailVerification user={'admin'} path={'/admin'} /> },
+                    { path: "confirm-email/:token", element: <AdminEmailVerification user={'admin'} path={'/admin'} /> },
                 ],
             },
         ],
