@@ -1004,7 +1004,8 @@ def run():
     db.session.add_all(market_day_list)
     db.session.commit()
 
-
+    def generate_fake_stripe_account():
+        return f"acct_{fake.bothify(text='##########????', letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ')}"
 
     vendors = []
     
@@ -1035,7 +1036,6 @@ def run():
         'Vendor-Slider-3-scaled.jpg'
     ]
 
-
     for i in range(150):
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
         city = str(fake.city())
@@ -1043,6 +1043,7 @@ def run():
         products = sample(range(1, 34), randint(1, 3))
         bio = str(fake.paragraph(nb_sentences=rev_len))
         image = choice(images) if randint(1, 8) > 1 else None
+        stripe_account_id = generate_fake_stripe_account()
 
         v = Vendor(
             name=name,
@@ -1051,7 +1052,8 @@ def run():
             products=products,
             bio=bio,
             image=image,
-            website='www.google.com/'
+            website='www.google.com/',
+            stripe_account_id=stripe_account_id
         )
         vendors.append(v)
 

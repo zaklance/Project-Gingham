@@ -270,6 +270,7 @@ class Vendor(db.Model, SerializerMixin):
     website = db.Column(db.String, nullable=True)
     image = db.Column(db.String)
     image_default = db.Column(db.String, nullable=False, default=random_vendor)
+    stripe_account_id = db.Column(db.String, unique=True, nullable=True)
 
     # Relationships
     reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic', cascade="all, delete")
@@ -645,6 +646,21 @@ class Basket(db.Model, SerializerMixin):
         if not isinstance(value, (int, float)) or value < 0:
             raise ValueError(f"{key} must be a non-negative integer")
         return value
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'vendor_id': self.vendor_id,
+            'price': self.price,
+            'fee_gingham': self.fee_gingham,
+            'pickup_start': str(self.pickup_start),
+            'pickup_end': str(self.pickup_end),
+            'sale_date': str(self.sale_date),
+            'market_day_id': self.market_day_id,
+            'vendor_name': self.vendor.name if self.vendor else None,
+            'location': self.market_day.markets.location if self.market_day else None,
+            'market_id': self.market_day.markets.id if self.market_day else None
+        }
 
     def __repr__(self):
         return (f"<Basket ID: {self.id}, Vendor: {self.vendor.name}, "

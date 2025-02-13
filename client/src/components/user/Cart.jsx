@@ -47,30 +47,34 @@ function Cart() {
 
     async function handleCheckout() {
         try {
-            // Get user ID from localStorage
             const userId = globalThis.localStorage.getItem('user_id');
             if (!userId) {
                 console.error("User ID not found in localStorage.");
                 throw new Error("User is not logged in.");
             }
     
-            // Fetch the Stripe publishable key from /api/config
-            console.log('Fetching Stripe publishable key...');
-            const configResponse = await fetch('/api/config');
-            if (!configResponse.ok) {
-                throw new Error(`Failed to fetch Stripe config: ${configResponse.statusText}`);
+            if (cartItems.length === 0) {
+                throw new Error("Cart is empty.");
             }
-            const { publishableKey } = await configResponse.json();
-            console.log('Received publishableKey:', publishableKey);
     
-            // Create PaymentIntent
-            console.log('Sending request to create PaymentIntent...');
+            console.log("🛒 Cart items before checkout:", cartItems);
+    
+            const formattedCartItems = cartItems.map(item => {
+                if (item.fee_gingham === undefined) {
+                    console.warn(`⚠️ fee_gingham missing for item ID ${item.id}, check API response.`);
+                }
+                return {
+                    ...item,
+                    fee_gingham: item.fee_gingham || 0
+                };
+            });
+    
+            console.log("Formatted cart items for checkout:", formattedCartItems);
+    
             const paymentResponse = await fetch('/api/create-payment-intent', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ total_price: totalPrice }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ baskets: formattedCartItems }),
             });
     
             if (!paymentResponse.ok) {
@@ -80,16 +84,9 @@ function Cart() {
             }
     
             const { clientSecret } = await paymentResponse.json();
-            console.log('Received clientSecret:', clientSecret);
-      
-            console.log('Navigating to payment page...');
+    
             navigate('/user/payment', {
-                state: {
-                    clientSecret,
-                    totalPrice,
-                    cartItems,
-                    amountInCart
-                },
+                state: { clientSecret, totalPrice, cartItems, amountInCart },
             });
         } catch (error) {
             console.error('Error during checkout:', error);
