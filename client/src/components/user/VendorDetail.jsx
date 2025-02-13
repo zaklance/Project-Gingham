@@ -118,6 +118,8 @@ function VendorDetail() {
                 vendor_name: vendor.name,
                 vendor_id: vendor.id,
                 market_id: marketDay.markets.id,
+                fee_gingham: basketInCart.fee_gingham,
+                fee_user: basketInCart.fee_user,
                 location: marketDay.markets.name,
                 id: basketInCart.id,
                 price: basketInCart.price,

@@ -215,8 +215,6 @@ function MarketDetail ({ match }) {
         setProductList(filteredProducts);
     }, [filteredProducts]);  
 
-
-
     // Gets rid of duplicate vendors (from different market_days)
     const uniqueFilteredVendorsList = [...new Set(filteredVendorsList)];
 
@@ -230,13 +228,15 @@ function MarketDetail ({ match }) {
                 vendor_name: vendorName,
                 vendor_id: vendorId,
                 market_id: market.id,
+                fee_gingham: basketInCart.fee_gingham,
+                fee_user: basketInCart.fee_user,
                 location: market.name,
                 id: basketInCart.id,
                 price: basketInCart.price,
                 pickup_start: basketInCart.pickup_start,
                 pickup_end: basketInCart.pickup_end,
-                day_of_week: new Date(basketInCart.sale_date).getDay(),
-                sale_date: new Date(basketInCart.sale_date)
+                day_of_week: new Date(`${basketInCart.sale_date}T00:00:00`).getDay(),
+                sale_date: basketInCart.sale_date
             }];
             setCartItems(updatedCartItems);
             setAmountInCart(updatedCartItems.length);
