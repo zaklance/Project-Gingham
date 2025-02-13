@@ -46,6 +46,7 @@ function VendorProfile () {
     const [changeConfirmPassword, setChangeConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false, pw3: false });
     const [isValid, setIsValid] = useState(false);
+    const [isSendingEmail, setIsSendingEmail] = useState(false);
 
     const [allVendorMarkets, setAllVendorMarkets] = useState([]);
     const [allMarketDays, setAllMarketDays] = useState([]);
@@ -154,43 +155,48 @@ function VendorProfile () {
     }, [vendorId]);
 
     const handleSaveEmail = async () => {
-        if (changeEmail !== changeConfirmEmail) {
-            toast.error('Emails do not match.', {
-                autoClose: 4000,
-            });
-            return;
-        }
-        try {
-            const response = await fetch(`/api/users/${id}`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: changeEmail
-                })
-            });
-            if (response.ok) {
-                const updatedData = await response.json();
-                setChangeEmail('')
-                setChangeConfirmEmail('')
-                setEmailMode(false);
-                toast.warning('Email will not update until you check your email and click the verify link.', {
-                    autoClose: 8000,
+            if (changeEmail !== changeConfirmEmail) {
+                toast.error('Emails do not match.', {
+                    autoClose: 4000,
                 });
-            } else {
-                console.log('Failed to save changes');
-                console.log('Response status:', response.status);
-                console.log('Response text:', await response.text());
+                return;
             }
-        } catch (error) {
-            // console.error('Error saving changes:', error);
-            toast.error(`Error saving changes: ${error}`, {
-                autoClose: 5000,
-            });
-        }
-    };
+            setIsSendingEmail(true);
+        
+            try {
+                const response = await fetch(`/api/change-vendor-email`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        vendor_id: id,
+                        email: changeEmail,
+                    }),
+                });
+        
+                if (response.ok) {
+                    setChangeEmail('');
+                    setChangeConfirmEmail('');
+                    setEmailMode(false);
+                    toast.warning('Email will not update until you check your email and click the verify link.', {
+                        autoClose: 8000,
+                    });
+                } else {
+                    console.log('Failed to save changes');
+                    console.log('Response status:', response.status);
+                    console.log('Response text:', await response.text());
+                }
+            } catch (error) {
+                // console.error('Error saving changes:', error);
+                toast.error(`Error saving changes: ${error}`, {
+                    autoClose: 5000,
+                });
+            } finally {
+                setIsSendingEmail(false);
+            }
+        };
 
     const handleSavePassword = async () => {
         if (changePassword !== changeConfirmPassword) {
@@ -349,6 +355,8 @@ function VendorProfile () {
             console.error('Error saving changes:', error);
         }
     };
+
+    
 
     useEffect(() => {
         const fetchVendorData = async () => {
