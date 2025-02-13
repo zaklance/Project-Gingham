@@ -228,7 +228,7 @@ function MarketDetail ({ match }) {
                 vendor_name: vendorName,
                 vendor_id: vendorId,
                 market_id: market.id,
-                fee_gingham: basketInCart.fee_gingham,
+                fee_vendor: basketInCart.fee_vendor,
                 fee_user: basketInCart.fee_user,
                 location: market.name,
                 id: basketInCart.id,

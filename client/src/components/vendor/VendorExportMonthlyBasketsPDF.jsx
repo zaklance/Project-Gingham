@@ -58,8 +58,8 @@ const ReceiptDocument = ({ filteredBaskets, year, month }) => {
                             <View style={styles.rowItem}>
                                 <Text>Grabbed: {item.is_grabbed ? 'Yes' : 'No'}</Text>
                                 <Text>Price: ${item.price.toFixed(2)}</Text>
-                                <Text>Fee: ${item.fee_gingham.toFixed(2)}</Text>
-                                <Text>Payout: ${item.is_refunded ? 'Refunded' : item.price - item.fee_gingham.toFixed(2)}</Text>
+                                <Text>Fee: ${item.fee_vendor.toFixed(2)}</Text>
+                                <Text>Payout: ${item.is_refunded ? 'Refunded' : item.price - item.fee_vendor.toFixed(2)}</Text>
                             </View>
                         </View>
                     ))
@@ -71,7 +71,7 @@ const ReceiptDocument = ({ filteredBaskets, year, month }) => {
                     <Text>Total Payout: </Text>
                     <Text>
                         ${filteredBaskets
-                            .reduce((acc, item) => acc + (item.is_refunded ? 0 : item.price - item.fee_gingham), 0)
+                            .reduce((acc, item) => acc + (item.is_refunded ? 0 : item.price - item.fee_vendor), 0)
                             .toFixed(2)}
                     </Text>                </Text>
                 <View style={styles.footer} fixed>

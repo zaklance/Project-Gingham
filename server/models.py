@@ -598,7 +598,7 @@ class Basket(db.Model, SerializerMixin):
     is_refunded = db.Column(db.Boolean, nullable=False, default=False)
     price = db.Column(db.Float, nullable=False)
     value = db.Column(db.Float, nullable=True)
-    fee_gingham = db.Column(db.Float, nullable=False, default=0)
+    fee_vendor = db.Column(db.Float, nullable=False, default=0)
     fee_user = db.Column(db.Float, nullable=False, default=0)
 
     vendor = db.relationship('Vendor', lazy='joined')
@@ -637,7 +637,7 @@ class Basket(db.Model, SerializerMixin):
     def set_fees(self, key, price):
         if not isinstance(price, (int, float)) or price < 0:
             raise ValueError(f"{key} must be a non-negative integer")
-        self.fee_gingham = round(min(price * 0.2, 3), 2)
+        self.fee_vendor = round(min(price * 0.2, 3), 2)
         self.fee_user = round(min(price * 0.029, 3) + .30, 2)
         return price
     
