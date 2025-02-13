@@ -1004,8 +1004,7 @@ def run():
     db.session.add_all(market_day_list)
     db.session.commit()
 
-    def generate_fake_stripe_account():
-        return f"acct_{fake.bothify(text='##########????', letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ')}"
+    test_stripe_account="acct_1Qs7KP08nIrce1x4"
 
     vendors = []
     
@@ -1043,7 +1042,7 @@ def run():
         products = sample(range(1, 34), randint(1, 3))
         bio = str(fake.paragraph(nb_sentences=rev_len))
         image = choice(images) if randint(1, 8) > 1 else None
-        stripe_account_id = generate_fake_stripe_account()
+        stripe_account_id = test_stripe_account
 
         v = Vendor(
             name=name,
@@ -1053,7 +1052,7 @@ def run():
             bio=bio,
             image=image,
             website='www.google.com/',
-            stripe_account_id=stripe_account_id
+            stripe_account_id=test_stripe_account
         )
         vendors.append(v)
 
