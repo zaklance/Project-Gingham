@@ -2991,8 +2991,10 @@ def create_payment_intent():
         if not data or 'baskets' not in data:
             return jsonify({'error': {'message': 'Missing baskets data.'}}), 400
 
+        # Calculate total amounts
         total_price = sum(basket['price'] for basket in data['baskets'])
-        total_fee = sum(basket['fee_gingham'] for basket in data['baskets'])  
+        total_fee_gingham = sum(basket['fee_gingham'] for basket in data['baskets'])
+        total_fee_user = sum(basket['fee_user'] for basket in data['baskets'])
 
         vendor_id = data['baskets'][0]['vendor_id']
         vendor_account_id = get_vendor_stripe_account(vendor_id)
@@ -3000,12 +3002,14 @@ def create_payment_intent():
         if not vendor_account_id:
             return jsonify({'error': {'message': 'Vendor Stripe account not found. Please update in admin panel.'}}), 400
 
+        total_application_fee = total_fee_gingham + total_fee_user
+
         payment_intent = stripe.PaymentIntent.create(
             currency='usd',
-            amount=int(total_price * 100),
+            amount=int((total_price + total_fee_user) * 100),
             automatic_payment_methods={'enabled': True},
             transfer_data={"destination": vendor_account_id},
-            application_fee_amount=int(total_fee * 100)
+            application_fee_amount=int(total_application_fee * 100),  # Platform fee
         )
 
         return jsonify({'clientSecret': payment_intent['client_secret']}), 200
@@ -3015,6 +3019,8 @@ def create_payment_intent():
 
     except Exception as e:
         return jsonify({'error': {'message': 'An unexpected error occurred.'}}), 500
+    
+# Need to create a distribute-payments route so that the payments by vendor_id/stripe_account_id is separated when it goes to stripe
 
 # Password reset for User
 @app.route('/api/user/password-reset-request', methods=['POST'])

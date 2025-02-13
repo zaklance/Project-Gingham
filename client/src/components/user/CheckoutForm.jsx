@@ -124,6 +124,26 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 }));
     
                 console.log("Items marked as sold!");
+
+                // console.log("📤 Sending distribute-payments request:", { 
+                //     payment_intent_id: paymentIntent?.id, 
+                //     baskets: cartItems 
+                // });
+
+                // const distributeResponse = await fetch('/api/distribute-payments', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ 
+                //         payment_intent_id: paymentIntent?.id, 
+                //         baskets: cartItems 
+                //     }),
+                // });
+
+                // if (!distributeResponse.ok) {
+                //     throw new Error(`Failed to distribute payments: ${distributeResponse.statusText}`);
+                // }
+
+                // console.log("Vendor payouts successful!");
     
                 // Generate QR codes
                 if (cartItems.length > 0) {
