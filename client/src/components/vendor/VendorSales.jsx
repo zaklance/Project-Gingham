@@ -5,6 +5,7 @@ import Chart from 'chart.js/auto';
 import PulseLoader from 'react-spinners/PulseLoader';
 import VendorActiveVendor from './VendorActiveVendor';
 import { months } from '../../utils/common.js'
+import VendorExportMonthlyBasketsPDF from './VendorExportMonthlyBasketsPDF.jsx';
 
 function VendorSales() {
     const chartRef = useRef();
@@ -87,7 +88,7 @@ function VendorSales() {
                     setBaskets(data)
                     organizeByMonth(data);
                 })
-                .catch(error => console.error('Error fetching market days', error));
+                .catch(error => console.error('Error fetching baskets', error));
         }
     }, [vendorId]);
 
@@ -483,12 +484,15 @@ function VendorSales() {
                                                     <p className='text-500'>{months[parseInt(month) - 1]} {year} &emsp;</p>
                                                     <p>Baskets: {count}</p>
                                                 </div>
-                                                <button
-                                                    onClick={() => downloadCSV(year, month)}
-                                                    className="btn btn-edit"
-                                                >
-                                                    Download CSV
-                                                </button>
+                                                <div className='flex-column flex-space-between'>
+                                                    <VendorExportMonthlyBasketsPDF monthlyBaskets={monthlyBaskets} year={year} month={month} vendorId={vendorId} />
+                                                    <button
+                                                        onClick={() => downloadCSV(year, month)}
+                                                        className="btn btn-file"
+                                                    >
+                                                        Download CSV
+                                                    </button>
+                                                </div>
                                             </div>
                                         );
                                     })}
