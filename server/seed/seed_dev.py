@@ -1315,9 +1315,9 @@ def run():
     #     first_name="Zak",
     #     last_name="Lance",
     #     phone="2095553880",
-    #     active_vendor=2,
-    #     vendor_id={2:2},
-    #     vendor_role={2:1}
+    #     active_vendor=1,
+    #     vendor_id={1:1, 2:2},
+    #     vendor_role={1:0, 2:1}
     # )
     # vendor_user_settings_demo_2 = SettingsVendor(
     #     vendor_user_id=52
@@ -1553,7 +1553,7 @@ def run():
     bsk3 = Basket(
         vendor_id=1,
         market_day_id=1,
-        sale_date=date(2024, 12, 15),
+        sale_date=date(2024, 10, 15),
         pickup_start=time(14, 0, 0),
         pickup_end=time(18, 0, 0),
         user_id=1,
@@ -1567,7 +1567,7 @@ def run():
     bsk4 = Basket(
         vendor_id=1,
         market_day_id=1,
-        sale_date=date(2025, 1, 15),
+        sale_date=date(2024, 11, 15),
         pickup_start=time(14, 0, 0),
         pickup_end=time(18, 0, 0),
         user_id=1,
@@ -1581,7 +1581,7 @@ def run():
     bsk5 = Basket(
         vendor_id=1,
         market_day_id=1,
-        sale_date=date(2025, 3, 15),
+        sale_date=date(2024, 12, 15),
         pickup_start=time(14, 0, 0),
         pickup_end=time(18, 0, 0),
         user_id=1,
@@ -1595,7 +1595,7 @@ def run():
     bsk6 = Basket(
         vendor_id=1,
         market_day_id=1,
-        sale_date=date(2025, 4, 15),
+        sale_date=date(2025, 1, 15),
         pickup_start=time(14, 0, 0),
         pickup_end=time(18, 0, 0),
         user_id=1,
