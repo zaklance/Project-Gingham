@@ -209,7 +209,7 @@ const router = createBrowserRouter([
             { path: "/", element: <Home /> },
             { path: "about", element: <About /> },
             { path: "contact", element: <Contact /> },
-            { path: "terms-of-service", element: <TermsOfService /> },
+            { path: "terms-service", element: <TermsOfService /> },
             { path: "privacy-policy", element: <PrivacyPolicy /> },
             {
                 path: "user",

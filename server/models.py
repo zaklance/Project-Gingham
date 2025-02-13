@@ -598,6 +598,7 @@ class Basket(db.Model, SerializerMixin):
     price = db.Column(db.Float, nullable=False)
     value = db.Column(db.Float, nullable=True)
     fee_gingham = db.Column(db.Float, nullable=False, default=0)
+    fee_user = db.Column(db.Float, nullable=False, default=0)
 
     vendor = db.relationship('Vendor', lazy='joined')
     market_day = db.relationship('MarketDay', lazy='joined')
@@ -632,10 +633,11 @@ class Basket(db.Model, SerializerMixin):
         return value
     
     @validates('price')
-    def set_fee_gingham(self, key, price):
+    def set_fees(self, key, price):
         if not isinstance(price, (int, float)) or price < 0:
             raise ValueError(f"{key} must be a non-negative integer")
         self.fee_gingham = round(min(price * 0.2, 3), 2)
+        self.fee_user = round(min(price * 0.029, 3), 2) + .30
         return price
     
     @validates('value')
