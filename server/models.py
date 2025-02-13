@@ -646,21 +646,6 @@ class Basket(db.Model, SerializerMixin):
         if not isinstance(value, (int, float)) or value < 0:
             raise ValueError(f"{key} must be a non-negative integer")
         return value
-    
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'vendor_id': self.vendor_id,
-            'price': self.price,
-            'fee_gingham': self.fee_gingham,
-            'pickup_start': str(self.pickup_start),
-            'pickup_end': str(self.pickup_end),
-            'sale_date': str(self.sale_date),
-            'market_day_id': self.market_day_id,
-            'vendor_name': self.vendor.name if self.vendor else None,
-            'location': self.market_day.markets.location if self.market_day else None,
-            'market_id': self.market_day.markets.id if self.market_day else None
-        }
 
     def __repr__(self):
         return (f"<Basket ID: {self.id}, Vendor: {self.vendor.name}, "
