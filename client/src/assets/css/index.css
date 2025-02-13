@@ -444,6 +444,10 @@ article {
   transition: 0.4s;
 }
 
+.scale-fix-120 {
+  scale: 125%
+}
+
 .column-2 {
   column-count: 2;
 }

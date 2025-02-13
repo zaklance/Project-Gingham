@@ -480,7 +480,7 @@ function VendorSales() {
                                         const count = monthlyBaskets[monthKey].length;
                                         return (
                                             <div key={monthKey} className="flex-start flex-center-align">
-                                                <div className='margin-r-16'>
+                                                <div>
                                                     <p className='text-500'>{months[parseInt(month) - 1]} {year} &emsp;</p>
                                                     <p>Baskets: {count}</p>
                                                 </div>

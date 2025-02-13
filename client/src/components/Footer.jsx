@@ -61,7 +61,7 @@ function Footer() {
                     </ul>
                     <ul className='ul-footer'>
                         <li className='footer-li'>
-                            <NavLink to="/terms-of-service">Terms of Service</NavLink>
+                            <NavLink to="/terms-service">Terms & Conditions</NavLink>
                         </li>
                         <li className='footer-li'>
                             <NavLink to="/privacy-policy">Privacy Policy</NavLink>
