@@ -950,7 +950,7 @@ def run():
             password="lol",
             first_name="Ham-man",
             last_name="Gingy",
-            phone="2095553880",
+            phone="+12095053880",
             admin_role=0
         ),
         SettingsAdmin(
@@ -961,7 +961,7 @@ def run():
             password="lol",
             first_name="Zak",
             last_name="Wosewick",
-            phone="0000000000",
+            phone="+10000000000",
             admin_role=1
         ),
         SettingsAdmin(
@@ -972,7 +972,7 @@ def run():
             password="lol",
             first_name="Sand",
             last_name="Man",
-            phone="0000000000",
+            phone="+10000000000",
             admin_role=1
         ),
         SettingsAdmin(
@@ -983,7 +983,7 @@ def run():
             password="lol",
             first_name="Vinh",
             last_name="Cent",
-            phone="0000000000",
+            phone="+10000000000",
             admin_role=1
         ),
         SettingsAdmin(

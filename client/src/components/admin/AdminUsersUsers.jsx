@@ -3,6 +3,8 @@ import { formatPhoneNumber } from '../../utils/helpers';
 import { avatars_default, states, status } from '../../utils/common';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 
 const AdminUsersUsers = () => {
     const [users, setUsers] = useState([]);
@@ -219,6 +221,13 @@ const AdminUsersUsers = () => {
         });
     };
 
+    const handlePhoneInputChange = event => {
+        setTempUserData({
+            ...tempUserData,
+            ['phone']: event
+        });
+    };
+
     const handleEditToggle = () => {
         if (!editMode) {
             setTempUserData({
@@ -300,12 +309,22 @@ const AdminUsersUsers = () => {
                             </div>
                             <div className="form-group">
                                 <label>Phone:</label>
-                                <input
+                                <PhoneInput
+                                    className='input-phone margin-l-8'
+                                    countryCallingCodeEditable={false}
+                                    withCountryCallingCode
+                                    country='US'
+                                    defaultCountry='US'
+                                    placeholder="enter your phone number"
+                                    value={tempUserData.phone || ''}
+                                    onChange={(event) => handlePhoneInputChange(event)}
+                                />
+                                {/* <input
                                     type="tel"
                                     name="phone"
                                     value={tempUserData ? formatPhoneNumber(tempUserData.phone) : ''}
                                     onChange={handleInputChange}
-                                />
+                                /> */}
                             </div>
                             <div className="form-address">
                                 <label>Address:</label>

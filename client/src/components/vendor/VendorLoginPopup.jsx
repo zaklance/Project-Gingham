@@ -4,6 +4,8 @@ import PasswordStrengthBar from 'react-password-strength-bar';
 import PasswordChecklist from "react-password-checklist"
 import { formatPhoneNumber } from '../../utils/helpers';
 import PulseLoader from 'react-spinners/PulseLoader';
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 
 function VendorLogin({ handlePopup }) {
     const [loginEmail, setLoginEmail] = useState('');
@@ -263,13 +265,22 @@ function VendorLogin({ handlePopup }) {
                         </div>
                         <div className="form-group form-login">
                             <label>Phone:</label>
-                            <input 
+                            <PhoneInput
+                                className='input-phone margin-l-8'
+                                countryCallingCodeEditable={false}
+                                withCountryCallingCode
+                                country='US'
+                                placeholder="enter your phone number"
+                                value={signupPhone}
+                                onChange={(event) => setSignupPhone(event)}
+                            />
+                            {/* <input 
                                 type="tel"
                                 value={signupPhone}
                                 placeholder='enter your phone number'
                                 onChange={(event => setSignupPhone(formatPhoneNumber(event.target.value)))}
                                 required
-                            />
+                            /> */}
                         </div>
                         <div className='flex-center margin-t-16'>
                             {isLoading ? (
