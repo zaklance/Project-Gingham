@@ -1776,6 +1776,10 @@ link {
   min-width: 280px;
 }
 
+.input-phone input {
+  min-width: 236px !important;
+}
+
 .form-contact label{
   background-color: white;
   color: #3b4752;
@@ -3332,18 +3336,6 @@ select:hover {
   .title-med, .font-gingham-large {
     font-size: 2.4em;
   }
-}
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* Dark background overlay */
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 

@@ -15,6 +15,8 @@ import VendorTeamRequest from './VendorTeamRequest';
 import VendorActiveVendor from './VendorActiveVendor';
 import VendorTeamLeave from './VendorTeamLeave';
 import { toast } from 'react-toastify';
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 
 function VendorProfile () {
     const { id } = useParams();
@@ -305,6 +307,13 @@ function VendorProfile () {
         setTempVendorUserData({
             ...tempVendorUserData,
             [name]: value,
+        });
+    };
+
+    const handlePhoneInputChange = event => {
+        setTempVendorUserData({
+            ...tempVendorUserData,
+            ['phone']: event
         });
     };
 
@@ -749,12 +758,22 @@ function VendorProfile () {
                                         </div>
                                         <div className='form-group flex-form'>
                                             <label>Phone Number:</label>
-                                            <input
+                                            <PhoneInput
+                                                className='input-phone margin-l-8'
+                                                countryCallingCodeEditable={false}
+                                                withCountryCallingCode
+                                                country='US'
+                                                defaultCountry='US'
+                                                placeholder="enter your phone number"
+                                                value={tempVendorUserData.phone || ''}
+                                                onChange={(event) => handlePhoneInputChange(event)}
+                                            />
+                                            {/* <input
                                                 type="tel"
                                                 name="phone"
                                                 value={tempVendorUserData ? tempVendorUserData.phone : ''}
                                                 onChange={handleInputChange}
-                                            />
+                                            /> */}
                                         </div>
                                         <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
                                         <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>

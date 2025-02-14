@@ -3,6 +3,8 @@ import { formatPhoneNumber } from '../../utils/helpers';
 import { avatars_default, states, status } from '../../utils/common';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 
 const AdminUsersVendorUsers = () => {
     const [users, setUsers] = useState([]);
@@ -102,6 +104,13 @@ const AdminUsersVendorUsers = () => {
             ...prev,
             [name]: name === 'vendor_role' ? (value === 'true') : value,
         }));
+    };
+
+    const handlePhoneInputChange = event => {
+        setTempUserData({
+            ...tempUserData,
+            ['phone']: event
+        });
     };
 
     const handleEditToggle = () => {
@@ -213,12 +222,22 @@ const AdminUsersVendorUsers = () => {
                             </div>
                             <div className="form-group">
                                 <label>Phone:</label>
-                                <input
+                                <PhoneInput
+                                    className='input-phone margin-l-8'
+                                    countryCallingCodeEditable={false}
+                                    withCountryCallingCode
+                                    country='US'
+                                    defaultCountry='US'
+                                    placeholder="enter your phone number"
+                                    value={tempUserData.phone || ''}
+                                    onChange={(event) => handlePhoneInputChange(event)}
+                                />
+                                {/* <input
                                     type="tel"
                                     name="phone"
                                     value={tempUserData ? formatPhoneNumber(tempUserData.phone) : ''}
                                     onChange={handleInputChange}
-                                />
+                                /> */}
                             </div>
                             <div className="form-group">
                                 <label>Vendor ID:</label>
