@@ -11,7 +11,8 @@ import PasswordChecklist from "react-password-checklist"
 import ProfileFavorites from './ProfileFavorites';
 import { toast } from 'react-toastify';
 import PulseLoader from 'react-spinners/PulseLoader';
-
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 
 function Profile({ marketData }) {
     const { id } = useParams();
@@ -141,6 +142,13 @@ function Profile({ marketData }) {
         setTempProfileData({
             ...tempProfileData,
             [name]: value
+        });
+    };
+    
+    const handlePhoneInputChange = event => {
+        setTempProfileData({
+            ...tempProfileData,
+            ['phone']: event
         });
     };
 
@@ -610,6 +618,7 @@ function Profile({ marketData }) {
         return <div>Loading...</div>;
     }
 
+    console.log(tempProfileData?.phone)
 
     return (
         <div>
@@ -641,12 +650,22 @@ function Profile({ marketData }) {
                                 </div>
                                 <div className="form-group">
                                     <label>Phone:</label>
-                                    <input
+                                    <PhoneInput
+                                        className='input-phone margin-l-8'
+                                        countryCallingCodeEditable={false}
+                                        withCountryCallingCode
+                                        country='US'
+                                        defaultCountry='US'
+                                        placeholder="enter your phone number"
+                                        value={tempProfileData.phone || ''}
+                                        onChange={(event) => handlePhoneInputChange(event)}
+                                    />
+                                    {/* <input
                                         type="tel"
                                         name="phone"
                                         value={tempProfileData ? formatPhoneNumber(tempProfileData.phone) : ''}
                                         onChange={handleInputChange}
-                                    />
+                                    /> */}
                                 </div>
                                 <div className="form-address">
                                     <label>Address:</label>
