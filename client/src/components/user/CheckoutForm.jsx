@@ -191,12 +191,14 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                             price: item.price,
                             quantity: item.quantity,
                             market_id: item.market_id,
+                            market_day_id: item.market_day_id,
                             market_location: item.location,
                             vendor_id: item.vendor_id,
                             vendor_name: item.vendor_name,
                             pickup_start: item.pickup_start,
                             pickup_end: item.pickup_end,
                             sale_date: item.sale_date,
+                            fee_user: item.fee_user
                         }))
                     }),
                 });
@@ -233,7 +235,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 <h1 className="title-med">Payments</h1>
                 <button className="btn btn-cart"><Link to="/user/cart">Back</Link></button>
             </div>
-            <form id="payment-form" className="flex-space-between box-bounding" onSubmit={handleSubmit}>
+            <form id="payment-form" className="flex-space-between box-bounding m-flex-wrap" onSubmit={handleSubmit}>
                 <div className="width-fit">
                     <ul>
                         {cartItems.map((item, index) => (
@@ -263,19 +265,19 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                     </ul>
                     <h1>Total Price: ${totalPrice.toFixed(2)}</h1>
                 </div>
-                <div className="width-50">
+                <div className="d-width-50">
                     <PaymentElement id="payment-element" options={{ layout: 'accordion' }} />
                     {!paymentSuccess ? (
-                        <button className="btn btn-add" disabled={isProcessing || !stripe || !elements} id="submit">
+                        <button className="btn btn-checkout" disabled={isProcessing || !stripe || !elements} id="submit">
                             <span id="button-text">
                                 {isProcessing ? "Processing ..." : "Pay now"}
                             </span>
                         </button>
                     ) : (
-                        <div className="margin-t-16">
+                        <div className="margin-t-16 flex-start flex-gap-16">
                             <ReceiptPDF receiptId={receiptId} page={"checkout"} />
                             <button 
-                                className="btn btn-add margin-t-8" 
+                                className="btn btn-checkout" 
                                 onClick={() => generateICSFile(cartItems)}
                             >
                                 Add to Calendar

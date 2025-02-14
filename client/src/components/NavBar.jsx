@@ -501,7 +501,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         {adminNotifications.length > 0 &&
                             <li className='notification' onClick={handleAdminNotifPopup}>
                                 <a className='nav-tab color-5 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
-                                {adminNotifications.length > 0 && <p className='badge'>{adminNotifications.length}</p>}
+                                <p className='badge'>{adminNotifications.length}</p>
                             </li>
                         }
                         <div className='notification'>
@@ -538,7 +538,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             <NavLink className='nav-tab color-2 btn-nav nowrap' to={`/user/pick-up`} title="Pick-Up">Pick-Up</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav' to={`/user/profile/${userId}`} title="Profile">Profile</NavLink>
+                            <NavLink className='nav-tab color-1 btn-nav' to={`/user/profile/${userId}`} title="Profile">Profile</NavLink>
                         </li>
                         {notifications.length > 0 &&
                             <li className='notification' onClick={handleNotifPopup}>

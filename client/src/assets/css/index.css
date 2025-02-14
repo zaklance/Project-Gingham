@@ -977,6 +977,18 @@ ul {
   background-color: #28a745 !important;
 }
 
+.btn-checkout {
+  font-size: .9em;
+  padding: 10px 12px;
+  border-radius: 8px;
+  height: fit-content;
+  border: none;
+  background-color: #eee;
+  margin: 12px 0px;
+  margin-right: 12px;
+  margin-left: 4px;
+}
+
 .btn-confirm {
   padding: 10px 12px;
   border-radius: 8px;
@@ -2929,14 +2941,18 @@ select:hover {
 
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 @media (min-width: 820px) {
-  .d-flex-space-between {
-      display: flex;
-      justify-content: space-between;
-    }
+.d-flex-space-between {
+    display: flex;
+    justify-content: space-between;
+  }
 
-    .d-nowrap {
-      white-space: nowrap;
-    }
+  .d-nowrap {
+    white-space: nowrap;
+  }
+
+  .d-width-50 {
+    width: 50%;
+  }
 }
 
 
