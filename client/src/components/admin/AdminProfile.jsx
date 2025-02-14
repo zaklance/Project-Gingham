@@ -7,7 +7,8 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { toast } from 'react-toastify';
-
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 
 function AdminProfile () {
     const { id } = useParams();
@@ -103,13 +104,6 @@ function AdminProfile () {
             fetchUserSettings();
         }, [id]);
 
-    // const handleInputChange = (event) => {
-    //     setAdminUserData({
-    //         ...adminUserData,
-    //         [event.target.name]: event.target.value,
-    //     });
-    // };
-
     const handleEditToggle = () => {
         if (!editMode) {
             setTempProfileData({ ...adminUserData });
@@ -124,6 +118,13 @@ function AdminProfile () {
         setTempProfileData({
             ...tempProfileData,
             [name]: value
+        });
+    };
+
+    const handlePhoneInputChange = event => {
+        setTempProfileData({
+            ...tempProfileData,
+            ['phone']: event
         });
     };
 
@@ -374,12 +375,22 @@ function AdminProfile () {
                                         </div>
                                         <div className='form-group'>
                                             <label>Phone Number:</label>
-                                            <input
+                                            <PhoneInput
+                                                className='input-phone margin-l-8'
+                                                countryCallingCodeEditable={false}
+                                                withCountryCallingCode
+                                                country='US'
+                                                defaultCountry='US'
+                                                placeholder="enter your phone number"
+                                                value={tempProfileData?.phone || ''}
+                                                onChange={(event) => handlePhoneInputChange(event)}
+                                            />
+                                            {/* <input
                                                 type="text"
                                                 name="phone"
                                                 value={tempProfileData ? formatPhoneNumber(tempProfileData.phone) : ''}
                                                 onChange={handleInputChange}
-                                            />
+                                            /> */}
                                         </div>
                                         <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
                                         <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>

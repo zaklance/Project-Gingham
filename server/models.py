@@ -119,12 +119,12 @@ class User(db.Model, SerializerMixin):
             raise ValueError("Invalid email address")
         return value
 
-    @validates('phone')
-    def validate_phone(self, key, value):
-        cleaned_phone = re.sub(r'\D', '', value)
-        if len(cleaned_phone) != 10:
-            raise ValueError("Phone number must contain exactly 10 digits")
-        return cleaned_phone
+    # @validates('phone')
+    # def validate_phone(self, key, value):
+    #     cleaned_phone = re.sub(r'\D', '', value)
+    #     if len(value) != 10:
+    #         raise ValueError("Phone number must contain exactly 10 digits")
+    #     return cleaned_phone
 
     @validates('address_1')
     def validate_address_1(self, key, value):
@@ -507,12 +507,12 @@ class VendorUser(db.Model, SerializerMixin):
             raise ValueError(f"{key.replace('_', ' ').capitalize()} must be between 1 and 50 characters")
         return value
 
-    @validates('phone')
-    def validate_phone(self, key, value):
-        cleaned_phone = re.sub(r'\D', '', value)
-        if len(cleaned_phone) != 10:
-            raise ValueError("Phone number must contain exactly 10 digits")
-        return cleaned_phone
+    # @validates('phone')
+    # def validate_phone(self, key, value):
+    #     cleaned_phone = re.sub(r'\D', '', value)
+    #     if len(cleaned_phone) != 10:
+    #         raise ValueError("Phone number must contain exactly 10 digits")
+    #     return cleaned_phone
 
     @hybrid_property
     def password(self):
@@ -561,12 +561,12 @@ class AdminUser(db.Model, SerializerMixin):
             raise ValueError(f"{key.replace('_', ' ').capitalize()} must be between 1 and 50 characters")
         return value
 
-    @validates('phone')
-    def validate_phone(self, key, value):
-        cleaned_phone = re.sub(r'\D', '', value)
-        if len(cleaned_phone) != 10:
-            raise ValueError("Phone number must contain exactly 10 digits")
-        return cleaned_phone
+    # @validates('phone')
+    # def validate_phone(self, key, value):
+    #     cleaned_phone = re.sub(r'\D', '', value)
+    #     if len(cleaned_phone) != 10:
+    #         raise ValueError("Phone number must contain exactly 10 digits")
+    #     return cleaned_phone
 
     @hybrid_property
     def password(self):

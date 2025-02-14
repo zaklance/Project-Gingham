@@ -1085,7 +1085,7 @@ def run():
         password = "lol"
         first_name = fake.first_name()
         last_name = fake.last_name()
-        phone = str(randint(1000000000,9999999999))
+        phone = f'+1 {str(randint(1000000000,9999999999))}'
         address_1 = fake.street_address()
         address_2 = f'{choice(apartment)} {randint(1, 200)}'
         city = fake.city()
@@ -1127,7 +1127,7 @@ def run():
         password="lol",
         first_name="Ham-man",
         last_name="Gingy",
-        phone="2095553880",
+        phone="+12095553880",
         address_1="11 Broadway",
         address_2="Floor 2",
         city="New York",
@@ -1266,7 +1266,7 @@ def run():
         first_name = fake.first_name()
         last_name = fake.last_name()
         # phone = fake.phone_number()
-        phone = str(randint(1000000000,9999999999))
+        phone = f'+1 str(randint(1000000000,9999999999))'
         active_vendor = rand_vendor_id
         vendor_id = choice_id[choice_num]
         vendor_role = choice_role[choice_num]
@@ -1299,7 +1299,7 @@ def run():
         password="lol",
         first_name="Ham-man",
         last_name="Gingy",
-        phone="2095553880",
+        phone="+12095553880",
         active_vendor=1,
         vendor_id={1:1},
         vendor_role={1:0}
@@ -1313,7 +1313,7 @@ def run():
     #     password="lol",
     #     first_name="Zak",
     #     last_name="Lance",
-    #     phone="2095553880",
+    #     phone="+12095553880",
     #     active_vendor=1,
     #     vendor_id={1:1, 2:2},
     #     vendor_role={1:0, 2:1}
@@ -1327,7 +1327,7 @@ def run():
     #     password="lol",
     #     first_name="Sand",
     #     last_name="Man",
-    #     phone="2095553880",
+    #     phone="+12095553880",
     #     active_vendor=1,
     #     vendor_id={1:1},
     #     vendor_role={1:1}
@@ -1341,7 +1341,7 @@ def run():
     #     password="lol",
     #     first_name="Vinh",
     #     last_name="Cent",
-    #     phone="2095553880",
+    #     phone="+12095553880",
     #     active_vendor=2,
     #     vendor_id={2:2},
     #     vendor_role={2:1}
@@ -1366,7 +1366,7 @@ def run():
             password="lol",
             first_name="Ham-man",
             last_name="Gingy",
-            phone="2095553880",
+            phone="+12095553880",
             admin_role=0
         ),
         SettingsAdmin(
@@ -1377,7 +1377,7 @@ def run():
             password="lol",
             first_name="Zak",
             last_name="Wosewick",
-            phone="0000000000",
+            phone="+10000000000",
             admin_role=1
         ),
         SettingsAdmin(
@@ -1388,7 +1388,7 @@ def run():
             password="lol",
             first_name="Sand",
             last_name="Man",
-            phone="0000000000",
+            phone="+10000000000",
             admin_role=1
         ),
         SettingsAdmin(
@@ -1399,7 +1399,7 @@ def run():
             password="lol",
             first_name="Vinh",
             last_name="Cent",
-            phone="0000000000",
+            phone="+10000000000",
             admin_role=1
         ),
         SettingsAdmin(
@@ -1410,7 +1410,7 @@ def run():
             password="lol",
             first_name="Hell",
             last_name="Oh",
-            phone="0000000000",
+            phone="+10000000000",
             admin_role=2
         ),
         SettingsAdmin(
