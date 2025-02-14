@@ -54,6 +54,7 @@ import AdminHelp from './components/admin/AdminHelp.jsx';
 import AdminEmailBulk from './components/admin/AdminEmailBulk.jsx';
 import AdminEmail from './components/admin/AdminEmail.jsx';
 import AdminBlog from './components/admin/AdminBlog.jsx';
+import AdminBaskets from './components/admin/AdminBaskets.jsx';
 import AdminReport from './components/admin/AdminReport.jsx';
 import AdminStats from './components/admin/AdminStats.jsx';
 import AdminEmailVerification from './components/admin/AdminEmailVerification.jsx';
@@ -264,6 +265,7 @@ const router = createBrowserRouter([
                     { path: "users", element: <AdminAuthRoute><AdminUsers /></AdminAuthRoute>},
                     { path: "help", element: <AdminAuthRoute><AdminHelp /></AdminAuthRoute>},
                     { path: "blog", element: <AdminAuthRoute><AdminBlog /></AdminAuthRoute>},
+                    { path: "baskets", element: <AdminAuthRoute><AdminBaskets /></AdminAuthRoute>},
                     { path: "report", element: <AdminAuthRoute><AdminReport /></AdminAuthRoute>},
                     { path: "email-bulk", element: <AdminAuthRoute><AdminEmailBulk /></AdminAuthRoute>},
                     { path: "email", element: <AdminAuthRoute><AdminEmail /></AdminAuthRoute>},

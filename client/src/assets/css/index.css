@@ -2422,6 +2422,13 @@ select:hover {
   background-size: 1.7rem auto;
 }
 
+.icon-basket {
+  background-image: url('../images/icons/icons8-basket-100.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 46%;
+  background-size: 1.4rem auto;
+}
+
 .icon-arrow-l {
   background-image: url('../images/icons/left-arrow-svgrepo-com.svg');
   background-repeat: no-repeat;
