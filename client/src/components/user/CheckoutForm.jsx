@@ -52,8 +52,8 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 return;
             }
     
-            const startDate = formatDate(item.pickup_start);
-            const endDate = formatDate(item.pickup_end);
+            const startDate = timeConverter(item.pickup_start);
+            const endDate = timeConverter(item.pickup_end);
     
             if (!startDate || !endDate) {
                 console.warn(`Skipping event for basket ${item.id} due to invalid date format.`);
