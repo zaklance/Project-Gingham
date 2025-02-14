@@ -3045,6 +3045,12 @@ def get_config():
         return jsonify({'error': 'Stripe publishable key not configured'}), 500
     return jsonify({'publishableKey': publishable_key}), 200
 
+def get_vendor_stripe_account(vendor_id):
+    vendor = Vendor.query.get(vendor_id)
+    if vendor and vendor.stripe_account_id:
+        return vendor.stripe_account_id
+    return None
+
 @app.route('/api/create-payment-intent', methods=['POST'])
 def create_payment_intent():
     try:

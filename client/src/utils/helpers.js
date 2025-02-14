@@ -143,6 +143,7 @@ export function receiptDateConverter(dateString) {
 
 
 // Input Conversions and Formatting
+// Add +1 (000) 000-0000
 export const formatPhoneNumber = (phone) => {
     const cleaned = ('' + phone).replace(/\D/g, '');
     const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
