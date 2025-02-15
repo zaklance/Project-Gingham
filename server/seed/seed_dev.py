@@ -54,6 +54,7 @@ def run():
 
     markets = [
         Market(
+            id=1,
             name='175th Street Greenmarket',
             image='10292023_Broadway_farmers_market_Columbia_NYC.jpg',
             location='W. 175th St. bet. Wadsworth Ave. & Broadway',
@@ -63,10 +64,11 @@ def run():
             coordinates={"lat": "40.84607450953993", "lng": "-73.93808039940272"},
             schedule='Thursday (8 a.m. - 4 p.m.)',
             year_round=False,
-            season_start=date(2024, 6, 27),
-            season_end=date(2024, 11, 21)
+            season_start=date(2025, 6, 26),
+            season_end=date(2025, 11, 20),
         ),
         Market(
+            id=2,
             name='57th Street Greenmarket',
             image='6329735393_3a905a118a_o.0.jpg',
             location='W. 57th St. & 10th Ave.',
@@ -76,10 +78,11 @@ def run():
             coordinates={"lat": "40.769140743893075", "lng": "-73.98836576430834"},
             schedule='Saturday (8 a.m. - 3 p.m.)',
             year_round=False,
-            season_start=date(2024, 6, 1),
-            season_end=date(2024, 11, 23)
+            season_start=date(2025, 6, 7),
+            season_end=date(2025, 11, 22),
         ),
         Market(
+            id=3,
             name='79th Street Greenmarket',
             image='image.jpeg',
             location='79th St. & Columbus Ave.',
@@ -88,9 +91,10 @@ def run():
             zipcode='10024',
             coordinates={"lat": "40.782040858828", "lng": "-73.9759752811397"},
             schedule='Sunday (9 a.m. - 4 p.m.)',
-            year_round=True
+            year_round=True,
         ),
         Market(
+            id=4,
             name='82nd Street Greenmarket',
             image='bronxborhall_shaylahunter_re_xy4a4543.jpg',
             location=' 82nd St. bet. 1st & York Aves.',
@@ -99,9 +103,10 @@ def run():
             zipcode='10028',
             coordinates={"lat": "40.77397099020891", "lng": "-73.95064361322936"},
             schedule='Saturday (9 a.m. - 2:30 p.m.)',
-            year_round=True
+            year_round=True,
         ),
         Market(
+            id=5,
             name='94th Street Greenmarket',
             image='c.-Martin-Seck-GAP-1-768x531.jpg',
             location='E. 94th St. & 1st Ave.',
@@ -112,9 +117,10 @@ def run():
             schedule='Sunday (9 a.m. - 4 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 18),
-            season_end=date(2024, 11, 19)
+            season_end=date(2024, 11, 19),
         ),
         Market(
+            id=6,
             name='97th Street Greenmarket',
             image='farmers-market.jpg',
             location='W. 97th St. bet. Columbus & Amsterdam Aves.',
@@ -123,9 +129,10 @@ def run():
             zipcode='10025',
             coordinates={"lat": "40.79433392796688", "lng": "-73.96852339557134"},
             schedule='Friday (8 a.m. - 2 p.m.)',
-            year_round=True
+            year_round=True,
         ),
         Market(
+            id=7,
             name='Abingdon Square Greenmarket',
             image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='Hudson St. & W. 12th St.',
@@ -134,9 +141,10 @@ def run():
             zipcode='10014',
             coordinates={"lat": "40.737268845844085", "lng": "-74.00531736212757"},
             schedule='Saturday (8 a.m. - 2 p.m.)',
-            year_round=True
+            year_round=True,
         ),
         Market(
+            id=8,
             name='Astor Place Greenmarket',
             image='greenmarket-grownyc-768x512.jpeg',
             location='E. 8th St. & Lafayette St.',
@@ -146,10 +154,11 @@ def run():
             coordinates={"lat": "40.729830818573944", "lng": "-73.99109568735417"},
             schedule='Tuesday (8 a.m. - 5 p.m.)',
             year_round=False,
-            season_start=date(2024, 6, 4),
-            season_end=date(2024, 11, 26)
+            season_start=date(2025, 6, 3),
+            season_end=date(2025, 11, 25),
         ),
         Market(
+            id=9,
             name='Bowling Green Greenmarket',
             image='image.jpeg',
             location='Broadway & Battery Pl.',
@@ -160,9 +169,10 @@ def run():
             schedule='Tuesday & Thursday (8 a.m. - 2 p.m.)',
             year_round=False,
             season_start=date(2024, 4, 16),
-            season_end=date(2024, 11, 26)
+            season_end=date(2024, 11, 26),
         ),
         Market(
+            id=10,
             name='Bro Sis Green Youth Market',
             image='Union_Square_Farmers_Market.jpg',
             location='Amsterdam Ave. bet. W. 143rd & 144th Sts. (Johnny Hartman Plaza)',
@@ -173,9 +183,10 @@ def run():
             schedule='Wednesday (10:30 a.m. - 6 p.m.)',
             year_round=False,
             season_start=date(2024, 7, 8),
-            season_end=date(2024, 11, 25)
+            season_end=date(2024, 11, 25),
         ),
         Market(
+            id=11,
             name="Chelsea’s Down to Earth Farmers Market",
             image='unnamed.jpg',
             location='W. 23rd St. bet. 8th & 9th Aves.',
@@ -186,9 +197,10 @@ def run():
             schedule='Saturday (9 a.m. - 2 p.m.)',
             year_round=False,
             season_start=date(2024, 4, 20),
-            season_end=date(2024, 12, 21)
+            season_end=date(2024, 12, 21),
         ),
         Market(
+            id=12,
             name="Children’s Aid Go!Healthy Food Box + Farmstand - Milbank Center",
             image='6329735393_3a905a118a_o.0.jpg',
             location='14-32 W. 118th St.',
@@ -199,9 +211,10 @@ def run():
             schedule='Wednesday (2 - 4:30 p.m.)',
             year_round=False,
             season_start=date(2024, 7, 10),
-            season_end=date(2024, 11, 20)
+            season_end=date(2024, 11, 20),
         ),
         Market(
+            id=13,
             name='Columbia Greenmarket',
             image='Union_Square_Farmers_Market.jpg',
             location='Broadway & 114th St.',
@@ -210,9 +223,10 @@ def run():
             zipcode='10025',
             coordinates={"lat": "40.80711550674964", "lng": "-73.9643334908912"},
             schedule='Thursday & Sunday (8 a.m. - 4 p.m.)',
-            year_round=True
+            year_round=True,
         ),
         Market(
+            id=14,
             name='Dag Hammarskjold Greenmarket',
             # image='c.-Martin-Seck-GAP-1-768x531.jpg',
             location='E. 47th St. & 2nd Ave.',
@@ -221,9 +235,10 @@ def run():
             zipcode='10017',
             coordinates={"lat": "40.752106980482026", "lng": "-73.96813449641382"},
             schedule='Wednesday (8 a.m. - 3 p.m.)',
-            year_round=True
+            year_round=True,
         ),
         Market(
+            id=15,
             name='Fort Washington Greenmarket',
             image='farmers-market.jpg',
             location='W. 168th St. & Ft. Washington Ave.',
@@ -233,10 +248,11 @@ def run():
             coordinates={"lat": "40.842308310821956", "lng": "-73.94211665674466"},
             schedule='Tuesday (8 a.m. - 4 p.m.)',
             year_round=False,
-            season_start=date(2024, 6, 4),
-            season_end=date(2024, 11, 26)
+            season_start=date(2025, 6, 3),
+            season_end=date(2025, 11, 23),
         ),
         Market(
+            id=16,
             name='Fulton Stall Market (Indoor Farmers Market)',
             image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='91 South St.',
@@ -245,9 +261,10 @@ def run():
             zipcode='10038',
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
             schedule='Monday - Saturday (11:30 a.m. - 5 p.m.)',
-            year_round=True
+            year_round=True,
         ),
         Market(
+            id=17,
             name='Gouverneur Health Farmstand',
             image='greenmarket-grownyc-768x512.jpeg',
             location='Madison St. bet. Clinton & Jefferson Sts.',
@@ -258,9 +275,10 @@ def run():
             schedule='Thursday (9 a.m. - 2 p.m.)',
             year_round=False,
             season_start=date(2024, 7, 5),
-            season_end=date(2024, 11, 22)
+            season_end=date(2024, 11, 22),
         ),
         Market(
+            id=18,
             name='Grass Roots Farmers Market',
             image='image.jpeg',
             location='W. 145th St. bet. Edgecombe & Bradhurst Aves. (Jackie Robinson Park)',
@@ -269,9 +287,10 @@ def run():
             zipcode='10039',
             coordinates={"lat": "40.82373611412579", "lng": "-73.9435495760123"},
             schedule='Tuesday & Saturday (9 a.m. - 4 p.m.)',
-            year_round=False
+            year_round=False,
         ),
         Market(
+            id=19,
             name='Greenmarket at the Oculus',
             image='Union_Square_Farmers_Market.jpg',
             location='Church & Fulton Sts. (Oculus Plaza)',
@@ -282,9 +301,10 @@ def run():
             schedule='Tuesday (8 a.m. - 5 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 18),
-            season_end=date(2024, 10, 29)
+            season_end=date(2024, 10, 29),
         ),
         Market(
+            id=20,
             name='Harlem Meer Farmstand',
             image='unnamed.jpg',
             location='Central Park N. & Malcom X Blvd.',
@@ -295,9 +315,10 @@ def run():
             schedule='Saturday (10 a.m. - 2 p.m.)',
             year_round=False,
             season_start=date(2024, 7, 20),
-            season_end=date(2024, 11, 30)
+            season_end=date(2024, 11, 30),
         ),
         Market(
+            id=21,
             name='Harvest Home East Harlem Farmers Market',
             # image='10292023_Broadway_farmers_market_Columbia_NYC.jpg',
             location='E. 104th St. & 3rd Ave.',
@@ -308,9 +329,10 @@ def run():
             schedule='Thursday (8 a.m. - 3 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 13),
-            season_end=date(2024, 11, 14)
+            season_end=date(2024, 11, 14),
         ),
         Market(
+            id=22,
             name='Harvest Home Harlem Hospital Farmers Market',
             image='6329735393_3a905a118a_o.0.jpg',
             location='W. 137th St. & Lenox Ave.',
@@ -321,9 +343,10 @@ def run():
             schedule='Friday (8 a.m. - 3 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 14),
-            season_end=date(2024, 11, 15)
+            season_end=date(2024, 11, 15),
         ),
         Market(
+            id=23,
             name='Harvest Home Lenox Avenue Farm Stand',
             image='unnamed.jpg',
             location='Lenox Ave. bet. W. 117th & 118th Sts.',
@@ -334,9 +357,10 @@ def run():
             schedule='Saturday (8 a.m. - 3 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 22),
-            season_end=date(2024, 11, 16)
+            season_end=date(2024, 11, 16),
         ),
         Market(
+            id=24,
             name='Harvest Home Metropolitan Hospital Farmers Market',
             image='bronxborhall_shaylahunter_re_xy4a4543.jpg',
             location='97th St. & 2nd Ave.',
@@ -347,9 +371,10 @@ def run():
             schedule='Friday (8 a.m. - 3 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 14),
-            season_end=date(2024, 11, 15)
+            season_end=date(2024, 11, 15),
         ),
         Market(
+            id=25,
             name='Inwood Park Greenmarket',
             image='c.-Martin-Seck-GAP-1-768x531.jpg',
             location='Isham St. bet. Seaman Ave. & Cooper St.',
@@ -358,9 +383,10 @@ def run():
             zipcode='10034',
             coordinates={"lat": "40.86911825882977", "lng": "-73.92025906885881"},
             schedule='Saturday (8 a.m. - 3 p.m.)',
-            year_round=True
+            year_round=True,
         ),
         Market(
+            id=26,
             name='Lower East Side Farmstand',
             image='farmers-market.jpg',
             location='Grand St. bet. Pitt & Willett Sts. (outside of Abrons Arts Center)',
@@ -371,9 +397,10 @@ def run():
             schedule='Thursday (8:30 a.m. - 3 p.m.)',
             year_round=False,
             season_start=date(2024, 7, 5),
-            season_end=date(2024, 11, 22)
+            season_end=date(2024, 11, 22),
         ),
         Market(
+            id=27,
             name='Morningside Park’s Down to Earth Farmers Market',
             image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='W. 110th St. & Manhattan Ave.',
@@ -382,9 +409,10 @@ def run():
             zipcode='10026',
             coordinates={"lat": "40.801382884379336", "lng": "-73.95970142371496"},
             schedule='Saturday (9 a.m. - 2 p.m.)',
-            year_round=True
+            year_round=True,
         ),
         Market(
+            id=28,
             name='Mount Sinai Greenmarket',
             image='greenmarket-grownyc-768x512.jpeg',
             location='Madison Ave. & 99th St.',
@@ -394,10 +422,11 @@ def run():
             coordinates={"lat": "40.78944510836953", "lng": "-73.95271330705022"},
             schedule='Wednesday (8 a.m. - 3 p.m.)',
             year_round=False,
-            season_start=date(2024, 6, 19),
-            season_end=date(2024, 11, 27)
+            season_start=date(2024, 6, 18),
+            season_end=date(2024, 11, 26),
         ),
         Market(
+            id=29,
             name='NYP Youth Market - Audoban',
             # image='image.jpeg',
             location='21 Audoban Ave.',
@@ -406,9 +435,10 @@ def run():
             zipcode='10032',
             coordinates={"lat": "40.839630140355446", "lng": "-73.93889062898364"},
             schedule='Thursday (9 a.m. - 3 p.m.)',
-            year_round=False
+            year_round=False,
         ),
         Market(
+            id=30,
             name='NYP Youth Market - Broadway',
             image='Union_Square_Farmers_Market.jpg',
             location='4781-4783 Broadway',
@@ -417,9 +447,10 @@ def run():
             zipcode='10034',
             coordinates={"lat": "40.86600006214813", "lng": "-73.9263264427691"},
             schedule='Wednesday (9 a.m. - 3 p.m.)',
-            year_round=False
+            year_round=False,
         ),
         Market(
+            id=31,
             name='Project EATS Farm Stand at Essex Crossing',
             image='unnamed.jpg',
             location='115 Delancey St.',
@@ -428,9 +459,10 @@ def run():
             zipcode='10002',
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
             schedule='Wednesday-Sunday (11 a.m. - 7 p.m.)',
-            year_round=False
+            year_round=False,
         ),
         Market(
+            id=32,
             name='P.S. 11 Farm Market',
             image='10292023_Broadway_farmers_market_Columbia_NYC.jpg',
             location='320 W. 21st St.',
@@ -441,9 +473,10 @@ def run():
             schedule='Wednesday (8 a.m. - 10 a.m.)',
             year_round=False,
             season_start=date(2024, 6, 11),
-            season_end=date(2024, 11, 12)
+            season_end=date(2024, 11, 12),
         ),
         Market(
+            id=33,
             name='P.S. 57 Farmstand',
             image='6329735393_3a905a118a_o.0.jpg',
             location='115th St. & 3rd Ave. (SW corner)',
@@ -452,9 +485,12 @@ def run():
             zipcode='10029',
             coordinates={"lat": "40.797300330819134", "lng": "-73.94074817230118"},
             schedule='Wednesday (9:30 a.m. - 3 p.m.)',
-            year_round=True
+            year_round=False,
+            season_start=date(2024, 6, 1),
+            season_end=date(2024, 11, 21),
         ),
         Market(
+            id=34,
             name='Stuyvesant Town Greenmarket',
             # image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='South end of Stuyvesant Town Oval',
@@ -464,10 +500,11 @@ def run():
             coordinates={"lat": "40.73200566470982", "lng": "-73.97761240821589"},
             schedule='Sunday (9:30 a.m. - 4 p.m.)',
             year_round=False,
-            season_start=date(2024, 5, 12),
-            season_end=date(2024, 12, 15)
+            season_start=date(2024, 5, 11),
+            season_end=date(2024, 12, 14),
         ),
         Market(
+            id=35,
             name='Tompkins Square Greenmarket',
             image='bronxborhall_shaylahunter_re_xy4a4543.jpg',
             location='E. 7th St. & Avenue A',
@@ -476,9 +513,10 @@ def run():
             zipcode='10003',
             coordinates={"lat": "40.72606737678102", "lng": "-73.98333751481684"},
             schedule='Sunday (9 a.m. - 4 p.m.)',
-            year_round=True
+            year_round=True,
         ),
         Market(
+            id=36,
             name='Tribeca Greenmarket',
             image='c.-Martin-Seck-GAP-1-768x531.jpg',
             location='Greenwich & Chambers Sts.',
@@ -489,9 +527,10 @@ def run():
             schedule='Wednesday & Saturday (8 a.m. - 2 p.m.)',
             year_round=False,
             season_start=date(2024, 4, 17),
-            season_end=date(2024, 11, 27)
+            season_end=date(2024, 11, 27),
         ),
         Market(
+            id=37,
             name='Tucker Square Greenmarket',
             # image='farmers-market.jpg',
             location='Columbus Ave. & 66th St.',
@@ -500,9 +539,10 @@ def run():
             zipcode='10023',
             coordinates={"lat": "40.77367979894632", "lng": "-73.9819555713842"},
             schedule='Thursday (8 a.m. - 3 p.m.); Saturday (8 a.m. - 4 p.m.)',
-            year_round=True
+            year_round=True,
         ),
         Market(
+            id=38,
             name='Two Bridges Youth Market',
             image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             location='50 Madison St.',
@@ -513,9 +553,10 @@ def run():
             schedule='Sunday (10:30 a.m. - 3:30 p.m.)',
             year_round=False,
             season_start=date(2024, 5, 26),
-            season_end=date(2024, 12, 15)
+            season_end=date(2024, 12, 15),
         ),
         Market(
+            id=39,
             name='Union Square Greenmarket',
             image='Union_Square_Farmers_Market.jpg',
             location='E. 17th St. & Union Square W.',
@@ -524,9 +565,10 @@ def run():
             zipcode='10003',
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
             schedule='Monday, Wednesday, Friday & Saturday (8 a.m. - 6 p.m.)',
-            year_round=True
+            year_round=True,
         ),
         Market(
+            id=40,
             name='Uptown Good Food Farm Stand',
             image='greenmarket-grownyc-768x512.jpeg',
             location='330 St. Nicholas Ave. (St. Nicholas Miracle Garden)',
@@ -537,7 +579,72 @@ def run():
             schedule='Thursday (4 - 7 p.m.)',
             year_round=False,
             season_start=date(2024, 6, 1),
-            season_end=date(2024, 11, 23)
+            season_end=date(2024, 11, 23),
+        ),
+        Market(
+            id=41,
+            name="City Hall Greenmarket",
+            image='farmers-market.jpg',
+            location='Chambers St. & Warren St.',
+            city="New York",
+            state="NY",
+            zipcode='10007',
+            coordinates={"lat": "40.713888983534495", "lng": "-74.00644264735783"},
+            schedule='Tuesday (9 a.m. - 4 p.m.)',
+            year_round=False,
+            season_start=date(2025, 4, 15),
+            season_end=date(2025, 11, 25),
+        ),
+        Market(
+            id=42,
+            name='Uptown Grand Central Farm Stand',
+            image='unnamed.jpg',
+            location='125th Street & Park Ave.',
+            city="New York",
+            state="NY",
+            zipcode='10035',
+            coordinates={"lat": "40.80493954076873", "lng": "-73.93903600281972"},
+            schedule='Wednesday (1:30 - 7 p.m.)',
+            year_round=True,
+        ),
+        Market(
+            id=43,
+            name='Lenox Hill Farm Stand',
+            image='image.jpeg',
+            location='70th St. & 1st Ave.',
+            city="New York",
+            state="NY",
+            zipcode='10021',
+            coordinates={"lat": "40.76668271329556", "lng": "-73.95721258190501"},
+            schedule='Thursday (12 a.m. - 5 p.m.)',
+            year_round=True,
+        ),
+        Market(
+            id=44,
+            name='92nd Street Greenmarket',
+            location='E 92th St. & 1st Ave.',
+            city="New York",
+            state="NY",
+            zipcode='10025',
+            coordinates={"lat": "40.78093568496837", "lng": "-73.94626236967947"},
+            schedule='Sunday (9 a.m. - 3 p.m.)',
+            year_round=False,
+            season_start=date(2025, 6, 22),
+            season_end=date(2025, 11, 23),
+        ),
+        Market(
+            id=45,
+            name='Rockefeller Greenmarket',
+            image='10292023_Broadway_farmers_market_Columbia_NYC.jpg',
+            location='Rockefeller Plaza at 50th St.',
+            city="New York",
+            state="NY",
+            zipcode='10011',
+            coordinates={"lat": "40.75921762876115", "lng": "-73.9783109644037"},
+            schedule='Wednesday (8 a.m. - 5 p.m.)',
+            year_round=False,
+            season_start=date(2025, 8, 13),
+            season_end=date(2025, 10, 29),
         )
     ]
     db.session.add_all(markets)

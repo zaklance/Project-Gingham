@@ -23,7 +23,6 @@ const ReceiptDocument = ({ receipt }) => {
     // console.log("Receipt Data:", receipt); // ✅ Debugging: Check fetched data in console
     
     const basketItems = Array.isArray(receipt?.baskets) ? receipt.baskets : []; // ✅ Ensure it's always an array
-    console.log(receipt)
 
     return (
         <Document>
@@ -62,13 +61,13 @@ const ReceiptDocument = ({ receipt }) => {
                         <View key={index} wrap={false}>
                             <View style={styles.row}>
                                 <Text>Basket ID: {item.id}</Text>
-                                <Text>Pickup Date: {formatBasketDate(item.sale_date)}</Text>
-                                <Text>Pickup Time: {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</Text>
+                                <Text>{item.vendor_name}</Text>
+                                <Text>{item.market_location}</Text>
                             </View>
                             <View style={styles.rowItem}>
                                 <Text>Price: ${item.price.toFixed(2)} &emsp; Fee: $ {item.fee_user < 1 ? item.fee_user.toFixed(2) : item.fee_user.toFixed(2)}</Text>
-                                <Text>{item.vendor_name}</Text>
-                                <Text>{item.market_location}</Text>
+                                <Text>Pickup Date: {formatBasketDate(item.sale_date)}</Text>
+                                <Text>Pickup Time: {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</Text>
                             </View>
                         </View>
                     ))
@@ -116,7 +115,7 @@ const Receipt = ({ receiptId, page }) => {
         fetch(`/api/receipts/${receiptId}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log("Fetched Receipt Data:", data);
+                // console.log("Fetched Receipt Data:", data);
                 if (data.error) {
                     setError(data.error);
                 } else {
@@ -130,7 +129,6 @@ const Receipt = ({ receiptId, page }) => {
             });
     }, [receiptId]);
 
-    console.log(receipt)
 
     if (loading) return <p>Loading receipt...</p>;
     if (error) return <p style={{ color: "#ff4b5a" }}>Error: {error}</p>;

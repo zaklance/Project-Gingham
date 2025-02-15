@@ -18,7 +18,7 @@ function BasketSales() {
         fetch(`/api/receipts?user_id=${userId}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log("Fetched Receipts:", data);
+                // console.log("Fetched Receipts:", data);
                 if (data.error) {
                     // setError(data.error);
                 } else {
@@ -54,38 +54,35 @@ function BasketSales() {
                             receipts
                                 .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                                 .map((receipt, index) => (
-                                    <>
+                                    <React.Fragment key={index}>
                                         { index > 0 && <tr className="spacer-row"><td colSpan="6"></td></tr>}
-                                        <React.Fragment key={index}>
-                                            {receipt.baskets
-                                                .sort((a, b) => new Date(b.sale_date) - new Date(a.sale_date))
-                                                .map((item, subIndex) => {
-                                                    const isFirst = subIndex === 0;
-                                                    const isLast = subIndex === receipt.baskets.length - 1;
-
-                                                    return (
-                                                    <tr key={`${index}-${subIndex}`}>
-                                                        <td className={`group-bar ${isFirst ? 'group-bar-first' : ''} ${isLast ? 'group-bar-last' : ''}`}></td>
-                                                        <td>
-                                                            <Link className='btn-nav' to={`/user/markets/${item.market_id}`}>
-                                                                {item.market_location || 'No Market Name'}
-                                                            </Link>
-                                                        </td>
-                                                        <td>
-                                                            <Link className='btn-nav' to={`/user/vendors/${item.vendor_id}`}>
-                                                                {item.vendor_name || 'No Vendor Name'}
-                                                            </Link>
-                                                        </td>
-                                                        <td className='table-center nowrap'>{formatBasketDate(item.sale_date) || 'N/A'}</td>
-                                                        <td className='table-center'>${item.price ? item.price.toFixed(2) : 'N/A'}</td>
-                                                        <td className='table-center' style={{height: '48px'}}>
-                                                        {isFirst && <ReceiptPDF receiptId={receipt.id} page={"profile"} />}
-                                                        </td>
-                                                    </tr>
-                                                )}
+                                        {receipt.baskets
+                                            .sort((a, b) => new Date(b.sale_date) - new Date(a.sale_date))
+                                            .map((item, subIndex) => {
+                                                const isFirst = subIndex === 0;
+                                                const isLast = subIndex === receipt.baskets.length - 1;
+                                                return (
+                                                <tr key={`${index}-${subIndex}`}>
+                                                    <td className={`group-bar ${isFirst ? 'group-bar-first' : ''} ${isLast ? 'group-bar-last' : ''}`}></td>
+                                                    <td>
+                                                        <Link className='btn-nav' to={`/user/markets/${item.market_id}`}>
+                                                            {item.market_location || 'No Market Name'}
+                                                        </Link>
+                                                    </td>
+                                                    <td>
+                                                        <Link className='btn-nav' to={`/user/vendors/${item.vendor_id}`}>
+                                                            {item.vendor_name || 'No Vendor Name'}
+                                                        </Link>
+                                                    </td>
+                                                    <td className='table-center nowrap'>{formatBasketDate(item.sale_date) || 'N/A'}</td>
+                                                    <td className='table-center'>${item.price ? item.price.toFixed(2) : 'N/A'}</td>
+                                                    <td className='table-center' style={{height: '48px'}}>
+                                                    {isFirst && <ReceiptPDF receiptId={receipt.id} page={"profile"} />}
+                                                    </td>
+                                                </tr>
                                             )}
-                                        </React.Fragment>
-                                    </>
+                                        )}
+                                    </React.Fragment>
                                 ))
                         ) : (
                             <tr>
@@ -100,4 +97,3 @@ function BasketSales() {
 }
 
 export default BasketSales;
-

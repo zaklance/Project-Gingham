@@ -48,6 +48,7 @@ def run():
 
     markets = [
         Market(
+            id=1,
             name='175th Street Greenmarket',
             location='W. 175th St. bet. Wadsworth Ave. & Broadway',
             city="New York",
@@ -56,11 +57,12 @@ def run():
             coordinates={"lat": "40.84607450953993", "lng": "-73.93808039940272"},
             schedule='Thursday (8 a.m. - 4 p.m.)',
             year_round=False,
-            season_start=date(2024, 6, 27),
-            season_end=date(2024, 11, 21),
+            season_start=date(2025, 6, 26),
+            season_end=date(2025, 11, 20),
             is_visible=False
         ),
         Market(
+            id=2,
             name='57th Street Greenmarket',
             location='W. 57th St. & 10th Ave.',
             city="New York",
@@ -69,11 +71,12 @@ def run():
             coordinates={"lat": "40.769140743893075", "lng": "-73.98836576430834"},
             schedule='Saturday (8 a.m. - 3 p.m.)',
             year_round=False,
-            season_start=date(2024, 6, 1),
-            season_end=date(2024, 11, 23),
+            season_start=date(2025, 6, 7),
+            season_end=date(2025, 11, 22),
             is_visible=False
         ),
         Market(
+            id=3,
             name='79th Street Greenmarket',
             location='79th St. & Columbus Ave.',
             city="New York",
@@ -85,6 +88,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=4,
             name='82nd Street Greenmarket',
             location=' 82nd St. bet. 1st & York Aves.',
             city="New York",
@@ -96,6 +100,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=5,
             name='94th Street Greenmarket',
             location='E. 94th St. & 1st Ave.',
             city="New York",
@@ -109,6 +114,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=6,
             name='97th Street Greenmarket',
             location='W. 97th St. bet. Columbus & Amsterdam Aves.',
             city="New York",
@@ -120,6 +126,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=7,
             name='Abingdon Square Greenmarket',
             location='Hudson St. & W. 12th St.',
             city="New York",
@@ -131,6 +138,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=8,
             name='Astor Place Greenmarket',
             location='E. 8th St. & Lafayette St.',
             city="New York",
@@ -139,11 +147,12 @@ def run():
             coordinates={"lat": "40.729830818573944", "lng": "-73.99109568735417"},
             schedule='Tuesday (8 a.m. - 5 p.m.)',
             year_round=False,
-            season_start=date(2024, 6, 4),
-            season_end=date(2024, 11, 26),
+            season_start=date(2025, 6, 3),
+            season_end=date(2025, 11, 25),
             is_visible=False
         ),
         Market(
+            id=9,
             name='Bowling Green Greenmarket',
             location='Broadway & Battery Pl.',
             city="New York",
@@ -157,6 +166,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=10,
             name='Bro Sis Green Youth Market',
             location='Amsterdam Ave. bet. W. 143rd & 144th Sts. (Johnny Hartman Plaza)',
             city="New York",
@@ -170,6 +180,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=11,
             name="Chelsea’s Down to Earth Farmers Market",
             location='W. 23rd St. bet. 8th & 9th Aves.',
             city="New York",
@@ -183,6 +194,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=12,
             name="Children’s Aid Go!Healthy Food Box + Farmstand - Milbank Center",
             location='14-32 W. 118th St.',
             city="New York",
@@ -196,6 +208,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=13,
             name='Columbia Greenmarket',
             location='Broadway & 114th St.',
             city="New York",
@@ -207,6 +220,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=14,
             name='Dag Hammarskjold Greenmarket',
             location='E. 47th St. & 2nd Ave.',
             city="New York",
@@ -218,6 +232,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=15,
             name='Fort Washington Greenmarket',
             location='W. 168th St. & Ft. Washington Ave.',
             city="New York",
@@ -226,11 +241,12 @@ def run():
             coordinates={"lat": "40.842308310821956", "lng": "-73.94211665674466"},
             schedule='Tuesday (8 a.m. - 4 p.m.)',
             year_round=False,
-            season_start=date(2024, 6, 4),
-            season_end=date(2024, 11, 26),
+            season_start=date(2025, 6, 3),
+            season_end=date(2025, 11, 23),
             is_visible=False
         ),
         Market(
+            id=16,
             name='Fulton Stall Market (Indoor Farmers Market)',
             location='91 South St.',
             city="New York",
@@ -242,6 +258,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=17,
             name='Gouverneur Health Farmstand',
             location='Madison St. bet. Clinton & Jefferson Sts.',
             city="New York",
@@ -255,6 +272,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=18,
             name='Grass Roots Farmers Market',
             location='W. 145th St. bet. Edgecombe & Bradhurst Aves. (Jackie Robinson Park)',
             city="New York",
@@ -266,6 +284,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=19,
             name='Greenmarket at the Oculus',
             location='Church & Fulton Sts. (Oculus Plaza)',
             city="New York",
@@ -279,6 +298,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=20,
             name='Harlem Meer Farmstand',
             location='Central Park N. & Malcom X Blvd.',
             city="New York",
@@ -292,6 +312,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=21,
             name='Harvest Home East Harlem Farmers Market',
             location='E. 104th St. & 3rd Ave.',
             city="New York",
@@ -305,6 +326,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=22,
             name='Harvest Home Harlem Hospital Farmers Market',
             location='W. 137th St. & Lenox Ave.',
             city="New York",
@@ -318,6 +340,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=23,
             name='Harvest Home Lenox Avenue Farm Stand',
             location='Lenox Ave. bet. W. 117th & 118th Sts.',
             city="New York",
@@ -331,6 +354,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=24,
             name='Harvest Home Metropolitan Hospital Farmers Market',
             location='97th St. & 2nd Ave.',
             city="New York",
@@ -344,6 +368,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=25,
             name='Inwood Park Greenmarket',
             location='Isham St. bet. Seaman Ave. & Cooper St.',
             city="New York",
@@ -355,6 +380,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=26,
             name='Lower East Side Farmstand',
             location='Grand St. bet. Pitt & Willett Sts. (outside of Abrons Arts Center)',
             city="New York",
@@ -368,6 +394,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=27,
             name='Morningside Park’s Down to Earth Farmers Market',
             location='W. 110th St. & Manhattan Ave.',
             city="New York",
@@ -379,6 +406,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=28,
             name='Mount Sinai Greenmarket',
             location='Madison Ave. & 99th St.',
             city="New York",
@@ -387,11 +415,12 @@ def run():
             coordinates={"lat": "40.78944510836953", "lng": "-73.95271330705022"},
             schedule='Wednesday (8 a.m. - 3 p.m.)',
             year_round=False,
-            season_start=date(2024, 6, 19),
-            season_end=date(2024, 11, 27),
+            season_start=date(2024, 6, 18),
+            season_end=date(2024, 11, 26),
             is_visible=False
         ),
         Market(
+            id=29,
             name='NYP Youth Market - Audoban',
             location='21 Audoban Ave.',
             city="New York",
@@ -403,6 +432,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=30,
             name='NYP Youth Market - Broadway',
             location='4781-4783 Broadway',
             city="New York",
@@ -414,6 +444,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=31,
             name='Project EATS Farm Stand at Essex Crossing',
             location='115 Delancey St.',
             city="New York",
@@ -425,6 +456,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=32,
             name='P.S. 11 Farm Market',
             location='320 W. 21st St.',
             city="New York",
@@ -438,6 +470,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=33,
             name='P.S. 57 Farmstand',
             location='115th St. & 3rd Ave. (SW corner)',
             city="New York",
@@ -451,6 +484,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=34,
             name='Stuyvesant Town Greenmarket',
             location='South end of Stuyvesant Town Oval',
             city="New York",
@@ -459,11 +493,12 @@ def run():
             coordinates={"lat": "40.73200566470982", "lng": "-73.97761240821589"},
             schedule='Sunday (9:30 a.m. - 4 p.m.)',
             year_round=False,
-            season_start=date(2024, 5, 12),
-            season_end=date(2024, 12, 15),
+            season_start=date(2024, 5, 11),
+            season_end=date(2024, 12, 14),
             is_visible=False
         ),
         Market(
+            id=35,
             name='Tompkins Square Greenmarket',
             location='E. 7th St. & Avenue A',
             city="New York",
@@ -475,6 +510,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=36,
             name='Tribeca Greenmarket',
             location='Greenwich & Chambers Sts.',
             city="New York",
@@ -488,6 +524,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=37,
             name='Tucker Square Greenmarket',
             location='Columbus Ave. & 66th St.',
             city="New York",
@@ -499,6 +536,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=38,
             name='Two Bridges Youth Market',
             location='50 Madison St.',
             city="New York",
@@ -512,6 +550,7 @@ def run():
             is_visible=False
         ),
         Market(
+            id=39,
             name='Union Square Greenmarket',
             location='E. 17th St. & Union Square W.',
             city="New York",
@@ -523,6 +562,7 @@ def run():
             is_visible=True
         ),
         Market(
+            id=40,
             name='Uptown Good Food Farm Stand',
             location='330 St. Nicholas Ave. (St. Nicholas Miracle Garden)',
             city="New York",
@@ -534,6 +574,72 @@ def run():
             season_start=date(2024, 6, 1),
             season_end=date(2024, 11, 23),
             is_visible=False
+        ),
+        Market(
+            id=41,
+            name="City Hall Greenmarket",
+            location='Chambers St. & Warren St.',
+            city="New York",
+            state="NY",
+            zipcode='10007',
+            coordinates={"lat": "40.713888983534495", "lng": "-74.00644264735783"},
+            schedule='Tuesday (9 a.m. - 4 p.m.)',
+            year_round=False,
+            season_start=date(2025, 4, 15),
+            season_end=date(2025, 11, 25),
+            is_visible=False
+        ),
+        Market(
+            id=42,
+            name='Uptown Grand Central Farm Stand',
+            location='125th Street & Park Ave.',
+            city="New York",
+            state="NY",
+            zipcode='10035',
+            coordinates={"lat": "40.80493954076873", "lng": "-73.93903600281972"},
+            schedule='Wednesday (1:30 - 7 p.m.)',
+            year_round=True,
+            is_visible=False
+        ),
+        Market(
+            id=43,
+            name='Lenox Hill Farm Stand',
+            location='70th St. & 1st Ave.',
+            city="New York",
+            state="NY",
+            zipcode='10021',
+            coordinates={"lat": "40.76668271329556", "lng": "-73.95721258190501"},
+            schedule='Thursday (12 a.m. - 5 p.m.)',
+            year_round=True,
+            is_visible=False
+        ),
+        Market(
+            id=44,
+            name='92nd Street Greenmarket',
+            location='E 92th St. & 1st Ave.',
+            city="New York",
+            state="NY",
+            zipcode='10025',
+            coordinates={"lat": "40.78093568496837", "lng": "-73.94626236967947"},
+            schedule='Sunday (9 a.m. - 3 p.m.)',
+            year_round=False,
+            season_start=date(2025, 6, 22),
+            season_end=date(2025, 11, 23),
+            is_visible=False
+        ),
+        Market(
+            id=45,
+            name='Rockefeller Greenmarket',
+            location='Rockefeller Plaza at 50th St.',
+            city="New York",
+            state="NY",
+            zipcode='10011',
+            coordinates={"lat": "40.75921762876115", "lng": "-73.9783109644037"},
+            schedule='Wednesday (8 a.m. - 5 p.m.)',
+            year_round=False,
+            season_start=date(2025, 8, 13),
+            season_end=date(2025, 10, 29),
+            is_visible=False
         )
     ]
     db.session.add_all(markets)
@@ -542,6 +648,7 @@ def run():
     market_day_list = [
         # 175th Street Greenmarket
         MarketDay(
+            id=1,
             market_id=1,
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
@@ -549,6 +656,7 @@ def run():
         ),
         # 57th Street Greenmarket
         MarketDay(
+            id=2,
             market_id=2,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -556,6 +664,7 @@ def run():
         ),
         # 79th Street Greenmarket
         MarketDay(
+            id=3,
             market_id=3,
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
@@ -563,6 +672,7 @@ def run():
         ),
         # 82nd Street Greenmarket
         MarketDay(
+            id=4,
             market_id=4,
             hour_start=time(9, 0, 0),
             hour_end=time(14, 30, 0),
@@ -570,6 +680,7 @@ def run():
         ),
         # 94th Street Greenmarket
         MarketDay(
+            id=5,
             market_id=5,
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
@@ -577,6 +688,7 @@ def run():
         ),
         # 97th Street Greenmarket
         MarketDay(
+            id=6,
             market_id=6,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
@@ -584,6 +696,7 @@ def run():
         ),
         # Abingdon Square Greenmarket
         MarketDay(
+            id=7,
             market_id=7,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
@@ -591,6 +704,7 @@ def run():
         ),
         # Astor Place Greenmarket
         MarketDay(
+            id=8,
             market_id=8,
             hour_start=time(8, 0, 0),
             hour_end=time(17, 0, 0),
@@ -598,6 +712,7 @@ def run():
         ),
         # Bowling Green Greenmarket
         MarketDay(
+            id=9,
             market_id=9,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
@@ -605,6 +720,7 @@ def run():
         ),
         # Bowling Green Greenmarket
         MarketDay(
+            id=10,
             market_id=9,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
@@ -612,6 +728,7 @@ def run():
         ),
         # Bro Sis Green Youth Market
         MarketDay(
+            id=11,
             market_id=10,
             hour_start=time(10, 30, 0),
             hour_end=time(18, 0, 0),
@@ -619,6 +736,7 @@ def run():
         ),
         # Chelsea’s Down to Earth Farmers Market
         MarketDay(
+            id=12,
             market_id=11,
             hour_start=time(9, 0, 0),
             hour_end=time(14, 0, 0),
@@ -626,6 +744,7 @@ def run():
         ),
         # Children’s Aid Go!Healthy Food Box + Farmstand - Milbank Center
         MarketDay(
+            id=13,
             market_id=12,
             hour_start=time(14, 0, 0),
             hour_end=time(16, 30, 0),
@@ -633,6 +752,7 @@ def run():
         ),
         # Columbia Greenmarket
         MarketDay(
+            id=14,
             market_id=13,
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
@@ -640,6 +760,7 @@ def run():
         ),
         # Columbia Greenmarket
         MarketDay(
+            id=15,
             market_id=13,
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
@@ -647,6 +768,7 @@ def run():
         ),
         # Dag Hammarskjold Greenmarket
         MarketDay(
+            id=16,
             market_id=14,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -654,6 +776,7 @@ def run():
         ),
         # Fort Washington Greenmarket
         MarketDay(
+            id=17,
             market_id=15,
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
@@ -661,6 +784,7 @@ def run():
         ),
         # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
+            id=18,
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
@@ -668,6 +792,7 @@ def run():
         ),
         # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
+            id=19,
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
@@ -675,6 +800,7 @@ def run():
         ),
         # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
+            id=20,
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
@@ -682,6 +808,7 @@ def run():
         ),
         # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
+            id=21,
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
@@ -689,6 +816,7 @@ def run():
         ),
         # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
+            id=22,
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
@@ -696,6 +824,7 @@ def run():
         ),
         # Fulton Stall Market (Indoor Farmers Market)
         MarketDay(
+            id=23,
             market_id=16,
             hour_start=time(11, 30, 0),
             hour_end=time(17, 0, 0),
@@ -703,6 +832,7 @@ def run():
         ),
         # Gouverneur Health Farmstand
         MarketDay(
+            id=24,
             market_id=17,
             hour_start=time(9, 0, 0),
             hour_end=time(14, 0, 0),
@@ -710,6 +840,7 @@ def run():
         ),
         # Grass Roots Farmers Market
         MarketDay(
+            id=25,
             market_id=18,
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
@@ -717,6 +848,7 @@ def run():
         ),
         # Grass Roots Farmers Market
         MarketDay(
+            id=26,
             market_id=18,
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
@@ -724,6 +856,7 @@ def run():
         ),
         # Greenmarket at the Oculus
         MarketDay(
+            id=27,
             market_id=19,
             hour_start=time(8, 0, 0),
             hour_end=time(17, 0, 0),
@@ -731,6 +864,7 @@ def run():
         ),
         # Harlem Meer Farmstand
         MarketDay(
+            id=28,
             market_id=20,
             hour_start=time(10, 00, 0),
             hour_end=time(14, 0, 0),
@@ -738,6 +872,7 @@ def run():
         ),
         # Harvest Home East Harlem Farmers Market
         MarketDay(
+            id=29,
             market_id=21,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -745,6 +880,7 @@ def run():
         ),
         # Harvest Home Harlem Hospital Farmers Market
         MarketDay(
+            id=30,
             market_id=22,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -752,6 +888,7 @@ def run():
         ),
         # Harvest Home Lenox Avenue Farm Stand
         MarketDay(
+            id=31,
             market_id=23,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -759,6 +896,7 @@ def run():
         ),
         # Harvest Home Metropolitan Hospital Farmers Market
         MarketDay(
+            id=32,
             market_id=24,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -766,6 +904,7 @@ def run():
         ),
         # Inwood Park Greenmarket
         MarketDay(
+            id=33,
             market_id=25,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -773,6 +912,7 @@ def run():
         ),
         # Lower East Side Farmstand
         MarketDay(
+            id=34,
             market_id=26,
             hour_start=time(8, 30, 0),
             hour_end=time(15, 0, 0),
@@ -780,6 +920,7 @@ def run():
         ),
         # Morningside Park’s Down to Earth Farmers Market
         MarketDay(
+            id=35,
             market_id=27,
             hour_start=time(9, 0, 0),
             hour_end=time(14, 0, 0),
@@ -787,6 +928,7 @@ def run():
         ),
         # Mount Sinai Greenmarket
         MarketDay(
+            id=36,
             market_id=28,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -794,6 +936,7 @@ def run():
         ),
         # NYP Youth Market - Audoban
         MarketDay(
+            id=37,
             market_id=29,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -801,6 +944,7 @@ def run():
         ),
         # NYP Youth Market - Broadway
         MarketDay(
+            id=38,
             market_id=30,
             hour_start=time(9, 0, 0),
             hour_end=time(15, 0, 0),
@@ -808,6 +952,7 @@ def run():
         ),
         # Project EATS Farm Stand at Essex Crossing
         MarketDay(
+            id=39,
             market_id=31,
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
@@ -815,6 +960,7 @@ def run():
         ),
         # Project EATS Farm Stand at Essex Crossing
         MarketDay(
+            id=40,
             market_id=31,
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
@@ -822,6 +968,7 @@ def run():
         ),
         # Project EATS Farm Stand at Essex Crossing
         MarketDay(
+            id=41,
             market_id=31,
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
@@ -829,6 +976,7 @@ def run():
         ),
         # Project EATS Farm Stand at Essex Crossing
         MarketDay(
+            id=42,
             market_id=31,
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
@@ -836,6 +984,7 @@ def run():
         ),
         # Project EATS Farm Stand at Essex Crossing
         MarketDay(
+            id=43,
             market_id=31,
             hour_start=time(11, 0, 0),
             hour_end=time(19, 0, 0),
@@ -843,6 +992,7 @@ def run():
         ),
         # P.S. 11 Farm Market
         MarketDay(
+            id=44,
             market_id=32,
             hour_start=time(8, 0, 0),
             hour_end=time(10, 00, 0),
@@ -850,6 +1000,7 @@ def run():
         ),
         # P.S. 57 Farmstand
         MarketDay(
+            id=45,
             market_id=33,
             hour_start=time(9, 30, 0),
             hour_end=time(15, 0, 0),
@@ -857,6 +1008,7 @@ def run():
         ),
         # Stuyvesant Town Greenmarket
         MarketDay(
+            id=46,
             market_id=34,
             hour_start=time(9, 30, 0),
             hour_end=time(16, 0, 0),
@@ -864,6 +1016,7 @@ def run():
         ),
         # Tompkins Square Greenmarket
         MarketDay(
+            id=47,
             market_id=35,
             hour_start=time(9, 0, 0),
             hour_end=time(16, 0, 0),
@@ -871,6 +1024,7 @@ def run():
         ),
         # Tribeca Greenmarket
         MarketDay(
+            id=48,
             market_id=36,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
@@ -878,6 +1032,7 @@ def run():
         ),
         # Tribeca Greenmarket
         MarketDay(
+            id=49,
             market_id=36,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
@@ -885,6 +1040,7 @@ def run():
         ),
         # Tucker Square Greenmarket
         MarketDay(
+            id=50,
             market_id=37,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -892,6 +1048,7 @@ def run():
         ),
         # Tucker Square Greenmarket
         MarketDay(
+            id=51,
             market_id=37,
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
@@ -899,6 +1056,7 @@ def run():
         ),
         # Two Bridges Youth Market
         MarketDay(
+            id=52,
             market_id=38,
             hour_start=time(10, 30, 0),
             hour_end=time(15, 30, 0),
@@ -906,6 +1064,7 @@ def run():
         ),
         # Union Square Greenmarket
         MarketDay(
+            id=53,
             market_id=39,
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
@@ -913,6 +1072,7 @@ def run():
         ),
         # Union Square Greenmarket
         MarketDay(
+            id=54,
             market_id=39,
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
@@ -920,6 +1080,7 @@ def run():
         ),
         # Union Square Greenmarket
         MarketDay(
+            id=55,
             market_id=39,
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
@@ -927,6 +1088,7 @@ def run():
         ),
         # Union Square Greenmarket
         MarketDay(
+            id=56,
             market_id=39,
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
@@ -934,10 +1096,51 @@ def run():
         ),
         # Uptown Good Food Farm Stand
         MarketDay(
+            id=57,
             market_id=40,
             hour_start=time(16, 0, 0),
             hour_end=time(19, 0, 0),
             day_of_week=4,
+        ),
+        # City Hall Greenmarket
+        MarketDay(
+            id=58,
+            market_id=41,
+            hour_start=time(9, 0, 0),
+            hour_end=time(16, 0, 0),
+            day_of_week=2
+        ),
+        # Uptown Grand Central Farm Stand
+        MarketDay(
+            id=59,
+            market_id=42,
+            hour_start=time(1, 30, 0),
+            hour_end=time(19, 0, 0),
+            day_of_week=3
+        ),
+        # Lenox Hill Farm Stand
+        MarketDay(
+            id=60,
+            market_id=43,
+            hour_start=time(12, 0, 0),
+            hour_end=time(17, 0, 0),
+            day_of_week=4
+        ),
+        # 92nd Street Greenmarket
+        MarketDay(
+            id=61,
+            market_id=44,
+            hour_start=time(9, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=1
+        ),
+        # Rockefeller Center Greenmarket
+        MarketDay(
+            id=62,
+            market_id=45,
+            hour_start=time(8, 0, 0),
+            hour_end=time(17, 0, 0),
+            day_of_week=3
         )
     ]
     db.session.add_all(market_day_list)

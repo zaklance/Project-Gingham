@@ -618,7 +618,6 @@ function Profile({ marketData }) {
         return <div>Loading...</div>;
     }
 
-    console.log(tempProfileData?.phone)
 
     return (
         <div>
