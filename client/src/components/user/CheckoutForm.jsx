@@ -18,29 +18,6 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const token = localStorage.getItem('user_jwt-token');
 
-    const formatDate = (timeString) => {
-        if (!timeString) {
-            console.error("Invalid time:", timeString);
-            return null;
-        }
-    
-        // Get today's date in YYYY-MM-DD format
-        const today = new Date();
-        const currentDate = today.toISOString().split('T')[0]; // "YYYY-MM-DD"
-    
-        // Combine with provided time (HH:mm) to form full datetime
-        const dateTimeString = `${currentDate}T${timeString}:00`; // Add seconds
-    
-        const dateObject = new Date(dateTimeString);
-    
-        if (isNaN(dateObject.getTime())) {
-            console.error("Invalid date conversion:", timeString);
-            return null;
-        }
-    
-        return dateObject.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-    };
-
     const generateICSFile = (cartItems) => {
         console.log("Generating ICS file for cart items:", cartItems);
         
@@ -98,10 +75,10 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
         if (!stripe || !elements) return;
     
         setIsProcessing(true);
-    
+        
         const { error, paymentIntent } = await stripe.confirmPayment({
             elements,
-            confirmParams: { return_url: window.location.href },
+            confirmParams: { return_url: window.location.href, },
             redirect: "if_required",
         });
     
@@ -124,25 +101,27 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 }));
     
                 console.log("Items marked as sold!");
-
-                // console.log("📤 Sending distribute-payments request:", { 
-                //     payment_intent_id: paymentIntent?.id, 
-                //     baskets: cartItems 
+                
+                // Need to fix distribute-payments... might need to be a webhook
+                // console.log("Sending distribute-payments request...", {
+                //     payment_intent_id: paymentIntent.id,
+                //     baskets: cartItems
                 // });
-
+    
                 // const distributeResponse = await fetch('/api/distribute-payments', {
                 //     method: 'POST',
                 //     headers: { 'Content-Type': 'application/json' },
                 //     body: JSON.stringify({ 
-                //         payment_intent_id: paymentIntent?.id, 
+                //         payment_intent_id: paymentIntent.id, 
                 //         baskets: cartItems 
                 //     }),
                 // });
-
+    
                 // if (!distributeResponse.ok) {
-                //     throw new Error(`Failed to distribute payments: ${distributeResponse.statusText}`);
+                //     const errorText = await distributeResponse.text();
+                //     throw new Error(`Failed to distribute payments: ${distributeResponse.status} ${distributeResponse.statusText}`);
                 // }
-
+    
                 // console.log("Vendor payouts successful!");
     
                 // Generate QR codes
@@ -227,7 +206,6 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
             setIsProcessing(false);
         }
     };
-
 
     return (
         <>
