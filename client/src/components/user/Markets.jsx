@@ -162,7 +162,21 @@ function Markets() {
                         .sort((a, b) => a.distance - b.distance);
                     setMarkets(sortedMarkets);
                 } else {
-                    setMarkets(markets)
+                    const sortedMarkets = markets
+                        .sort((a, b) => {
+                            const nameA = a.name.toLowerCase();
+                            const nameB = b.name.toLowerCase();
+
+                            const numA = nameA.match(/^\D*(\d+)/)?.[1];
+                            const numB = nameB.match(/^\D*(\d+)/)?.[1];
+
+                            if (numA && numB && nameA[0] >= "0" && nameA[0] <= "9" && nameB[0] >= "0" && nameB[0] <= "9") {
+                                return parseInt(numA) - parseInt(numB);
+                            }
+
+                            return nameA.localeCompare(nameB, undefined, { numeric: true });
+                        });
+                    setMarkets(sortedMarkets)
                 }
                 const coordinates = markets
                     .filter((market) => market.coordinates)
@@ -424,10 +438,34 @@ function Markets() {
         let results = [...filteredMarketsResults];
 
         if (filterAZ) {
-            results.sort((a, b) => a.name.localeCompare(b.name));
+            results.sort((a, b) => {
+                const nameA = a.name.toLowerCase();
+                const nameB = b.name.toLowerCase();
+
+                const numA = nameA.match(/^\D*(\d+)/)?.[1];
+                const numB = nameB.match(/^\D*(\d+)/)?.[1];
+
+                if (numA && numB && nameA[0] >= "0" && nameA[0] <= "9" && nameB[0] >= "0" && nameB[0] <= "9") {
+                    return parseInt(numA) - parseInt(numB);
+                }
+
+                return nameA.localeCompare(nameB, undefined, { numeric: true });
+            });
         }
         else if (filterZA) {
-            results.sort((a, b) => b.name.localeCompare(a.name));
+            results.sort((a, b) => {
+                const nameA = a.name.toLowerCase();
+                const nameB = b.name.toLowerCase();
+
+                const numA = nameA.match(/^\D*(\d+)/)?.[1];
+                const numB = nameB.match(/^\D*(\d+)/)?.[1];
+
+                if (numA && numB && nameA[0] >= "0" && nameA[0] <= "9" && nameB[0] >= "0" && nameB[0] <= "9") {
+                    return parseInt(numB) - parseInt(numA);
+                }
+
+                return nameB.localeCompare(nameA, undefined, { numeric: true });
+            });
         }
         else if (filterLocation) {
             results = results
@@ -467,7 +505,7 @@ function Markets() {
                 <div className='header'>
                     <div id="map-main">
                         <Map
-                            token={mapToken}
+                            token={'eyJraWQiOiJKRjNNUjQyNFNBIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJZSjhXNlhRSEg3IiwiaWF0IjoxNzM5ODE0Mjc5LCJleHAiOjE3NDA0NzAzOTl9.T65ByLqJC84_dmGBuQW94XJEYyFVI3A1jUTIBaNd0krkTlCEzfHsTVFxaxOCT7KBnTK3v73aFoOqhpVu3Y65LQ'}
                             initialRegion={{
                                 centerLatitude: 40.736358642578125,
                                 centerLongitude: -73.99076080322266,
@@ -478,7 +516,7 @@ function Markets() {
                             showsScale={FeatureVisibility.Visible}
                             showsUserLocation={true}
                             tracksUserLocation={true}
-                            onUserLocationChange={event => setUserCoordinates({ 'lat': event.coordinate.latitude, 'lng': event.coordinate.longitude })}
+                            onUserLocationChange={event => {setUserCoordinates({ 'lat': event.coordinate.latitude, 'lng': event.coordinate.longitude }); setFilterLocation(true)}}
                         >
                             {marketCoordinates.map((market) => (
                                 <Annotation
