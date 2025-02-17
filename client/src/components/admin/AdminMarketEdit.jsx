@@ -77,8 +77,8 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         if (!market?.name) return false;
 
         if (query && !market?.name?.toLowerCase().includes(query.toLowerCase())) return false;
-        if (locationQuery[0] && market.city.toLowerCase() !== locationQuery[0].toLowerCase()) return false;
-        if (locationQuery[1] && market.state.toLowerCase() !== locationQuery[1].toLowerCase()) return false;
+        if (cityQuery && market.city.toLowerCase() !== cityQuery.toLowerCase()) return false;
+        if (stateQuery && market.state.toLowerCase() !== stateQuery.toLowerCase()) return false;
         if (isVisible !== "" && market.is_visible !== isVisible) return false;
         if (isCurrent !== "" && market.is_current !== isCurrent) return false;
         if (isYearRound !== "" && market.year_round !== isYearRound) return false;
@@ -527,9 +527,22 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                                 )
                                             )}
                                             {/* <p>{market.schedule}</p> */}
-                                            <p>Is Visible: &#8202; &#8202;{market.is_visible ? 'Yes' : 'No'}</p>
-                                            <p>Is Current: &#8202;{market.is_current ? 'Yes' : 'No'}</p>
-                                            <p>Vendors: &emsp; {market.market_days.reduce((total, marketDay) => total + (marketDay.vendor_markets?.length || 0), 0)}</p>
+                                            <table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Is Visible: &#8202;</td>
+                                                        <td className='text-center'>{market.is_visible ? 'Yes' : 'No'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Is Current: &#8202;</td>
+                                                        <td className='text-center'>{market.is_current ? 'Yes' : 'No'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Vendors: &#8202;</td>
+                                                        <td className='text-center'>{market.market_days.reduce((total, marketDay) => total + (marketDay.vendor_markets?.length || 0), 0)}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                         <div className='text-center margin-t-8'>
                                             <button className='btn btn-file' onClick={(e) => setQuery(market.name)}>Select</button>
