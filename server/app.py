@@ -3906,11 +3906,11 @@ def get_user_receipts():
             if not request.data:
                 return jsonify({"error": "Empty request body"}), 400
 
-            print("Raw request data:", request.data)
+            # print("Raw request data:", request.data)
 
             data = request.get_json()
 
-            print("Parsed JSON data:", data)
+            # print("Parsed JSON data:", data)
 
             if not data or 'user_id' not in data or 'baskets' not in data:
                 return jsonify({"error": "Missing required fields: 'user_id' and 'baskets'"}), 400

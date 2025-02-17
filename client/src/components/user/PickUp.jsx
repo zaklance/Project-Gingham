@@ -147,8 +147,8 @@ function PickUp() {
                                                         <button className="btn-basket-save" onClick={(event) => handlePickUp(event, basket.id)}>Pick Up Basket</button>
                                                     </div>
                                                     {inPickupWindow && (
-                                                        <div className='flex-center'>
-                                                            <a className="link-edit" onClick={(event) => handleIssuePopup(event, basket.id)}>Problems with pickup?</a>
+                                                        <div className='flex-center margin-t-4'>
+                                                            <a className="forgot-password" onClick={(event) => handleIssuePopup(event, basket.id)}>Problems with pickup?</a>
                                                         </div>
                                                     )}
                                                 </>

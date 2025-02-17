@@ -46,13 +46,15 @@ function UserIssues({ basketId, onClose }) {
     return (
         <div className="popup-overlay">
             <div className="popup-on">
-                <h3 className="margin-t-16 margin-b-16 flex-center">Report a Pickup Issue</h3>
-                <div className="wrapper">
+                <button className="btn btn-large x-btn" onClick={onClose}>X</button>
+                <h1 className="margin-t-16 margin-b-16 flex-center m-margin-0-24">Report a Pickup Issue</h1>
+                <div className="wrapper-issues">
                     <div className="margin-t-16 flex-center">
                         <form onSubmit={handleSubmit} className="form">
                             <div className="form-group form-contact">
                                 <label>Issue Type:</label>
                                 <select 
+                                    className='m-select-wrap'
                                     name="issueType"
                                     value={formData.issueType}
                                     onChange={handleChange}
@@ -78,8 +80,8 @@ function UserIssues({ basketId, onClose }) {
                                 />
                             </div>
                             <div className="flex-center">
-                                <button className="btn-login" type="submit">Submit</button>
-                                <button className="btn-login" type="button" onClick={onClose}>Cancel</button>
+                                <button className="btn-edit" type="submit">Submit</button>
+                                {/* <button className="btn-edit" type="button" onClick={onClose}>Cancel</button> */}
                             </div>
                         </form>
                     </div>

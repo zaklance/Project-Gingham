@@ -22,6 +22,13 @@ export function blogTimeConverter(postedAt) {
     return formattedDate;
 }
 
+export function fileTimeConverter(postedAt) {
+    const [date] = postedAt.split(/T| /);
+    const [year, month, day] = date.split('-');
+    const formattedDate = `${year}-${month}${day}`;
+    return formattedDate;
+}
+
 export function marketDateConvert(sale_date) {
     const [date] = sale_date.split(/T| /);
     const [year, month, day] = date.split('-');
