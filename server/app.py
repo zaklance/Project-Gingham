@@ -3097,8 +3097,69 @@ def create_payment_intent():
     except Exception as e:
         # General error handling
         return jsonify({'error': {'message': 'An unexpected error occurred.'}}), 500
-    
-# Need to create a distribute-payments route so that the payments by vendor_id/stripe_account_id is separated when it goes to stripe
+
+# Distribute Payments route is not working correctly - this may need to be made into a webhook.     
+# @app.route('/api/distribute-payments', methods=['POST'])
+# def distribute_payments():
+#     try:
+#         data = request.get_json()
+#         if not data or 'baskets' not in data or 'payment_intent_id' not in data:
+#             return jsonify({'error': {'message': 'Missing required data.'}}), 400
+
+#         payment_intent_id = data['payment_intent_id']
+#         baskets = data['baskets']
+
+#         print(f"Fetching PaymentIntent {payment_intent_id}...")
+
+#         # Retrieve the PaymentIntent to get the charge ID
+#         payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+#         charge_id = payment_intent.charges.data[0].id if payment_intent.charges.data else None
+
+#         if not charge_id:
+#             print("No charge found for PaymentIntent.")
+#             return jsonify({'error': {'message': 'No charge associated with this PaymentIntent.'}}), 400
+
+#         print(f"Retrieved Charge ID: {charge_id}")
+
+#         transfers = []
+
+#         for basket in baskets:
+#             vendor_id = basket['vendor_id']
+#             vendor_account_id = get_vendor_stripe_account(vendor_id)
+#             price = basket['price']
+#             fee_vendor = basket.get('fee_vendor', 0)
+
+#             if not vendor_account_id:
+#                 print(f"⚠️ Skipping vendor {vendor_id}: No Stripe account.")
+#                 continue
+
+#             vendor_payout = price - fee_vendor
+#             if vendor_payout <= 0:
+#                 print(f"⚠️ Skipping vendor {vendor_id}: Payout amount is zero or negative.")
+#                 continue
+
+#             print(f"💰 Transferring {vendor_payout} to Vendor {vendor_id} (Stripe Account: {vendor_account_id})")
+
+#             transfer = stripe.Transfer.create(
+#                 amount=int(vendor_payout * 100),
+#                 currency="usd",
+#                 destination=vendor_account_id,
+#                 description=f"Payout for Basket {basket['id']}",
+#                 source_transaction=charge_id 
+#             )
+
+#             transfers.append(transfer)
+#             print(f"Transfer successful: {transfer['id']} to Vendor {vendor_id}")
+
+#         return jsonify({'message': 'Vendor payouts completed successfully', 'transfers': transfers}), 200
+
+#     except stripe.error.StripeError as e:
+#         print("Stripe error during payouts:", e)
+#         return jsonify({'error': {'message': str(e.user_message)}}), 400
+
+#     except Exception as e:
+#         print("Unexpected error:", str(e))
+#         return jsonify({'error': {'message': 'An unexpected error occurred.'}}), 500
 
 # Password reset for User
 @app.route('/api/user/password-reset-request', methods=['POST'])
