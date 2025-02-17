@@ -14,6 +14,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const [stateQuery, setStateQuery] = useState("");
     const [isCurrent, setIsCurrent] = useState("");
     const [isVisible, setIsVisible] = useState("");
+    const [isYearRound, setIsYearRound] = useState("");
     const [editMode, setEditMode] = useState(false);
     const [editDayMode, setEditDayMode] = useState(false);
     const [adminMarketData, setAdminMarketData] = useState(null);
@@ -22,6 +23,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const [image, setImage] = useState(null)
     const [showDropdown, setShowDropdown] = useState(false);
     const [status, setStatus] = useState('initial')
+    const [showFilters, setShowFilters] = useState(false)
 
     const dropdownRef = useRef(null);
     const { handlePopup } = useOutletContext();
@@ -49,6 +51,9 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         if (isCurrent !== "") {
             if (market.is_current !== isCurrent) return false;
         }
+        if (isYearRound !== "") {
+            if (market.year_round !== isYearRound) return false;
+        }
 
         return true;
     });
@@ -67,10 +72,6 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
             const [city, state] = cityState.split(","); // Convert back to object
             return { city, state };
         });
-    console.log(filteredLocationDropdown)
-    console.log(cityQuery)
-    console.log(`'${stateQuery}'`)
-    
 
     const filteredMarketsResults = markets.filter(market => {
         if (!market?.name) return false;
@@ -80,12 +81,12 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         if (locationQuery[1] && market.state.toLowerCase() !== locationQuery[1].toLowerCase()) return false;
         if (isVisible !== "" && market.is_visible !== isVisible) return false;
         if (isCurrent !== "" && market.is_current !== isCurrent) return false;
+        if (isYearRound !== "" && market.year_round !== isYearRound) return false;
 
         return true
     });
 
-    const filteredMarkets = markets.filter(market => market.name.toLowerCase().includes(query.toLowerCase()) && market.name !== query)
-    const matchingMarket = markets.find(market => market.name.toLowerCase() === query.toLowerCase());
+    const matchingMarket = markets.find(market => (market.name.toLowerCase() === query.toLowerCase()) && (market.city.toLowerCase().includes(cityQuery.toLowerCase()) && (market.state.toLowerCase() === stateQuery.toLowerCase())));
     const matchingMarketId = matchingMarket ? matchingMarket.id : null;
 
     const handleVisibilityChange = (value) => {
@@ -95,6 +96,14 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const handleCurrentChange = (value) => {
         setIsCurrent(prev => (prev === value ? "" : value));
     };
+    
+    const handleYearRoundChange = (value) => {
+        setIsYearRound(prev => (prev === value ? "" : value));
+    };
+
+    const handleDropDownFilters = (event) => {
+        setShowFilters(!showFilters)
+    }
 
     useEffect(() => {
         fetch(`/api/market-days?market_id=${matchingMarketId}`)
@@ -380,7 +389,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     <div className="dropdown-content" ref={dropdownRef}>
                                         {
                                             (query || locationQuery[0] || locationQuery[1] || isCurrent !== "" || isVisible !== "") &&
-                                            filteredMarketsDropdown.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => { setQuery(item.name); setShowDropdown(false);}}>
+                                            filteredMarketsDropdown.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => { setQuery(item.name); setCityQuery(item.city); setStateQuery(item.state); setShowDropdown(false);}}>
                                                 {item.name}
                                             </div>)
                                         }
@@ -414,47 +423,73 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     }
                                 </div>
                             </td>
-                            <td className='cell-text'>
-                                <div className='flex-space-between flex-column'>
-                                    <div className='search-bar-checkbox'>
-                                        <label className='text-500 margin-r-8'>Visible:&#8202; &#8202;</label>
-                                        <input
-                                            className='scale-fix-125 margin-r-4'
-                                            type='checkbox'
-                                            checked={isVisible}
-                                            value={true}
-                                            onChange={() => handleVisibilityChange(true)}
-                                        />
-                                        <label className='margin-r-8'>Yes</label>
-                                        <input
-                                            className='scale-fix-125 margin-r-4'
-                                            type='checkbox'
-                                            checked={isVisible === false}
-                                            value={false}
-                                            onChange={() => handleVisibilityChange(false)}
-                                        />
-                                        <label className='margin-r-8'>No</label>
+                            <td>
+                                <button className='btn btn-filter' onClick={handleDropDownFilters}>&#9776;</button>
+                                {showFilters && (
+                                    <div className='dropdown-content box-filters-admin flex-space-between flex-column'>
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td><label className='text-500 margin-r-8'>Visible:</label></td>
+                                                    <td><input
+                                                        className='scale-fix-125 margin-r-4'
+                                                        type='checkbox'
+                                                        checked={isVisible}
+                                                        value={true}
+                                                        onChange={() => handleVisibilityChange(true)}
+                                                    />
+                                                    <label className='margin-r-8'>Yes</label>
+                                                    <input
+                                                        className='scale-fix-125 margin-r-4'
+                                                        type='checkbox'
+                                                        checked={isVisible === false}
+                                                        value={false}
+                                                        onChange={() => handleVisibilityChange(false)}
+                                                    />
+                                                    <label className='margin-r-8'>No</label></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><label className='text-500 margin-r-8'>Current:</label></td>
+                                                    <td><input
+                                                        className='scale-fix-125 margin-r-4'
+                                                        type='checkbox'
+                                                        checked={isCurrent}
+                                                        value={true}
+                                                        onChange={() => handleCurrentChange(true)}
+                                                    />
+                                                    <label className='margin-r-8'>Yes</label>
+                                                    <input
+                                                        className='scale-fix-125 margin-r-4'
+                                                        type='checkbox'
+                                                        checked={isCurrent === false}
+                                                        value={false}
+                                                        onChange={() => handleCurrentChange(false)}
+                                                    />
+                                                    <label className='margin-r-8'>No</label></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><label className='text-500 margin-r-8'>Year Round:&emsp;</label></td>
+                                                    <td><input
+                                                        className='scale-fix-125 margin-r-4'
+                                                        type='checkbox'
+                                                        checked={isYearRound}
+                                                        value={true}
+                                                        onChange={() => handleYearRoundChange(true)}
+                                                    />
+                                                    <label className='margin-r-8'>Yes</label>
+                                                    <input
+                                                        className='scale-fix-125 margin-r-4'
+                                                        type='checkbox'
+                                                        checked={isYearRound === false}
+                                                        value={false}
+                                                        onChange={() => handleYearRoundChange(false)}
+                                                    />
+                                                    <label className='margin-r-8'>No</label></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
-                                    <div className='search-bar-checkbox'>
-                                        <label className='text-500 margin-r-8'>Current:</label>
-                                        <input
-                                            className='scale-fix-125 margin-r-4'
-                                            type='checkbox'
-                                            checked={isCurrent}
-                                            value={true}
-                                            onChange={() => handleCurrentChange(true)}
-                                        />
-                                        <label className='margin-r-8'>Yes</label>
-                                        <input
-                                            className='scale-fix-125 margin-r-4'
-                                            type='checkbox'
-                                            checked={isCurrent === false}
-                                            value={false}
-                                            onChange={() => handleCurrentChange(false)}
-                                        />
-                                        <label className='margin-r-8'>No</label>
-                                    </div>
-                                </div>
+                                )}
                             </td>
                         </tr>
                     </tbody>
