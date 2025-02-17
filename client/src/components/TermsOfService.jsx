@@ -97,6 +97,9 @@ function TermsOfService() {
                             <a href={`mailto:sales@gingham.nyc`} target="_blank" rel="noopener noreferrer"> sales@gingham.nyc</a>.</strong>
                         </p>
                         <p className="margin-b-16">
+                            Please note that any refunds may or may not include transaction fees based on the reason for refund. 
+                        </p>
+                        <p className="margin-b-16">
                             Thank you for your understanding and support of local farmers and vendors.
                         </p>
                 </section>
