@@ -66,6 +66,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 26),
             season_end=date(2025, 11, 20),
+            is_current=True
         ),
         Market(
             id=2,
@@ -80,6 +81,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 7),
             season_end=date(2025, 11, 22),
+            is_current=True
         ),
         Market(
             id=3,
@@ -92,6 +94,7 @@ def run():
             coordinates={"lat": "40.782040858828", "lng": "-73.9759752811397"},
             schedule='Sunday (9 a.m. - 4 p.m.)',
             year_round=True,
+            is_current=True
         ),
         Market(
             id=4,
@@ -104,6 +107,7 @@ def run():
             coordinates={"lat": "40.77397099020891", "lng": "-73.95064361322936"},
             schedule='Saturday (9 a.m. - 2:30 p.m.)',
             year_round=True,
+            is_current=True
         ),
         Market(
             id=5,
@@ -118,6 +122,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 18),
             season_end=date(2024, 11, 19),
+            is_current=False
         ),
         Market(
             id=6,
@@ -130,6 +135,7 @@ def run():
             coordinates={"lat": "40.79433392796688", "lng": "-73.96852339557134"},
             schedule='Friday (8 a.m. - 2 p.m.)',
             year_round=True,
+            is_current=True
         ),
         Market(
             id=7,
@@ -142,6 +148,7 @@ def run():
             coordinates={"lat": "40.737268845844085", "lng": "-74.00531736212757"},
             schedule='Saturday (8 a.m. - 2 p.m.)',
             year_round=True,
+            is_current=True
         ),
         Market(
             id=8,
@@ -156,6 +163,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 3),
             season_end=date(2025, 11, 25),
+            is_current=True
         ),
         Market(
             id=9,
@@ -168,8 +176,9 @@ def run():
             coordinates={"lat": "40.704724320402526", "lng": "-74.01342009247573"},
             schedule='Tuesday & Thursday (8 a.m. - 2 p.m.)',
             year_round=False,
-            season_start=date(2024, 4, 16),
-            season_end=date(2024, 11, 26),
+            season_start=date(2024, 4, 15),
+            season_end=date(2024, 11, 25),
+            is_current=True
         ),
         Market(
             id=10,
@@ -184,6 +193,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 8),
             season_end=date(2024, 11, 25),
+            is_current=False
         ),
         Market(
             id=11,
@@ -198,6 +208,7 @@ def run():
             year_round=False,
             season_start=date(2024, 4, 20),
             season_end=date(2024, 12, 21),
+            is_current=False
         ),
         Market(
             id=12,
@@ -212,6 +223,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 10),
             season_end=date(2024, 11, 20),
+            is_current=False
         ),
         Market(
             id=13,
@@ -224,6 +236,7 @@ def run():
             coordinates={"lat": "40.80711550674964", "lng": "-73.9643334908912"},
             schedule='Thursday & Sunday (8 a.m. - 4 p.m.)',
             year_round=True,
+            is_current=True
         ),
         Market(
             id=14,
@@ -236,6 +249,7 @@ def run():
             coordinates={"lat": "40.752106980482026", "lng": "-73.96813449641382"},
             schedule='Wednesday (8 a.m. - 3 p.m.)',
             year_round=True,
+            is_current=True
         ),
         Market(
             id=15,
@@ -250,6 +264,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 3),
             season_end=date(2025, 11, 23),
+            is_current=True
         ),
         Market(
             id=16,
@@ -262,6 +277,7 @@ def run():
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
             schedule='Monday - Saturday (11:30 a.m. - 5 p.m.)',
             year_round=True,
+            is_current=True
         ),
         Market(
             id=17,
@@ -276,6 +292,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 5),
             season_end=date(2024, 11, 22),
+            is_current=False
         ),
         Market(
             id=18,
@@ -288,6 +305,7 @@ def run():
             coordinates={"lat": "40.82373611412579", "lng": "-73.9435495760123"},
             schedule='Tuesday & Saturday (9 a.m. - 4 p.m.)',
             year_round=False,
+            is_current=False
         ),
         Market(
             id=19,
@@ -302,6 +320,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 18),
             season_end=date(2024, 10, 29),
+            is_current=False
         ),
         Market(
             id=20,
@@ -316,6 +335,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 20),
             season_end=date(2024, 11, 30),
+            is_current=False
         ),
         Market(
             id=21,
@@ -330,6 +350,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 13),
             season_end=date(2024, 11, 14),
+            is_current=False
         ),
         Market(
             id=22,
@@ -344,6 +365,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 14),
             season_end=date(2024, 11, 15),
+            is_current=False
         ),
         Market(
             id=23,
@@ -358,6 +380,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 22),
             season_end=date(2024, 11, 16),
+            is_current=False
         ),
         Market(
             id=24,
@@ -372,6 +395,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 14),
             season_end=date(2024, 11, 15),
+            is_current=False
         ),
         Market(
             id=25,
@@ -384,6 +408,7 @@ def run():
             coordinates={"lat": "40.86911825882977", "lng": "-73.92025906885881"},
             schedule='Saturday (8 a.m. - 3 p.m.)',
             year_round=True,
+            is_current=True
         ),
         Market(
             id=26,
@@ -398,6 +423,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 5),
             season_end=date(2024, 11, 22),
+            is_current=False
         ),
         Market(
             id=27,
@@ -410,6 +436,7 @@ def run():
             coordinates={"lat": "40.801382884379336", "lng": "-73.95970142371496"},
             schedule='Saturday (9 a.m. - 2 p.m.)',
             year_round=True,
+            is_current=True
         ),
         Market(
             id=28,
@@ -424,6 +451,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 18),
             season_end=date(2024, 11, 26),
+            is_current=False
         ),
         Market(
             id=29,
@@ -436,6 +464,7 @@ def run():
             coordinates={"lat": "40.839630140355446", "lng": "-73.93889062898364"},
             schedule='Thursday (9 a.m. - 3 p.m.)',
             year_round=False,
+            is_current=False
         ),
         Market(
             id=30,
@@ -448,6 +477,7 @@ def run():
             coordinates={"lat": "40.86600006214813", "lng": "-73.9263264427691"},
             schedule='Wednesday (9 a.m. - 3 p.m.)',
             year_round=False,
+            is_current=False
         ),
         Market(
             id=31,
@@ -460,6 +490,7 @@ def run():
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
             schedule='Wednesday-Sunday (11 a.m. - 7 p.m.)',
             year_round=False,
+            is_current=False
         ),
         Market(
             id=32,
@@ -474,6 +505,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 11),
             season_end=date(2024, 11, 12),
+            is_current=False
         ),
         Market(
             id=33,
@@ -488,6 +520,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 1),
             season_end=date(2024, 11, 21),
+            is_current=False
         ),
         Market(
             id=34,
@@ -502,6 +535,7 @@ def run():
             year_round=False,
             season_start=date(2024, 5, 11),
             season_end=date(2024, 12, 14),
+            is_current=False
         ),
         Market(
             id=35,
@@ -514,6 +548,7 @@ def run():
             coordinates={"lat": "40.72606737678102", "lng": "-73.98333751481684"},
             schedule='Sunday (9 a.m. - 4 p.m.)',
             year_round=True,
+            is_current=True
         ),
         Market(
             id=36,
@@ -525,9 +560,8 @@ def run():
             zipcode='10013',
             coordinates={"lat": "40.71690089948348", "lng": "-74.01090464424209"},
             schedule='Wednesday & Saturday (8 a.m. - 2 p.m.)',
-            year_round=False,
-            season_start=date(2024, 4, 17),
-            season_end=date(2024, 11, 27),
+            year_round=True,
+            is_current=True
         ),
         Market(
             id=37,
@@ -540,6 +574,7 @@ def run():
             coordinates={"lat": "40.77367979894632", "lng": "-73.9819555713842"},
             schedule='Thursday (8 a.m. - 3 p.m.); Saturday (8 a.m. - 4 p.m.)',
             year_round=True,
+            is_current=True
         ),
         Market(
             id=38,
@@ -554,6 +589,7 @@ def run():
             year_round=False,
             season_start=date(2024, 5, 26),
             season_end=date(2024, 12, 15),
+            is_current=False
         ),
         Market(
             id=39,
@@ -566,6 +602,7 @@ def run():
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
             schedule='Monday, Wednesday, Friday & Saturday (8 a.m. - 6 p.m.)',
             year_round=True,
+            is_current=True
         ),
         Market(
             id=40,
@@ -580,6 +617,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 1),
             season_end=date(2024, 11, 23),
+            is_current=False
         ),
         Market(
             id=41,
@@ -594,6 +632,7 @@ def run():
             year_round=False,
             season_start=date(2025, 4, 15),
             season_end=date(2025, 11, 25),
+            is_current=True
         ),
         Market(
             id=42,
@@ -606,6 +645,7 @@ def run():
             coordinates={"lat": "40.80493954076873", "lng": "-73.93903600281972"},
             schedule='Wednesday (1:30 - 7 p.m.)',
             year_round=True,
+            is_current=True
         ),
         Market(
             id=43,
@@ -618,6 +658,7 @@ def run():
             coordinates={"lat": "40.76668271329556", "lng": "-73.95721258190501"},
             schedule='Thursday (12 a.m. - 5 p.m.)',
             year_round=True,
+            is_current=True
         ),
         Market(
             id=44,
@@ -631,6 +672,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 22),
             season_end=date(2025, 11, 23),
+            is_current=True
         ),
         Market(
             id=45,
@@ -645,6 +687,7 @@ def run():
             year_round=False,
             season_start=date(2025, 8, 13),
             season_end=date(2025, 10, 29),
+            is_current=True
         )
     ]
     db.session.add_all(markets)
@@ -1033,19 +1076,11 @@ def run():
             market_id=36,
             hour_start=time(8, 0, 0),
             hour_end=time(14, 0, 0),
-            day_of_week=3,
-        ),
-        # Tribeca Greenmarket
-        MarketDay(
-            id=49,
-            market_id=36,
-            hour_start=time(8, 0, 0),
-            hour_end=time(14, 0, 0),
             day_of_week=6,
         ),
         # Tucker Square Greenmarket
         MarketDay(
-            id=50,
+            id=49,
             market_id=37,
             hour_start=time(8, 0, 0),
             hour_end=time(15, 0, 0),
@@ -1053,7 +1088,7 @@ def run():
         ),
         # Tucker Square Greenmarket
         MarketDay(
-            id=51,
+            id=50,
             market_id=37,
             hour_start=time(8, 0, 0),
             hour_end=time(16, 0, 0),
@@ -1061,7 +1096,7 @@ def run():
         ),
         # Two Bridges Youth Market
         MarketDay(
-            id=52,
+            id=51,
             market_id=38,
             hour_start=time(10, 30, 0),
             hour_end=time(15, 30, 0),
@@ -1069,7 +1104,7 @@ def run():
         ),
         # Union Square Greenmarket
         MarketDay(
-            id=53,
+            id=52,
             market_id=39,
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
@@ -1077,7 +1112,7 @@ def run():
         ),
         # Union Square Greenmarket
         MarketDay(
-            id=54,
+            id=53,
             market_id=39,
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
@@ -1085,7 +1120,7 @@ def run():
         ),
         # Union Square Greenmarket
         MarketDay(
-            id=55,
+            id=54,
             market_id=39,
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
@@ -1093,7 +1128,7 @@ def run():
         ),
         # Union Square Greenmarket
         MarketDay(
-            id=56,
+            id=55,
             market_id=39,
             hour_start=time(8, 0, 0),
             hour_end=time(18, 0, 0),
@@ -1101,11 +1136,51 @@ def run():
         ),
         # Uptown Good Food Farm Stand
         MarketDay(
-            id=57,
+            id=56,
             market_id=40,
             hour_start=time(16, 0, 0),
             hour_end=time(19, 0, 0),
             day_of_week=4,
+        ),
+        # City Hall Greenmarket
+        MarketDay(
+            id=57,
+            market_id=41,
+            hour_start=time(9, 0, 0),
+            hour_end=time(16, 0, 0),
+            day_of_week=2
+        ),
+        # Uptown Grand Central Farm Stand
+        MarketDay(
+            id=58,
+            market_id=42,
+            hour_start=time(1, 30, 0),
+            hour_end=time(19, 0, 0),
+            day_of_week=3
+        ),
+        # Lenox Hill Farm Stand
+        MarketDay(
+            id=59,
+            market_id=43,
+            hour_start=time(12, 0, 0),
+            hour_end=time(17, 0, 0),
+            day_of_week=4
+        ),
+        # 92nd Street Greenmarket
+        MarketDay(
+            id=60,
+            market_id=44,
+            hour_start=time(9, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=1
+        ),
+        # Rockefeller Center Greenmarket
+        MarketDay(
+            id=61,
+            market_id=45,
+            hour_start=time(8, 0, 0),
+            hour_end=time(17, 0, 0),
+            day_of_week=3
         )
     ]
     db.session.add_all(market_day_list)
@@ -1256,7 +1331,7 @@ def run():
         rev_len = randint(2, 5)
 
         review_text = str(fake.paragraph(nb_sentences=rev_len))
-        market_id = str(randint(1, 40))
+        market_id = str(randint(1, 45))
         user_id = str(randint(1, 50))
         is_reported = choice(reported)
         last_year = randint(0, 365)
@@ -1300,7 +1375,7 @@ def run():
 
     market_favs = []
     for i in range(300):
-        market_id = randint(1, 40)
+        market_id = randint(1, 45)
         user_id = randint(1, 51)
 
         mf = MarketFavorite(
@@ -1346,7 +1421,7 @@ def run():
     for i in range(500):
 
         vendor_id = str(randint(1, 150))
-        market_day_id = str(randint(1, 57))
+        market_day_id = str(randint(1, 61))
 
         vm = VendorMarket(
             vendor_id=vendor_id,
@@ -1532,7 +1607,7 @@ def run():
     vendor_markets = []
     for i in range(500):
         vendor_id = str(randint(1, 150))
-        market_day_id = str(randint(1, 57))
+        market_day_id = str(randint(1, 61))
 
         vm = VendorMarket(
             vendor_id=vendor_id,
