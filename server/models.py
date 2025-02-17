@@ -185,6 +185,7 @@ class Market(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     bio = db.Column(db.String, nullable=True)
+    website = db.Column(db.String, nullable=True)
     image = db.Column(db.String, nullable=True)
     image_default = db.Column(db.String, nullable=False, default=random_market)
     location = db.Column(db.String, nullable=False)
