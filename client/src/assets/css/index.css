@@ -860,6 +860,16 @@ ul {
   /* padding: 8px; */
   max-width: 140px;
   margin-left: -102px;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+}
+
+.box-filters-admin {
+  background-color: #eee;
+  padding: 4px;
+  border-radius: 4px;
+  margin-left: -170px;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
 }
 
@@ -2162,10 +2172,6 @@ select:hover {
   /* width: 360px; */
   width: 156px !important;
   font-size: 1em;
-}
-
-.search-bar-checkbox {
-  width: 168px;
 }
 
 .search-bar-events {
