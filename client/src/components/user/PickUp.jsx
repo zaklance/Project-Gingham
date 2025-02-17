@@ -83,7 +83,7 @@ function PickUp() {
         setShowQR(prevId => (prevId === basketId ? null : basketId));
     };
 
-    const isPickupTime = (pickupStart, pickupEnd) => {
+    const isPickupTime = (pickupStart, pickupEnd, extensionHours = 0) => {
         const now = new Date();
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     
@@ -98,11 +98,16 @@ function PickUp() {
         // console.log("Current Local Time:", now.toLocaleString('en-US', { timeZone }));
         // console.log("Pickup Start (Local):", isNaN(start) ? "Invalid Time" : start.toLocaleString('en-US', { timeZone }));
         // console.log("Pickup End (Local):", isNaN(end) ? "Invalid Time" : end.toLocaleString('en-US', { timeZone }));
-    
-        const isWithinTime = now >= start && now <= end;
-        // console.log("In Pickup Window:", isWithinTime);
-    
-        return isWithinTime;
+        
+        let extendedEnd;
+
+        if (extensionHours === "endOfDay") {
+            extendedEnd = new Date(end);
+            extendedEnd.setHours(23, 59, 59, 999);
+        } else {
+            extendedEnd = new Date(end.getTime() + (extensionHours * 60 * 60 * 1000));
+        }
+        return now >= start && now <= extendedEnd;
     };
     
     return (
@@ -115,7 +120,7 @@ function PickUp() {
                             baskets.map((basket, index) => {
                                 const matchingQRCode = qRCodes.find(qRCode => qRCode.basket_id === basket.id);
                                 const isSelected = showQR === basket.id;
-                                const inPickupWindow = isPickupTime(basket.pickup_start, basket.pickup_end);
+                                const inPickupWindow = isPickupTime(basket.pickup_start, basket.pickup_end, "endOfDay");
                                 return (
                                     <div key={index} className='basket-card'>
                                         <div className='width-100'>
