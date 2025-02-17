@@ -1571,6 +1571,13 @@ def market_by_id(id):
                     market.is_visible = data['is_visible'].lower() == 'true'
                 else:
                     return {'error': 'Invalid value for is_visible. Must be a boolean or "true"/"false" string.'}, 400
+            if 'is_current' in data:
+                if isinstance(data['is_current'], bool):
+                    market.is_current = data['is_current']
+                elif isinstance(data['is_current'], str):
+                    market.is_current = data['is_current'].lower() == 'true'
+                else:
+                    return {'error': 'Invalid value for is_visible. Must be a boolean or "true"/"false" string.'}, 400
             if 'season_start' in data:
                 if data['season_start'] is None:
                     market.season_start = None
