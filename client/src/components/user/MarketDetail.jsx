@@ -147,7 +147,7 @@ function MarketDetail ({ match }) {
         const dayId = parseInt(event.target.value);
         const day = marketDays.find(day => day.id === dayId);
         setSelectedDay(day);
-        setSelectedProduct()
+        // setSelectedProduct()
         setDayParam(day.id)
     };
 
@@ -505,12 +505,12 @@ function MarketDetail ({ match }) {
             </div>
             <div className='flex-start'>
                 {market.year_round === false && market.season_start && market.season_end ? (
-                        <h4>Season: {formatDate(market.season_start)} – {formatDate(market.season_end)}</h4>
+                        <h4>Season: {formatDate(market.season_start)} – {formatDate(market.season_end)} {!market.is_current && `(${new Date().getFullYear() - 1} Season)`}</h4>
                     ) : (
                         market.year_round === false && (!market.season_start || !market.season_end) ? (
                             <h4>No Dates Available</h4>
                         ) : (
-                            <h4>Open Year Round</h4>
+                            <h4>Open Year Round {!market.is_current && `(${new Date().getFullYear() - 1} Season)`}</h4>
                         )
                     )}
             </div>

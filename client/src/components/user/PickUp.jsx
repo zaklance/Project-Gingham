@@ -183,7 +183,7 @@ function PickUp() {
                     </>
                 )}
             </div>
-            {showPopup && <UserIssues basketId={selectedBasketId} onClose={handleCloseIssuePopup} />}
+            {showPopup && <UserIssues basketId={selectedBasketId} handleClose={handleCloseIssuePopup} />}
         </>
     );
 }
