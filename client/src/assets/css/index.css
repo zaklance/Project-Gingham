@@ -104,6 +104,15 @@ body {
   border-radius: 20px;
 }
 
+.wrapper-issues {
+  background-color: white;
+  margin-bottom: 5%;
+  margin-left: 5%;
+  margin-right: 5%;
+  /* padding: 20px; */
+  border-radius: 20px;
+}
+
 .vendor-wrapper {
   background-color: white;
   border-radius: 20px;
@@ -975,6 +984,18 @@ ul {
 
 .btn-add-green:active {
   background-color: #28a745 !important;
+}
+
+.btn-checkout {
+  font-size: .9em;
+  padding: 10px 12px;
+  border-radius: 8px;
+  height: fit-content;
+  border: none;
+  background-color: #eee;
+  margin: 12px 0px;
+  margin-right: 12px;
+  margin-left: 4px;
 }
 
 .btn-confirm {
@@ -2803,7 +2824,8 @@ select:hover {
   color: #007BFF;
   cursor: pointer;         
   text-decoration: none;
-  width:max-content
+  width:max-content;
+  background-color: transparent !important;
 }
 
 .forgot-password:hover {
@@ -2929,14 +2951,18 @@ select:hover {
 
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 @media (min-width: 820px) {
-  .d-flex-space-between {
-      display: flex;
-      justify-content: space-between;
-    }
+.d-flex-space-between {
+    display: flex;
+    justify-content: space-between;
+  }
 
-    .d-nowrap {
-      white-space: nowrap;
-    }
+  .d-nowrap {
+    white-space: nowrap;
+  }
+
+  .d-width-50 {
+    width: 50%;
+  }
 }
 
 
@@ -2990,6 +3016,21 @@ select:hover {
     text-align: center;
   }
 
+  .m-margin-0-24 {
+    margin: 0 24px;
+  }
+
+  .m-select-wrap {
+    max-width: 154px !important;
+  }
+
+  .m-select-wrap>option {
+    max-width: 100%;
+    overflow: hidden;
+    word-wrap: normal !important;
+    white-space: normal;
+  }
+
   .nav-bar {
     overflow-x: scroll;
     overflow-y: visible !important;
@@ -3018,7 +3059,7 @@ select:hover {
     min-height: fit-content !important;
   }
 
-  .popup {
+  .popup, .popup-on {
     top: 0;
     left: 0;
     width: 100vw;
@@ -3042,6 +3083,10 @@ select:hover {
 
   .form-contact textarea {
     max-width: 48vw;
+  }
+
+  .popup-on .wrapper-issues {
+    max-width: 90vw;
   }
 
   #html-input {
@@ -3141,7 +3186,7 @@ select:hover {
     padding: 0;
   }
 
-  .wrapper {
+  .wrapper, .wrapper-issues {
     width: 100%;
     padding: 2px;
   }

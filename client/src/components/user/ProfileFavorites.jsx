@@ -218,16 +218,18 @@ function ProfileFavorites() {
             <h3>Vendors</h3>
             <ul className='favorites-list box-scroll'>
                 {vendorFavs.length > 0 ? (
-                    vendorFavs.map((data) => (
-                        <li key={data.id}>
-                            <Link to={`/user/vendors/${data.vendor_id}`}><b>{data.vendor.name}</b> <i>of {data.vendor.city}, {data.vendor.state}</i></Link>
-                            <button
-                                className={`btn-fav-blog margin-l-8 ${isClickedVendor[data.vendor_id] || vendorFavs.some(fav => fav.vendor_id === data.vendor_id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
-                                title="remove vendor from favorites"
-                                onClick={(e) => handleClickVendor(data.vendor_id)}>&emsp;
-                            </button>
-                        </li>
-                    ))
+                    [...vendorFavs]
+                    .sort((a, b) => a.vendor.name.localeCompare(b.vendor.name))
+                        .map((data) => (
+                            <li key={data.id}>
+                                <Link to={`/user/vendors/${data.vendor_id}`}><b>{data.vendor.name}</b> <i>of {data.vendor.city}, {data.vendor.state}</i></Link>
+                                <button
+                                    className={`btn-fav-blog margin-l-8 ${isClickedVendor[data.vendor_id] || vendorFavs.some(fav => fav.vendor_id === data.vendor_id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
+                                    title="remove vendor from favorites"
+                                    onClick={(e) => handleClickVendor(data.vendor_id)}>&emsp;
+                                </button>
+                            </li>
+                        ))
                 ) : (
                     <p>No favorite vendors</p>
                 )}
@@ -235,16 +237,18 @@ function ProfileFavorites() {
             <h3 className='margin-t-16'>Markets</h3>
             <ul className='favorites-list box-scroll'>
                 {marketFavs.length > 0 ? (
-                    marketFavs.map((data) => (
-                        <li key={data.id}>
-                            <Link to={`/user/markets/${data.market_id}`}><b>{data.market.name}</b> <i>open {data.market.schedule}</i></Link>
-                            <button
-                                className={`btn-fav-blog margin-l-8 ${isClickedMarket[data.market_id] || marketFavs.some(fav => fav.market_id === data.market_id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
-                                title="remove market from favorites"
-                                onClick={(e) => handleClickMarket(data.market_id)}>&emsp;
-                            </button>
-                        </li>
-                    ))
+                    [...marketFavs]
+                        .sort((a, b) => a.market.name.localeCompare(b.market.name))
+                        .map((data) => (
+                            <li key={data.id}>
+                                <Link to={`/user/markets/${data.market_id}`}><b>{data.market.name}</b> <i>open {data.market.schedule}</i></Link>
+                                <button
+                                    className={`btn-fav-blog margin-l-8 ${isClickedMarket[data.market_id] || marketFavs.some(fav => fav.market_id === data.market_id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
+                                    title="remove market from favorites"
+                                    onClick={(e) => handleClickMarket(data.market_id)}>&emsp;
+                                </button>
+                            </li>
+                        ))
                 ) : (
                     <p>No favorite markets</p>
                 )}
@@ -252,7 +256,9 @@ function ProfileFavorites() {
             <h3 className='margin-t-16 margin-b-8'>Blogs</h3>
             <div className='box-scroll'>
                 {blogFavs.length > 0 ? (
-                    blogFavs.map((blog) => (
+                    [...blogFavs]
+                        .sort((a, b) => new Date(b.blog.post_date) - new Date(a.blog.post_date))
+                        .map((blog) => (
                         <details
                             key={blog.id}
                             className='blog-favs'

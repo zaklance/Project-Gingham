@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { PDFViewer, Document, Image, Page, Text, View, StyleSheet, PDFDownloadLink } from "@react-pdf/renderer";
-import { formatBasketDate, convertToLocalDate, timeConverter, receiptDateConverter } from "../../utils/helpers";
+import { formatBasketDate, convertToLocalDate, timeConverter, receiptDateConverter, fileTimeConverter } from "../../utils/helpers";
 
 const styles = StyleSheet.create({
     page: { padding: 30, fontSize: 12, fontFamily: 'Helvetica', color: "#3b4752", backgroundColor: '#fbf7eb' },
@@ -11,6 +11,9 @@ const styles = StyleSheet.create({
     row: { flexDirection: "row", justifyContent: "space-between" },
     rowItem: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
     rowFooter: { flexDirection: "row", justifyContent: "space-between", gap: 172 },
+    rowStart: { flexDirection: "row", width: '100%' },
+    basketInfo: { width: '150' },
+    total: { width: '75' },
     bold: { fontFamily: "Helvetica-Bold", fontWeight: "bold" },
     divider: { borderBottom: "2px solid #3b4752", marginVertical: 4 },
     footer: { position: "absolute", bottom: 24 },
@@ -58,24 +61,33 @@ const ReceiptDocument = ({ receipt }) => {
                         <View key={index} wrap={false}>
                             <View style={styles.row}>
                                 <Text>Basket ID: {item.id}</Text>
-                                <Text>Pickup Date: {formatBasketDate(item.sale_date)}</Text>
-                                <Text>Pickup Time: {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</Text>
-                            </View>
-                            <View style={styles.rowItem}>
-                                <Text>Price: ${item.price.toFixed(2)}</Text>
                                 <Text>{item.vendor_name}</Text>
                                 <Text>{item.market_location}</Text>
+                            </View>
+                            <View style={styles.rowItem}>
+                                <Text>Price: ${item.price.toFixed(2)} &emsp; Fee: $ {item.fee_user < 1 ? item.fee_user.toFixed(2) : item.fee_user.toFixed(2)}</Text>
+                                <Text>Pickup Date: {formatBasketDate(item.sale_date)}</Text>
+                                <Text>Pickup Time: {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</Text>
                             </View>
                         </View>
                     ))
                 )}
 
-                <View style={styles.divider} />
-
-                <Text style={[styles.bold, styles.row]}>
-                    <Text>Total: </Text>
-                    <Text>${basketItems.reduce((acc, item) => acc + item.price, 0).toFixed(2)}</Text>
-                </Text>
+                <View wrap={false}>
+                    <View style={styles.divider} />
+                    <View wrap={false} style={styles.rowStart}>
+                        <Text style={styles.total}>Total Price:</Text>
+                        <Text>${basketItems.reduce((acc, item) => acc + item.price, 0).toFixed(2)}</Text>
+                    </View>
+                    <View wrap={false} style={styles.rowStart}>
+                        <Text style={styles.total}>Total Fee:</Text>
+                        <Text>${basketItems.reduce((acc, item) => acc + item.fee_user, 0).toFixed(2)}</Text>
+                    </View>
+                    <View wrap={false} style={[styles.rowStart, styles.bold]}>
+                        <Text style={styles.total}>Sum Total:</Text>
+                        <Text>${basketItems.reduce((acc, item) => acc + (item.price + item.fee_user), 0).toFixed(2)}</Text>
+                    </View>
+                </View>
                 <View style={styles.footer} fixed>
                     <View style={styles.rowFooter}>
                         <Text style={styles.bold}>Gingham 2025 &copy;</Text>
@@ -103,7 +115,7 @@ const Receipt = ({ receiptId, page }) => {
         fetch(`/api/receipts/${receiptId}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log("Fetched Receipt Data:", data);
+                // console.log("Fetched Receipt Data:", data);
                 if (data.error) {
                     setError(data.error);
                 } else {
@@ -117,6 +129,7 @@ const Receipt = ({ receiptId, page }) => {
             });
     }, [receiptId]);
 
+
     if (loading) return <p>Loading receipt...</p>;
     if (error) return <p style={{ color: "#ff4b5a" }}>Error: {error}</p>;
     if (!receipt) return <p>No receipt found.</p>;
@@ -128,20 +141,18 @@ const Receipt = ({ receiptId, page }) => {
                 <ReceiptDocument receipt={receipt} />
             </PDFViewer> */}
             {page === 'checkout' && (
-                <div className="text-center">
-                    <PDFDownloadLink 
-                        document={<ReceiptDocument receipt={receipt} />} 
-                        fileName={`receipt_${receipt.id}.pdf`}
-                        className="btn btn-add"
-                    >
-                        {({ loading }) => (loading ? "Preparing download..." : "Download Receipt")}
-                    </PDFDownloadLink>
-                </div>
+                <PDFDownloadLink 
+                    document={<ReceiptDocument receipt={receipt} />} 
+                    fileName={`gingham-receipt_${fileTimeConverter(receipt.created_at)}.pdf`}
+                    className="btn btn-checkout"
+                >
+                    {({ loading }) => (loading ? "Preparing download..." : "Download Receipt")}
+                </PDFDownloadLink>
             )}
             {page === 'profile' && (
                 <PDFDownloadLink
                     document={<ReceiptDocument receipt={receipt} />}
-                    fileName={`receipt_${receipt.id}.pdf`}
+                    fileName={`gingham-receipt_${fileTimeConverter(receipt.created_at)}.pdf`}
                     className="icon-file"
                 >                        
                     &emsp;
