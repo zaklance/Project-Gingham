@@ -50,7 +50,7 @@ def run():
         Market(
             id=1,
             name='175th Street Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/manhattan/175th-street",
             location='W. 175th St. bet. Wadsworth Ave. & Broadway',
             city="New York",
             state="NY",
@@ -66,7 +66,7 @@ def run():
         Market(
             id=2,
             name='57th Street Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/manhattan/57th-street-sa",
             location='W. 57th St. & 10th Ave.',
             city="New York",
             state="NY",
@@ -82,7 +82,8 @@ def run():
         Market(
             id=3,
             name='79th Street Greenmarket',
-            website="",
+            bio="Clothing Collection Hours: 9:00 a.m. - 12:00 p.m.",
+            website="https://www.grownyc.org/greenmarket/manhattan/79th-street",
             location='79th St. & Columbus Ave.',
             city="New York",
             state="NY",
@@ -96,7 +97,7 @@ def run():
         Market(
             id=4,
             name='82nd Street Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/manhattan/82nd-street",
             location=' 82nd St. bet. 1st & York Aves.',
             city="New York",
             state="NY",
@@ -110,7 +111,6 @@ def run():
         Market(
             id=5,
             name='94th Street Greenmarket',
-            website="",
             location='E. 94th St. & 1st Ave.',
             city="New York",
             state="NY",
@@ -126,7 +126,7 @@ def run():
         Market(
             id=6,
             name='97th Street Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/manhattan/west-97",
             location='W. 97th St. bet. Columbus & Amsterdam Aves.',
             city="New York",
             state="NY",
@@ -140,7 +140,7 @@ def run():
         Market(
             id=7,
             name='Abingdon Square Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/manhattan/abingdon-square",
             location='Hudson St. & W. 12th St.',
             city="New York",
             state="NY",
@@ -154,7 +154,7 @@ def run():
         Market(
             id=8,
             name='Astor Place Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/manhattan/astorplace",
             location='E. 8th St. & Lafayette St.',
             city="New York",
             state="NY",
@@ -170,7 +170,7 @@ def run():
         Market(
             id=9,
             name='Bowling Green Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/manhattan/bowling-green-tu",
             location='Broadway & Battery Pl.',
             city="New York",
             state="NY",
@@ -186,7 +186,7 @@ def run():
         Market(
             id=10,
             name='Bro Sis Green Youth Market',
-            website="",
+            website="https://brotherhood-sistersol.org/events/brosis-green-youth-market-2024/",
             location='Amsterdam Ave. bet. W. 143rd & 144th Sts. (Johnny Hartman Plaza)',
             city="New York",
             state="NY",
@@ -202,7 +202,7 @@ def run():
         Market(
             id=11,
             name="Chelsea’s Down to Earth Farmers Market",
-            website="",
+            website="https://downtoearthmarkets.com/markets?region=Manhattan&market=Chelsea+Farmers+Market",
             location='W. 23rd St. bet. 8th & 9th Aves.',
             city="New York",
             state="NY",
@@ -234,7 +234,8 @@ def run():
         Market(
             id=13,
             name='Columbia Greenmarket',
-            website="",
+            bio="Clothing Collection Hours: 9:00 a.m. - 12:00 p.m. *Sundays only",
+            website="https://www.grownyc.org/greenmarket/manhattan/columbia-su",
             location='Broadway & 114th St.',
             city="New York",
             state="NY",
@@ -248,7 +249,7 @@ def run():
         Market(
             id=14,
             name='Dag Hammarskjold Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/manhattan/dag-hammarskjold",
             location='E. 47th St. & 2nd Ave.',
             city="New York",
             state="NY",
@@ -262,7 +263,7 @@ def run():
         Market(
             id=15,
             name='Fort Washington Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/manhattan/fort-washington",
             location='W. 168th St. & Ft. Washington Ave.',
             city="New York",
             state="NY",
@@ -278,7 +279,8 @@ def run():
         Market(
             id=16,
             name='Fulton Stall Market (Indoor Farmers Market)',
-            website="",
+            bio="Indoor Market Hours:  Monday - Saturday 11:30 AM to 5:00 PM, year round. CSA Pick-Up Hours:  Thursday 4:00 PM to 6:00 PM Friday 11:30 AM to 5:00 PM. Outdoor Market:  Saturday 11:30 AM to 5:00 PM, Fulton St. at South St., May through Thanksgiving.",
+            website="https://fultonstallmarket.org",
             location='91 South St.',
             city="New York",
             state="NY",
@@ -292,7 +294,7 @@ def run():
         Market(
             id=17,
             name='Gouverneur Health Farmstand',
-            website="",
+            website="https://www.grownyc.org/farmstand/gouverneur",
             location='Madison St. bet. Clinton & Jefferson Sts.',
             city="New York",
             state="NY",
@@ -308,7 +310,7 @@ def run():
         Market(
             id=18,
             name='Grass Roots Farmers Market',
-            website="",
+            website="https://www.harlemonestop.com/organization/448/grassroots-farmers-market",
             location='W. 145th St. bet. Edgecombe & Bradhurst Aves. (Jackie Robinson Park)',
             city="New York",
             state="NY",
@@ -322,7 +324,7 @@ def run():
         Market(
             id=19,
             name='Greenmarket at the Oculus',
-            website="",
+            website="https://www.grownyc.org/greenmarket-oculus-plaza",
             location='Church & Fulton Sts. (Oculus Plaza)',
             city="New York",
             state="NY",
@@ -338,7 +340,7 @@ def run():
         Market(
             id=20,
             name='Harlem Meer Farmstand',
-            website="",
+            website="https://www.centralparknyc.org/locations/110th-street-malcolm-x-boulevard",
             location='Central Park N. & Malcom X Blvd.',
             city="New York",
             state="NY",
@@ -354,7 +356,7 @@ def run():
         Market(
             id=21,
             name='Harvest Home East Harlem Farmers Market',
-            website="",
+            website="https://www.harvesthomefm.org/manhattan-markets",
             location='E. 104th St. & 3rd Ave.',
             city="New York",
             state="NY",
@@ -370,7 +372,7 @@ def run():
         Market(
             id=22,
             name='Harvest Home Harlem Hospital Farmers Market',
-            website="",
+            website="https://www.harvesthomefm.org/manhattan-markets",
             location='W. 137th St. & Lenox Ave.',
             city="New York",
             state="NY",
@@ -386,7 +388,7 @@ def run():
         Market(
             id=23,
             name='Harvest Home Lenox Avenue Farm Stand',
-            website="",
+            website="https://www.harvesthomefm.org/manhattan-markets",
             location='Lenox Ave. bet. W. 117th & 118th Sts.',
             city="New York",
             state="NY",
@@ -402,7 +404,7 @@ def run():
         Market(
             id=24,
             name='Harvest Home Metropolitan Hospital Farmers Market',
-            website="",
+            website="https://www.harvesthomefm.org/manhattan-markets",
             location='97th St. & 2nd Ave.',
             city="New York",
             state="NY",
@@ -418,7 +420,8 @@ def run():
         Market(
             id=25,
             name='Inwood Park Greenmarket',
-            website="",
+            bio="Clothing Collection Hours: 9:30 a.m. - 12:30 p.m. ",
+            website="https://www.grownyc.org/greenmarket/manhattan/inwood",
             location='Isham St. bet. Seaman Ave. & Cooper St.',
             city="New York",
             state="NY",
@@ -432,7 +435,7 @@ def run():
         Market(
             id=26,
             name='Lower East Side Farmstand',
-            website="",
+            website="https://www.grownyc.org/farmstand/les",
             location='Grand St. bet. Pitt & Willett Sts. (outside of Abrons Arts Center)',
             city="New York",
             state="NY",
@@ -447,8 +450,8 @@ def run():
         ),
         Market(
             id=27,
-            name='Morningside Park’s Down to Earth Farmers Market',
-            website="",
+            name="Morningside Park’s Down to Earth Farmers Market",
+            website="https://www.morningsidepark.org/farmers-market",
             location='W. 110th St. & Manhattan Ave.',
             city="New York",
             state="NY",
@@ -462,7 +465,7 @@ def run():
         Market(
             id=28,
             name='Mount Sinai Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/manhattan/mount-sinai",
             location='Madison Ave. & 99th St.',
             city="New York",
             state="NY",
@@ -470,10 +473,10 @@ def run():
             coordinates={"lat": "40.78944510836953", "lng": "-73.95271330705022"},
             schedule='Wednesday (8 a.m. - 3 p.m.)',
             year_round=False,
-            season_start=date(2024, 6, 18),
-            season_end=date(2024, 11, 26),
+            season_start=date(2025, 6, 18),
+            season_end=date(2025, 11, 26),
             is_visible=False,
-            is_current=False
+            is_current=True
         ),
         Market(
             id=29,
@@ -506,7 +509,7 @@ def run():
         Market(
             id=31,
             name='Project EATS Farm Stand at Essex Crossing',
-            website="",
+            website="https://www.projecteats.org/farm-1",
             location='115 Delancey St.',
             city="New York",
             state="NY",
@@ -520,7 +523,7 @@ def run():
         Market(
             id=32,
             name='P.S. 11 Farm Market',
-            website="",
+            website="https://www.justfood.org/ps-11-farm-market",
             location='320 W. 21st St.',
             city="New York",
             state="NY",
@@ -536,7 +539,7 @@ def run():
         Market(
             id=33,
             name='P.S. 57 Farmstand',
-            website="",
+            website="https://www.grownyc.org/farmstand/ps57",
             location='115th St. & 3rd Ave. (SW corner)',
             city="New York",
             state="NY",
@@ -552,7 +555,7 @@ def run():
         Market(
             id=34,
             name='Stuyvesant Town Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/manhattan/stuyvesant-town",
             location='South end of Stuyvesant Town Oval',
             city="New York",
             state="NY",
@@ -560,15 +563,16 @@ def run():
             coordinates={"lat": "40.73200566470982", "lng": "-73.97761240821589"},
             schedule='Sunday (9:30 a.m. - 4 p.m.)',
             year_round=False,
-            season_start=date(2024, 5, 11),
-            season_end=date(2024, 12, 14),
+            season_start=date(2025, 5, 11),
+            season_end=date(2025, 12, 14),
             is_visible=False,
-            is_current=False
+            is_current=True
         ),
         Market(
             id=35,
             name='Tompkins Square Greenmarket',
-            website="",
+            bio="Compost Program Hours: 9:00 a.m. - 5:00 p.m. In partnership with LES Ecology Center. Clothing Collection Hours: 9:00 a.m. - 1:00 p.m. ",
+            website="https://www.grownyc.org/greenmarket/manhattan/tompkins-square",
             location='E. 7th St. & Avenue A',
             city="New York",
             state="NY",
@@ -582,7 +586,8 @@ def run():
         Market(
             id=36,
             name='Tribeca Greenmarket',
-            website="",
+            bio="Clothing Collection Hours: 8:30 a.m. - 1:30 p.m.",
+            website="https://www.grownyc.org/greenmarket/manhattan/tribeca-sa",
             location='Greenwich & Chambers Sts.',
             city="New York",
             state="NY",
@@ -596,7 +601,7 @@ def run():
         Market(
             id=37,
             name='Tucker Square Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/manhattan/tuckersaturday",
             location='Columbus Ave. & 66th St.',
             city="New York",
             state="NY",
@@ -610,7 +615,7 @@ def run():
         Market(
             id=38,
             name='Two Bridges Youth Market',
-            website="",
+            website="https://www.manhattanbp.nyc.gov/events/two-bridges-youth-farmers-market-2/",
             location='50 Madison St.',
             city="New York",
             state="NY",
@@ -626,7 +631,7 @@ def run():
         Market(
             id=39,
             name='Union Square Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/manhattan-union-square-sa",
             location='E. 17th St. & Union Square W.',
             city="New York",
             state="NY",
@@ -640,7 +645,7 @@ def run():
         Market(
             id=40,
             name='Uptown Good Food Farm Stand',
-            website="",
+            website="https://www.uptowngoodfood.com",
             location='330 St. Nicholas Ave. (St. Nicholas Miracle Garden)',
             city="New York",
             state="NY",
@@ -648,15 +653,15 @@ def run():
             coordinates={"lat": "40.811760800653175", "lng": "-73.95159181329969"},
             schedule='Thursday (4 - 7 p.m.)',
             year_round=False,
-            season_start=date(2024, 6, 1),
-            season_end=date(2024, 11, 23),
+            season_start=date(2025, 6, 12),
+            season_end=date(2025, 10, 30),
             is_visible=False,
-            is_current=False
+            is_current=True
         ),
         Market(
             id=41,
             name="City Hall Greenmarket",
-            website="",
+            website="https://www.grownyc.org/city-hall-greenmarket-tuesday",
             location='Chambers St. & Warren St.',
             city="New York",
             state="NY",
@@ -672,7 +677,7 @@ def run():
         Market(
             id=42,
             name='Uptown Grand Central Farm Stand',
-            website="",
+            website="https://www.grownyc.org/uptowngrandcentralfarmstand",
             location='125th Street & Park Ave.',
             city="New York",
             state="NY",
@@ -686,7 +691,7 @@ def run():
         Market(
             id=43,
             name='Lenox Hill Farm Stand',
-            website="",
+            website="https://www.grownyc.org/lenoxhillfarmstand",
             location='70th St. & 1st Ave.',
             city="New York",
             state="NY",
@@ -700,7 +705,7 @@ def run():
         Market(
             id=44,
             name='92nd Street Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/manhattan/92nd-street",
             location='E 92th St. & 1st Ave.',
             city="New York",
             state="NY",
@@ -716,7 +721,7 @@ def run():
         Market(
             id=45,
             name='Rockefeller Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/manhattan/rockefeller-w",
             location='Rockefeller Plaza at 50th St.',
             city="New York",
             state="NY",
@@ -732,7 +737,7 @@ def run():
         Market(
             id=46,
             name='4th Ave Sunset Park Greenmarket',
-            website="",
+            website="https://www.grownyc.org/4AveSunsetParkGreenmarket",
             location='4th Ave. btw. 59th & 60th St.',
             city="Brooklyn",
             state="NY",
@@ -749,7 +754,7 @@ def run():
             id=47,
             name='7th Ave Sunset Park Greenmarket & Farmstand',
             bio='GrowNYC Farmstand Hours: December 7 - March 29, 8:30 a.m. - 2:00 p.m.',
-            website="",
+            website="https://www.grownyc.org/7aveSunsetParkGreenmarket",
             location='7th Ave. and 44th St.',
             city="Brooklyn",
             state="NY",
@@ -763,8 +768,8 @@ def run():
         Market(
             id=48,
             name='Bartel-Pritchard Square Greenmarket Wednesday',
-            bio='Open Sundays, 9 a.m. - 2 p.m., May 4 - December 28 (2025)',
-            website="",
+            bio='Open Sundays, 9 a.m. - 2 p.m., May 4 - December 28 (2025). Clothing Collection Hours: 8:00 a.m. - 2:00 p.m. *Sundays only',
+            website="https://www.grownyc.org/greenmarket/brooklyn/bartel-pritchard-square-sun",
             location='Prospect Park West at 15th St.',
             city="Brooklyn",
             state="NY",
@@ -778,7 +783,7 @@ def run():
         Market(
             id=49,
             name='Bay Ridge Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/brooklyn/bay-ridge",
             location="3rd Ave. & 95th St. (Walgreen's parking lot)",
             website="",
             city="Brooklyn",
@@ -797,7 +802,7 @@ def run():
             name='Bensonhurst Greenmarket',
             website="",
             location="18th Ave. btw 81st & 82nd St.",
-            website="",
+            website="https://www.grownyc.org/greenmarket/brooklyn/bensonhurst",
             city="Brooklyn",
             state="NY",
             zipcode='11214',
@@ -812,7 +817,7 @@ def run():
         Market(
             id=51,
             name='Boro Park Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/brooklyn/boro-park",
             location="14th Ave. btw 49th St & 50th St.",
             website="",
             city="Brooklyn",
@@ -830,7 +835,7 @@ def run():
             id=52,
             name='Brooklyn Borough Hall Greenmarket',
             bio="Clothing Collection Hours: 8:00 a.m. - 2:00 p.m. *Saturdays only",
-            website="",
+            website="https://www.grownyc.org/greenmarket/brooklyn/boro-hall-sa",
             location="Plaza at Court St. and Montague St.",
             city="Brooklyn",
             state="NY",
@@ -844,7 +849,7 @@ def run():
         Market(
             id=53,
             name='Carroll Gardens Greenmarket',
-            website="",
+            website="https://www.grownyc.org/greenmarket/brooklyn/carroll-gardens",
             location="Carroll St., between Smith and Court St.",
             website="",
             city="Brooklyn",
@@ -860,7 +865,7 @@ def run():
             id=54,
             name='Cortelyou Greenmarket',
             bio="Clothing Collection Hours: 8:00 a.m. - 2:00 p.m. ",
-            website="",
+            website="https://www.grownyc.org/greenmarket/brooklyn/cortelyou",
             location="Cortelyou Rd. btw. Argyle & Rugby",
             city="Brooklyn",
             state="NY",
@@ -875,7 +880,7 @@ def run():
             id=55,
             name='Domino Park Greenmarket',
             bio="Compost Program Hours: 8:00 a.m. - 3:00 p.m. In partnership with Domino Park",
-            website="",
+            website="https://www.grownyc.org/greenmarket/brooklyn/dominopark",
             location="River St. between S 2nd & S 3rd St.",
             city="Brooklyn",
             state="NY",
@@ -892,7 +897,7 @@ def run():
             id=56,
             name='Fort Greene Park Greenmarket',
             bio="Clothing Collection Hours: 8:00 a.m. - 1:30 p.m.",
-            website="",
+            website="https://www.grownyc.org/greenmarket/brooklyn/fort-greene",
             location="Southeast corner of Fort Greene Park",
             city="Brooklyn",
             state="NY",
@@ -907,7 +912,7 @@ def run():
             id=57,
             name='Grand Army Plaza Greenmarket',
             bio="Clothing Collection Hours: 8:00 a.m. - 2:00 p.m. (access road)",
-            website="",
+            website="https://www.grownyc.org/greenmarket/brooklyn-grand-army-plaza",
             location="Prospect Park West & Flatbush Ave.",
             city="Brooklyn",
             state="NY",
@@ -922,7 +927,7 @@ def run():
             id=58,
             name='McCarren Park Greenmarket',
             bio="Winter Market Hours (Dec-June): 8:00 a.m. - 2:00 p.m., Clothing Collection Hours: 8:30 a.m. - 1:00 p.m. ",
-            website="",
+            website="https://www.grownyc.org/greenmarket/brooklyn/greenpoint-sa",
             location="North 12th St. & Union Ave.",
             city="Brooklyn",
             state="NY",
@@ -1009,22 +1014,287 @@ def run():
             is_visible=False,
             is_current=True
         ),
-        # Market(
-        #     id=6,
-        #     name='Rockefeller',
-        #     website="",
-        #     location="Rockefeller",
-        #     city="Brooklyn",
-        #     state="NY",
-        #     zipcode='112',
-        #     coordinates={"lat": "40", "lng": "-73"},
-        #     schedule='Wednesday (8 a.m. - 3 p.m.)',
-        #     year_round=False,
-        #     season_start=date(2025, 5, 13),
-        #     season_end=date(2025, 11, 29),
-        #     is_visible=False,
-        #     is_current=True
-        # ),
+        Market(
+            id=64,
+            name='Uptown Good Food Farmers Market',
+            website="https://www.uptowngoodfood.com",
+            location='St Nichlas Ave & W 137th St',
+            city="New York",
+            state="NY",
+            zipcode='10030',
+            coordinates={"lat": "40.81846114132001", "lng": "-73.94716123494268"},
+            schedule='Saturday (9 a.m. - 3 p.m.)',
+            year_round=False,
+            season_start=date(2025, 6, 14),
+            season_end=date(2025, 11, 22),
+            is_visible=False,
+            is_current=True
+        ),
+        Market(
+            id=65,
+            name='Bronx Borough Hall Greenmarket',
+            website="https://www.grownyc.org/greenmarket/bronx/bronx-borough-hall",
+            location="161st and Grand Concourse",
+            city="Bronx",
+            state="NY",
+            zipcode='11451',
+            coordinates={"lat": "40.82712761948003", "lng": "-73.92291257503476"},
+            schedule='Tuesday (8 a.m. - 4 p.m.)',
+            year_round=False,
+            season_start=date(2025, 6, 3),
+            season_end=date(2025, 11, 25),
+            is_visible=False,
+            is_current=True
+        ),
+        Market(
+            id=66,
+            name='Lincoln Hospital Greenmarket',
+            website="https://www.grownyc.org/greenmarket/bronx/lincoln-hospital-fr",
+            location="E 149th St. between Park and Morris Ave.",
+            city="Bronx",
+            state="NY",
+            zipcode='11451',
+            coordinates={"lat": "40.81767598142591", "lng": "-73.92456971708086"},
+            schedule='Tuesday & Friday (8 a.m. - 3 p.m.)',
+            year_round=False,
+            season_start=date(2024, 6, 20),
+            season_end=date(2024, 11, 25),
+            is_visible=False,
+            is_current=False
+        ),
+        Market(
+            id=67,
+            name='Parkchester Greenmarket',
+            website="https://www.grownyc.org/greenmarket/bronx/parkchester",
+            location="Westchester Ave. & White Plains Rd.",
+            city="Bronx",
+            state="NY",
+            zipcode='11472',
+            coordinates={"lat": "40.83317410448814", "lng": "-73.86260641367636"},
+            schedule='Friday (8 a.m. - 3 p.m.)',
+            year_round=False,
+            season_start=date(2024, 6, 28),
+            season_end=date(2024, 11, 22),
+            is_visible=False,
+            is_current=False
+        ),
+        Market(
+            id=68,
+            name='Poe Park Greenmarket',
+            website="https://www.grownyc.org/greenmarket/bronx/poe-park",
+            location="E 192nd St. btw. Grand Concourse & Valentine",
+            city="Bronx",
+            state="NY",
+            zipcode='11458',
+            coordinates={"lat": "40.86416971566585", "lng": "-73.89571072742248"},
+            schedule='Tuesday (8 a.m. - 3 p.m.)',
+            year_round=False,
+            season_start=date(2025, 6, 24),
+            season_end=date(2025, 11, 25),
+            is_visible=False,
+            is_current=True
+        ),
+        Market(
+            id=69,
+            name='Eastchester Farmstand',
+            website="https://www.grownyc.org/farmstand/eastchester",
+            location="E 229th St, btw. Schieffelin Pl. and Needham Ave. (in front of Northeast Bronx YMCA)",
+            city="Bronx",
+            state="NY",
+            zipcode='11466',
+            coordinates={"lat": "40.88321727756723", "lng": "-73.84186826636773"},
+            schedule='Wednesday (9:30 a.m. - 2:30 p.m.)',
+            year_round=False,
+            season_start=date(2024, 7, 3),
+            season_end=date(2024, 11, 27),
+            is_visible=False,
+            is_current=False
+        ),
+        Market(
+            id=70,
+            name='Morrisania Farmstand',
+            website="https://www.grownyc.org/farmstand/morrisania",
+            location="169th S. & Boston Rd. at McKinley Sq.",
+            city="Bronx",
+            state="NY",
+            zipcode='11456',
+            coordinates={"lat": "40.831096591339886", "lng": "-73.90074501323292"},
+            schedule='Wednesday (10 a.m. - 2 p.m.)',
+            year_round=False,
+            season_start=date(2024, 5, 13),
+            season_end=date(2024, 11, 29),
+            is_visible=False,
+            is_current=False
+        ),
+        Market(
+            id=71,
+            name='Norwood Farmstand',
+            website="https://www.grownyc.org/farmstand/norwood",
+            location="E Gun Hill Rd. & Dekalb Ave. (SE corner)",
+            city="Bronx",
+            state="NY",
+            zipcode='11467',
+            coordinates={"lat": "40.88205803262807", "lng": "-73.88043055713167"},
+            schedule='Thursday (9:30 a.m. - 3 p.m.)',
+            year_round=True,
+            is_visible=False,
+            is_current=True
+        ),
+        Market(
+            id=72,
+            name='Corona Greenmarket',
+            website="https://www.grownyc.org/greenmarket/queens/corona",
+            location="Roosevelt Ave. & 103rd St.",
+            city="Queens",
+            state="NY",
+            zipcode='11368',
+            coordinates={"lat": "40.749703950923625", "lng": "-73.86243001581482"},
+            schedule='Wednesday (8 a.m. - 3 p.m.)',
+            year_round=False,
+            season_start=date(2025, 6, 13),
+            season_end=date(2025, 11, 29),
+            is_visible=False,
+            is_current=True
+        ),
+        Market(
+            id=73,
+            name='Elmhurst Greenmarket',
+            website="https://www.grownyc.org/greenmarket/queens/elmhurst",
+            location="41st Avenue btw. 80th and 81st St.",
+            city="Queens",
+            state="NY",
+            zipcode='11373',
+            coordinates={"lat": "40.745766752804975", "lng": "-73.88548117820142"},
+            schedule='Tuesday (8 a.m. - 3 p.m.)',
+            year_round=False,
+            season_start=date(2025, 6, 10),
+            season_end=date(2025, 11, 25),
+            is_visible=False,
+            is_current=True
+        ),
+        Market(
+            id=74,
+            name='Flushing Greenmarket',
+            website="https://www.grownyc.org/greenmarket/queens/flushing",
+            location="Sanford Ave & Union St (Bowne Playground)",
+            city="Queens",
+            state="NY",
+            zipcode='11355',
+            coordinates={"lat": "40.75799958731366", "lng": "-73.82478622250639"},
+            schedule='Wednesday (8 a.m. - 3 p.m.)',
+            year_round=False,
+            season_start=date(2025, 7, 16),
+            season_end=date(2025, 11, 26),
+            is_visible=False,
+            is_current=True
+        ),
+        Market(
+            id=75,
+            name='Forest Hills Greenmarket',
+            bio="Clothing Collection Hours: 9:30 a.m. - 12:30 p.m.",
+            website="https://www.grownyc.org/greenmarket/queens/forest-hills",
+            location="South side of Queens Blvd. at 70th Ave.",
+            city="Queens",
+            state="NY",
+            zipcode='11375',
+            coordinates={"lat": "40.72188032218282", "lng": "-73.84677718219234"},
+            schedule='Sunday (8 a.m. - 2 p.m.)',
+            year_round=True,
+            is_visible=False,
+            is_current=True
+        ),
+        Market(
+            id=76,
+            name='Jackson Heights Greenmarket',
+            bio="Winter Market Hours (Jan-May): 8:00 a.m. - 2:00 p.m. Summer Market Hours (June-Dec): 8:00 a.m. - 3:00 p.m. Clothing Collection Hours: 9 a.m. - 1 p.m.",
+            website="https://www.grownyc.org/greenmarket/queens/jackson-heights",
+            location="34th Ave. between 79th & 80th St.",
+            city="Queens",
+            state="NY",
+            zipcode='11372',
+            coordinates={"lat": "40.75356895340519", "lng": "-73.88775343357531"},
+            schedule='Sunday (8 a.m. - 3 p.m.)',
+            year_round=True,
+            is_visible=False,
+            is_current=True
+        ),
+        Market(
+            id=77,
+            name='Sunnyside Greenmarket',
+            bio="Winter Market Hours (Jan-April): 8:00 a.m. - 2:00 p.m. Summer Market Hours (May-Dec): 8:00 a.m. - 3:00 p.m. Clothing Collection Hours: 9:30 a.m. - 12:30 p.m.",
+            website="https://www.grownyc.org/greenmarket/queens/sunnyside",
+            location="Skillman Ave. btw. 42nd & 43rd St.",
+            city="Queens",
+            state="NY",
+            zipcode='11104',
+            coordinates={"lat": "40.74702085787132", "lng": "-73.92090207753752"},
+            schedule='Saturday (8 a.m. - 3 p.m.)',
+            year_round=True,
+            is_visible=False,
+            is_current=True
+        ),
+        Market(
+            id=78,
+            name='Forest Park Farmstand',
+            website="https://www.grownyc.org/farmstand/forest-park",
+            location="Park Ln. South and Myrtle Ave. (My Buddy Statue Plaza)",
+            city="Queens",
+            state="NY",
+            zipcode='11418',
+            coordinates={"lat": "40.70119996340413", "lng": "-73.84164046638213"},
+            schedule='Saturday (8:30 a.m. - 2 p.m.)',
+            year_round=False,
+            season_start=date(2024, 7, 5),
+            season_end=date(2024, 11, 23),
+            is_visible=False,
+            is_current=False
+        ),
+        Market(
+            id=79,
+            name='Ridgewood Farmstand',
+            website="https://www.grownyc.org/farmstand/ridgewood",
+            location="Cypress Ave. btw. Myrtle and Putnam Ave.",
+            city="Queens",
+            state="NY",
+            zipcode='11385',
+            coordinates={"lat": "40.700180513908236", "lng": "-73.90654389324352"},
+            schedule='Saturday (9 a.m. - 1:30 p.m.)',
+            year_round=False,
+            season_start=date(2024, 7, 6),
+            season_end=date(2024, 11, 23),
+            is_visible=False,
+            is_current=False
+        ),
+        Market(
+            id=80,
+            name='St. George Greenmarket',
+            website="https://www.grownyc.org/greenmarket/staten-island/saint-george",
+            location="St. Mark's Pl. and Hyatt St.",
+            city="Staten Island",
+            state="NY",
+            zipcode='11301',
+            coordinates={"lat": "40.64152934585844", "lng": "-74.07776631907625"},
+            schedule='Saturday (8 a.m. - 1 p.m.)',
+            year_round=True,
+            is_visible=False,
+            is_current=True
+        ),
+        Market(
+            id=81,
+            name='Staten Island Mall Greenmarket',
+            website="https://www.grownyc.org/greenmarket/staten-island/si-mall",
+            location="Marsh Ave. & Ring Rd. (Commuter Lot Behind Macy's)",
+            city="Staten Island",
+            state="NY",
+            zipcode='11314',
+            coordinates={"lat": "40.583886817878415", "lng": "-74.16145661866804"},
+            schedule='Saturday (8 a.m. - 2 p.m.)',
+            year_round=False,
+            season_start=date(2025, 6, 7),
+            season_end=date(2025, 11, 22),
+            is_visible=False,
+            is_current=True
+        ),
     ]
     db.session.add_all(markets)
     db.session.commit()
@@ -1678,14 +1948,158 @@ def run():
             hour_end=time(14, 30, 0),
             day_of_week=5
         ),
-        # # 
-        # MarketDay(
-        #     id=,
-        #     market_id=,
-        #     hour_start=time(8, 0, 0),
-        #     hour_end=time(15, 0, 0),
-        #     day_of_week=
-        # ),
+        # Uptown Good Food Farmers Market
+        MarketDay(
+            id=82,
+            market_id=64,
+            hour_start=time(9, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=6
+        ),
+        # Bronx Borough Hall Greenmarket
+        MarketDay(
+            id=83,
+            market_id=65,
+            hour_start=time(8, 0, 0),
+            hour_end=time(16, 0, 0),
+            day_of_week=2
+        ),
+        # Lincoln Hospital Greenmarket
+        MarketDay(
+            id=84,
+            market_id=66,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=2
+        ),
+        # Lincoln Hospital Greenmarket
+        MarketDay(
+            id=85,
+            market_id=66,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=5
+        ),
+        # Parkchester Greenmarket
+        MarketDay(
+            id=86,
+            market_id=67,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=5
+        ),
+        # Poe Park Greenmarket
+        MarketDay(
+            id=87,
+            market_id=68,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=2
+        ),
+        # Eastchester Farmstand
+        MarketDay(
+            id=88,
+            market_id=69,
+            hour_start=time(9, 30, 0),
+            hour_end=time(14, 30, 0),
+            day_of_week=3
+        ),
+        # Morrisania Farmstand
+        MarketDay(
+            id=89,
+            market_id=70,
+            hour_start=time(10, 0, 0),
+            hour_end=time(14, 0, 0),
+            day_of_week=3
+        ),
+        # Norwood Farmstand
+        MarketDay(
+            id=90,
+            market_id=71,
+            hour_start=time(9, 30, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=4
+        ),
+        # Corona Greenmarket
+        MarketDay(
+            id=91,
+            market_id=72,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=3
+        ),
+        # Elmhurst Greenmarket
+        MarketDay(
+            id=92,
+            market_id=73,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=2
+        ),
+        # Flushing Greenmarket
+        MarketDay(
+            id=93,
+            market_id=74,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=3
+        ),
+        # Forest Hills Greenmarket
+        MarketDay(
+            id=94,
+            market_id=75,
+            hour_start=time(8, 0, 0),
+            hour_end=time(14, 0, 0),
+            day_of_week=0
+        ),
+        # Jackson Heights Greenmarket
+        MarketDay(
+            id=95,
+            market_id=76,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=0
+        ),
+        # Sunnyside Greenmarket
+        MarketDay(
+            id=96,
+            market_id=77,
+            hour_start=time(8, 0, 0),
+            hour_end=time(15, 0, 0),
+            day_of_week=6
+        ),
+        # Forest Park Farmstand
+        MarketDay(
+            id=97,
+            market_id=78,
+            hour_start=time(8, 30, 0),
+            hour_end=time(14, 0, 0),
+            day_of_week=6
+        ),
+        # Ridgewood Farmstand
+        MarketDay(
+            id=98,
+            market_id=79,
+            hour_start=time(9, 0, 0),
+            hour_end=time(13, 30, 0),
+            day_of_week=6
+        ),
+        # St. George Greenmarket
+        MarketDay(
+            id=99,
+            market_id=80,
+            hour_start=time(8, 0, 0),
+            hour_end=time(13, 0, 0),
+            day_of_week=6
+        ),
+        # Staten Island Mall Greenmarket
+        MarketDay(
+            id=100,
+            market_id=81,
+            hour_start=time(8, 0, 0),
+            hour_end=time(14, 0, 0),
+            day_of_week=6
+        )
     ]
     db.session.add_all(market_day_list)
     db.session.commit()
