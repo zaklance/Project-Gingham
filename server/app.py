@@ -3189,9 +3189,8 @@ def create_payment_intent():
     
 @app.route('/api/stripe-webhook', methods=['POST'])
 def stripe_webhook():
-    """Handles Stripe webhooks securely."""
     
-    payload = request.get_data(as_text=True)  # Get raw JSON from Stripe
+    payload = request.get_data(as_text=True)
     sig_header = request.headers.get('Stripe-Signature')
 
     try:
@@ -3204,17 +3203,13 @@ def stripe_webhook():
         print("❌ [Error] Invalid signature:", str(e))
         return jsonify({'error': 'Invalid signature'}), 400
 
-    # Extract event type
     event_type = event['type']
-    print("\n✅ [Event Received]:", event_type)
 
-    # ✅ Handle `payment_intent.created`
     if event_type == 'payment_intent.created':
         payment_intent = event['data']['object']
         print("ℹ️ Payment Intent Created:", payment_intent['id'])
         return jsonify({'message': 'Payment Intent created'}), 200
 
-    # ✅ Handle `payment_intent.succeeded`
     elif event_type == 'payment_intent.succeeded':
         payment_intent = event['data']['object']
         print("✅ Payment Succeeded:", payment_intent['id'])
@@ -3224,22 +3219,19 @@ def stripe_webhook():
 
         return jsonify({'message': 'Payment processed'}), 200
 
-    # ✅ Handle `charge.succeeded` (PRINT FULL PAYLOAD)
     elif event_type == 'charge.succeeded':
         charge = event['data']['object']
         print("\n✅ Charge Succeeded:")
-        print(json.dumps(charge, indent=2))  # Pretty print full charge payload
+        print(json.dumps(charge, indent=2))
 
         return jsonify({'message': 'Charge processed'}), 200
 
-    # ✅ Handle `charge.updated`
     elif event_type == 'charge.updated':
         charge = event['data']['object']
         print("✅ Charge Updated:", charge['id'])
 
         return jsonify({'message': 'Charge updated'}), 200
 
-    # ⚠️ Log unhandled events but return 200 to avoid Stripe retry loops
     else:
         print("⚠️ Unhandled event type:", event_type)
         return jsonify({'message': f'Unhandled event {event_type}'}), 200  
