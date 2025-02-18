@@ -300,7 +300,7 @@ function VendorLogin({ handlePopup }) {
                                             name="terms"
                                             value={termsConditions}
                                             onChange={(event) => setTermsConditions(!termsConditions)}
-                                            className='scale-fix-120'
+                                            className='scale-fix-125'
                                         />
                                         <p className="forgot-password" onClick={() => {
                                             navigate('/terms-service');

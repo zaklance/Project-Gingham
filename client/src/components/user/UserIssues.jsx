@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 
-function UserIssues({ basketId, onClose }) {
+function UserIssues({ basketId, handleClose }) {
     const [formData, setFormData] = useState({
         issueType: '',
         comments: ''
@@ -22,7 +22,7 @@ function UserIssues({ basketId, onClose }) {
             body: JSON.stringify({
                 user_id: localStorage.getItem('user_id'),
                 basket_id: basketId,
-                issue_type: 'Pickup Issue',
+                issue_type: 'pickup-issue',
                 issue_subtype: formData.issueType,
                 body: formData.comments,
                 status: 'pending'
@@ -31,9 +31,9 @@ function UserIssues({ basketId, onClose }) {
         .then(response => response.json())
         .then(() => {
             toast.success("Your request has been received and will be reviewed shortly.", {
-                autoClose: 4000
+                autoClose: 6000
             });
-            onClose();
+            handleClose();
         })
         .catch(error => {
             console.error('Error submitting issue:', error);
@@ -46,9 +46,9 @@ function UserIssues({ basketId, onClose }) {
     return (
         <div className="popup-overlay">
             <div className="popup-on">
-                <button className="btn btn-large x-btn" onClick={onClose}>X</button>
+                <button className="btn btn-large x-btn" onClick={handleClose}>X</button>
                 <h1 className="margin-t-16 margin-b-16 flex-center m-margin-0-24">Report a Pickup Issue</h1>
-                <div className="wrapper-issues">
+                <div className="wrapper-issue">
                     <div className="margin-t-16 flex-center">
                         <form onSubmit={handleSubmit} className="form">
                             <div className="form-group form-contact">
@@ -70,18 +70,19 @@ function UserIssues({ basketId, onClose }) {
                             <div className="form-group form-contact">
                                 <label>Comments:</label>
                                 <textarea
+                                    className='textarea-issue'
                                     name="comments"
                                     value={formData.comments}
-                                    placeholder="Enter additional details"
+                                    placeholder="Please go into detail about the problem with the pickup"
                                     onChange={handleChange}
-                                    rows="10"
-                                    cols="40"
+                                    // rows="10"
+                                    // cols="40"
                                     required
                                 />
                             </div>
                             <div className="flex-center">
                                 <button className="btn-edit" type="submit">Submit</button>
-                                {/* <button className="btn-edit" type="button" onClick={onClose}>Cancel</button> */}
+                                {/* <button className="btn-edit" type="button" onClick={handleClose}>Cancel</button> */}
                             </div>
                         </form>
                     </div>
