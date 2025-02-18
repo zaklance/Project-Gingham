@@ -585,7 +585,7 @@ class AdminUser(db.Model, SerializerMixin):
     def __repr__(self) -> str:
         return f"<AdminUser {self.email}>"
     
-class Basket(db.Model, SerializerMixin):
+class Basket(db.Model):
     __tablename__ = 'baskets'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -602,6 +602,7 @@ class Basket(db.Model, SerializerMixin):
     value = db.Column(db.Float, nullable=True)
     fee_vendor = db.Column(db.Float, nullable=False, default=0)
     fee_user = db.Column(db.Float, nullable=False, default=0)
+    item_count = db.Column(db.Integer, nullable=False, default=0)  
 
     vendor = db.relationship('Vendor', lazy='joined')
     market_day = db.relationship('MarketDay', lazy='joined')
@@ -619,12 +620,6 @@ class Basket(db.Model, SerializerMixin):
         '-user_issues.basket'
     )
 
-    # @validates('sale_date')
-    # def validate_sale_date(self, key, value):
-    #     if value < date.today():
-    #         raise ValueError("Sale date cannot be in the past")
-    #     return value
-
     @hybrid_property
     def sale_date_str(self):
         return self.sale_date.strftime('%Y-%m-%d') if self.sale_date else None
@@ -634,7 +629,7 @@ class Basket(db.Model, SerializerMixin):
         if not isinstance(value, bool):
             raise ValueError(f"{key} must be a boolean value")
         return value
-    
+
     @validates('price')
     def set_fees(self, key, price):
         if not isinstance(price, (int, float)) or price < 0:
@@ -642,16 +637,24 @@ class Basket(db.Model, SerializerMixin):
         self.fee_vendor = round(min(price * 0.2, 3), 2)
         self.fee_user = round(min(price * 0.029, 3) + .30, 2)
         return price
-    
+
     @validates('value')
     def validate_value(self, key, value):
         if not isinstance(value, (int, float)) or value < 0:
             raise ValueError(f"{key} must be a non-negative integer")
         return value
 
+    @validates('item_count')
+    def validate_item_count(self, key, value):
+        """Ensures item count is a positive integer."""
+        if not isinstance(value, int) or value <= 0:
+            raise ValueError(f"{key} must be a positive integer")
+        return value
+
     def __repr__(self):
         return (f"<Basket ID: {self.id}, Vendor: {self.vendor.name}, "
-                f"Market ID: {self.market_day_id}, Sold: {self.is_sold}, Value: {self.value}>")
+                f"Market ID: {self.market_day_id}, Sold: {self.is_sold}, "
+                f"Value: {self.value}, Items: {self.item_count}>")
 
 class UserNotification(db.Model, SerializerMixin):
     __tablename__ = 'user_notifications'

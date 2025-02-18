@@ -4114,12 +4114,7 @@ def get_user_receipts():
             if not request.data:
                 return jsonify({"error": "Empty request body"}), 400
 
-            # print("Raw request data:", request.data)
-
             data = request.get_json()
-
-            # print("Parsed JSON data:", data)
-
             if not data or 'user_id' not in data or 'baskets' not in data:
                 return jsonify({"error": "Missing required fields: 'user_id' and 'baskets'"}), 400
 
@@ -4127,18 +4122,27 @@ def get_user_receipts():
             if not user:
                 return jsonify({"error": "User not found"}), 404
 
-            created_at = datetime.utcnow().date()
+            created_at = datetime.utcnow()
 
             new_receipt = Receipt(
                 user_id=data['user_id'],
-                baskets=data['baskets'],
                 created_at=created_at
             )
 
             db.session.add(new_receipt)
             db.session.commit()
 
+            for basket_data in data['baskets']:
+                basket_id = basket_data.get('id')
+                item_count = basket_data.get('quantity', 1)
+
+                basket = Basket.query.get(basket_id)
+                if basket:
+                    basket.item_count = item_count
+                    db.session.commit()
+
             return jsonify(new_receipt.to_dict()), 201
+
         except Exception as e:
             db.session.rollback()
             return jsonify({"error": f"Error creating receipt: {str(e)}"}), 500
