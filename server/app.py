@@ -42,6 +42,8 @@ load_dotenv()
 
 app = Flask(__name__)
 
+STRIPE_WEBHOOK_SECRET = "whsec_0fd1e4d74c18b3685bd164fe766c292f8ec7a73a887dd83f598697be422a2875"
+
 USER_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/user-images')
 VENDOR_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/vendor-images')
 MARKET_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/market-images')
@@ -70,6 +72,93 @@ avatars = [
         "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
         "avatar-watermelon-1.jpg"
     ]
+
+def handle_checkout_completed(session):
+    """Retrieve purchase details from checkout session."""
+    session_id = session["id"]
+    session_details = stripe.checkout.Session.retrieve(session_id, expand=["line_items", "payment_intent"])
+    
+    payment_intent_id = session_details["payment_intent"]
+    line_items = session_details["line_items"]["data"]
+    customer_email = session_details.get("customer_details", {}).get("email", "N/A")
+
+    # Get the last 4 digits of the card
+    payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id, expand=["charges.payment_method"])
+    last4 = payment_intent["charges"]["data"][0]["payment_method_details"]["card"]["last4"]
+
+    # Extract receipt data
+    purchased_items = [
+        {
+            "basket_id": item["id"],
+            "name": item["description"],
+            "quantity": item["quantity"],
+            "price": item["amount_total"] / 100,
+            "pickup_date": session.get("metadata", {}).get(f"pickup_date_{item['id']}", "Unknown"),
+            "pickup_time": session.get("metadata", {}).get(f"pickup_time_{item['id']}", "Unknown"),
+            "vendor": session.get("metadata", {}).get(f"vendor_{item['id']}", "Unknown")
+        }
+        for item in line_items
+    ]
+
+    total_amount = session_details["amount_total"] / 100
+    currency = session_details["currency"].upper()
+
+    print(f"✅ Checkout Completed for {customer_email} - Total: ${total_amount} {currency} (Card Last 4: {last4})")
+
+    # Generate receipt
+    generate_receipt(customer_email, total_amount, currency, purchased_items, last4)
+
+def handle_payment_success(payment_intent):
+    """Retrieve payment details from successful payment."""
+    payment_intent_id = payment_intent["id"]
+    total_amount = payment_intent["amount_received"] / 100  # Convert cents to dollars
+    currency = payment_intent["currency"].upper()
+
+    # Get last 4 digits of the card
+    last4 = payment_intent["charges"]["data"][0]["payment_method_details"]["card"]["last4"]
+
+    # Get customer email
+    customer_email = payment_intent.get("charges", {}).get("data", [{}])[0].get("billing_details", {}).get("email", "N/A")
+
+    # Retrieve metadata for baskets (if stored in frontend during checkout)
+    baskets = payment_intent.get("metadata", {}).get("baskets", "[]")
+
+    print(f"✅ Payment Successful: {payment_intent_id}")
+    print(f"Customer: {customer_email}")
+    print(f"Total Paid: ${total_amount} {currency}")
+    print(f"Card Last 4: {last4}")
+
+    # If baskets metadata exists, convert it from JSON format
+    import json
+    try:
+        basket_data = json.loads(baskets)
+    except json.JSONDecodeError:
+        basket_data = []
+
+    purchased_items = [
+        {
+            "basket_id": item.get("id"),
+            "name": item.get("name"),
+            "price": item.get("price"),
+            "quantity": item.get("quantity"),
+            "pickup_date": item.get("pickup_date", "Unknown"),
+            "pickup_time": item.get("pickup_time", "Unknown"),
+            "vendor": item.get("vendor_name", "Unknown")
+        }
+        for item in basket_data
+    ]
+
+    generate_receipt(customer_email, total_amount, currency, purchased_items, last4)
+
+def generate_receipt(email, total, currency, items, last4):
+    """Generate structured receipt details."""
+    print("\n🧾 **Receipt Details:**")
+    print(f"Customer: {email}")
+    print(f"Total: ${total} {currency}")
+    print(f"Card Last 4: {last4}")
+    for item in items:
+        print(f"- {item['name']} (Basket ID: {item['basket_id']}) - ${item['price']:.2f}")
+        print(f"  Pickup: {item['pickup_date']} {item['pickup_time']} from {item['vendor']}")
 
 def generate_csv(model, fields, filename_prefix):
     """Helper function to generate CSV from a model."""
@@ -3090,6 +3179,65 @@ def create_payment_intent():
     except Exception as e:
         # General error handling
         return jsonify({'error': {'message': 'An unexpected error occurred.'}}), 500
+    
+@app.route('/api/stripe-webhook', methods=['POST'])
+def stripe_webhook():
+    """Handles Stripe webhooks securely."""
+    
+    payload = request.get_data(as_text=True)  # Get raw JSON from Stripe
+    sig_header = request.headers.get('Stripe-Signature')
+
+    try:
+        # Verify Stripe event signature
+        event = stripe.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
+    except ValueError as e:
+        print("❌ [Error] Invalid payload:", str(e))
+        return jsonify({'error': 'Invalid payload'}), 400
+    except stripe.error.SignatureVerificationError as e:
+        print("❌ [Error] Invalid signature:", str(e))
+        return jsonify({'error': 'Invalid signature'}), 400
+
+    # Extract event type
+    event_type = event['type']
+    print("\n✅ [Event Received]:", event_type)
+
+    # ✅ Handle `payment_intent.created`
+    if event_type == 'payment_intent.created':
+        payment_intent = event['data']['object']
+        print("ℹ️ Payment Intent Created:", payment_intent['id'])
+        return jsonify({'message': 'Payment Intent created'}), 200
+
+    # ✅ Handle `payment_intent.succeeded`
+    elif event_type == 'payment_intent.succeeded':
+        payment_intent = event['data']['object']
+        print("✅ Payment Succeeded:", payment_intent['id'])
+        print("💵 Amount:", payment_intent['amount'])
+        print("💰 Currency:", payment_intent['currency'])
+        print("📌 Status:", payment_intent['status'])
+
+        return jsonify({'message': 'Payment processed'}), 200
+
+    # ✅ Handle `charge.succeeded` (PRINT FULL PAYLOAD)
+    elif event_type == 'charge.succeeded':
+        charge = event['data']['object']
+        print("\n✅ Charge Succeeded:")
+        print(json.dumps(charge, indent=2))  # Pretty print full charge payload
+
+        return jsonify({'message': 'Charge processed'}), 200
+
+    # ✅ Handle `charge.updated`
+    elif event_type == 'charge.updated':
+        charge = event['data']['object']
+        print("✅ Charge Updated:", charge['id'])
+
+        return jsonify({'message': 'Charge updated'}), 200
+
+    # ⚠️ Log unhandled events but return 200 to avoid Stripe retry loops
+    else:
+        print("⚠️ Unhandled event type:", event_type)
+        return jsonify({'message': f'Unhandled event {event_type}'}), 200  
+    
+
 
 # Distribute Payments route is not working correctly - this may need to be made into a webhook.     
 # @app.route('/api/distribute-payments', methods=['POST'])
