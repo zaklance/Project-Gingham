@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { markets_default, states } from '../../utils/common';
+import { formatDate } from '../../utils/helpers';
 import { toast } from 'react-toastify';
 
 function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
@@ -8,20 +9,101 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const [marketDays, setMarketDays] = useState([])
     const [selectedDay, setSelectedDay] = useState(null);
     const [query, setQuery] = useState("");
+    const [locationQuery, setLocationQuery] = useState([]);
+    const [cityQuery, setCityQuery] = useState("");
+    const [stateQuery, setStateQuery] = useState("");
+    const [isCurrent, setIsCurrent] = useState("");
+    const [isVisible, setIsVisible] = useState("");
+    const [isYearRound, setIsYearRound] = useState("");
     const [editMode, setEditMode] = useState(false);
     const [editDayMode, setEditDayMode] = useState(false);
     const [adminMarketData, setAdminMarketData] = useState(null);
     const [tempMarketData, setTempMarketData] = useState(null);
     const [tempMarketDayData, setTempMarketDayData] = useState(null);
     const [image, setImage] = useState(null)
+    const [showDropdown, setShowDropdown] = useState(false);
     const [status, setStatus] = useState('initial')
+    const [showFilters, setShowFilters] = useState(false)
 
+    const dropdownRef = useRef(null);
     const { handlePopup } = useOutletContext();
 
-    const onUpdateQuery = event => setQuery(event.target.value);
-    const filteredMarkets = markets.filter(market => market.name.toLowerCase().includes(query.toLowerCase()) && market.name !== query)
-    const matchingMarket = markets.find(market => market.name.toLowerCase() === query.toLowerCase());
+    const onUpdateQuery = (event) => {
+        const value = event.target.value;
+        setQuery(value);
+        setShowDropdown(value.trim().length > 0);
+    };
+
+    const onUpdateLocationQuery = (event) => {
+        const value = event.target.value;
+        setCityQuery(prev => prev);
+        setShowDropdown(value.trim().length > 0);
+    };
+
+    const filteredMarketsDropdown = markets.filter(market => {
+        if (query && !market?.name?.toLowerCase().includes(query.toLowerCase())) return false;
+        if (market.name.toLowerCase() === query.toLowerCase()) return false;
+        if (cityQuery && market.city.toLowerCase() !== cityQuery.toLowerCase()) return false;
+        if (stateQuery && market.state.toLowerCase() !== stateQuery.toLowerCase()) return false;
+        if (isVisible !== "") {
+            if (market.is_visible !== isVisible) return false;
+        }
+        if (isCurrent !== "") {
+            if (market.is_current !== isCurrent) return false;
+        }
+        if (isYearRound !== "") {
+            if (market.year_round !== isYearRound) return false;
+        }
+
+        return true;
+    });
+
+    const filteredLocationDropdown = Array.from(new Set(markets
+        .filter(market => {
+            // if (query && !market?.name?.toLowerCase().includes(query.toLowerCase())) return false;
+            if ((market.city.toLowerCase() === cityQuery.toLowerCase()) && (market.state.toLowerCase() === stateQuery.toLowerCase())) return false;
+            if (cityQuery && !market.city.toLowerCase().includes(cityQuery.toLowerCase())) return false;
+            if (stateQuery && !market.state.toLowerCase().includes(stateQuery.toLowerCase())) return false;
+
+            return true;
+        })
+        .map(market => `${market.city}, ${market.state}`)))  // Convert to unique strings
+        .map(cityState => {
+            const [city, state] = cityState.split(","); // Convert back to object
+            return { city, state };
+        });
+
+    const filteredMarketsResults = markets.filter(market => {
+        if (!market?.name) return false;
+
+        if (query && !market?.name?.toLowerCase().includes(query.toLowerCase())) return false;
+        if (cityQuery && market.city.toLowerCase() !== cityQuery.toLowerCase()) return false;
+        if (stateQuery && market.state.toLowerCase() !== stateQuery.toLowerCase()) return false;
+        if (isVisible !== "" && market.is_visible !== isVisible) return false;
+        if (isCurrent !== "" && market.is_current !== isCurrent) return false;
+        if (isYearRound !== "" && market.year_round !== isYearRound) return false;
+
+        return true
+    });
+
+    const matchingMarket = markets.find(market => (market.name.toLowerCase() === query.toLowerCase()) && (market.city.toLowerCase().includes(cityQuery.toLowerCase()) && (market.state.toLowerCase() === stateQuery.toLowerCase())));
     const matchingMarketId = matchingMarket ? matchingMarket.id : null;
+
+    const handleVisibilityChange = (value) => {
+        setIsVisible(prev => (prev === value ? "" : value));
+    };
+    
+    const handleCurrentChange = (value) => {
+        setIsCurrent(prev => (prev === value ? "" : value));
+    };
+    
+    const handleYearRoundChange = (value) => {
+        setIsYearRound(prev => (prev === value ? "" : value));
+    };
+
+    const handleDropDownFilters = (event) => {
+        setShowFilters(!showFilters)
+    }
 
     useEffect(() => {
         fetch(`/api/market-days?market_id=${matchingMarketId}`)
@@ -278,6 +360,19 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         }
     };
 
+    const handleClickOutsideDropdown = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            setShowDropdown(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutsideDropdown);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutsideDropdown);
+        };
+    }, [showDropdown]);
+
     
     return(
         <>
@@ -288,20 +383,175 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                     <tbody>
                         <tr>
                             <td className='cell-title'>Search:</td>
-                            <td className='cell-text'>
-                                <input id='search' className="search-bar" type="text" placeholder="Search markets..." value={query} onChange={onUpdateQuery} />
+                            <td className='cell-text search-bar-markets'>
+                                <input id='search' className="search-bar-markets" type="text" placeholder="Search market names..." value={query} onChange={onUpdateQuery} />
+                                {showDropdown && (
+                                    <div className="dropdown-content" ref={dropdownRef}>
+                                        {
+                                            (query || locationQuery[0] || locationQuery[1] || isCurrent !== "" || isVisible !== "") &&
+                                            filteredMarketsDropdown.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => { setQuery(item.name); setCityQuery(item.city); setStateQuery(item.state); setShowDropdown(false);}}>
+                                                {item.name}
+                                            </div>)
+                                        }
+                                    </div>
+                                )}
+                            </td>
+                            <td className='cell-text search-bar-city'>
+                                <div className='flex-space-between'>
+                                    <input id='search' className="search-bar-city" type="text" placeholder="Search cities..." value={cityQuery} onChange={(e) => setCityQuery(e.target.value)} />
+                                    <select
+                                        key={stateQuery}
+                                        className='select-state'
+                                        name="state"
+                                        value={stateQuery || ''}
+                                        onChange={(e) => setStateQuery(e.target.value)}
+                                    >
+                                        <option value="">Select</option>
+                                        {states.map(state => (
+                                            <option key={state} value={state}>
+                                                {state}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                                 <div className="dropdown-content">
                                     {
-                                        query &&
-                                        filteredMarkets.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => setQuery(item.name)}>
-                                            {item.name}
+                                        (cityQuery || stateQuery) &&
+                                        filteredLocationDropdown.slice(0, 10).map(item => <div className="search-results-city" key={item.id} onClick={(e) => { setCityQuery(item.city); setStateQuery(item.state.trim());}}>
+                                            {item.city}, {item.state}
                                         </div>)
                                     }
                                 </div>
                             </td>
+                            <td>
+                                <button className='btn btn-filter' onClick={handleDropDownFilters}>&#9776;</button>
+                                {showFilters && (
+                                    <div className='dropdown-content box-filters-admin flex-space-between flex-column'>
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td><label className='text-500 margin-r-8'>Visible:</label></td>
+                                                    <td><input
+                                                        className='scale-fix-125 margin-r-4'
+                                                        type='checkbox'
+                                                        checked={isVisible}
+                                                        value={true}
+                                                        onChange={() => handleVisibilityChange(true)}
+                                                    />
+                                                    <label className='margin-r-8'>Yes</label>
+                                                    <input
+                                                        className='scale-fix-125 margin-r-4'
+                                                        type='checkbox'
+                                                        checked={isVisible === false}
+                                                        value={false}
+                                                        onChange={() => handleVisibilityChange(false)}
+                                                    />
+                                                    <label className='margin-r-8'>No</label></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><label className='text-500 margin-r-8'>Current:</label></td>
+                                                    <td><input
+                                                        className='scale-fix-125 margin-r-4'
+                                                        type='checkbox'
+                                                        checked={isCurrent}
+                                                        value={true}
+                                                        onChange={() => handleCurrentChange(true)}
+                                                    />
+                                                    <label className='margin-r-8'>Yes</label>
+                                                    <input
+                                                        className='scale-fix-125 margin-r-4'
+                                                        type='checkbox'
+                                                        checked={isCurrent === false}
+                                                        value={false}
+                                                        onChange={() => handleCurrentChange(false)}
+                                                    />
+                                                    <label className='margin-r-8'>No</label></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><label className='text-500 margin-r-8'>Year Round:&emsp;</label></td>
+                                                    <td><input
+                                                        className='scale-fix-125 margin-r-4'
+                                                        type='checkbox'
+                                                        checked={isYearRound}
+                                                        value={true}
+                                                        onChange={() => handleYearRoundChange(true)}
+                                                    />
+                                                    <label className='margin-r-8'>Yes</label>
+                                                    <input
+                                                        className='scale-fix-125 margin-r-4'
+                                                        type='checkbox'
+                                                        checked={isYearRound === false}
+                                                        value={false}
+                                                        onChange={() => handleYearRoundChange(false)}
+                                                    />
+                                                    <label className='margin-r-8'>No</label></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </td>
                         </tr>
                     </tbody>
                 </table>
+                <details className='details-markets'>
+                    <summary>Market Results</summary>
+                    <div>
+                        <div className='box-scroll grid-3'>
+                            {filteredMarketsResults
+                                .sort((a, b) => {
+                                    const nameA = a.name.toLowerCase();
+                                    const nameB = b.name.toLowerCase();
+
+                                    const numA = nameA.match(/^\D*(\d+)/)?.[1];
+                                    const numB = nameB.match(/^\D*(\d+)/)?.[1];
+
+                                    if (numA && numB && nameA[0] >= "0" && nameA[0] <= "9" && nameB[0] >= "0" && nameB[0] <= "9") {
+                                        return parseInt(numA) - parseInt(numB);
+                                    }
+
+                                    return nameA.localeCompare(nameB, undefined, { numeric: true });
+                                })
+                                .map(market => (
+                                    <div key={market.id} className='box-bounding'>
+                                        <h4>{market.name}</h4>
+                                        <p className='margin-b-12 text-500' style={{ borderBottom: "1px solid #3b4752"}}>{market.city}, {market.state}</p>
+                                        <div className='text-line-1-4'>
+                                            {market.year_round === false && market.season_start && market.season_end ? (
+                                                <p>{formatDate(market.season_start)} – {formatDate(market.season_end)}</p>
+                                            ) : (
+                                                market.year_round === false && (!market.season_start || !market.season_end) ? (
+                                                    <></>
+                                                ) : (
+                                                    <p>Open Year Round</p>
+                                                )
+                                            )}
+                                            {/* <p>{market.schedule}</p> */}
+                                            <table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Is Visible: &#8202;</td>
+                                                        <td className='text-center'>{market.is_visible ? 'Yes' : 'No'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Is Current: &#8202;</td>
+                                                        <td className='text-center'>{market.is_current ? 'Yes' : 'No'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Vendors: &#8202;</td>
+                                                        <td className='text-center'>{market.market_days.reduce((total, marketDay) => total + (marketDay.vendor_markets?.length || 0), 0)}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div className='text-center margin-t-8'>
+                                            <button className='btn btn-file' onClick={(e) => setQuery(market.name)}>Select</button>
+                                        </div>
+                                    </div>
+                                ))}
+                        </div>
+                    </div>
+                </details>
                 <div>
                     {editMode ? (
                         <>
@@ -444,6 +694,18 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     <option value={false}>false</option>
                                 </select>
                             </div>
+                            <div className='form-group'>
+                                <label title="true or false">Is Current:</label>
+                                <select
+                                    name="is_current"
+                                    value={tempMarketData ? tempMarketData.is_current : ''}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="">Select</option>
+                                    <option value={true}>true</option>
+                                    <option value={false}>false</option>
+                                </select>
+                            </div>
                             <div className="form-group">
                                 <label>Default Image:</label>
                                 <select className='select'
@@ -555,6 +817,10 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     <tr>
                                         <td className='cell-title' title="true or false">Is Visible:</td>
                                         <td className='cell-text'>{adminMarketData ? `${adminMarketData.is_visible}` : ''}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='cell-title' title="true or false">Is Current:</td>
+                                        <td className='cell-text'>{adminMarketData ? `${adminMarketData.is_current}` : ''}</td>
                                     </tr>
                                 </tbody>
                             </table>

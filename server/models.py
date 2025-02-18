@@ -185,6 +185,7 @@ class Market(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     bio = db.Column(db.String, nullable=True)
+    website = db.Column(db.String, nullable=True)
     image = db.Column(db.String, nullable=True)
     image_default = db.Column(db.String, nullable=False, default=random_market)
     location = db.Column(db.String, nullable=False)
@@ -196,7 +197,8 @@ class Market(db.Model, SerializerMixin):
     year_round = db.Column(db.Boolean, nullable=True)
     season_start = db.Column(db.Date, nullable=True)
     season_end = db.Column(db.Date, nullable=True)
-    is_visible = db.Column(db.Boolean, nullable=True, default=True)
+    is_visible = db.Column(db.Boolean, nullable=False, default=True)
+    is_current = db.Column(db.Boolean, nullable=False, default=True)
 
     # Relationships
     reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic', cascade="all, delete")
@@ -908,6 +910,7 @@ class SettingsUser(db.Model, SerializerMixin):
     site_basket_pickup_time = db.Column(db.Boolean, default=True, nullable=False)
     site_vendor_review_response = db.Column(db.Boolean, default=True, nullable=False)
     site_new_blog = db.Column(db.Boolean, default=True, nullable=False)
+    site_new_market_in_city = db.Column(db.Boolean, default=True, nullable=False)
     
     email_fav_market_new_event = db.Column(db.Boolean, default=True, nullable=False)
     email_fav_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
@@ -919,6 +922,7 @@ class SettingsUser(db.Model, SerializerMixin):
     email_basket_pickup_time = db.Column(db.Boolean, default=False, nullable=False)
     email_vendor_review_response = db.Column(db.Boolean, default=False, nullable=False)
     email_new_blog = db.Column(db.Boolean, default=True, nullable=False)
+    email_new_market_in_city = db.Column(db.Boolean, default=True, nullable=False)
     
     text_fav_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
     text_fav_market_new_basket = db.Column(db.Boolean, default=False, nullable=False)

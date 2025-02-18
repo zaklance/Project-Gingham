@@ -1,4 +1,3 @@
-
 // Time Conversions and Formatting
 export function timeConverter(time24) {
     const [hours, minutes, seconds] = time24.split(':').map(Number);
@@ -148,18 +147,19 @@ export function receiptDateConverter(dateString) {
     return isNaN(date.getTime()) ? "Invalid Date" : date.toLocaleDateString('en-CA');
 }
 
-
 // Input Conversions and Formatting
-// Add +1 (000) 000-0000
-export const formatPhoneNumber = (phone) => {
+export const formatPhoneNumber = (phone, countryCode = '+1') => {
     const cleaned = ('' + phone).replace(/\D/g, '');
-    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+
+    const normalized = cleaned.length === 11 && cleaned.startsWith('1') ? cleaned.slice(1) : cleaned;
+
+    const match = normalized.match(/^(\d{3})(\d{3})(\d{4})$/);
     if (match) {
-        return `(${match[1]}) ${match[2]}-${match[3]}`;
+        return `${countryCode} (${match[1]}) ${match[2]}-${match[3]}`;
     }
+    
     return phone;
 };
-
 
 
 // Link Generators
