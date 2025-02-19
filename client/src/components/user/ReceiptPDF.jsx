@@ -138,7 +138,7 @@ const Receipt = ({ receiptId, isPaymentCompleted }) => {
                         setError(err.message);
                         setIsPreparing(false);
                     });
-            }, 1600);
+            }, 2000);
 
             return () => clearTimeout(timer);
         }
