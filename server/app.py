@@ -103,7 +103,7 @@ def handle_checkout_completed(session):
     total_amount = session_details["amount_total"] / 100
     currency = session_details["currency"].upper()
 
-    print(f"✅ Checkout Completed for {customer_email} - Total: ${total_amount} {currency} (Card Last 4: {last4})")
+    print(f"Checkout Completed for {customer_email} - Total: ${total_amount} {currency} (Card Last 4: {last4})")
 
     # Generate receipt
     generate_receipt(customer_email, total_amount, currency, purchased_items, last4)
@@ -123,7 +123,7 @@ def handle_payment_success(payment_intent):
     # Retrieve metadata for baskets (if stored in frontend during checkout)
     baskets = payment_intent.get("metadata", {}).get("baskets", "[]")
 
-    print(f"✅ Payment Successful: {payment_intent_id}")
+    print(f"Payment Successful: {payment_intent_id}")
     print(f"Customer: {customer_email}")
     print(f"Total Paid: ${total_amount} {currency}")
     print(f"Card Last 4: {last4}")
@@ -3197,67 +3197,67 @@ def stripe_webhook():
         # Verify Stripe event signature
         event = stripe.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
     except ValueError as e:
-        print("❌ [Error] Invalid payload:", str(e))
+        print("[Error] Invalid payload:", str(e))
         return jsonify({'error': 'Invalid payload'}), 400
     except stripe.error.SignatureVerificationError as e:
-        print("❌ [Error] Invalid signature:", str(e))
+        print("[Error] Invalid signature:", str(e))
         return jsonify({'error': 'Invalid signature'}), 400
 
     event_type = event['type']
-    print(f"\n✅ [Event Received]: {event_type}")
+    # print(f"\n[Event Received]: {event_type}")
 
-    # ✅ Handle `payment_intent.created`
+    # Handle `payment_intent.created`
     if event_type == 'payment_intent.created':
         payment_intent = event['data']['object']
-        print("ℹ️ Payment Intent Created:", payment_intent['id'])
+        # print("Payment Intent Created:", payment_intent['id'])
         return jsonify({'message': 'Payment Intent created'}), 200
 
-    # ✅ Handle `payment_intent.succeeded`
+    # Handle `payment_intent.succeeded`
     elif event_type == 'payment_intent.succeeded':
         payment_intent = event['data']['object']
-        print("✅ Payment Succeeded:", payment_intent['id'])
-        print("💵 Amount:", payment_intent['amount'])
-        print("💰 Currency:", payment_intent['currency'])
-        print("📌 Status:", payment_intent['status'])
+        # print("Payment Succeeded:", payment_intent['id'])
+        # print("Amount:", payment_intent['amount'])
+        # print("Currency:", payment_intent['currency'])
+        # print("Status:", payment_intent['status'])
         return jsonify({'message': 'Payment processed'}), 200
 
-    # ✅ Handle `charge.succeeded`
+    # Handle `charge.succeeded`
     elif event_type == 'charge.succeeded':
         charge = event['data']['object']
-        print("\n✅ Charge Succeeded:")
-        print(json.dumps(charge, indent=2))
+        # print("\nCharge Succeeded:")
+        # print(json.dumps(charge, indent=2))
         return jsonify({'message': 'Charge processed'}), 200
 
-    # ✅ Handle `charge.updated`
+    # Handle `charge.updated`
     elif event_type == 'charge.updated':
         charge = event['data']['object']
-        print("✅ Charge Updated:", charge['id'])
+        # print("Charge Updated:", charge['id'])
         return jsonify({'message': 'Charge updated'}), 200
 
-    # ✅ Handle `payment.created`
+    # Handle `payment.created`
     elif event_type == 'payment.created':
         payment = event['data']['object']
-        print("\n✅ Payment Created:")
-        print(json.dumps(payment, indent=2))
+        # print("\nPayment Created:")
+        # print(json.dumps(payment, indent=2))
         return jsonify({'message': 'Payment created'}), 200
 
-    # ✅ Handle `transfer.created`
+    # Handle `transfer.created`
     elif event_type == 'transfer.created':
         transfer = event['data']['object']
-        print("\n✅ Transfer Created:")
-        print(json.dumps(transfer, indent=2))
+        # print("\nTransfer Created:")
+        # print(json.dumps(transfer, indent=2))
         return jsonify({'message': 'Transfer created'}), 200
 
-    # ✅ Handle `application_fee.created`
+    # Handle `application_fee.created`
     elif event_type == 'application_fee.created':
         application_fee = event['data']['object']
-        print("\n✅ Application Fee Created:")
-        print(json.dumps(application_fee, indent=2))
+        # print("\nApplication Fee Created:")
+        # print(json.dumps(application_fee, indent=2))
         return jsonify({'message': 'Application fee created'}), 200
 
-    # ⚠️ Catch all unhandled events (returns 200 to prevent Stripe retries)
+    #Catch all unhandled events (returns 200 to prevent Stripe retries)
     else:
-        print("⚠️ Unhandled event type:", event_type)
+        print("Unhandled event type:", event_type)
         return jsonify({'message': f'Unhandled event {event_type}'}), 200 
     
 @app.route('/api/stripe-transaction', methods=['GET'])
@@ -3269,49 +3269,49 @@ def get_stripe_transaction():
         return jsonify({"error": "Missing required parameter: payment_intent_id"}), 400
 
     try:
-        # ✅ Fetch PaymentIntent from Stripe
+        # Fetch PaymentIntent from Stripe
         payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
-        print(f"✅ Payment Intent Found: {payment_intent.id}")
+        print(f"Payment Intent Found: {payment_intent.id}")
 
         if not payment_intent or "latest_charge" not in payment_intent:
             return jsonify({"error": "Invalid PaymentIntent or charge not found"}), 404
 
-        # ✅ Fetch Charge details
+        # Fetch Charge details
         charge = stripe.Charge.retrieve(payment_intent["latest_charge"])
-        print(f"✅ Charge Found: {charge.id}")
+        print(f"Charge Found: {charge.id}")
 
-        # ✅ Try getting balance_transaction from charge
+        # Try getting balance_transaction from charge
         balance_transaction_id = charge.get("balance_transaction")
 
-        # ✅ If missing, try fetching from Application Fee
+        # If missing, try fetching from Application Fee
         if not balance_transaction_id and charge.get("application_fee"):
             app_fee = stripe.ApplicationFee.retrieve(charge["application_fee"])
             balance_transaction_id = app_fee.get("balance_transaction")
             print(f"🔄 Using Application Fee Transaction: {balance_transaction_id}")
 
-        # ✅ If still missing, try fetching from Transfer
+        # If still missing, try fetching from Transfer
         if not balance_transaction_id and charge.get("source_transfer"):
             transfer = stripe.Transfer.retrieve(charge["source_transfer"])
             balance_transaction_id = transfer.get("balance_transaction")
             print(f"🔄 Using Transfer Transaction: {balance_transaction_id}")
 
-        # ✅ If still missing, return an error
+        # If still missing, return an error
         if not balance_transaction_id:
             return jsonify({"error": "Charge does not have a balance transaction yet. Try again later."}), 400
 
-        # ✅ Fetch Balance Transaction details from Stripe
+        # Fetch Balance Transaction details from Stripe
         balance_transaction = stripe.BalanceTransaction.retrieve(balance_transaction_id)
-        print(f"✅ Balance Transaction Found: {balance_transaction_id}")
+        print(f"Balance Transaction Found: {balance_transaction_id}")
 
-        # ✅ Extract Fees & Taxes
+        # Extract Fees & Taxes
         fee_processor = sum(fee['amount'] / 100 for fee in balance_transaction.fee_details if fee['type'] == 'stripe_fee')
         fee_gingham = sum(fee['amount'] / 100 for fee in balance_transaction.fee_details if fee['type'] == 'application_fee')
         tax_total = sum(fee['amount'] / 100 for fee in balance_transaction.fee_details if fee['type'] == 'tax')
 
-        # ✅ Extract Last 4 Digits of Card
+        # Extract Last 4 Digits of Card
         card_id = charge.payment_method_details.get('card', {}).get('last4', "N/A")
 
-        # ✅ Return transaction details
+        # Return transaction details
         return jsonify({
             "payment_intent_id": payment_intent_id,
             "fee_gingham": fee_gingham,
@@ -3321,10 +3321,10 @@ def get_stripe_transaction():
         }), 200
 
     except stripe.error.InvalidRequestError as e:
-        print(f"❌ Stripe API Error: {str(e)}")  # Debugging log
+        print(f"Stripe API Error: {str(e)}")  # Debugging log
         return jsonify({"error": f"Stripe API error: {str(e)}"}), 500
     except Exception as e:
-        print(f"❌ Unexpected Error: {str(e)}")  # Debugging log
+        print(f"Unexpected Error: {str(e)}")  # Debugging log
         return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
 
 # Distribute Payments route is not working correctly - this may need to be made into a webhook.     
