@@ -38,7 +38,7 @@ const ReceiptDocument = ({ receipt, transaction }) => {
                         <Text>{receipt.user.address_1}{receipt.user.address_2 && ", "}{receipt.user.address_2}</Text>
                     </View>
                     <View style={styles.row}>
-                        <Text>&emsp;</Text>
+                        <Text><Text style={styles.bold}>Card:</Text> {`**** **** **** ${transaction?.card_id}` || "N/A"}</Text>
                         <Text>{receipt.user?.city || "N/A"}, {receipt.user?.state || "N/A"} {receipt.user?.zipcode || "N/A"}</Text>
                     </View>
                 </View>
@@ -54,7 +54,7 @@ const ReceiptDocument = ({ receipt, transaction }) => {
                             <Text>{item.market_location}</Text>
                         </View>
                         <View style={styles.rowItem}>
-                            <Text>Price: ${item.price.toFixed(2)} &emsp; Fee: ${item.fee_user.toFixed(2)}</Text>
+                            <Text>Price: ${item.price.toFixed(2)} &emsp; Fee: $ {item.fee_user.toFixed(2)}</Text>
                             <Text>Pickup Date: {formatBasketDate(item.sale_date)}</Text>
                             <Text>Pickup Time: {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</Text>
                         </View>
@@ -71,34 +71,15 @@ const ReceiptDocument = ({ receipt, transaction }) => {
                         <Text style={styles.total}>Total Fee:</Text>
                         <Text>${basketItems.reduce((acc, item) => acc + item.fee_user, 0).toFixed(2)}</Text>
                     </View>
+                    <View style={styles.rowStart}>
+                        <Text style={styles.total}>Total Tax:</Text>
+                        <Text>${transaction.tax.toFixed(2)}</Text>
+                    </View>
                     <View style={[styles.rowStart, styles.bold]}>
                         <Text style={styles.total}>Sum Total:</Text>
                         <Text>${basketItems.reduce((acc, item) => acc + (item.price + item.fee_user), 0).toFixed(2)}</Text>
                     </View>
                 </View>
-
-                {transaction && (
-                    <View wrap={false} style={styles.section}>
-                        <Text style={styles.bold}>Transaction Details:</Text>
-                        <View style={styles.divider} />
-                        <View style={styles.row}>
-                            <Text>Gingham Fee:</Text>
-                            <Text>${transaction?.fee_gingham?.toFixed(2) || "N/A"}</Text>
-                        </View>
-                        <View style={styles.row}>
-                            <Text>Stripe Fee:</Text>
-                            <Text>${transaction?.fee_processor?.toFixed(2) || "N/A"}</Text>
-                        </View>
-                        <View style={styles.row}>
-                            <Text>Last 4 Digits of Card:</Text>
-                            <Text>{transaction?.card_id || "N/A"}</Text>
-                        </View>
-                        <View style={styles.row}>
-                            <Text>Tax:</Text>
-                            <Text>${transaction?.tax?.toFixed(2) || "N/A"}</Text>
-                        </View>
-                    </View>
-                )}
 
                 <View style={styles.footer} fixed>
                     <View style={styles.rowFooter}>
