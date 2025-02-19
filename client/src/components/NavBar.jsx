@@ -391,11 +391,64 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li>
                             <NavLink className='nav-tab color-3 btn-nav' to="/user/vendors" state={{ resetFilters: true }} title="Vendors">Vendors</NavLink>
                         </li>
+                    </>
+                )}
+                {/* User Login / Logout */}
+                {isUserLoggedIn && !isVendorPage && !isAdminPage &&  (
+                    <>
+                        <li>
+                            <NavLink className='nav-tab color-4 btn-nav nowrap' to={`/user/pick-up`} title="Pick-Up">Pick-Up</NavLink>
+                        </li>
+                        <li>
+                            <NavLink className='nav-tab color-2 btn-nav' to={`/user/profile/${userId}`} title="Profile">Profile</NavLink>
+                        </li>
+                    </>
+                )}
+                {!isNotUser && (
+                    <>
                         {amountInCart > 0 && (
                             <li>
-                                <NavLink className='nav-tab color-4 btn-nav nowrap' to="/user/cart" title="Cart">Cart {amountInCart > 0 ? `(${amountInCart})` : null}</NavLink>
+                                <NavLink className='nav-tab color-1 btn-nav nav-tab-wide nowrap icon-basket' to="/user/cart" title="Cart">&emsp;</NavLink>
                             </li>
                         )}
+                    </>
+                )}
+                {isUserLoggedIn && !isVendorPage && !isAdminPage &&  (
+                    <>
+                        {notifications.length > 0 &&
+                            <li className='notification' onClick={handleNotifPopup}>
+                                <a className='nav-tab color-4 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
+                                {notifications.filter(notification => notification.is_read === false).length > 0 && (
+                                    <p className='badge'>
+                                        {notifications.filter(notification => notification.is_read === false).length}
+                                    </p>)}
+                            </li>
+                        }
+                        <div className='notification'>
+                            {notifications.length > 0 &&
+                                <div className={`popup-notif ${isNotifPopup ? 'popup-notif-on' : ''}`} style={{ top: window.scrollY }}>
+                                    <ul className='flex-start flex-wrap ul-notif'>
+                                        <li className='btn btn-clear' onClick={handleUserNotificationClear}>
+                                            Clear All Notifications
+                                        </li>
+                                        {notifications.map((notification) => (
+                                            <li key={notification.id} className='li-notif'>
+                                                <div className='flex-start badge-container'>
+                                                    <button className='btn btn-unreport btn-notif' onClick={() => handleNotificationDelete(notification.id)}>x</button>
+                                                    <NavLink className="link-plain scale-102" to={notification.link} onClick={() => handleUserNotificationIsRead(notification.id, 'link')}>
+                                                        {notification.message}
+                                                    </NavLink>
+                                                    {!notification.is_read && <button className='btn btn-unread' onClick={() => handleUserNotificationIsRead(notification.id)}>&emsp;</button>}
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            }
+                            {isNotifPopup && (
+                                <div className="popup-overlay" onClick={closePopup}></div>
+                            )}
+                        </div>
                     </>
                 )}
                 {/* Vendor Tabs */}
@@ -437,7 +490,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                                             : <button className='btn btn-unreport btn-notif' onClick={() => handleVendorNotificationDelete(notification.id)}>x</button>}
                                                         {notification.link ? <NavLink className="link-plain scale-102" to={notification.link} onClick={() => handleVendorNotificationIsRead(notification.id)}>{notification.message}</NavLink>
                                                             : <p onClick={() => handleVendorNotificationIsRead(notification.id)}>{notification.message}</p>}
-                                                        {!notification.is_read && <button className='btn btn-unread'>&emsp;</button>}
+                                                        {!notification.is_read && <button className='btn btn-unread' onClick={() => handleVendorNotificationIsRead(notification.id)}>&emsp;</button>}
                                                     </div>
                                                 </li>
                                         ))}
@@ -501,7 +554,9 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         {adminNotifications.length > 0 &&
                             <li className='notification' onClick={handleAdminNotifPopup}>
                                 <a className='nav-tab color-5 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
-                                <p className='badge'>{adminNotifications.length}</p>
+                                {adminNotifications.filter(notification => notification.is_read === false).length > 0 && (
+                                    <p className='badge'>{adminNotifications.length}</p>
+                                )}
                             </li>
                         }
                         <div className='notification'>
@@ -518,7 +573,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                                         <button className='btn btn-unreport btn-notif' onClick={() => handleAdminNotificationIsRead(notification.id)}>o</button>
                                                         : <button className='btn btn-unreport btn-notif' onClick={() => handleAdminNotificationDelete(notification.id)}>x</button>}
                                                     <NavLink className='link-plain scale-102' to={notification.link} onClick={() => handleAdminNotificationIsRead(notification.id)}>{notification.message}</NavLink>
-                                                    {!notification.is_read && <button className='btn btn-unread'>&emsp;</button>}
+                                                    {!notification.is_read && <button className='btn btn-unread' onClick={() => handleAdminNotificationIsRead(notification.id)}>&emsp;</button>}
                                                 </div>
                                             </li>
                                         ))}
@@ -534,43 +589,6 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {/* User Login / Logout */}
                 {isUserLoggedIn && !isVendorPage && !isAdminPage ?  (
                     <>
-                        <li>
-                            <NavLink className='nav-tab color-2 btn-nav nowrap' to={`/user/pick-up`} title="Pick-Up">Pick-Up</NavLink>
-                        </li>
-                        <li>
-                            <NavLink className='nav-tab color-1 btn-nav' to={`/user/profile/${userId}`} title="Profile">Profile</NavLink>
-                        </li>
-                        {notifications.length > 0 &&
-                            <li className='notification' onClick={handleNotifPopup}>
-                                <a className='nav-tab color-4 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
-                                {notifications.length > 0 && <p className='badge'>{notifications.length}</p>}
-                            </li>
-                        }
-                        <div className='notification'>
-                            {notifications.length > 0 &&
-                                <div className={`popup-notif ${isNotifPopup ? 'popup-notif-on' : ''}`} style={{ top: window.scrollY }}>
-                                    <ul className='flex-start flex-wrap ul-notif'>
-                                        <li className='btn btn-clear' onClick={handleUserNotificationClear}>
-                                            Clear All Notifications
-                                        </li>
-                                        {notifications.map((notification) => (
-                                            <li key={notification.id} className='li-notif'>
-                                                <div className='flex-start badge-container'>
-                                                    <button className='btn btn-unreport btn-notif' onClick={() => handleNotificationDelete(notification.id)}>x</button>
-                                                    <NavLink className="link-plain scale-102" to={notification.link} onClick={() => handleUserNotificationIsRead(notification.id, 'link')}>
-                                                        {notification.message}
-                                                    </NavLink>
-                                                    {!notification.is_read && <button className='btn btn-unread' onClick={() => handleUserNotificationIsRead(notification.id)}>&emsp;</button>}
-                                                </div>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            }
-                            {isNotifPopup && (
-                                <div className="popup-overlay" onClick={closePopup}></div>
-                            )}
-                        </div>
                         <li style={{ marginLeft: 'auto' }}>
                             <NavLink className='nav-tab color-3 tab-right btn-nav' to="/user/logout" title="Logout">Logout</NavLink>
                         </li>

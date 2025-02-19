@@ -2900,12 +2900,12 @@ def run():
             title="Butternut Squash Soup",
             body="""
                 <div class="column-3">
-                    <h5>Prep Time: 10 mins | Cook Time: 35 mins | Total: 45 mins | Serves: 6</h5>
+                    <h5 class="divider-b">Prep Time: 10 mins | Cook Time: 35 mins | Total: 45 mins | Serves: 6</h5>
                     <br/>
                     <article class="first-letter">
                         This vegan butternut squash soup is the perfect fall comfort food! Store in the fridge for 4 days or freeze for months.
                     </article>
-                    <h5>Ingredients</h5>
+                    <h5 class="text-underline">Ingredients</h5>
                     <ul class="ul-bullet">
                         <li>2 tbsp olive oil</li>
                         <li>1 large yellow onion, chopped</li>
@@ -2918,7 +2918,7 @@ def run():
                         <li>3–4 cups vegetable broth</li>
                         <li>Freshly ground black pepper</li>
                     </ul>
-                    <h5>Instructions</h5>
+                    <h5 class="text-underline">Instructions</h5>
                     <ul class="ul-numbers">
                         <li>Heat oil in a large pot over medium heat. Add onion, salt, and pepper; sauté 5–8 mins. Add squash and cook 8–10 mins, stirring.</li>
                         <li>Add garlic, sage, rosemary, and ginger; cook 30 secs to 1 min until fragrant. Add 3 cups broth, bring to a boil, cover, and simmer 20–30 mins until squash is tender.</li>
