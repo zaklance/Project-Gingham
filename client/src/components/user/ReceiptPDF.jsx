@@ -129,7 +129,6 @@ const Receipt = ({ receiptId, isPaymentCompleted, page }) => {
             fetch(`/api/stripe-transaction?payment_intent_id=${encodeURIComponent(receipt.payment_intent_id.trim())}`)
                 .then((res) => res.json())
                 .then((transactionData) => {
-                    console.log("Fetched Stripe Transaction Data:", transactionData);
                     if (transactionData.error) throw new Error(transactionData.error);
                     setTransaction(transactionData);
                     setIsPreparing(false);
