@@ -122,27 +122,25 @@ const Receipt = ({ receiptId, isPaymentCompleted, page }) => {
     }, [receiptId]);
 
     useEffect(() => {
-        if (isPaymentCompleted && receipt?.payment_intent_id) {
+        // Fetch transaction data if it's a new purchase OR if it's from history (profile)
+        if ((isPaymentCompleted || page === 'profile') && receipt?.payment_intent_id) {
             setIsPreparing(true);
 
-            const timer = setTimeout(() => {
-                fetch(`/api/stripe-transaction?payment_intent_id=${encodeURIComponent(receipt.payment_intent_id.trim())}`)
-                    .then((res) => res.json())
-                    .then((transactionData) => {
-                        if (transactionData.error) throw new Error(transactionData.error);
-                        setTransaction(transactionData);
-                        setIsPreparing(false);
-                    })
-                    .catch((err) => {
-                        console.error("Failed to fetch transaction:", err);
-                        setError(err.message);
-                        setIsPreparing(false);
-                    });
-            }, 2000);
-
-            return () => clearTimeout(timer);
+            fetch(`/api/stripe-transaction?payment_intent_id=${encodeURIComponent(receipt.payment_intent_id.trim())}`)
+                .then((res) => res.json())
+                .then((transactionData) => {
+                    console.log("Fetched Stripe Transaction Data:", transactionData);
+                    if (transactionData.error) throw new Error(transactionData.error);
+                    setTransaction(transactionData);
+                    setIsPreparing(false);
+                })
+                .catch((err) => {
+                    console.error("Failed to fetch transaction:", err);
+                    setError(err.message);
+                    setIsPreparing(false);
+                });
         }
-    }, [isPaymentCompleted, receipt]);
+    }, [isPaymentCompleted, page, receipt]);
 
     if (isLoading) return <p>Loading receipt...</p>;
     if (error) return <p style={{ color: "#ff4b5a" }}>Error: {error}</p>;
@@ -152,20 +150,20 @@ const Receipt = ({ receiptId, isPaymentCompleted, page }) => {
         <>
             {page === 'checkout' && (
                 <PDFDownloadLink 
-                    document={<ReceiptDocument receipt={receipt} />} 
+                    document={<ReceiptDocument receipt={receipt} transaction={transaction} />} 
                     fileName={`gingham-receipt_${fileTimeConverter(receipt.created_at)}.pdf`}
                     className="btn btn-checkout"
                 >
-                    {({ loading }) => (loading ? "Preparing download..." : "Download Receipt")}
+                    {({ loading }) => (isPreparing || loading ? "Preparing download..." : "Download Receipt")}
                 </PDFDownloadLink>
             )}
             {page === 'profile' && (
                 <PDFDownloadLink
-                    document={<ReceiptDocument receipt={receipt} />}
+                    document={<ReceiptDocument receipt={receipt} transaction={transaction} />}
                     fileName={`gingham-receipt_${fileTimeConverter(receipt.created_at)}.pdf`}
                     className="icon-file"
                 >                        
-                    &emsp;
+                &emsp;
                 </PDFDownloadLink>
             )}
         </>
