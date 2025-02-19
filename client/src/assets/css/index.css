@@ -216,6 +216,11 @@ p, li, div, form, input, select, button, textarea, td {
   font-style: italic;
 }
 
+.text-underline {
+  text-decoration: underline;
+  text-underline-offset: .15em;
+}
+
 .text-center {
   text-align: center;
 }
@@ -287,6 +292,10 @@ article {
   background-color: #ccc;
   margin-top: 2rem;
   margin-bottom: 2rem;
+}
+
+.divider-b {
+  border-bottom: 1px solid #3b4752;
 }
 
 .margin-r-4 {
@@ -1067,10 +1076,11 @@ ul {
 
 .btn-like:hover, .btn-fav-filter:hover {
   /* padding: 10px 12px; */
-  background-image: url('../images/icons/icons8-heart-red.gif');
+  background-image: url('../images/icons/icons8-heart.gif');
   background-repeat: no-repeat;
   background-position: right 50% top 50%;
   background-size: 1.6rem auto;
+  background-blend-mode: darken;
   border-radius: 8px;
   border: none;
   background-color: #ffd1d8;
@@ -1153,10 +1163,11 @@ ul {
 }
 
 .btn-fav-blog:hover {
-  background-image: url('../images/icons/icons8-heart-red.gif');
+  background-image: url('../images/icons/icons8-heart.gif');
   background-repeat: no-repeat;
   background-position: right 50% top 50%;
   background-size: 1.1rem auto;
+  background-blend-mode: darken;
   background-color: #ffd1d8;
   transition: .2s;
 }
@@ -2396,10 +2407,12 @@ select:hover {
 }
 
 .icon-notif:hover {
-  background-image: url('../images/icons/icons8-notification-color-3.gif');
+  background-image: url('../images/icons/icons8-notification.gif');
   background-repeat: no-repeat;
   background-position: right 50% top 46%;
   background-size: 1.26rem auto;
+  background-blend-mode: darken;
+
 }
 
 .icon-email {
@@ -2410,10 +2423,11 @@ select:hover {
 }
 
 .icon-email:hover {
-  background-image: url('../images/icons/icons8-email-yellow.gif');
+  background-image: url('../images/icons/icons8-email.gif');
   background-repeat: no-repeat;
   background-position: right 50% top 40%;
   background-size: 1.2rem auto;
+  background-blend-mode: darken;
 }
 
 .icon-email-bulk, .icon-email-bulk:hover {
@@ -2477,6 +2491,7 @@ select:hover {
 
 .icon-file:hover {
   background-image: url('../images/icons/icons8-document.gif');
+  background-blend-mode: darken;
   background-color: transparent;
 }
 
@@ -2488,11 +2503,11 @@ select:hover {
 }
 
 .icon-report:hover {
-  background-blend-mode: darken;
   background-image: url('../images/icons/icons8-flag.gif');
   background-repeat: no-repeat;
   background-position: right 50% top 47%;
   background-size: 1.08rem auto;
+  background-blend-mode: darken;
 }
 
 .icon-basket {
@@ -2503,11 +2518,11 @@ select:hover {
 }
 
 .icon-basket:hover {
-  background-blend-mode: darken;
   background-image: url('../images/icons/icons8-basket.gif');
   background-repeat: no-repeat;
   background-position: right 50% top 46%;
   background-size: 1.4rem auto;
+  background-blend-mode: darken;
 }
 
 .icon-arrow-l {
@@ -2634,9 +2649,9 @@ select:hover {
   font-size: .5em;
   top: -8px;
   right: -6px;
-  padding: 5px 8.5px;
-  border-radius: 50%;
-  background: #007BFF;
+  padding: 5px 9px;
+  border-radius: 50px;
+  background: #ff4b5a;
   color: white;
 }
 
