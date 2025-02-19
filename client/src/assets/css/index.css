@@ -2309,7 +2309,7 @@ select:hover {
   max-width: 300px;
   /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); */
   background-color: #fff;
-  text-align: center;
+  /* text-align: center; */
 }
 
 .basket-cards-container {

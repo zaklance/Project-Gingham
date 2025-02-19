@@ -14,12 +14,15 @@ function MarketCard({ marketData, user, haversineDistance, resultCoordinates, us
     return (
         <div className="market-card flex-space-between flex-column">
             <div>
-                {marketData.image !== null ? (
-                    <img className="img-market-card" src={`/market-images/${marketData.image}`} alt="Market Image" />
-                ) : (
-                    <img className="img-market-card" src={`/market-images/_default-images/${marketData.image_default}`} alt="Market Image" />
-                )}
-                <h3 className="margin-b-16">{marketData.name}</h3>
+                    {marketData.image !== null ? (
+                        <img className="img-market-card" src={`/market-images/${marketData.image}`} alt="Market Image" />
+                    ) : (
+                        <img className="img-market-card" src={`/market-images/_default-images/${marketData.image_default}`} alt="Market Image" />
+                    )}
+                <div className='text-center'>
+                    <h4>{marketData.name}</h4>
+                    <p className='text-500 margin-b-16'>{marketData.city}, {marketData.state}</p>
+                </div>
                 <p><strong>Location:</strong> {marketData.location}</p>
                 <p><strong>Schedule:</strong> {marketData.schedule}</p>
 

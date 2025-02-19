@@ -4096,12 +4096,15 @@ def get_user_receipts():
     if request.method == 'GET':
         try:
             user_id = request.args.get("user_id", type=int)
-            if not user_id:
-                return jsonify({"error": "Missing user_id parameter"}), 400
+            
+            if user_id:
+                user = User.query.get(user_id)
+                if not user:
+                    return jsonify({"error": "User not found"}), 404
 
-            user = User.query.get(user_id)
-            if not user:
-                return jsonify({"error": "User not found"}), 404
+                receipts = Receipt.query.filter_by(user_id=user_id).order_by(Receipt.created_at.desc()).all()
+            else:
+                receipts = Receipt.query.order_by(Receipt.created_at.desc()).all()
 
             receipts = Receipt.query.filter_by(user_id=user_id).order_by(Receipt.created_at.desc()).all()
 

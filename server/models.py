@@ -585,7 +585,7 @@ class AdminUser(db.Model, SerializerMixin):
     def __repr__(self) -> str:
         return f"<AdminUser {self.email}>"
     
-class Basket(db.Model):
+class Basket(db.Model, SerializerMixin):
     __tablename__ = 'baskets'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -847,22 +847,22 @@ class Receipt(db.Model, SerializerMixin):
         '-user.receipts',
     )
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'user_id': self.user_id,
-            'baskets': self.baskets,
-            'created_at': self.created_at.isoformat() if self.created_at else None,
-            'user': {
-                'first_name': self.user.first_name,
-                'last_name': self.user.last_name,
-                'address_1': self.user.address_1,
-                'address_2': self.user.address_2,
-                'city': self.user.city,
-                'state': self.user.state,
-                'zipcode': self.user.zipcode
-            }
-        }
+    # def to_dict(self):
+    #     return {
+    #         'id': self.id,
+    #         'user_id': self.user_id,
+    #         'baskets': self.baskets,
+    #         'created_at': self.created_at.isoformat() if self.created_at else None,
+    #         'user': {
+    #             'first_name': self.user.first_name,
+    #             'last_name': self.user.last_name,
+    #             'address_1': self.user.address_1,
+    #             'address_2': self.user.address_2,
+    #             'city': self.user.city,
+    #             'state': self.user.state,
+    #             'zipcode': self.user.zipcode
+    #         }
+    #     }
 
     def __repr__(self) -> str:
         return f"<Receipt ID: {self.id}, User ID: {self.user_id}, Baskets: {self.baskets}, Created At: {self.created_at}>"

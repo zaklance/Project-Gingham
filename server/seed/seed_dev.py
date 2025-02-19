@@ -63,7 +63,7 @@ def run():
             state="NY",
             zipcode='10033',
             coordinates={"lat": "40.84607450953993", "lng": "-73.93808039940272"},
-            schedule='Thursday (8 a.m. - 4 p.m.)',
+            schedule='Thursday (8 AM - 4 PM)',
             year_round=False,
             season_start=date(2025, 6, 26),
             season_end=date(2025, 11, 20),
@@ -79,7 +79,7 @@ def run():
             state="NY",
             zipcode='10019',
             coordinates={"lat": "40.769140743893075", "lng": "-73.98836576430834"},
-            schedule='Saturday (8 a.m. - 3 p.m.)',
+            schedule='Saturday (8 AM - 3 PM)',
             year_round=False,
             season_start=date(2025, 6, 7),
             season_end=date(2025, 11, 22),
@@ -88,7 +88,7 @@ def run():
         Market(
             id=3,
             name='79th Street Greenmarket',
-            bio="Clothing Collection Hours: 9:00 a.m. - 12:00 p.m.",
+            bio="Clothing Collection Hours: 9:00 AM - 12:00 PM",
             image='image.jpeg',
             website="https://www.grownyc.org/greenmarket/manhattan/79th-street",
             location='79th St. & Columbus Ave.',
@@ -96,7 +96,7 @@ def run():
             state="NY",
             zipcode='10024',
             coordinates={"lat": "40.782040858828", "lng": "-73.9759752811397"},
-            schedule='Sunday (9 a.m. - 4 p.m.)',
+            schedule='Sunday (9 AM - 4 PM)',
             year_round=True,
             is_current=True
         ),
@@ -110,7 +110,7 @@ def run():
             state="NY",
             zipcode='10028',
             coordinates={"lat": "40.77397099020891", "lng": "-73.95064361322936"},
-            schedule='Saturday (9 a.m. - 2:30 p.m.)',
+            schedule='Saturday (9 AM - 2:30 PM)',
             year_round=True,
             is_current=True
         ),
@@ -123,7 +123,7 @@ def run():
             state="NY",
             zipcode='10128',
             coordinates={"lat": "40.78180268440337", "lng": "-73.94555998335593"},
-            schedule='Sunday (9 a.m. - 4 p.m.)',
+            schedule='Sunday (9 AM - 4 PM)',
             year_round=False,
             season_start=date(2024, 6, 18),
             season_end=date(2024, 11, 19),
@@ -139,7 +139,7 @@ def run():
             state="NY",
             zipcode='10025',
             coordinates={"lat": "40.79433392796688", "lng": "-73.96852339557134"},
-            schedule='Friday (8 a.m. - 2 p.m.)',
+            schedule='Friday (8 AM - 2 PM)',
             year_round=True,
             is_current=True
         ),
@@ -153,7 +153,7 @@ def run():
             state="NY",
             zipcode='10014',
             coordinates={"lat": "40.737268845844085", "lng": "-74.00531736212757"},
-            schedule='Saturday (8 a.m. - 2 p.m.)',
+            schedule='Saturday (8 AM - 2 PM)',
             year_round=True,
             is_current=True
         ),
@@ -167,7 +167,7 @@ def run():
             state="NY",
             zipcode='10003',
             coordinates={"lat": "40.729830818573944", "lng": "-73.99109568735417"},
-            schedule='Tuesday (8 a.m. - 5 p.m.)',
+            schedule='Tuesday (8 AM - 5 PM)',
             year_round=False,
             season_start=date(2025, 6, 3),
             season_end=date(2025, 11, 25),
@@ -183,7 +183,7 @@ def run():
             state="NY",
             zipcode='10004',
             coordinates={"lat": "40.704724320402526", "lng": "-74.01342009247573"},
-            schedule='Tuesday & Thursday (8 a.m. - 2 p.m.)',
+            schedule='Tuesday & Thursday (8 AM - 2 PM)',
             year_round=False,
             season_start=date(2024, 4, 15),
             season_end=date(2024, 11, 25),
@@ -199,7 +199,7 @@ def run():
             state="NY",
             zipcode='10031',
             coordinates={"lat": "40.824268847996954", "lng": "-73.94880767347686"},
-            schedule='Wednesday (10:30 a.m. - 6 p.m.)',
+            schedule='Wednesday (10:30 AM - 6 PM)',
             year_round=False,
             season_start=date(2024, 7, 8),
             season_end=date(2024, 11, 25),
@@ -215,7 +215,7 @@ def run():
             state="NY",
             zipcode='10011',
             coordinates={"lat": "40.74610601822501", "lng": "-74.00012495281699"},
-            schedule='Saturday (9 a.m. - 2 p.m.)',
+            schedule='Saturday (9 AM - 2 PM)',
             year_round=False,
             season_start=date(2024, 4, 20),
             season_end=date(2024, 12, 21),
@@ -231,7 +231,7 @@ def run():
             state="NY",
             zipcode='10026',
             coordinates={"lat": "40.80245205041825", "lng": "-73.94675905810875"},
-            schedule='Wednesday (2 - 4:30 p.m.)',
+            schedule='Wednesday (2 - 4:30 PM)',
             year_round=False,
             season_start=date(2024, 7, 10),
             season_end=date(2024, 11, 20),
@@ -240,7 +240,7 @@ def run():
         Market(
             id=13,
             name='Columbia Greenmarket',
-            bio="Clothing Collection Hours: 9:00 a.m. - 12:00 p.m. *Sundays only",
+            bio="Clothing Collection Hours: 9:00 AM - 12:00 PM *Sundays only",
             image='Union_Square_Farmers_Market.jpg',
             website="https://www.grownyc.org/greenmarket/manhattan/columbia-su",
             location='Broadway & 114th St.',
@@ -248,7 +248,7 @@ def run():
             state="NY",
             zipcode='10025',
             coordinates={"lat": "40.80711550674964", "lng": "-73.9643334908912"},
-            schedule='Thursday & Sunday (8 a.m. - 4 p.m.)',
+            schedule='Thursday & Sunday (8 AM - 4 PM)',
             year_round=True,
             is_current=True
         ),
@@ -262,7 +262,7 @@ def run():
             state="NY",
             zipcode='10017',
             coordinates={"lat": "40.752106980482026", "lng": "-73.96813449641382"},
-            schedule='Wednesday (8 a.m. - 3 p.m.)',
+            schedule='Wednesday (8 AM - 3 PM)',
             year_round=True,
             is_current=True
         ),
@@ -276,7 +276,7 @@ def run():
             state="NY",
             zipcode='10032',
             coordinates={"lat": "40.842308310821956", "lng": "-73.94211665674466"},
-            schedule='Tuesday (8 a.m. - 4 p.m.)',
+            schedule='Tuesday (8 AM - 4 PM)',
             year_round=False,
             season_start=date(2025, 6, 3),
             season_end=date(2025, 11, 23),
@@ -293,7 +293,7 @@ def run():
             state="NY",
             zipcode='10038',
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
-            schedule='Monday - Saturday (11:30 a.m. - 5 p.m.)',
+            schedule='Monday - Saturday (11:30 AM - 5 PM)',
             year_round=True,
             is_current=True
         ),
@@ -307,7 +307,7 @@ def run():
             state="NY",
             zipcode='10002',
             coordinates={"lat": "40.71266393582476", "lng": "-73.98847487671178"},
-            schedule='Thursday (9 a.m. - 2 p.m.)',
+            schedule='Thursday (9 AM - 2 PM)',
             year_round=False,
             season_start=date(2024, 7, 5),
             season_end=date(2024, 11, 22),
@@ -323,7 +323,7 @@ def run():
             state="NY",
             zipcode='10039',
             coordinates={"lat": "40.82373611412579", "lng": "-73.9435495760123"},
-            schedule='Tuesday & Saturday (9 a.m. - 4 p.m.)',
+            schedule='Tuesday & Saturday (9 AM - 4 PM)',
             year_round=False,
             is_current=False
         ),
@@ -337,7 +337,7 @@ def run():
             state="NY",
             zipcode='10006',
             coordinates={"lat": "40.71142490993184", "lng": "-74.01076962766949"},
-            schedule='Tuesday (8 a.m. - 5 p.m.)',
+            schedule='Tuesday (8 AM - 5 PM)',
             year_round=False,
             season_start=date(2024, 6, 18),
             season_end=date(2024, 10, 29),
@@ -353,7 +353,7 @@ def run():
             state="NY",
             zipcode='10026',
             coordinates={"lat": "40.79815888129796", "lng": "-73.95254032492262"},
-            schedule='Saturday (10 a.m. - 2 p.m.)',
+            schedule='Saturday (10 AM - 2 PM)',
             year_round=False,
             season_start=date(2024, 7, 20),
             season_end=date(2024, 11, 30),
@@ -369,7 +369,7 @@ def run():
             state="NY",
             zipcode='10029',
             coordinates={"lat": "40.79001677902627", "lng": "-73.94559282721028"},
-            schedule='Thursday (8 a.m. - 3 p.m.)',
+            schedule='Thursday (8 AM - 3 PM)',
             year_round=False,
             season_start=date(2024, 6, 13),
             season_end=date(2024, 11, 14),
@@ -385,7 +385,7 @@ def run():
             state="NY",
             zipcode='10030',
             coordinates={"lat": "40.81542139191092", "lng": "-73.93994201397497"},
-            schedule='Friday (8 a.m. - 3 p.m.)',
+            schedule='Friday (8 AM - 3 PM)',
             year_round=False,
             season_start=date(2024, 6, 14),
             season_end=date(2024, 11, 15),
@@ -401,7 +401,7 @@ def run():
             state="NY",
             zipcode='10026',
             coordinates={"lat": "40.80272354850676", "lng": "-73.94895981440956"},
-            schedule='Saturday (8 a.m. - 3 p.m.)',
+            schedule='Saturday (8 AM - 3 PM)',
             year_round=False,
             season_start=date(2024, 6, 22),
             season_end=date(2024, 11, 16),
@@ -417,7 +417,7 @@ def run():
             state="NY",
             zipcode='10029',
             coordinates={"lat": "40.784947665352576", "lng": "-73.94660106093569"},
-            schedule='Friday (8 a.m. - 3 p.m.)',
+            schedule='Friday (8 AM - 3 PM)',
             year_round=False,
             season_start=date(2024, 6, 14),
             season_end=date(2024, 11, 15),
@@ -426,7 +426,7 @@ def run():
         Market(
             id=25,
             name='Inwood Park Greenmarket',
-            bio="Clothing Collection Hours: 9:30 a.m. - 12:30 p.m. ",
+            bio="Clothing Collection Hours: 9:30 AM - 12:30 PM ",
             image='c.-Martin-Seck-GAP-1-768x531.jpg',
             website="https://www.grownyc.org/greenmarket/manhattan/inwood",
             location='Isham St. bet. Seaman Ave. & Cooper St.',
@@ -434,7 +434,7 @@ def run():
             state="NY",
             zipcode='10034',
             coordinates={"lat": "40.86911825882977", "lng": "-73.92025906885881"},
-            schedule='Saturday (8 a.m. - 3 p.m.)',
+            schedule='Saturday (8 AM - 3 PM)',
             year_round=True,
             is_current=True
         ),
@@ -448,7 +448,7 @@ def run():
             state="NY",
             zipcode='10002',
             coordinates={"lat": "40.715117290409026", "lng": "-73.98348650666313"},
-            schedule='Thursday (8:30 a.m. - 3 p.m.)',
+            schedule='Thursday (8:30 AM - 3 PM)',
             year_round=False,
             season_start=date(2024, 7, 5),
             season_end=date(2024, 11, 22),
@@ -464,7 +464,7 @@ def run():
             state="NY",
             zipcode='10026',
             coordinates={"lat": "40.801382884379336", "lng": "-73.95970142371496"},
-            schedule='Saturday (9 a.m. - 2 p.m.)',
+            schedule='Saturday (9 AM - 2 PM)',
             year_round=True,
             is_current=True
         ),
@@ -478,7 +478,7 @@ def run():
             state="NY",
             zipcode='10029',
             coordinates={"lat": "40.78944510836953", "lng": "-73.95271330705022"},
-            schedule='Wednesday (8 a.m. - 3 p.m.)',
+            schedule='Wednesday (8 AM - 3 PM)',
             year_round=False,
             season_start=date(2025, 6, 18),
             season_end=date(2025, 11, 26),
@@ -494,7 +494,7 @@ def run():
             state="NY",
             zipcode='10032',
             coordinates={"lat": "40.839630140355446", "lng": "-73.93889062898364"},
-            schedule='Thursday (9 a.m. - 3 p.m.)',
+            schedule='Thursday (9 AM - 3 PM)',
             year_round=False,
             is_current=False
         ),
@@ -508,7 +508,7 @@ def run():
             state="NY",
             zipcode='10034',
             coordinates={"lat": "40.86600006214813", "lng": "-73.9263264427691"},
-            schedule='Wednesday (9 a.m. - 3 p.m.)',
+            schedule='Wednesday (9 AM - 3 PM)',
             year_round=False,
             is_current=False
         ),
@@ -522,7 +522,7 @@ def run():
             state="NY",
             zipcode='10002',
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
-            schedule='Wednesday-Sunday (11 a.m. - 7 p.m.)',
+            schedule='Wednesday - Sunday (11 AM - 7 PM)',
             year_round=False,
             is_current=False
         ),
@@ -536,7 +536,7 @@ def run():
             state="NY",
             zipcode='10011',
             coordinates={"lat": "40.74443551076143", "lng": "-74.00056543152783"},
-            schedule='Wednesday (8 a.m. - 10 a.m.)',
+            schedule='Wednesday (8 AM - 10 AM)',
             year_round=False,
             season_start=date(2024, 6, 11),
             season_end=date(2024, 11, 12),
@@ -552,7 +552,7 @@ def run():
             state="NY",
             zipcode='10029',
             coordinates={"lat": "40.797300330819134", "lng": "-73.94074817230118"},
-            schedule='Wednesday (9:30 a.m. - 3 p.m.)',
+            schedule='Wednesday (9:30 AM - 3 PM)',
             year_round=False,
             season_start=date(2024, 6, 1),
             season_end=date(2024, 11, 21),
@@ -568,7 +568,7 @@ def run():
             state="NY",
             zipcode='10009',
             coordinates={"lat": "40.73200566470982", "lng": "-73.97761240821589"},
-            schedule='Sunday (9:30 a.m. - 4 p.m.)',
+            schedule='Sunday (9:30 AM - 4 PM)',
             year_round=False,
             season_start=date(2025, 5, 11),
             season_end=date(2025, 12, 14),
@@ -577,7 +577,7 @@ def run():
         Market(
             id=35,
             name='Tompkins Square Greenmarket',
-            bio="Compost Program Hours: 9:00 a.m. - 5:00 p.m. In partnership with LES Ecology Center. Clothing Collection Hours: 9:00 a.m. - 1:00 p.m. ",
+            bio="Compost Program Hours: 9:00 AM - 5:00 PM In partnership with LES Ecology Center. Clothing Collection Hours: 9:00 AM - 1:00 PM ",
             image='bronxborhall_shaylahunter_re_xy4a4543.jpg',
             website="https://www.grownyc.org/greenmarket/manhattan/tompkins-square",
             location='E. 7th St. & Avenue A',
@@ -585,14 +585,14 @@ def run():
             state="NY",
             zipcode='10003',
             coordinates={"lat": "40.72606737678102", "lng": "-73.98333751481684"},
-            schedule='Sunday (9 a.m. - 4 p.m.)',
+            schedule='Sunday (9 AM - 4 PM)',
             year_round=True,
             is_current=True
         ),
         Market(
             id=36,
             name='Tribeca Greenmarket',
-            bio="Clothing Collection Hours: 8:30 a.m. - 1:30 p.m.",
+            bio="Clothing Collection Hours: 8:30 AM - 1:30 PM",
             image='c.-Martin-Seck-GAP-1-768x531.jpg',
             website="https://www.grownyc.org/greenmarket/manhattan/tribeca-sa",
             location='Greenwich & Chambers Sts.',
@@ -600,7 +600,7 @@ def run():
             state="NY",
             zipcode='10013',
             coordinates={"lat": "40.71690089948348", "lng": "-74.01090464424209"},
-            schedule='Wednesday & Saturday (8 a.m. - 2 p.m.)',
+            schedule='Wednesday & Saturday (8 AM - 2 PM)',
             year_round=True,
             is_current=True
         ),
@@ -614,7 +614,7 @@ def run():
             state="NY",
             zipcode='10023',
             coordinates={"lat": "40.77367979894632", "lng": "-73.9819555713842"},
-            schedule='Thursday (8 a.m. - 3 p.m.); Saturday (8 a.m. - 4 p.m.)',
+            schedule='Thursday (8 AM - 3 PM); Saturday (8 AM - 4 PM)',
             year_round=True,
             is_current=True
         ),
@@ -628,7 +628,7 @@ def run():
             state="NY",
             zipcode='10010',
             coordinates={"lat": "40.71160138343196", "lng": "-73.99773475060357"},
-            schedule='Sunday (10:30 a.m. - 3:30 p.m.)',
+            schedule='Sunday (10:30 AM - 3:30 PM)',
             year_round=False,
             season_start=date(2024, 5, 26),
             season_end=date(2024, 12, 15),
@@ -644,7 +644,7 @@ def run():
             state="NY",
             zipcode='10003',
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
-            schedule='Monday, Wednesday, Friday & Saturday (8 a.m. - 6 p.m.)',
+            schedule='Monday, Wednesday, Friday & Saturday (8 AM - 6 PM)',
             year_round=True,
             is_current=True
         ),
@@ -658,7 +658,7 @@ def run():
             state="NY",
             zipcode='10027',
             coordinates={"lat": "40.811760800653175", "lng": "-73.95159181329969"},
-            schedule='Thursday (4 - 7 p.m.)',
+            schedule='Thursday (4 - 7 PM)',
             year_round=False,
             season_start=date(2025, 6, 12),
             season_end=date(2025, 10, 30),
@@ -674,7 +674,7 @@ def run():
             state="NY",
             zipcode='10007',
             coordinates={"lat": "40.713888983534495", "lng": "-74.00644264735783"},
-            schedule='Tuesday (9 a.m. - 4 p.m.)',
+            schedule='Tuesday (9 AM - 4 PM)',
             year_round=False,
             season_start=date(2025, 4, 15),
             season_end=date(2025, 11, 25),
@@ -690,7 +690,7 @@ def run():
             state="NY",
             zipcode='10035',
             coordinates={"lat": "40.80493954076873", "lng": "-73.93903600281972"},
-            schedule='Wednesday (1:30 - 7 p.m.)',
+            schedule='Wednesday (1:30 - 7 PM)',
             year_round=True,
             is_current=True
         ),
@@ -704,7 +704,7 @@ def run():
             state="NY",
             zipcode='10021',
             coordinates={"lat": "40.76668271329556", "lng": "-73.95721258190501"},
-            schedule='Thursday (12 a.m. - 5 p.m.)',
+            schedule='Thursday (12 AM - 5 PM)',
             year_round=True,
             is_current=True
         ),
@@ -717,7 +717,7 @@ def run():
             state="NY",
             zipcode='10025',
             coordinates={"lat": "40.78093568496837", "lng": "-73.94626236967947"},
-            schedule='Sunday (9 a.m. - 3 p.m.)',
+            schedule='Sunday (9 AM - 3 PM)',
             year_round=False,
             season_start=date(2025, 6, 22),
             season_end=date(2025, 11, 23),
@@ -733,7 +733,7 @@ def run():
             state="NY",
             zipcode='10011',
             coordinates={"lat": "40.75921762876115", "lng": "-73.9783109644037"},
-            schedule='Wednesday (8 a.m. - 5 p.m.)',
+            schedule='Wednesday (8 AM - 5 PM)',
             year_round=False,
             season_start=date(2025, 8, 13),
             season_end=date(2025, 10, 29),
@@ -748,7 +748,7 @@ def run():
             state="NY",
             zipcode='11220',
             coordinates={"lat": "40.641355855453725", "lng": "-74.01786898937985"},
-            schedule='Saturday (8 a.m. - 3 p.m.)',
+            schedule='Saturday (8 AM - 3 PM)',
             year_round=False,
             season_start=date(2025, 7, 19),
             season_end=date(2025, 11, 22),
@@ -757,28 +757,28 @@ def run():
         Market(
             id=47,
             name='7th Ave Sunset Park Greenmarket & Farmstand',
-            bio='GrowNYC Farmstand Hours: December 7 - March 29, 8:30 a.m. - 2:00 p.m.',
+            bio='GrowNYC Farmstand Hours: December 7 - March 29, 8:30 AM - 2:00 PM',
             website="https://www.grownyc.org/7aveSunsetParkGreenmarket",
             location='7th Ave. and 44th St.',
             city="Brooklyn",
             state="NY",
             zipcode='11232',
             coordinates={"lat": "40.64611854880164", "lng": "-74.00210232700428"},
-            schedule='Saturday (8 a.m. - 3 p.m.)',
+            schedule='Saturday (8 AM - 3 PM)',
             year_round=True,
             is_current=True
         ),
         Market(
             id=48,
             name='Bartel-Pritchard Square Greenmarket',
-            bio='Open Sundays, 9 a.m. - 2 p.m., May 4 - December 28 (2025). Clothing Collection Hours: 8:00 a.m. - 2:00 p.m. *Sundays only',
+            bio='Open Sundays, 9 AM - 2 PM, May 4 - December 28 (2025). Clothing Collection Hours: 8:00 AM - 2:00 PM *Sundays only',
             website="https://www.grownyc.org/greenmarket/brooklyn/bartel-pritchard-square-sun",
             location='Prospect Park West at 15th St.',
             city="Brooklyn",
             state="NY",
             zipcode='11215',
             coordinates={"lat": "40.66093347326259", "lng": "-73.97983995813392"},
-            schedule='Wednesday & Sunday (8 a.m. - 2 p.m.)',
+            schedule='Wednesday & Sunday (8 AM - 2 PM)',
             year_round=True,
             is_current=True
         ),
@@ -791,7 +791,7 @@ def run():
             state="NY",
             zipcode='11209',
             coordinates={"lat": "40.61747641086637", "lng": "-74.03382578460307"},
-            schedule='Saturday (8 a.m. - 3 p.m.)',
+            schedule='Saturday (8 AM - 3 PM)',
             year_round=False,
             season_start=date(2025, 5, 3),
             season_end=date(2025, 11, 22),
@@ -806,7 +806,7 @@ def run():
             state="NY",
             zipcode='11214',
             coordinates={"lat": "40.60962923768487", "lng": "-73.99964841122642"},
-            schedule='Sunday (8 a.m. - 3 p.m.)',
+            schedule='Sunday (8 AM - 3 PM)',
             year_round=False,
             season_start=date(2025, 6, 1),
             season_end=date(2025, 11, 23),
@@ -821,7 +821,7 @@ def run():
             state="NY",
             zipcode='11219',
             coordinates={"lat": "40.6332003298811", "lng": "-73.990434076326"},
-            schedule='Thursday (8 a.m. - 2 p.m.)',
+            schedule='Thursday (8 AM - 2 PM)',
             year_round=False,
             season_start=date(2025, 7, 10),
             season_end=date(2025, 11, 20),
@@ -830,14 +830,14 @@ def run():
         Market(
             id=52,
             name='Brooklyn Borough Hall Greenmarket',
-            bio="Clothing Collection Hours: 8:00 a.m. - 2:00 p.m. *Saturdays only",
+            bio="Clothing Collection Hours: 8:00 AM - 2:00 PM *Saturdays only",
             website="https://www.grownyc.org/greenmarket/brooklyn/boro-hall-sa",
             location="Plaza at Court St. and Montague St.",
             city="Brooklyn",
             state="NY",
             zipcode='11201',
             coordinates={"lat": "40.69373734346325", "lng": "-73.99028138467902"},
-            schedule='Tuesday & Saturday (8 a.m. - 3 p.m.)',
+            schedule='Tuesday & Saturday (8 AM - 3 PM)',
             year_round=True,
             is_current=True
         ),
@@ -850,35 +850,35 @@ def run():
             state="NY",
             zipcode='11231',
             coordinates={"lat": "40.68066564582587", "lng": "-73.99492222793602"},
-            schedule='Sunday (8 a.m. - 2 p.m.)',
+            schedule='Sunday (8 AM - 2 PM)',
             year_round=True,
             is_current=True
         ),
         Market(
             id=54,
             name='Cortelyou Greenmarket',
-            bio="Clothing Collection Hours: 8:00 a.m. - 2:00 p.m. ",
+            bio="Clothing Collection Hours: 8:00 AM - 2:00 PM ",
             website="https://www.grownyc.org/greenmarket/brooklyn/cortelyou",
             location="Cortelyou Rd. btw. Argyle & Rugby",
             city="Brooklyn",
             state="NY",
             zipcode='11226',
             coordinates={"lat": "40.64066550667735", "lng": "-73.96617270509422"},
-            schedule='Sunday (8 a.m. - 2 p.m.)',
+            schedule='Sunday (8 AM - 2 PM)',
             year_round=True,
             is_current=True
         ),
         Market(
             id=55,
             name='Domino Park Greenmarket',
-            bio="Compost Program Hours: 8:00 a.m. - 3:00 p.m. In partnership with Domino Park",
+            bio="Compost Program Hours: 8:00 AM - 3:00 PM In partnership with Domino Park",
             website="https://www.grownyc.org/greenmarket/brooklyn/dominopark",
             location="River St. between S 2nd & S 3rd St.",
             city="Brooklyn",
             state="NY",
             zipcode='11211',
             coordinates={"lat": "40.71454659991076", "lng": "-73.96789782065231"},
-            schedule='Sunday (8 a.m. - 3 p.m.)',
+            schedule='Sunday (8 AM - 3 PM)',
             year_round=False,
             season_start=date(2025, 6, 15),
             season_end=date(2025, 11, 23),
@@ -887,42 +887,42 @@ def run():
         Market(
             id=56,
             name='Fort Greene Park Greenmarket',
-            bio="Clothing Collection Hours: 8:00 a.m. - 1:30 p.m.",
+            bio="Clothing Collection Hours: 8:00 AM - 1:30 PM",
             website="https://www.grownyc.org/greenmarket/brooklyn/fort-greene",
             location="Southeast corner of Fort Greene Park",
             city="Brooklyn",
             state="NY",
             zipcode='11217',
             coordinates={"lat": "40.68975009223109", "lng": "-73.97325242641791"},
-            schedule='Saturday (8 a.m. - 3 p.m.)',
+            schedule='Saturday (8 AM - 3 PM)',
             year_round=True,
             is_current=True
         ),
         Market(
             id=57,
             name='Grand Army Plaza Greenmarket',
-            bio="Clothing Collection Hours: 8:00 a.m. - 2:00 p.m. (access road)",
+            bio="Clothing Collection Hours: 8:00 AM - 2:00 PM (access road)",
             website="https://www.grownyc.org/greenmarket/brooklyn-grand-army-plaza",
             location="Prospect Park West & Flatbush Ave.",
             city="Brooklyn",
             state="NY",
             zipcode='11215',
             coordinates={"lat": "40.67245689931319", "lng": "-73.96983563878808"},
-            schedule='Saturday (8 a.m. - 4 p.m.)',
+            schedule='Saturday (8 AM - 4 PM)',
             year_round=True,
             is_current=True
         ),
         Market(
             id=58,
             name='McCarren Park Greenmarket',
-            bio="Winter Market Hours (Dec-June): 8:00 a.m. - 2:00 p.m., Clothing Collection Hours: 8:30 a.m. - 1:00 p.m. ",
+            bio="Winter Market Hours (Dec-June): 8:00 AM - 2:00 PM, Clothing Collection Hours: 8:30 AM - 1:00 PM ",
             website="https://www.grownyc.org/greenmarket/brooklyn/greenpoint-sa",
             location="North 12th St. & Union Ave.",
             city="Brooklyn",
             state="NY",
             zipcode='11206',
             coordinates={"lat": "40.719618944319244", "lng": "-73.95254269383604"},
-            schedule='Saturday (8 a.m. - 3 p.m.)',
+            schedule='Saturday (8 AM - 3 PM)',
             year_round=True,
             is_current=True
         ),
@@ -935,7 +935,7 @@ def run():
             state="NY",
             zipcode='11233',
             coordinates={"lat": "40.681341936525094", "lng": "-73.93488186255223"},
-            schedule='Saturday (9 a.m. - 2:30 p.m.)',
+            schedule='Saturday (9 AM - 2:30 PM)',
             year_round=True,
             is_current=True
         ),
@@ -948,7 +948,7 @@ def run():
             state="NY",
             zipcode='11212',
             coordinates={"lat": "40.668716736959446", "lng": "-73.91863750511548"},
-            schedule='Saturday (8:30 a.m. - 1:30 p.m.)',
+            schedule='Saturday (8:30 AM - 1:30 PM)',
             year_round=False,
             season_start=date(2025, 7, 6),
             season_end=date(2025, 11, 23),
@@ -963,7 +963,7 @@ def run():
             state="NY",
             zipcode='11208',
             coordinates={"lat": "40.68219369806769", "lng": "-73.87707168852842"},
-            schedule='Friday (9 a.m. - 2 p.m.)',
+            schedule='Friday (9 AM - 2 PM)',
             year_round=False,
             season_start=date(2025, 7, 5),
             season_end=date(2025, 11, 22),
@@ -978,7 +978,7 @@ def run():
             state="NY",
             zipcode='11206',
             coordinates={"lat": "40.700986782517276", "lng": "-73.94208330001895"},
-            schedule='Wednesday (9 a.m. - 2 p.m.)',
+            schedule='Wednesday (9 AM - 2 PM)',
             year_round=False,
             season_start=date(2025, 7, 3),
             season_end=date(2025, 11, 27),
@@ -993,7 +993,7 @@ def run():
             state="NY",
             zipcode='11225',
             coordinates={"lat": "40.66642777862011", "lng": "-73.95098824442748"},
-            schedule='Friday (9 a.m. - 2:30 p.m.)',
+            schedule='Friday (9 AM - 2:30 PM)',
             year_round=True,
             is_current=True
         ),
@@ -1006,7 +1006,7 @@ def run():
             state="NY",
             zipcode='10030',
             coordinates={"lat": "40.81846114132001", "lng": "-73.94716123494268"},
-            schedule='Saturday (9 a.m. - 3 p.m.)',
+            schedule='Saturday (9 AM - 3 PM)',
             year_round=False,
             season_start=date(2025, 6, 14),
             season_end=date(2025, 11, 22),
@@ -1021,7 +1021,7 @@ def run():
             state="NY",
             zipcode='11451',
             coordinates={"lat": "40.82712761948003", "lng": "-73.92291257503476"},
-            schedule='Tuesday (8 a.m. - 4 p.m.)',
+            schedule='Tuesday (8 AM - 4 PM)',
             year_round=False,
             season_start=date(2025, 6, 3),
             season_end=date(2025, 11, 25),
@@ -1036,7 +1036,7 @@ def run():
             state="NY",
             zipcode='11451',
             coordinates={"lat": "40.81767598142591", "lng": "-73.92456971708086"},
-            schedule='Tuesday & Friday (8 a.m. - 3 p.m.)',
+            schedule='Tuesday & Friday (8 AM - 3 PM)',
             year_round=False,
             season_start=date(2024, 6, 20),
             season_end=date(2024, 11, 25),
@@ -1051,7 +1051,7 @@ def run():
             state="NY",
             zipcode='11472',
             coordinates={"lat": "40.83317410448814", "lng": "-73.86260641367636"},
-            schedule='Friday (8 a.m. - 3 p.m.)',
+            schedule='Friday (8 AM - 3 PM)',
             year_round=False,
             season_start=date(2024, 6, 28),
             season_end=date(2024, 11, 22),
@@ -1066,7 +1066,7 @@ def run():
             state="NY",
             zipcode='11458',
             coordinates={"lat": "40.86416971566585", "lng": "-73.89571072742248"},
-            schedule='Tuesday (8 a.m. - 3 p.m.)',
+            schedule='Tuesday (8 AM - 3 PM)',
             year_round=False,
             season_start=date(2025, 6, 24),
             season_end=date(2025, 11, 25),
@@ -1081,7 +1081,7 @@ def run():
             state="NY",
             zipcode='11466',
             coordinates={"lat": "40.88321727756723", "lng": "-73.84186826636773"},
-            schedule='Wednesday (9:30 a.m. - 2:30 p.m.)',
+            schedule='Wednesday (9:30 AM - 2:30 PM)',
             year_round=False,
             season_start=date(2024, 7, 3),
             season_end=date(2024, 11, 27),
@@ -1096,7 +1096,7 @@ def run():
             state="NY",
             zipcode='11456',
             coordinates={"lat": "40.831096591339886", "lng": "-73.90074501323292"},
-            schedule='Wednesday (10 a.m. - 2 p.m.)',
+            schedule='Wednesday (10 AM - 2 PM)',
             year_round=False,
             season_start=date(2024, 5, 13),
             season_end=date(2024, 11, 29),
@@ -1111,7 +1111,7 @@ def run():
             state="NY",
             zipcode='11467',
             coordinates={"lat": "40.88205803262807", "lng": "-73.88043055713167"},
-            schedule='Thursday (9:30 a.m. - 3 p.m.)',
+            schedule='Thursday (9:30 AM - 3 PM)',
             year_round=True,
             is_current=True
         ),
@@ -1124,7 +1124,7 @@ def run():
             state="NY",
             zipcode='11368',
             coordinates={"lat": "40.749703950923625", "lng": "-73.86243001581482"},
-            schedule='Wednesday (8 a.m. - 3 p.m.)',
+            schedule='Wednesday (8 AM - 3 PM)',
             year_round=False,
             season_start=date(2025, 6, 13),
             season_end=date(2025, 11, 29),
@@ -1139,7 +1139,7 @@ def run():
             state="NY",
             zipcode='11373',
             coordinates={"lat": "40.745766752804975", "lng": "-73.88548117820142"},
-            schedule='Tuesday (8 a.m. - 3 p.m.)',
+            schedule='Tuesday (8 AM - 3 PM)',
             year_round=False,
             season_start=date(2025, 6, 10),
             season_end=date(2025, 11, 25),
@@ -1154,7 +1154,7 @@ def run():
             state="NY",
             zipcode='11355',
             coordinates={"lat": "40.75799958731366", "lng": "-73.82478622250639"},
-            schedule='Wednesday (8 a.m. - 3 p.m.)',
+            schedule='Wednesday (8 AM - 3 PM)',
             year_round=False,
             season_start=date(2025, 7, 16),
             season_end=date(2025, 11, 26),
@@ -1163,42 +1163,42 @@ def run():
         Market(
             id=75,
             name='Forest Hills Greenmarket',
-            bio="Clothing Collection Hours: 9:30 a.m. - 12:30 p.m.",
+            bio="Clothing Collection Hours: 9:30 AM - 12:30 PM",
             website="https://www.grownyc.org/greenmarket/queens/forest-hills",
             location="South side of Queens Blvd. at 70th Ave.",
             city="Queens",
             state="NY",
             zipcode='11375',
             coordinates={"lat": "40.72188032218282", "lng": "-73.84677718219234"},
-            schedule='Sunday (8 a.m. - 2 p.m.)',
+            schedule='Sunday (8 AM - 2 PM)',
             year_round=True,
             is_current=True
         ),
         Market(
             id=76,
             name='Jackson Heights Greenmarket',
-            bio="Winter Market Hours (Jan-May): 8:00 a.m. - 2:00 p.m. Summer Market Hours (June-Dec): 8:00 a.m. - 3:00 p.m. Clothing Collection Hours: 9 a.m. - 1 p.m.",
+            bio="Winter Market Hours (Jan-May): 8:00 AM - 2:00 PM Summer Market Hours (June-Dec): 8:00 AM - 3:00 PM Clothing Collection Hours: 9 AM - 1 PM",
             website="https://www.grownyc.org/greenmarket/queens/jackson-heights",
             location="34th Ave. between 79th & 80th St.",
             city="Queens",
             state="NY",
             zipcode='11372',
             coordinates={"lat": "40.75356895340519", "lng": "-73.88775343357531"},
-            schedule='Sunday (8 a.m. - 3 p.m.)',
+            schedule='Sunday (8 AM - 3 PM)',
             year_round=True,
             is_current=True
         ),
         Market(
             id=77,
             name='Sunnyside Greenmarket',
-            bio="Winter Market Hours (Jan-April): 8:00 a.m. - 2:00 p.m. Summer Market Hours (May-Dec): 8:00 a.m. - 3:00 p.m. Clothing Collection Hours: 9:30 a.m. - 12:30 p.m.",
+            bio="Winter Market Hours (Jan-April): 8:00 AM - 2:00 PM Summer Market Hours (May-Dec): 8:00 AM - 3:00 PM Clothing Collection Hours: 9:30 AM - 12:30 PM",
             website="https://www.grownyc.org/greenmarket/queens/sunnyside",
             location="Skillman Ave. btw. 42nd & 43rd St.",
             city="Queens",
             state="NY",
             zipcode='11104',
             coordinates={"lat": "40.74702085787132", "lng": "-73.92090207753752"},
-            schedule='Saturday (8 a.m. - 3 p.m.)',
+            schedule='Saturday (8 AM - 3 PM)',
             year_round=True,
             is_current=True
         ),
@@ -1211,7 +1211,7 @@ def run():
             state="NY",
             zipcode='11418',
             coordinates={"lat": "40.70119996340413", "lng": "-73.84164046638213"},
-            schedule='Saturday (8:30 a.m. - 2 p.m.)',
+            schedule='Saturday (8:30 AM - 2 PM)',
             year_round=False,
             season_start=date(2024, 7, 5),
             season_end=date(2024, 11, 23),
@@ -1226,7 +1226,7 @@ def run():
             state="NY",
             zipcode='11385',
             coordinates={"lat": "40.700180513908236", "lng": "-73.90654389324352"},
-            schedule='Saturday (9 a.m. - 1:30 p.m.)',
+            schedule='Saturday (9 AM - 1:30 PM)',
             year_round=False,
             season_start=date(2024, 7, 6),
             season_end=date(2024, 11, 23),
@@ -1241,7 +1241,7 @@ def run():
             state="NY",
             zipcode='11301',
             coordinates={"lat": "40.64152934585844", "lng": "-74.07776631907625"},
-            schedule='Saturday (8 a.m. - 1 p.m.)',
+            schedule='Saturday (8 AM - 1 PM)',
             year_round=True,
             is_current=True
         ),
@@ -1254,7 +1254,7 @@ def run():
             state="NY",
             zipcode='11314',
             coordinates={"lat": "40.583886817878415", "lng": "-74.16145661866804"},
-            schedule='Saturday (8 a.m. - 2 p.m.)',
+            schedule='Saturday (8 AM - 2 PM)',
             year_round=False,
             season_start=date(2025, 6, 7),
             season_end=date(2025, 11, 22),
@@ -2100,7 +2100,7 @@ def run():
         'Vendor-Slider-3-scaled.jpg'
     ]
 
-    for i in range(150):
+    for i in range(200):
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
         city = str(fake.city())
         state = str(choice(states_ne))
@@ -2210,11 +2210,11 @@ def run():
     # add fake market reviews
     market_revs = []
     reported = (False, False, False, False, False, False, False, False, False, True)
-    for i in range(200):
+    for i in range(250):
         rev_len = randint(2, 5)
 
         review_text = str(fake.paragraph(nb_sentences=rev_len))
-        market_id = str(randint(1, 45))
+        market_id = str(randint(1, 81))
         user_id = str(randint(1, 50))
         is_reported = choice(reported)
         last_year = randint(0, 365)
@@ -2234,11 +2234,11 @@ def run():
 
     # add fake vendor reviews
     vendor_revs = []
-    for i in range(200):
+    for i in range(250):
         rev_len = randint(2, 5)
 
         review_text = fake.paragraph(nb_sentences=rev_len)
-        vendor_id = str(randint(1, 150))
+        vendor_id = str(randint(1, 200))
         user_id = str(randint(1, 50))
         is_reported = choice(reported)
         last_year = randint(0, 365)
@@ -2301,10 +2301,10 @@ def run():
 
     # add fake vendor markets
     vendor_markets = []
-    for i in range(500):
+    for i in range(800):
 
-        vendor_id = str(randint(1, 150))
-        market_day_id = str(randint(1, 61))
+        vendor_id = str(randint(1, 200))
+        market_day_id = str(randint(1, 100))
 
         vm = VendorMarket(
             vendor_id=vendor_id,
@@ -2320,8 +2320,8 @@ def run():
     vendor_users = []
     vendor_users_settings = []
     for i in range(50):
-        rand_vendor_id = randint(1, 150)
-        rand_vendor_id_2 = randint(1, 150)
+        rand_vendor_id = randint(1, 200)
+        rand_vendor_id_2 = randint(1, 200)
         choice_num = choice([0, 1])
         choice_id = [{ rand_vendor_id: rand_vendor_id}, { rand_vendor_id: rand_vendor_id, rand_vendor_id_2: rand_vendor_id_2}]
         choice_role = [{ rand_vendor_id: randint(0, 1)}, { rand_vendor_id: randint(0, 1), rand_vendor_id_2: randint(0, 1)}]
@@ -2486,25 +2486,10 @@ def run():
     db.session.add_all(admin_user_demo)
     db.session.commit()
 
-
-    vendor_markets = []
-    for i in range(500):
-        vendor_id = str(randint(1, 150))
-        market_day_id = str(randint(1, 61))
-
-        vm = VendorMarket(
-            vendor_id=vendor_id,
-            market_day_id=market_day_id
-        )
-        vendor_markets.append(vm)
-
-    db.session.add_all(vendor_markets)
-    db.session.commit()
-
     baskets = []
     est = timezone('US/Eastern')  # Define the EST timezone.
 
-    for i in range(2000):
+    for i in range(3000):
         rand_user = [None, randint(1, 51)]
 
         selected_vm = choice(vendor_markets)
@@ -2538,7 +2523,7 @@ def run():
         user_id = choice(rand_user)
         is_sold = user_id is not None
         is_grabbed = bool(fake.boolean()) if is_sold else False
-        price = randint(6, 20)
+        price = randint(8, 20)
         value = price + randint(4, 8)
 
         bsk = Basket(
@@ -2597,8 +2582,8 @@ def run():
         user_id = choice(rand_user)
         is_sold = user_id is not None
         is_grabbed = bool(fake.boolean()) if is_sold else False
-        price = randint(5, 10)
-        value = price + randint(2, 8)
+        price = randint(8, 20)
+        value = price + randint(4, 8)
 
         bsk2 = Basket(
             vendor_id=1,
@@ -2722,9 +2707,9 @@ def run():
     for i in range(100):
         heading = randint(1, 2)
         msg_len = randint(2, 5)
-        rand_market = choice([None, randint(1, 40)])
+        rand_market = choice([None, randint(1, 81)])
         if rand_market is None:
-            rand_vendor = randint(1, 150)
+            rand_vendor = randint(1, 200)
         else:
             rand_vendor = None
         last_month = randint(0, 31)
