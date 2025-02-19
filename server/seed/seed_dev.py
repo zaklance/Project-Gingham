@@ -2331,7 +2331,7 @@ def run():
         first_name = fake.first_name()
         last_name = fake.last_name()
         # phone = fake.phone_number()
-        phone = f'+1 str(randint(1000000000,9999999999))'
+        phone = f'+1 {str(randint(1000000000,9999999999))}'
         active_vendor = rand_vendor_id
         vendor_id = choice_id[choice_num]
         vendor_role = choice_role[choice_num]

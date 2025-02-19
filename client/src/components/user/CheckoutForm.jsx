@@ -162,6 +162,11 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 });
     
                 if (!receiptResponse.ok) {
+                    setIsProcessing(false)
+                    setCartItems([]);
+                    setAmountInCart(0);
+                    toast.error(`Failed to create receipt: ${receiptResponse.statusText}`, { autoClose: 6000 });
+
                     throw new Error(`Failed to create receipt: ${receiptResponse.statusText}`);
                 }
     
@@ -175,14 +180,14 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 localStorage.setItem("amountInCart", JSON.stringify(0));
                 setCartItems([]);
                 setAmountInCart(0);
-                toast.success('Payment successful!', { autoClose: 4000 });
+                toast.success('Payment successful!', { autoClose: 5000 });
                 setPaymentSuccess(true);
             } catch (error) {
                 console.error("Error processing post-payment actions:", error);
             }
         } else {
             console.log(error)
-            // toast.error('An unexpected error occurred.', { autoClose: 4000 });
+            toast.error(`An unexpected error occurred: ${error.message}`, { autoClose: 6000 });
             setIsProcessing(false);
         }
     };
