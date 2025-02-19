@@ -182,7 +182,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
             }
         } else {
             console.log(error)
-            toast.error('An unexpected error occurred.', { autoClose: 4000 });
+            // toast.error('An unexpected error occurred.', { autoClose: 4000 });
             setIsProcessing(false);
         }
     };
@@ -235,6 +235,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                         <div className="margin-t-16 flex-start flex-gap-16">
                             <ReceiptPDF receiptId={receiptId} isPaymentCompleted={paymentSuccess} page={"checkout"} />
                             <button 
+                                type="button"
                                 className="btn btn-checkout" 
                                 onClick={() => generateICSFile(cartItems)}
                             >

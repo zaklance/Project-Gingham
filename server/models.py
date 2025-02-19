@@ -835,7 +835,7 @@ class Receipt(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     baskets = db.Column(db.JSON, nullable=False)
-    payment_intent_id = db.Column(db.String, nullable=False)  # ✅ NEW COLUMN
+    payment_intent_id = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships
