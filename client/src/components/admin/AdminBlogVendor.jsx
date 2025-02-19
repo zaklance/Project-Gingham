@@ -225,8 +225,7 @@ const AdminBlogVendor = ({ blogs, activeTabMode }) => {
                                 onChange={(e) => setNewBlogType(e.target.value)}
                             >
                                 <option value='General'>General</option>
-                                <option value='Recipe'>Recipe</option>
-                                <option value='Market Spotlight'>Spotlight Market</option>
+                                <option value='Hot To'>How To</option>
                                 <option value='Vendor Spotlight'>Spotlight Vendor</option>
                             </select>
                         </div>

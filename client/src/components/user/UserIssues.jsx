@@ -64,7 +64,6 @@ function UserIssues({ basketId, handleClose }) {
                                     <option value="Unable to Pick Up">Unable to Pick Up</option>
                                     <option value="Vendor Not in Market">Vendor Not in Market</option>
                                     <option value="Market Closed Early">Market Closed Early</option>
-                                    <option value="Other">Other</option>
                                 </select>
                             </div>
                             <div className="form-group form-contact">
