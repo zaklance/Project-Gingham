@@ -65,7 +65,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
             console.log("ICS file download triggered successfully.");
         } catch (error) {
             console.error("Error generating ICS file:", error);
-            // toast.error('An unexpected error occurred while generating the calendar file.', { autoClose: 4000 });
+            toast.error('An unexpected error occurred while generating the calendar file.', { autoClose: 4000 });
         }
     };
 
