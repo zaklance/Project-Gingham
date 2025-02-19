@@ -122,24 +122,36 @@ const Receipt = ({ receiptId, isPaymentCompleted, page }) => {
     }, [receiptId]);
 
     useEffect(() => {
-        // Fetch transaction data if it's a new purchase OR if it's from history (profile)
-        if ((isPaymentCompleted || page === 'profile') && receipt?.payment_intent_id) {
-            setIsPreparing(true);
+        if (receipt?.payment_intent_id) {
+            setIsPreparing(true); // Show "Preparing download..."
 
-            fetch(`/api/stripe-transaction?payment_intent_id=${encodeURIComponent(receipt.payment_intent_id.trim())}`)
-                .then((res) => res.json())
-                .then((transactionData) => {
-                    if (transactionData.error) throw new Error(transactionData.error);
-                    setTransaction(transactionData);
-                    setIsPreparing(false);
-                })
-                .catch((err) => {
-                    console.error("Failed to fetch transaction:", err);
-                    setError(err.message);
-                    setIsPreparing(false);
-                });
+            // ✅ Apply 1600ms delay for checkout, fetch immediately for profile
+            const fetchTransaction = () => {
+                fetch(`/api/stripe-transaction?payment_intent_id=${encodeURIComponent(receipt.payment_intent_id.trim())}`)
+                    .then((res) => res.json())
+                    .then((transactionData) => {
+                        console.log("Fetched Stripe Transaction Data:", transactionData);
+                        if (transactionData.error) throw new Error(transactionData.error);
+                        setTransaction(transactionData);
+                        setIsPreparing(false); // ✅ Switch to "Download Receipt"
+                    })
+                    .catch((err) => {
+                        console.error("Failed to fetch transaction:", err);
+                        setError(err.message);
+                        setIsPreparing(false);
+                    });
+            };
+
+            if (page === "checkout") {
+                // Delay fetch by 1600ms only for checkout
+                const timer = setTimeout(fetchTransaction, 1700);
+                return () => clearTimeout(timer);
+            } else {
+                // Fetch immediately for profile
+                fetchTransaction();
+            }
         }
-    }, [isPaymentCompleted, page, receipt]);
+    }, [receipt, page]);
 
     if (isLoading) return <p>Loading receipt...</p>;
     if (error) return <p style={{ color: "#ff4b5a" }}>Error: {error}</p>;
