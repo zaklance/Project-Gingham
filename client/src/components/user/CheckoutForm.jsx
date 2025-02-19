@@ -65,7 +65,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
             console.log("ICS file download triggered successfully.");
         } catch (error) {
             console.error("Error generating ICS file:", error);
-            toast.error('An unexpected error occurred while generating the calendar file.', { autoClose: 4000 });
+            // toast.error('An unexpected error occurred while generating the calendar file.', { autoClose: 4000 });
         }
     };
 
@@ -101,29 +101,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 }));
     
                 console.log("Items marked as sold!");
-                
-                // Need to fix distribute-payments... might need to be a webhook
-                // console.log("Sending distribute-payments request...", {
-                //     payment_intent_id: paymentIntent.id,
-                //     baskets: cartItems
-                // });
-    
-                // const distributeResponse = await fetch('/api/distribute-payments', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({ 
-                //         payment_intent_id: paymentIntent.id, 
-                //         baskets: cartItems 
-                //     }),
-                // });
-    
-                // if (!distributeResponse.ok) {
-                //     const errorText = await distributeResponse.text();
-                //     throw new Error(`Failed to distribute payments: ${distributeResponse.status} ${distributeResponse.statusText}`);
-                // }
-    
-                // console.log("Vendor payouts successful!");
-    
+
                 // Generate QR codes
                 if (cartItems.length > 0) {
                     console.log("Generating QR codes...");
@@ -164,6 +142,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                     },
                     body: JSON.stringify({
                         user_id: userId,
+                        payment_intent_id: paymentIntent.id,
                         baskets: cartItems.map(item => ({
                             id: item.id,
                             name: item.name,
@@ -202,6 +181,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 console.error("Error processing post-payment actions:", error);
             }
         } else {
+            console.log(error)
             toast.error('An unexpected error occurred.', { autoClose: 4000 });
             setIsProcessing(false);
         }
@@ -253,7 +233,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                         </button>
                     ) : (
                         <div className="margin-t-16 flex-start flex-gap-16">
-                            <ReceiptPDF receiptId={receiptId} page={"checkout"} />
+                            <ReceiptPDF receiptId={receiptId} isPaymentCompleted={paymentSuccess} page={"checkout"} />
                             <button 
                                 className="btn btn-checkout" 
                                 onClick={() => generateICSFile(cartItems)}
