@@ -73,7 +73,7 @@ const ReceiptDocument = ({ receipt, transaction }) => {
                     </View>
                     <View style={styles.rowStart}>
                         <Text style={styles.total}>Total Tax:</Text>
-                        <Text>${transaction.tax.toFixed(2)}</Text>
+                        <Text>${transaction?.tax.toFixed(2)}</Text>
                     </View>
                     <View style={[styles.rowStart, styles.bold]}>
                         <Text style={styles.total}>Sum Total:</Text>
@@ -93,7 +93,7 @@ const ReceiptDocument = ({ receipt, transaction }) => {
     );
 };
 
-const Receipt = ({ receiptId, isPaymentCompleted }) => {
+const Receipt = ({ receiptId, isPaymentCompleted, page }) => {
     const [receipt, setReceipt] = useState(null);
     const [transaction, setTransaction] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -149,13 +149,26 @@ const Receipt = ({ receiptId, isPaymentCompleted }) => {
     if (!receipt) return <p>No receipt found.</p>;
 
     return (
-        <PDFDownloadLink
-            className="btn btn-checkout"
-            document={<ReceiptDocument receipt={receipt} transaction={transaction} />}
-            fileName={`gingham-receipt_${fileTimeConverter(receipt.created_at)}.pdf`}
-        >
-            {({ isLoading }) => (isPreparing || isLoading ? "Preparing download..." : "Download Receipt")}
-        </PDFDownloadLink>
+        <>
+            {page === 'checkout' && (
+                <PDFDownloadLink 
+                    document={<ReceiptDocument receipt={receipt} />} 
+                    fileName={`gingham-receipt_${fileTimeConverter(receipt.created_at)}.pdf`}
+                    className="btn btn-checkout"
+                >
+                    {({ loading }) => (loading ? "Preparing download..." : "Download Receipt")}
+                </PDFDownloadLink>
+            )}
+            {page === 'profile' && (
+                <PDFDownloadLink
+                    document={<ReceiptDocument receipt={receipt} />}
+                    fileName={`gingham-receipt_${fileTimeConverter(receipt.created_at)}.pdf`}
+                    className="icon-file"
+                >                        
+                    &emsp;
+                </PDFDownloadLink>
+            )}
+        </>
     );
 };
 
