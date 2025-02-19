@@ -240,6 +240,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                         <div className="margin-t-16 flex-start flex-gap-16">
                             <ReceiptPDF receiptId={receiptId} isPaymentCompleted={paymentSuccess} page={"checkout"} />
                             <button 
+                                type="button"
                                 className="btn btn-checkout" 
                                 onClick={() => generateICSFile(cartItems)}
                             >
