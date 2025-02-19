@@ -26,30 +26,29 @@ function VendorSales() {
 
     const vendorUserId = localStorage.getItem('vendor_user_id');
 
-    const dateRange = {
-        "Next Week": -7,
-        "Week": 7,
-        "Month": 31,
-        "3 Months": 91,
-        "6 Months": 183,
-        "Year": 365,
-    }
+    const dateRange = { "Next Week": -7, "Week": 7, "Month": 31, "3 Months": 91, "6 Months": 183, "Year": 365, }
 
     function getDatesForRange(range = 31) {
         const dates = [];
         const today = new Date();
     
-        // Determine the start and end points for the range
-        const startOffset = range < 0 ? 0 : range - 1;
-        const endOffset = range < 0 ? Math.abs(range) : 0;
-    
-        for (let i = startOffset; i >= -endOffset; i--) {
-            const currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
-            dates.push(formatToLocalDateString(currentDate));
+        if (range < 0) {
+            for (let i = 1; i <= Math.abs(range); i++) {
+                const currentDate = new Date(today);
+                currentDate.setDate(today.getDate() + i);
+                dates.push(currentDate.toISOString().split('T')[0]);
+            }
+        } else {
+            for (let i = 0; i < range; i++) {
+                const currentDate = new Date(today);
+                currentDate.setDate(today.getDate() - i);
+                dates.push(currentDate.toISOString().split('T')[0]);
+            }
+            dates.reverse();
         }
     
         return dates;
-    }
+    }    
 
     const fetchVendorId = async () => {
         if (!vendorUserId) {
@@ -139,44 +138,39 @@ function VendorSales() {
         function processBaskets(baskets) {
             const allowedDates = getDatesForRange(selectedRangeGraph);
         
-            console.log("Allowed Dates:", allowedDates);
-        
-            const filteredBaskets = baskets.filter((basket) => {
-                const basketDate = formatToLocalDateString(basket.sale_date);
-                console.log("Checking Sale Date:", basketDate, "Allowed?", allowedDates.includes(basketDate));
-                return allowedDates.includes(basketDate);
-            });
-            // console.log("Filtered Baskets:", filteredBaskets);
-        
             const soldData = {};
             const unsoldData = {};
         
-            filteredBaskets.forEach((basket) => {
-                const basketDate = formatToLocalDateString(basket.sale_date);
-                if (basket.is_sold) {
-                    soldData[basketDate] = (soldData[basketDate] || 0) + 1;
-                } else {
-                    unsoldData[basketDate] = (unsoldData[basketDate] || 0) + 1;
+            allowedDates.forEach(date => {
+                soldData[date] = 0;
+                unsoldData[date] = 0;
+            });
+        
+            baskets.forEach((basket) => {
+                const basketDate = new Date(basket.sale_date).toISOString().split('T')[0];
+        
+                if (allowedDates.includes(basketDate)) {
+                    if (basket.is_sold) {
+                        soldData[basketDate] += 1;
+                    } else {
+                        unsoldData[basketDate] += 1;
+                    }
                 }
             });
         
             return { soldData, unsoldData };
         }
         
+        const allowedDates = getDatesForRange(selectedRangeGraph);
+
         const { soldData, unsoldData } = processBaskets(baskets);
 
-        const xAxisLabels = getDatesForRange(selectedRangeGraph).map(date => {
-            const d = new Date(date);
-            d.setDate(d.getDate() - 1);
-            return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-        });        
-        
         const data = {
-            labels: getDatesForRange(selectedRangeGraph),
+            labels: allowedDates.map(date => convertToLocalDate(date)),
             datasets: [
                 {
                     label: 'Sold Baskets',
-                    data: xAxisLabels.map(date => soldData[date] || 0),
+                    data: allowedDates.map(date => soldData[date] ?? 0),
                     borderColor: "#007BFF",
                     backgroundColor: "#6c7ae0",
                     borderWidth: 2,
@@ -185,7 +179,7 @@ function VendorSales() {
                 },
                 {
                     label: 'Unsold Baskets',
-                    data: xAxisLabels.map(date => unsoldData[date] || 0),
+                    data: allowedDates.map(date => unsoldData[date] ?? 0),
                     borderColor: "#ff6699",
                     backgroundColor: "#ff806b",
                     borderWidth: 2,
