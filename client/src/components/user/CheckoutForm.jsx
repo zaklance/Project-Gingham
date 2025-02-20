@@ -20,30 +20,55 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
 
     const generateICSFile = (cartItems) => {
         console.log("Generating ICS file for cart items:", cartItems);
-        
+    
         let icsContent = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Gingham//EN\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\n`;
     
         cartItems.forEach(item => {
-            if (!item.vendor_name || !item.pickup_start || !item.pickup_end) {
+            if (!item.vendor_name || !item.pickup_start || !item.pickup_end || !item.location) {
                 console.warn(`Skipping event for basket ${item.id} due to missing data.`, item);
                 return;
             }
     
-            const startDate = timeConverter(item.pickup_start);
-            const endDate = timeConverter(item.pickup_end);
+            // Create full date-time objects (assuming sale_date exists)
+            const saleDate = item.sale_date ? new Date(item.sale_date) : new Date();
+            const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     
-            if (!startDate || !endDate) {
-                console.warn(`Skipping event for basket ${item.id} due to invalid date format.`);
+            const parseTime = (timeString) => {
+                const [hours, minutes] = timeString.split(":").map(Number);
+                const date = new Date(saleDate);
+                date.setHours(hours, minutes, 0, 0);
+                return date;
+            };
+    
+            // Convert pickup times to full datetime objects
+            const localStartDate = parseTime(item.pickup_start);
+            const localEndDate = parseTime(item.pickup_end);
+    
+            if (isNaN(localStartDate) || isNaN(localEndDate)) {
+                console.warn(`Skipping event for basket ${item.id} due to invalid date.`);
                 return;
             }
+    
+            // Format the dates for iCalendar (YYYYMMDDTHHMMSS)
+            const formatICSDate = (date) => {
+                return `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}T${date.getHours().toString().padStart(2, '0')}${date.getMinutes().toString().padStart(2, '0')}00`;
+            };
+    
+            const startDate = formatICSDate(localStartDate);
+            const endDate = formatICSDate(localEndDate);
+    
+            // Generate Apple Maps link if coordinates exist
+            const appleMapsLink = item.latitude && item.longitude
+                ? `Open in Apple Maps: https://maps.apple.com/?q=${item.latitude},${item.longitude}`
+                : '';
     
             icsContent += `BEGIN:VEVENT\n`;
             icsContent += `UID:${item.id}@gingham.com\n`;
             icsContent += `SUMMARY:Pick up your order from ${item.vendor_name}\n`;
-            icsContent += `DESCRIPTION:Pick up your order from ${item.vendor_name} at ${item.location}\n`;
+            icsContent += `DESCRIPTION:Pick up your order from ${item.vendor_name} at ${item.location}.\n${appleMapsLink}\n`; // ✅ Clickable Apple Maps link
             icsContent += `LOCATION:${item.location}\n`;
-            icsContent += `DTSTART:${startDate}\n`;
-            icsContent += `DTEND:${endDate}\n`;
+            icsContent += `DTSTART;TZID=${userTimeZone}:${startDate}\n`;
+            icsContent += `DTEND;TZID=${userTimeZone}:${endDate}\n`;
             icsContent += `STATUS:CONFIRMED\n`;
             icsContent += `END:VEVENT\n`;
         });
@@ -65,7 +90,6 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
             console.log("ICS file download triggered successfully.");
         } catch (error) {
             console.error("Error generating ICS file:", error);
-            // toast.error('An unexpected error occurred while generating the calendar file.', { autoClose: 4000 });
         }
     };
 
