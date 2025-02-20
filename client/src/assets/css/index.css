@@ -194,6 +194,14 @@ p, li, div, form, input, select, button, textarea, td {
   margin-bottom: -24px;
 }
 
+.font-lilita {
+  font-family: "Lilita One", sans-serif;
+}
+
+.font-quicksand {
+  font-family: "Quicksand", sans-serif;
+}
+
 .font-gingham-large {
 	font-size: 10rem;
   font-family: nf-le-petit-cochon;
@@ -212,6 +220,10 @@ p, li, div, form, input, select, button, textarea, td {
   font-weight: 500;
 }
 
+.text-600 {
+  font-weight: 600;
+}
+
 .text-italic {
   font-style: italic;
 }
@@ -219,6 +231,10 @@ p, li, div, form, input, select, button, textarea, td {
 .text-underline {
   text-decoration: underline;
   text-underline-offset: .15em;
+}
+
+.text-caps {
+  text-transform: uppercase;
 }
 
 .text-center {
@@ -440,6 +456,10 @@ article {
 
 .width-100 {
   width: 100%;
+}
+
+.width-98 {
+  width: 98%;
 }
 
 .width-80 {
@@ -840,6 +860,14 @@ ul {
 .box-blog {
   background-color: #fbf7eb;
   padding: 16px
+}
+
+.box-key {
+  width: 98%;
+  padding: 4px 12px;
+  border: 4px solid #eee;
+  /* background-color: #eee; */
+  border-radius: 12px;
 }
 
 .box-scroll {
@@ -1687,37 +1715,61 @@ link {
   border-radius: 16px;
 }
 
-.map-circle {
+.map-circle, .map-circle-off-season, .map-circle-vendors {
   shape-outside: circle();
   clip-path: circle();
   width: 36px;
   height: 36px;
-  background: #ff6699;
+  background-color: #ff6699;
   transition: background-color 0.4s ease, transform 0.4s ease;
 }
 
-.map-circle:hover {
+.map-circle-off-season {
+  background: #6c7ae0;
+}
+
+.map-circle-vendors {
+  background: #00bda4;
+}
+
+.map-circle:hover, .map-circle-off-season:hover, .map-circle-vendors:hover {
   background-color: #ff4499;
   transition: background-color 0.4s ease, transform 0.4s ease;
 }
 
-.map-inside-circle {
+.map-circle-off-season:hover {
+  background-color: #8f96eb;
+}
+
+.map-circle-vendors:hover {
+  background-color: #28a745;
+}
+
+.map-inside-circle, .map-inside-circle-off-season, .map-inside-circle-vendors {
   shape-outside: circle();
   clip-path: circle();
   width: 14px;
   height: 14px;
-  background: #ff9e5c;
   margin-top: -25px;
   margin-left: 11px;
   transition: opacity 0.4s ease, transform 0.4s ease;
+  background-color: #ff9e5c;
 }
 
-.map-inside-circle:hover {
+.map-inside-circle-off-season {
+  background-color: #69d2c2;
+}
+
+.map-inside-circle-vendors {
+  background-color: #93d500;
+}
+
+.map-inside-circle:hover, .map-inside-circle-off-season:hover, .map-inside-circle-vendors:hover {
   transform: scale(1.6);
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-.map-triangle {
+.map-triangle, .map-triangle-off-season, .map-triangle-vendors {
   width: 20px;
   height: 20px;
   margin-top: 2px;
@@ -1725,6 +1777,14 @@ link {
   border-left: 16px solid transparent;
   border-right: 16px solid transparent;
   border-top: 16px solid #ff6699;
+}
+
+.map-triangle-off-season {
+  border-top: 16px solid #6c7ae0;
+}
+
+.map-triangle-vendors {
+  border-top: 16px solid #00bda4;
 }
 
 .marker-details {
@@ -1984,7 +2044,8 @@ link {
 }
 
 .table-search {
-  min-width: 100%
+  width: 98.5%;
+  margin: 2px auto;
 }
 
 .table-rect>label, .table-rect>input {
