@@ -97,6 +97,25 @@ function Markets() {
         }));
     };
 
+    const determineSeason = (market) => {
+        const today = new Date();
+        const seasonStart = new Date(market.season_start);
+        const seasonEnd = new Date(market.season_end);
+        const inSeason = market.year_round || (today >= seasonStart && today <= seasonEnd);
+
+        if (inSeason) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    const determineVendors = (market) => {
+        return market.market_days?.some(marketDay => 
+            marketDay.vendor_markets && marketDay.vendor_markets.length > 0
+        );
+    };
+
     useEffect(() => {
         if (userId) {
 
@@ -188,7 +207,8 @@ function Markets() {
                         schedule: market.schedule,
                         season_start: market.season_start,
                         season_end: market.season_end,
-                        year_round: market.year_round
+                        year_round: market.year_round,
+                        market_days: market.market_days
                     }));
                 setMarketCoordinates(coordinates);
             })
@@ -530,9 +550,26 @@ function Markets() {
                                 >
                                     {!markerViews[market.id] ? (
                                         <div onClick={() => handleMarkerClickOn(market.id)}>
-                                            <div className="map-circle"></div>
-                                            <div className="map-inside-circle"></div>
-                                            <div className="map-triangle"></div>
+                                            {!determineSeason(market) ? (
+                                                <>
+                                                    <div className="map-circle-off-season"></div>
+                                                    <div className="map-inside-circle-off-season"></div>
+                                                    <div className="map-triangle-off-season"></div>
+                                                </>
+                                            ) : (!determineVendors(market)
+                                            ) ? (
+                                                <>
+                                                    <div className="map-circle-vendors"></div>
+                                                    <div className="map-inside-circle-vendors"></div>
+                                                    <div className="map-triangle-vendors"></div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="map-circle"></div>
+                                                    <div className="map-inside-circle"></div>
+                                                    <div className="map-triangle"></div>
+                                                </>
+                                            )}
                                         </div>
                                     ) : (
                                         <div className="marker-details" onClick={() => handleMarkerClickOff(market.id)}>
@@ -557,7 +594,33 @@ function Markets() {
                             ))}
                         </Map>
                     </div>
-                    <table className='table-search margin-t-24'>
+                    <div className='flex-space-between flex-gap-8 m-flex-wrap box-key width-98 margin-auto'>
+                        <div className='flex-start flex-center-align'>
+                            <div>
+                                <div className="map-circle"></div>
+                                <div className="map-inside-circle"></div>
+                                <div className="map-triangle"></div>
+                            </div>
+                            <h5 className='font-quicksand text-caps text-500 margin-l-12'>In season with <br/>participating vendors</h5>
+                        </div>
+                        <div className='flex-start flex-center-align'>
+                            <div>
+                                <div className="map-circle-vendors"></div>
+                                <div className="map-inside-circle-vendors"></div>
+                                <div className="map-triangle-vendors"></div>
+                            </div>
+                            <h5 className='font-quicksand text-caps text-500 margin-l-12'>In season without <br/>participating vendors</h5>
+                        </div>
+                        <div className='flex-start flex-center-align'>
+                            <div>
+                                <div className="map-circle-off-season"></div>
+                                <div className="map-inside-circle-off-season"></div>
+                                <div className="map-triangle-off-season"></div>
+                            </div>
+                            <h5 className='font-quicksand text-caps text-500 margin-l-12'>Out of <br/>season</h5>
+                        </div>
+                    </div>
+                    <table className='table-search margin-t-4'>
                         <tbody>
                             <tr>
                                 {/* <td className='cell-title btn-grey m-hidden'>Search:</td> */}

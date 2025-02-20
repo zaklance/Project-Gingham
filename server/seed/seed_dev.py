@@ -127,6 +127,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 18),
             season_end=date(2024, 11, 19),
+            is_visible=False,
             is_current=False
         ),
         Market(
