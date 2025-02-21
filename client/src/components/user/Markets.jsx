@@ -594,14 +594,14 @@ function Markets() {
                             ))}
                         </Map>
                     </div>
-                    <div className='flex-space-between flex-gap-8 m-flex-wrap box-key width-98 margin-auto'>
+                    <div className='flex-space-evenly flex-gap-8 m-flex-wrap box-key width-98 margin-auto'>
                         <div className='flex-start flex-center-align'>
                             <div>
                                 <div className="map-circle"></div>
                                 <div className="map-inside-circle"></div>
                                 <div className="map-triangle"></div>
                             </div>
-                            <h5 className='font-quicksand text-caps text-500 margin-l-12'>In season with <br/>participating vendors</h5>
+                            <h5 className='font-quicksand text-caps text-500 margin-l-12'>In season with <br/>Gingham vendors</h5>
                         </div>
                         <div className='flex-start flex-center-align'>
                             <div>
@@ -609,7 +609,7 @@ function Markets() {
                                 <div className="map-inside-circle-vendors"></div>
                                 <div className="map-triangle-vendors"></div>
                             </div>
-                            <h5 className='font-quicksand text-caps text-500 margin-l-12'>In season without <br/>participating vendors</h5>
+                            <h5 className='font-quicksand text-caps text-500 margin-l-12'>In season without <br/>Gingham vendors</h5>
                         </div>
                         <div className='flex-start flex-center-align'>
                             <div>
