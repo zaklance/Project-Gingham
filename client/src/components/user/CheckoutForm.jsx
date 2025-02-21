@@ -7,6 +7,7 @@ import { timeConverter } from "../../utils/helpers";
 import objectHash from 'object-hash';
 import ReceiptPDF from "./ReceiptPDF";
 
+
 function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAmountInCart }) {
     const stripe = useStripe();
     const elements = useElements();
@@ -58,14 +59,13 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
             const endDate = formatICSDate(localEndDate);
     
             // Generate Apple Maps link if coordinates exist
-            const appleMapsLink = item.coordinates
-                ? `Open in Apple Maps: https://maps.apple.com/?q=${item.coordinates.lat}+${item.coordinates.lng}.`
-                : '';
+            const appleMapsLink = `Open in Apple Maps:\\nhttps://maps.apple.com/?q=${item.coordinates.lat}+${item.coordinates.lng}`;
+            const googleMapsLink = `Open in Google Maps:\\nhttps://maps.google.com/?q=${item.coordinates.lat}+${item.coordinates.lng}`;
     
             icsContent += `BEGIN:VEVENT\n`;
             icsContent += `UID:${item.id}@gingham.com\n`;
             icsContent += `SUMMARY:Pick up your order from ${item.vendor_name}\n`;
-            icsContent += `DESCRIPTION:Pick up your order from ${item.vendor_name} at ${item.market_name} at ${item.location} \\n\\nOpen in Apple Maps:\\nhttps://maps.apple.com/?q=${item.coordinates.lat}+${item.coordinates.lng}\\n\\nOpen in Google Maps:\\nhttps://maps.google.com/?q=${item.coordinates.lat}+${item.coordinates.lng}\n`;
+            icsContent += `DESCRIPTION:Pick up your order from ${item.vendor_name} at ${item.market_name} at ${item.location} \\n\\n${appleMapsLink}\\n\\n${googleMapsLink}\n`;
             icsContent += `LOCATION:https://maps.apple.com/?q=${item.coordinates.lat}+${item.coordinates.lng}\n`;
             icsContent += `DTSTART;TZID=${userTimeZone}:${startDate}\n`;
             icsContent += `DTEND;TZID=${userTimeZone}:${endDate}\n`;
