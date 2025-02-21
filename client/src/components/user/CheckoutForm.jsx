@@ -58,15 +58,15 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
             const endDate = formatICSDate(localEndDate);
     
             // Generate Apple Maps link if coordinates exist
-            const appleMapsLink = item.latitude && item.longitude
-                ? `Open in Apple Maps: https://maps.apple.com/?q=${item.latitude},${item.longitude}`
+            const appleMapsLink = item.coordinates
+                ? `Open in Apple Maps: https://maps.apple.com/?q=${item.coordinates.lat}+${item.coordinates.lng}.`
                 : '';
     
             icsContent += `BEGIN:VEVENT\n`;
             icsContent += `UID:${item.id}@gingham.com\n`;
             icsContent += `SUMMARY:Pick up your order from ${item.vendor_name}\n`;
-            icsContent += `DESCRIPTION:Pick up your order from ${item.vendor_name} at ${item.location}.\n${appleMapsLink}\n`; // ✅ Clickable Apple Maps link
-            icsContent += `LOCATION:${item.location}\n`;
+            icsContent += `DESCRIPTION:Pick up your order from ${item.vendor_name} at ${item.market_name} at ${item.location} \\n\\nOpen in Google Maps:\\nhttps://maps.google.com/?q=${item.coordinates.lat}+${item.coordinates.lng}\n`;
+            icsContent += `LOCATION:https://maps.apple.com/?q=${item.coordinates.lat}+${item.coordinates.lng}\n`;
             icsContent += `DTSTART;TZID=${userTimeZone}:${startDate}\n`;
             icsContent += `DTEND;TZID=${userTimeZone}:${endDate}\n`;
             icsContent += `STATUS:CONFIRMED\n`;
@@ -82,7 +82,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'pickup_schedule.ics';
+            a.download = 'gingham_pickup_schedule.ics';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -92,6 +92,8 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
             console.error("Error generating ICS file:", error);
         }
     };
+
+    console.log(cartItems)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
