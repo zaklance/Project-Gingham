@@ -2056,15 +2056,13 @@ link {
   /* min-width: 124px; */
 }
 
-.cell-text {
-  width: 100%;
-  /* padding: 4px; */
-  word-wrap: break-word;
-}
-
 .table-search {
   width: 98.5%;
   margin: 2px auto;
+}
+
+.table-search .cell-text {
+  border-width: 4px;
 }
 
 .table-rect>label, .table-rect>input {
@@ -2591,16 +2589,31 @@ select:hover {
 }
 
 .icon-basket {
-  background-image: url('../images/icons/icons8-buying-100.svg');
+  background-image: url('../images/icons/icons8-basket-100.svg');
   background-repeat: no-repeat;
   background-position: right 50% top 46%;
-  background-size: 1.8rem auto;
+  background-size: 1.4rem auto;
 }
 
 .icon-basket:hover {
-  background-image: url('../images/icons/icons8-shopping-cart.gif');
+  background-image: url('../images/icons/icons8-basket.gif');
   background-repeat: no-repeat;
   background-position: right 50% top 46%;
+  background-size: 1.4rem auto;
+  background-blend-mode: darken;
+}
+
+.icon-cart {
+  background-image: url('../images/icons/icons8-buying-100.svg');
+  background-repeat: no-repeat;
+  background-position: right 56% top 46%;
+  background-size: 1.8rem auto;
+}
+
+.icon-cart:hover {
+  background-image: url('../images/icons/icons8-shopping-cart.gif');
+  background-repeat: no-repeat;
+  background-position: right 56% top 46%;
   background-size: 1.8rem auto;
   background-blend-mode: darken;
 }
@@ -2733,6 +2746,18 @@ select:hover {
   border-radius: 50px;
   background: #ff4b5a;
   color: white;
+}
+
+.badge-cart {
+  position: absolute;
+  font-size: .5em;
+  top: -8px;
+  right: 1px;
+  padding: 5px 9px;
+  border-radius: 50px;
+  background: #007BFF;
+  color: white;
+  z-index: 5;
 }
 
 .badge-votes {

@@ -407,8 +407,13 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {!isNotUser && (
                     <>
                         {amountInCart > 0 && (
-                            <li>
-                                <NavLink className='nav-tab color-1 btn-nav nav-tab-wide nowrap icon-basket' to="/user/cart" title="Cart">&emsp;</NavLink>
+                            <li className='notification'>
+                                <NavLink className='nav-tab color-1 btn-nav nav-tab-wide nowrap icon-cart' to="/user/cart" title="Cart">&emsp;</NavLink>
+                                {amountInCart > 0 && (
+                                    <p className='badge-cart'>
+                                        {amountInCart}
+                                    </p>
+                                )}
                             </li>
                         )}
                     </>
@@ -421,7 +426,8 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                 {notifications.filter(notification => notification.is_read === false).length > 0 && (
                                     <p className='badge'>
                                         {notifications.filter(notification => notification.is_read === false).length}
-                                    </p>)}
+                                    </p>
+                                )}
                             </li>
                         }
                         <div className='notification'>
