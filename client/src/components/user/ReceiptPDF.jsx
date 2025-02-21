@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { PDFDownloadLink, Document, Image, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import { formatBasketDate, timeConverter, receiptDateConverter, fileTimeConverter } from "../../utils/helpers";
+import PulseLoader from 'react-spinners/PulseLoader';
 
 const styles = StyleSheet.create({
     page: { padding: 30, fontSize: 12, fontFamily: "Helvetica", color: "#3b4752", backgroundColor: "#fbf7eb" },
@@ -99,8 +100,11 @@ const Receipt = ({ receiptId, isPaymentCompleted, page }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isPreparing, setIsPreparing] = useState(false);
+    const [canDownload, setCanDownload] = useState(false);
 
     useEffect(() => {
+        if (canDownload) return
+
         if (!receiptId) {
             setError("Invalid receipt ID.");
             setIsLoading(false);
@@ -122,6 +126,8 @@ const Receipt = ({ receiptId, isPaymentCompleted, page }) => {
     }, [receiptId]);
 
     useEffect(() => {
+        if (canDownload) return
+
         if (receipt?.payment_intent_id) {
             setIsPreparing(true); // Show "Preparing download..."
 
@@ -133,6 +139,7 @@ const Receipt = ({ receiptId, isPaymentCompleted, page }) => {
                         if (transactionData.error) throw new Error(transactionData.error);
                         setTransaction(transactionData);
                         setIsPreparing(false);
+                        setCanDownload(true);
                     })
                     .catch((err) => {
                         console.error("Failed to fetch transaction:", err);
@@ -148,13 +155,23 @@ const Receipt = ({ receiptId, isPaymentCompleted, page }) => {
             } else {
                 // Fetch immediately for profile
                 fetchTransaction();
+                
             }
         }
     }, [receipt, page]);
 
-    if (isLoading) return <p>Loading receipt...</p>;
+    if (isLoading && page === 'profile' && !canDownload && isPreparing) return (
+        <PulseLoader
+            className='margin-t-12'
+            color={'#ff806b'}
+            size={10}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+        />
+    );
+    if (isLoading && !canDownload && page === 'checkout') return <p>Loading receipt...</p>;
     if (error) return <p style={{ color: "#ff4b5a" }}>Error: {error}</p>;
-    if (!receipt) return <p>No receipt found.</p>;
+    // if (!receipt) return <p>No receipt found.</p>;
 
     return (
         <>
@@ -167,15 +184,24 @@ const Receipt = ({ receiptId, isPaymentCompleted, page }) => {
                     {({ loading }) => (isPreparing || loading ? "Preparing download..." : "Download Receipt")}
                 </PDFDownloadLink>
             )}
-            {page === 'profile' && (
-                <PDFDownloadLink
-                    document={<ReceiptDocument receipt={receipt} transaction={transaction} />}
-                    fileName={`gingham-receipt_${fileTimeConverter(receipt.created_at)}.pdf`}
-                    className="icon-file"
-                >                        
-                &emsp;
-                </PDFDownloadLink>
-            )}
+            {page === 'profile' ? (
+                canDownload ? (
+                    <PDFDownloadLink
+                        document={<ReceiptDocument receipt={receipt} transaction={transaction} />}
+                        fileName={`gingham-receipt_${fileTimeConverter(receipt.created_at)}.pdf`}
+                    >
+                        &emsp;
+                    </PDFDownloadLink>
+                ) : (
+                    <PulseLoader
+                        className='margin-t-12'
+                        color={'#ff806b'}
+                        size={10}
+                        aria-label="Loading Spinner"
+                        data-testid="loader"
+                    />
+                )
+            ) : null}
         </>
     );
 };

@@ -9,18 +9,18 @@ import ReceiptPDF from "./ReceiptPDF";
 
 
 function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAmountInCart }) {
-    const stripe = useStripe();
-    const elements = useElements();
-
     const [isProcessing, setIsProcessing] = useState(false);
     const [paymentSuccess, setPaymentSuccess] = useState(false);
     const [receiptId, setReceiptId] = useState(null);
+
+    const stripe = useStripe();
+    const elements = useElements();
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const token = localStorage.getItem('user_jwt-token');
 
     const generateICSFile = (cartItems) => {
-        console.log("Generating ICS file for cart items:", cartItems);
+        // console.log("Generating ICS file for cart items:", cartItems);
     
         let icsContent = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Gingham//EN\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\n`;
     
@@ -75,7 +75,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
     
         icsContent += `END:VCALENDAR`;
     
-        console.log("ICS content successfully generated:\n", icsContent);
+        // console.log("ICS content successfully generated:\n", icsContent);
     
         try {
             const blob = new Blob([icsContent], { type: 'text/calendar' });
@@ -92,8 +92,6 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
             console.error("Error generating ICS file:", error);
         }
     };
-
-    console.log(cartItems)
 
     const handleSubmit = async (e) => {
         e.preventDefault();

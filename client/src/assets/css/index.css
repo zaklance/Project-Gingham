@@ -3235,6 +3235,10 @@ select:hover {
     padding: 21px 20px 28px 20px;
   }
 
+  .nav-tab-wide {
+    padding: 21px 28px 28px 28px;
+  }
+
   .popup-notif-on {
     position: fixed;
     top: 20px;
@@ -3394,6 +3398,10 @@ select:hover {
 
   .nav-tab {
     padding: 21px 16px 28px 16px;
+  }
+
+  .nav-tab-wide {
+    padding: 21px 24px 28px 24px;
   }
 
   .tab-right {

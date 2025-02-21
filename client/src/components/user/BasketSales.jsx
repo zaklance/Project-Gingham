@@ -5,6 +5,7 @@ import ReceiptPDF from './ReceiptPDF';
 
 function BasketSales() {
     const [receipts, setReceipts] = useState(null);
+    const [willDownload, setWillDownload] = useState({});
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'))
 
@@ -32,6 +33,13 @@ function BasketSales() {
                 // setLoading(false);
             });
     }, [userId]);
+
+    const handleDownload = (id) => {
+        setWillDownload((prev) => ({
+            ...prev,
+            [id]: true,
+        }));
+    };
 
     return (
         <div>
@@ -77,7 +85,9 @@ function BasketSales() {
                                                     <td className='table-center nowrap'>{formatBasketDate(item.sale_date) || 'N/A'}</td>
                                                     <td className='table-center'>${item.price ? item.price.toFixed(2) : 'N/A'}</td>
                                                     <td className='table-center' style={{height: '48px'}}>
-                                                    {isFirst && <ReceiptPDF receiptId={receipt.id} page={"profile"} />}
+                                                            <span className='icon-file' onMouseEnter={() => handleDownload(receipt.id)}>
+                                                                {isFirst && willDownload[receipt.id] ? <ReceiptPDF receiptId={receipt.id} page={"profile"} /> : '\u2003'}
+                                                            </span>
                                                     </td>
                                                 </tr>
                                             )}

@@ -3276,14 +3276,14 @@ def get_stripe_transaction():
     try:
         # Fetch PaymentIntent from Stripe
         payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
-        print(f"Payment Intent Found: {payment_intent.id}")
+        # print(f"Payment Intent Found: {payment_intent.id}")
 
         if not payment_intent or "latest_charge" not in payment_intent:
             return jsonify({"error": "Invalid PaymentIntent or charge not found"}), 404
 
         # Fetch Charge details
         charge = stripe.Charge.retrieve(payment_intent["latest_charge"])
-        print(f"Charge Found: {charge.id}")
+        # print(f"Charge Found: {charge.id}")
 
         # Try getting balance_transaction from charge
         balance_transaction_id = charge.get("balance_transaction")
@@ -3306,7 +3306,7 @@ def get_stripe_transaction():
 
         # Fetch Balance Transaction details from Stripe
         balance_transaction = stripe.BalanceTransaction.retrieve(balance_transaction_id)
-        print(f"Balance Transaction Found: {balance_transaction_id}")
+        # print(f"Balance Transaction Found: {balance_transaction_id}")
 
         # Extract Fees & Taxes
         fee_processor = sum(fee['amount'] / 100 for fee in balance_transaction.fee_details if fee['type'] == 'stripe_fee')
