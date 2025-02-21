@@ -1592,6 +1592,7 @@ def all_markets():
 
         new_market = Market(
             name=data.get('name'),
+            website=data.get('website'),
             bio=data.get('bio'),
             location=data.get('location'),
             city=data.get('city'),
@@ -1601,7 +1602,9 @@ def all_markets():
             schedule=data.get('schedule'),
             year_round=data.get('year_round'),
             season_start=season_start,
-            season_end=season_end
+            season_end=season_end,
+            is_visible=data.get('is_visible'),
+            is_current=data.get('is_current')
         )
 
         try:
@@ -1628,6 +1631,8 @@ def market_by_id(id):
         try:
             if 'name' in data:
                 market.name = data['name']
+            if 'website' in data:
+                market.website = data['website']
             if 'image' in data:
                 market.image = data['image']
             if 'image_default' in data:

@@ -636,7 +636,7 @@ function MarketDetail ({ match }) {
                     );
                 })
             ) : (
-                <p>No vendors at this market</p>
+                <p>No vendors on Gingham at this market</p>
             )}
             </div>
             <ReviewMarket market={market} />

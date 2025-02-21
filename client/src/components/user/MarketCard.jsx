@@ -10,6 +10,14 @@ function MarketCard({ marketData, user, haversineDistance, resultCoordinates, us
         navigate(`/user/markets/${marketData.id}`);
     };
 
+    const countVendors = (market) => {
+        const totalVendors = market.market_days?.reduce((total, marketDay) => 
+            total + (marketDay.vendor_markets?.length || 0), 0
+        ) || 0;
+
+        return totalVendors > 0 ? totalVendors : "None";
+    };
+
 
     return (
         <div className="market-card flex-space-between flex-column">
@@ -53,6 +61,7 @@ function MarketCard({ marketData, user, haversineDistance, resultCoordinates, us
                                 : 'your home address'}
                     </p>
                 ) : <></>}
+                <p><strong>Vendors:</strong> {countVendors(marketData)} on <span className='font-gingham text-size-1'>Gin<span className="kern-1-5">g</span><span className="kern-05">h</span>am</span></p>
             </div>
             <div>
                 <button className="btn-market-card" onClick={handleLearnMore}>Learn More!</button>

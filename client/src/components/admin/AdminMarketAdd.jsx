@@ -10,11 +10,14 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
     const [adminMarketDayData, setAdminMarketDayData] = useState(null);
     const [newMarket, setNewMarket] = useState({
         name: '',
+        website: '',
         location: '',
         zipcode: '',
         coordinates: { lat: '', lng: '' },
         schedule: '',
         year_round: '',
+        is_current: '',
+        is_visible: '',
         season_start: '',
         season_end: '',
     });
@@ -74,6 +77,8 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
         try {
             // Convert year_round to boolean
             newMarket.year_round = newMarket.year_round === 'true' || newMarket.year_round === true;
+            newMarket.is_current = newMarket.is_current === 'true' || newMarket.is_current === true;
+            newMarket.is_visible = newMarket.is_visible === 'true' || newMarket.is_visible === true;
     
             // Save market details first
             const response = await fetch(`/api/markets`, {
@@ -201,6 +206,16 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                             />
                         </div>
                         <div className='form-group'>
+                            <label>Website:</label>
+                            <input
+                                type="text"
+                                name="website"
+                                placeholder='Union Square Greenmarket'
+                                value={newMarket ? newMarket.website : ''}
+                                onChange={handleInputMarketChange}
+                            />
+                        </div>
+                        <div className='form-group'>
                             <label>Bio:</label>
                             <textarea
                                 className='textarea-edit'
@@ -291,6 +306,30 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                             <select
                                 name="year_round"
                                 value={newMarket ? newMarket.year_round : ''}
+                                onChange={handleInputMarketChange}
+                            >
+                                <option value="">Select</option>
+                                <option value={true}>Yes</option>
+                                <option value={false}>No</option>
+                            </select>
+                        </div>
+                        <div className='form-group'>
+                            <label title="true or false">Is Current:</label>
+                            <select
+                                name="is_current"
+                                value={newMarket ? newMarket.is_current : ''}
+                                onChange={handleInputMarketChange}
+                            >
+                                <option value="">Select</option>
+                                <option value={true}>Yes</option>
+                                <option value={false}>No</option>
+                            </select>
+                        </div>
+                        <div className='form-group'>
+                            <label title="true or false">Is Visible:</label>
+                            <select
+                                name="is_visible"
+                                value={newMarket ? newMarket.is_visible : ''}
                                 onChange={handleInputMarketChange}
                             >
                                 <option value="">Select</option>
