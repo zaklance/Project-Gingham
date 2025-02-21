@@ -230,13 +230,16 @@ function MarketDetail ({ match }) {
                 market_id: market.id,
                 fee_vendor: basketInCart.fee_vendor,
                 fee_user: basketInCart.fee_user,
-                location: market.name,
+                market_name: market.name,
+                location: market.location,
+                coordinates: market.coordinates,
                 id: basketInCart.id,
                 price: basketInCart.price,
                 pickup_start: basketInCart.pickup_start,
                 pickup_end: basketInCart.pickup_end,
                 day_of_week: new Date(`${basketInCart.sale_date}T00:00:00`).getDay(),
-                sale_date: basketInCart.sale_date
+                sale_date: basketInCart.sale_date,
+
             }];
             setCartItems(updatedCartItems);
             setAmountInCart(updatedCartItems.length);
