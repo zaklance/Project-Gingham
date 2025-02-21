@@ -65,7 +65,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
             icsContent += `BEGIN:VEVENT\n`;
             icsContent += `UID:${item.id}@gingham.com\n`;
             icsContent += `SUMMARY:Pick up your order from ${item.vendor_name}\n`;
-            icsContent += `DESCRIPTION:Pick up your order from ${item.vendor_name} at ${item.market_name} at ${item.location} \\n\\nOpen in Google Maps:\\nhttps://maps.google.com/?q=${item.coordinates.lat}+${item.coordinates.lng}\n`;
+            icsContent += `DESCRIPTION:Pick up your order from ${item.vendor_name} at ${item.market_name} at ${item.location} \\n\\nOpen in Apple Maps:\\nhttps://maps.apple.com/?q=${item.coordinates.lat}+${item.coordinates.lng}\\n\\nOpen in Google Maps:\\nhttps://maps.google.com/?q=${item.coordinates.lat}+${item.coordinates.lng}\n`;
             icsContent += `LOCATION:https://maps.apple.com/?q=${item.coordinates.lat}+${item.coordinates.lng}\n`;
             icsContent += `DTSTART;TZID=${userTimeZone}:${startDate}\n`;
             icsContent += `DTEND;TZID=${userTimeZone}:${endDate}\n`;
