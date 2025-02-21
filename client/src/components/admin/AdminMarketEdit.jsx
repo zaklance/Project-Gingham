@@ -565,6 +565,15 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 />
                             </div>
                             <div className='form-group'>
+                                <label>Website:</label>
+                                <input
+                                    type="text"
+                                    name="website"
+                                    value={tempMarketData ? tempMarketData.website : ''}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                            <div className='form-group'>
                                 <label>Bio:</label>
                                 <textarea
                                     className='textarea-edit'
@@ -765,6 +774,10 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     <tr>
                                         <td className='cell-title'>Name:</td>
                                         <td className='cell-text'>{adminMarketData ? `${adminMarketData.name}` : ''}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='cell-title'>Website:</td>
+                                        <td className='cell-text'>{adminMarketData?.website ? <a href={adminMarketData.website} target="_blank" rel="noopener noreferrer">Link</a> : ''}</td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title'>Bio:</td>

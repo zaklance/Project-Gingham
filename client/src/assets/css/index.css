@@ -224,6 +224,10 @@ p, li, div, form, input, select, button, textarea, td {
   font-weight: 600;
 }
 
+.text-size-1 {
+  font-size: 1.2rem;
+}
+
 .text-italic {
   font-style: italic;
 }
@@ -288,6 +292,18 @@ p, li, div, form, input, select, button, textarea, td {
 article {
   margin-bottom: 1em;
   widows:2;
+}
+
+.kern-05 {
+  letter-spacing: -0.5pt;
+}
+
+.kern-1 {
+  letter-spacing: -1pt;
+}
+
+.kern-1-5 {
+  letter-spacing: -1.5pt;
 }
 
 .kern-2 {
@@ -865,9 +881,12 @@ ul {
 .box-key {
   width: 98%;
   padding: 4px 12px;
-  border: 4px solid #eee;
+  border: 6px solid #eee;
   /* background-color: #eee; */
   border-radius: 12px;
+  display: flex;
+  justify-content: space-evenly;
+  gap: 8;
 }
 
 .box-scroll {
@@ -2572,17 +2591,17 @@ select:hover {
 }
 
 .icon-basket {
-  background-image: url('../images/icons/icons8-basket-100.svg');
+  background-image: url('../images/icons/icons8-buying-100.svg');
   background-repeat: no-repeat;
   background-position: right 50% top 46%;
-  background-size: 1.4rem auto;
+  background-size: 1.8rem auto;
 }
 
 .icon-basket:hover {
-  background-image: url('../images/icons/icons8-basket.gif');
+  background-image: url('../images/icons/icons8-shopping-cart.gif');
   background-repeat: no-repeat;
   background-position: right 50% top 46%;
-  background-size: 1.4rem auto;
+  background-size: 1.8rem auto;
   background-blend-mode: darken;
 }
 
@@ -3270,6 +3289,10 @@ select:hover {
 
   .title-med, .font-gingham-large {
     font-size: 2.8em;
+  }
+
+  .box-key {
+    justify-content: space-between;
   }
 }
 

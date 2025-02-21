@@ -594,7 +594,7 @@ function Markets() {
                             ))}
                         </Map>
                     </div>
-                    <div className='flex-space-evenly flex-gap-8 m-flex-wrap box-key width-98 margin-auto'>
+                    <div className='box-key m-flex-wrap width-98 margin-auto'>
                         <div className='flex-start flex-center-align'>
                             <div>
                                 <div className="map-circle"></div>

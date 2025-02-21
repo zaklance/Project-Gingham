@@ -126,6 +126,10 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
                             <td className='cell-text'>{adminMarketData ? `${adminMarketData.name}` : ''}</td>
                         </tr>
                         <tr>
+                            <td className='cell-title'>Website:</td>
+                            <td className='cell-text'>{adminMarketData?.website ? <a href={adminMarketData.website} target="_blank" rel="noopener noreferrer">Link</a> : ''}</td>
+                        </tr>
+                        <tr>
                             <td className='cell-title'>Bio:</td>
                             <td className='cell-text'>{adminMarketData ? adminMarketData.bio : ''}</td>
                         </tr>
@@ -160,6 +164,14 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
                         <tr>
                             <td className='cell-title' title="true or false">Year Round:</td>
                             <td className='cell-text'>{adminMarketData ? `${adminMarketData.year_round}` : ''}</td>
+                        </tr>
+                        <tr>
+                            <td className='cell-title' title="true or false">Is Current:</td>
+                            <td className='cell-text'>{adminMarketData ? `${adminMarketData.is_current}` : ''}</td>
+                        </tr>
+                        <tr>
+                            <td className='cell-title' title="true or false">Is Visible:</td>
+                            <td className='cell-text'>{adminMarketData ? `${adminMarketData.is_visible}` : ''}</td>
                         </tr>
                         {String(adminMarketData?.year_round) === 'false' && (
                             <>
