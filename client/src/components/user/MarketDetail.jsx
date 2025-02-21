@@ -397,6 +397,25 @@ function MarketDetail ({ match }) {
         }
     };
 
+    const determineSeason = (market) => {
+        const today = new Date();
+        const seasonStart = new Date(market.season_start);
+        const seasonEnd = new Date(market.season_end);
+        const inSeason = market.year_round || (today >= seasonStart && today <= seasonEnd);
+
+        if (inSeason) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    const determineVendors = (market) => {
+        return market.market_days?.some(marketDay => 
+            marketDay.vendor_markets && marketDay.vendor_markets.length > 0
+        );
+    };
+
     if (!market) {
         return <div>Loading...</div>;
     }
@@ -465,9 +484,26 @@ function MarketDetail ({ match }) {
                             latitude={marketLocation.lat}
                             longitude={marketLocation.lng}
                         >
-                            <div className="map-circle"></div>
-                            <div className="map-inside-circle"></div>
-                            <div className="map-triangle"></div>
+                            {!determineSeason(market) ? (
+                                <>
+                                    <div className="map-circle-off-season"></div>
+                                    <div className="map-inside-circle-off-season"></div>
+                                    <div className="map-triangle-off-season"></div>
+                                </>
+                            ) : (!determineVendors(market)
+                            ) ? (
+                                <>
+                                    <div className="map-circle-vendors"></div>
+                                    <div className="map-inside-circle-vendors"></div>
+                                    <div className="map-triangle-vendors"></div>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="map-circle"></div>
+                                    <div className="map-inside-circle"></div>
+                                    <div className="map-triangle"></div>
+                                </>
+                            )}
                         </Annotation>
                     </Map>
                 </div>
