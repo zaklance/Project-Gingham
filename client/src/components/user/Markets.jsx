@@ -634,17 +634,32 @@ function Markets() {
                                         onChange={onUpdateQuery} />
                                     {showDropdown && (
                                         <ul className="dropdown-content" ref={dropdownRef}>
-                                            {filteredMarketsDropdown.slice(0, 10).map(item => (
-                                                <li
-                                                    className="search-results"
-                                                    key={item.id}
-                                                    onClick={() => {
-                                                        setQuery(item.name);
-                                                        setShowDropdown(false);
-                                                    }}
-                                                >
-                                                    {item.name}
-                                                </li>
+                                            {filteredMarketsDropdown
+                                                .slice(0, 10)
+                                                .sort((a, b) => {
+                                                    const nameA = a.name.toLowerCase();
+                                                    const nameB = b.name.toLowerCase();
+
+                                                    const numA = nameA.match(/^\D*(\d+)/)?.[1];
+                                                    const numB = nameB.match(/^\D*(\d+)/)?.[1];
+
+                                                    if (numA && numB && nameA[0] >= "0" && nameA[0] <= "9" && nameB[0] >= "0" && nameB[0] <= "9") {
+                                                        return parseInt(numA) - parseInt(numB);
+                                                    }
+
+                                                    return nameA.localeCompare(nameB, undefined, { numeric: true });
+                                                })
+                                                .map(item => (
+                                                    <li
+                                                        className="search-results"
+                                                        key={item.id}
+                                                        onClick={() => {
+                                                            setQuery(item.name);
+                                                            setShowDropdown(false);
+                                                        }}
+                                                    >
+                                                        {item.name}
+                                                    </li>
                                             ))}
                                         </ul>
                                     )}
