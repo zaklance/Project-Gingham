@@ -28,6 +28,10 @@ function Markets() {
     const [userCoordinates, setUserCoordinates] = useState();
     const [markerViews, setMarkerViews] = useState({});
     const [marketCoordinates, setMarketCoordinates] = useState([]);
+    const [showGingham, setShowGingham] = useState(true);
+    const [showVendors, setShowVendors] = useState(true);
+    const [showOffSeason, setShowOffSeason] = useState(true);
+    const [isHover, setIsHover] = useState({});
 
     const dropdownRef = useRef(null);
     const dropdownAddressRef = useRef(null);
@@ -94,6 +98,20 @@ function Markets() {
         setMarkerViews((prev) => ({
             ...prev,
             [marketId]: false,
+        }));
+    };
+    
+    const handleMarkerHoverOn = (id) => {
+        setIsHover((prev) => ({
+            ...prev,
+            [id]: true,
+        }));
+    };
+
+    const handleMarkerHoverOff = (id) => {
+        setIsHover((prev) => ({
+            ...prev,
+            [id]: false,
         }));
     };
 
@@ -549,25 +567,41 @@ function Markets() {
                                     onDeselect={() => handleMarkerClickOff(market.id)}
                                 >
                                     {!markerViews[market.id] ? (
-                                        <div onClick={() => handleMarkerClickOn(market.id)}>
+                                        <div 
+                                            onClick={() => handleMarkerClickOn(market.id)}
+                                            onMouseEnter={() => handleMarkerHoverOn(market.id)}
+                                            onMouseLeave={() => handleMarkerHoverOff(market.id)}
+                                        >
                                             {!determineSeason(market) ? (
                                                 <>
-                                                    <div className="map-circle-off-season"></div>
-                                                    <div className="map-inside-circle-off-season"></div>
-                                                    <div className="map-triangle-off-season"></div>
+                                                    {showOffSeason && (
+                                                        <>
+                                                            <div className={!isHover[market.id] ? "map-circle-off-season" : "map-circle-off-season-on"}></div>
+                                                            <div className={!isHover[market.id] ? "map-inside-circle-off-season" : "map-inside-circle-off-season-on"}></div>
+                                                            <div className={!isHover[market.id] ? "map-triangle-off-season" : "map-triangle-off-season-on"}></div>
+                                                        </>
+                                                    )}
                                                 </>
                                             ) : (!determineVendors(market)
                                             ) ? (
                                                 <>
-                                                    <div className="map-circle-vendors"></div>
-                                                    <div className="map-inside-circle-vendors"></div>
-                                                    <div className="map-triangle-vendors"></div>
+                                                    {showVendors && (
+                                                        <>
+                                                            <div className={!isHover[market.id] ? "map-circle-vendors" : "map-circle-vendors-on"} ></div>
+                                                            <div className={!isHover[market.id] ? "map-inside-circle-vendors" : "map-inside-circle-vendors-on"}></div>
+                                                            <div className={!isHover[market.id] ? "map-triangle-vendors" : "map-triangle-vendors-on"}></div>
+                                                        </>
+                                                    )}
                                                 </>
                                             ) : (
                                                 <>
-                                                    <div className="map-circle"></div>
-                                                    <div className="map-inside-circle"></div>
-                                                    <div className="map-triangle"></div>
+                                                    {showGingham && (
+                                                        <>
+                                                            <div className={!isHover[market.id] ? "map-circle" : "map-circle-on"}></div>
+                                                            <div className={!isHover[market.id] ? "map-inside-circle" : "map-inside-circle-on"}></div>
+                                                            <div className={!isHover[market.id] ? "map-triangle" : "map-triangle-on" }></div>
+                                                        </>
+                                                    )}
                                                 </>
                                             )}
                                         </div>
@@ -595,27 +629,27 @@ function Markets() {
                         </Map>
                     </div>
                     <div className='box-key m-flex-wrap width-98 margin-auto'>
-                        <div className='flex-start flex-center-align'>
+                        <div className='flex-start flex-center-align' onClick={() => setShowGingham(!showGingham)}>
                             <div>
-                                <div className="map-circle"></div>
-                                <div className="map-inside-circle"></div>
-                                <div className="map-triangle"></div>
+                                <div className={showGingham ? "map-circle" : "map-circle-on"}></div>
+                                <div className={showGingham ? "map-inside-circle" : "map-inside-circle-on"}></div>
+                                <div className={showGingham ? "map-triangle" : "map-triangle-on" }></div>
                             </div>
                             <h5 className='font-quicksand text-caps text-500 margin-l-12'>In season with <br/>Gingham vendors</h5>
                         </div>
-                        <div className='flex-start flex-center-align'>
+                        <div className='flex-start flex-center-align' onClick={() => setShowVendors(!showVendors)}>
                             <div>
-                                <div className="map-circle-vendors"></div>
-                                <div className="map-inside-circle-vendors"></div>
-                                <div className="map-triangle-vendors"></div>
+                                <div className={showVendors ? "map-circle-vendors" : "map-circle-vendors-on"} ></div>
+                                <div className={showVendors ? "map-inside-circle-vendors" : "map-inside-circle-vendors-on"}></div>
+                                <div className={showVendors ? "map-triangle-vendors" : "map-triangle-vendors-on"}></div>
                             </div>
                             <h5 className='font-quicksand text-caps text-500 margin-l-12'>In season without <br/>Gingham vendors</h5>
                         </div>
-                        <div className='flex-start flex-center-align'>
+                        <div className='flex-start flex-center-align' onClick={() => setShowOffSeason(!showOffSeason)}>
                             <div>
-                                <div className="map-circle-off-season"></div>
-                                <div className="map-inside-circle-off-season"></div>
-                                <div className="map-triangle-off-season"></div>
+                                <div className={showOffSeason ? "map-circle-off-season" : "map-circle-off-season-on"}></div>
+                                <div className={showOffSeason ? "map-inside-circle-off-season" : "map-inside-circle-off-season-on"}></div>
+                                <div className={showOffSeason ? "map-triangle-off-season" : "map-triangle-off-season-on"}></div>
                             </div>
                             <h5 className='font-quicksand text-caps text-500 margin-l-12'>Out of <br/>season</h5>
                         </div>
