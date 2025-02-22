@@ -1734,7 +1734,7 @@ link {
   border-radius: 16px;
 }
 
-.map-circle, .map-circle-off-season, .map-circle-vendors {
+.map-circle, .map-circle-on, .map-circle-off-season, .map-circle-off-season-on, .map-circle-vendors, .map-circle-vendors-on {
   shape-outside: circle();
   clip-path: circle();
   width: 36px;
@@ -1751,20 +1751,22 @@ link {
   background: #00bda4;
 }
 
-.map-circle:hover, .map-circle-off-season:hover, .map-circle-vendors:hover {
+.map-circle:hover, .map-circle-on {
   background-color: #ff4499;
   transition: background-color 0.4s ease, transform 0.4s ease;
 }
 
-.map-circle-off-season:hover {
+.map-circle-off-season:hover, .map-circle-off-season-on {
   background-color: #8f96eb;
+  transition: background-color 0.4s ease, transform 0.4s ease;
 }
 
-.map-circle-vendors:hover {
+.map-circle-vendors:hover, .map-circle-vendors-on {
   background-color: #28a745;
+  transition: background-color 0.4s ease, transform 0.4s ease;
 }
 
-.map-inside-circle, .map-inside-circle-off-season, .map-inside-circle-vendors {
+.map-inside-circle, .map-inside-circle-on, .map-inside-circle-off-season, .map-inside-circle-off-season-on, .map-inside-circle-vendors, .map-inside-circle-vendors-on {
   shape-outside: circle();
   clip-path: circle();
   width: 14px;
@@ -1775,20 +1777,20 @@ link {
   background-color: #ff9e5c;
 }
 
-.map-inside-circle-off-season {
+.map-inside-circle-off-season, .map-inside-circle-off-season-on {
   background-color: #69d2c2;
 }
 
-.map-inside-circle-vendors {
+.map-inside-circle-vendors, .map-inside-circle-vendors-on {
   background-color: #93d500;
 }
 
-.map-inside-circle:hover, .map-inside-circle-off-season:hover, .map-inside-circle-vendors:hover {
+.map-inside-circle:hover, .map-inside-circle-on,.map-inside-circle-off-season:hover, .map-inside-circle-off-season-on, .map-inside-circle-vendors:hover, .map-inside-circle-vendors-on {
   transform: scale(1.6);
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-.map-triangle, .map-triangle-off-season, .map-triangle-vendors {
+.map-triangle, .map-triangle-on, .map-triangle-off-season, .map-triangle-off-season-on, .map-triangle-vendors, .map-triangle-vendors-on {
   width: 20px;
   height: 20px;
   margin-top: 2px;
@@ -1796,14 +1798,27 @@ link {
   border-left: 16px solid transparent;
   border-right: 16px solid transparent;
   border-top: 16px solid #ff6699;
+  transition: border 0.4s ease, transform 0.4s ease;
+}
+
+.map-triangle:hover, .map-triangle-on {
+  border-top: 16px solid #ff4499;
 }
 
 .map-triangle-off-season {
   border-top: 16px solid #6c7ae0;
 }
 
+.map-triangle-off-season:hover, .map-triangle-off-season-on {
+  border-top: 16px solid #8f96eb;
+}
+
 .map-triangle-vendors {
   border-top: 16px solid #00bda4;
+}
+
+.map-triangle-vendors:hover, .map-triangle-vendors-on {
+  border-top: 16px solid #28a745;
 }
 
 .marker-details {
