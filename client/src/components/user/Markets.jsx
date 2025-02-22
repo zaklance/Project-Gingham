@@ -549,7 +549,7 @@ function Markets() {
                 <div className='header'>
                     <div id="map-main">
                         <Map
-                            token={'eyJraWQiOiJKRjNNUjQyNFNBIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJZSjhXNlhRSEg3IiwiaWF0IjoxNzM5ODE0Mjc5LCJleHAiOjE3NDA0NzAzOTl9.T65ByLqJC84_dmGBuQW94XJEYyFVI3A1jUTIBaNd0krkTlCEzfHsTVFxaxOCT7KBnTK3v73aFoOqhpVu3Y65LQ'}
+                            token={mapToken}
                             initialRegion={{
                                 centerLatitude: 40.736358642578125,
                                 centerLongitude: -73.99076080322266,
@@ -563,14 +563,13 @@ function Markets() {
                             onUserLocationChange={event => {setUserCoordinates({ 'lat': event.coordinate.latitude, 'lng': event.coordinate.longitude }); setFilterLocation(true)}}
                         >
                             {marketCoordinates.map((market) => (
-                                <>
+                                <div key={`marker-${market.id}`}>
                                     {!markerViews[market.id] ? (
                                         <>
                                             {!determineSeason(market) ? (
                                                 <>
                                                     {showOffSeason && (
                                                         <Annotation
-                                                            key={market.id}
                                                             latitude={market.latitude}
                                                             longitude={market.longitude}
                                                             onSelect={() => handleMarkerClickOn(market.id)}
@@ -593,7 +592,6 @@ function Markets() {
                                                 <>
                                                     {showVendors && (
                                                         <Annotation
-                                                            key={market.id}
                                                             latitude={market.latitude}
                                                             longitude={market.longitude}
                                                             onSelect={() => handleMarkerClickOn(market.id)}
@@ -615,7 +613,6 @@ function Markets() {
                                                 <>
                                                     {showGingham && (
                                                         <Annotation
-                                                            key={market.id}
                                                             latitude={market.latitude}
                                                             longitude={market.longitude}
                                                             onSelect={() => handleMarkerClickOn(market.id)}
@@ -637,7 +634,6 @@ function Markets() {
                                         </>
                                     ) : (
                                         <Annotation
-                                            key={market.id}
                                             latitude={market.latitude}
                                             longitude={market.longitude}
                                             onSelect={() => handleMarkerClickOn(market.id)}
@@ -650,19 +646,19 @@ function Markets() {
                                                     {market.year_round ? (
                                                         <div className="marker-day">Open Year-Round</div>
                                                     ) : (
-                                                        <>
+                                                        <div>
                                                             {market.season_start ? (
                                                                 <div className="marker-day">{formatDate(market.season_start)} — {formatDate(market.season_end)}</div>
                                                             ) : (
                                                                 null
                                                             )}
-                                                        </>
+                                                        </div>
                                                     )}
                                                 </div>
                                             </div> 
                                         </Annotation>
                                     )}
-                                </>
+                                </div>
                             ))}
                         </Map>
                     </div>
@@ -695,7 +691,7 @@ function Markets() {
                     <table className='table-search margin-t-4'>
                         <tbody>
                             <tr>
-                                {/* <td className='cell-title btn-grey m-hidden'>Search:</td> */}
+                                <td className='cell-title btn-grey m-hidden'>Search:</td>
                                 <td className='cell-text'>
                                     <input
                                         id='search'

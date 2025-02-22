@@ -1833,9 +1833,6 @@ link {
   padding: 4px;
   border-radius: 8px;
   transform: translate(-42%, -50%)
-  /* margin-left:-100px; */
-  /* margin-top: -24px; */
-  /* bottom: 10px; */
 }
 
 .marker-name {
@@ -2078,7 +2075,12 @@ link {
   margin: 2px auto;
 }
 
-.table-search .cell-text {
+.table-search-vendor {
+  width: calc(100% + 4px);
+  margin: 2px -2px;
+}
+
+.table-search .cell-text, .table-search-vendor .cell-text {
   border-width: 4px;
 }
 
@@ -2205,7 +2207,9 @@ select:hover {
 
 .select-filter {
   border-radius: 12px;
-  height: 48px
+  height: 48px;
+  width: 124px;
+
 }
 
 .select-dropdown {
@@ -3345,8 +3349,6 @@ select:hover {
 
 
 
-
-
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 @media screen and (max-width: 600px) {
   .m-hidden {
@@ -3614,6 +3616,7 @@ select:hover {
 
 
 
+
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 @media screen and (max-width: 444px) {
   .popup-notif-on {
@@ -3636,5 +3639,16 @@ select:hover {
   
   .title-med, .font-gingham-large {
     font-size: 2.2em;
+  }
+}
+
+
+
+
+
+/* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
+@media screen and (max-width: 360px) {
+  .img-market-card {
+    max-width: 212px;
   }
 }
