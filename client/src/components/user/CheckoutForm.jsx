@@ -30,12 +30,10 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 return;
             }
         
-            // Fix: Parse sale_date as a local date, not UTC
             const [year, month, day] = item.sale_date.split("-").map(Number);
             const saleDate = new Date(year, month - 1, day);
         
             const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            console.log(`User Time Zone:`, userTimeZone);
     
             const parseTime = (timeString) => {
                 const [hours, minutes] = timeString.split(":").map(Number);
