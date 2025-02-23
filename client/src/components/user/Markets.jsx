@@ -31,6 +31,7 @@ function Markets() {
     const [showGingham, setShowGingham] = useState(true);
     const [showVendors, setShowVendors] = useState(true);
     const [showOffSeason, setShowOffSeason] = useState(true);
+    const [showFlagship, setShowFlagship] = useState(true);
     const [isHover, setIsHover] = useState({});
 
     const dropdownRef = useRef(null);
@@ -140,6 +141,16 @@ function Markets() {
         );
     };
 
+    const determineFlagship = (market) => {
+        return market.is_flagship === true
+    };
+
+    const isFlagship = (market) => {
+        return market.some(marketDay => 
+            marketDay.is_flagship === true
+        );
+    };
+
     useEffect(() => {
         if (userId) {
 
@@ -232,7 +243,8 @@ function Markets() {
                         season_start: market.season_start,
                         season_end: market.season_end,
                         year_round: market.year_round,
-                        market_days: market.market_days
+                        market_days: market.market_days,
+                        is_flagship: market.is_flagship,
                     }));
                 setMarketCoordinates(coordinates);
             })
@@ -566,7 +578,25 @@ function Markets() {
                                 <div key={`marker-${market.id}`}>
                                     {!markerViews[market.id] ? (
                                         <>
-                                            {!determineSeason(market) ? (
+                                            {determineFlagship(market) ? (
+                                                <Annotation
+                                                    latitude={market.latitude}
+                                                    longitude={market.longitude}
+                                                    onSelect={() => handleMarkerClickOn(market.id)}
+                                                    onDeselect={() => handleMarkerClickOff(market.id)}
+                                                >
+                                                    <div 
+                                                        onClick={() => handleMarkerClickOn(market.id)}
+                                                        onMouseEnter={() => handleMarkerHoverOn(market.id)}
+                                                        onMouseLeave={() => handleMarkerHoverOff(market.id)}
+                                                    >
+                                                        <div className={!isHover[market.id] ? "map-circle-flag" : "map-circle-flag-on"}></div>
+                                                        <div className={!isHover[market.id] ? "map-inside-circle-flag" : "map-inside-circle-flag-on"}></div>
+                                                        <div className={!isHover[market.id] ? "map-triangle-flag" : "map-triangle-flag-on"}></div>
+                                                    </div>
+                                                </Annotation>
+                                            ) : (!determineSeason(market)
+                                            ) ? (
                                                 <>
                                                     {showOffSeason && (
                                                         <Annotation
@@ -663,6 +693,16 @@ function Markets() {
                         </Map>
                     </div>
                     <div className='box-key m-flex-wrap width-98 margin-auto'>
+                        {isFlagship && (
+                            <div className='flex-start flex-center-align' onClick={() => setShowFlagship(!showFlagship)}>
+                                <div>
+                                    <div className={showFlagship ? "map-circle-flag" : "map-circle-flag-on"}></div>
+                                    <div className={showFlagship ? "map-inside-circle-flag" : "map-inside-circle-flag-on"}></div>
+                                    <div className={showFlagship ? "map-triangle-flag" : "map-triangle-flag-on"}></div>
+                                </div>
+                                <h5 className='font-quicksand text-caps text-500 margin-l-12'>Flagship<br/>market</h5>
+                            </div>
+                        )}
                         <div className='flex-start flex-center-align' onClick={() => setShowGingham(!showGingham)}>
                             <div>
                                 <div className={showGingham ? "map-circle" : "map-circle-on"}></div>

@@ -1603,6 +1603,7 @@ def all_markets():
             year_round=data.get('year_round'),
             season_start=season_start,
             season_end=season_end,
+            is_flagship=data.get('is_flagship'),
             is_visible=data.get('is_visible'),
             is_current=data.get('is_current')
         )
@@ -1658,6 +1659,13 @@ def market_by_id(id):
                     market.year_round = data['year_round'].lower() == 'true'
                 else:
                     return {'error': 'Invalid value for year_round. Must be a boolean or "true"/"false" string.'}, 400
+            if 'is_flagship' in data:
+                if isinstance(data['is_flagship'], bool):
+                    market.is_flagship = data['is_flagship']
+                elif isinstance(data['is_flagship'], str):
+                    market.is_flagship = data['is_flagship'].lower() == 'true'
+                else:
+                    return {'error': 'Invalid value for is_flagship. Must be a boolean or "true"/"false" string.'}, 400
             if 'is_visible' in data:
                 if isinstance(data['is_visible'], bool):
                     market.is_visible = data['is_visible']

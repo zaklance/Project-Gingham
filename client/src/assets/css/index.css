@@ -490,6 +490,12 @@ article {
   width: 50%;
 }
 
+.scale-98:hover {
+  display: inline-block;
+  scale: 98%;
+  transition: 0.4s;
+}
+
 .scale-102:hover {
   display: inline-block;
   scale: 102%;
@@ -1734,7 +1740,10 @@ link {
   border-radius: 16px;
 }
 
-.map-circle, .map-circle-on, .map-circle-off-season, .map-circle-off-season-on, .map-circle-vendors, .map-circle-vendors-on {
+.map-circle, .map-circle-on,
+.map-circle-off-season, .map-circle-off-season-on,
+.map-circle-vendors, .map-circle-vendors-on,
+.map-circle-flag, .map-circle-flag-on {
   shape-outside: circle();
   clip-path: circle();
   width: 36px;
@@ -1749,6 +1758,11 @@ link {
 
 .map-circle-vendors {
   background: #00bda4;
+}
+
+.map-circle-flag {
+  /* background: #ffcd00; */
+  background: #ffb600;
 }
 
 .map-circle:hover, .map-circle-on {
@@ -1766,7 +1780,16 @@ link {
   transition: background-color 0.4s ease, transform 0.4s ease;
 }
 
-.map-inside-circle, .map-inside-circle-on, .map-inside-circle-off-season, .map-inside-circle-off-season-on, .map-inside-circle-vendors, .map-inside-circle-vendors-on {
+.map-circle-flag:hover, .map-circle-flag-on {
+  /* background-color: #ffb600; */
+  background-color: #ffcd00;
+  transition: background-color 0.4s ease, transform 0.4s ease;
+}
+
+.map-inside-circle, .map-inside-circle-on,
+.map-inside-circle-off-season, .map-inside-circle-off-season-on,
+.map-inside-circle-vendors, .map-inside-circle-vendors-on,
+.map-inside-circle-flag, .map-inside-circle-flag-on {
   shape-outside: circle();
   clip-path: circle();
   width: 14px;
@@ -1785,12 +1808,22 @@ link {
   background-color: #93d500;
 }
 
-.map-inside-circle:hover, .map-inside-circle-on,.map-inside-circle-off-season:hover, .map-inside-circle-off-season-on, .map-inside-circle-vendors:hover, .map-inside-circle-vendors-on {
+.map-inside-circle-flag, .map-inside-circle-flag-on {
+  background-color: #f6e948;
+}
+
+.map-inside-circle:hover, .map-inside-circle-on,
+.map-inside-circle-off-season:hover, .map-inside-circle-off-season-on,
+.map-inside-circle-vendors:hover, .map-inside-circle-vendors-on,
+.map-inside-circle-flag:hover, .map-inside-circle-flag-on {
   transform: scale(1.6);
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-.map-triangle, .map-triangle-on, .map-triangle-off-season, .map-triangle-off-season-on, .map-triangle-vendors, .map-triangle-vendors-on {
+.map-triangle, .map-triangle-on,
+.map-triangle-off-season, .map-triangle-off-season-on,
+.map-triangle-vendors, .map-triangle-vendors-on,
+.map-triangle-flag, .map-triangle-flag-on {
   width: 20px;
   height: 20px;
   margin-top: 2px;
@@ -1801,24 +1834,34 @@ link {
   transition: border 0.4s ease, transform 0.4s ease;
 }
 
-.map-triangle:hover, .map-triangle-on {
-  border-top: 16px solid #ff4499;
-}
-
 .map-triangle-off-season {
   border-top: 16px solid #6c7ae0;
-}
-
-.map-triangle-off-season:hover, .map-triangle-off-season-on {
-  border-top: 16px solid #8f96eb;
 }
 
 .map-triangle-vendors {
   border-top: 16px solid #00bda4;
 }
 
+.map-triangle-flag {
+  /* border-top: 16px solid #ffcd00; */
+  border-top: 16px solid #ffb600;
+}
+
+.map-triangle:hover, .map-triangle-on {
+  border-top: 16px solid #ff4499;
+}
+
+.map-triangle-off-season:hover, .map-triangle-off-season-on {
+  border-top: 16px solid #8f96eb;
+}
+
 .map-triangle-vendors:hover, .map-triangle-vendors-on {
   border-top: 16px solid #28a745;
+}
+
+.map-triangle-flag:hover, .map-triangle-flag-on {
+  border-top: 16px solid #ffcd00;
+  /* border-top: 16px solid #ffb600; */
 }
 
 .marker-details {
@@ -2399,6 +2442,7 @@ select:hover {
   gap: 20px;
   /* Adjust the gap between cards */
   justify-content: center;
+  padding-left: 10px;
 }
 
 .market-cards-container>* {
@@ -2453,7 +2497,7 @@ select:hover {
 }
 
 .img-market-card {
-  width: 260px;
+  width: 252px;
   height: 174px;
   object-fit: cover;
   border-radius: 6px;
@@ -3639,6 +3683,10 @@ select:hover {
   
   .title-med, .font-gingham-large {
     font-size: 2.2em;
+  }
+  
+  .img-market-card {
+    width: 272px;
   }
 }
 

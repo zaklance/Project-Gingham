@@ -441,7 +441,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                             <li key={notification.id} className='li-notif'>
                                                 <div className='flex-start badge-container'>
                                                     <button className='btn btn-unreport btn-notif' onClick={() => handleNotificationDelete(notification.id)}>x</button>
-                                                    <NavLink className="link-plain scale-102" to={notification.link} onClick={() => handleUserNotificationIsRead(notification.id, 'link')}>
+                                                    <NavLink className="link-plain scale-98" to={notification.link} onClick={() => handleUserNotificationIsRead(notification.id, 'link')}>
                                                         {notification.message}
                                                     </NavLink>
                                                     {!notification.is_read && <button className='btn btn-unread' onClick={() => handleUserNotificationIsRead(notification.id)}>&emsp;</button>}
