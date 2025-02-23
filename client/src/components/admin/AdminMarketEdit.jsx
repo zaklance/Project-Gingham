@@ -692,6 +692,18 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 </>
                             )}
                             <div className='form-group'>
+                                <label title="true or false">Is Flagship:</label>
+                                <select
+                                    name="is_flagship"
+                                    value={tempMarketData ? tempMarketData.is_flagship : ''}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="">Select</option>
+                                    <option value={true}>true</option>
+                                    <option value={false}>false</option>
+                                </select>
+                            </div>
+                            <div className='form-group'>
                                 <label title="true or false">Is Visible:</label>
                                 <select
                                     name="is_visible"
@@ -827,6 +839,10 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                             </tr>
                                         </>
                                     )}
+                                    <tr>
+                                        <td className='cell-title' title="true or false">Is Flagship:</td>
+                                        <td className='cell-text'>{adminMarketData ? `${adminMarketData.is_flagship}` : ''}</td>
+                                    </tr>
                                     <tr>
                                         <td className='cell-title' title="true or false">Is Visible:</td>
                                         <td className='cell-text'>{adminMarketData ? `${adminMarketData.is_visible}` : ''}</td>

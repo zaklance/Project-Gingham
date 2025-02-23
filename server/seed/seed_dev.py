@@ -98,7 +98,8 @@ def run():
             coordinates={"lat": "40.782040858828", "lng": "-73.9759752811397"},
             schedule='Sunday (9 AM - 4 PM)',
             year_round=True,
-            is_current=True
+            is_current=True,
+            is_flagship=True
         ),
         Market(
             id=4,
@@ -296,7 +297,8 @@ def run():
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
             schedule='Monday - Saturday (11:30 AM - 5 PM)',
             year_round=True,
-            is_current=True
+            is_current=True,
+            is_flagship=True
         ),
         Market(
             id=17,
@@ -647,7 +649,8 @@ def run():
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
             schedule='Monday, Wednesday, Friday & Saturday (8 AM - 6 PM)',
             year_round=True,
-            is_current=True
+            is_current=True,
+            is_flagship=True
         ),
         Market(
             id=40,

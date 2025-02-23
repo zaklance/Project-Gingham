@@ -16,6 +16,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
         coordinates: { lat: '', lng: '' },
         schedule: '',
         year_round: '',
+        is_flagship: '',
         is_current: '',
         is_visible: '',
         season_start: '',
@@ -79,6 +80,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
             newMarket.year_round = newMarket.year_round === 'true' || newMarket.year_round === true;
             newMarket.is_current = newMarket.is_current === 'true' || newMarket.is_current === true;
             newMarket.is_visible = newMarket.is_visible === 'true' || newMarket.is_visible === true;
+            newMarket.is_flagship = newMarket.is_flagship === 'true' || newMarket.is_flagship === true;
     
             // Save market details first
             const response = await fetch(`/api/markets`, {
@@ -210,7 +212,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                             <input
                                 type="text"
                                 name="website"
-                                placeholder='Union Square Greenmarket'
+                                placeholder='https://www.unionsquare.market'
                                 value={newMarket ? newMarket.website : ''}
                                 onChange={handleInputMarketChange}
                             />
@@ -302,10 +304,10 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                             />
                         </div>
                         <div className='form-group'>
-                            <label title="true or false">Year Round:</label>
+                            <label title="true or false">Is Flagship:</label>
                             <select
-                                name="year_round"
-                                value={newMarket ? newMarket.year_round : ''}
+                                name="is_flagship"
+                                value={newMarket ? newMarket.is_flagship : ''}
                                 onChange={handleInputMarketChange}
                             >
                                 <option value="">Select</option>
@@ -330,6 +332,18 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                             <select
                                 name="is_visible"
                                 value={newMarket ? newMarket.is_visible : ''}
+                                onChange={handleInputMarketChange}
+                            >
+                                <option value="">Select</option>
+                                <option value={true}>Yes</option>
+                                <option value={false}>No</option>
+                            </select>
+                        </div>
+                        <div className='form-group'>
+                            <label title="true or false">Year Round:</label>
+                            <select
+                                name="year_round"
+                                value={newMarket ? newMarket.year_round : ''}
                                 onChange={handleInputMarketChange}
                             >
                                 <option value="">Select</option>
