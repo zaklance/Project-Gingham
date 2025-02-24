@@ -228,6 +228,10 @@ p, li, div, form, input, select, button, textarea, td {
   font-size: 1.2rem;
 }
 
+.text-size-088 {
+  font-size: 0.88rem;
+}
+
 .text-italic {
   font-style: italic;
 }
@@ -280,6 +284,10 @@ p, li, div, form, input, select, button, textarea, td {
 
 .text-line-1-4 {
   line-height: 1.4em;
+}
+
+.text-break-all {
+  word-break: break-all;
 }
 
 .first-letter::first-letter {
@@ -2543,6 +2551,10 @@ select:hover {
   width: 100%;
 }
 
+.img-blog-array {
+  width: 100%;
+}
+
 .icon-notif {
   background-image: url('../images/icons/icons8-notification.svg');
   background-repeat: no-repeat;
@@ -2682,6 +2694,24 @@ select:hover {
   background-position: right 56% top 46%;
   background-size: 1.8rem auto;
   background-blend-mode: darken;
+}
+
+.icon-copy, .icon-copy:hover {
+  background-image: url('../images/icons/copy-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.4rem auto;
+  height: 28px;
+  width: 28px;
+}
+
+.icon-copy-success, .icon-copy-success:hover {
+  background-image: url('../images/icons/copy-success-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.4rem auto;
+  height: 28px;
+  width: 28px;
 }
 
 .icon-arrow-l {
@@ -3080,6 +3110,7 @@ select:hover {
 
 .details-markets summary {
   font-size: 1em;
+  border-radius: 12px;
 }
 
 .faqs p, .faqs ul li {
@@ -3103,10 +3134,6 @@ select:hover {
   margin: 0 2px;
 }
 
-.details-markets summary {
-  border-radius: 12px;
-}
-
 .details-markets[open] summary {
   border-radius: 12px 12px 0 0;
 }
@@ -3114,6 +3141,30 @@ select:hover {
 .details-markets>div {
   border-radius: 0 0 12px 12px;
   border-top: none;
+}
+
+.details-images>details summary {
+  background-color: #fff;
+  border-left: solid 6px #eee;
+  border-right: solid 6px #eee;
+  border-bottom: solid 6px #eee;
+}
+
+.details-images>details[open] summary {
+  border-bottom: solid 0px #eee;
+}
+
+.details-images>summary {
+  background-color: #eee;
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #3b4752;
+  padding: 8px
+}
+
+.details-images>div {
+  padding: 8px 8px 16px 28px;
+  border: solid 6px #eee;
 }
 
 .blog-favs summary {

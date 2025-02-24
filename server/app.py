@@ -47,6 +47,7 @@ STRIPE_WEBHOOK_SECRET = "whsec_0fd1e4d74c18b3685bd164fe766c292f8ec7a73a887dd83f5
 USER_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/user-images')
 VENDOR_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/vendor-images')
 MARKET_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/market-images')
+BLOG_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/blog-images')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'svg', 'heic'}
 MAX_SIZE = 1.5 * 1024 * 1024
 MAX_RES = (1800, 1800)
@@ -308,6 +309,73 @@ def upload_file():
             return {'error': f'Failed to upload image: {str(e)}'}, 500
 
     return {'error': 'File type not allowed'}, 400
+
+@app.route('/api/upload-files', methods=['POST'])
+def upload_files():
+    if 'files' not in request.files:
+        return {'error': 'No files part in the request'}, 400
+
+    files = request.files.getlist('files')
+
+    if not files or all(file.filename == '' for file in files):
+        return {'error': 'No files selected'}, 400
+
+    formatted_date = datetime.now().strftime("%Y-%m%d")
+    upload_folder = os.path.join(os.getcwd(), f'../client/public/blog-images/{formatted_date}')
+
+    if not os.path.exists(upload_folder):
+        os.makedirs(upload_folder)
+
+    uploaded_files = []
+
+    for file in files:
+        if file and allowed_file(file.filename):
+            original_filename = secure_filename(file.filename)
+            file_path = os.path.join(upload_folder, original_filename)
+
+            if os.path.exists(file_path):
+                base, ext = os.path.splitext(original_filename)
+                counter = 1
+                while os.path.exists(file_path):
+                    file_path = os.path.join(upload_folder, f"{base}_{counter}{ext}")
+                    counter += 1
+
+            try:
+                if original_filename.rsplit('.', 1)[1].lower() == 'svg':
+                    file.save(file_path)
+                else:
+                    image = Image.open(file)
+                    image = resize_image(image)
+                    image.save(file_path)
+
+                uploaded_files.append(os.path.basename(file_path))
+
+            except Exception as e:
+                return {'error': f'Failed to upload image: {str(e)}'}, 500
+
+    return {'message': 'Files successfully uploaded', 'filenames': uploaded_files}, 201
+
+@app.route('/api/blog-images', methods=['GET'])
+def get_blog_images():
+    blog_folder = os.path.join(os.getcwd(), '../client/public/blog-images')
+
+    if not os.path.exists(blog_folder):
+        return {'folders': {}}
+
+    folders = [f for f in os.listdir(blog_folder) if os.path.isdir(os.path.join(blog_folder, f))]
+
+    folders.sort(reverse=True, key=lambda x: int(x.replace("-", "")) if x.replace("-", "").isdigit() else 0)
+
+    images_by_folder = {}
+
+    for folder in folders:
+        folder_path = os.path.join(blog_folder, folder)
+        images = [f'/blog-images/{folder}/{img}' for img in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, img))]
+        
+        if images:
+            images_by_folder[folder] = images
+
+    return {'folders': images_by_folder}
 
 @app.route('/api/delete-image', methods=['DELETE'])
 @jwt_required()
