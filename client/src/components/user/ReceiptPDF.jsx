@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
 
 const ReceiptDocument = ({ receipt, transaction }) => {
     const basketItems = Array.isArray(receipt?.baskets) ? receipt.baskets : [];
+    console.log(basketItems)
 
     return (
         <Document>
@@ -52,7 +53,7 @@ const ReceiptDocument = ({ receipt, transaction }) => {
                         <View style={styles.row}>
                             <Text>Basket ID: {item.id}</Text>
                             <Text>{item.vendor_name}</Text>
-                            <Text>{item.market_location}</Text>
+                            <Text>{item.market_name}</Text>
                         </View>
                         <View style={styles.rowItem}>
                             <Text>Price: ${item.price.toFixed(2)} &emsp; Fee: $ {item.fee_user.toFixed(2)}</Text>
@@ -176,13 +177,23 @@ const Receipt = ({ receiptId, isPaymentCompleted, page }) => {
     return (
         <>
             {page === 'checkout' && (
-                <PDFDownloadLink 
-                    document={<ReceiptDocument receipt={receipt} transaction={transaction} />} 
-                    fileName={`gingham-receipt_${fileTimeConverter(receipt.created_at)}.pdf`}
-                    className="btn btn-checkout"
-                >
-                    {({ loading }) => (isPreparing || loading ? "Preparing download..." : "Download Receipt")}
-                </PDFDownloadLink>
+                canDownload ? (
+                    <PDFDownloadLink 
+                        document={<ReceiptDocument receipt={receipt} transaction={transaction} />} 
+                        fileName={`gingham-receipt_${fileTimeConverter(receipt.created_at)}.pdf`}
+                        className="btn btn-checkout"
+                    >
+                        {({ loading }) => (isPreparing || loading ? "Preparing download..." : "Download Receipt")}
+                    </PDFDownloadLink>
+                ) : (
+                    <PulseLoader
+                        className='margin-t-12'
+                        color={'#ff806b'}
+                        size={10}
+                        aria-label="Loading Spinner"
+                        data-testid="loader"
+                    />
+                )
             )}
             {page === 'profile' ? (
                 canDownload ? (

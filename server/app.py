@@ -4193,7 +4193,6 @@ def blog(id):
             db.session.rollback()
             return {'error': f'Failed to delete Blog: {str(e)}'}, 500
 
-
 @app.route('/api/receipts', methods=['GET', 'POST'])
 def get_user_receipts():
     if request.method == 'GET':

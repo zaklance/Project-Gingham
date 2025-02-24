@@ -19,6 +19,8 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const token = localStorage.getItem('user_jwt-token');
 
+    console.log(cartItems)
+
     const generateICSFile = (cartItems) => {
         // console.log("Generating ICS file for cart items:", cartItems);
     
@@ -157,7 +159,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 }
 
 
-                console.log("Creating receipt...");
+                // console.log("Creating receipt...");
                 const receiptResponse = await fetch('/api/receipts', {
                     method: 'POST',
                     headers: {
@@ -173,8 +175,8 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                             price: item.price,
                             quantity: item.quantity,
                             market_id: item.market_id,
-                            market_day_id: item.market_day_id,
-                            market_location: item.location,
+                            market_name: item.market_name,
+                            location: item.location,
                             vendor_id: item.vendor_id,
                             vendor_name: item.vendor_name,
                             pickup_start: item.pickup_start,

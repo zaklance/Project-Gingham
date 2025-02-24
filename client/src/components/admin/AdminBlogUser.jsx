@@ -11,6 +11,10 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
     const [editingBlogId, setEditingBlogId] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);
 
+    const textareasRefAdd = useRef([]);
+    const textareasRefEdit = useRef([]);
+    const adminId = parseInt(globalThis.localStorage.getItem('admin_user_id'));
+
     const defaultBlog = `
         <div class="column-3">
             <article class="first-letter">
@@ -43,10 +47,6 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
         </div>
     `
     const [newBlog, setNewBlog] = useState(defaultBlog);
-
-    const textareasRefAdd = useRef([]);
-    const textareasRefEdit = useRef([]);
-    const adminId = parseInt(globalThis.localStorage.getItem('admin_user_id'));
 
     const recipe = `
         <div class="column-3">
@@ -260,7 +260,7 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
                             <select
                                 name="blog_type"
                                 value={newBlogType}
-                                onChange={(e) => {setNewBlogType(e.target.value); if (e.target.value === 'Recipe') {setNewBlog(recipe)} else {setNewBlog(defaultBlog)}}}
+                                onChange={(e) => { setNewBlogType(e.target.value); if (e.target.value === 'Recipe') { setNewBlog(recipe); setNewTitle("ZL’s Patented Falafel Burger");} else {setNewBlog(defaultBlog); setNewTitle('Super Witty Title')}}}
                             >
                                 <option value='General'>General</option>
                                 <option value='Recipe'>Recipe</option>

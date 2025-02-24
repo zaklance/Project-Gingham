@@ -197,9 +197,9 @@ class Market(db.Model, SerializerMixin):
     year_round = db.Column(db.Boolean, nullable=True)
     season_start = db.Column(db.Date, nullable=True)
     season_end = db.Column(db.Date, nullable=True)
-    is_visible = db.Column(db.Boolean, nullable=False, default=True)
-    is_current = db.Column(db.Boolean, nullable=False, default=True)
     is_flagship = db.Column(db.Boolean, nullable=False, default=False)
+    is_current = db.Column(db.Boolean, nullable=False, default=True)
+    is_visible = db.Column(db.Boolean, nullable=False, default=True)
 
     # Relationships
     reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic', cascade="all, delete")
@@ -843,23 +843,6 @@ class Receipt(db.Model, SerializerMixin):
     user = db.relationship('User', back_populates='receipts')
 
     serialize_rules = ('-user.receipts',)
-
-    # def to_dict(self):
-    #     return {
-    #         'id': self.id,
-    #         'user_id': self.user_id,
-    #         'baskets': self.baskets,
-    #         'created_at': self.created_at.isoformat() if self.created_at else None,
-    #         'user': {
-    #             'first_name': self.user.first_name,
-    #             'last_name': self.user.last_name,
-    #             'address_1': self.user.address_1,
-    #             'address_2': self.user.address_2,
-    #             'city': self.user.city,
-    #             'state': self.user.state,
-    #             'zipcode': self.user.zipcode
-    #         }
-    #     }
 
     def __repr__(self) -> str:
         return f"<Receipt ID: {self.id}, User ID: {self.user_id}, Baskets: {self.baskets}, Created At: {self.created_at}>"

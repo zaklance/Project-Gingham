@@ -881,7 +881,8 @@ ul {
 
 .box-blog {
   background-color: #fbf7eb;
-  padding: 16px
+  padding: 16px;
+  height: min-content;
 }
 
 .box-key {
