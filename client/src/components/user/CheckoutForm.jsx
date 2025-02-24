@@ -19,8 +19,6 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const token = localStorage.getItem('user_jwt-token');
 
-    console.log(cartItems)
-
     const generateICSFile = (cartItems) => {
         // console.log("Generating ICS file for cart items:", cartItems);
     
@@ -64,7 +62,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
             const googleMapsLink = `Open in Google Maps:\\nhttps://maps.google.com/?q=${item.coordinates.lat}+${item.coordinates.lng}`;
     
             icsContent += `BEGIN:VEVENT\n`;
-            icsContent += `UID:${item.id}@gingham.com\n`;
+            icsContent += `UID:${item.id}@gingham-nyc\n`;
             icsContent += `SUMMARY:Pick up your order from ${item.vendor_name}\n`;
             icsContent += `DESCRIPTION:Pick up your order from ${item.vendor_name} at ${item.market_name} at ${item.location} \\n\\n${appleMapsLink}\\n\\n${googleMapsLink}\n`;
             icsContent += `LOCATION:https://maps.apple.com/?q=${item.coordinates.lat}+${item.coordinates.lng}\n`;
