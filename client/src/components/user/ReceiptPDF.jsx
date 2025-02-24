@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
 
 const ReceiptDocument = ({ receipt, transaction }) => {
     const basketItems = Array.isArray(receipt?.baskets) ? receipt.baskets : [];
-    console.log(basketItems)
 
     return (
         <Document>
