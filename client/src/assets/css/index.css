@@ -299,7 +299,7 @@ p, li, div, form, input, select, button, textarea, td {
 
 article {
   margin-bottom: 1em;
-  widows:2;
+  widows: 2;
 }
 
 .kern-05 {
@@ -853,6 +853,7 @@ ul {
   float: none;
   background-color: #d8f4fe;
   padding: 24px;
+  border-radius: 12px;
 }
 
 .box-blue {
@@ -890,6 +891,7 @@ ul {
 .box-blog {
   background-color: #fbf7eb;
   padding: 16px;
+  border-radius: 12px;
   height: min-content;
 }
 
@@ -1558,8 +1560,13 @@ div:has(.btn-unread)>.btn-notif {
 }
 
 .tabs {
-  /* display: flex; */
-  margin-bottom: 20px;
+  display: flex;
+  gap: 24px;
+  /* margin-bottom: 20px; */
+}
+
+.tabs>* {
+  margin-top: 0px;
 }
 
 .active-tab {
@@ -2506,7 +2513,7 @@ select:hover {
 }
 
 .img-market-card {
-  width: 252px;
+  width: 260px;
   height: 174px;
   object-fit: cover;
   border-radius: 6px;
@@ -2703,6 +2710,7 @@ select:hover {
   background-size: 1.4rem auto;
   height: 28px;
   width: 28px;
+  transition: opacity .4s ease;
 }
 
 .icon-copy-success, .icon-copy-success:hover {
@@ -2712,6 +2720,7 @@ select:hover {
   background-size: 1.4rem auto;
   height: 28px;
   width: 28px;
+  transition: opacity .4s ease;
 }
 
 .icon-arrow-l {

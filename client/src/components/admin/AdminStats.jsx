@@ -472,7 +472,7 @@ function AdminStats() {
                     </div>
                     <div className='box-bounding'>
                         <div className='flex-space-between flex-bottom-align'>
-                            <h2 className='margin-t-16'>Basket Sales</h2>
+                            <h2>Basket Sales</h2>
                             <select className='' value={selectedRangeGraph} onChange={handleDateChangeGraph}>
                                 {/* <option value="">Time Frame</option> */}
                                 {Object.entries(dateRange).map(([label, value]) => (

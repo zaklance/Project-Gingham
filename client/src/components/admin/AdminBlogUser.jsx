@@ -41,7 +41,7 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
                 a more sustainable future—one basket at a time!
             </article>
             <article>
-                —The Gingham Team
+                <span class='font-gingham text-size-1'>—The Gin<span class="kern-1-5">g</span><span class="kern-05">h</span>am Team</span>
             </article>
             <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
         </div>
@@ -78,7 +78,7 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
                 Enjoy this creamy, cozy soup!
             </article>
             <article>
-                —The Gingham Team
+                <span class='font-gingham text-size-1'>—The Gin<span class="kern-1-5">g</span><span class="kern-05">h</span>am Team</span>
             </article>
             <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
         </div>

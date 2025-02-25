@@ -48,7 +48,19 @@ function VendorSales() {
         }
     
         return dates;
-    }    
+    }  
+
+    useEffect(() => {
+        const anchor = window.location.hash.slice(1);
+        setTimeout(() => {
+            if (anchor) {
+                const anchorEl = document.getElementById(anchor);
+                if (anchorEl) {
+                    anchorEl.scrollIntoView();
+                }
+            }
+        }, 500);
+    }, []);  
 
     const fetchVendorId = async () => {
         if (!vendorUserId) {
@@ -430,7 +442,7 @@ function VendorSales() {
                 </div>
             </div>
             {baskets && !loading && (
-                <div className='box-bounding box-scroll'>
+                <div id="statements" className='box-bounding box-scroll'>
                     <h3 className='margin-b-16'>Monthly Statements</h3>
                     {Object.entries(
                         Object.keys(monthlyBaskets)
