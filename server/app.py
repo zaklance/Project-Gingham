@@ -3222,11 +3222,10 @@ def get_config():
         return jsonify({'error': 'Stripe publishable key not configured'}), 500
     return jsonify({'publishableKey': publishable_key}), 200
 
-def get_vendor_stripe_account(vendor_id):
-    vendor = Vendor.query.get(vendor_id)
-    if vendor and vendor.stripe_account_id:
-        return vendor.stripe_account_id
-    return None
+def get_vendor_stripe_accounts(vendor_ids):
+    vendors = Vendor.query.filter(Vendor.id.in_(vendor_ids)).all()
+    vendor_accounts = {vendor.id: vendor.stripe_account_id for vendor in vendors if vendor.stripe_account_id}
+    return vendor_accounts  # Returns a dictionary {vendor_id: stripe_account_id}
 
 @app.route('/api/create-payment-intent', methods=['POST'])
 def create_payment_intent():
@@ -3236,37 +3235,113 @@ def create_payment_intent():
         if not data or 'baskets' not in data:
             return jsonify({'error': {'message': 'Missing baskets data.'}}), 400
 
-        # Calculate total amounts
         total_price = sum(basket['price'] for basket in data['baskets'])
         total_fee_vendor = sum(basket['fee_vendor'] for basket in data['baskets'])
-        total_fee_user = sum(basket['fee_user'] for basket in data['baskets'])
+        total_fee_user = sum(basket['fee_user'] for basket in data['baskets']) 
 
-        vendor_id = data['baskets'][0]['vendor_id']
-        vendor_account_id = get_vendor_stripe_account(vendor_id)
-
-        if not vendor_account_id:
-            return jsonify({'error': {'message': 'Vendor Stripe account not found. Please update in admin panel.'}}), 400
-
-        total_application_fee = total_fee_vendor + total_fee_user
+        transfer_group = f"group_pi_{int(datetime.now().timestamp())}"
 
         payment_intent = stripe.PaymentIntent.create(
-            currency='usd',
             amount=int((total_price + total_fee_user) * 100),
+            currency="usd",
             automatic_payment_methods={'enabled': True},
-            transfer_data={"destination": vendor_account_id},
-            application_fee_amount=int(total_application_fee * 100),  # Platform fee
+            transfer_group=transfer_group
         )
 
-        # Return the clientSecret
-        return jsonify({'clientSecret': payment_intent['client_secret']}), 200
+        return jsonify({
+            'clientSecret': payment_intent['client_secret'],
+            'transfer_group': transfer_group
+        }), 200
 
     except stripe.error.StripeError as e:
-        # Stripe-specific error handling
         return jsonify({'error': {'message': str(e.user_message)}}), 400
 
     except Exception as e:
-        # General error handling
-        return jsonify({'error': {'message': 'An unexpected error occurred.'}}), 500
+        return jsonify({'error': {'message': 'An unexpected error occurred.', 'details': str(e)}}), 500
+
+@app.route('/api/process-transfers', methods=['POST'])
+def process_transfers():
+    try:
+        data = request.get_json()
+        print("🔍 Received data for transfer processing:", data)  # ✅ Debugging
+
+        if not data or 'payment_intent_id' not in data or 'baskets' not in data:
+            return jsonify({'error': {'message': 'Missing required data.'}}), 400
+
+        payment_intent_id = data['payment_intent_id']
+        print(f"📌 Processing transfers for PaymentIntent: {payment_intent_id}")
+
+        # ✅ Retrieve PaymentIntent status
+        payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+        print(f"🔎 PaymentIntent Status: {payment_intent['status']}")  # ✅ Debugging
+
+        if payment_intent['status'] != 'succeeded':
+            return jsonify({
+                'error': {
+                    'message': f"Payment not completed yet. Current status: {payment_intent['status']}",
+                    'payment_intent_status': payment_intent['status']
+                }
+            }), 400
+
+        # ✅ Fetch Vendor Stripe Accounts
+        vendor_ids = [basket['vendor_id'] for basket in data['baskets']]
+        vendor_accounts = get_vendor_stripe_accounts(vendor_ids)
+        print(f"✅ Vendor accounts retrieved: {vendor_accounts}")
+
+        transfer_data = []
+        for basket in data['baskets']:
+            vendor_id = basket['vendor_id']
+            stripe_account_id = vendor_accounts.get(vendor_id)
+
+            if not stripe_account_id:
+                print(f"❌ Vendor {vendor_id} has no Stripe account!")
+                continue  # Skip vendors without an account
+
+            transfer_amount = int((basket['price'] - basket['fee_vendor']) * 100)
+            print(f"💰 Creating transfer for vendor {vendor_id} (Stripe ID: {stripe_account_id}): {transfer_amount} cents")
+
+            try:
+                transfer = stripe.Transfer.create(
+                    amount=transfer_amount,
+                    currency="usd",
+                    destination=stripe_account_id,
+                    transfer_group=f"group_pi_{payment_intent_id}"
+                )
+
+                print(f"🔍 Stripe Transfer Response: {transfer}")  # ✅ Log entire transfer response
+
+                transfer_data.append({
+                    "vendor_id": vendor_id,
+                    "stripe_account_id": stripe_account_id,
+                    "transfer_id": transfer.id,
+                    "amount": transfer.amount,
+                    "destination": stripe_account_id,
+                    "payment_intent_id": payment_intent_id,
+                    "transfer_group": f"group_pi_{payment_intent_id}",
+                    "platform_fee": int(basket['fee_vendor'] * 100),
+                })
+
+                print(f"✅ Transfer successful for vendor {vendor_id} (Stripe ID: {stripe_account_id})")
+
+            except stripe.error.StripeError as e:
+                print(f"❌ Transfer failed for vendor {vendor_id} (Stripe ID: {stripe_account_id}): {e}")
+                print(f"🔍 Stripe API Response: {e.json_body}")  # ✅ Prints full Stripe response
+                return jsonify({'error': {'message': f"Transfer failed for vendor {vendor_id}", 'details': e.json_body}}), 400
+
+        print("🚀 Final Transfer Data:", transfer_data)
+
+        return jsonify({
+            'message': 'Transfers processed successfully',
+            'transfer_data': transfer_data
+        }), 200
+
+    except stripe.error.StripeError as e:
+        print(f"❌ Stripe API Error: {str(e)}")
+        return jsonify({'error': {'message': 'Stripe API Error', 'details': str(e)}}), 400
+
+    except Exception as e:
+        print(f"❌ Unexpected error in /api/process-transfers: {str(e)}")  # ✅ Logs full error
+        return jsonify({'error': {'message': 'An unexpected error occurred.', 'details': str(e)}}), 500
     
 @app.route('/api/stripe-webhook', methods=['POST'])
 def stripe_webhook():
@@ -3335,8 +3410,13 @@ def stripe_webhook():
         # print("\nApplication Fee Created:")
         # print(json.dumps(application_fee, indent=2))
         return jsonify({'message': 'Application fee created'}), 200
-
-    #Catch all unhandled events (returns 200 to prevent Stripe retries)
+    
+    elif event["type"] == "balance.available":
+        balance_data = event["data"]["object"]
+        available_funds = balance_data["available"]
+        print(f"Available Balance Updated: {available_funds}")
+        return jsonify({'message': 'Balance Available'})
+        
     else:
         print("Unhandled event type:", event_type)
         return jsonify({'message': f'Unhandled event {event_type}'}), 200 
@@ -3718,7 +3798,6 @@ def notify_me_for_more_baskets():
                 vendor_id=vendor.id,
                 vendor_user_id=vendor_user.id,
                 market_id=data.get('market_id'),
-                created_at=datetime.utcnow(),
                 is_read=False
             )
             notifications.append(new_notification)
