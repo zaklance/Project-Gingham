@@ -5,7 +5,6 @@ import { formatDate } from '../../utils/helpers';
 import { toast } from 'react-toastify';
 
 function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
-    const [marketDayDetails, setMarketDayDetails] = useState([])
     const [marketDays, setMarketDays] = useState([])
     const [selectedDay, setSelectedDay] = useState(null);
     const [query, setQuery] = useState("");
@@ -19,7 +18,6 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const [editDayMode, setEditDayMode] = useState(false);
     const [adminMarketData, setAdminMarketData] = useState(null);
     const [tempMarketData, setTempMarketData] = useState(null);
-    const [tempMarketDayData, setTempMarketDayData] = useState(null);
     const [image, setImage] = useState(null)
     const [showDropdown, setShowDropdown] = useState(false);
     const [status, setStatus] = useState('initial')
@@ -390,7 +388,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                         {
                                             (query || locationQuery[0] || locationQuery[1] || isCurrent !== "" || isVisible !== "") &&
                                             filteredMarketsDropdown.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => { setQuery(item.name); setCityQuery(item.city); setStateQuery(item.state); setShowDropdown(false);}}>
-                                                {item.name}
+                                                {item.name} – {item.city}, {item.state}
                                             </div>)
                                         }
                                     </div>
@@ -402,6 +400,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     <select
                                         key={stateQuery}
                                         className='select-state'
+                                        style={{borderRadius: '8px'}}
                                         name="state"
                                         value={stateQuery || ''}
                                         onChange={(e) => setStateQuery(e.target.value)}

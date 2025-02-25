@@ -127,7 +127,10 @@ const AdminBlog = () => {
                         </Link>
                     </div>
                 </div>
-                <div className='flex-start flex-gap-12 flex-center-align'>
+                {activeTab === 'user' && <AdminBlogUser blogs={blogs} setBlogs={setBlogs} activeTabMode={activeTabMode} />}
+                {activeTab === 'vendor' && <AdminBlogVendor blogs={blogs} setBlogs={setBlogs} activeTabMode={activeTabMode} />}
+                {activeTab === 'admin' && <AdminBlogAdmin blogs={blogs} setBlogs={setBlogs} activeTabMode={activeTabMode} />}
+                <div className='flex-start flex-gap-12 flex-center-align margin-t-32'>
                     <h2>Image Uploads:</h2>
                     <div>
                         <div>
@@ -170,10 +173,13 @@ const AdminBlog = () => {
                                                 <img src={img} alt={`Uploaded ${index}`} className='img-blog' />
                                                 <div className='flex-space-between'>
                                                     <p className='text-break-all text-size-088'>
-                                                        <button className={copied[index] ? "btn icon-copy-success" : "btn icon-copy"} 
-                                                            onClick={() => handleCopy(img, index)}>&emsp;
-                                                        </button> 
-                                                        https://www.gingham.nyc/public{img}
+                                                        <button 
+                                                            className={copied[index] ? "btn icon-copy-success" : "btn icon-copy"} 
+                                                            onClick={() => handleCopy(img, index)}
+                                                            title="copy"
+                                                        >
+                                                            &emsp;
+                                                        </button> <span className='text-500'>src=</span>{img}
                                                     </p>
                                                 </div>
                                             </div>
@@ -184,9 +190,6 @@ const AdminBlog = () => {
                         </details>
                     </div>
                 )}
-                {activeTab === 'user' && <AdminBlogUser blogs={blogs} setBlogs={setBlogs} activeTabMode={activeTabMode} />}
-                {activeTab === 'vendor' && <AdminBlogVendor blogs={blogs} setBlogs={setBlogs} activeTabMode={activeTabMode} />}
-                {activeTab === 'admin' && <AdminBlogAdmin blogs={blogs} setBlogs={setBlogs} activeTabMode={activeTabMode} />}
             </div>
         </>
     );

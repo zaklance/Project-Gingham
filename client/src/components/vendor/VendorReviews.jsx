@@ -165,15 +165,12 @@ function VendorReviews() {
 
     return (
         <>
-            <div>
+            <div className='box-bounding'>
                 <h2>Reviews</h2>
                 <div className='box-scroll'>
                     {reviews.length > 0 ? (
                         reviews
-                            .sort((a, b) => {
-                                // Default to sorting by newest to oldest
-                                new Date(b.post_date) - new Date(a.post_date);
-                            })
+                            .sort((a, b) => new Date(b.post_date) - new Date(a.post_date))
                             .map((review, index) => (
                                 <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                     <div>
