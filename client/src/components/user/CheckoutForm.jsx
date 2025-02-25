@@ -101,14 +101,14 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
         
         const { error, paymentIntent } = await stripe.confirmPayment({
             elements,
-            confirmParams: { return_url: window.location.href, },
+            confirmParams: { return_url: window.location.href },
             redirect: "if_required",
         });
     
         if (error?.type === "card_error" || error?.type === "validation_error") {
             setIsProcessing(false);
         } else if (paymentIntent?.status === "succeeded") {
-            console.log("Payment successful! Marking items as sold...");
+            console.log("✅ Payment successful! Marking items as sold...");
     
             try {
                 await Promise.all(cartItems.map(async (cartItem) => {
@@ -123,12 +123,36 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                     }
                 }));
     
-                console.log("Items marked as sold!");
-
-                // Generate QR codes
-                if (cartItems.length > 0) {
-                    console.log("Generating QR codes...");
+                console.log("✅ Items marked as sold!");
     
+                // ✅ Call `/api/process-transfers` to distribute funds to vendors
+                console.log("🔄 Processing vendor payments...");
+                const transferResponse = await fetch('/api/process-transfers', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        payment_intent_id: paymentIntent.id,
+                        baskets: cartItems.map(item => ({
+                            id: item.id,
+                            price: item.price,
+                            vendor_id: item.vendor_id,
+                            fee_vendor: item.fee_vendor
+                        }))
+                    }),
+                });
+    
+                if (!transferResponse.ok) {
+                    throw new Error(`Failed to process transfers: ${transferResponse.statusText}`);
+                }
+    
+                console.log("✅ Vendor payments processed successfully!");
+    
+                // ✅ Generate QR codes
+                if (cartItems.length > 0) {
+                    console.log("🔄 Generating QR codes...");
                     const qrPromises = cartItems.map(async (cartItem) => {
                         const hash = objectHash(`${cartItem.vendor_name} ${cartItem.location} ${cartItem.id} ${userId}`);
                         const response = await fetch('/api/qr-codes', {
@@ -152,11 +176,11 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                     });
     
                     await Promise.all(qrPromises);
-                    console.log("All QR codes created successfully!");
+                    console.log("✅ All QR codes created successfully!");
                 }
-
-
-                // console.log("Creating receipt...");
+    
+                // ✅ Create receipt
+                console.log("🔄 Creating receipt...");
                 const receiptResponse = await fetch('/api/receipts', {
                     method: 'POST',
                     headers: {
@@ -185,20 +209,15 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 });
     
                 if (!receiptResponse.ok) {
-                    setIsProcessing(false)
-                    setCartItems([]);
-                    setAmountInCart(0);
-                    toast.error(`Failed to create receipt: ${receiptResponse.statusText}`, { autoClose: 6000 });
-
                     throw new Error(`Failed to create receipt: ${receiptResponse.statusText}`);
                 }
     
                 const receiptData = await receiptResponse.json();
-                console.log("Receipt created successfully!", receiptData);
+                console.log("✅ Receipt created successfully!", receiptData);
                 
                 setReceiptId(receiptData.id);
     
-                // Clear cart
+                // ✅ Clear cart
                 localStorage.setItem("cartItems", JSON.stringify([]));
                 localStorage.setItem("amountInCart", JSON.stringify(0));
                 setCartItems([]);
@@ -206,11 +225,13 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 toast.success('Payment successful!', { autoClose: 5000 });
                 setPaymentSuccess(true);
             } catch (error) {
-                console.error("Error processing post-payment actions:", error);
+                console.error("❌ Error processing post-payment actions:", error);
+                toast.error(`An error occurred: ${error.message}`, { autoClose: 6000 });
+            } finally {
+                setIsProcessing(false);
             }
         } else {
-            console.log(error)
-            // toast.error(`An unexpected error occurred: ${error.message}`, { autoClose: 6000 });
+            console.error(error);
             setIsProcessing(false);
         }
     };
