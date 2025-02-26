@@ -4,6 +4,7 @@ import { formatDate } from '../../utils/helpers';
 import { weekDay } from '../../utils/common';
 import { Annotation, ColorScheme, FeatureVisibility, Map, Marker } from 'mapkit-react';
 import MarketCard from './MarketCard';
+import MapAnnotation from './MapAnnotation';
 
 function Markets() {
     const [user, setUser] = useState({});
@@ -32,7 +33,6 @@ function Markets() {
     const [showVendors, setShowVendors] = useState(true);
     const [showOffSeason, setShowOffSeason] = useState(true);
     const [showFlagship, setShowFlagship] = useState(true);
-    const [isHover, setIsHover] = useState({});
 
     const dropdownRef = useRef(null);
     const dropdownAddressRef = useRef(null);
@@ -106,20 +106,6 @@ function Markets() {
             [id]: false,
         }));
         // handleMarkerHoverOff(id)
-    };
-    
-    const handleMarkerHoverOn = (id) => {
-        setIsHover((prev) => ({
-            ...prev,
-            [id]: true,
-        }));
-    };
-
-    const handleMarkerHoverOff = (id) => {
-        setIsHover((prev) => ({
-            ...prev,
-            [id]: false,
-        }));
     };
 
     const determineSeason = (market) => {
@@ -575,120 +561,21 @@ function Markets() {
                             onUserLocationChange={event => {setUserCoordinates({ 'lat': event.coordinate.latitude, 'lng': event.coordinate.longitude }); setFilterLocation(true)}}
                         >
                             {marketCoordinates.map((market) => (
-                                <div key={`marker-${market.id}`}>
-                                    {!markerViews[market.id] ? (
+                                <>
                                         <>
                                             {determineFlagship(market) ? (
-                                                <Annotation
-                                                    latitude={market.latitude}
-                                                    longitude={market.longitude}
-                                                    onSelect={() => handleMarkerClickOn(market.id)}
-                                                    onDeselect={() => handleMarkerClickOff(market.id)}
-                                                >
-                                                    <div 
-                                                        onClick={() => handleMarkerClickOn(market.id)}
-                                                        onMouseEnter={() => handleMarkerHoverOn(market.id)}
-                                                        onMouseLeave={() => handleMarkerHoverOff(market.id)}
-                                                    >
-                                                        <div className={!isHover[market.id] ? "map-circle-flag" : "map-circle-flag-on"}></div>
-                                                        <div className={!isHover[market.id] ? "map-inside-circle-flag" : "map-inside-circle-flag-on"}></div>
-                                                        <div className={!isHover[market.id] ? "map-triangle-flag" : "map-triangle-flag-on"}></div>
-                                                    </div>
-                                                </Annotation>
+                                                <MapAnnotation key={`marker-${market.id}`} market={market} markerType={"-flag"} showMarker={showFlagship} />
                                             ) : (!determineSeason(market)
                                             ) ? (
-                                                <>
-                                                    {showOffSeason && (
-                                                        <Annotation
-                                                            latitude={market.latitude}
-                                                            longitude={market.longitude}
-                                                            onSelect={() => handleMarkerClickOn(market.id)}
-                                                            onDeselect={() => handleMarkerClickOff(market.id)}
-                                                        >
-                                                            <div 
-                                                                onClick={() => handleMarkerClickOn(market.id)}
-                                                                onMouseEnter={() => handleMarkerHoverOn(market.id)}
-                                                                onMouseLeave={() => handleMarkerHoverOff(market.id)}
-                                                            >
-                                                                <div className={!isHover[market.id] ? "map-circle-off-season" : "map-circle-off-season-on"}></div>
-                                                                <div className={!isHover[market.id] ? "map-inside-circle-off-season" : "map-inside-circle-off-season-on"}></div>
-                                                                <div className={!isHover[market.id] ? "map-triangle-off-season" : "map-triangle-off-season-on"}></div>
-                                                            </div>
-                                                        </Annotation>
-                                                    )}
-                                                </>
+                                                <MapAnnotation key={`marker-${market.id}`} market={market} markerType={"-off-season"} showMarker={showOffSeason} />
                                             ) : (!determineVendors(market)
                                             ) ? (
-                                                <>
-                                                    {showVendors && (
-                                                        <Annotation
-                                                            latitude={market.latitude}
-                                                            longitude={market.longitude}
-                                                            onSelect={() => handleMarkerClickOn(market.id)}
-                                                            onDeselect={() => handleMarkerClickOff(market.id)}
-                                                        >
-                                                            <div 
-                                                                onClick={() => handleMarkerClickOn(market.id)}
-                                                                onMouseEnter={() => handleMarkerHoverOn(market.id)}
-                                                                onMouseLeave={() => handleMarkerHoverOff(market.id)}
-                                                            >
-                                                                <div className={!isHover[market.id] ? "map-circle-vendors" : "map-circle-vendors-on"} ></div>
-                                                                <div className={!isHover[market.id] ? "map-inside-circle-vendors" : "map-inside-circle-vendors-on"}></div>
-                                                                <div className={!isHover[market.id] ? "map-triangle-vendors" : "map-triangle-vendors-on"}></div>
-                                                            </div>
-                                                        </Annotation>
-                                                    )}
-                                                </>
+                                                <MapAnnotation key={`marker-${market.id}`} market={market} markerType={"-vendors"} showMarker={showVendors} />
                                             ) : (
-                                                <>
-                                                    {showGingham && (
-                                                        <Annotation
-                                                            latitude={market.latitude}
-                                                            longitude={market.longitude}
-                                                            onSelect={() => handleMarkerClickOn(market.id)}
-                                                            onDeselect={() => handleMarkerClickOff(market.id)}
-                                                        >
-                                                            <div 
-                                                                onClick={() => handleMarkerClickOn(market.id)}
-                                                                onMouseEnter={() => handleMarkerHoverOn(market.id)}
-                                                                onMouseLeave={() => handleMarkerHoverOff(market.id)}
-                                                            >
-                                                                <div className={!isHover[market.id] ? "map-circle" : "map-circle-on"}></div>
-                                                                <div className={!isHover[market.id] ? "map-inside-circle" : "map-inside-circle-on"}></div>
-                                                                <div className={!isHover[market.id] ? "map-triangle" : "map-triangle-on" }></div>
-                                                            </div>
-                                                        </Annotation>
-                                                    )}
-                                                </>
+                                                <MapAnnotation key={`marker-${market.id}`} market={market} markerType={""} showMarker={showGingham} />
                                             )}
                                         </>
-                                    ) : (
-                                        <Annotation
-                                            latitude={market.latitude}
-                                            longitude={market.longitude}
-                                            onSelect={() => handleMarkerClickOn(market.id)}
-                                            onDeselect={() => handleMarkerClickOff(market.id)}
-                                        >
-                                            <div className="marker-details" onClick={() => handleMarkerClickOff(market.id)}>
-                                                <div className='text-center'>
-                                                    <div className="marker-name"><Link className='link-underline link-scale-96' to={`/user/markets/${market.id}`}>{market.name}</Link></div>
-                                                    <div className="marker-day">{market.schedule}</div>
-                                                    {market.year_round ? (
-                                                        <div className="marker-day">Open Year-Round</div>
-                                                    ) : (
-                                                        <div>
-                                                            {market.season_start ? (
-                                                                <div className="marker-day">{formatDate(market.season_start)} — {formatDate(market.season_end)}</div>
-                                                            ) : (
-                                                                null
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div> 
-                                        </Annotation>
-                                    )}
-                                </div>
+                                </>
                             ))}
                         </Map>
                     </div>
