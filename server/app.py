@@ -3310,7 +3310,7 @@ def process_transfers():
                     "basket_id": basket["id"], 
                     "vendor_id": vendor_id,
                     "stripe_account_id": stripe_account_id,
-                    "transfer_id": transfer.id,
+                    "stripe_transfer_id": transfer.id,
                     "amount": transfer.amount,
                     "destination": stripe_account_id,
                     "payment_intent_id": payment_intent_id,
@@ -3320,9 +3320,9 @@ def process_transfers():
                 
                 basket_record = Basket.query.filter_by(id=basket['id']).first()
                 if basket_record:
-                    basket_record.transfer_id = transfer.id 
+                    basket_record.stripe_transfer_id = transfer.id 
                     db.session.commit() 
-                    print(f"✅✅✅✅✅✅Basket {basket['id']} updated with transfer_id {transfer.id}")
+                    print(f"✅✅✅✅✅✅Basket {basket['id']} updated with stripe_transfer_id {transfer.id}")
 
             except stripe.error.StripeError as e:
                 print(f"❌ Transfer failed for vendor {vendor_id} (Stripe ID: {stripe_account_id}): {e}")
@@ -3402,14 +3402,14 @@ def reverse_basket_transfer():
         print(f"🔄 Reversing transfer for Basket {basket_id} (Stripe ID: {stripe_account_id}) (Amount: {reversal_amount} cents)")
 
         basket_record = Basket.query.filter_by(id=basket_id).first()
-        if not basket_record or not basket_record.transfer_id:
-            return jsonify({'error': {'message': f"No transfer_id found for basket {basket_id}."}}), 400
+        if not basket_record or not basket_record.stripe_transfer_id:
+            return jsonify({'error': {'message': f"No stripe_transfer_id found for basket {basket_id}."}}), 400
 
-        transfer_id = basket_record.transfer_id
-        print(f"✅ Found transfer_id: {transfer_id} for basket {basket_id}")
+        stripe_transfer_id = basket_record.stripe_transfer_id
+        print(f"✅ Found stripe_transfer_id: {stripe_transfer_id} for basket {basket_id}")
 
         reversal = stripe.Transfer.create_reversal(
-            transfer_id,
+            stripe_transfer_id,
             amount=reversal_amount,
             metadata={"reason": "Refunded to customer"}
         )
@@ -3426,7 +3426,7 @@ def reverse_basket_transfer():
             "destination_payment_refund": reversal.get("destination_payment_refund"),
             "metadata": reversal["metadata"],
             "source_refund": reversal["source_refund"],
-            "transfer": transfer_id
+            "transfer": stripe_transfer_id
         }), 200
 
     except stripe.error.StripeError as e:
