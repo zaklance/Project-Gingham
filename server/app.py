@@ -3215,17 +3215,17 @@ def incoming_sms():
 # Stripe
 stripe.api_key = os.getenv('STRIPE_PY_KEY')
 
+def get_vendor_stripe_accounts(vendor_ids):
+    vendors = Vendor.query.filter(Vendor.id.in_(vendor_ids)).all()
+    vendor_accounts = {vendor.id: vendor.stripe_account_id for vendor in vendors if vendor.stripe_account_id}
+    return vendor_accounts
+
 @app.route('/api/config', methods=['GET'])
 def get_config():
     publishable_key = stripe.api_key
     if not publishable_key:
         return jsonify({'error': 'Stripe publishable key not configured'}), 500
     return jsonify({'publishableKey': publishable_key}), 200
-
-def get_vendor_stripe_accounts(vendor_ids):
-    vendors = Vendor.query.filter(Vendor.id.in_(vendor_ids)).all()
-    vendor_accounts = {vendor.id: vendor.stripe_account_id for vendor in vendors if vendor.stripe_account_id}
-    return vendor_accounts  # Returns a dictionary {vendor_id: stripe_account_id}
 
 @app.route('/api/create-payment-intent', methods=['POST'])
 def create_payment_intent():
@@ -3294,7 +3294,7 @@ def process_transfers():
             stripe_account_id = vendor_accounts.get(vendor_id)
 
             if not stripe_account_id:
-                print(f"❌ Vendor {vendor_id} has no Stripe account!")
+                print(f"❌ Vendor {vendor_id} has no Stripe account! Skipping...")
                 continue  # Skip vendors without an account
 
             transfer_amount = int((basket['price'] - basket['fee_vendor']) * 100)
@@ -3311,6 +3311,7 @@ def process_transfers():
                 print(f"🔍 Stripe Transfer Response: {transfer}")  # ✅ Log entire transfer response
 
                 transfer_data.append({
+                    "basket_id": basket["id"],  # ✅ Include basket ID in response
                     "vendor_id": vendor_id,
                     "stripe_account_id": stripe_account_id,
                     "transfer_id": transfer.id,
@@ -3320,8 +3321,12 @@ def process_transfers():
                     "transfer_group": f"group_pi_{payment_intent_id}",
                     "platform_fee": int(basket['fee_vendor'] * 100),
                 })
-
-                print(f"✅ Transfer successful for vendor {vendor_id} (Stripe ID: {stripe_account_id})")
+                
+                basket_record = Basket.query.filter_by(id=basket['id']).first()
+                if basket_record:
+                    basket_record.transfer_id = transfer.id  # Save transfer ID to basket
+                    db.session.commit()  # ✅ Commit changes to database
+                    print(f"✅✅✅✅✅✅Basket {basket['id']} updated with transfer_id {transfer.id}")
 
             except stripe.error.StripeError as e:
                 print(f"❌ Transfer failed for vendor {vendor_id} (Stripe ID: {stripe_account_id}): {e}")
@@ -3342,7 +3347,169 @@ def process_transfers():
     except Exception as e:
         print(f"❌ Unexpected error in /api/process-transfers: {str(e)}")  # ✅ Logs full error
         return jsonify({'error': {'message': 'An unexpected error occurred.', 'details': str(e)}}), 500
-    
+
+def get_vendor_stripe_account(vendor_id):
+    vendor = Vendor.query.filter_by(id=vendor_id).first()
+    if vendor and vendor.stripe_account_id:
+        return vendor.stripe_account_id
+    return None
+
+def reverse_vendor_transfer(payment_intent_id, stripe_account_id):
+    """
+    Reverses the transfer for a specific vendor if it exists.
+    """
+    try:
+        # ✅ Retrieve Transfer linked to this vendor & PaymentIntent
+        transfers = stripe.Transfer.list(transfer_group=f"group_pi_{payment_intent_id}")
+        vendor_transfer = next((t for t in transfers['data'] if t['destination'] == stripe_account_id), None)
+
+        if not vendor_transfer:
+            return {"error": f"No transfer found for vendor {stripe_account_id}."}
+
+        print(f"🔄 Reversing Transfer: {vendor_transfer['id']} ({vendor_transfer['amount']} cents) for vendor {stripe_account_id}")
+
+        # ✅ Reverse the transfer
+        reversal = stripe.Transfer.create_reversal(
+            vendor_transfer['id'],
+            metadata={"reason": "Vendor refund request"}
+        )
+
+        print(f"✅ Reversal successful: {reversal['id']} for vendor {stripe_account_id}")
+        return reversal['id']  # Return reversal ID
+
+    except stripe.error.StripeError as e:
+        print(f"❌ Stripe API Error: {e.user_message}")
+        return {"error": e.user_message}
+
+    except Exception as e:
+        print(f"❌ Unexpected Error: {str(e)}")
+        return {"error": "An unexpected error occurred"}
+
+def check_reversal_status(reversal_id):
+    """
+    Checks if the reversal has been completed.
+    """
+    try:
+        reversal = stripe.Transfer.retrieve(reversal_id)
+        print(f"🔎 Reversal {reversal_id} status: {reversal['status']}")
+        return reversal['status'] == 'succeeded'
+    except stripe.error.StripeError as e:
+        print(f"❌ Stripe API Error: {e.user_message}")
+        return False
+
+@app.route('/api/transfer-reversal', methods=['POST'])
+def reverse_basket_transfer():
+    """
+    Reverse a specific transfer from a basket after a refund has been processed.
+    """
+    try:
+        data = request.get_json()
+        required_fields = ["basket_id", "stripe_account_id", "amount"]
+        if not all(field in data for field in required_fields):
+            return jsonify({'error': {'message': 'Missing required data.'}}), 400
+
+        basket_id = data['basket_id']
+        stripe_account_id = data['stripe_account_id']
+        reversal_amount = int(data['amount'] * 100)  # Convert dollars to cents
+
+        print(f"🔄 Reversing transfer for Basket {basket_id} (Stripe ID: {stripe_account_id}) (Amount: {reversal_amount} cents)")
+
+        # ✅ Retrieve the transfer_id from the Basket table based on basket_id
+        basket_record = Basket.query.filter_by(id=basket_id).first()
+        if not basket_record or not basket_record.transfer_id:
+            return jsonify({'error': {'message': f"No transfer_id found for basket {basket_id}."}}), 400
+
+        transfer_id = basket_record.transfer_id
+        print(f"✅ Found transfer_id: {transfer_id} for basket {basket_id}")
+
+        # ✅ Reverse the transfer amount from the vendor
+        reversal = stripe.Transfer.create_reversal(
+            transfer_id,
+            amount=reversal_amount,  # Reverse only the refunded amount
+            metadata={"reason": "Refunded to customer"}
+        )
+
+        print(f"✅ Reversal successful: {reversal['id']} for basket {basket_id}")
+
+        # ✅ Return response matching Stripe's Transfer Reversal JSON structure
+        return jsonify({
+            "id": reversal["id"],
+            "object": reversal["object"],
+            "amount": reversal["amount"],
+            "balance_transaction": reversal["balance_transaction"],
+            "created": reversal["created"],
+            "currency": reversal["currency"],
+            "destination_payment_refund": reversal.get("destination_payment_refund"),
+            "metadata": reversal["metadata"],
+            "source_refund": reversal["source_refund"],
+            "transfer": transfer_id  # ✅ Return the original transfer_id
+        }), 200
+
+    except stripe.error.StripeError as e:
+        print(f"❌ Stripe API Error: {e.user_message}")
+        return jsonify({'error': {'message': e.user_message}}), 400
+
+    except Exception as e:
+        print(f"❌ Unexpected Error: {str(e)}")
+        return jsonify({'error': {'message': 'An unexpected error occurred.', 'details': str(e)}}), 500
+
+@app.route('/api/refund', methods=['POST'])
+def process_refund():
+    """
+    Processes a refund for a specific vendor in a multi-vendor transaction.
+    Ensures transfer reversal before issuing a refund.
+    """
+    try:
+        data = request.get_json()
+        required_fields = ["payment_intent_id", "vendor_id", "stripe_account_id", "amount"]
+        if not all(field in data for field in required_fields):
+            return jsonify({'error': {'message': 'Missing required data.'}}), 400
+
+        payment_intent_id = data['payment_intent_id']
+        vendor_id = data['vendor_id']
+        stripe_account_id = data['stripe_account_id']  # ✅ Direct vendor stripe ID
+        refund_amount = int(data['amount'] * 100)  # Convert to cents
+
+        print(f"🔄 Initiating refund process for Vendor {vendor_id} (Stripe ID: {stripe_account_id}) in PaymentIntent {payment_intent_id}")
+
+        # ✅ Reverse the transfer for this vendor
+        reversal_id = reverse_vendor_transfer(payment_intent_id, stripe_account_id)
+        if isinstance(reversal_id, dict) and "error" in reversal_id:
+            return jsonify({'error': reversal_id["error"]}), 400  # Stop if reversal failed
+
+        # ✅ Wait until the reversal is complete before refunding
+        timeout = time.time() + 30
+        while time.time() < timeout:
+            if check_reversal_status(reversal_id):
+                print(f"✅ Transfer reversal completed for vendor {vendor_id}. Proceeding with refund.")
+                break
+            print("⏳ Waiting for reversal to complete...")
+            time.sleep(5)
+
+        # ✅ Issue refund for **only** this vendor's portion
+        refund = stripe.Refund.create(
+            payment_intent=payment_intent_id,  # Refund must be linked to PaymentIntent
+            amount=refund_amount,  # Only refund this vendor's amount
+            metadata={
+                "vendor_id": vendor_id,
+                "reason": "requested_by_customer"
+            }
+        )
+
+        print(f"✅ Refund issued: {refund['id']} for {refund_amount} cents")
+        return jsonify({
+            "message": "Refund processed successfully",
+            "refund_id": refund['id']
+        }), 200
+
+    except stripe.error.StripeError as e:
+        print(f"❌ Stripe API Error: {e.user_message}")
+        return jsonify({'error': {'message': e.user_message}}), 400
+
+    except Exception as e:
+        print(f"❌ Unexpected Error: {str(e)}")
+        return jsonify({'error': {'message': 'An unexpected error occurred.', 'details': str(e)}}), 500
+
 @app.route('/api/stripe-webhook', methods=['POST'])
 def stripe_webhook():
 
@@ -3411,12 +3578,12 @@ def stripe_webhook():
         # print(json.dumps(application_fee, indent=2))
         return jsonify({'message': 'Application fee created'}), 200
     
-    elif event["type"] == "balance.available":
+    elif event_type == "balance.available":
         balance_data = event["data"]["object"]
         available_funds = balance_data["available"]
         print(f"Available Balance Updated: {available_funds}")
         return jsonify({'message': 'Balance Available'})
-        
+    
     else:
         print("Unhandled event type:", event_type)
         return jsonify({'message': f'Unhandled event {event_type}'}), 200 
