@@ -139,7 +139,8 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                             id: item.id,
                             price: item.price,
                             vendor_id: item.vendor_id,
-                            fee_vendor: item.fee_vendor
+                            fee_vendor: item.fee_vendor,
+                            basket_id: cartItems.id
                         }))
                     }),
                 });
