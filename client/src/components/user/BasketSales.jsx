@@ -74,7 +74,7 @@ function BasketSales() {
                                                     <td className={`group-bar ${isFirst ? 'group-bar-first' : ''} ${isLast ? 'group-bar-last' : ''}`}></td>
                                                     <td>
                                                         <Link className='btn-nav' to={`/user/markets/${item.market_id}`}>
-                                                            {item.market_location || 'No Market Name'}
+                                                            {item.market_name || 'No Market Name'}
                                                         </Link>
                                                     </td>
                                                     <td>

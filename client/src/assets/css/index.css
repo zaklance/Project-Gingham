@@ -1563,6 +1563,7 @@ div:has(.btn-unread)>.btn-notif {
   display: flex;
   gap: 24px;
   /* margin-bottom: 20px; */
+  color: #ff806b
 }
 
 .tabs>* {

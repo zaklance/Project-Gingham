@@ -65,7 +65,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
             icsContent += `UID:${item.id}@gingham-nyc\n`;
             icsContent += `SUMMARY:Pick up your order from ${item.vendor_name}\n`;
             icsContent += `DESCRIPTION:Pick up your order from ${item.vendor_name} at ${item.market_name} at ${item.location} \\n\\n${appleMapsLink}\\n\\n${googleMapsLink}\n`;
-            icsContent += `LOCATION:https://maps.apple.com/?q=${item.coordinates.lat}+${item.coordinates.lng}\n`;
+            icsContent += `LOCATION:${item.market_name}\n`;
             icsContent += `DTSTART;TZID=${userTimeZone}:${startDate}\n`;
             icsContent += `DTEND;TZID=${userTimeZone}:${endDate}\n`;
             icsContent += `STATUS:CONFIRMED\n`;
