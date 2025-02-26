@@ -603,6 +603,7 @@ class Basket(db.Model, SerializerMixin):
     value = db.Column(db.Float, nullable=True)
     fee_vendor = db.Column(db.Float, nullable=False, default=0)
     fee_user = db.Column(db.Float, nullable=False, default=0)
+    transfer_id= db.Column(db.String, nullable=True)
 
     vendor = db.relationship('Vendor', lazy='joined')
     market_day = db.relationship('MarketDay', lazy='joined')
