@@ -5,7 +5,7 @@ import Chart from 'chart.js/auto';
 import PulseLoader from 'react-spinners/PulseLoader';
 import VendorActiveVendor from './VendorActiveVendor';
 import { months } from '../../utils/common.js'
-import VendorExportMonthlyBasketsPDF from './VendorExportMonthlyBasketsPDF.jsx';
+import VendorPDFMonthlyBaskets from './VendorPDFMonthlyBaskets.jsx';
 
 function VendorSales() {
     const chartRef = useRef();
@@ -26,7 +26,7 @@ function VendorSales() {
 
     const vendorUserId = localStorage.getItem('vendor_user_id');
 
-    const dateRange = { "Next Week": -7, "Week": 7, "Month": 31, "3 Months": 91, "6 Months": 183, "Year": 365, }
+    const dateRange = { "Next 7 Days": -7, "7 Days": 7, "30 Days": 30, "90 Days": 90, "180 Days": 180, "Year": 365, }
 
     function getDatesForRange(range = 31) {
         const dates = [];
@@ -221,7 +221,8 @@ function VendorSales() {
                     legend: {
                         display: true
                     }
-                }
+                },
+                aspectRatio: 3 / 2
             }
         });
 
@@ -478,7 +479,7 @@ function VendorSales() {
                                     {monthsInYear.sort((a, b) => {
                                         const monthA = parseInt(a.month, 10);
                                         const monthB = parseInt(b.month, 10);
-                                        return monthA - monthB;
+                                        return monthB - monthA;
                                     }).map(monthData => {
                                         const month = monthData.month;
                                         const monthKey = monthData.monthKey;
@@ -496,7 +497,7 @@ function VendorSales() {
                                                     <p>Baskets: {count}</p>
                                                 </div>
                                                 <div className='flex-column flex-space-between'>
-                                                    <VendorExportMonthlyBasketsPDF monthlyBaskets={monthlyBaskets} year={year} month={month} vendorId={vendorId} />
+                                                    <VendorPDFMonthlyBaskets monthlyBaskets={monthlyBaskets} year={year} month={month} vendorId={vendorId} />
                                                     <button
                                                         onClick={() => downloadCSV(year, month)}
                                                         className="btn btn-file"

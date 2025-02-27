@@ -5,7 +5,7 @@ import { useStripe, useElements } from "@stripe/react-stripe-js";
 import { toast } from 'react-toastify';
 import { timeConverter, formatBasketDate } from "../../utils/helpers";
 import objectHash from 'object-hash';
-import ReceiptPDF from "./ReceiptPDF";
+import PDFReceipt from "./PDFReceipt";
 
 
 function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAmountInCart }) {
@@ -287,7 +287,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                         </button>
                     ) : (
                         <div className="margin-t-16 flex-start flex-gap-16">
-                            <ReceiptPDF receiptId={receiptId} isPaymentCompleted={paymentSuccess} page={"checkout"} />
+                            <PDFReceipt receiptId={receiptId} isPaymentCompleted={paymentSuccess} page={"checkout"} />
                             <button 
                                 type="button"
                                 className="btn btn-checkout" 

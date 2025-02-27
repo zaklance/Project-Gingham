@@ -1,7 +1,7 @@
 import React, { useEffect,useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { receiptDateConverter, formatBasketDate } from '../../utils/helpers';
-import ReceiptPDF from './ReceiptPDF';
+import PDFReceipt from './PDFReceipt';
 
 function BasketSales() {
     const [receipts, setReceipts] = useState(null);
@@ -86,7 +86,7 @@ function BasketSales() {
                                                     <td className='table-center'>${item.price ? item.price.toFixed(2) : 'N/A'}</td>
                                                     <td className='table-center' style={{height: '48px'}}>
                                                             <span className='icon-file' onMouseEnter={() => handleDownload(receipt.id)}>
-                                                                {isFirst && willDownload[receipt.id] ? <ReceiptPDF receiptId={receipt.id} page={"profile"} /> : '\u2003'}
+                                                                {isFirst && willDownload[receipt.id] ? <PDFReceipt receiptId={receipt.id} page={"profile"} /> : '\u2003'}
                                                             </span>
                                                     </td>
                                                 </tr>
