@@ -30,7 +30,7 @@ const ReceiptDocument = ({ filteredBaskets, year, month }) => {
                 
                 <View style={styles.section}>
                     <View style={styles.row}>
-                        <Text><Text style={styles.bold}>Monthly Statement:</Text> {year} {months[month]}</Text>
+                        <Text><Text style={styles.bold}>Monthly Statement:</Text> {year} {months[parseInt(month) - 1]}</Text>
                         <Text><Text style={styles.bold}>Vendor ID:</Text> {filteredBaskets[0].vendor?.id}</Text>
                     </View>
                     <View style={styles.row}>
@@ -86,7 +86,7 @@ const ReceiptDocument = ({ filteredBaskets, year, month }) => {
     );
 };
 
-const VendorExportMonthlyBasketsPDF = ({ monthlyBaskets, year, month, vendorId }) => {
+const VendorPDFMonthlyBaskets = ({ monthlyBaskets, year, month, vendorId }) => {
     const [filteredBaskets, setFilteredBaskets] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -132,4 +132,4 @@ const VendorExportMonthlyBasketsPDF = ({ monthlyBaskets, year, month, vendorId }
     );
 };
 
-export default VendorExportMonthlyBasketsPDF;
+export default VendorPDFMonthlyBaskets;

@@ -5072,7 +5072,7 @@ def export_csv_vendor_baskets():
         mem,
         mimetype='text/csv',
         as_attachment=True,
-        download_name=f'baskets_{year}-{month:02d}.csv'
+        download_name=f'gingham_vendor-statement_{year}-{month:02d}.csv'
     )
 
 @app.route('/api/export-pdf/for-vendor/baskets', methods=['GET'])
