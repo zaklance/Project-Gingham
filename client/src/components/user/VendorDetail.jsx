@@ -117,7 +117,12 @@ function VendorDetail() {
             const updatedCartItems = [...cartItems, {
                 vendor_name: vendor.name,
                 vendor_id: vendor.id,
-                location: marketDay.markets.name,
+                market_id: marketDay.markets.id,
+                fee_vendor: basketInCart.fee_vendor,
+                fee_user: basketInCart.fee_user,
+                market_name: marketDay.markets.name,
+                location: marketDay.markets.location,
+                coordinates: marketDay.markets.coordinates,
                 id: basketInCart.id,
                 price: basketInCart.price,
                 pickup_start: basketInCart.pickup_start,
@@ -269,12 +274,12 @@ function VendorDetail() {
     const handleNotifyMe = async (market) => {
 
         if (!userId) {
-            alert('Please ensure you are logged in.');
+            handlePopup();
             return;
         }
         const token = localStorage.getItem('user_jwt-token');
         if (!token) {
-            alert('Authorization token is missing. Please log in.');
+            handlePopup();
             return;
         }
 
@@ -297,14 +302,20 @@ function VendorDetail() {
 
             if (response.ok) {
                 const responseData = await response.json();
-                alert(`Your request has been sent to ${vendor.name}!`);
+                toast.success(`Your request has been sent to ${vendor.name}!`, {
+                    autoClose: 5000,
+                });
             } else {
                 const errorData = await response.json();
-                alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
+                toast.error(`Error sending request: ${errorData.message || 'Unknown error'}`, {
+                    autoClose: 6000,
+                });
             }
         } catch (error) {
             console.error('Error sending request:', error);
-            alert('An error occurred while sending the request. Please try again later.');
+            toast.error('An error occurred while sending the request. Please try again later.', {
+                autoClose: 5000,
+            });
         }
     };
 
@@ -352,31 +363,28 @@ function VendorDetail() {
                     )}
                 </div>
             </div>
-            <div className='flex-space-between margin-t-24 flex-wrap'>
-                <div className='width-100'>
-                    {vendor.image !== null ? (
-                        <img className='img-vendor' src={`/vendor-images/${vendor.image}`} alt="Vendor Image"/>
-                    ) : (
-                        <img className='img-vendor' src={`/vendor-images/_default-images/${vendor.image_default}`} alt="Vendor Image"/>
-                    )}
-                </div>
-                <div className='side-basket'>
-                    <h3 className='margin-t-8'>{productList?.length > 1 ? 'Products: ' : 'Product: '}{productList?.length > 0
-                        ? productList.map(p => p.product).join(', ')
-                        : "No products available"}</h3>
-                    <div className='flex-start'>
-                        <h4 className='nowrap'>Based out of: {vendor.city}, {vendor.state}</h4>
-                        <div className='alert-container flex-start flex-center-align nowrap'>
-                            <button 
-                                className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
-                                onClick={handleClick}>&emsp;
-                            </button>
-                        </div>
-                    </div>
-                    <h2 className='margin-t-16'>Vendor Bio</h2>
-                    <p className='margin-t-8'>{vendor.bio}</p>
+            <div className='width-100 margin-t-24'>
+                {vendor.image !== null ? (
+                    <img className='img-vendor' src={`/vendor-images/${vendor.image}`} alt="Vendor Image"/>
+                ) : (
+                    <img className='img-vendor' src={`/vendor-images/_default-images/${vendor.image_default}`} alt="Vendor Image"/>
+                )}
+            </div>
+            <div className='market-details'>
+                <h3 className='margin-t-8'>{productList?.length > 1 ? 'Products: ' : 'Product: '}{productList?.length > 0
+                    ? productList.map(p => p.product).join(', ')
+                    : "No products available"}
+                </h3>
+                <div className='flex-start'>
+                    <h4 className=''>Based out of: {vendor.city}, {vendor.state}</h4>
+                    <button 
+                        className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
+                        onClick={handleClick}>&emsp;
+                    </button>
                 </div>
             </div>
+            <h2 className='margin-t-16'>Vendor Bio</h2>
+            <p className='margin-t-8'>{vendor.bio}</p>
             <div>
                 <h2 className="margin-t-24" id="markets">Farmers Market Locations:</h2>
                 <div className='box-scroll'>
@@ -409,9 +417,9 @@ function VendorDetail() {
                                 (item) => item.market_day_id === marketDetail.id && item.is_sold === false
                             );
                             return (
-                                <div key={index} className="market-item" >
+                                <div key={index} className="market-item flex-gap-8" >
                                     <span className='width-40'>
-                                        <Link to={`/user/markets/${market.market_day.market_id}`} className="market-name">
+                                        <Link to={`/user/markets/${market.market_day.market_id}?day=${market.market_day.id}`} className="market-name">
                                             {marketDetail?.markets?.name || 'Loading...'}
                                         </Link>
                                         <br/>

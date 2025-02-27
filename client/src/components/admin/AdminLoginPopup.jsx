@@ -4,6 +4,8 @@ import PasswordStrengthBar from 'react-password-strength-bar';
 import PasswordChecklist from "react-password-checklist"
 import { formatPhoneNumber } from '../../utils/helpers';
 import PulseLoader from 'react-spinners/PulseLoader';
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 
 function Login({ handlePopup }) {
     const [loginEmail, setLoginEmail] = useState('');
@@ -16,6 +18,7 @@ function Login({ handlePopup }) {
     const [signupLastName, setSignupLastName] = useState('');
     const [signupPhone, setSignupPhone] = useState('');
     const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false, pw3: false });
+    const [termsConditions, setTermsConditions] = useState(false);
     const [isValid, setIsValid] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -70,17 +73,23 @@ function Login({ handlePopup }) {
             alert("Emails do not match.");
             return;
         }
-    
         if (signupPassword !== signupConfirmPassword) {
             alert("Passwords do not match.");
             return;
         }
-
         if (!isValid) {
             alert("Password does not meet requirements.");
             return;
         }
+        if (!termsConditions) {
+            alert("You must agree to Terms & Conditions to signup.");
+            return;
+        }
+        if (isLoading) {
+            return;
+        }
 
+        setIsLoading(true);
         const response = await fetch('/api/admin-signup', {
             method: 'POST',
             headers: {
@@ -117,7 +126,9 @@ function Login({ handlePopup }) {
             } else {
                 alert("Signup failed. Please check your details and try again.")
             }
+            setIsLoading(false);
         }
+        setIsLoading(false);
     };
 
     const togglePasswordVisibility = (field) => {
@@ -256,13 +267,22 @@ function Login({ handlePopup }) {
                         </div>
                         <div className="form-group form-login">
                             <label>Phone:</label>
-                            <input 
+                            <PhoneInput
+                                className='input-phone margin-l-8'
+                                countryCallingCodeEditable={false}
+                                withCountryCallingCode
+                                country='US'
+                                placeholder="enter your phone number"
+                                value={signupPhone}
+                                onChange={(event) => setSignupPhone(event)}
+                            />
+                            {/* <input 
                                 type="text"
                                 value={signupPhone}
                                 placeholder='enter your phone number'
                                 onChange={(event => setSignupPhone(formatPhoneNumber(event.target.value)))}
                                 required
-                            />
+                            /> */}
                         </div>
                         <div className='flex-center margin-t-16'>
                             {isLoading ? (
@@ -274,7 +294,24 @@ function Login({ handlePopup }) {
                                     data-testid="loader"
                                 />
                             ) : (
-                                <button className='btn-login' type="submit">Signup</button>
+                                <div className='flex-center-align flex-space-around margin-t-16 flex-gap-16'>
+                                    <button className='btn-login' type="submit">Signup</button>
+                                    <div className='flex-start flex-center-align'>
+                                        <input
+                                            type='checkbox'
+                                            name="terms"
+                                            value={termsConditions}
+                                            onChange={(event) => setTermsConditions(!termsConditions)}
+                                            className='scale-fix-125'
+                                        />
+                                        <p className="forgot-password" onClick={() => {
+                                            navigate('/terms-service');
+                                            window.location.reload();
+                                        }}>
+                                            Terms & Conditions
+                                        </p>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     </form>

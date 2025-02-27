@@ -1,7 +1,8 @@
 import os
 import json
 import smtplib
-from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
+import csv
+from flask import Flask, Response, request, jsonify, session, send_from_directory, send_file, redirect, url_for
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
                     VendorReview, ReportedReview, MarketReviewRating, 
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
@@ -9,9 +10,9 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     Product, UserNotification, VendorNotification, 
                     AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
                     Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
-                    bcrypt )
+                    UserIssue, bcrypt )
 from dotenv import load_dotenv
-from sqlalchemy import func, desc
+from sqlalchemy import cast, desc, extract, func, Integer
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.dialects.postgresql import JSONB
@@ -23,23 +24,35 @@ from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
 from datetime import datetime, date, time, timedelta
 from PIL import Image
-from io import BytesIO
+from io import BytesIO, StringIO
 from random import choice
 import stripe
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 import utils.events as events
-from utils.emails import send_contact_email, send_user_password_reset_email, send_vendor_password_reset_email, send_admin_password_reset_email, send_user_confirmation_email, send_vendor_confirmation_email, send_admin_confirmation_email
+from utils.emails import ( send_contact_email, send_user_password_reset_email, 
+                          send_vendor_password_reset_email, send_admin_password_reset_email, 
+                          send_user_confirmation_email, send_vendor_confirmation_email, 
+                          send_admin_confirmation_email )
 import subprocess
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+from twilio.twiml.messaging_response import MessagingResponse
 
 load_dotenv()
 
 app = Flask(__name__)
 
+STRIPE_WEBHOOK_SECRET = "whsec_0fd1e4d74c18b3685bd164fe766c292f8ec7a73a887dd83f598697be422a2875"
+STRIPE_ALLOWED_IPS = {
+    "3.18.12.63", "3.130.192.231", "13.235.14.237", "13.235.122.149",
+    "18.211.135.69", "35.154.171.200", "52.15.183.38", "54.88.130.119",
+    "54.88.130.237", "54.187.174.169", "54.187.205.235", "54.187.216.72"
+}
+
 USER_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/user-images')
 VENDOR_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/vendor-images')
 MARKET_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/market-images')
+BLOG_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/blog-images')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'svg', 'heic'}
 MAX_SIZE = 1.5 * 1024 * 1024
 MAX_RES = (1800, 1800)
@@ -61,10 +74,115 @@ avatars = [
         "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-cabbage-1.jpg", 
         "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime-1.jpg", "avatar-melon-1.jpg",
         "avatar-mangosteen-1.jpg", "avatar-mangosteen-2.jpg", "avatar-nectarine-1.jpg", 
-        "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg", "avatar-peach-1.jpg", 
+        "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-peach-1.jpg", 
         "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
         "avatar-watermelon-1.jpg"
     ]
+
+def handle_checkout_completed(session):
+    """Retrieve purchase details from checkout session."""
+    session_id = session["id"]
+    session_details = stripe.checkout.Session.retrieve(session_id, expand=["line_items", "payment_intent"])
+    
+    payment_intent_id = session_details["payment_intent"]
+    line_items = session_details["line_items"]["data"]
+    customer_email = session_details.get("customer_details", {}).get("email", "N/A")
+
+    # Get the last 4 digits of the card
+    payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id, expand=["charges.payment_method"])
+    last4 = payment_intent["charges"]["data"][0]["payment_method_details"]["card"]["last4"]
+
+    # Extract receipt data
+    purchased_items = [
+        {
+            "basket_id": item["id"],
+            "name": item["description"],
+            "quantity": item["quantity"],
+            "price": item["amount_total"] / 100,
+            "pickup_date": session.get("metadata", {}).get(f"pickup_date_{item['id']}", "Unknown"),
+            "pickup_time": session.get("metadata", {}).get(f"pickup_time_{item['id']}", "Unknown"),
+            "vendor": session.get("metadata", {}).get(f"vendor_{item['id']}", "Unknown")
+        }
+        for item in line_items
+    ]
+
+    total_amount = session_details["amount_total"] / 100
+    currency = session_details["currency"].upper()
+
+    print(f"Checkout Completed for {customer_email} - Total: ${total_amount} {currency} (Card Last 4: {last4})")
+
+    # Generate receipt
+    generate_receipt(customer_email, total_amount, currency, purchased_items, last4)
+
+def handle_payment_success(payment_intent):
+    """Retrieve payment details from successful payment."""
+    payment_intent_id = payment_intent["id"]
+    total_amount = payment_intent["amount_received"] / 100  # Convert cents to dollars
+    currency = payment_intent["currency"].upper()
+
+    # Get last 4 digits of the card
+    last4 = payment_intent["charges"]["data"][0]["payment_method_details"]["card"]["last4"]
+
+    # Get customer email
+    customer_email = payment_intent.get("charges", {}).get("data", [{}])[0].get("billing_details", {}).get("email", "N/A")
+
+    # Retrieve metadata for baskets (if stored in frontend during checkout)
+    baskets = payment_intent.get("metadata", {}).get("baskets", "[]")
+
+    print(f"Payment Successful: {payment_intent_id}")
+    print(f"Customer: {customer_email}")
+    print(f"Total Paid: ${total_amount} {currency}")
+    print(f"Card Last 4: {last4}")
+
+    # If baskets metadata exists, convert it from JSON format
+    import json
+    try:
+        basket_data = json.loads(baskets)
+    except json.JSONDecodeError:
+        basket_data = []
+
+    purchased_items = [
+        {
+            "basket_id": item.get("id"),
+            "name": item.get("name"),
+            "price": item.get("price"),
+            "quantity": item.get("quantity"),
+            "pickup_date": item.get("pickup_date", "Unknown"),
+            "pickup_time": item.get("pickup_time", "Unknown"),
+            "vendor": item.get("vendor_name", "Unknown")
+        }
+        for item in basket_data
+    ]
+
+    generate_receipt(customer_email, total_amount, currency, purchased_items, last4)
+
+def generate_receipt(email, total, currency, items, last4):
+    """Generate structured receipt details."""
+    print("\n🧾 **Receipt Details:**")
+    print(f"Customer: {email}")
+    print(f"Total: ${total} {currency}")
+    print(f"Card Last 4: {last4}")
+    for item in items:
+        print(f"- {item['name']} (Basket ID: {item['basket_id']}) - ${item['price']:.2f}")
+        print(f"  Pickup: {item['pickup_date']} {item['pickup_time']} from {item['vendor']}")
+
+def generate_csv(model, fields, filename_prefix):
+    """Helper function to generate CSV from a model."""
+    try:
+        today_date = datetime.today().strftime("%Y-%m-%d")
+        filename = f"{filename_prefix}_{today_date}.csv"
+
+        csv_data = ",".join(fields) + "\n"
+
+        records = model.query.all()
+        for record in records:
+            row = [str(getattr(record, field, "")) for field in fields]
+            csv_data += ",".join(row) + "\n"
+
+        return jsonify({"filename": filename, "data": csv_data})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -196,6 +314,73 @@ def upload_file():
             return {'error': f'Failed to upload image: {str(e)}'}, 500
 
     return {'error': 'File type not allowed'}, 400
+
+@app.route('/api/upload-files', methods=['POST'])
+def upload_files():
+    if 'files' not in request.files:
+        return {'error': 'No files part in the request'}, 400
+
+    files = request.files.getlist('files')
+
+    if not files or all(file.filename == '' for file in files):
+        return {'error': 'No files selected'}, 400
+
+    formatted_date = datetime.now().strftime("%Y-%m%d")
+    upload_folder = os.path.join(os.getcwd(), f'../client/public/blog-images/{formatted_date}')
+
+    if not os.path.exists(upload_folder):
+        os.makedirs(upload_folder)
+
+    uploaded_files = []
+
+    for file in files:
+        if file and allowed_file(file.filename):
+            original_filename = secure_filename(file.filename)
+            file_path = os.path.join(upload_folder, original_filename)
+
+            if os.path.exists(file_path):
+                base, ext = os.path.splitext(original_filename)
+                counter = 1
+                while os.path.exists(file_path):
+                    file_path = os.path.join(upload_folder, f"{base}_{counter}{ext}")
+                    counter += 1
+
+            try:
+                if original_filename.rsplit('.', 1)[1].lower() == 'svg':
+                    file.save(file_path)
+                else:
+                    image = Image.open(file)
+                    image = resize_image(image)
+                    image.save(file_path)
+
+                uploaded_files.append(os.path.basename(file_path))
+
+            except Exception as e:
+                return {'error': f'Failed to upload image: {str(e)}'}, 500
+
+    return {'message': 'Files successfully uploaded', 'filenames': uploaded_files}, 201
+
+@app.route('/api/blog-images', methods=['GET'])
+def get_blog_images():
+    blog_folder = os.path.join(os.getcwd(), '../client/public/blog-images')
+
+    if not os.path.exists(blog_folder):
+        return {'folders': {}}
+
+    folders = [f for f in os.listdir(blog_folder) if os.path.isdir(os.path.join(blog_folder, f))]
+
+    folders.sort(reverse=True, key=lambda x: int(x.replace("-", "")) if x.replace("-", "").isdigit() else 0)
+
+    images_by_folder = {}
+
+    for folder in folders:
+        folder_path = os.path.join(blog_folder, folder)
+        images = [f'/blog-images/{folder}/{img}' for img in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, img))]
+        
+        if images:
+            images_by_folder[folder] = images
+
+    return {'folders': images_by_folder}
 
 @app.route('/api/delete-image', methods=['DELETE'])
 @jwt_required()
@@ -331,7 +516,11 @@ def login():
 
     db.session.commit()
     
-    access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "user"})
+    access_token = create_access_token(
+        identity=user.id, 
+        expires_delta=timedelta(hours=12), 
+        additional_claims={"role": "user"}
+    )
     
     return jsonify(access_token=access_token, user_id=user.id), 200
 
@@ -391,7 +580,6 @@ def signup():
 @app.route('/api/user/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
 def confirm_email(token):
     try:
-        # Decode the token (itsdangerous generates URL-safe tokens by default)
         print(f"Received token: {token}")
         data = serializer.loads(token, salt='user-confirmation-salt', max_age=3600)
 
@@ -405,19 +593,15 @@ def confirm_email(token):
         if request.method == 'POST':
             print(f"POST request: Token verified, user data extracted: {data}")
 
-            # Check if the user already exists by ID
             existing_user = User.query.get(user_id)
 
             if existing_user:
-                # If user exists, update the email instead of creating a new account
                 print(f"POST request: User {user_id} exists, updating email to {email}")
 
-                # Prevent duplicate email usage
                 if User.query.filter(User.email == email, User.id != user_id).first():
                     return jsonify({"error": "This email is already in use by another account."}), 400
 
                 existing_user.email = email
-                existing_user.email_verified = False  # Require re-verification
                 db.session.commit()
 
                 return jsonify({
@@ -427,7 +611,6 @@ def confirm_email(token):
                     "email": existing_user.email
                 }), 200
 
-            # If the user does not exist, prevent creating a new account without required fields
             if "password" not in data:
                 print("POST request failed: Missing password field for new account creation.")
                 return jsonify({"error": "Password is required to create a new account."}), 400
@@ -444,8 +627,7 @@ def confirm_email(token):
                 city=data.get('city', ""),
                 state=data.get('state', ""),
                 zipcode=data.get('zipcode', ""),
-                coordinates=data.get('coordinates'),
-                email_verified=True
+                coordinates=data.get('coordinates')
             )
             db.session.add(new_user)
             db.session.commit()
@@ -482,7 +664,11 @@ def vendorLogin():
 
     db.session.commit()
     
-    access_token = create_access_token(identity=vendor_user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "vendor"})
+    access_token = create_access_token(
+        identity=vendor_user.id, 
+        expires_delta=timedelta(hours=12), 
+        additional_claims={"role": "vendor"}
+    )
 
     return jsonify(access_token=access_token, vendor_user_id=vendor_user.id), 200
 
@@ -500,53 +686,94 @@ def vendorSignup():
         return jsonify({'error': result["error"]}), 500
     return jsonify({'message': result['message']}), 200
 
-@app.route('/api/vendor/confirm-email/<token>', methods=['GET', 'POST'])
+@app.route('/api/change-vendor-email', methods=['POST'])
+def change_vendor_email():
+    try:
+        data = request.get_json()
+
+        email = data.get('email')
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+
+        result = send_vendor_confirmation_email(email, data)
+
+        if 'error' in result:
+            return jsonify({"error": result["error"]}), 500
+
+        return jsonify({"message": result["message"]}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+
+@app.route('/api/vendor/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
 def confirm_vendor_email(token):
     try:
-        
         print(f'Received token: {token}')
         data = serializer.loads(token, salt='vendor-confirmation-salt', max_age=3600)
-        
+
+        vendor_id = data.get('vendor_id')
+        email = data.get('email')
+
         if request.method == 'GET':
-            print(f"GET request: Token verified, email extracted: {data['email']}")
-            # Redirect to the frontend with the token
+            print(f"GET request: Token verified, email extracted: {email}")
             return redirect(f'http://localhost:5173/vendor/confirm-email/{token}')
         
         if request.method == 'POST':
             print(f"POST request: Token verified, user data extracted: {data}")
             
-            if VendorUser.query.filter_by(email=data['email']).first():
-                print("POST request: Email already confirmed or in use")
-                return {'error': 'Email already confirmed or in use.'}, 400
+            existing_vendor = VendorUser.query.get(vendor_id)
             
+            if existing_vendor:
+                print(f"POST request: User {vendor_id} exists, updating email to {email}")
+                
+                if VendorUser.query.filter(VendorUser.email == email, VendorUser.id != vendor_id).first():
+                    return jsonify({"error": "This email is already in use by another account."}), 400
+                
+                existing_vendor.email = email
+                db.session.commit()
+                
+                return jsonify({
+                    "message": "Email updated successfully. Verification required for the new email.",
+                    "isNewUser": False,
+                    "user_id": existing_vendor.id,
+                    "email": existing_vendor.email
+                }), 200
+            
+            if "password" not in data:
+                print("POST request failed: Missing password field for new account creation.")
+                return jsonify({"error": "Password is required to create a new account."}), 400
+
             new_vendor_user = VendorUser(
-                email=data['email'],
+                email=email,
                 password=data['password'], 
                 first_name=data['first_name'],
                 last_name=data['last_name'],
                 phone=data['phone'],
-                email_verified=True
             )
             db.session.add(new_vendor_user)
             db.session.commit()
-            
+
             print("POST request: VendorUser created and committed to the database")
-            return {'message': 'Email confirmed and account created successfully.'}, 201
+            return jsonify({
+                'message': 'Email confirmed and account created successfully.', 
+                'isNewVendor': True, 
+                'vendor_id': new_vendor_user.id
+            }), 201
 
     except SignatureExpired:
         print("Request: The token has expired")
-        return {'error': 'The token has expired'}, 400
+        return jsonify({'error': 'The token has expired'}), 400
 
     except Exception as e:
         print(f"Request: An error occurred: {str(e)}")
-        return {'error': f'Failed to confirm email: {str(e)}'}, 500
+        return jsonify({'error': f'Failed to confirm or update email: {str(e)}'}), 500
     
 @app.route('/api/vendor/logout', methods=['DELETE'])
 def vendorLogout():
     session.pop('vendor_user_id', None)
     return {}, 204
     
-    # ADMIN PORTAL
+# ADMIN PORTAL
 @app.route('/api/admin/login', methods=['POST'])
 def adminLogin():
 
@@ -563,7 +790,11 @@ def adminLogin():
 
     db.session.commit()
     
-    access_token = create_access_token(identity=admin_user.id, expires_delta=timedelta(hours=12), additional_claims={"role": "admin"})
+    access_token = create_access_token(
+        identity=admin_user.id, 
+        expires_delta=timedelta(hours=12), 
+        additional_claims={"role": "admin"}
+    )
 
     return jsonify(access_token=access_token, admin_user_id=admin_user.id), 200
 
@@ -581,55 +812,88 @@ def adminSignup():
         return jsonify({'error': result["error"]}), 500
     return jsonify({'message': result['message']}), 200
 
-from itsdangerous import BadSignature, SignatureExpired
+@app.route('/api/change-admin-email', methods=['POST'])
+def change_admin_email():
+    try:
+        data = request.get_json()
 
-@app.route('/api/admin/confirm-email/<token>', methods=['GET', 'POST'])
+        email = data.get('email')
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+
+        result = send_admin_confirmation_email(email, data)
+
+        if 'error' in result:
+            return jsonify({"error": result["error"]}), 500
+
+        return jsonify({"message": result["message"]}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+
+@app.route('/api/admin/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
 def confirm_admin_email(token):
     try:
         print(f'Received token: {token}')
         data = serializer.loads(token, salt='admin-confirmation-salt', max_age=3600)
 
+        admin_id = data.get('admin_id')
+        email = data.get('email')
+
         if request.method == 'GET':
-            print(f"GET request: Token verified, email extracted: {data['email']}")
+            print(f"GET request: Token verified, email extracted: {email}")
             return redirect(f'http://localhost:5173/admin/confirm-email/{token}')
         
         if request.method == 'POST':
             print(f"POST request: Token verified, user data extracted: {data}")
             
-            # Check if admin user already exists
-            if AdminUser.query.filter_by(email=data['email']).first():
-                print("POST request: Email already confirmed or in use")
-                return {'error': 'Email already confirmed or in use.'}, 400
+            existing_admin = AdminUser.query.get(admin_id)
             
-            # Create new admin user
+            if existing_admin:
+                print(f"POST request: User {admin_id} exists, updating email to {email}")
+                
+                if AdminUser.query.filter(AdminUser.email == email, AdminUser.id != admin_id).first():
+                    return jsonify({"error": "This email is already in use by another account."}), 400
+                
+                existing_admin.email = email
+                db.session.commit()
+                
+                return jsonify({
+                    "message": "Email updated successfully. Verification required for the new email.",
+                    "isNewUser": False,
+                    "user_id": existing_admin.id,
+                    "email": existing_admin.email
+                }), 200
+            
+            if "password" not in data:
+                print("POST request failed: Missing password field for new account creation.")
+                return jsonify({"error": "Password is required to create a new account."}), 400
+
             new_admin_user = AdminUser(
-                email=data['email'],
+                email=email,
                 password=data['password'], 
                 first_name=data['first_name'],
                 last_name=data['last_name'],
                 phone=data['phone'],
-                email_verified=True
             )
             db.session.add(new_admin_user)
             db.session.commit()
-            
-            print("POST request: AdminUser created and committed to the database")
-            return {'message': 'Email confirmed and account created successfully.'}, 201
+
+            print("POST request: VendorUser created and committed to the database")
+            return jsonify({
+                'message': 'Email confirmed and account created successfully.', 
+                'isNewVendor': True, 
+                'vendor_id': new_admin_user.id
+            }), 201
 
     except SignatureExpired:
         print("Request: The token has expired")
-        return {'error': 'The token has expired'}, 400
-
-    except BadSignature:
-        print("Request: The token is invalid")
-        return {'error': 'Invalid token'}, 400
+        return jsonify({'error': 'The token has expired'}), 400
 
     except Exception as e:
         print(f"Request: An error occurred: {str(e)}")
-        return {'error': f'Failed to confirm email: {str(e)}'}, 500
-        
-        
-    
+        return jsonify({'error': f'Failed to confirm or update email: {str(e)}'}), 500
+
 @app.route('/api/admin/logout', methods=['DELETE'])
 def adminLogout():
     session.pop('admin_user_id', None)
@@ -1052,46 +1316,10 @@ def user_password_change(id):
         
         return jsonify(user_id=user.id), 200
 
-@app.route('/api/users/count', methods=['GET'])
-@jwt_required()
-def user_count():
-    status = request.args.get('status', type=str)
-    city = request.args.get('city', type=str)
-    state = request.args.get('state', type=str)
-    try:
-        count = db.session.query(User).count()
-        if status:
-            count = db.session.query(User).filter(User.status == status).count()
-        if city:
-            count = db.session.query(User).filter(User.city == city).count()
-        if state:
-            count = db.session.query(User).filter(User.state == state).count()
-        return jsonify({"count": count}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/users/top-10-cities', methods=['GET'])
-@jwt_required()
-def top_10_cities():
-    try:
-        city_counts = (
-            db.session.query(User.city, func.count(User.city).label("count"))
-            .group_by(User.city)
-            .order_by(func.count(User.city).desc())
-            .limit(10)
-            .all()
-        )
-
-        city_data = {city: count for city, count in city_counts}
-
-        return jsonify(city_data), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/vendor-users', methods=['GET', 'PATCH'])
+@app.route('/api/vendor-users', methods=['GET', 'POST', 'PATCH'])
 @jwt_required()
 def get_vendor_users():
-    if request.method =='GET':
+    if request.method == 'GET':
         try:
             vendor_id = request.args.get('vendor_id', type=int)
             email = request.args.get('email', type=str)
@@ -1105,68 +1333,80 @@ def get_vendor_users():
                 ]
             elif email is not None:
                 vendor_users = VendorUser.query.filter_by(email=email).all()
+                if not vendor_users:
+                    return jsonify([]), 200  # Return empty list instead of 404
             else:
                 vendor_users = query.all()
 
-            if not vendor_users:
-                return jsonify({'message': 'No team members found for this vendor'}), 404
-
-            return jsonify([{
-                'id': vendor_user.id,
-                'first_name': vendor_user.first_name,
-                'last_name': vendor_user.last_name,
-                'email': vendor_user.email,
-                'phone': vendor_user.phone,
-                'vendor_id': vendor_user.vendor_id,
-                'vendor_role': vendor_user.vendor_role,
-                'active_vendor': vendor_user.active_vendor
-            } for vendor_user in vendor_users]), 200
+            return jsonify([user.to_dict() for user in vendor_users]), 200
 
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-    
+
+    elif request.method == 'POST':
+        try:
+            data = request.get_json()
+            email = data.get('email')
+            vendor_id = data.get('vendor_id')
+            role = data.get('role')
+            password = data.get('password', 'temporary_password')
+
+            if not email or not vendor_id:
+                return jsonify({'error': 'Email and vendor_id are required'}), 400
+            
+            vendor_id_dict = {str(vendor_id): vendor_id}
+            vendor_role_dict = {str(vendor_id): role}
+            
+            new_user = VendorUser(
+                email=email,
+                vendor_id=vendor_id_dict,
+                vendor_role=vendor_role_dict,
+                active_vendor=vendor_id,
+                password=password, 
+                first_name="Pending",
+                last_name="Pending",
+                phone="0000000000"
+            )
+            db.session.add(new_user)
+            db.session.commit()
+
+            return jsonify(new_user.to_dict()), 201 
+
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'error': str(e)}), 500
+
     elif request.method == 'PATCH':
         try:
             delete_vendor_id = request.args.get('delete_vendor_id', type=int)
             if delete_vendor_id:
-                if not delete_vendor_id:
-                    return jsonify({'message': 'delete_vendor_id parameter is required'}), 400
-                
                 vendor_users = VendorUser.query.all()
+                vendor_id_str = str(delete_vendor_id)
 
                 for vendor_user in vendor_users:
-                    vendor_id_str = str(delete_vendor_id)
-                    
                     if isinstance(vendor_user.vendor_role, dict) and vendor_id_str in vendor_user.vendor_role:
-                        vendor_user.vendor_role.pop(vendor_id_str)
+                        vendor_user.vendor_role.pop(vendor_id_str, None)
                     if isinstance(vendor_user.vendor_id, dict) and vendor_id_str in vendor_user.vendor_id:
-                        vendor_user.vendor_id.pop(vendor_id_str)
+                        vendor_user.vendor_id.pop(vendor_id_str, None)
 
                         remaining_keys = list(vendor_user.vendor_id.keys())
-                        if remaining_keys:
-                            vendor_user.active_vendor = int(remaining_keys[0])
-                        else:
-                            vendor_user.active_vendor = None
-                    
+                        vendor_user.active_vendor = int(remaining_keys[0]) if remaining_keys else None
+
                     db.session.commit()
 
                 return jsonify({'message': 'Vendor updated successfully'}), 200
-        
+
         except Exception as e:
             return jsonify({'error': str(e)}), 500
-    
+
 @app.route('/api/vendor-users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 @jwt_required()
 def get_vendor_user(id):
-    if not check_role('vendor') and not check_role('admin'):
-        return {'error': "Access forbidden: Vendor only"}, 403
-    
     if request.method == 'GET':
         vendor_user = VendorUser.query.get(id)
         if not vendor_user:
             return jsonify({'error': 'User not found'}), 404
-        profile_data = vendor_user.to_dict()
-        return jsonify(profile_data), 200
+        return jsonify(vendor_user.to_dict()), 200
 
     elif request.method == 'PATCH':
         vendor_user = VendorUser.query.get(id)
@@ -1183,13 +1423,9 @@ def get_vendor_user(id):
                     vendor_user.vendor_role.pop(delete_vendor_id_str, None)
                 if isinstance(vendor_user.vendor_id, dict):
                     vendor_user.vendor_id.pop(delete_vendor_id_str, None)
-                
+
                 remaining_keys = list(vendor_user.vendor_id.keys())
-                if remaining_keys:
-                    first_key = next(iter(vendor_user.vendor_id))
-                    vendor_user.active_vendor = int(first_key)
-                else:
-                    vendor_user.active_vendor = None
+                vendor_user.active_vendor = int(remaining_keys[0]) if remaining_keys else None
 
                 db.session.commit()
                 return jsonify({'message': 'Vendor updated successfully'}), 200
@@ -1208,16 +1444,13 @@ def get_vendor_user(id):
                     vendor_user.vendor_role = data['vendor_role']
                 if 'vendor_id' in data:
                     vendor_user.vendor_id = data['vendor_id']
+
                 remaining_keys = list(vendor_user.vendor_id.keys())
-                if remaining_keys:
-                    first_key = next(iter(vendor_user.vendor_id))
-                    vendor_user.active_vendor = int(first_key)
-                else:
-                    vendor_user.active_vendor = None
+                vendor_user.active_vendor = int(remaining_keys[0]) if remaining_keys else None
 
                 db.session.commit()
                 return jsonify(vendor_user.to_dict()), 200                
-                    
+
             if not delete_vendor_id and not admin_patch:
                 if 'first_name' in data:
                     vendor_user.first_name = data['first_name']
@@ -1245,13 +1478,16 @@ def get_vendor_user(id):
                     vendor_user.vendor_id[vendor_id_key] = vendor_id_value
                 if 'active_vendor' in data:
                     vendor_user.active_vendor = data['active_vendor']
+                if 'join_date' in data:
+                    data['join_date'] = datetime.strptime(data['join_date'], "%Y-%m-%d %H:%M:%S")
+                if 'last_login' in data:
+                    data['last_login'] = datetime.strptime(data['last_login'], "%Y-%m-%d %H:%M:%S")
                     
                 db.session.commit()
                 return jsonify(vendor_user.to_dict()), 200
 
         except Exception as e:
             db.session.rollback()
-            app.logger.error(f"Error updating VendorUser: {str(e)}")
             return jsonify({'error': str(e)}), 500
 
     elif request.method == 'DELETE':
@@ -1266,17 +1502,27 @@ def get_vendor_user(id):
         
         except Exception as e:
             db.session.rollback()
-            app.logger.error(f"Error deleting VendorUser: {str(e)}")
             return jsonify({'error': str(e)}), 500
 
-@app.route('/api/vendor-users/count', methods=['GET'])
+@app.route('/api/vendor-users/<int:id>/password', methods=['PATCH'])
 @jwt_required()
-def vendor_user_count():
-    try:
-        count = db.session.query(VendorUser).count()
-        return jsonify({"count": count}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+def vendor_user_password_change(id):
+    if not check_role('vendor') and not check_role('admin'):
+        return {'error': "Access forbidden: Vendor User only"}, 403
+    
+    if request.method == 'PATCH':
+        data = request.get_json()
+        vendor_user = VendorUser.query.filter(VendorUser.id == id).first()
+        if not vendor_user:
+            return {'error': ' User not found'}, 401
+        
+        if not vendor_user.authenticate(data['old_password']):
+            return {'error': ' Incorrect password!'}, 401
+        
+        vendor_user.password = data.get('new_password')
+        db.session.commit()
+        
+        return jsonify(id=vendor_user.id), 200
 
 @app.route('/api/admin-users', methods=['GET', 'POST'])
 @jwt_required()
@@ -1337,7 +1583,19 @@ def handle_admin_user_by_id(id):
     elif request.method == 'PATCH':
         try:
             data = request.get_json()
-            data.pop('last_login', None)
+
+            if 'join_date' in data:
+                try:
+                    data['join_date'] = datetime.strptime(data['join_date'], "%Y-%m-%d %H:%M:%S")
+                except ValueError:
+                    return jsonify({'error': 'Invalid date format for join_date. Expected YYYY-MM-DD HH:MM:SS'}), 400
+
+            if 'last_login' in data:
+                try:
+                    data['last_login'] = datetime.strptime(data['last_login'], "%Y-%m-%d %H:%M:%S")
+                except ValueError:
+                    return jsonify({'error': 'Invalid date format for last_login. Expected YYYY-MM-DD HH:MM:SS'}), 400
+
             for key, value in data.items():
                 setattr(admin_user, key, value)
             db.session.commit()
@@ -1357,14 +1615,25 @@ def handle_admin_user_by_id(id):
             db.session.rollback()
             return {'error': f'Exception: {str(e)}'}, 500
 
-@app.route('/api/admin-users/count', methods=['GET'])
+@app.route('/api/admin-users/<int:id>/password', methods=['PATCH'])
 @jwt_required()
-def admin_user_count():
-    try:
-        count = db.session.query(AdminUser).count()
-        return jsonify({"count": count}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+def admin_user_password_change(id):
+    if not check_role('admin'):
+        return {'error': "Access forbidden: Admin User only"}, 403
+    
+    if request.method == 'PATCH':
+        data = request.get_json()
+        admin_user = AdminUser.query.filter(AdminUser.id == id).first()
+        if not admin_user:
+            return {'error': ' User not found'}, 401
+        
+        if not admin_user.authenticate(data['old_password']):
+            return {'error': ' Incorrect password!'}, 401
+        
+        admin_user.password = data.get('new_password')
+        db.session.commit()
+        
+        return jsonify(id=admin_user.id), 200
 
 @app.route('/api/markets', methods=['GET', 'POST'])
 def all_markets():
@@ -1396,13 +1665,20 @@ def all_markets():
 
         new_market = Market(
             name=data.get('name'),
+            website=data.get('website'),
+            bio=data.get('bio'),
             location=data.get('location'),
+            city=data.get('city'),
+            state=data.get('state'),
             zipcode=data.get('zipcode'),
             coordinates=data.get('coordinates'),
             schedule=data.get('schedule'),
             year_round=data.get('year_round'),
             season_start=season_start,
-            season_end=season_end
+            season_end=season_end,
+            is_flagship=data.get('is_flagship'),
+            is_visible=data.get('is_visible'),
+            is_current=data.get('is_current')
         )
 
         try:
@@ -1429,12 +1705,20 @@ def market_by_id(id):
         try:
             if 'name' in data:
                 market.name = data['name']
+            if 'website' in data:
+                market.website = data['website']
             if 'image' in data:
                 market.image = data['image']
             if 'image_default' in data:
                 market.image_default = data['image_default']
+            if 'bio' in data:
+                market.bio = data['bio']
             if 'location' in data:
                 market.location = data['location']
+            if 'city' in data:
+                market.city = data['city']
+            if 'state' in data:
+                market.state = data['state']
             if 'zipcode' in data:
                 market.zipcode = data['zipcode']
             if 'coordinates' in data:
@@ -1442,12 +1726,31 @@ def market_by_id(id):
             if 'schedule' in data:
                 market.schedule = data['schedule']
             if 'year_round' in data:
-                market.year_round = data['year_round']
+                if isinstance(data['year_round'], bool):
+                    market.year_round = data['year_round']
+                elif isinstance(data['year_round'], str):
+                    market.year_round = data['year_round'].lower() == 'true'
+                else:
+                    return {'error': 'Invalid value for year_round. Must be a boolean or "true"/"false" string.'}, 400
+            if 'is_flagship' in data:
+                if isinstance(data['is_flagship'], bool):
+                    market.is_flagship = data['is_flagship']
+                elif isinstance(data['is_flagship'], str):
+                    market.is_flagship = data['is_flagship'].lower() == 'true'
+                else:
+                    return {'error': 'Invalid value for is_flagship. Must be a boolean or "true"/"false" string.'}, 400
             if 'is_visible' in data:
                 if isinstance(data['is_visible'], bool):
                     market.is_visible = data['is_visible']
                 elif isinstance(data['is_visible'], str):
                     market.is_visible = data['is_visible'].lower() == 'true'
+                else:
+                    return {'error': 'Invalid value for is_visible. Must be a boolean or "true"/"false" string.'}, 400
+            if 'is_current' in data:
+                if isinstance(data['is_current'], bool):
+                    market.is_current = data['is_current']
+                elif isinstance(data['is_current'], str):
+                    market.is_current = data['is_current'].lower() == 'true'
                 else:
                     return {'error': 'Invalid value for is_visible. Must be a boolean or "true"/"false" string.'}, 400
             if 'season_start' in data:
@@ -1481,15 +1784,6 @@ def market_by_id(id):
         except Exception as e:
             db.session.rollback()
             return {'error': str(e)}, 500
-
-@app.route('/api/markets/count', methods=['GET'])
-@jwt_required()
-def market_count():
-    try:
-        count = db.session.query(Market).count()
-        return jsonify({"count": count}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/market-days', methods=['GET', 'POST', 'DELETE'])
 def all_market_days():
@@ -1548,15 +1842,6 @@ def market_day_by_id(id):
         except Exception as e:
             db.session.rollback()
             return {'error': str(e)}, 500
-
-@app.route('/api/market-days/count', methods=['GET'])
-@jwt_required()
-def market_days_count():
-    try:
-        count = db.session.query(MarketDay).count()
-        return jsonify({"count": count}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
     
 @app.route('/api/vendors', methods=['GET', 'POST', 'PATCH'])
 def all_vendors():
@@ -1669,15 +1954,6 @@ def get_vendor_image(vendor_id):
         except FileNotFoundError:
             return {'error': 'Image not found'}, 404
     return {'error': 'Vendor or image not found'}, 404
-
-@app.route('/api/vendors/count', methods=['GET'])
-@jwt_required()
-def vendor_count():
-    try:
-        count = db.session.query(Vendor).count()
-        return jsonify({"count": count}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/market-reviews', methods=['GET', 'POST', 'DELETE'])
 def all_market_reviews():
@@ -2114,7 +2390,7 @@ def all_events():
             app.logger.error(f'Error fetching events: {e}')  
             return {'error': f'Exception: {str(e)}'}, 500
         
-    elif request.method == 'POST':
+    if request.method == 'POST':
         data = request.get_json()
         print("Received Data:", data)
 
@@ -2125,36 +2401,32 @@ def all_events():
             return jsonify({"error": f"Invalid time format: {str(e)}"}), 400
 
         vendor_id = data.get('vendor_id')
-        if isinstance(vendor_id, dict):
+        if isinstance(vendor_id, dict): 
             try:
                 vendor_id = int(list(vendor_id.keys())[0])
             except (ValueError, IndexError):
                 return jsonify({"error": "Invalid vendor_id format"}), 400
         else:
             try:
-                vendor_id = int(vendor_id)
+                vendor_id = int(vendor_id) if vendor_id is not None else None
             except (TypeError, ValueError):
                 return jsonify({"error": "Invalid vendor_id"}), 400
 
         market_id = data.get('market_id')
-        if not vendor_id or not market_id:
-            return jsonify({"error": "Missing vendor_id or market_id"}), 400
 
         new_event = Event(
-            # vendor_id=vendor_id,
-            # market_id=market_id,
+            vendor_id=vendor_id,
+            market_id=market_id,
             title=data['title'],
             message=data['message'],
             start_date=start_date,
             end_date=end_date
         )
-        if 'vendor_id' in data:
-            new_event.vendor_id = data['vendor_id']
-        if 'market_id' in data:
-            new_event.market_id = data['market_id']
 
         db.session.add(new_event)
         db.session.commit()
+
+        return new_event.to_dict(), 201
 
         return new_event.to_dict(), 201
 
@@ -2283,7 +2555,7 @@ def handle_baskets():
                 price=price,
                 value=value,
                 is_sold=data.get('is_sold', False),
-                is_grabbed=data.get('is_grabbed', False)
+                is_grabbed=data.get('is_grabbed', False),
             )
 
             db.session.add(new_basket)
@@ -2325,6 +2597,8 @@ def handle_baskets():
                 basket.is_sold = data['is_sold']
             if 'is_grabbed' in data:
                 basket.is_grabbed = data['is_grabbed']
+            if 'is_refunded' in data:
+                basket.is_refunded = data['is_refunded']
             if 'price' in data:
                 basket.price = data['price']
             if 'value' in data:
@@ -2468,6 +2742,8 @@ def get_vendor_sales_history():
                     "pickup_end": basket.pickup_end.strftime('%H:%M'),
                     "total_baskets": 0,
                     "sold_baskets": 0,
+                    "fee_vendor": basket.fee_vendor,
+                    "is_refunded": basket.is_refunded
                 }
 
             sales_history[(sale_date, market_day_id)]["total_baskets"] += 1
@@ -2480,73 +2756,6 @@ def get_vendor_sales_history():
     except Exception as e:
         app.logger.error(f"Error fetching sales history: {e}")
         return {'error': f"Exception: {str(e)}"}, 500
-
-@app.route('/api/baskets/count', methods=['GET'])
-@jwt_required()
-def basket_count():
-    try:
-        count = db.session.query(Basket).count()
-        sold_count = db.session.query(Basket).filter(Basket.is_sold == True).count()
-        grabbed_count = db.session.query(Basket).filter(Basket.is_grabbed == True).count()
-        unsold_count = db.session.query(Basket).filter(Basket.is_sold == False).count()
-
-        sold_price = db.session.query(func.sum(Basket.price)).filter(Basket.is_sold == True).scalar() or 0
-        sold_value = db.session.query(func.sum(Basket.value)).filter(Basket.is_sold == True).scalar() or 0
-
-        return jsonify({
-            "count": count,
-            "sold_count": sold_count,
-            "grabbed_count": grabbed_count,
-            "unsold_count": unsold_count,
-            "sold_price": sold_price,
-            "sold_value": sold_value
-        }), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/baskets/top-10-markets', methods=['GET'])
-@jwt_required()
-def basket_top_10_markets():
-    try:
-        market_counts = (
-            db.session.query(Market.name, func.count(Basket.id).label("count"))
-            .join(MarketDay, MarketDay.id == Basket.market_day_id)
-            .join(Market, Market.id == MarketDay.market_id)
-            .group_by(Market.name)
-            .order_by(func.count(Basket.id).desc())
-            .limit(10)
-            .all()
-        )
-
-        market_data = {market: count for market, count in market_counts}
-
-        return jsonify(market_data), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/baskets/top-10-users', methods=['GET'])
-@jwt_required()
-def basket_top_10_users():
-    try:
-        top_users = db.session.query(
-            User.first_name,
-            User.last_name,
-            User.email,
-            db.func.count(Basket.user_id).label('basket_count')
-        ).join(Basket, Basket.user_id == User.id).group_by(User.id).order_by(db.desc('basket_count')).limit(10).all()
-
-        users_data = [{
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "email": user.email,
-            "basket_count": user.basket_count
-        } for user in top_users]
-
-        return jsonify(users_data), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
 
 @app.route('/api/products', methods=['GET', 'POST'])
 def all_products():
@@ -2660,12 +2869,12 @@ def qr_code(id):
         qr_code = QRCode.query.filter_by(id=id).first()
         if not qr_code:
             return {'error': 'QR code not found'}, 404
-        qr_code_data = qr_code.to_dict()  # Fixed variable name
+        qr_code_data = qr_code.to_dict()
         return jsonify(qr_code_data), 200
 
     elif request.method == 'DELETE':
         qr_code = QRCode.query.filter_by(id=id).first()
-        if not qr_code:  # Fixed variable name
+        if not qr_code:
             return {'error': 'QR code not found'}, 404
         
         try:
@@ -2966,9 +3175,54 @@ def send_sendgrid_email_client():
     except Exception as e:
         print(e.message)
         return jsonify({"error": str(e)}), 500
-    
+
+@app.route("/api/sms", methods=['GET', 'POST'])
+def incoming_sms():
+    # Get the message the user sent our Twilio number
+    body = request.values.get('Body', None)
+    sender_phone = request.values.get('From', None)
+
+    if sender_phone.startswith("+1"):
+        sender_phone = sender_phone[2:]
+    elif sender_phone.startswith("+"):
+        sender_phone = sender_phone[1:]
+
+    # Start our TwiML response
+    resp = MessagingResponse()
+
+    # Determine the right reply for this message
+    if body == 'stop':
+        try:
+            user = User.query.filter_by(phone=sender_phone).first()
+            if user:
+                settings = SettingsUser.query.filter_by(user_id=user.id).first()
+                if settings:
+                    settings.text_fav_market_schedule_change = False
+                    settings.text_fav_market_new_basket = False
+                    settings.text_fav_vendor_schedule_change = False
+                    settings.text_basket_pickup_time = False
+                    db.session.commit()
+                    resp.message("You have been unsubscribed from all text notifications ;)")
+                else:
+                    resp.message("Error unsubscribing from text all notifications. Please turn them off on the website. ¯\_(ツ)_/¯")
+            else:
+                print("No user found with this phone number.")
+                resp.message("Error unsubscribing from all text notifications. Please turn them off on the website. ¯\_(ツ)_/¯")
+        except Exception as e:
+            db.session.rollback()
+            print(f"An error occurred: {str(e)}")
+    else:
+        resp.message("I didn't understand that prompt :/")
+
+    return str(resp)
+
 # Stripe
 stripe.api_key = os.getenv('STRIPE_PY_KEY')
+
+def get_vendor_stripe_accounts(vendor_ids):
+    vendors = Vendor.query.filter(Vendor.id.in_(vendor_ids)).all()
+    vendor_accounts = {vendor.id: vendor.stripe_account_id for vendor in vendors if vendor.stripe_account_id}
+    return vendor_accounts
 
 @app.route('/api/config', methods=['GET'])
 def get_config():
@@ -2982,31 +3236,443 @@ def create_payment_intent():
     try:
         # Parse request data
         data = request.get_json()
-        if not data or 'total_price' not in data:
-            return jsonify({'error': {'message': 'Invalid request: Missing total_price.'}}), 400
+        if not data or 'baskets' not in data:
+            return jsonify({'error': {'message': 'Missing baskets data.'}}), 400
 
-        # Validate total_price
-        total_price = data['total_price']
-        if not isinstance(total_price, (int, float)) or total_price <= 0:
-            return jsonify({'error': {'message': "'total_price' must be a positive number."}}), 400
+        total_price = sum(basket['price'] for basket in data['baskets'])
+        total_fee_vendor = sum(basket['fee_vendor'] for basket in data['baskets'])
+        total_fee_user = sum(basket['fee_user'] for basket in data['baskets']) 
 
-        # Create a PaymentIntent
+        transfer_group = f"group_pi_{int(datetime.now().timestamp())}"
+
         payment_intent = stripe.PaymentIntent.create(
-            currency='usd',
-            amount=int(total_price * 100),  # Convert dollars to cents
+            amount=int((total_price + total_fee_user) * 100),
+            currency="usd",
             automatic_payment_methods={'enabled': True},
+            transfer_group=transfer_group
         )
 
-        # Return the clientSecret
-        return jsonify({'clientSecret': payment_intent['client_secret']}), 200
+        return jsonify({
+            'clientSecret': payment_intent['client_secret'],
+            'transfer_group': transfer_group
+        }), 200
 
     except stripe.error.StripeError as e:
-        # Stripe-specific error handling
         return jsonify({'error': {'message': str(e.user_message)}}), 400
 
     except Exception as e:
-        # General error handling
-        return jsonify({'error': {'message': 'An unexpected error occurred.'}}), 500
+        return jsonify({'error': {'message': 'An unexpected error occurred.', 'details': str(e)}}), 500
+
+@app.route('/api/process-transfers', methods=['POST'])
+def process_transfers():
+    try:
+        data = request.get_json()
+        print("🔍 Received data for transfer processing:", data) 
+
+        if not data or 'payment_intent_id' not in data or 'baskets' not in data:
+            return jsonify({'error': {'message': 'Missing required data.'}}), 400
+
+        payment_intent_id = data['payment_intent_id']
+        print(f"📌 Processing transfers for PaymentIntent: {payment_intent_id}")
+
+        payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+        print(f"🔎 PaymentIntent Status: {payment_intent['status']}")
+        if payment_intent['status'] != 'succeeded':
+            return jsonify({
+                'error': {
+                    'message': f"Payment not completed yet. Current status: {payment_intent['status']}",
+                    'payment_intent_status': payment_intent['status']
+                }
+            }), 400
+
+        vendor_ids = [basket['vendor_id'] for basket in data['baskets']]
+        vendor_accounts = get_vendor_stripe_accounts(vendor_ids)
+        print(f"✅ Vendor accounts retrieved: {vendor_accounts}")
+
+        transfer_data = []
+        for basket in data['baskets']:
+            vendor_id = basket['vendor_id']
+            stripe_account_id = vendor_accounts.get(vendor_id)
+
+            if not stripe_account_id:
+                print(f"❌ Vendor {vendor_id} has no Stripe account! Skipping...")
+                continue
+            transfer_amount = int((basket['price'] - basket['fee_vendor']) * 100)
+            print(f"💰 Creating transfer for vendor {vendor_id} (Stripe ID: {stripe_account_id}): {transfer_amount} cents")
+
+            try:
+                transfer = stripe.Transfer.create(
+                    amount=transfer_amount,
+                    currency="usd",
+                    destination=stripe_account_id,
+                    transfer_group=f"group_pi_{payment_intent_id}"
+                )
+
+                print(f"🔍 Stripe Transfer Response: {transfer}") 
+
+                transfer_data.append({
+                    "basket_id": basket["id"], 
+                    "vendor_id": vendor_id,
+                    "stripe_account_id": stripe_account_id,
+                    "stripe_transfer_id": transfer.id,
+                    "amount": transfer.amount,
+                    "destination": stripe_account_id,
+                    "payment_intent_id": payment_intent_id,
+                    "transfer_group": f"group_pi_{payment_intent_id}",
+                    "platform_fee": int(basket['fee_vendor'] * 100),
+                })
+                
+                basket_record = Basket.query.filter_by(id=basket['id']).first()
+                if basket_record:
+                    basket_record.stripe_transfer_id = transfer.id 
+                    db.session.commit() 
+                    print(f"✅✅✅✅✅✅Basket {basket['id']} updated with stripe_transfer_id {transfer.id}")
+
+            except stripe.error.StripeError as e:
+                print(f"❌ Transfer failed for vendor {vendor_id} (Stripe ID: {stripe_account_id}): {e}")
+                print(f"🔍 Stripe API Response: {e.json_body}") 
+                return jsonify({'error': {'message': f"Transfer failed for vendor {vendor_id}", 'details': e.json_body}}), 400
+
+        print("🚀 Final Transfer Data:", transfer_data)
+
+        return jsonify({
+            'message': 'Transfers processed successfully',
+            'transfer_data': transfer_data
+        }), 200
+
+    except stripe.error.StripeError as e:
+        print(f"❌ Stripe API Error: {str(e)}")
+        return jsonify({'error': {'message': 'Stripe API Error', 'details': str(e)}}), 400
+
+    except Exception as e:
+        print(f"❌ Unexpected error in /api/process-transfers: {str(e)}")
+        return jsonify({'error': {'message': 'An unexpected error occurred.', 'details': str(e)}}), 500
+
+@app.route('/api/transfer-reversal', methods=['POST'])
+def reverse_basket_transfer():
+    try:
+        data = request.get_json()
+        required_fields = ["basket_id", "stripe_account_id", "amount"]
+        if not all(field in data for field in required_fields):
+            return jsonify({'error': {'message': 'Missing required data.'}}), 400
+
+        basket_id = data['basket_id']
+        stripe_account_id = data['stripe_account_id']
+        reversal_amount = int(data['amount'] * 100) 
+
+        print(f"🔄 Reversing transfer for Basket {basket_id} (Stripe ID: {stripe_account_id}) (Amount: {reversal_amount} cents)")
+
+        basket_record = Basket.query.filter_by(id=basket_id).first()
+        if not basket_record or not basket_record.stripe_transfer_id:
+            return jsonify({'error': {'message': f"No stripe_transfer_id found for basket {basket_id}."}}), 400
+
+        stripe_transfer_id = basket_record.stripe_transfer_id
+        print(f"✅ Found stripe_transfer_id: {stripe_transfer_id} for basket {basket_id}")
+
+        reversal = stripe.Transfer.create_reversal(
+            stripe_transfer_id,
+            amount=reversal_amount,
+            metadata={"reason": "Refunded to customer"}
+        )
+
+        print(f"✅ Reversal successful: {reversal['id']} for basket {basket_id}")
+
+        return jsonify({
+            "id": reversal["id"],
+            "object": reversal["object"],
+            "amount": reversal["amount"],
+            "balance_transaction": reversal["balance_transaction"],
+            "created": reversal["created"],
+            "currency": reversal["currency"],
+            "destination_payment_refund": reversal.get("destination_payment_refund"),
+            "metadata": reversal["metadata"],
+            "source_refund": reversal["source_refund"],
+            "transfer": stripe_transfer_id
+        }), 200
+
+    except stripe.error.StripeError as e:
+        print(f"❌ Stripe API Error: {e.user_message}")
+        return jsonify({'error': {'message': e.user_message}}), 400
+
+    except Exception as e:
+        print(f"❌ Unexpected Error: {str(e)}")
+        return jsonify({'error': {'message': 'An unexpected error occurred.', 'details': str(e)}}), 500
+
+# @app.route('/api/refund', methods=['POST'])
+# def process_refund():
+#     """
+#     Processes a refund for a specific vendor in a multi-vendor transaction.
+#     Ensures transfer reversal before issuing a refund.
+#     """
+#     try:
+#         data = request.get_json()
+#         required_fields = ["payment_intent_id", "vendor_id", "stripe_account_id", "amount"]
+#         if not all(field in data for field in required_fields):
+#             return jsonify({'error': {'message': 'Missing required data.'}}), 400
+
+#         payment_intent_id = data['payment_intent_id']
+#         vendor_id = data['vendor_id']
+#         stripe_account_id = data['stripe_account_id']  # ✅ Direct vendor stripe ID
+#         refund_amount = int(data['amount'] * 100)  # Convert to cents
+
+#         print(f"🔄 Initiating refund process for Vendor {vendor_id} (Stripe ID: {stripe_account_id}) in PaymentIntent {payment_intent_id}")
+
+#         # ✅ Reverse the transfer for this vendor
+#         reversal_id = reverse_vendor_transfer(payment_intent_id, stripe_account_id)
+#         if isinstance(reversal_id, dict) and "error" in reversal_id:
+#             return jsonify({'error': reversal_id["error"]}), 400  # Stop if reversal failed
+
+#         # ✅ Wait until the reversal is complete before refunding
+#         timeout = time.time() + 30
+#         while time.time() < timeout:
+#             if check_reversal_status(reversal_id):
+#                 print(f"✅ Transfer reversal completed for vendor {vendor_id}. Proceeding with refund.")
+#                 break
+#             print("⏳ Waiting for reversal to complete...")
+#             time.sleep(5)
+
+#         # ✅ Issue refund for **only** this vendor's portion
+#         refund = stripe.Refund.create(
+#             payment_intent=payment_intent_id,  # Refund must be linked to PaymentIntent
+#             amount=refund_amount,  # Only refund this vendor's amount
+#             metadata={
+#                 "vendor_id": vendor_id,
+#                 "reason": "requested_by_customer"
+#             }
+#         )
+
+#         print(f"✅ Refund issued: {refund['id']} for {refund_amount} cents")
+#         return jsonify({
+#             "message": "Refund processed successfully",
+#             "refund_id": refund['id']
+#         }), 200
+
+#     except stripe.error.StripeError as e:
+#         print(f"❌ Stripe API Error: {e.user_message}")
+#         return jsonify({'error': {'message': e.user_message}}), 400
+
+#     except Exception as e:
+#         print(f"❌ Unexpected Error: {str(e)}")
+#         return jsonify({'error': {'message': 'An unexpected error occurred.', 'details': str(e)}}), 500
+
+def get_request_ip():
+    if request.headers.get("X-Forwarded-For"):
+        return request.headers.get("X-Forwarded-For").split(",")[0].strip()
+    return request.remote_addr 
+
+@app.route('/api/stripe-webhook', methods=['POST'])
+def stripe_webhook():
+    # CHECKS IP ADDRESS BEFORE REQUEST
+    # request_ip = get_request_ip()
+
+    # if request_ip not in STRIPE_ALLOWED_IPS:
+    #     print(f"Unauthorized Webhook Attempt from {request_ip}")
+    #     return jsonify({"error": "Unauthorized IP"}), 40
+
+    payload = request.get_data(as_text=True)
+    sig_header = request.headers.get('Stripe-Signature')
+
+    try:
+        # Verify Stripe event signature
+        event = stripe.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
+    except ValueError as e:
+        print("[Error] Invalid payload:", str(e))
+        return jsonify({'error': 'Invalid payload'}), 400
+    except stripe.error.SignatureVerificationError as e:
+        print("[Error] Invalid signature:", str(e))
+        return jsonify({'error': 'Invalid signature'}), 400
+
+    event_type = event['type']
+    # print(f"\n[Event Received]: {event_type}")
+
+    # Handle `payment_intent.created`
+    if event_type == 'payment_intent.created':
+        payment_intent = event['data']['object']
+        # print("Payment Intent Created:", payment_intent['id'])
+        return jsonify({'message': 'Payment Intent created'}), 200
+
+    # Handle `payment_intent.succeeded`
+    elif event_type == 'payment_intent.succeeded':
+        payment_intent = event['data']['object']
+        # print("Payment Succeeded:", payment_intent['id'])
+        # print("Amount:", payment_intent['amount'])
+        # print("Currency:", payment_intent['currency'])
+        # print("Status:", payment_intent['status'])
+        return jsonify({'message': 'Payment processed'}), 200
+
+    # Handle `charge.succeeded`
+    elif event_type == 'charge.succeeded':
+        charge = event['data']['object']
+        # print("\nCharge Succeeded:")
+        # print(json.dumps(charge, indent=2))
+        return jsonify({'message': 'Charge processed'}), 200
+
+    # Handle `charge.updated`
+    elif event_type == 'charge.updated':
+        charge = event['data']['object']
+        # print("Charge Updated:", charge['id'])
+        return jsonify({'message': 'Charge updated'}), 200
+
+    # Handle `payment.created`
+    elif event_type == 'payment.created':
+        payment = event['data']['object']
+        # print("\nPayment Created:")
+        # print(json.dumps(payment, indent=2))
+        return jsonify({'message': 'Payment created'}), 200
+
+    # Handle `transfer.created`
+    elif event_type == 'transfer.created':
+        transfer = event['data']['object']
+        # print("\nTransfer Created:")
+        # print(json.dumps(transfer, indent=2))
+        return jsonify({'message': 'Transfer created'}), 200
+
+    # Handle `application_fee.created`
+    elif event_type == 'application_fee.created':
+        application_fee = event['data']['object']
+        # print("\nApplication Fee Created:")
+        # print(json.dumps(application_fee, indent=2))
+        return jsonify({'message': 'Application fee created'}), 200
+    
+    elif event_type == "balance.available":
+        balance_data = event["data"]["object"]
+        available_funds = balance_data["available"]
+        print(f"Available Balance Updated: {available_funds}")
+        return jsonify({'message': 'Balance Available'})
+    
+    else:
+        print("Unhandled event type:", event_type)
+        return jsonify({'message': f'Unhandled event {event_type}'}), 200 
+    
+@app.route('/api/stripe-transaction', methods=['GET'])
+def get_stripe_transaction():
+    """Fetch live transaction details from Stripe using PaymentIntent ID."""
+    payment_intent_id = request.args.get("payment_intent_id")
+
+    if not payment_intent_id:
+        return jsonify({"error": "Missing required parameter: payment_intent_id"}), 400
+
+    try:
+        # Fetch PaymentIntent from Stripe
+        payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+        # print(f"Payment Intent Found: {payment_intent.id}")
+
+        if not payment_intent or "latest_charge" not in payment_intent:
+            return jsonify({"error": "Invalid PaymentIntent or charge not found"}), 404
+
+        # Fetch Charge details
+        charge = stripe.Charge.retrieve(payment_intent["latest_charge"])
+        # print(f"Charge Found: {charge.id}")
+
+        # Try getting balance_transaction from charge
+        balance_transaction_id = charge.get("balance_transaction")
+
+        # If missing, try fetching from Application Fee
+        if not balance_transaction_id and charge.get("application_fee"):
+            app_fee = stripe.ApplicationFee.retrieve(charge["application_fee"])
+            balance_transaction_id = app_fee.get("balance_transaction")
+            print(f"🔄 Using Application Fee Transaction: {balance_transaction_id}")
+
+        # If still missing, try fetching from Transfer
+        if not balance_transaction_id and charge.get("source_transfer"):
+            transfer = stripe.Transfer.retrieve(charge["source_transfer"])
+            balance_transaction_id = transfer.get("balance_transaction")
+            print(f"🔄 Using Transfer Transaction: {balance_transaction_id}")
+
+        # If still missing, return an error
+        if not balance_transaction_id:
+            return jsonify({"error": "Charge does not have a balance transaction yet. Try again later."}), 400
+
+        # Fetch Balance Transaction details from Stripe
+        balance_transaction = stripe.BalanceTransaction.retrieve(balance_transaction_id)
+        # print(f"Balance Transaction Found: {balance_transaction_id}")
+
+        # Extract Fees & Taxes
+        fee_processor = sum(fee['amount'] / 100 for fee in balance_transaction.fee_details if fee['type'] == 'stripe_fee')
+        fee_gingham = sum(fee['amount'] / 100 for fee in balance_transaction.fee_details if fee['type'] == 'application_fee')
+        tax_total = sum(fee['amount'] / 100 for fee in balance_transaction.fee_details if fee['type'] == 'tax')
+
+        # Extract Last 4 Digits of Card
+        card_id = charge.payment_method_details.get('card', {}).get('last4', "N/A")
+
+        # Return transaction details
+        return jsonify({
+            "payment_intent_id": payment_intent_id,
+            "fee_gingham": fee_gingham,
+            "fee_processor": fee_processor,
+            "card_id": card_id,
+            "tax": tax_total
+        }), 200
+
+    except stripe.error.InvalidRequestError as e:
+        print(f"Stripe API Error: {str(e)}")  # Debugging log
+        return jsonify({"error": f"Stripe API error: {str(e)}"}), 500
+    except Exception as e:
+        print(f"Unexpected Error: {str(e)}")  # Debugging log
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+
+# Distribute Payments route is not working correctly - this may need to be made into a webhook.     
+# @app.route('/api/distribute-payments', methods=['POST'])
+# def distribute_payments():
+#     try:
+#         data = request.get_json()
+#         if not data or 'baskets' not in data or 'payment_intent_id' not in data:
+#             return jsonify({'error': {'message': 'Missing required data.'}}), 400
+
+#         payment_intent_id = data['payment_intent_id']
+#         baskets = data['baskets']
+
+#         print(f"Fetching PaymentIntent {payment_intent_id}...")
+
+#         # Retrieve the PaymentIntent to get the charge ID
+#         payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+#         charge_id = payment_intent.charges.data[0].id if payment_intent.charges.data else None
+
+#         if not charge_id:
+#             print("No charge found for PaymentIntent.")
+#             return jsonify({'error': {'message': 'No charge associated with this PaymentIntent.'}}), 400
+
+#         print(f"Retrieved Charge ID: {charge_id}")
+
+#         transfers = []
+
+#         for basket in baskets:
+#             vendor_id = basket['vendor_id']
+#             vendor_account_id = get_vendor_stripe_account(vendor_id)
+#             price = basket['price']
+#             fee_vendor = basket.get('fee_vendor', 0)
+
+#             if not vendor_account_id:
+#                 print(f"⚠️ Skipping vendor {vendor_id}: No Stripe account.")
+#                 continue
+
+#             vendor_payout = price - fee_vendor
+#             if vendor_payout <= 0:
+#                 print(f"⚠️ Skipping vendor {vendor_id}: Payout amount is zero or negative.")
+#                 continue
+
+#             print(f"💰 Transferring {vendor_payout} to Vendor {vendor_id} (Stripe Account: {vendor_account_id})")
+
+#             transfer = stripe.Transfer.create(
+#                 amount=int(vendor_payout * 100),
+#                 currency="usd",
+#                 destination=vendor_account_id,
+#                 description=f"Payout for Basket {basket['id']}",
+#                 source_transaction=charge_id 
+#             )
+
+#             transfers.append(transfer)
+#             print(f"Transfer successful: {transfer['id']} to Vendor {vendor_id}")
+
+#         return jsonify({'message': 'Vendor payouts completed successfully', 'transfers': transfers}), 200
+
+#     except stripe.error.StripeError as e:
+#         print("Stripe error during payouts:", e)
+#         return jsonify({'error': {'message': str(e.user_message)}}), 400
+
+#     except Exception as e:
+#         print("Unexpected error:", str(e))
+#         return jsonify({'error': {'message': 'An unexpected error occurred.'}}), 500
 
 # Password reset for User
 @app.route('/api/user/password-reset-request', methods=['POST'])
@@ -3137,8 +3803,6 @@ def admin_password_reset_request():
         return jsonify({"error": result["error"]}), 500
     return jsonify({"message": result["message"]}), 200
     
-
-
 @app.route('/api/admin/password-reset/<token>', methods=['GET', 'POST'])
 def admin_password_reset(token):
     if request.method == 'GET':
@@ -3257,7 +3921,6 @@ def notify_me_for_more_baskets():
                 vendor_id=vendor.id,
                 vendor_user_id=vendor_user.id,
                 market_id=data.get('market_id'),
-                created_at=datetime.utcnow(),
                 is_read=False
             )
             notifications.append(new_notification)
@@ -3288,13 +3951,15 @@ def notify_me_for_more_baskets():
         print(f"Error creating notification: {str(e)}")
         return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
 
-@app.route('/api/vendor-notifications', methods=['GET', 'DELETE'])
+@app.route('/api/vendor-notifications', methods=['GET', 'POST', 'DELETE'])
 @jwt_required()
 def fetch_vendor_notifications():
     vendor_id = request.args.get('vendor_id')
     vendor_user_id = request.args.get('vendor_user_id')
     is_read = request.args.get('is_read', None)
     subject = request.args.get('subject')
+    data = request.args.get('data')
+    vendor_id = request.args.get('vendor_id')
     
     if request.method == 'GET':
         query = VendorNotification.query
@@ -3308,6 +3973,10 @@ def fetch_vendor_notifications():
             query = query.filter_by(is_read=is_read_bool)
         if subject:
             query = query.filter_by(subject=subject)
+        if data:
+            query = query.filter_by(data=data)
+        if vendor_id:
+            query = query.filter_by(data=vendor_id)
 
         notifications = query.order_by(VendorNotification.created_at.desc()).all()
 
@@ -3316,6 +3985,7 @@ def fetch_vendor_notifications():
             'subject': n.subject,
             'message': n.message,
             'link': n.link,
+            'data': n.data,
             'is_read': n.is_read,
             'user_id': n.user_id,
             'market_id': n.market_id,
@@ -3327,12 +3997,81 @@ def fetch_vendor_notifications():
         
         return jsonify({'notifications': notifications_data}), 200
     
+    if request.method == 'POST':
+        data = request.get_json()
+
+        vendor_role_arg = request.args.get('vendor_role', type=int)
+
+        if not data or 'message' not in data or 'vendor_id' not in data:
+            return jsonify({'message': 'Invalid request data.'}), 400
+
+        try:
+            vendor_id_str = str(data['vendor_id'])
+            vendor_user_id = int(data['data'])
+    
+            vendor_user = VendorUser.query.get(vendor_user_id)
+
+            if not vendor_user:
+                return jsonify({'message': 'Vendor user not found.'}), 404
+
+            if isinstance(vendor_user.vendor_id, dict) and vendor_id_str in vendor_user.vendor_id:
+                return jsonify({'message': 'Vendor team request already sent.'}), 400
+            
+            vendor_users = VendorUser.query.filter(
+                VendorUser.vendor_id.contains({vendor_id_str: int(data['vendor_id'])}),
+                VendorUser.vendor_role[vendor_id_str].as_integer() <= vendor_role_arg
+            ).all()
+            
+            print(f"Found vendor_users: {vendor_users}")
+
+            if not vendor_users:
+                return jsonify({'message': 'No matching vendor users found.'}), 404
+
+            notifications = []
+
+            for vendor_user in vendor_users:
+                new_notification = VendorNotification(
+                    subject=data['subject'],
+                    message=data['message'],
+                    link=data['link'],
+                    data=data['data'],
+                    user_id=data.get('user_id'),
+                    market_id=data.get('market_id'),
+                    vendor_id=data['vendor_id'],
+                    vendor_user_id=vendor_user.id,
+                    created_at=datetime.utcnow(),
+                    is_read=False
+                )
+                db.session.add(new_notification)
+                notifications.append(new_notification)
+
+            db.session.commit()
+
+            return jsonify([{
+                'id': n.id,
+                'subject': n.subject,
+                'message': n.message,
+                'link': n.link,
+                'data': n.data,
+                'user_id': n.user_id,
+                'market_id': n.market_id,
+                'vendor_id': n.vendor_id,
+                'vendor_user_id': n.vendor_user_id,
+                'is_read': n.is_read
+            } for n in notifications]), 201
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error creating notification: {str(e)}")
+            return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
+
     if request.method == 'DELETE':
-        query = VendorNotification.query
-        if vendor_user_id:
+        if subject == 'team-request':
+            query = VendorNotification.query
             query = query.filter(
-                VendorNotification.vendor_user_id == vendor_user_id,
-                VendorNotification.subject != 'team-request'
+                VendorNotification.data == int(data),
+                VendorNotification.subject == subject,
+                VendorNotification.vendor_id ==int(vendor_id)
             )
         
             deleted_count = query.delete()
@@ -3405,10 +4144,10 @@ def approve_notification(notification_id):
     if not notification:
         return jsonify({'message': 'Notification not found'}), 404
 
-    if not notification.vendor_user_id:
+    if not notification.data:
         return jsonify({'message': 'No vendor user associated with this notification'}), 400
 
-    user = VendorUser.query.get(notification.vendor_user_id)
+    user = VendorUser.query.get(int(notification.data))
     if not user:
         return jsonify({'message': 'Vendor user not found'}), 404
 
@@ -3428,7 +4167,12 @@ def approve_notification(notification_id):
     notification.is_read = True
     db.session.commit()
 
-    db.session.delete(notification)
+    VendorNotification.query.filter_by(
+        subject=notification.subject,
+        vendor_id=notification.vendor_id,
+        data=notification.data
+    ).delete()
+
     db.session.commit()
 
     return jsonify({'message': 'Notification approved and user updated successfully'}), 200
@@ -3441,7 +4185,11 @@ def reject_notification(notification_id):
     if not notification:
         return jsonify({'message': 'Notification not found'}), 404
 
-    db.session.delete(notification)
+    VendorNotification.query.filter_by(
+        subject=notification.subject,
+        vendor_id=notification.vendor_id,
+        data=notification.data
+    ).delete()
     db.session.commit()
 
     return jsonify({'message': 'Notification rejected successfully'}), 200
@@ -3714,6 +4462,612 @@ def blog(id):
         except Exception as e:
             db.session.rollback()
             return {'error': f'Failed to delete Blog: {str(e)}'}, 500
+
+@app.route('/api/receipts', methods=['GET', 'POST'])
+def get_user_receipts():
+    if request.method == 'GET':
+        try:
+            user_id = request.args.get("user_id", type=int)
+            
+            if user_id:
+                user = User.query.get(user_id)
+                if not user:
+                    return jsonify({"error": "User not found"}), 404
+
+                receipts = Receipt.query.filter_by(user_id=user_id).order_by(Receipt.created_at.desc()).all()
+            else:
+                receipts = Receipt.query.order_by(Receipt.created_at.desc()).all()
+
+            receipts = Receipt.query.filter_by(user_id=user_id).order_by(Receipt.created_at.desc()).all()
+
+            return jsonify([receipt.to_dict() for receipt in receipts]), 200
+        except Exception as e:
+            return jsonify({"error": f"Error fetching receipts: {str(e)}"}), 500
+
+    if request.method == 'POST':
+        try:
+            if not request.data:
+                return jsonify({"error": "Empty request body"}), 400
+
+            data = request.get_json()
+
+            if not data or 'user_id' not in data or 'baskets' not in data or 'payment_intent_id' not in data:
+                return jsonify({"error": "Missing required fields: 'user_id', 'baskets', or 'payment_intent_id'"}), 400
+
+            user = User.query.get(data['user_id'])
+            if not user:
+                return jsonify({"error": "User not found"}), 404
+
+            created_at = datetime.utcnow().date()
+
+            new_receipt = Receipt(
+                user_id=data['user_id'],
+                baskets=data['baskets'],
+                payment_intent_id=data['payment_intent_id'],
+                created_at=created_at
+            )
+
+            db.session.add(new_receipt)
+            db.session.commit()
+
+            return jsonify(new_receipt.to_dict()), 201
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": f"Error creating receipt: {str(e)}"}), 500
+
+@app.route('/api/receipts/<int:receipt_id>', methods=['GET'])
+def get_receipt(receipt_id):
+    try:
+        receipt = Receipt.query.get(receipt_id)
+        if not receipt:
+            return jsonify({"error": "Receipt not found"}), 404
+
+        return jsonify(receipt.to_dict()), 200
+    except Exception as e:
+        return jsonify({"error": f"Error fetching receipt: {str(e)}"}), 500
+
+@app.route('/api/user-issues', methods=['GET', 'POST'])
+@jwt_required()
+def user_issues():
+    if request.method == 'GET':
+        user_id = request.args.get('user_id')
+        
+        if user_id:
+            issues = UserIssue.query.filter_by(user_id=user_id).all()
+        else:
+            issues = UserIssue.query.all()
+            
+        return jsonify([
+            {
+                "id": issue.id,
+                "user_id": issue.user_id,
+                "basket_id": issue.basket_id,
+                "issue_type": issue.issue_type,
+                "issue_subtype": issue.issue_subtype,
+                "body": issue.body,
+                "status": issue.status,
+                "created_at": issue.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            }
+            for issue in issues
+        ]), 200
+
+    elif request.method == 'POST':
+        data = request.get_json()
+
+        required_fields = ['user_id', 'issue_type', 'issue_subtype', 'body']
+        for field in required_fields:
+            if field not in data or not data[field]:
+                return jsonify({"error": f"{field} is required"}), 400
+
+        new_issue = UserIssue(
+            user_id=data['user_id'],
+            basket_id=data.get('basket_id'),
+            issue_type=data['issue_type'],
+            issue_subtype=data['issue_subtype'],
+            body=data['body'],
+            status="Pending"
+        )
+
+        db.session.add(new_issue)
+        db.session.commit()
+
+        return jsonify({"message": "Issue created successfully", "issue_id": new_issue.id}), 201
+
+
+@app.route('/api/users/count', methods=['GET'])
+@jwt_required()
+def user_count():
+    status = request.args.get('status', type=str)
+    city = request.args.get('city', type=str)
+    state = request.args.get('state', type=str)
+    try:
+        count = db.session.query(User).count()
+        if status:
+            count = db.session.query(User).filter(User.status == status).count()
+        if city:
+            count = db.session.query(User).filter(User.city == city).count()
+        if state:
+            count = db.session.query(User).filter(User.state == state).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/vendor-users/count', methods=['GET'])
+@jwt_required()
+def vendor_user_count():
+    try:
+        count = db.session.query(VendorUser).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/admin-users/count', methods=['GET'])
+@jwt_required()
+def admin_user_count():
+    try:
+        count = db.session.query(AdminUser).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/markets/count', methods=['GET'])
+@jwt_required()
+def market_count():
+    try:
+        count = db.session.query(Market).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/api/market-days/count', methods=['GET'])
+@jwt_required()
+def market_days_count():
+    try:
+        count = db.session.query(MarketDay).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/vendors/count', methods=['GET'])
+@jwt_required()
+def vendor_count():
+    try:
+        count = db.session.query(Vendor).count()
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/baskets/count', methods=['GET'])
+@jwt_required()
+def basket_count():
+    try:
+        count = db.session.query(Basket).count()
+        sold_count = db.session.query(Basket).filter(Basket.is_sold == True).count()
+        grabbed_count = db.session.query(Basket).filter(Basket.is_grabbed == True).count()
+        unsold_count = db.session.query(Basket).filter(Basket.is_sold == False).count()
+
+        sold_price = db.session.query(func.sum(Basket.price)).filter(Basket.is_sold == True).scalar() or 0
+        sold_value = db.session.query(func.sum(Basket.value)).filter(Basket.is_sold == True).scalar() or 0
+
+        return jsonify({
+            "count": count,
+            "sold_count": sold_count,
+            "grabbed_count": grabbed_count,
+            "unsold_count": unsold_count,
+            "sold_price": sold_price,
+            "sold_value": sold_value
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/baskets/top-10-markets', methods=['GET'])
+@jwt_required()
+def basket_top_10_markets():
+    try:
+        market_counts = (
+            db.session.query(Market.name, func.count(Basket.id).label("count"))
+            .join(MarketDay, MarketDay.id == Basket.market_day_id)
+            .join(Market, Market.id == MarketDay.market_id)
+            .group_by(Market.name)
+            .order_by(func.count(Basket.id).desc())
+            .limit(10)
+            .all()
+        )
+
+        market_data = {market: count for market, count in market_counts}
+
+        return jsonify(market_data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/baskets/top-10-vendors', methods=['GET'])
+@jwt_required()
+def basket_top_10_vendors():
+    try:
+        vendor_counts = (
+            db.session.query(Vendor.name, func.count(Basket.id).label("count"))
+            .join(Vendor, Vendor.id == Basket.vendor_id)
+            .group_by(Vendor.name)
+            .order_by(func.count(Basket.id).desc())
+            .limit(10)
+            .all()
+        )
+
+        vendor_data = {vendor: count for vendor, count in vendor_counts}
+
+        return jsonify(vendor_data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/baskets/top-10-users', methods=['GET'])
+@jwt_required()
+def basket_top_10_users():
+    try:
+        top_users = db.session.query(
+            User.first_name,
+            User.last_name,
+            User.email,
+            db.func.count(Basket.user_id).label('basket_count')
+        ).join(Basket, Basket.user_id == User.id).group_by(User.id).order_by(db.desc('basket_count')).limit(10).all()
+
+        users_data = [{
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "basket_count": user.basket_count
+        } for user in top_users]
+
+        return jsonify(users_data), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500        
+    
+@app.route('/api/users/top-10-cities', methods=['GET'])
+@jwt_required()
+def top_10_cities():
+    try:
+        city_state_counts = (
+            db.session.query(User.city, User.state, func.count().label("count"))
+            .group_by(User.city, User.state)
+            .order_by(func.count().desc())
+            .limit(10)
+            .all()
+        )
+
+        city_data = [
+            {"city": city, "state": state, "count": count}
+            for city, state, count in city_state_counts
+        ]
+
+        return jsonify(city_data), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/market-favorites/top-10-markets', methods=['GET'])
+def get_top_favorited_markets():
+    try:
+        top_markets = (
+            db.session.query(
+                MarketFavorite.market_id,
+                Market.name,
+                func.count(MarketFavorite.id).label("favorite_count")
+            )
+            .join(Market, Market.id == MarketFavorite.market_id)
+            .group_by(MarketFavorite.market_id, Market.name)
+            .order_by(func.count(MarketFavorite.id).desc())
+            .limit(10)
+            .all()
+        )
+
+        result = [
+            {"market_id": market_id, "market_name": name, "favorite_count": favorite_count}
+            for market_id, name, favorite_count in top_markets
+        ]
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/vendor-favorites/top-10-vendors', methods=['GET'])
+def get_top_favorited_vendors():
+    try:
+        top_vendors = (
+            db.session.query(
+                VendorFavorite.vendor_id,
+                Vendor.name,
+                func.count(VendorFavorite.id).label("favorite_count")
+            )
+            .join(Vendor, Vendor.id == VendorFavorite.vendor_id)
+            .group_by(VendorFavorite.vendor_id, Vendor.name)
+            .order_by(func.count(VendorFavorite.id).desc())
+            .limit(10)
+            .all()
+        )
+
+        result = [
+            {"vendor_id": vendor_id, "vendor_name": name, "favorite_count": favorite_count}
+            for vendor_id, name, favorite_count in top_vendors
+        ]
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/export-csv/users', methods=['GET'])
+def export_csv_users():
+    try:
+        users = User.query.all()
+        csv_data = []
+
+        headers = ["id", "email", "first_name", "last_name", "phone", "address_1", "address_2", 
+                   "city", "state", "zipcode", "coordinates", "avatar_default", "status", 
+                   "login_count", "last_login", "join_date"]
+
+        for user in users:
+            csv_data.append([
+                user.id, user.email, user.first_name, user.last_name, user.phone,
+                user.address_1, user.address_2, user.city, user.state, user.zipcode,
+                user.coordinates, user.avatar_default, user.status,
+                user.login_count, user.last_login, user.join_date
+            ])
+
+        output = StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+        writer.writerow(headers)
+        writer.writerows(csv_data)
+
+        csv_content = output.getvalue()
+        output.close()
+
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        filename = f"database_export_users_{today_date}.csv"
+
+        response = Response(csv_content, mimetype="text/csv")
+        response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+
+        return jsonify({"csv": csv_content, "filename": filename})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/export-csv/vendor-users', methods=['GET'])
+def export_csv_vendor_users():
+    try:
+        vendor_users = VendorUser.query.all()
+        csv_data = []
+
+        headers = ["id", "email", "first_name", "last_name", "phone", 
+                   "vendor_id", "vendor_role", "login_count", "last_login", "join_date"]
+
+        for user in vendor_users:
+            csv_data.append([
+                user.id, user.email, user.first_name, user.last_name, user.phone,
+                json.dumps(user.vendor_id),
+                json.dumps(user.vendor_role),
+                user.login_count, user.last_login, user.join_date
+            ])
+
+        output = StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+        writer.writerow(headers)
+        writer.writerows(csv_data)
+
+        csv_content = output.getvalue()
+        output.close()
+
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        filename = f"database_export_vendor_users_{today_date}.csv"
+
+        return jsonify({"csv": csv_content, "filename": filename})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/export-csv/markets', methods=['GET'])
+def export_csv_markets():
+    try:
+        markets = Market.query.all()
+        csv_data = []
+
+        headers = ["id", "name", "image_default", "location", "city",
+                   "state", "zipcode", "coordinates", "schedule", 
+                   "year_round", "season_start", "season_end", 
+                   "is_visible"]
+
+        for market in markets:
+            csv_data.append([
+                market.id, market.name, market.image_default, market.location,
+                market.city, market.state, market.zipcode, json.dumps(market.coordinates),
+                market.schedule, market.year_round, market.season_start,
+                market.season_end, market.is_visible
+            ])
+
+        output = StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+        writer.writerow(headers)
+        writer.writerows(csv_data)
+
+        csv_content = output.getvalue()
+        output.close()
+
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        filename = f"database_export_markets_{today_date}.csv"
+
+        return jsonify({"csv": csv_content, "filename": filename})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/export-csv/vendors', methods=['GET'])
+def export_csv_vendors():
+    try:
+        vendors = Vendor.query.all()
+        csv_data = []
+
+        headers = ["id", "name", "city", "state", "products", "bio", "website", "image_default"]
+
+        for vendor in vendors:
+            csv_data.append([
+                vendor.id, vendor.name, vendor.city, vendor.state,
+                json.dumps(vendor.products), vendor.bio, vendor.website, vendor.image_default
+            ])
+
+        output = StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+        writer.writerow(headers)
+        writer.writerows(csv_data)
+
+        csv_content = output.getvalue()
+        output.close()
+
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        filename = f"database_export_vendors_{today_date}.csv"
+
+        return jsonify({"csv": csv_content, "filename": filename})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/export-csv/baskets', methods=['GET'])
+def export_csv_baskets():
+    try:
+        baskets = Basket.query.all()
+        csv_data = []
+
+        headers = ["id", "vendor_id", "market_day_id", "sale_date", "pickup_start", "pickup_end", 
+                   "user_id", "is_sold", "is_grabbed", "is_refunded", "price", "value", "fee_vendor"]
+
+        for basket in baskets:
+            csv_data.append([
+                basket.id, basket.vendor_id, basket.market_day_id, basket.sale_date, 
+                basket.pickup_start, basket.pickup_end, basket.user_id, 
+                basket.is_sold, basket.is_grabbed, basket.is_refunded, basket.price, 
+                basket.value, basket.fee_vendor
+            ])
+
+        output = StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+        writer.writerow(headers)
+        writer.writerows(csv_data)
+
+        csv_content = output.getvalue()
+        output.close()
+
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        filename = f"database_export_baskets_{today_date}.csv"
+
+        return jsonify({"csv": csv_content, "filename": filename})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/export-csv/products', methods=['GET'])
+def export_csv_products():
+    try:
+        products = Product.query.all()
+        csv_data = []
+
+        headers = ["id", "product"]
+
+        for product in products:
+            csv_data.append([
+                product.id, product.product
+            ])
+
+        output = StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+        writer.writerow(headers)
+        writer.writerows(csv_data)
+
+        csv_content = output.getvalue()
+        output.close()
+
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        filename = f"database_export_products_{today_date}.csv"
+
+        return jsonify({"csv": csv_content, "filename": filename})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/export-csv/for-vendor/baskets', methods=['GET'])
+def export_csv_vendor_baskets():
+    vendor_id = request.args.get('vendor_id', type=int)
+    month = request.args.get('month', type=int)
+    year = request.args.get('year', type=int)
+    
+    if not all([vendor_id, month, year]):
+        return jsonify({'error': 'Missing required parameters'}), 400
+    
+    # Query baskets for given vendor and month/year
+    baskets = Basket.query.filter(
+        Basket.vendor_id == vendor_id,
+        extract('month', Basket.sale_date) == month,
+        extract('year', Basket.sale_date) == year
+    ).all()
+    
+    # Create CSV in memory
+    output = StringIO()
+    writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+    
+    # Write headers
+    headers = ['ID', 'Sale Date', 'Pickup Start', 'Pickup End', 'Price', 
+              'Value', 'Fee', 'Is Sold', 'Is Grabbed', "Is Refunded"]
+    writer.writerow(headers)
+    
+    # Write data
+    for basket in baskets:
+        writer.writerow([
+            basket.id,
+            basket.sale_date.strftime('%Y-%m-%d') if basket.sale_date else '',
+            basket.pickup_start.strftime('%H:%M') if basket.pickup_start else '',
+            basket.pickup_end.strftime('%H:%M') if basket.pickup_end else '',
+            basket.price,
+            basket.value,
+            basket.fee_vendor,
+            'Yes' if basket.is_sold else 'No',
+            'Yes' if basket.is_grabbed else 'No',
+            'Yes' if basket.is_refunded else 'No'
+        ])
+    
+    # Convert to BytesIO for send_file
+    mem = BytesIO()
+    mem.write(output.getvalue().encode('utf-8'))
+    mem.seek(0)
+    output.close()
+    
+    return send_file(
+        mem,
+        mimetype='text/csv',
+        as_attachment=True,
+        download_name=f'gingham_vendor-statement_{year}-{month:02d}.csv'
+    )
+
+@app.route('/api/export-pdf/for-vendor/baskets', methods=['GET'])
+def export_pdf_vendor_baskets():
+    vendor_id = request.args.get('vendor_id', type=int)
+    month = request.args.get('month', type=int)
+    year = request.args.get('year', type=int)
+    
+    if not all([vendor_id, month, year]):
+        return jsonify({'error': 'Missing required parameters'}), 400
+    
+    try:
+        # Query baskets for given vendor and month/year
+        baskets = Basket.query.filter(
+            Basket.vendor_id == vendor_id,
+            extract('month', Basket.sale_date) == month,
+            extract('year', Basket.sale_date) == year
+        ).all()
+        
+        return jsonify([basket.to_dict() for basket in baskets]), 200
+    
+    except Exception as e:
+        return jsonify({"error": f"Error fetching baskets: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5555)), debug=True)

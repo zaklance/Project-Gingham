@@ -6,7 +6,9 @@ import PasswordChecklist from "react-password-checklist"
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-
+import { toast } from 'react-toastify';
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 
 function AdminProfile () {
     const { id } = useParams();
@@ -28,6 +30,7 @@ function AdminProfile () {
     const [changeConfirmPassword, setChangeConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false, pw3: false });
     const [isValid, setIsValid] = useState(false);
+    const [isSendingEmail, setIsSendingEmail] = useState(false);
 
     const token = localStorage.getItem('admin_jwt-token');
 
@@ -101,13 +104,6 @@ function AdminProfile () {
             fetchUserSettings();
         }, [id]);
 
-    // const handleInputChange = (event) => {
-    //     setAdminUserData({
-    //         ...adminUserData,
-    //         [event.target.name]: event.target.value,
-    //     });
-    // };
-
     const handleEditToggle = () => {
         if (!editMode) {
             setTempProfileData({ ...adminUserData });
@@ -122,6 +118,13 @@ function AdminProfile () {
         setTempProfileData({
             ...tempProfileData,
             [name]: value
+        });
+    };
+
+    const handlePhoneInputChange = event => {
+        setTempProfileData({
+            ...tempProfileData,
+            ['phone']: event
         });
     };
 
@@ -180,47 +183,66 @@ function AdminProfile () {
 
     const handleSaveEmail = async () => {
         if (changeEmail !== changeConfirmEmail) {
-            alert("Emails do not match.");
+            toast.error('Emails do not match.', {
+                autoClose: 4000,
+            });
             return;
         }
+        setIsSendingEmail(true);
+    
         try {
-            const response = await fetch(`/api/users/${id}`, {
-                method: 'PATCH',
+            const response = await fetch(`/api/change-admin-email`, {
+                method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    email: changeEmail
-                })
+                    admin_id: id,
+                    email: changeEmail,
+                }),
             });
+    
+            const responseData = await response.json();
+    
+            console.log("Response Data:", responseData);
+    
             if (response.ok) {
-                const updatedData = await response.json();
-                setChangeEmail('')
-                setChangeConfirmEmail('')
+                setChangeEmail('');
+                setChangeConfirmEmail('');
                 setEmailMode(false);
-                alert('Email will not update until you check your email and click the verify link.')
+                toast.warning('Email will not update until you check your email and click the verify link.', {
+                    autoClose: 8000,
+                });
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status:', response.status);
-                console.log('Response text:', await response.text());
+                console.log('Response text:', responseData);
             }
         } catch (error) {
-            console.error('Error saving changes:', error);
+            toast.error(`Error saving changes: ${error}`, {
+                autoClose: 5000,
+            });
+        } finally {
+            setIsSendingEmail(false);
         }
     };
 
     const handleSavePassword = async () => {
         if (changePassword !== changeConfirmPassword) {
-            alert("Passwords do not match.");
+            toast.error('Passwords do not match.', {
+                autoClose: 4000,
+            });
             return;
         }
         if (!isValid) {
-            alert("Password does not meet requirements.");
+            toast.error('Password does not meet requirements.', {
+                autoClose: 4000,
+            });
             return;
         }
         try {
-            const response = await fetch(`/api/users/${id}/password`, {
+            const response = await fetch(`/api/admin-users/${id}/password`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -238,14 +260,19 @@ function AdminProfile () {
                 setChangePassword('')
                 setChangeConfirmPassword('')
                 setPasswordMode(false);
-                alert('Password changed')
+                toast.success('Password changed.', {
+                    autoClose: 4000,
+                });
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status:', response.status);
                 console.log('Response text:', await response.text());
             }
         } catch (error) {
-            console.error('Error saving changes:', error);
+            // console.error('Error saving changes:', error);
+            toast.error(`Error saving changes: ${error}`, {
+                autoClose: 5000,
+            });
         }
     };
 
@@ -348,12 +375,22 @@ function AdminProfile () {
                                         </div>
                                         <div className='form-group'>
                                             <label>Phone Number:</label>
-                                            <input
+                                            <PhoneInput
+                                                className='input-phone margin-l-8'
+                                                countryCallingCodeEditable={false}
+                                                withCountryCallingCode
+                                                country='US'
+                                                defaultCountry='US'
+                                                placeholder="enter your phone number"
+                                                value={tempProfileData?.phone || ''}
+                                                onChange={(event) => handlePhoneInputChange(event)}
+                                            />
+                                            {/* <input
                                                 type="text"
                                                 name="phone"
                                                 value={tempProfileData ? formatPhoneNumber(tempProfileData.phone) : ''}
                                                 onChange={handleInputChange}
-                                            />
+                                            /> */}
                                         </div>
                                         <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
                                         <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
@@ -497,12 +534,14 @@ function AdminProfile () {
                                     <FormGroup>
                                         <FormControlLabel control={<Switch checked={tempAdminSettings.site_report_review} onChange={() => handleSwitchChange('site_report_review')} color={'secondary'} />} label="Review is reported"/>
                                         <FormControlLabel control={<Switch checked={tempAdminSettings.site_product_request} onChange={() => handleSwitchChange('site_product_request')} color={'secondary'} />} label="Vendor requests new product category"/>
+                                        {/* <FormControlLabel control={<Switch checked={tempAdminSettings.site_new_blog} onChange={() => handleSwitchChange('site_new_blog')} color={'secondary'} />} label="A new blog has been posted"/> */}
                                     </FormGroup>
                                 )}
                                 {activeTab === 'email' && (
                                     <FormGroup>
                                         <FormControlLabel control={<Switch checked={tempAdminSettings.email_report_review} onChange={() => handleSwitchChange('email_report_review')} color={'secondary'} />} label="Review is reported"/>
                                         <FormControlLabel control={<Switch checked={tempAdminSettings.email_product_request} onChange={() => handleSwitchChange('email_product_request')} color={'secondary'} />} label="Vendor requests new product category" />
+                                        <FormControlLabel control={<Switch checked={tempAdminSettings.email_new_blog} onChange={() => handleSwitchChange('email_new_blog')} color={'secondary'} />} label="A new blog has been posted" />
                                     </FormGroup>
                                 )}
                                 {activeTab === 'text' && (

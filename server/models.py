@@ -27,7 +27,7 @@ avatars = [
         "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-cabbage-1.jpg", 
         "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime-1.jpg", "avatar-melon-1.jpg",
         "avatar-mangosteen-1.jpg", "avatar-mangosteen-2.jpg", "avatar-nectarine-1.jpg", 
-        "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg", "avatar-peach-1.jpg", 
+        "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-peach-1.jpg", 
         "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
         "avatar-watermelon-1.jpg"
     ]
@@ -82,7 +82,8 @@ class User(db.Model, SerializerMixin):
     market_favorites = db.relationship('MarketFavorite', back_populates='user')
     vendor_favorites = db.relationship('VendorFavorite', back_populates='user')
     blog_favorites = db.relationship('BlogFavorite', back_populates='user')
-
+    receipts = db.relationship('Receipt', back_populates='user', cascade="all, delete-orphan")
+    user_issues = db.relationship('UserIssue', back_populates='user', cascade="all, delete-orphan")
 
     serialize_rules = (
         '-_password',
@@ -91,6 +92,7 @@ class User(db.Model, SerializerMixin):
         '-market_favorites',
         '-vendor_favorites',
         '-blog_favorites',
+        '-user_issues.user'
     )
 
     @validates('first_name')
@@ -117,12 +119,12 @@ class User(db.Model, SerializerMixin):
             raise ValueError("Invalid email address")
         return value
 
-    @validates('phone')
-    def validate_phone(self, key, value):
-        cleaned_phone = re.sub(r'\D', '', value)  # Remove non-digit characters
-        if len(cleaned_phone) != 10:
-            raise ValueError("Phone number must contain exactly 10 digits")
-        return cleaned_phone
+    # @validates('phone')
+    # def validate_phone(self, key, value):
+    #     cleaned_phone = re.sub(r'\D', '', value)
+    #     if len(value) != 10:
+    #         raise ValueError("Phone number must contain exactly 10 digits")
+    #     return cleaned_phone
 
     @validates('address_1')
     def validate_address_1(self, key, value):
@@ -182,16 +184,22 @@ class Market(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
+    bio = db.Column(db.String, nullable=True)
+    website = db.Column(db.String, nullable=True)
     image = db.Column(db.String, nullable=True)
     image_default = db.Column(db.String, nullable=False, default=random_market)
     location = db.Column(db.String, nullable=False)
+    city = db.Column(db.String, nullable=False)
+    state = db.Column(db.String, nullable=False)
     zipcode = db.Column(db.String, nullable=True)
     coordinates = db.Column(db.JSON, nullable=True)
     schedule = db.Column(db.String, nullable=True)
     year_round = db.Column(db.Boolean, nullable=True)
     season_start = db.Column(db.Date, nullable=True)
     season_end = db.Column(db.Date, nullable=True)
-    is_visible = db.Column(db.Boolean, nullable=True, default=True)
+    is_flagship = db.Column(db.Boolean, nullable=False, default=False)
+    is_current = db.Column(db.Boolean, nullable=False, default=True)
+    is_visible = db.Column(db.Boolean, nullable=False, default=True)
 
     # Relationships
     reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic', cascade="all, delete")
@@ -265,6 +273,7 @@ class Vendor(db.Model, SerializerMixin):
     website = db.Column(db.String, nullable=True)
     image = db.Column(db.String)
     image_default = db.Column(db.String, nullable=False, default=random_vendor)
+    stripe_account_id = db.Column(db.String, nullable=True) # bring back unique=True post deployment
 
     # Relationships
     reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic', cascade="all, delete")
@@ -501,12 +510,12 @@ class VendorUser(db.Model, SerializerMixin):
             raise ValueError(f"{key.replace('_', ' ').capitalize()} must be between 1 and 50 characters")
         return value
 
-    @validates('phone')
-    def validate_phone(self, key, value):
-        cleaned_phone = re.sub(r'\D', '', value)
-        if len(cleaned_phone) != 10:
-            raise ValueError("Phone number must contain exactly 10 digits")
-        return cleaned_phone
+    # @validates('phone')
+    # def validate_phone(self, key, value):
+    #     cleaned_phone = re.sub(r'\D', '', value)
+    #     if len(cleaned_phone) != 10:
+    #         raise ValueError("Phone number must contain exactly 10 digits")
+    #     return cleaned_phone
 
     @hybrid_property
     def password(self):
@@ -555,11 +564,12 @@ class AdminUser(db.Model, SerializerMixin):
             raise ValueError(f"{key.replace('_', ' ').capitalize()} must be between 1 and 50 characters")
         return value
 
-    @validates('phone')
-    def validate_phone(self, key, value):
-        if value and len(value) > 15:
-            raise ValueError("Phone number cannot be longer than 15 characters")
-        return value
+    # @validates('phone')
+    # def validate_phone(self, key, value):
+    #     cleaned_phone = re.sub(r'\D', '', value)
+    #     if len(cleaned_phone) != 10:
+    #         raise ValueError("Phone number must contain exactly 10 digits")
+    #     return cleaned_phone
 
     @hybrid_property
     def password(self):
@@ -584,16 +594,21 @@ class Basket(db.Model, SerializerMixin):
     market_day_id = db.Column(db.Integer, db.ForeignKey('market_days.id'), nullable=True)
     sale_date = db.Column(db.Date, nullable=True)
     pickup_start = db.Column(db.Time, nullable=False)
+    pickup_end = db.Column(db.Time, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    is_sold = db.Column(db.Boolean, nullable=True)
-    is_grabbed = db.Column(db.Boolean, nullable=True)
+    is_sold = db.Column(db.Boolean, nullable=False, default=False)
+    is_grabbed = db.Column(db.Boolean, nullable=False, default=False)
+    is_refunded = db.Column(db.Boolean, nullable=False, default=False)
     price = db.Column(db.Float, nullable=False)
     value = db.Column(db.Float, nullable=True)
-    pickup_end = db.Column(db.Time, nullable=False)
+    fee_vendor = db.Column(db.Float, nullable=False, default=0)
+    fee_user = db.Column(db.Float, nullable=False, default=0)
+    stripe_transfer_id= db.Column(db.String, nullable=True)
 
     vendor = db.relationship('Vendor', lazy='joined')
     market_day = db.relationship('MarketDay', lazy='joined')
     qr_codes = db.relationship('QRCode', back_populates='baskets')
+    user_issues = db.relationship('UserIssue', back_populates='basket', cascade="all, delete-orphan")
 
     serialize_rules = (
         '-vendor.baskets', 
@@ -603,6 +618,7 @@ class Basket(db.Model, SerializerMixin):
         '-vendor.reviews', 
         '-vendor.vendor_markets',
         '-vendor.vendor_favorites',
+        '-user_issues.basket'
     )
 
     # @validates('sale_date')
@@ -611,14 +627,26 @@ class Basket(db.Model, SerializerMixin):
     #         raise ValueError("Sale date cannot be in the past")
     #     return value
 
+    @hybrid_property
+    def sale_date_str(self):
+        return self.sale_date.strftime('%Y-%m-%d') if self.sale_date else None
+
     @validates('is_sold', 'is_grabbed')
     def validate_boolean(self, key, value):
         if not isinstance(value, bool):
             raise ValueError(f"{key} must be a boolean value")
         return value
     
-    @validates('price', 'value')
-    def validate_price(self, key, value):
+    @validates('price')
+    def set_fees(self, key, price):
+        if not isinstance(price, (int, float)) or price < 0:
+            raise ValueError(f"{key} must be a non-negative integer")
+        self.fee_vendor = round(min(price * 0.2, 3), 2)
+        self.fee_user = round(min(price * 0.029, 3) + .30, 2)
+        return price
+    
+    @validates('value')
+    def validate_value(self, key, value):
         if not isinstance(value, (int, float)) or value < 0:
             raise ValueError(f"{key} must be a non-negative integer")
         return value
@@ -635,6 +663,7 @@ class UserNotification(db.Model, SerializerMixin):
     link = db.Column(db.String, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
+    market_day_id = db.Column(db.Integer, db.ForeignKey('market_days.id'), nullable=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
@@ -648,8 +677,10 @@ class VendorNotification(db.Model, SerializerMixin):
     subject = db.Column(db.String, nullable=False)
     message = db.Column(db.String, nullable=False)
     link = db.Column(db.String, nullable=True)
+    data = db.Column(db.String, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
+    market_day_id = db.Column(db.Integer, db.ForeignKey('market_days.id'), nullable=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -658,7 +689,7 @@ class VendorNotification(db.Model, SerializerMixin):
     # vendor = db.relationship('Vendor', back_populates='notifications')
     # vendor_user = db.relationship('VendorUser', back_populates='notifications')
 
-    serialize_rules = ('vendor_user.first_name', 'vendor_user.last_name')
+    # serialize_rules = ('vendor_user.first_name', 'vendor_user.last_name')
 
     def get_vendor_name(self):
         return Vendor.query.filter_by(id=self.vendor_id).first().name
@@ -674,6 +705,7 @@ class AdminNotification(db.Model, SerializerMixin):
     link = db.Column(db.String, nullable=True)
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
+    market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
     
@@ -805,10 +837,46 @@ class Receipt(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     baskets = db.Column(db.JSON, nullable=False)
+    payment_intent_id = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationships
+    user = db.relationship('User', back_populates='receipts')
+
+    serialize_rules = ('-user.receipts',)
 
     def __repr__(self) -> str:
         return f"<Receipt ID: {self.id}, User ID: {self.user_id}, Baskets: {self.baskets}, Created At: {self.created_at}>"
+    
+class UserIssue(db.Model, SerializerMixin): 
+    __tablename__ = 'user_issues'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    basket_id = db.Column(db.Integer, db.ForeignKey('baskets.id'), nullable=True)
+    issue_type = db.Column(db.String, nullable=False)
+    issue_subtype = db.Column(db.String, nullable=False)
+    body = db.Column(db.String, nullable=False)
+    status = db.Column(db.String, default="Pending")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', back_populates='user_issues')
+    basket = db.relationship('Basket', back_populates='user_issues')
+
+    serialize_rules = (
+        '-user.user_issues',
+        '-basket.user_issues',
+        '-user.blog_favorites', 
+        '-user.market_reviews', 
+        '-user.vendor_reviews',
+        '-baskets.market_day', 
+        '-baskets.vendor.reviews', 
+        '-baskets.vendor.vendor_favorites', 
+        '-baskets.vendor.vendor_markets'
+    )
+    
+    def __repr__(self) -> str: 
+        return f"<User Issues ID: {self.id}, User ID: {self.user_id}>"
 
 class SettingsUser(db.Model, SerializerMixin):
     __tablename__ = 'settings_users'
@@ -825,22 +893,25 @@ class SettingsUser(db.Model, SerializerMixin):
     site_fav_vendor_new_basket = db.Column(db.Boolean, default=True, nullable=False)
     site_basket_pickup_time = db.Column(db.Boolean, default=True, nullable=False)
     site_vendor_review_response = db.Column(db.Boolean, default=True, nullable=False)
+    site_new_blog = db.Column(db.Boolean, default=True, nullable=False)
+    site_new_market_in_city = db.Column(db.Boolean, default=True, nullable=False)
     
     email_fav_market_new_event = db.Column(db.Boolean, default=True, nullable=False)
     email_fav_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
-    email_fav_market_new_vendor = db.Column(db.Boolean, default=True, nullable=False)
+    email_fav_market_new_vendor = db.Column(db.Boolean, default=False, nullable=False)
     email_fav_market_new_basket = db.Column(db.Boolean, default=False, nullable=False)
-    email_fav_vendor_new_event = db.Column(db.Boolean, default=True, nullable=False)
-    email_fav_vendor_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
-    email_fav_vendor_new_basket = db.Column(db.Boolean, default=True, nullable=False)
-    email_basket_pickup_time = db.Column(db.Boolean, default=True, nullable=False)
+    email_fav_vendor_new_event = db.Column(db.Boolean, default=False, nullable=False)
+    email_fav_vendor_schedule_change = db.Column(db.Boolean, default=False, nullable=False)
+    email_fav_vendor_new_basket = db.Column(db.Boolean, default=False, nullable=False)
+    email_basket_pickup_time = db.Column(db.Boolean, default=False, nullable=False)
     email_vendor_review_response = db.Column(db.Boolean, default=False, nullable=False)
+    email_new_blog = db.Column(db.Boolean, default=True, nullable=False)
+    email_new_market_in_city = db.Column(db.Boolean, default=True, nullable=False)
     
     text_fav_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
     text_fav_market_new_basket = db.Column(db.Boolean, default=False, nullable=False)
-    text_fav_vendor_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
+    text_fav_vendor_schedule_change = db.Column(db.Boolean, default=False, nullable=False)
     text_basket_pickup_time = db.Column(db.Boolean, default=True, nullable=False)
-    text_vendor_review_response = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self) -> str:
         return f"<User Settings ID: {self.id}, User ID: {self.user_id}>"
@@ -856,11 +927,13 @@ class SettingsVendor(db.Model, SerializerMixin):
     site_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
     site_basket_sold = db.Column(db.Boolean, default=True, nullable=False)
     site_new_review = db.Column(db.Boolean, default=True, nullable=False)
+    site_new_blog = db.Column(db.Boolean, default=True, nullable=False)
 
     email_market_new_event = db.Column(db.Boolean, default=True, nullable=False)
     email_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
     email_basket_sold = db.Column(db.Boolean, default=False, nullable=False)
     email_new_review = db.Column(db.Boolean, default=False, nullable=False)
+    email_new_blog = db.Column(db.Boolean, default=True, nullable=False)
 
     text_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
     text_basket_sold = db.Column(db.Boolean, default=True, nullable=False)
@@ -877,9 +950,11 @@ class SettingsAdmin(db.Model, SerializerMixin):
     
     site_report_review = db.Column(db.Boolean, default=True, nullable=False)
     site_product_request = db.Column(db.Boolean, default=True, nullable=False)
+    site_new_blog = db.Column(db.Boolean, default=True, nullable=False)
     
     email_report_review = db.Column(db.Boolean, default=False, nullable=False)
     email_product_request = db.Column(db.Boolean, default=True, nullable=False)
+    email_new_blog = db.Column(db.Boolean, default=True, nullable=False)
     
     text_report_review = db.Column(db.Boolean, default=False, nullable=False)
     text_product_request = db.Column(db.Boolean, default=False, nullable=False)

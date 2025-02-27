@@ -51,6 +51,8 @@ def run():
             name='Astor Place Greenmarket',
             image='greenmarket-grownyc-768x512.jpeg',
             location='E. 8th St. & Lafayette St.',
+            city="New York",
+            state="NY",
             zipcode='10003',
             coordinates={"lat": "40.729830818573944", "lng": "-73.99109568735417"},
             schedule='Tuesday (8 a.m. - 5 p.m.)',
@@ -63,6 +65,8 @@ def run():
             name='Dag Hammarskjold Greenmarket',
             # image='c.-Martin-Seck-GAP-1-768x531.jpg',
             location='E. 47th St. & 2nd Ave.',
+            city="New York",
+            state="NY",
             zipcode='10017',
             coordinates={"lat": "40.752106980482026", "lng": "-73.96813449641382"},
             schedule='Wednesday (8 a.m. - 3 p.m.)',
@@ -73,6 +77,8 @@ def run():
             name='Greenmarket at the Oculus',
             image='Union_Square_Farmers_Market.jpg',
             location='Church & Fulton Sts. (Oculus Plaza)',
+            city="New York",
+            state="NY",
             zipcode='10006',
             coordinates={"lat": "40.71142490993184", "lng": "-74.01076962766949"},
             schedule='Tuesday (8 a.m. - 5 p.m.)',
@@ -85,6 +91,8 @@ def run():
             name='Union Square Greenmarket',
             image='Union_Square_Farmers_Market.jpg',
             location='E. 17th St. & Union Square W.',
+            city="New York",
+            state="NY",
             zipcode='10003',
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
             schedule='Monday, Wednesday, Friday & Saturday (8 a.m. - 6 p.m.)',
@@ -217,7 +225,7 @@ def run():
         "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-cabbage-1.jpg", 
         "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime-1.jpg", "avatar-melon-1.jpg",
         "avatar-mangosteen-1.jpg", "avatar-mangosteen-2.jpg", "avatar-nectarine-1.jpg", 
-        "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-onion-3.jpg", "avatar-peach-1.jpg", 
+        "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-peach-1.jpg", 
         "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
         "avatar-watermelon-1.jpg"
     ]
@@ -229,7 +237,7 @@ def run():
             password="lol",
             first_name="Zak",
             last_name="Lance",
-            phone="0000000000",
+            phone="+10000000000",
             address_1="11 Broadway",
             address_2="Floor 2",
             city="New York",
@@ -245,7 +253,7 @@ def run():
             password="lol",
             first_name="Sand",
             last_name="Man",
-            phone="0000000000",
+            phone="+10000000000",
             address_1="11 Broadway",
             address_2="Floor 2",
             city="New York",
@@ -261,7 +269,7 @@ def run():
             password="lol",
             first_name="Vinh",
             last_name="Cent",
-            phone="0000000000",
+            phone="+10000000000",
             address_1="11 Broadway",
             address_2="Floor 2",
             city="New York",
@@ -282,7 +290,7 @@ def run():
     #     password = "lol"
     #     first_name = fake.first_name()
     #     last_name = fake.last_name()
-    #     phone = str(randint(1000000000,9999999999))
+    #     phone = sf'+1 tr(randint(1000000000,9999999999))'
     #     address_1 = fake.street_address()
     #     address_2 = f'{choice(apartment)} {randint(1, 200)}'
     #     city = fake.city()
@@ -411,7 +419,7 @@ def run():
         password="lol",
         first_name="Ham-man",
         last_name="Gingy",
-        phone="2095553880",
+        phone="+12095553880",
         active_vendor=1,
         vendor_id={1:1},
         vendor_role={1:0}
@@ -428,7 +436,7 @@ def run():
         first_name = fake.first_name()
         last_name = fake.last_name()
         # phone = fake.phone_number()
-        phone = str(randint(1000000000,9999999999))
+        phone = f'+1 str(randint(1000000000,9999999999))'
         active_vendor = rand_vendor_id
         vendor_id = { rand_vendor_id: rand_vendor_id}
         vendor_role = {rand_vendor_id: randint(0, 1)}
@@ -458,7 +466,7 @@ def run():
             password="lol",
             first_name="Ham-man",
             last_name="Gingy",
-            phone="2095553880",
+            phone="+12095553880",
             admin_role=0
         ),
         SettingsAdmin(
@@ -469,7 +477,7 @@ def run():
             password="lol",
             first_name="Zak",
             last_name="Wosewick",
-            phone="0000000000",
+            phone="+10000000000",
             admin_role=1
         ),
         SettingsAdmin(
@@ -480,7 +488,7 @@ def run():
             password="lol",
             first_name="Sand",
             last_name="Man",
-            phone="0000000000",
+            phone="+10000000000",
             admin_role=1
         ),
         SettingsAdmin(
@@ -491,7 +499,7 @@ def run():
             password="lol",
             first_name="Vinh",
             last_name="Cent",
-            phone="0000000000",
+            phone="+10000000000",
             admin_role=1
         ),
         SettingsAdmin(
@@ -502,7 +510,7 @@ def run():
             password="lol",
             first_name="Hell",
             last_name="Oh",
-            phone="0000000000",
+            phone="+10000000000",
             admin_role=2
         ),
         SettingsAdmin(

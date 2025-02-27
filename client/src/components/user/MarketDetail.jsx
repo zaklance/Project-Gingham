@@ -15,9 +15,6 @@ function MarketDetail ({ match }) {
     const [vendorDetailsMap, setVendorDetailsMap] = useState({});
     const [marketFavs, setMarketFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
-    const [alertMessage, setAlertMessage] = useState(null);
-    const [showAlert, setShowAlert] = useState(false);
-    const [vendorAlertStates, setVendorAlertStates] = useState({});
     const [selectedProduct, setSelectedProduct] = useState("");
     const [marketDays, setMarketDays] = useState([]);
     const [selectedDay, setSelectedDay] = useState(null);
@@ -150,7 +147,7 @@ function MarketDetail ({ match }) {
         const dayId = parseInt(event.target.value);
         const day = marketDays.find(day => day.id === dayId);
         setSelectedDay(day);
-        setSelectedProduct()
+        // setSelectedProduct()
         setDayParam(day.id)
     };
 
@@ -218,8 +215,6 @@ function MarketDetail ({ match }) {
         setProductList(filteredProducts);
     }, [filteredProducts]);  
 
-
-
     // Gets rid of duplicate vendors (from different market_days)
     const uniqueFilteredVendorsList = [...new Set(filteredVendorsList)];
 
@@ -232,13 +227,19 @@ function MarketDetail ({ match }) {
             const updatedCartItems = [...cartItems, {
                 vendor_name: vendorName,
                 vendor_id: vendorId,
-                location: market.name,
+                market_id: market.id,
+                fee_vendor: basketInCart.fee_vendor,
+                fee_user: basketInCart.fee_user,
+                market_name: market.name,
+                location: market.location,
+                coordinates: market.coordinates,
                 id: basketInCart.id,
                 price: basketInCart.price,
                 pickup_start: basketInCart.pickup_start,
                 pickup_end: basketInCart.pickup_end,
-                day_of_week: new Date(basketInCart.sale_date).getDay(),
-                sale_date: new Date(basketInCart.sale_date)
+                day_of_week: new Date(`${basketInCart.sale_date}T00:00:00`).getDay(),
+                sale_date: basketInCart.sale_date,
+
             }];
             setCartItems(updatedCartItems);
             setAmountInCart(updatedCartItems.length);
@@ -315,7 +316,7 @@ function MarketDetail ({ match }) {
                 }
             }
         } else {
-            handlePopup()
+            handlePopup();
         }
     };
 
@@ -354,12 +355,12 @@ function MarketDetail ({ match }) {
 
     const handleNotifyMe = async (vendor) => {
         if (!userId) {
-            alert('Please ensure you are logged in.');
+            handlePopup();
             return;
         }
         const token = localStorage.getItem('user_jwt-token');
         if (!token) {
-            alert('Authorization token is missing. Please log in.');
+            handlePopup();
             return;
         }
 
@@ -382,16 +383,40 @@ function MarketDetail ({ match }) {
 
             if (response.ok) {
                 const responseData = await response.json();
-                alert(`Your request has been sent to ${vendor.name}!`);
-                
+                toast.success(`Your request has been sent to ${vendor.name}!`, {
+                    autoClose: 5000,
+                });
             } else {
                 const errorData = await response.json();
-                alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
+                toast.error(`Error sending request: ${errorData.message || 'Unknown error'}`, {
+                    autoClose: 4000,
+                });
             }
         } catch (error) {
             console.error('Error sending request:', error);
-            alert('An error occurred while sending the request. Please try again later.');
+            toast.error('An error occurred while sending the request. Please try again later.', {
+                autoClose: 4000,
+            });
         }
+    };
+
+    const determineSeason = (market) => {
+        const today = new Date();
+        const seasonStart = new Date(market.season_start);
+        const seasonEnd = new Date(market.season_end);
+        const inSeason = market.year_round || (today >= seasonStart && today <= seasonEnd);
+
+        if (inSeason) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    const determineVendors = (market) => {
+        return market.market_days?.some(marketDay => 
+            marketDay.vendor_markets && marketDay.vendor_markets.length > 0
+        );
     };
 
     if (!market) {
@@ -462,9 +487,26 @@ function MarketDetail ({ match }) {
                             latitude={marketLocation.lat}
                             longitude={marketLocation.lng}
                         >
-                            <div className="map-circle"></div>
-                            <div className="map-inside-circle"></div>
-                            <div className="map-triangle"></div>
+                            {!determineSeason(market) ? (
+                                <>
+                                    <div className="map-circle-off-season"></div>
+                                    <div className="map-inside-circle-off-season"></div>
+                                    <div className="map-triangle-off-season"></div>
+                                </>
+                            ) : (!determineVendors(market)
+                            ) ? (
+                                <>
+                                    <div className="map-circle-vendors"></div>
+                                    <div className="map-inside-circle-vendors"></div>
+                                    <div className="map-triangle-vendors"></div>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="map-circle"></div>
+                                    <div className="map-inside-circle"></div>
+                                    <div className="map-triangle"></div>
+                                </>
+                            )}
                         </Annotation>
                     </Map>
                 </div>
@@ -472,23 +514,17 @@ function MarketDetail ({ match }) {
             <p>{market.description}</p>
             <div className='flex-start market-details margin-t-8'>
                 <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
-                    {market.location}
+                    {market.location}, {market.city}, {market.state}
                 </a></h4>
-                <div className='flex-start alert-container'>
-                    <button
-                        className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
-                        onClick={handleClick}>&emsp;</button>
-                    {showAlert && (
-                        <div className={`alert alert-favorites ${!showAlert ? 'alert-favorites-hidden' : ''}`}>
-                            {alertMessage}
-                        </div>
-                    )}
-                </div>
+                <button
+                    className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
+                    onClick={handleClick}>&emsp;
+                </button>
             </div>
             <div className='flex-start m-flex-wrap'>
                 <label><h4>Schedule:</h4></label>
                 {marketDays.length === 1 ? (
-                    <h4>&ensp; {weekDay[0]}, &ensp;</h4>
+                    <h4>&ensp; {weekDay[marketDays[0].day_of_week]}, &ensp;</h4>
                 ) : (
                     <select id="marketDaysSelect"
                     className='select-rounded margin-r-4'
@@ -508,12 +544,12 @@ function MarketDetail ({ match }) {
             </div>
             <div className='flex-start'>
                 {market.year_round === false && market.season_start && market.season_end ? (
-                        <h4>Season: {formatDate(market.season_start)} – {formatDate(market.season_end)}</h4>
+                        <h4>Season: {formatDate(market.season_start)} – {formatDate(market.season_end)} {!market.is_current && `(${new Date().getFullYear() - 1} Season)`}</h4>
                     ) : (
                         market.year_round === false && (!market.season_start || !market.season_end) ? (
                             <h4>No Dates Available</h4>
                         ) : (
-                            <h4>Open Year Round</h4>
+                            <h4>Open Year Round {!market.is_current && `(${new Date().getFullYear() - 1} Season)`}</h4>
                         )
                     )}
             </div>
@@ -590,11 +626,6 @@ function MarketDetail ({ match }) {
                             {firstBasket && firstBasket.sale_date ? formatPickupText(firstBasket, timeConverter, marketDateConvert) : ""}
                         </span>
                         )}
-                        {vendorAlertStates[vendorId] && (
-                        <div className={`alert alert-cart-vendor`}>
-                            {alertMessage}
-                        </div>
-                        )}
                         {availableBaskets.length > 0 ? (
                         <button className="btn-add btn-add-green color-7 nowrap" onClick={() => handleAddToCart(vendorId, vendorDetail, availableBaskets)}>
                             Add to Cart
@@ -608,7 +639,7 @@ function MarketDetail ({ match }) {
                     );
                 })
             ) : (
-                <p>No vendors at this market</p>
+                <p>No vendors on Gingham at this market</p>
             )}
             </div>
             <ReviewMarket market={market} />

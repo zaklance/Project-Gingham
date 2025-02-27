@@ -14,6 +14,9 @@ import VendorLocations from './VendorLocations';
 import VendorTeamRequest from './VendorTeamRequest';
 import VendorActiveVendor from './VendorActiveVendor';
 import VendorTeamLeave from './VendorTeamLeave';
+import { toast } from 'react-toastify';
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 
 function VendorProfile () {
     const { id } = useParams();
@@ -45,6 +48,7 @@ function VendorProfile () {
     const [changeConfirmPassword, setChangeConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false, pw3: false });
     const [isValid, setIsValid] = useState(false);
+    const [isSendingEmail, setIsSendingEmail] = useState(false);
 
     const [allVendorMarkets, setAllVendorMarkets] = useState([]);
     const [allMarketDays, setAllMarketDays] = useState([]);
@@ -153,48 +157,64 @@ function VendorProfile () {
     }, [vendorId]);
 
     const handleSaveEmail = async () => {
-        if (changeEmail !== changeConfirmEmail) {
-            alert("Emails do not match.");
-            return;
-        }
-        try {
-            const response = await fetch(`/api/users/${id}`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: changeEmail
-                })
-            });
-            if (response.ok) {
-                const updatedData = await response.json();
-                setChangeEmail('')
-                setChangeConfirmEmail('')
-                setEmailMode(false);
-                alert('Email will not update until you check your email and click the verify link.')
-            } else {
-                console.log('Failed to save changes');
-                console.log('Response status:', response.status);
-                console.log('Response text:', await response.text());
+            if (changeEmail !== changeConfirmEmail) {
+                toast.error('Emails do not match.', {
+                    autoClose: 4000,
+                });
+                return;
             }
-        } catch (error) {
-            console.error('Error saving changes:', error);
-        }
-    };
+            setIsSendingEmail(true);
+        
+            try {
+                const response = await fetch(`/api/change-vendor-email`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        vendor_id: id,
+                        email: changeEmail,
+                    }),
+                });
+        
+                if (response.ok) {
+                    setChangeEmail('');
+                    setChangeConfirmEmail('');
+                    setEmailMode(false);
+                    toast.warning('Email will not update until you check your email and click the verify link.', {
+                        autoClose: 8000,
+                    });
+                } else {
+                    console.log('Failed to save changes');
+                    console.log('Response status:', response.status);
+                    console.log('Response text:', await response.text());
+                }
+            } catch (error) {
+                // console.error('Error saving changes:', error);
+                toast.error(`Error saving changes: ${error}`, {
+                    autoClose: 5000,
+                });
+            } finally {
+                setIsSendingEmail(false);
+            }
+        };
 
     const handleSavePassword = async () => {
         if (changePassword !== changeConfirmPassword) {
-            alert("Passwords do not match.");
+            console.log('Passwords do not match.', {
+                autoClose: 4000,
+            });
             return;
         }
         if (!isValid) {
-            alert("Password does not meet requirements.");
+            console.log('Password does not meet requirements.', {
+                autoClose: 4000,
+            });
             return;
         }
         try {
-            const response = await fetch(`/api/users/${id}/password`, {
+            const response = await fetch(`/api/vendor-users/${id}/password`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -206,20 +226,36 @@ function VendorProfile () {
                 }),
                 credentials: 'include',
             });
+    
+            const data = await response.json();
+            
+            if (response.status === 401) {
+                console.log(data.error, {
+                    autoClose: 4000,
+                });
+                return;
+            }
+            
+            if (response.status === 403) {
+                toast.error('Access forbidden: Vendor User only', {
+                    autoClose: 4000,
+                });
+                return;
+            }
+    
             if (response.ok) {
-                const updatedData = await response.json();
-                setPassword('')
-                setChangePassword('')
-                setChangeConfirmPassword('')
+                setPassword('');
+                setChangePassword('');
+                setChangeConfirmPassword('');
                 setPasswordMode(false);
-                alert('Password changed')
-            } else {
-                console.log('Failed to save changes');
-                console.log('Response status:', response.status);
-                console.log('Response text:', await response.text());
+                toast.success('Password changed', {
+                    autoClose: 2000,
+                });
             }
         } catch (error) {
-            console.error('Error saving changes:', error);
+            toast.error('Error saving changes', {
+                autoClose: 5000,
+            });
         }
     };
 
@@ -274,6 +310,13 @@ function VendorProfile () {
         });
     };
 
+    const handlePhoneInputChange = event => {
+        setTempVendorUserData({
+            ...tempVendorUserData,
+            ['phone']: event
+        });
+    };
+
     const handleEditToggle = () => {
         setEditMode(!editMode);
         if (!editMode) {
@@ -321,6 +364,8 @@ function VendorProfile () {
             console.error('Error saving changes:', error);
         }
     };
+
+    
 
     useEffect(() => {
         const fetchVendorData = async () => {
@@ -373,7 +418,9 @@ function VendorProfile () {
         if (image) {
             const maxFileSize = 25 * 1024 * 1024;
             if (image.size > maxFileSize) {
-                alert("File size exceeds 25 MB. Please upload a smaller file.");
+                toast.warning('File size exceeds 25 MB. Please upload a smaller file.', {
+                    autoClose: 4000,
+                });
                 return;
             }
     
@@ -464,14 +511,20 @@ function VendorProfile () {
                     if (response.ok) {
                         const responseData = await response.json();
                         setProductRequest('')
-                        alert(`Your product request has been sent to the admins for approval, if approved your product will be automatically changed!`);
+                        toast.success('Your product request has been sent to the admins for approval, if approved your product will be automatically changed.', {
+                            autoClose: 6000,
+                        });
                     } else {
                         const errorData = await response.json();
-                        alert(`Error sending request: ${errorData.message || 'Unknown error'}`);
+                        toast.error(`Error sending request: ${errorData.message || 'Unknown error'}`, {
+                            autoClose: 4000,
+                        });
                     }
                 } catch (error) {
                     console.error('Error sending request:', error);
-                    alert('An error occurred while sending the request. Please try again later.');
+                    toast.error('An error occurred while sending the request. Please try again later.', {
+                        autoClose: 4000,
+                    });
                 }
             }
         } catch (error) {
@@ -508,7 +561,9 @@ function VendorProfile () {
     const handleDeleteProductImage = async () => {
         if (!vendorData || !vendorData.image) {
             console.log("Vendor Image URL:", vendorImageURL);
-            alert('No image to delete.');
+            toast.warning('No image to delete.', {
+                autoClose: 4000,
+            });
             return;
         }
     
@@ -538,15 +593,21 @@ function VendorProfile () {
                 }));
     
                 setVendorImageURL(null);
-                alert('Image deleted successfully.');
+                toast.success('Image deleted successfully!', {
+                    autoClose: 4000,
+                });
             } else {
                 const errorText = await response.text();
                 console.error('Failed to delete image:', errorText);
-                alert(`Failed to delete the image`);
+                toast.error('Failed to delete the image', {
+                    autoClose: 4000,
+                });
             }
         } catch (error) {
             console.error('Error deleting image:', error);
-            alert('An unexpected error occurred while deleting the image.');
+            toast.error('An unexpected error occurred while deleting the image.', {
+                autoClose: 5000,
+            });
         }
     };
 
@@ -697,12 +758,22 @@ function VendorProfile () {
                                         </div>
                                         <div className='form-group flex-form'>
                                             <label>Phone Number:</label>
-                                            <input
+                                            <PhoneInput
+                                                className='input-phone margin-l-8'
+                                                countryCallingCodeEditable={false}
+                                                withCountryCallingCode
+                                                country='US'
+                                                defaultCountry='US'
+                                                placeholder="enter your phone number"
+                                                value={tempVendorUserData.phone || ''}
+                                                onChange={(event) => handlePhoneInputChange(event)}
+                                            />
+                                            {/* <input
                                                 type="tel"
                                                 name="phone"
                                                 value={tempVendorUserData ? tempVendorUserData.phone : ''}
                                                 onChange={handleInputChange}
-                                            />
+                                            /> */}
                                         </div>
                                         <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
                                         <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
@@ -843,6 +914,7 @@ function VendorProfile () {
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_market_new_event} onChange={() => handleSwitchChange('site_market_new_event')} color={'secondary'} />} label="Market creates an event"/>
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_market_schedule_change} onChange={() => handleSwitchChange('site_market_schedule_change')} color={'secondary'} />} label="Market changes schedule"/>
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_basket_sold} onChange={() => handleSwitchChange('site_basket_sold')} color={'secondary'} />} label="When a basket is sold"/>
+                                        {/* <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_new_blog} onChange={() => handleSwitchChange('site_new_blog')} color={'secondary'} />} label="A new blog has been posted"/> */}
                                     </FormGroup>
                                 )}
                                 {activeTab === 'email' && (
@@ -850,6 +922,7 @@ function VendorProfile () {
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_market_new_event} onChange={() => handleSwitchChange('email_market_new_event')} color={'secondary'} />} label="Market creates an event" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_market_schedule_change} onChange={() => handleSwitchChange('email_market_schedule_change')} color={'secondary'} />} label="Market changes schedule" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_basket_sold} onChange={() => handleSwitchChange('email_basket_sold')} color={'secondary'} />} label="When a basket is sold" />
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_new_blog} onChange={() => handleSwitchChange('email_new_blog')} color={'secondary'} />} label="A new blog has been posted" />
                                     </FormGroup>
                                 )}
                                 {activeTab === 'text' && (

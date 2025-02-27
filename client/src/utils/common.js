@@ -20,6 +20,11 @@ export const weekDayReverse = {
     "saturday": 6
 }
 
+export const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+];
+
 export const states = [
     "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
     "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
@@ -44,9 +49,8 @@ export const avatars_default = {
     "Mangosteen 2": "avatar-mangosteen-2.jpg",
     "Melon": "avatar-melon-1.jpg",
     "Nectarine": "avatar-nectarine-1.jpg", 
-    "Onion 1": "avatar-onion-1.jpg", 
-    "Onion 2": "avatar-onion-2.jpg", 
-    "Onion 3": "avatar-onion-3.jpg",
+    "Onion 1": "avatar-onion-1.jpg",  
+    "Onion 2": "avatar-onion-2.jpg",
     "Peach": "avatar-peach-1.jpg", 
     "Pomegranate": "avatar-pomegranate-1.jpg", 
     "Radish": "avatar-radish-1.jpg", 

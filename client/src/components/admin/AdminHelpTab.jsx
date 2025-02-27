@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 const AdminHelpTab = ({ fAQs, setFAQs, forUser, forVendor, forAdmin, userType }) => {
     const [newFAQ, setNewFAQ] = useState({});
@@ -39,7 +40,9 @@ const AdminHelpTab = ({ fAQs, setFAQs, forUser, forVendor, forAdmin, userType })
             if (response.ok) {
                 const createdFAQ = await response.json();
                 console.log('FAQ data updated successfully:', createdFAQ);
-                alert('FAQ successfully created')
+                toast.success('FAQ successfully created!', {
+                    autoClose: 4000,
+                });
                 setFAQs((prev) => [...prev, createdFAQ]);
                 setNewFAQ({})
             } else {

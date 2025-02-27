@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import objectHash from 'object-hash';
-import { weekDay } from '../../utils/common';
-import { timeConverter } from '../../utils/helpers';
+import { timeConverter, formatBasketDate } from '../../utils/helpers';
 
 function Cart() {
     const { handlePopup, cartItems, setCartItems, amountInCart, setAmountInCart } = useOutletContext();
@@ -41,20 +40,28 @@ function Cart() {
         setAmountInCart(amountInCart - 1);
     }
 	
-    let totalPrice = 0;
+    let subtotal = 0;
+    let transactionFees = 0;
+
     cartItems.forEach(item => {
-      totalPrice += item.price;
+        subtotal += item.price;
+        transactionFees += item.fee_user || 0;
     });
+
+    const totalPrice = subtotal + transactionFees;
 
     async function handleCheckout() {
         try {
-            // Get user ID from localStorage
             const userId = globalThis.localStorage.getItem('user_id');
             if (!userId) {
                 console.error("User ID not found in localStorage.");
                 throw new Error("User is not logged in.");
             }
     
+            if (cartItems.length === 0) {
+                throw new Error("Cart is empty.");
+            }
+
             // Fetch the Stripe publishable key from /api/config
             console.log('Fetching Stripe publishable key...');
             const configResponse = await fetch('/api/config');
@@ -66,12 +73,10 @@ function Cart() {
     
             // Create PaymentIntent
             console.log('Sending request to create PaymentIntent...');
-            const paymentResponse = await fetch('/api/create-payment-intent', {
+                const paymentResponse = await fetch('/api/create-payment-intent', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ total_price: totalPrice }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ baskets: cartItems }),
             });
     
             if (!paymentResponse.ok) {
@@ -81,64 +86,9 @@ function Cart() {
             }
     
             const { clientSecret } = await paymentResponse.json();
-            console.log('Received clientSecret:', clientSecret);
     
-            // Mark items as sold
-            console.log('Marking items as sold...');
-            await Promise.all(cartItems.map(async (cartItem) => {
-                const response = await fetch(`/api/baskets/${cartItem.id}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        is_sold: true,
-                        user_id: userId,
-                    }),
-                });
-    
-                if (!response.ok) {
-                    throw new Error(`Failed to update cartItem with id: ${cartItem.id}`);
-                }
-            }));
-    
-            // Generate QR codes
-            if (cartItems.length > 0) {
-                console.log('Generating QR codes...');
-                const qrPromises = cartItems.map(async (cartItem) => {
-                    const hash = objectHash(`${cartItem.vendor_name} ${cartItem.location} ${cartItem.id} ${userId}`);
-                    const response = await fetch('/api/qr-codes', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            qr_code: hash,
-                            user_id: userId,
-                            basket_id: cartItem.id,
-                            vendor_id: cartItem.vendor_id,
-                        }),
-                    });
-    
-                    if (!response.ok) {
-                        throw new Error(`Failed to create QR code for basket ID ${cartItem.id}: ${response.statusText}`);
-                    }
-                    return response.json();
-                });
-    
-                const results = await Promise.all(qrPromises);
-                console.log('All QR codes created successfully:', results);
-            }
-    
-            console.log('Navigating to payment page...');
             navigate('/user/payment', {
-                state: {
-                    clientSecret,
-                    totalPrice,
-                    cartItems,
-                    amountInCart
-                },
+                state: { clientSecret, totalPrice, cartItems, amountInCart },
             });
         } catch (error) {
             console.error('Error during checkout:', error);
@@ -165,7 +115,7 @@ function Cart() {
                                 <ul>
                                     {cartItems.map((item, index) => (
                                         <li className='cart-item' key={index}>
-                                            <span><b>{item.vendor_name}</b> at <i>{item.location}</i>, {weekDay[item.day_of_week]} from {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</span>
+                                            <span><b>{item.vendor_name}</b> at <i>{item.location}</i>, {formatBasketDate(item.sale_date)} from {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</span>
                                             <span><b>${item.price}</b></span>
                                             <button className='btn-cart' onClick={() => removeFromCart(item)}>Remove</button>
                                         </li>
@@ -173,10 +123,16 @@ function Cart() {
                                 </ul>
                             </div>
                             <div className="cart-sidebar flex-start m-flex-wrap">
-                                <h1 className='margin-r-16'>Total: ${totalPrice}</h1> 
-                                <button className='btn-edit' onClick={() => {globalThis.localStorage.getItem('user_id') == null ? handlePopup() : handleCheckout();}}>
-                                    Checkout
-                                </button>
+                                <ul>
+                                    <h3 className='margin-r-16'>Subtotal: ${subtotal.toFixed(2)}</h3>
+                                    <h3 className='margin-r-16'>Transaction Fees: ${transactionFees.toFixed(2)}</h3>
+                                    <h2 className='margin-r-16'>Total: ${totalPrice.toFixed(2)}</h2> 
+                                    <button className='btn-edit' onClick={() => {
+                                        globalThis.localStorage.getItem('user_id') == null ? handlePopup() : handleCheckout();
+                                    }}>
+                                        Checkout
+                                    </button>
+                                </ul>
                             </div>
                         </div>
                     </>

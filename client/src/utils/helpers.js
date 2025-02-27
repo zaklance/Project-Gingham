@@ -1,4 +1,3 @@
-
 // Time Conversions and Formatting
 export function timeConverter(time24) {
     const [hours, minutes, seconds] = time24.split(':').map(Number);
@@ -22,6 +21,13 @@ export function blogTimeConverter(postedAt) {
     return formattedDate;
 }
 
+export function fileTimeConverter(postedAt) {
+    const [date] = postedAt.split(/T| /);
+    const [year, month, day] = date.split('-');
+    const formattedDate = `${year}-${month}${day}`;
+    return formattedDate;
+}
+
 export function marketDateConvert(sale_date) {
     const [date] = sale_date.split(/T| /);
     const [year, month, day] = date.split('-');
@@ -33,6 +39,14 @@ export function convertToLocalDate(gmtDateString) {
     const [year, month, day] = gmtDateString.split('-').map(Number);
     const localDate = new Date(year, month - 1, day);
     return localDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+    });
+}
+
+export function formatToLocalDateString(date) {
+    return new Date(date).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
@@ -60,44 +74,31 @@ export function formatDate(dateString) {
 }
 
 export function formatBasketDate(dateInput) {
-    try {
-        if (!dateInput) {
-            console.warn('Invalid date input:', dateInput);
-            return 'Invalid Date';
-        }
+    if (!dateInput) return "Invalid Date";
 
-        let date;
-        if (dateInput instanceof Date) {
-            date = dateInput;
-        } else if (typeof dateInput === 'string') {
-            const dateParts = dateInput.split('-');
-            if (dateParts.length !== 3) {
-                console.error('Invalid date string format:', dateInput);
-                return 'Invalid Date';
-            }
-            date = new Date(`${dateParts[0]}-${dateParts[1]}-${dateParts[2]}T00:00:00`);
+    let date;
+    if (dateInput instanceof Date) {
+        date = dateInput;
+    } else if (typeof dateInput === "string") {
+        const dateParts = dateInput.split("T")[0].split("-");
+        if (dateParts.length === 3) {
+            const [year, month, day] = dateParts.map(Number);
+            date = new Date(year, month - 1, day);
         } else {
-            console.error('Unsupported date format:', dateInput);
-            return 'Invalid Date';
+            return "Invalid Date";
         }
-
-        if (isNaN(date.getTime())) {
-            console.error('Invalid date:', dateInput);
-            return 'Invalid Date';
-        }
-
-        const formattedDate = date.toLocaleString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
-
-        return formattedDate;
-    } catch (error) {
-        console.error('Error converting date:', error);
-        return 'Invalid Date';
+    } else {
+        return "Invalid Date";
     }
+
+    if (isNaN(date.getTime())) return "Invalid Date";
+
+    return date.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    });
 }
 
 export const isToday = (date) => {
@@ -134,16 +135,31 @@ export function formatEventDate(dateString) {
     });
 }
 
-// Input Conversions and Formatting
-export const formatPhoneNumber = (phone) => {
-    const cleaned = ('' + phone).replace(/\D/g, '');
-    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-    if (match) {
-        return `(${match[1]}) ${match[2]}-${match[3]}`;
+export function receiptDateConverter(dateString) {
+    if (!dateString) return "N/A"; 
+    
+    let date = new Date(dateString);
+    
+    if (isNaN(date.getTime())) {
+        date = new Date(dateString + "T00:00:00");
     }
+
+    return isNaN(date.getTime()) ? "Invalid Date" : date.toLocaleDateString('en-CA');
+}
+
+// Input Conversions and Formatting
+export const formatPhoneNumber = (phone, countryCode = '+1') => {
+    const cleaned = ('' + phone).replace(/\D/g, '');
+
+    const normalized = cleaned.length === 11 && cleaned.startsWith('1') ? cleaned.slice(1) : cleaned;
+
+    const match = normalized.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+        return `${countryCode} (${match[1]}) ${match[2]}-${match[3]}`;
+    }
+    
     return phone;
 };
-
 
 
 // Link Generators
