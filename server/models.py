@@ -273,7 +273,8 @@ class Vendor(db.Model, SerializerMixin):
     website = db.Column(db.String, nullable=True)
     image = db.Column(db.String)
     image_default = db.Column(db.String, nullable=False, default=random_vendor)
-    stripe_account_id = db.Column(db.String, nullable=True) # bring back unique=True post deployment
+    stripe_account_id = db.Column(db.String, nullable=True)  # bring back unique=True post deployment
+    # is_temporarily_closed = db.Column(db.Boolean, default=False, nullable=False)
 
     # Relationships
     reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic', cascade="all, delete")
