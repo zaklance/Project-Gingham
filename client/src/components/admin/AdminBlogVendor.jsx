@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { blogTimeConverter } from '../../utils/helpers';
+import { toast } from 'react-toastify';
 
 const AdminBlogVendor = ({ blogs, activeTabMode }) => {
     const [newTitle, setNewTitle] = useState('');
@@ -35,7 +36,7 @@ const AdminBlogVendor = ({ blogs, activeTabMode }) => {
                 a more sustainable future—one basket at a time!
             </article>
             <article>
-                —The Gingham Team
+                <span class='font-gingham text-size-1'>—The Gin<span class="kern-1-5">g</span><span class="kern-05">h</span>am Team</span>
             </article>
             <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
         </div>
@@ -52,10 +53,14 @@ const AdminBlogVendor = ({ blogs, activeTabMode }) => {
 
     const postBlog = async () => {
         if (!newTitle) {
-            return alert('No blog title!')
+            return (toast.warning('No blog title.', {
+                autoClose: 4000,
+            }))
         }
         if (!newDate) {
-            return alert('No blog date!')
+            return (toast.warning('No blog date', {
+                autoClose: 4000,
+            }))
         }
 
         if (confirm(`Are you sure you want to post the blog "${newTitle}" to the site?`)) {
@@ -79,10 +84,14 @@ const AdminBlogVendor = ({ blogs, activeTabMode }) => {
                 });
                 const result = await response.json();
                 if (response.ok) {
-                    alert('Blog posted successfully!');
-                    console.log(result);
+                    toast.success('Blog posted successfully!', {
+                        autoClose: 4000,
+                    });
+                    // console.log(result);
                 } else {
-                    alert('Error posting blog:', result.error);
+                    toast.error('Error posting blog', result.error, {
+                        autoClose: 4000,
+                    });
                 }
             } catch (error) {
                 console.error('Error sending blog:', error);
@@ -216,8 +225,7 @@ const AdminBlogVendor = ({ blogs, activeTabMode }) => {
                                 onChange={(e) => setNewBlogType(e.target.value)}
                             >
                                 <option value='General'>General</option>
-                                <option value='Recipe'>Recipe</option>
-                                <option value='Market Spotlight'>Spotlight Market</option>
+                                <option value='Hot To'>How To</option>
                                 <option value='Vendor Spotlight'>Spotlight Vendor</option>
                             </select>
                         </div>

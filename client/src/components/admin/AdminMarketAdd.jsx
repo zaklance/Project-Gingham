@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import { states } from '../../utils/common';
 
 function AdminMarketAdd({ markets, weekDayReverse }) {
     const [marketDays, setMarketDays] = useState([])
@@ -8,11 +10,15 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
     const [adminMarketDayData, setAdminMarketDayData] = useState(null);
     const [newMarket, setNewMarket] = useState({
         name: '',
+        website: '',
         location: '',
         zipcode: '',
         coordinates: { lat: '', lng: '' },
         schedule: '',
         year_round: '',
+        is_flagship: '',
+        is_current: '',
+        is_visible: '',
         season_start: '',
         season_end: '',
     });
@@ -72,6 +78,9 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
         try {
             // Convert year_round to boolean
             newMarket.year_round = newMarket.year_round === 'true' || newMarket.year_round === true;
+            newMarket.is_current = newMarket.is_current === 'true' || newMarket.is_current === true;
+            newMarket.is_visible = newMarket.is_visible === 'true' || newMarket.is_visible === true;
+            newMarket.is_flagship = newMarket.is_flagship === 'true' || newMarket.is_flagship === true;
     
             // Save market details first
             const response = await fetch(`/api/markets`, {
@@ -85,8 +94,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
             if (response.ok) {
                 const updatedData = await response.json();
                 console.log('Market data updated successfully:', updatedData);
-                alert('Market successfully created');
-    
+                alert('Market successfully created!');
                 if (image) {
                     await handleImageUpload(updatedData.id);
                 }
@@ -127,7 +135,9 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
         event.preventDefault();
         try {
             if (!newMarketDay.market_id || !newMarketDay.day_of_week) {
-                alert("Market ID and Day of Week are required.");
+                toast.warning('Market ID and Day of Week are required.', {
+                    autoClose: 4000,
+                });
                 return;
             }
     
@@ -143,7 +153,9 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
     
             if (response.ok) {
                 const updatedData = await response.json();
-                alert('Market Day successfully created');
+                toast.success('Market Day successfully created!', {
+                    autoClose: 4000,
+                });
                 console.log('Market Day data created successfully:', updatedData);
             } else {
                 console.error('Failed to save changes');
@@ -155,12 +167,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
     };
 
     const handleWeekDayChange = (event) => {
-        const dayValue = weekDayReverse[event.target.value.toLowerCase()];
-        // if (dayValue === undefined) {
-        //     alert("Invalid day of the week. Please enter a valid day.");
-        //     return;
-        // }
-    
+        const dayValue = weekDayReverse[event.target.value.toLowerCase()];    
         setNewMarketDay({
             ...newMarketDay,
             day_of_week: dayValue,
@@ -173,7 +180,9 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
             const maxFileSize = 5 * 1024 * 1024; // 5 MB limit
     
             if (file.size > maxFileSize) {
-                alert("File size exceeds 5 MB. Please upload a smaller file.");
+                toast.warning('File size exceeds 5 MB. Please upload a smaller file', {
+                    autoClose: 4000,
+                });
                 return;
             }
     
@@ -199,6 +208,26 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                             />
                         </div>
                         <div className='form-group'>
+                            <label>Website:</label>
+                            <input
+                                type="text"
+                                name="website"
+                                placeholder='https://www.unionsquare.market'
+                                value={newMarket ? newMarket.website : ''}
+                                onChange={handleInputMarketChange}
+                            />
+                        </div>
+                        <div className='form-group'>
+                            <label>Bio:</label>
+                            <textarea
+                                className='textarea-edit'
+                                type="text"
+                                name="bio"
+                                value={newMarket.bio || ''}
+                                onChange={handleInputMarketChange}
+                            />
+                        </div>
+                        <div className='form-group'>
                             <label>Location:</label>
                             <input
                                 type="text"
@@ -207,6 +236,32 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                                 value={newMarket ? newMarket.location : ''}
                                 onChange={handleInputMarketChange}
                             />
+                        </div>
+                        <div className='form-group'>
+                            <label>City:</label>
+                            <input
+                                type="text"
+                                name="city"
+                                placeholder='New York'
+                                value={newMarket ? newMarket.city : ''}
+                                onChange={handleInputMarketChange}
+                            />
+                        </div>
+                        <div className='form-group'>
+                            <label>State:</label>
+                            <select
+                                className='select-state'
+                                name="state"
+                                value={newMarket ? newMarket.state : ''}
+                                onChange={handleInputMarketChange}
+                            >
+                                <option value="">Select</option>
+                                {states.map((state, index) => (
+                                    <option key={index} value={state}>
+                                        {state}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                         <div className='form-group'>
                             <label>Zipcode:</label>
@@ -249,6 +304,42 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                             />
                         </div>
                         <div className='form-group'>
+                            <label title="true or false">Is Flagship:</label>
+                            <select
+                                name="is_flagship"
+                                value={newMarket ? newMarket.is_flagship : ''}
+                                onChange={handleInputMarketChange}
+                            >
+                                <option value="">Select</option>
+                                <option value={true}>Yes</option>
+                                <option value={false}>No</option>
+                            </select>
+                        </div>
+                        <div className='form-group'>
+                            <label title="true or false">Is Current:</label>
+                            <select
+                                name="is_current"
+                                value={newMarket ? newMarket.is_current : ''}
+                                onChange={handleInputMarketChange}
+                            >
+                                <option value="">Select</option>
+                                <option value={true}>Yes</option>
+                                <option value={false}>No</option>
+                            </select>
+                        </div>
+                        <div className='form-group'>
+                            <label title="true or false">Is Visible:</label>
+                            <select
+                                name="is_visible"
+                                value={newMarket ? newMarket.is_visible : ''}
+                                onChange={handleInputMarketChange}
+                            >
+                                <option value="">Select</option>
+                                <option value={true}>Yes</option>
+                                <option value={false}>No</option>
+                            </select>
+                        </div>
+                        <div className='form-group'>
                             <label title="true or false">Year Round:</label>
                             <select
                                 name="year_round"
@@ -256,8 +347,8 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                                 onChange={handleInputMarketChange}
                             >
                                 <option value="">Select</option>
-                                <option value={true}>true</option>
-                                <option value={false}>false</option>
+                                <option value={true}>Yes</option>
+                                <option value={false}>No</option>
                             </select>
                         </div>
                         {newMarket?.year_round === 'false' && (
@@ -354,7 +445,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                             />
                         </div>
                         <div className='form-group'>
-                            <label>Location:</label>
+                            <label>Hour End:</label>
                             <input
                                 type="text"
                                 name="hour_end"

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PulseLoader from 'react-spinners/PulseLoader';
+import { toast } from 'react-toastify';
 
 function VendorEvents({ vendorId, vendorUserData }) {
     const [newEvent, setNewEvent] = useState({});
@@ -49,17 +50,23 @@ function VendorEvents({ vendorId, vendorUserData }) {
 
     const handleSaveNewEvent = async () => {
         if (!newEvent.title || !newEvent.message || !newEvent.start_date || !newEvent.end_date) {
-            alert("All fields are required.");
+            toast.warning('All fields are required.', {
+                autoClose: 4000,
+            });
             return;
         }
     
         if (newEvent.title.length > 24) {
-            alert('Title cannot exceed 24 characters.');
+            toast.warning('Title cannot exceed 24 characters.', {
+                autoClose: 4000,
+            });
             return;
         }
     
         if (!newEvent.market_id) {
-            alert("Please select a market.");
+            toast.warning('Please select a market.', {
+                autoClose: 4000,
+            });
             return;
         }
     
@@ -70,7 +77,9 @@ function VendorEvents({ vendorId, vendorUserData }) {
         }
         
         if (!vendorId) {
-            alert("Invalid vendor ID. Please try again.");
+            toast.warning('Invalid vendor ID. Please try again.', {
+                autoClose: 4000,
+            });
             return;
         }
     
@@ -96,8 +105,9 @@ function VendorEvents({ vendorId, vendorUserData }) {
             if (response.ok) {
                 const createdEvent = await response.json();
                 console.log("Created Event:", createdEvent);
-                alert('Market Event successfully created');
-    
+                toast.success('Market Event successfully created!', {
+                    autoClose: 4000,
+                });
                 setEvents((prevEvents) => [...prevEvents, createdEvent]);
                 setNewEvent({});
             } else {
@@ -272,7 +282,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
                                 ))}
                             </select>
                         ) : (
-                            <p>No markets available.</p>
+                            <p className='margin-l-8'>Refresh if you expect to see markets</p>
                         )}
                     </div>
                     <div className='form-group'>

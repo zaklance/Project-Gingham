@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { formatPhoneNumber } from '../../utils/helpers';
 import { useNavigate } from 'react-router-dom';
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
@@ -8,7 +10,6 @@ const AdminUsers = () => {
     const [editMode, setEditMode] = useState(false);
     const [userData, setUserData] = useState(null);
     const [tempUserData, setTempUserData] = useState(null);
-    const [image, setImage] = useState(null);
     const [adminUserData, setAdminUserData] = useState(null);
 
     const token = localStorage.getItem('admin_jwt-token');
@@ -149,6 +150,14 @@ const AdminUsers = () => {
             [name]: value,
         }));
     };
+
+    const handlePhoneInputChange = event => {
+        setTempUserData({
+            ...tempUserData,
+            ['phone']: event
+        });
+    };
+
     const handleEditToggle = () => {
         if (!editMode) {
             setTempUserData({
@@ -216,12 +225,22 @@ const AdminUsers = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>Phone:</label>
-                                    <input
+                                    <PhoneInput
+                                        className='input-phone margin-l-8'
+                                        countryCallingCodeEditable={false}
+                                        withCountryCallingCode
+                                        country='US'
+                                        defaultCountry='US'
+                                        placeholder="enter your phone number"
+                                        value={tempUserData.phone || ''}
+                                        onChange={(event) => handlePhoneInputChange(event)}
+                                    />
+                                    {/* <input
                                         type="tel"
                                         name="phone"
                                         value={tempUserData ? formatPhoneNumber(tempUserData.phone) : ''}
                                         onChange={handleInputChange}
-                                    />
+                                    /> */}
                                 </div>
                                 {userData?.admin_role > 0 && adminUserData?.admin_role === 0 ? (
                                     <div className='form-group'>

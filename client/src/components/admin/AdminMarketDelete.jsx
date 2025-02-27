@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { toast } from 'react-toastify';
 
 function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
     const [query, setQuery] = useState("");
@@ -80,7 +80,9 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
                 window.location.href = "/admin/markets?tab=delete";
             } catch (error) {
                 console.error('Error deleting market or associated days:', error);
-                alert('An error occurred while deleting the market and its associated days.');
+                toast.error('An error occurred while deleting the market and its associated days.', {
+                    autoClose: 6000,
+                });
             }
         } else {
             setQuery('');
@@ -113,7 +115,7 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
                     <tbody>
                         <tr>
                             <td className='cell-title'>Image:</td>
-                            <td className='cell-text'>{adminMarketData ? <img className='img-market' src={`/market-images/${adminMarketData.image}`} alt="Market Image" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
+                            <td className='cell-text'>{adminMarketData ? <img className='img-market' src={adminMarketData.image ? `/market-images/${adminMarketData.image}` : `/market-images/_default-images/${adminMarketData.image_default}`} alt="Market Image" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
                         </tr>
                         <tr>
                             <td className='cell-title'>ID:</td>
@@ -124,8 +126,24 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
                             <td className='cell-text'>{adminMarketData ? `${adminMarketData.name}` : ''}</td>
                         </tr>
                         <tr>
+                            <td className='cell-title'>Website:</td>
+                            <td className='cell-text'>{adminMarketData?.website ? <a href={adminMarketData.website} target="_blank" rel="noopener noreferrer">Link</a> : ''}</td>
+                        </tr>
+                        <tr>
+                            <td className='cell-title'>Bio:</td>
+                            <td className='cell-text'>{adminMarketData ? adminMarketData.bio : ''}</td>
+                        </tr>
+                        <tr>
                             <td className='cell-title'>Location:</td>
                             <td className='cell-text'>{adminMarketData ? adminMarketData.location : ''}</td>
+                        </tr>
+                        <tr>
+                            <td className='cell-title'>City:</td>
+                            <td className='cell-text'>{adminMarketData ? adminMarketData.city : ''}</td>
+                        </tr>
+                        <tr>
+                            <td className='cell-title'>State:</td>
+                            <td className='cell-text'>{adminMarketData ? adminMarketData.state : ''}</td>
                         </tr>
                         <tr>
                             <td className='cell-title'>Zipcode:</td>
@@ -144,17 +162,33 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
                             <td className='cell-text'>{adminMarketData ? adminMarketData.schedule : ''}</td>
                         </tr>
                         <tr>
+                            <td className='cell-title' title="true or false">Is Flagship:</td>
+                            <td className='cell-text'>{adminMarketData ? `${adminMarketData.is_flagship}` : ''}</td>
+                        </tr>
+                        <tr>
+                            <td className='cell-title' title="true or false">Is Current:</td>
+                            <td className='cell-text'>{adminMarketData ? `${adminMarketData.is_current}` : ''}</td>
+                        </tr>
+                        <tr>
+                            <td className='cell-title' title="true or false">Is Visible:</td>
+                            <td className='cell-text'>{adminMarketData ? `${adminMarketData.is_visible}` : ''}</td>
+                        </tr>
+                        <tr>
                             <td className='cell-title' title="true or false">Year Round:</td>
                             <td className='cell-text'>{adminMarketData ? `${adminMarketData.year_round}` : ''}</td>
                         </tr>
-                        <tr>
-                            <td className='cell-title' title="yyyy-mm-dd">Season Start:</td>
-                            <td className='cell-text'>{adminMarketData ? adminMarketData.season_start : ''}</td>
-                        </tr>
-                        <tr>
-                            <td className='cell-title' title="yyyy-mm-dd">Season End:</td>
-                            <td className='cell-text'>{adminMarketData ? adminMarketData.season_end : ''}</td>
-                        </tr>
+                        {String(adminMarketData?.year_round) === 'false' && (
+                            <>
+                                <tr>
+                                    <td className='cell-title' title="yyyy-mm-dd">Season Start:</td>
+                                    <td className='cell-text'>{adminMarketData ? adminMarketData.season_start : ''}</td>
+                                </tr>
+                                <tr>
+                                    <td className='cell-title' title="yyyy-mm-dd">Season End:</td>
+                                    <td className='cell-text'>{adminMarketData ? adminMarketData.season_end : ''}</td>
+                                </tr>
+                            </>
+                        )}
                     </tbody>
                 </table>
                 <button className='btn-edit' onClick={handleDelete}>Delete</button>

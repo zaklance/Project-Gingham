@@ -11,6 +11,7 @@ function TermsOfService() {
         "Return and Exchange Policy",
         "Vendor Terms",
         "Consumer Terms",
+        "Text Messaging Policy",
         "Limitation of Liability",
         "Intellectual Property",
         "Termination of Accounts",
@@ -96,6 +97,9 @@ function TermsOfService() {
                             <a href={`mailto:sales@gingham.nyc`} target="_blank" rel="noopener noreferrer"> sales@gingham.nyc</a>.</strong>
                         </p>
                         <p className="margin-b-16">
+                            Please note that any refunds may or may not include transaction fees based on the reason for refund. 
+                        </p>
+                        <p className="margin-b-16">
                             Thank you for your understanding and support of local farmers and vendors.
                         </p>
                 </section>
@@ -111,6 +115,16 @@ function TermsOfService() {
                     <h3 className="margin-b-16">Consumer Terms</h3>
                         <p className="margin-b-16">
                             Lorem Impsum Salt 
+                        </p>
+                </section>
+
+                <section id="Text Messaging Policy" className="section-help">
+                    <h3 className="margin-b-16">Text Messaging Policy</h3>
+                        <p className="margin-b-16">
+                            By using our services, you agree to receive text messages from Gingham related to your orders, account status, and promotions. Message frequency may vary.
+                        </p>
+                        <p className="margin-b-16">
+                            <strong>Opt-Out:</strong> You may opt out of SMS notifications at any time by replying "STOP" to any message. Standard carrier messaging rates apply.
                         </p>
                 </section>
 
@@ -137,8 +151,9 @@ function TermsOfService() {
 
                 <section id="Changes to Terms of Service" className="section-help">
                     <h3 className="margin-b-16">Changes to Terms of Service</h3>
-                        <p className="margin-b-16">
-                            Lorem Impsum Salt 
+                    <p className="margin-b-16">
+                            We may update this Terms of Service from time to time. Any significant changes will be communicated via email or through a notification on the platform.
+                            Please review this page periodically for updates.
                         </p>
                 </section>
 

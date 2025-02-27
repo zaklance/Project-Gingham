@@ -13,15 +13,15 @@ function VendorCard({ vendorData, selectedProduct, products }) {
 
 
     return (
-        <div className="market-card flex-space-between flex-column">
+        <div className="market-card flex-space-between flex-column text-center">
             {vendorData.image !== null ? (
-                <img style={{ width: '260px' }} src={`/vendor-images/${vendorData.image}`} alt="Vendor Image" />
+                <img className='img-market-card' src={`/vendor-images/${vendorData.image}`} alt="Vendor Image" />
             ) : (
-                <img style={{ width: '260px' }} src={`/vendor-images/_default-images/${vendorData.image_default}`} alt="Vendor Image" />
+                <img className='img-market-card' src={`/vendor-images/_default-images/${vendorData.image_default}`} alt="Vendor Image" />
             )}
-            <h2 className='center'>{vendorData.name}</h2>
+            <h2 className='center margin-t-8 margin-b-8'>{vendorData.name}</h2>
             <h4>{vendorData.city}, {vendorData.state}</h4>
-            <h4>
+            <h4 className='margin-b-8'>
                 {productList.length > 0
                     ? productList.map(p => p.product).join(', ')
                     : "No products available"}

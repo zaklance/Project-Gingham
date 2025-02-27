@@ -72,6 +72,8 @@ export function useMapInstance(
     defaultHeading,
     defaultTilt,
     reuseMaps,
+    renderingType,
+    colorScheme,
 
     ...mapOptions
   } = props;
@@ -105,7 +107,7 @@ export function useMapInstance(
   const savedMapStateRef = useRef<{
     mapId?: string | null;
     cameraState: CameraState;
-  }>();
+  }>(undefined);
 
   // create the map instance and register it in the context
   useEffect(
@@ -114,8 +116,10 @@ export function useMapInstance(
 
       const {addMapInstance, removeMapInstance} = context;
 
-      const mapId = props.mapId;
-      const cacheKey = mapId || 'default';
+      // note: colorScheme (upcoming feature) isn't yet in the typings, remove once that is fixed:
+      const {mapId} = props;
+      const cacheKey = `${mapId || 'default'}:${renderingType || 'default'}:${colorScheme || 'LIGHT'}`;
+
       let mapDiv: HTMLElement;
       let map: google.maps.Map;
 
@@ -133,7 +137,16 @@ export function useMapInstance(
         mapDiv = document.createElement('div');
         mapDiv.style.height = '100%';
         container.appendChild(mapDiv);
-        map = new google.maps.Map(mapDiv, mapOptions);
+
+        map = new google.maps.Map(mapDiv, {
+          ...mapOptions,
+          ...(renderingType
+            ? {renderingType: renderingType as google.maps.RenderingType}
+            : {}),
+          ...(colorScheme
+            ? {colorScheme: colorScheme as google.maps.ColorScheme}
+            : {})
+        });
       }
 
       setMap(map);
@@ -186,7 +199,17 @@ export function useMapInstance(
     //    changes should be ignored
     //  - mapOptions has special hooks that take care of updating the options
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [container, apiIsLoaded, id, props.mapId]
+    [
+      container,
+      apiIsLoaded,
+      id,
+
+      // these props can't be changed after initialization and require a new
+      // instance to be created
+      props.mapId,
+      props.renderingType,
+      props.colorScheme
+    ]
   );
 
   return [map, containerRef, cameraStateRef] as const;

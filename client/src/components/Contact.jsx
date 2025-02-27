@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 
 function Contact() {
     const [formData, setFormData] = useState({
@@ -25,13 +26,19 @@ function Contact() {
             });
             const result = await response.json()
             if (response.ok) {
-                alert('Message sent successfully!');
+                toast.success('Message sent successfully!', {
+                    autoClose: 4000,
+                });
             } else {
-                alert('Error sending message:', result.error);
+                toast.error('Error sending message:', result.error, {
+                    autoClose: 5000,
+                });
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occured while sending the message.');
+            toast.error('An error occured while sending the message.', {
+                autoClose: 4000,
+            });
         }
     };
 

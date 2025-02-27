@@ -4,6 +4,7 @@ import { formatDate } from '../../utils/helpers';
 import { weekDay } from '../../utils/common';
 import { Annotation, ColorScheme, FeatureVisibility, Map, Marker } from 'mapkit-react';
 import MarketCard from './MarketCard';
+import MapAnnotation from './MapAnnotation';
 
 function Markets() {
     const [user, setUser] = useState({});
@@ -28,6 +29,10 @@ function Markets() {
     const [userCoordinates, setUserCoordinates] = useState();
     const [markerViews, setMarkerViews] = useState({});
     const [marketCoordinates, setMarketCoordinates] = useState([]);
+    const [showGingham, setShowGingham] = useState(true);
+    const [showVendors, setShowVendors] = useState(true);
+    const [showOffSeason, setShowOffSeason] = useState(true);
+    const [showFlagship, setShowFlagship] = useState(true);
 
     const dropdownRef = useRef(null);
     const dropdownAddressRef = useRef(null);
@@ -83,18 +88,53 @@ function Markets() {
 
     const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
 
-    const handleMarkerClickOn = (marketId) => {
-        setMarkerViews((prev) => ({
-            ...prev,
-            [marketId]: true,
-        }));
+    const handleMarkerClickOn = (id) => {
+        setMarkerViews((prev) => {
+            const updatedViews = Object.keys(prev).reduce((acc, key) => {
+                acc[key] = false;
+                return acc;
+            }, {});
+
+            updatedViews[id] = true;
+            return updatedViews;
+        });
     };
 
-    const handleMarkerClickOff = (marketId) => {
+    const handleMarkerClickOff = (id) => {
         setMarkerViews((prev) => ({
             ...prev,
-            [marketId]: false,
+            [id]: false,
         }));
+        // handleMarkerHoverOff(id)
+    };
+
+    const determineSeason = (market) => {
+        const today = new Date();
+        const seasonStart = new Date(market.season_start);
+        const seasonEnd = new Date(market.season_end);
+        const inSeason = market.year_round || (today >= seasonStart && today <= seasonEnd);
+
+        if (inSeason) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    const determineVendors = (market) => {
+        return market.market_days?.some(marketDay => 
+            marketDay.vendor_markets && marketDay.vendor_markets.length > 0
+        );
+    };
+
+    const determineFlagship = (market) => {
+        return market.is_flagship === true
+    };
+
+    const isFlagship = (market) => {
+        return market.some(marketDay => 
+            marketDay.is_flagship === true
+        );
     };
 
     useEffect(() => {
@@ -144,7 +184,7 @@ function Markets() {
         if (location.state?.resetFilters) {
             setIsClicked(false);
         }
-        fetch("/api/markets")
+        fetch("/api/markets?is_visible=true")
             .then(response => response.json())
             .then(markets => {
                 if (userId & markets.length > 0) {
@@ -162,8 +202,37 @@ function Markets() {
                         .sort((a, b) => a.distance - b.distance);
                     setMarkets(sortedMarkets);
                 } else {
-                    setMarkets(markets)
+                    const sortedMarkets = markets
+                        .sort((a, b) => {
+                            const nameA = a.name.toLowerCase();
+                            const nameB = b.name.toLowerCase();
+
+                            const numA = nameA.match(/^\D*(\d+)/)?.[1];
+                            const numB = nameB.match(/^\D*(\d+)/)?.[1];
+
+                            if (numA && numB && nameA[0] >= "0" && nameA[0] <= "9" && nameB[0] >= "0" && nameB[0] <= "9") {
+                                return parseInt(numA) - parseInt(numB);
+                            }
+
+                            return nameA.localeCompare(nameB, undefined, { numeric: true });
+                        });
+                    setMarkets(sortedMarkets)
                 }
+                const coordinates = markets
+                    .filter((market) => market.coordinates)
+                    .map((market) => ({
+                        id: market.id,
+                        name: market.name,
+                        latitude: parseFloat(market.coordinates.lat),
+                        longitude: parseFloat(market.coordinates.lng),
+                        schedule: market.schedule,
+                        season_start: market.season_start,
+                        season_end: market.season_end,
+                        year_round: market.year_round,
+                        market_days: market.market_days,
+                        is_flagship: market.is_flagship,
+                    }));
+                setMarketCoordinates(coordinates);
             })
             .catch(error => console.error('Error fetching markets', error));
     }, [location.state, user]);
@@ -175,29 +244,6 @@ function Markets() {
                 setMarketDays(data);
             })
             .catch(error => console.error('Error fetching market data:', error));
-    }, []);
-
-    useEffect(() => {
-        fetch("/api/markets") 
-            .then((response) => response.json())
-            .then((markets) => {
-                const coordinates = markets
-                    .filter((market) => market.coordinates)
-                    .map((market) => ({
-                        id: market.id,
-                        name: market.name,
-                        latitude: parseFloat(market.coordinates.lat),
-                        longitude: parseFloat(market.coordinates.lng),
-                        schedule: market.schedule,
-                        season_start: market.season_start,
-                        season_end: market.season_end,
-                        year_round: market.year_round
-                    }));
-                setMarketCoordinates(coordinates);
-            })
-            .catch((error) => {
-                console.error("Error fetching markets:", error);
-            });
     }, []);
 
     useEffect(() => {
@@ -434,10 +480,34 @@ function Markets() {
         let results = [...filteredMarketsResults];
 
         if (filterAZ) {
-            results.sort((a, b) => a.name.localeCompare(b.name));
+            results.sort((a, b) => {
+                const nameA = a.name.toLowerCase();
+                const nameB = b.name.toLowerCase();
+
+                const numA = nameA.match(/^\D*(\d+)/)?.[1];
+                const numB = nameB.match(/^\D*(\d+)/)?.[1];
+
+                if (numA && numB && nameA[0] >= "0" && nameA[0] <= "9" && nameB[0] >= "0" && nameB[0] <= "9") {
+                    return parseInt(numA) - parseInt(numB);
+                }
+
+                return nameA.localeCompare(nameB, undefined, { numeric: true });
+            });
         }
         else if (filterZA) {
-            results.sort((a, b) => b.name.localeCompare(a.name));
+            results.sort((a, b) => {
+                const nameA = a.name.toLowerCase();
+                const nameB = b.name.toLowerCase();
+
+                const numA = nameA.match(/^\D*(\d+)/)?.[1];
+                const numB = nameB.match(/^\D*(\d+)/)?.[1];
+
+                if (numA && numB && nameA[0] >= "0" && nameA[0] <= "9" && nameB[0] >= "0" && nameB[0] <= "9") {
+                    return parseInt(numB) - parseInt(numA);
+                }
+
+                return nameB.localeCompare(nameA, undefined, { numeric: true });
+            });
         }
         else if (filterLocation) {
             results = results
@@ -488,51 +558,67 @@ function Markets() {
                             showsScale={FeatureVisibility.Visible}
                             showsUserLocation={true}
                             tracksUserLocation={true}
-                            onUserLocationChange={event => setUserCoordinates({ 'lat': event.coordinate.latitude, 'lng': event.coordinate.longitude })}
+                            onUserLocationChange={event => {setUserCoordinates({ 'lat': event.coordinate.latitude, 'lng': event.coordinate.longitude }); setFilterLocation(true)}}
                         >
                             {marketCoordinates.map((market) => (
-                                <Annotation
-                                    key={market.id}
-                                    latitude={market.latitude}
-                                    longitude={market.longitude}
-                                    // title={market.name}
-                                    // subtitle={market.schedule}
-                                    onSelect={() => handleMarkerClickOn(market.id)}
-                                    onDeselect={() => handleMarkerClickOff(market.id)}
-                                >
-                                    {!markerViews[market.id] ? (
-                                        <div onClick={() => handleMarkerClickOn(market.id)}>
-                                            <div className="map-circle"></div>
-                                            <div className="map-inside-circle"></div>
-                                            <div className="map-triangle"></div>
-                                        </div>
-                                    ) : (
-                                        <div className="marker-details" onClick={() => handleMarkerClickOff(market.id)}>
-                                            <div className='text-center'>
-                                                <div className="marker-name"><Link className='link-underline link-scale-96' to={`/user/markets/${market.id}`}>{market.name}</Link></div>
-                                                <div className="marker-day">{market.schedule}</div>
-                                                {market.year_round ? (
-                                                    <div className="marker-day">Open Year-Round</div>
-                                                ) : (
-                                                    <>
-                                                        {market.season_start ? (
-                                                            <div className="marker-day">{formatDate(market.season_start)} — {formatDate(market.season_end)}</div>
-                                                        ) : (
-                                                            null
-                                                        )}
-                                                    </>
-                                                )}
-                                            </div>
-                                        </div> 
-                                    )}
-                                </Annotation>
+                                <>
+                                        <>
+                                            {determineFlagship(market) ? (
+                                                <MapAnnotation key={`marker-${market.id}`} market={market} markerType={"-flag"} showMarker={showFlagship} />
+                                            ) : (!determineSeason(market)
+                                            ) ? (
+                                                <MapAnnotation key={`marker-${market.id}`} market={market} markerType={"-off-season"} showMarker={showOffSeason} />
+                                            ) : (!determineVendors(market)
+                                            ) ? (
+                                                <MapAnnotation key={`marker-${market.id}`} market={market} markerType={"-vendors"} showMarker={showVendors} />
+                                            ) : (
+                                                <MapAnnotation key={`marker-${market.id}`} market={market} markerType={""} showMarker={showGingham} />
+                                            )}
+                                        </>
+                                </>
                             ))}
                         </Map>
                     </div>
-                    <table className='table-search margin-t-24'>
+                    <div className='box-key m-flex-wrap width-98 margin-auto'>
+                        {isFlagship && (
+                            <div className='flex-start flex-center-align' onClick={() => setShowFlagship(!showFlagship)}>
+                                <div>
+                                    <div className={showFlagship ? "map-circle-flag" : "map-circle-flag-on"}></div>
+                                    <div className={showFlagship ? "map-inside-circle-flag" : "map-inside-circle-flag-on"}></div>
+                                    <div className={showFlagship ? "map-triangle-flag" : "map-triangle-flag-on"}></div>
+                                </div>
+                                <h5 className='font-quicksand text-caps text-500 margin-l-12'>Flagship<br/>market</h5>
+                            </div>
+                        )}
+                        <div className='flex-start flex-center-align' onClick={() => setShowGingham(!showGingham)}>
+                            <div>
+                                <div className={showGingham ? "map-circle" : "map-circle-on"}></div>
+                                <div className={showGingham ? "map-inside-circle" : "map-inside-circle-on"}></div>
+                                <div className={showGingham ? "map-triangle" : "map-triangle-on" }></div>
+                            </div>
+                            <h5 className='font-quicksand text-caps text-500 margin-l-12'>In season with <br/>Gingham vendors</h5>
+                        </div>
+                        <div className='flex-start flex-center-align' onClick={() => setShowVendors(!showVendors)}>
+                            <div>
+                                <div className={showVendors ? "map-circle-vendors" : "map-circle-vendors-on"} ></div>
+                                <div className={showVendors ? "map-inside-circle-vendors" : "map-inside-circle-vendors-on"}></div>
+                                <div className={showVendors ? "map-triangle-vendors" : "map-triangle-vendors-on"}></div>
+                            </div>
+                            <h5 className='font-quicksand text-caps text-500 margin-l-12'>In season without <br/>Gingham vendors</h5>
+                        </div>
+                        <div className='flex-start flex-center-align' onClick={() => setShowOffSeason(!showOffSeason)}>
+                            <div>
+                                <div className={showOffSeason ? "map-circle-off-season" : "map-circle-off-season-on"}></div>
+                                <div className={showOffSeason ? "map-inside-circle-off-season" : "map-inside-circle-off-season-on"}></div>
+                                <div className={showOffSeason ? "map-triangle-off-season" : "map-triangle-off-season-on"}></div>
+                            </div>
+                            <h5 className='font-quicksand text-caps text-500 margin-l-12'>Out of <br/>season</h5>
+                        </div>
+                    </div>
+                    <table className='table-search margin-t-4'>
                         <tbody>
                             <tr>
-                                {/* <td className='cell-title btn-grey m-hidden'>Search:</td> */}
+                                <td className='cell-title btn-grey m-hidden'>Search:</td>
                                 <td className='cell-text'>
                                     <input
                                         id='search'
@@ -543,17 +629,32 @@ function Markets() {
                                         onChange={onUpdateQuery} />
                                     {showDropdown && (
                                         <ul className="dropdown-content" ref={dropdownRef}>
-                                            {filteredMarketsDropdown.slice(0, 10).map(item => (
-                                                <li
-                                                    className="search-results"
-                                                    key={item.id}
-                                                    onClick={() => {
-                                                        setQuery(item.name);
-                                                        setShowDropdown(false);
-                                                    }}
-                                                >
-                                                    {item.name}
-                                                </li>
+                                            {filteredMarketsDropdown
+                                                .slice(0, 10)
+                                                .sort((a, b) => {
+                                                    const nameA = a.name.toLowerCase();
+                                                    const nameB = b.name.toLowerCase();
+
+                                                    const numA = nameA.match(/^\D*(\d+)/)?.[1];
+                                                    const numB = nameB.match(/^\D*(\d+)/)?.[1];
+
+                                                    if (numA && numB && nameA[0] >= "0" && nameA[0] <= "9" && nameB[0] >= "0" && nameB[0] <= "9") {
+                                                        return parseInt(numA) - parseInt(numB);
+                                                    }
+
+                                                    return nameA.localeCompare(nameB, undefined, { numeric: true });
+                                                })
+                                                .map(item => (
+                                                    <li
+                                                        className="search-results"
+                                                        key={item.id}
+                                                        onClick={() => {
+                                                            setQuery(item.name);
+                                                            setShowDropdown(false);
+                                                        }}
+                                                    >
+                                                        {item.name}
+                                                    </li>
                                             ))}
                                         </ul>
                                     )}

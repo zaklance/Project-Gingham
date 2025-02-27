@@ -5,6 +5,8 @@ import PasswordChecklist from "react-password-checklist"
 import { states } from '../../utils/common';
 import { formatPhoneNumber } from '../../utils/helpers';
 import PulseLoader from 'react-spinners/PulseLoader';
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 
 function Login({ handlePopup }) {
     const [loginEmail, setLoginEmail] = useState('');
@@ -25,6 +27,7 @@ function Login({ handlePopup }) {
     const [addressResults, setAddressResults] = useState();
     const [showAddressDropdown, setShowAddressDropdown] = useState(false);
     const [resultCoordinates, setResultCoordinates] = useState();
+    const [termsConditions, setTermsConditions] = useState(false);
     const [isValid, setIsValid] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -82,17 +85,18 @@ function Login({ handlePopup }) {
             alert("Emails do not match.");
             return;
         }
-    
         if (signupPassword !== signupConfirmPassword) {
             alert("Passwords do not match.");
             return;
         }
-    
         if (!isValid) {
             alert("Password does not meet requirements.");
             return;
         }
-    
+        if (!termsConditions) {
+            alert("You must agree to Terms & Conditions to signup.");
+            return;
+        }
         if (isLoading) {
             return;
         }
@@ -189,6 +193,7 @@ function Login({ handlePopup }) {
             }
         } catch (error) {
             console.error("Error during signup:", error);
+            setIsLoading(false);
             alert("An unexpected error occurred. Please try again.");
         } finally {
             setIsLoading(false);
@@ -398,13 +403,23 @@ function Login({ handlePopup }) {
                         </div>
                         <div className='form-group form-login'>
                             <label>Phone: </label>
-                            <input 
+                            <PhoneInput
+                                className='input-phone margin-l-8'
+                                countryCallingCodeEditable={false}
+                                withCountryCallingCode
+                                country='US'
+                                defaultCountry='US'
+                                placeholder="enter your phone number"
+                                value={signupPhone}
+                                onChange={(event) => setSignupPhone(event)}
+                            />
+                            {/* <input 
                                 type="tel"
                                 value={signupPhone}
                                 placeholder='enter your phone number'
                                 onChange={(event) => setSignupPhone(formatPhoneNumber(event.target.value))}
                                 required
-                            />
+                            /> */}
                         </div>
                         <div className="form-group form-login">
                             <label>Address 1:</label>
@@ -492,7 +507,24 @@ function Login({ handlePopup }) {
                                     data-testid="loader"
                                 />
                             ) : (
-                                <button className='btn-login' type="submit">Signup</button>
+                                <div className='flex-center-align flex-space-around margin-t-16 flex-gap-16'>
+                                    <button className='btn-login' type="submit">Signup</button>
+                                    <div className='flex-start flex-center-align'>
+                                        <input
+                                            type='checkbox'
+                                            name="terms"
+                                            value={termsConditions}
+                                            onChange={(event) => setTermsConditions(!termsConditions)}
+                                            className='scale-fix-125'
+                                        />
+                                        <p className="forgot-password" onClick={() => {
+                                            navigate('/terms-service');
+                                            window.location.reload();
+                                        }}>
+                                            Terms & Conditions
+                                        </p>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     </form>

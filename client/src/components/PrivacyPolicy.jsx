@@ -8,6 +8,7 @@ function PrivacyPolicy() {
         "Information We Collect", 
         "How We Use Your Information", 
         "How We Share Your Information", 
+        "Text Messaging Policy",
         "Data Security", 
         "Your Choices", 
         "Children's Privacy", 
@@ -118,6 +119,16 @@ function PrivacyPolicy() {
                         </ul>
                 </section>
 
+                <section id="Text Messaging Policy" className="section-help">
+                    <h3 className="margin-b-16">Text Messaging Policy</h3>
+                        <p className="margin-b-16">
+                            By providing your phone number and opting into SMS notifications, you consent to receive text messages from Gingham regarding order updates, promotions, and account-related notifications. 
+                        </p>
+                        <p className="margin-b-16">
+                            <strong>Opt-Out:</strong> You can opt out of receiving text messages at any time by replying "STOP" to any SMS message. Standard messaging rates may apply.
+                        </p>
+                </section>
+
                 <section id="Data Security" className="section-help">
                     <h3 className="margin-b-16">Data Security</h3>
                         <p className="margin-b-16">
@@ -153,7 +164,7 @@ function PrivacyPolicy() {
                 <section id="Changes to This Privacy Policy" className="section-help">
                     <h3 className="margin-b-16">Changes to This Privacy Policy</h3>
                         <p className="margin-b-16">
-                            We may update this Privacy Policy from time to time. Any significant changes will be communciated via email or through a notification on the platform.
+                            We may update this Privacy Policy from time to time. Any significant changes will be communicated via email or through a notification on the platform.
                             Please review this page periodically for updates.
                         </p>
                 </section>

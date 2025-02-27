@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { blogTimeConverter } from '../../utils/helpers';
+import { toast } from 'react-toastify';
 
 const AdminBlogUser = ({ blogs, activeTabMode }) => {
     const [newTitle, setNewTitle] = useState('');
@@ -9,7 +10,12 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
     const [tempBlogData, setTempBlogData] = useState(null);
     const [editingBlogId, setEditingBlogId] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [newBlog, setNewBlog] = useState(`
+
+    const textareasRefAdd = useRef([]);
+    const textareasRefEdit = useRef([]);
+    const adminId = parseInt(globalThis.localStorage.getItem('admin_user_id'));
+
+    const defaultBlog = `
         <div class="column-3">
             <article class="first-letter">
                 Do you love supporting local farmers, enjoying fresh produce, and finding great 
@@ -35,15 +41,48 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
                 a more sustainable future—one basket at a time!
             </article>
             <article>
-                —The Gingham Team
+                <span class='font-gingham text-size-1'>—The Gin<span class="kern-1-5">g</span><span class="kern-05">h</span>am Team</span>
             </article>
             <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
         </div>
-    `);
+    `
+    const [newBlog, setNewBlog] = useState(defaultBlog);
 
-    const textareasRefAdd = useRef([]);
-    const textareasRefEdit = useRef([]);
-    const adminId = parseInt(globalThis.localStorage.getItem('admin_user_id'));
+    const recipe = `
+        <div class="column-3">
+            <h5 class="divider-b">Prep Time: 10 mins | Cook Time: 35 mins | Total: 45 mins | Serves: 6</h5>
+            <br/>
+            <article class="first-letter">
+                This vegan butternut squash soup is the perfect fall comfort food! Store in the fridge for 4 days or freeze for months.
+            </article>
+            <h5 class="text-underline">Ingredients</h5>
+            <ul class="ul-bullet">
+                <li>2 tbsp olive oil</li>
+                <li>1 large yellow onion, chopped</li>
+                <li>½ tsp sea salt</li>
+                <li>1 (3-lb) butternut squash, peeled, seeded, cubed</li>
+                <li>3 garlic cloves, chopped</li>
+                <li>1 tbsp fresh sage, chopped</li>
+                <li>½ tbsp fresh rosemary, minced</li>
+                <li>1 tsp fresh ginger, grated</li>
+                <li>3–4 cups vegetable broth</li>
+                <li>Freshly ground black pepper</li>
+            </ul>
+            <h5 class="text-underline">Instructions</h5>
+            <ul class="ul-numbers">
+                <li>Heat oil in a large pot over medium heat. Add onion, salt, and pepper; sauté 5–8 mins. Add squash and cook 8–10 mins, stirring.</li>
+                <li>Add garlic, sage, rosemary, and ginger; cook 30 secs to 1 min until fragrant. Add 3 cups broth, bring to a boil, cover, and simmer 20–30 mins until squash is tender.</li>
+                <li>Cool slightly, blend until smooth (in batches if needed). Adjust thickness with more broth, season, and serve.</li>
+            </ul>
+            <article>
+                Enjoy this creamy, cozy soup!
+            </article>
+            <article>
+                <span class='font-gingham text-size-1'>—The Gin<span class="kern-1-5">g</span><span class="kern-05">h</span>am Team</span>
+            </article>
+            <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
+        </div>
+    `
 
     useEffect(() => {
         const filteredBlogs = blogs.filter(blog => blog.for_user === true);
@@ -52,10 +91,14 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
 
     const postBlog = async () => {
         if (!newTitle) {
-            return alert('No blog title!')
+            return (toast.warning('No blog title.', {
+                autoClose: 4000,
+            }))
         }
         if (!newDate) {
-            return alert('No blog date!')
+            return (toast.warning('No blog date', {
+                autoClose: 4000,
+            }))
         }
 
         if (confirm(`Are you sure you want to post the blog "${newTitle}" to the site?`)) {
@@ -79,10 +122,14 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
                 });
                 const result = await response.json();
                 if (response.ok) {
-                    alert('Blog posted successfully!');
-                    console.log(result);
+                    toast.success('Blog posted successfully!', {
+                        autoClose: 4000,
+                    });
+                    // console.log(result);
                 } else {
-                    alert('Error posting blog:', result.error);
+                    toast.error('Error posting blog', result.error, {
+                        autoClose: 4000,
+                    });
                 }
             } catch (error) {
                 console.error('Error sending blog:', error);
@@ -213,7 +260,7 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
                             <select
                                 name="blog_type"
                                 value={newBlogType}
-                                onChange={(e) => setNewBlogType(e.target.value)}
+                                onChange={(e) => { setNewBlogType(e.target.value); if (e.target.value === 'Recipe') { setNewBlog(recipe); setNewTitle("ZL’s Patented Falafel Burger");} else {setNewBlog(defaultBlog); setNewTitle('Super Witty Title')}}}
                             >
                                 <option value='General'>General</option>
                                 <option value='Recipe'>Recipe</option>

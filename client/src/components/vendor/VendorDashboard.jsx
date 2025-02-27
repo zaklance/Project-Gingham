@@ -74,7 +74,7 @@ function VendorDashboard({ marketId }) {
             }
 
             try {
-                const response = await fetch(`/api/vendor-notifications?vendor_id=${vendorId}&subject=team-request`, {
+                const response = await fetch(`/api/vendor-notifications?vendor_user_id=${vendorUserId}&subject=team-request`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -108,20 +108,20 @@ function VendorDashboard({ marketId }) {
             <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap margin-t-16'>
                 <h1 className=''>Vendor Dashboard</h1>
                 {vendorUserData && vendorUserData.active_vendor !== null && vendorUserData.vendor_role[vendorUserData.active_vendor] <= 1 ? (
-                    <div className='tabs margin-t-20 margin-l-24'>
-                        <Link to="#" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                    <div className='tabs margin-l-24 m-flex-wrap'>
+                        <Link to="/vendor/dashboard?tab=baskets" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                             Baskets
                         </Link>
                         {vendorUserData?.vendor_role[vendorUserData.active_vendor] <= 1 && (
                             <>
-                                <Link to="#" onClick={() => setActiveTab('events')} className={activeTab === 'events' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                                <Link to="/vendor/dashboard?tab=events" onClick={() => setActiveTab('events')} className={activeTab === 'events' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                                     Events
                                 </Link>
-                                <Link to="#" onClick={() => setActiveTab('team')} className={activeTab === 'team' ? 'notification active-tab btn btn-reset btn-tab margin-r-24' : 'notification btn btn-reset btn-tab margin-r-24'}>
+                                <Link to="/vendor/dashboard?tab=team" onClick={() => setActiveTab('team')} className={activeTab === 'team' ? 'notification active-tab btn btn-reset btn-tab' : 'notification btn btn-reset btn-tab'}>
                                     Team
                                     {notifications.length > 0 && <p className='badge'>{notifications.length}</p>}
                                 </Link>
-                                <Link to="#" onClick={() => setActiveTab('reviews')} className={activeTab === 'reviews' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                                <Link to="/vendor/dashboard?tab=reviews" onClick={() => setActiveTab('reviews')} className={activeTab === 'reviews' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                                     Reviews
                                 </Link>
                             </>
@@ -131,7 +131,7 @@ function VendorDashboard({ marketId }) {
                     <></>
                 )}
             </div>
-            <br />            
+            {/* <br />             */}
             {activeTab === 'baskets' && <VendorBaskets marketId={marketId} vendorId={vendorId} vendorUserData={vendorUserData} newVendor={newVendor} setNewVendor={setNewVendor} />}
             {activeTab === 'events' && <VendorEvents vendorId={vendorId} vendorUserData={vendorUserData} />}
             {activeTab === 'team' && <VendorTeam vendorId={vendorId} vendorUserData={vendorUserData} notifications={notifications} setNotifications={setNotifications} />}

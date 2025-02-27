@@ -9,7 +9,10 @@ import BasketSales from './BasketSales';
 import PasswordStrengthBar from 'react-password-strength-bar';
 import PasswordChecklist from "react-password-checklist"
 import ProfileFavorites from './ProfileFavorites';
-
+import { toast } from 'react-toastify';
+import PulseLoader from 'react-spinners/PulseLoader';
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 
 function Profile({ marketData }) {
     const { id } = useParams();
@@ -141,6 +144,13 @@ function Profile({ marketData }) {
             [name]: value
         });
     };
+    
+    const handlePhoneInputChange = event => {
+        setTempProfileData({
+            ...tempProfileData,
+            ['phone']: event
+        });
+    };
 
     const handleAddressInputChange = event => {
         const { name, value } = event.target;
@@ -240,7 +250,9 @@ function Profile({ marketData }) {
 
                 const maxFileSize = 25 * 1024 * 1024
                 if (image.size > maxFileSize) {
-                    alert("File size exceeds 25 MB. Please upload a smaller file.");
+                    toast.warning('File size exceeds 25 MB. Please upload a smaller file.', {
+                        autoClose: 6000,
+                    });
                     return;
                 }
 
@@ -317,10 +329,11 @@ function Profile({ marketData }) {
 
     const handleSaveEmail = async () => {
         if (changeEmail !== changeConfirmEmail) {
-            alert("Emails do not match.");
+            toast.error('Emails do not match.', {
+                autoClose: 4000,
+            });
             return;
         }
-    
         setIsSendingEmail(true);
     
         try {
@@ -336,18 +349,23 @@ function Profile({ marketData }) {
                 }),
             });
     
-            if (emailChangeResponse.ok) {
+            if (response.ok) {
                 setChangeEmail('');
                 setChangeConfirmEmail('');
                 setEmailMode(false);
-                alert('Email will not update until you click the verification link in the sent email.')
+                toast.warning('Email will not update until you check your email and click the verify link.', {
+                    autoClose: 8000,
+                });
             } else {
                 console.log('Failed to save changes');
-                console.log('Response status:', emailChangeResponse.status);
-                console.log('Response text:', await emailChangeResponse.text());
+                console.log('Response status:', response.status);
+                console.log('Response text:', await response.text());
             }
         } catch (error) {
-            console.error('Error saving changes:', error);
+            // console.error('Error saving changes:', error);
+            toast.error(`Error saving changes: ${error}`, {
+                autoClose: 5000,
+            });
         } finally {
             setIsSendingEmail(false);
         }
@@ -355,11 +373,15 @@ function Profile({ marketData }) {
 
     const handleSavePassword = async () => {
         if (changePassword !== changeConfirmPassword) {
-            alert("Passwords do not match.");
+            toast.error('Passwords do not match.', {
+                autoClose: 4000,
+            });
             return;
         }
         if (!isValid) {
-            alert("Password does not meet requirements.");
+            toast.error('Password does not meet requirements.', {
+                autoClose: 4000,
+            });
             return;
         }
         try {
@@ -381,7 +403,9 @@ function Profile({ marketData }) {
                 setChangePassword('')
                 setChangeConfirmPassword('')
                 setPasswordMode(false);
-                alert('Password changed')
+                toast.success('Password changed.', {
+                    autoClose: 4000,
+                });
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status:', response.status);
@@ -389,23 +413,32 @@ function Profile({ marketData }) {
             }
         } catch (error) {
             console.error('Error saving changes:', error);
+            toast.error(`Error saving changes: ${error}`, {
+                autoClose: 5000,
+            });
         }
     };
 
     const handleDeleteImage = async () => {
         if (!profileData || !profileData.avatar) {
-            alert('No image to delete.');
+            toast.warning('No image to delete.', {
+                autoClose: 4000,
+            });
             return;
         }
     
         if (!userId) {
-            alert('User ID is not defined.');
+            toast.warning('User ID is not defined.', {
+                autoClose: 4000,
+            });
             return;
         }
     
         const token = localStorage.getItem('user_jwt-token');
         if (!token) {
-            alert('User is not authenticated. Please log in again.');
+            toast.warning('User is not authenticated. Please log in again.', {
+                autoClose: 4000,
+            });
             return;
         }
     
@@ -434,16 +467,21 @@ function Profile({ marketData }) {
                     ...prevData,
                     avatar: null,
                 }));
-    
-                alert('Image deleted successfully.');
+                toast.success('Image deleted successfully.', {
+                    autoClose: 4000,
+                });
             } else {
                 const errorText = await response.text();
                 console.error('Failed to delete image:', errorText);
-                alert(`Failed to delete the image: ${JSON.parse(errorText).error}`);
+                toast.error(`Failed to delete the image: ${JSON.parse(errorText).error}`, {
+                    autoClose: 4000,
+                });
             }
         } catch (error) {
             console.error('Error deleting image:', error);
-            alert('An unexpected error occurred while deleting the image.');
+            toast.warning('An unexpected error occurred while deleting the image.', {
+                autoClose: 4000,
+            });
         }
     };
 
@@ -611,12 +649,22 @@ function Profile({ marketData }) {
                                 </div>
                                 <div className="form-group">
                                     <label>Phone:</label>
-                                    <input
+                                    <PhoneInput
+                                        className='input-phone margin-l-8'
+                                        countryCallingCodeEditable={false}
+                                        withCountryCallingCode
+                                        country='US'
+                                        defaultCountry='US'
+                                        placeholder="enter your phone number"
+                                        value={tempProfileData.phone || ''}
+                                        onChange={(event) => handlePhoneInputChange(event)}
+                                    />
+                                    {/* <input
                                         type="tel"
                                         name="phone"
                                         value={tempProfileData ? formatPhoneNumber(tempProfileData.phone) : ''}
                                         onChange={handleInputChange}
-                                    />
+                                    /> */}
                                 </div>
                                 <div className="form-address">
                                     <label>Address:</label>
@@ -854,9 +902,19 @@ function Profile({ marketData }) {
                                                         required
                                                     />
                                                 </div>
-                                                <button className='btn-edit' onClick={handleSaveEmail} disabled={isSendingEmail}>
-                                                    {isSendingEmail ? "Sending Email..." : "Save Changes"}
-                                                </button>
+                                                {isSendingEmail ? (
+                                                    <PulseLoader
+                                                        className='margin-t-16'
+                                                        color={'#ff806b'}
+                                                        size={10}
+                                                        aria-label="Loading Spinner"
+                                                        data-testid="loader"
+                                                    />
+                                                ) : (
+                                                    <button className='btn-edit' onClick={handleSaveEmail} disabled={isSendingEmail}>
+                                                        Save Changes
+                                                    </button>
+                                                )}
                                                 <button className='btn-edit' onClick={handleEmailToggle} disabled={isSendingEmail}>
                                                     Cancel
                                                 </button>
@@ -895,7 +953,8 @@ function Profile({ marketData }) {
                                 <FormControlLabel control={<Switch checked={tempUserSettings.site_fav_vendor_new_event} onChange={() => handleSwitchChange('site_fav_vendor_new_event')} color={'secondary'} />} label="Favorite vendor creates an event or special"/>
                                 <FormControlLabel control={<Switch checked={tempUserSettings.site_fav_vendor_schedule_change} onChange={() => handleSwitchChange('site_fav_vendor_schedule_change')} color={'secondary'} />} label="Favorite vendor changes schedule"/>
                                 <FormControlLabel control={<Switch checked={tempUserSettings.site_fav_vendor_new_basket} onChange={() => handleSwitchChange('site_fav_vendor_new_basket')} color={'secondary'} />} label="New basket for sale by a favorited vendor"/>
-                                <FormControlLabel control={<Switch checked={tempUserSettings.site_basket_pickup_time} onChange={() => handleSwitchChange('site_basket_pickup_time')} color={'secondary'} />} label="Pickup time for a basket you purchased"/>
+                                <FormControlLabel control={<Switch checked={tempUserSettings.site_basket_pickup_time} onChange={() => handleSwitchChange('site_basket_pickup_time')} color={'secondary'} />} label="It is pickup time for a basket you purchased"/>
+                                {/* <FormControlLabel control={<Switch checked={tempUserSettings.site_new_blog} onChange={() => handleSwitchChange('site_new_blog')} color={'secondary'} />} label="A new blog has been posted"/> */}
                             </FormGroup>
                         )}
                         {activeTab === 'email' && (
@@ -906,7 +965,8 @@ function Profile({ marketData }) {
                                 <FormControlLabel control={<Switch checked={tempUserSettings.email_fav_vendor_new_event} onChange={() => handleSwitchChange('email_fav_vendor_new_event')} color={'secondary'} />} label="Favorite vendor creates an event or special" />
                                 <FormControlLabel control={<Switch checked={tempUserSettings.email_fav_vendor_schedule_change} onChange={() => handleSwitchChange('email_fav_vendor_schedule_change')} color={'secondary'} />} label="Favorite vendor changes schedule" />
                                 <FormControlLabel control={<Switch checked={tempUserSettings.email_fav_vendor_new_basket} onChange={() => handleSwitchChange('email_fav_vendor_new_basket')} color={'secondary'} />} label="New basket for sale by a favorited vendor" />
-                                <FormControlLabel control={<Switch checked={tempUserSettings.email_basket_pickup_time} onChange={() => handleSwitchChange('email_basket_pickup_time')} color={'secondary'} />} label="Pickup time for a basket you purchased" />
+                                <FormControlLabel control={<Switch checked={tempUserSettings.email_basket_pickup_time} onChange={() => handleSwitchChange('email_basket_pickup_time')} color={'secondary'} />} label="it is pickup time for a basket you purchased" />
+                                <FormControlLabel control={<Switch checked={tempUserSettings.email_new_blog} onChange={() => handleSwitchChange('email_new_blog')} color={'secondary'} />} label="A new blog has been posted" />
                             </FormGroup>
                         )}
                         {activeTab === 'text' && (
@@ -914,7 +974,7 @@ function Profile({ marketData }) {
                                 <FormControlLabel control={<Switch checked={tempUserSettings.text_fav_market_schedule_change} onChange={() => handleSwitchChange('text_fav_market_schedule_change')} color={'secondary'} />} label="Favorite market changes schedule" />
                                 <FormControlLabel control={<Switch checked={tempUserSettings.text_fav_market_new_basket} onChange={() => handleSwitchChange('text_fav_market_new_basket')} color={'secondary'} />} label="New basket for sale by a favorited market" />
                                 <FormControlLabel control={<Switch checked={tempUserSettings.text_fav_vendor_schedule_change} onChange={() => handleSwitchChange('text_fav_vendor_schedule_change')} color={'secondary'} />} label="Favorite vendor changes schedule" />
-                                <FormControlLabel control={<Switch checked={tempUserSettings.text_basket_pickup_time} onChange={() => handleSwitchChange('text_basket_pickup_time')} color={'secondary'} />} label="Pickup time for a basket you purchased" />
+                                <FormControlLabel control={<Switch checked={tempUserSettings.text_basket_pickup_time} onChange={() => handleSwitchChange('text_basket_pickup_time')} color={'secondary'} />} label="It is pickup time for a basket you purchased" />
                             </FormGroup>
                         )}
                         <button className='btn-edit' onClick={handleSaveSettings}>Save</button>

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AdminVendorNotifications from './AdminVendorNotifications';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function AdminVendorProducts({ vendors }) {
     const [products, setProducts] = useState([]);
@@ -9,6 +11,7 @@ function AdminVendorProducts({ vendors }) {
     const [newProduct, setNewProduct] = useState(null);
     const [notifications, setNotifications] = useState(null);
     
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch("/api/products")
@@ -29,7 +32,9 @@ function AdminVendorProducts({ vendors }) {
 
         const isDuplicate = products.some((item) => item.product === newProduct?.product);
         if (isDuplicate) {
-            alert("New Product matches one already in the system.");
+            toast.success('New Product matches one already in the system.', {
+                autoClose: 5000,
+            });
             return; // Exit the function early
         }
 
@@ -47,9 +52,12 @@ function AdminVendorProducts({ vendors }) {
             if (response.ok) {
                 const newData = await response.json();
                 setProducts((prev) => [...prev, newData])
-
-                alert('Product successfully created');
-                console.log('Product data created successfully:', newData);
+                toast.success('Product successfully created!', {
+                    autoClose: 4000,
+                });
+                window.location.reload()
+                navigate('/admin/vendors?tab=products')
+                // console.log('Product data created successfully:', newData);
             } else {
                 console.error('Failed to create product');
                 console.error('Response:', await response.text());
@@ -78,7 +86,9 @@ function AdminVendorProducts({ vendors }) {
                 setTempProductData(null);
                 setSelectedProduct(updatedProduct);
                 setEditMode(!editMode);
-                alert('Product successfully updated');
+                toast.success('Product successfully updated!', {
+                    autoClose: 4000,
+                });
                 console.log('Product updated successfully:', updatedProduct);
             } else {
                 console.error('Failed to update product:', await response.text());
@@ -96,7 +106,9 @@ function AdminVendorProducts({ vendors }) {
                     method: "DELETE",
                 }).then(() => {
                     setProducts((prev) => prev.filter((item) => item.id !== selectedProduct.id))
-                    alert('Product successfully deleted');
+                    toast.success('Product successfully deleted!', {
+                        autoClose: 4000,
+                    });
                 })
             } catch (error) {
                 console.error("Error deleting review", error)

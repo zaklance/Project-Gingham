@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PulseLoader from 'react-spinners/PulseLoader';
+import { toast } from 'react-toastify';
 
 const AdminEmail = () => {
     const [previewHtml, setPreviewHtml] = useState('');
@@ -146,12 +147,16 @@ const AdminEmail = () => {
                 const result = await response.json()
                 if (response.ok) {
                     setIsLoading(false)
-                    alert('Message sent successfully!');
-                    console.log(result)
+                    toast.success('Message sent successfully!', {
+                        autoClose: 4000,
+                    });
+                    // console.log(result)
                 }
             } catch (error) {
                 setIsLoading(false)
-                alert('Error sending email, make sure your email is verified on sendgrid (contact Zak)', error);
+                toast.error('Error sending email, make sure your email is verified on sendgrid (contact Zak)', error, {
+                    autoClose: 4000,
+                });
             }
         } else {
             setIsLoading(false)
@@ -259,7 +264,7 @@ const AdminEmail = () => {
                     />
                 </div>
                 <div className='flex-start'>
-                    <button className='btn btn-small margin-t-8 margin-l-12 margin-b-16' onClick={previewEmail}>Preview Email</button>
+                    {bodyType == 'html' && <button className='btn btn-small margin-t-8 margin-l-12 margin-b-16' onClick={previewEmail}>Preview Email</button>}
                     {isLoading ? (
                         <PulseLoader
                             className='margin-l-24 margin-t-12'
@@ -272,11 +277,13 @@ const AdminEmail = () => {
                         <button className='btn btn-small margin-t-8 margin-l-16 margin-b-16' onClick={sendEmail}>Send Email</button>
                     )}
                 </div>
-                <iframe
-                    title="email-preview"
-                    srcDoc={previewHtml}
-                    style={{ width: '100%', height: '600px', border: '1px solid grey' }}
-                />
+                {bodyType === 'html' && (
+                    <iframe
+                        title="email-preview"
+                        srcDoc={previewHtml}
+                        style={{ width: '100%', height: '600px', border: '1px solid grey' }}
+                    />
+                )}
             </div>
         </>
     );

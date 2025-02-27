@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { states, vendors_default } from '../../utils/common';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-
+import { toast } from 'react-toastify';
 
 function AdminVendorEdit({ vendors }) {
     const [query, setQuery] = useState("");
@@ -103,7 +103,9 @@ function AdminVendorEdit({ vendors }) {
 
     const handleDeleteImage = async () => {
         if (!vendorData || !vendorData.image) {
-            alert('No image to delete.');
+            toast.success('No image to delete.', {
+                autoClose: 4000,
+            });
             return;
         }
     
@@ -129,17 +131,22 @@ function AdminVendorEdit({ vendors }) {
                     ...prevData,
                     image: null, 
                 }));
-    
-                alert('Image deleted successfully.');
+                toast.success('Image deleted successfully.', {
+                    autoClose: 4000,
+                });
                 window.location.reload();
             } else {
                 const errorText = await response.text();
                 console.error('Failed to delete image:', errorText);
-                alert('Failed to delete the image. Please try again.');
+                toast.error('Failed to delete the image. Please try again.', {
+                    autoClose: 4000,
+                });
             }
         } catch (error) {
             console.error('Error deleting image:', error);
-            alert('An unexpected error occurred while deleting the image.');
+            toast.error('An unexpected error occurred while deleting the image.', {
+                autoClose: 4000,
+            });
         }
     };
 
@@ -177,7 +184,9 @@ function AdminVendorEdit({ vendors }) {
                     const updatedData = await response.json();
                     setVendorData(updatedData);
                     setEditMode(false);
-                    alert('Vendor details updated successfully.');
+                    toast.success('Vendor details updated successfully.', {
+                        autoClose: 4000,
+                    });
         
                     if (image) {
                         await handleImageUpload(matchingVendorId);
