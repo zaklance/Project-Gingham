@@ -43,6 +43,11 @@ load_dotenv()
 app = Flask(__name__)
 
 STRIPE_WEBHOOK_SECRET = "whsec_0fd1e4d74c18b3685bd164fe766c292f8ec7a73a887dd83f598697be422a2875"
+STRIPE_ALLOWED_IPS = {
+    "3.18.12.63", "3.130.192.231", "13.235.14.237", "13.235.122.149",
+    "18.211.135.69", "35.154.171.200", "52.15.183.38", "54.88.130.119",
+    "54.88.130.237", "54.187.174.169", "54.187.205.235", "54.187.216.72"
+}
 
 USER_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/user-images')
 VENDOR_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/vendor-images')
@@ -3344,49 +3349,6 @@ def process_transfers():
         print(f"❌ Unexpected error in /api/process-transfers: {str(e)}")
         return jsonify({'error': {'message': 'An unexpected error occurred.', 'details': str(e)}}), 500
 
-# def get_vendor_stripe_account(vendor_id):
-#     vendor = Vendor.query.filter_by(id=vendor_id).first()
-#     if vendor and vendor.stripe_account_id:
-#         return vendor.stripe_account_id
-#     return None
-
-# def reverse_vendor_transfer(payment_intent_id, stripe_account_id):
-#     try:
-#         # ✅ Retrieve Transfer linked to this vendor & PaymentIntent
-#         transfers = stripe.Transfer.list(transfer_group=f"group_pi_{payment_intent_id}")
-#         vendor_transfer = next((t for t in transfers['data'] if t['destination'] == stripe_account_id), None)
-
-#         if not vendor_transfer:
-#             return {"error": f"No transfer found for vendor {stripe_account_id}."}
-
-#         print(f"🔄 Reversing Transfer: {vendor_transfer['id']} ({vendor_transfer['amount']} cents) for vendor {stripe_account_id}")
-
-#         # ✅ Reverse the transfer
-#         reversal = stripe.Transfer.create_reversal(
-#             vendor_transfer['id'],
-#             metadata={"reason": "Vendor refund request"}
-#         )
-
-#         print(f"✅ Reversal successful: {reversal['id']} for vendor {stripe_account_id}")
-#         return reversal['id']  # Return reversal ID
-
-#     except stripe.error.StripeError as e:
-#         print(f"❌ Stripe API Error: {e.user_message}")
-#         return {"error": e.user_message}
-
-#     except Exception as e:
-#         print(f"❌ Unexpected Error: {str(e)}")
-#         return {"error": "An unexpected error occurred"}
-
-# def check_reversal_status(reversal_id):
-#     try:
-#         reversal = stripe.Transfer.retrieve(reversal_id)
-#         print(f"🔎 Reversal {reversal_id} status: {reversal['status']}")
-#         return reversal['status'] == 'succeeded'
-#     except stripe.error.StripeError as e:
-#         print(f"❌ Stripe API Error: {e.user_message}")
-#         return False
-
 @app.route('/api/transfer-reversal', methods=['POST'])
 def reverse_basket_transfer():
     try:
@@ -3494,8 +3456,19 @@ def reverse_basket_transfer():
 #         print(f"❌ Unexpected Error: {str(e)}")
 #         return jsonify({'error': {'message': 'An unexpected error occurred.', 'details': str(e)}}), 500
 
+def get_request_ip():
+    if request.headers.get("X-Forwarded-For"):
+        return request.headers.get("X-Forwarded-For").split(",")[0].strip()
+    return request.remote_addr 
+
 @app.route('/api/stripe-webhook', methods=['POST'])
 def stripe_webhook():
+    # CHECKS IP ADDRESS BEFORE REQUEST
+    # request_ip = get_request_ip()
+
+    # if request_ip not in STRIPE_ALLOWED_IPS:
+    #     print(f"Unauthorized Webhook Attempt from {request_ip}")
+    #     return jsonify({"error": "Unauthorized IP"}), 40
 
     payload = request.get_data(as_text=True)
     sig_header = request.headers.get('Stripe-Signature')
