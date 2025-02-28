@@ -19,7 +19,7 @@ function ReviewVendor({ vendor }) {
     const [reports, setReports] = useState([]);
     const [hotReviews, setHotReviews] = useState([]);
     const [showFilters, setShowFilters] = useState(false);
-    const [filterNew, setFilterNew] = useState(false);
+    const [filterNew, setFilterNew] = useState(true);
     const [filterOld, setFilterOld] = useState(false);
     const [filterUp, setFilterUp] = useState(false);
     const [filterDown, setFilterDown] = useState(false);
@@ -424,6 +424,7 @@ function ReviewVendor({ vendor }) {
                                     type="radio"
                                     name="filters"
                                     value={true}
+                                    checked={filterNew}
                                     onChange={handleFilterNew}
                                 />
                                 <label htmlFor='new'>Newest</label>
@@ -433,6 +434,7 @@ function ReviewVendor({ vendor }) {
                                     type="radio"
                                     name="filters"
                                     value={true}
+                                    checked={filterOld}
                                     onChange={handleFilterOld}
                                 />
                                 <label htmlFor='old'>Oldest</label>
@@ -442,6 +444,7 @@ function ReviewVendor({ vendor }) {
                                     type="radio"
                                     name="filters"
                                     value={true}
+                                    checked={filterUp}
                                     onChange={handleFilterUp}
                                 />
                                 <label htmlFor='upVotes'>Up-Votes</label>
@@ -451,6 +454,7 @@ function ReviewVendor({ vendor }) {
                                     type="radio"
                                     name="filters"
                                     value={true}
+                                    checked={filterDown}
                                     onChange={handleFilterDown}
                                 />
                                 <label htmlFor='downVotes'>Down-Votes</label>

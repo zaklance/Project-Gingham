@@ -3475,8 +3475,8 @@ def run():
         phone = f'+1 {str(randint(1000000000,9999999999))}'
         address_1 = fake.street_address()
         address_2 = f'{choice(apartment)} {randint(1, 200)}'
-        city = fake.city()
-        state = choice(states)
+        city = choice(['Brooklyn', 'Brooklyn', 'Brooklyn', 'Bronx', 'Bronx', 'Far Rockaway', 'New York', 'New York', 'New York', 'New York', 'Queens', 'Queens', 'Staten Island'])
+        state = 'NY'
         zipcode = fake.postcode()
         # avatar = choice(avatars)
         # avatar = f'_default-images/{choice(avatars)}'
