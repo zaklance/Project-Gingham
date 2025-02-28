@@ -52,6 +52,69 @@ def run():
 
     db.session.commit()
 
+
+    # add fake users
+    users = []
+    users_settings = []
+    states = [
+         'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA', 
+         'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA', 
+         'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 
+         'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 
+         'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
+         ]
+    apartment = ['Apt', 'Suite', 'Floor', 'Building']
+    avatars = [
+        "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-cabbage-1.jpg", 
+        "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime-1.jpg", "avatar-melon-1.jpg",
+        "avatar-mangosteen-1.jpg", "avatar-mangosteen-2.jpg", "avatar-nectarine-1.jpg", 
+        "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-peach-1.jpg", 
+        "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
+        "avatar-watermelon-1.jpg"
+    ]
+
+    for i in range(50):
+        email = fake.ascii_safe_email()
+        # password = fake.password()
+        password = "lol"
+        first_name = fake.first_name()
+        last_name = fake.last_name()
+        phone = f'+1 {str(randint(1000000000,9999999999))}'
+        address_1 = fake.street_address()
+        address_2 = f'{choice(apartment)} {randint(1, 200)}'
+        city = choice(['Brooklyn', 'Brooklyn', 'Brooklyn', 'Bronx', 'Bronx', 'Far Rockaway', 'New York', 'New York', 'New York', 'New York', 'Queens', 'Queens', 'Staten Island'])
+        state = 'NY'
+        zipcode = fake.postcode()
+        # avatar = choice(avatars)
+        # avatar = f'_default-images/{choice(avatars)}'
+
+        u = User(
+            id=(i + 1),
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            phone=phone,
+            address_1=address_1,
+            address_2=address_2,
+            city=city,
+            state=state,
+            zipcode=zipcode,
+            coordinates={"lat": 40.726586, "lng": -73.988734}
+            # avatar=avatar
+        )
+        users.append(u)
+
+        su = SettingsUser(
+            user_id=(i + 1)
+        )
+        users_settings.append(su)
+
+    db.session.add_all(users)
+    db.session.add_all(users_settings)
+    db.session.commit()
+
+
     markets = [
         Market(
             id=1,
@@ -3444,67 +3507,6 @@ def run():
         vendors.append(v)
 
     db.session.add_all(vendors)
-    db.session.commit()
-
-    # add fake users
-    users = []
-    users_settings = []
-    states = [
-         'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA', 
-         'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA', 
-         'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 
-         'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 
-         'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
-         ]
-    apartment = ['Apt', 'Suite', 'Floor', 'Building']
-    avatars = [
-        "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-cabbage-1.jpg", 
-        "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime-1.jpg", "avatar-melon-1.jpg",
-        "avatar-mangosteen-1.jpg", "avatar-mangosteen-2.jpg", "avatar-nectarine-1.jpg", 
-        "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-peach-1.jpg", 
-        "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
-        "avatar-watermelon-1.jpg"
-    ]
-
-    for i in range(50):
-        email = fake.ascii_safe_email()
-        # password = fake.password()
-        password = "lol"
-        first_name = fake.first_name()
-        last_name = fake.last_name()
-        phone = f'+1 {str(randint(1000000000,9999999999))}'
-        address_1 = fake.street_address()
-        address_2 = f'{choice(apartment)} {randint(1, 200)}'
-        city = choice(['Brooklyn', 'Brooklyn', 'Brooklyn', 'Bronx', 'Bronx', 'Far Rockaway', 'New York', 'New York', 'New York', 'New York', 'Queens', 'Queens', 'Staten Island'])
-        state = 'NY'
-        zipcode = fake.postcode()
-        # avatar = choice(avatars)
-        # avatar = f'_default-images/{choice(avatars)}'
-
-        u = User(
-            id=(i + 1),
-            email=email,
-            password=password,
-            first_name=first_name,
-            last_name=last_name,
-            phone=phone,
-            address_1=address_1,
-            address_2=address_2,
-            city=city,
-            state=state,
-            zipcode=zipcode,
-            coordinates={"lat": 40.726586, "lng": -73.988734}
-            # avatar=avatar
-        )
-        users.append(u)
-
-        su = SettingsUser(
-            user_id=(i + 1)
-        )
-        users_settings.append(su)
-
-    db.session.add_all(users)
-    db.session.add_all(users_settings)
     db.session.commit()
 
 
