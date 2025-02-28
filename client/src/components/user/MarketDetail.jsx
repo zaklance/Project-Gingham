@@ -363,32 +363,42 @@ function MarketDetail ({ match }) {
             handlePopup();
             return;
         }
-
+    
         try {
+            const payload = {
+                subject: 'basket-notify',
+                message: `A user is interested in buying a basket at ${market.name}, consider adding more for sale.`,
+                link: "/vendor/dashboard?tab=baskets",
+                user_id: userId,
+                market_id: market?.id, // Ensure market.id is defined
+                vendor_id: vendor?.id,  // Ensure vendor.id is defined
+            };
+    
+            console.log("Sending request with payload:", payload);
+    
             const response = await fetch('/api/notify-me-for-more-baskets', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    subject: 'basket-notify',
-                    message: `A user is interested in buying a basket at ${market.name}, consider adding more for sale.`,
-                    link: "/vendor/dashboard?tab=baskets",
-                    user_id: userId,
-                    market_id: market.id,
-                    vendor_id: vendor.id,
-                }),
+                body: JSON.stringify(payload),
             });
-
+    
+            let responseData;
+            try {
+                responseData = await response.json(); // Try to parse JSON
+            } catch (error) {
+                responseData = null; // Handle empty or non-JSON response
+            }
+    
             if (response.ok) {
-                const responseData = await response.json();
                 toast.success(`Your request has been sent to ${vendor.name}!`, {
                     autoClose: 5000,
                 });
             } else {
-                const errorData = await response.json();
-                toast.error(`Error sending request: ${errorData.message || 'Unknown error'}`, {
+                console.error("Error Response:", responseData);
+                toast.error(`Error sending request: ${responseData?.message || 'Unknown error'}`, {
                     autoClose: 4000,
                 });
             }
