@@ -184,8 +184,8 @@ class Market(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    bio = db.Column(db.String, nullable=True)
     website = db.Column(db.String, nullable=True)
+    bio = db.Column(db.String, nullable=True)
     image = db.Column(db.String, nullable=True)
     image_default = db.Column(db.String, nullable=False, default=random_market)
     location = db.Column(db.String, nullable=False)
@@ -280,7 +280,6 @@ class Vendor(db.Model, SerializerMixin):
     reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic', cascade="all, delete")
     vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic', cascade="all, delete")
     vendor_markets = db.relationship('VendorMarket', back_populates='vendor', cascade="all, delete")
-    # notifications = db.relationship('VendorNotification', back_populates='vendor', lazy='dynamic')
 
     serialize_rules = (
         '-reviews.vendor', 
@@ -537,10 +536,10 @@ class AdminUser(db.Model, SerializerMixin):
     __tablename__ = 'admin_users'
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String, unique=True, nullable=False)
-    _password = db.Column(db.String, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, unique=True, nullable=False)
+    _password = db.Column(db.String, nullable=False)
     phone = db.Column(db.String, nullable=True)
     admin_role = db.Column(db.Integer, default=5)
     login_count = db.Column(db.Integer, default=0)
