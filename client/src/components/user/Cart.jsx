@@ -5,16 +5,14 @@ import { timeConverter, formatBasketDate } from '../../utils/helpers';
 
 function Cart() {
     const { handlePopup, cartItems, setCartItems, amountInCart, setAmountInCart } = useOutletContext();
-    const [name, setName] = useState('');
-    const [address, setAddress] = useState('');
     const [cartTimer, setCartTimer] = useState(null);
-    const [hash, setHash] = useState('');
 
     const navigate = useNavigate();
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const token = localStorage.getItem('user_jwt-token');
 
+    // This doesn't actually work in a browser, timeout can only last 10 seconds before browsers shut them down.
     function startCartTimer() {
         if (cartTimer) {
             clearTimeout(cartTimer);
@@ -100,7 +98,6 @@ function Cart() {
         console.log("Cart items:", cartItems);
     }, [amountInCart, cartItems]);
 
-    console.log(cartItems)
 
     return (
         <div>
