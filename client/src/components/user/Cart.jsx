@@ -12,26 +12,6 @@ function Cart() {
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const token = localStorage.getItem('user_jwt-token');
 
-    // This doesn't actually work in a browser, timeout can only last 10 seconds before browsers shut them down.
-    function startCartTimer() {
-        if (cartTimer) {
-            clearTimeout(cartTimer);
-        }
-
-        const newCartTimer = setTimeout(() => {
-            setCartItems([]);
-            setAmountInCart(0);
-        }, (60 * 60 * 1000));
-
-        setCartTimer(newCartTimer);
-    }
-
-    useEffect(() => {
-        if (cartItems.length > 0) {
-            startCartTimer();
-        }
-    }, [cartItems]);
-
     function removeFromCart(itemToRemove) {
         const updatedCart = cartItems.filter(item => item.id !== itemToRemove.id);
         setCartItems(updatedCart);
@@ -114,7 +94,7 @@ function Cart() {
                                 <ul>
                                     {cartItems.map((item, index) => (
                                         <li className='cart-item' key={index}>
-                                            <span><b>{item.vendor_name}</b> at <i>{item.location}</i>, {formatBasketDate(item.sale_date)} from {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</span>
+                                            <span><b>{item.vendor_name}</b> at <i>{item.market_name}</i>, {formatBasketDate(item.sale_date)} from {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</span>
                                             <span><b>${item.price}</b></span>
                                             <button className='btn-cart' onClick={() => removeFromCart(item)}>Remove</button>
                                         </li>

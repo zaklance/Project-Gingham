@@ -266,8 +266,8 @@ class Vendor(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    city = db.Column(db.String, nullable=True)
-    state = db.Column(db.String(2), nullable=True)
+    city = db.Column(db.String, nullable=False)
+    state = db.Column(db.String(2), nullable=False)
     products = db.Column(db.JSON, nullable=False)
     bio = db.Column(db.String, nullable=True)
     website = db.Column(db.String, nullable=True)
