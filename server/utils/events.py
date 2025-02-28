@@ -766,7 +766,7 @@ def notify_vendor_users_new_market_location(mapper, connection, target):
         
 @listens_for(QRCode, "after_insert")
 def handle_qr_code_deletion(mapper, connection, target):
-    session = Session()  # Use the properly bound session
+    session = Session(bind=connection)  # Use the properly bound session
     try:
         # Get the current UTC time
         current_time = datetime.now(timezone.utc)
