@@ -100,6 +100,8 @@ function Cart() {
         console.log("Cart items:", cartItems);
     }, [amountInCart, cartItems]);
 
+    console.log(cartItems)
+
     return (
         <div>
             <h2>Shopping Cart</h2>

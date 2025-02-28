@@ -88,26 +88,6 @@ function Markets() {
 
     const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
 
-    const handleMarkerClickOn = (id) => {
-        setMarkerViews((prev) => {
-            const updatedViews = Object.keys(prev).reduce((acc, key) => {
-                acc[key] = false;
-                return acc;
-            }, {});
-
-            updatedViews[id] = true;
-            return updatedViews;
-        });
-    };
-
-    const handleMarkerClickOff = (id) => {
-        setMarkerViews((prev) => ({
-            ...prev,
-            [id]: false,
-        }));
-        // handleMarkerHoverOff(id)
-    };
-
     const determineSeason = (market) => {
         const today = new Date();
         const seasonStart = new Date(market.season_start);
@@ -560,23 +540,30 @@ function Markets() {
                             tracksUserLocation={true}
                             onUserLocationChange={event => {setUserCoordinates({ 'lat': event.coordinate.latitude, 'lng': event.coordinate.longitude }); setFilterLocation(true)}}
                         >
-                            {marketCoordinates.map((market) => (
-                                <>
-                                        <>
-                                            {determineFlagship(market) ? (
-                                                <MapAnnotation key={`marker-${market.id}`} market={market} markerType={"-flag"} showMarker={showFlagship} />
-                                            ) : (!determineSeason(market)
-                                            ) ? (
-                                                <MapAnnotation key={`marker-${market.id}`} market={market} markerType={"-off-season"} showMarker={showOffSeason} />
-                                            ) : (!determineVendors(market)
-                                            ) ? (
-                                                <MapAnnotation key={`marker-${market.id}`} market={market} markerType={"-vendors"} showMarker={showVendors} />
-                                            ) : (
-                                                <MapAnnotation key={`marker-${market.id}`} market={market} markerType={""} showMarker={showGingham} />
-                                            )}
-                                        </>
-                                </>
-                            ))}
+                            {marketCoordinates.map((market) => {
+                                const markerType = determineFlagship(market) 
+                                    ? "-flag" 
+                                    : !determineSeason(market) 
+                                    ? "-off-season" 
+                                    : !determineVendors(market) 
+                                    ? "-vendors" 
+                                    : "";
+
+                                return (
+                                    <MapAnnotation 
+                                        key={`marker-${market.id}`} 
+                                        market={market} 
+                                        markerType={markerType}
+                                        setMarkerViews={setMarkerViews}
+                                        showMarker={
+                                            determineFlagship(market) ? showFlagship :
+                                            !determineSeason(market) ? showOffSeason :
+                                            !determineVendors(market) ? showVendors : 
+                                            showGingham
+                                        } 
+                                    />
+                                );
+                            })}
                         </Map>
                     </div>
                     <div className='box-key m-flex-wrap width-98 margin-auto'>
@@ -647,7 +634,7 @@ function Markets() {
                                                 .map(item => (
                                                     <li
                                                         className="search-results"
-                                                        key={item.id}
+                                                        key={`filters-${item.id}`}
                                                         onClick={() => {
                                                             setQuery(item.name);
                                                             setShowDropdown(false);
@@ -752,7 +739,7 @@ function Markets() {
                                             <select className='select-dropdown select-blue' value={selectedDay} onChange={handleDayChange}>
                                                 <option value="">Days Open</option>
                                                 {Array.isArray(weekDay) && weekDay.map((product, index) => (
-                                                    <option key={index} value={index}>
+                                                    <option key={`day-${index}`} value={index}>
                                                         {product}
                                                     </option>
                                                 ))}
@@ -770,7 +757,7 @@ function Markets() {
                 <div className="market-cards-container box-scroll-large margin-t-24">
                     {sortedMarketsResults
                         .map((marketData) => (
-                            <MarketCard key={marketData.id} marketData={marketData} user={user} haversineDistance={haversineDistance} resultCoordinates={resultCoordinates} userCoordinates={userCoordinates} filterAddress={filterAddress} />
+                            <MarketCard key={`market-${marketData.id}`} marketData={marketData} user={user} haversineDistance={haversineDistance} resultCoordinates={resultCoordinates} userCoordinates={userCoordinates} filterAddress={filterAddress} />
                     ))}
                 </div>
             </div>
