@@ -19,7 +19,6 @@ function Markets() {
     const [filterZA, setFilterZA] = useState(false);
     const [filterLocation, setFilterLocation] = useState(false);
     const [filterAddress, setFilterAddress] = useState(false);
-    const [filterRadio, setFilterRadio] = useState('az');
     const [address, setAddress] = useState("");
     const [selectedDay, setSelectedDay] = useState('');
     const [isInSeason, setIsInSeason] = useState(false);
@@ -27,7 +26,6 @@ function Markets() {
     const [showAddressDropdown, setShowAddressDropdown] = useState(false);
     const [resultCoordinates, setResultCoordinates] = useState();
     const [userCoordinates, setUserCoordinates] = useState();
-    const [markerViews, setMarkerViews] = useState({});
     const [marketCoordinates, setMarketCoordinates] = useState([]);
     const [showGingham, setShowGingham] = useState(true);
     const [showVendors, setShowVendors] = useState(true);
@@ -554,7 +552,6 @@ function Markets() {
                                         key={`marker-${market.id}`} 
                                         market={market} 
                                         markerType={markerType}
-                                        setMarkerViews={setMarkerViews}
                                         showMarker={
                                             determineFlagship(market) ? showFlagship :
                                             !determineSeason(market) ? showOffSeason :

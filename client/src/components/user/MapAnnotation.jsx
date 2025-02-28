@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Annotation } from 'mapkit-react';
 import { formatDate } from '../../utils/helpers';
 
-function MapAnnotation({ market, markerType, showMarker, setMarkerViews }) {
+function MapAnnotation({ market, markerType, showMarker }) {
     const [isHover, setIsHover] = useState({});
 
     const handleMarkerHoverOn = (id) => {
@@ -20,31 +20,11 @@ function MapAnnotation({ market, markerType, showMarker, setMarkerViews }) {
         }));
     };
 
-    const handleMarkerClickOn = (id) => {
-        setMarkerViews((prev) => {
-            const updatedViews = Object.keys(prev).reduce((acc, key) => {
-                acc[key] = false;
-                return acc;
-            }, {});
-
-            updatedViews[id] = true;
-            return updatedViews;
-        });
-    };
-
-    const handleMarkerClickOff = (id) => {
-        setMarkerViews((prev) => ({
-            ...prev,
-            [id]: false,
-        }));
-        // handleMarkerHoverOff(id)
-    };
 
     return (
         <Annotation
             latitude={market.latitude}
             longitude={market.longitude}
-            onSelect={() => handleMarkerClickOn(market.id)}
             visible={showMarker}
             calloutElement={
                 <div 
