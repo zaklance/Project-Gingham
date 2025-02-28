@@ -108,7 +108,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
         if (error?.type === "card_error" || error?.type === "validation_error") {
             setIsProcessing(false);
         } else if (paymentIntent?.status === "succeeded") {
-            console.log("✅ Payment successful! Marking items as sold...");
+            console.log("Payment successful! Marking items as sold...");
     
             try {
                 await Promise.all(cartItems.map(async (cartItem) => {
@@ -123,10 +123,10 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                     }
                 }));
     
-                console.log("✅ Items marked as sold!");
+                console.log("Items marked as sold!");
     
-                // ✅ Call `/api/process-transfers` to distribute funds to vendors
-                console.log("🔄 Processing vendor payments...");
+                // Call `/api/process-transfers` to distribute funds to vendors
+                console.log("Processing vendor payments...");
                 const transferResponse = await fetch('/api/process-transfers', {
                     method: 'POST',
                     headers: {
@@ -149,11 +149,11 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                     throw new Error(`Failed to process transfers: ${transferResponse.statusText}`);
                 }
     
-                console.log("✅ Vendor payments processed successfully!");
+                console.log("Vendor payments processed successfully!");
     
-                // ✅ Generate QR codes
+                // Generate QR codes
                 if (cartItems.length > 0) {
-                    console.log("🔄 Generating QR codes...");
+                    console.log("Generating QR codes...");
                     const qrPromises = cartItems.map(async (cartItem) => {
                         const hash = objectHash(`${cartItem.vendor_name} ${cartItem.location} ${cartItem.id} ${userId}`);
                         const response = await fetch('/api/qr-codes', {
@@ -177,11 +177,11 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                     });
     
                     await Promise.all(qrPromises);
-                    console.log("✅ All QR codes created successfully!");
+                    console.log("All QR codes created successfully!");
                 }
     
-                // ✅ Create receipt
-                console.log("🔄 Creating receipt...");
+                // Create receipt
+                console.log("Creating receipt...");
                 const receiptResponse = await fetch('/api/receipts', {
                     method: 'POST',
                     headers: {
@@ -214,11 +214,11 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 }
     
                 const receiptData = await receiptResponse.json();
-                console.log("✅ Receipt created successfully!", receiptData);
+                console.log("Receipt created successfully!", receiptData);
                 
                 setReceiptId(receiptData.id);
     
-                // ✅ Clear cart
+                // Clear cart
                 localStorage.setItem("cartItems", JSON.stringify([]));
                 localStorage.setItem("amountInCart", JSON.stringify(0));
                 setCartItems([]);
@@ -226,7 +226,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 toast.success('Payment successful!', { autoClose: 5000 });
                 setPaymentSuccess(true);
             } catch (error) {
-                console.error("❌ Error processing post-payment actions:", error);
+                console.error("Error processing post-payment actions:", error);
                 toast.error(`An error occurred: ${error.message}`, { autoClose: 6000 });
             } finally {
                 setIsProcessing(false);

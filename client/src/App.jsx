@@ -35,6 +35,30 @@ function App() {
         globalThis.localStorage.setItem('cartItems', JSON.stringify(cartItems));
     }, [cartItems]);
 
+    useEffect(() => {
+        const checkExpiredItems = () => {
+            const currentTime = new Date();
+            const updatedCart = cartItems.filter(cartItem => {
+                const saleDateTime = new Date(cartItem.sale_date);
+                const pickupEndTime = new Date(cartItem.pickup_end);
+                return currentTime <= saleDateTime || currentTime <= pickupEndTime;
+            });
+
+            if (updatedCart.length !== cartItems.length) {
+                setCartItems(updatedCart);
+                setAmountInCart(updatedCart.length);
+                globalThis.localStorage.setItem('cartItems', JSON.stringify(updatedCart));
+                globalThis.localStorage.setItem('amountInCart', JSON.stringify(updatedCart.length));
+            }
+        };
+
+        checkExpiredItems();
+        // Check every minute
+        const interval = setInterval(checkExpiredItems, 60000);
+
+        return () => clearInterval(interval);
+    }, [cartItems]);
+
     const handlePopup = () => {
         setIsPopup(!isPopup);
     }

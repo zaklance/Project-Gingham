@@ -131,7 +131,7 @@ const Receipt = ({ receiptId, isPaymentCompleted, page }) => {
         if (receipt?.payment_intent_id) {
             setIsPreparing(true); // Show "Preparing download..."
 
-            // ✅ Apply 1600ms delay for checkout, fetch immediately for profile
+            // Apply 1600ms delay for checkout, fetch immediately for profile
             const fetchTransaction = () => {
                 fetch(`/api/stripe-transaction?payment_intent_id=${encodeURIComponent(receipt.payment_intent_id.trim())}`)
                     .then((res) => res.json())
