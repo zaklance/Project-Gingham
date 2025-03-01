@@ -14,7 +14,7 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
 from dotenv import load_dotenv
 from sqlalchemy import cast, desc, extract, func, Integer
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, Session
 from sqlalchemy.dialects.postgresql import JSONB
 from flask_migrate import Migrate
 from flask_cors import CORS
@@ -3883,51 +3883,74 @@ def delete_user_notifications(id):
         db.session.commit()
         return jsonify({'notifications': notification_data}), 200
 
+
 @app.route('/api/notify-me-for-more-baskets', methods=['POST'])
 @jwt_required()
 def notify_me_for_more_baskets():
     data = request.get_json()
 
+    # Validate input
     if not data or 'user_id' not in data or 'vendor_id' not in data:
         return jsonify({'message': 'Invalid request data.'}), 400
 
+    session = Session(db.engine)  # Ensure explicit session for SQLAlchemy 2.0
     try:
-        # Retrieve the vendor
-        vendor = Vendor.query.get(data['vendor_id'])
+        # Fetch User and Vendor
+        user = session.get(User, data['user_id'])
+        vendor = session.get(Vendor, data['vendor_id'])
+
+        # Retrieve all VendorUsers
+        all_vendor_users = session.query(VendorUser).all()
+
+        vendor_users = []
+        for vendor_user in all_vendor_users:
+            vendor_data = vendor_user.vendor_id  # Get vendor_id field (JSON)
+
+            # Ensure vendor_id is properly handled (convert JSON if needed)
+            if isinstance(vendor_data, dict):  
+                vendor_dict = vendor_data  # Already a dict
+            elif isinstance(vendor_data, str):
+                try:
+                    vendor_dict = json.loads(vendor_data)  # Convert JSON string to dict
+                except json.JSONDecodeError:
+                    print(f"Invalid JSON format in vendor_id for VendorUser ID {vendor_user.id}")
+                    continue  # Skip this record
+            else:
+                print(f"Unexpected type for vendor_id in VendorUser ID {vendor_user.id}: {type(vendor_data)}")
+                continue  # Skip
+
+            # Check if the `vendor_id` exists as a key (convert to string)
+            if str(data['vendor_id']) in vendor_dict:
+                vendor_users.append(vendor_user)
+
+        # Error Handling: Ensure required entities exist
         if not vendor:
             return jsonify({'message': f"Vendor with ID {data['vendor_id']} not found."}), 404
 
-        # Retrieve the user
-        user = User.query.get(data['user_id'])
         if not user:
             return jsonify({'message': f"User with ID {data['user_id']} not found."}), 404
 
-        vendor_users = [
-            vu for vu in VendorUser.query.all()
-            if str(data['vendor_id']) in vu.vendor_id.keys()
-        ]
-
         if not vendor_users:
+            print(f"No vendor users found for vendor ID {data['vendor_id']}.")
             return jsonify({'message': f"No vendor users found for vendor ID {data['vendor_id']}."}), 404
 
-        # Create a notification for the vendor
-        notifications = []
-
-        for vendor_user in vendor_users:
-            new_notification = VendorNotification(
-                subject=data.get('subject'),
-                message=data.get('message'),
-                link=data.get('link'),
+        # Create notifications for each vendor user found
+        notifications = [
+            VendorNotification(
+                subject=data.get('subject', 'New Basket Interest'),
+                message=data.get('message', f"A user is interested in buying a basket at {vendor.name}."),
+                link=data.get('link', "/vendor/dashboard?tab=baskets"),
                 user_id=user.id,
                 vendor_id=vendor.id,
                 vendor_user_id=vendor_user.id,
                 market_id=data.get('market_id'),
                 is_read=False
             )
-            notifications.append(new_notification)
+            for vendor_user in vendor_users
+        ]
 
-        db.session.add_all(notifications)
-        db.session.commit()
+        session.add_all(notifications)
+        session.commit()
 
         return jsonify({
             'message': 'Notifications sent successfully.',
@@ -3948,9 +3971,12 @@ def notify_me_for_more_baskets():
         }), 201
 
     except Exception as e:
-        db.session.rollback()
+        session.rollback()
         print(f"Error creating notification: {str(e)}")
         return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
+
+    finally:
+        session.close()
 
 @app.route('/api/vendor-notifications', methods=['GET', 'POST', 'DELETE'])
 @jwt_required()
