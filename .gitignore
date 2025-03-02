@@ -179,6 +179,7 @@ cython_debug/
 
 
 .DS_STORE
+.DS_Store
 node_modules
 scripts/flow/*/.flowconfig
 .flowconfig
