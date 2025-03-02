@@ -1885,14 +1885,11 @@ link {
   background-color: #fff;
   border-style: solid;
   border-color: #b5b5b5;
-  margin-left: 44%;
-  margin-top: 16%;
   border-width: 2px;
   width: max-content;
   max-width: 240px;
   padding: 4px;
   border-radius: 8px;
-  transform: translate(-42%, -50%)
 }
 
 .marker-name {

@@ -27,9 +27,7 @@ function MapAnnotation({ market, markerType, showMarker }) {
             longitude={market.longitude}
             visible={showMarker}
             calloutElement={
-                <div 
-                    className="marker-details"
-                >
+                <div className="marker-details">
                     <div className='text-center'>
                         <div className="marker-name"><Link className='link-underline link-scale-96' to={`/user/markets/${market.id}`}>{market.name}</Link></div>
                         <div className="marker-day">{market.schedule}</div>
@@ -48,7 +46,7 @@ function MapAnnotation({ market, markerType, showMarker }) {
                 </div> 
             }
             calloutEnabled
-            // calloutOffsetY={-32}
+            // calloutOffsetY={-43}
         >
             <div 
                 onMouseEnter={() => handleMarkerHoverOn(market.id)}

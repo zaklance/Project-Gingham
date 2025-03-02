@@ -84,37 +84,6 @@ function Markets() {
         }
     };
 
-    const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
-
-    const determineSeason = (market) => {
-        const today = new Date();
-        const seasonStart = new Date(market.season_start);
-        const seasonEnd = new Date(market.season_end);
-        const inSeason = market.year_round || (today >= seasonStart && today <= seasonEnd);
-
-        if (inSeason) {
-            return true
-        } else {
-            return false
-        }
-    }
-
-    const determineVendors = (market) => {
-        return market.market_days?.some(marketDay => 
-            marketDay.vendor_markets && marketDay.vendor_markets.length > 0
-        );
-    };
-
-    const determineFlagship = (market) => {
-        return market.is_flagship === true
-    };
-
-    const isFlagship = (market) => {
-        return market.some(marketDay => 
-            marketDay.is_flagship === true
-        );
-    };
-
     useEffect(() => {
         if (userId) {
 
@@ -348,39 +317,6 @@ function Markets() {
             setResultCoordinates(null)
         }
     }
-
-    const handleFiltersAll = (event) => {
-        if (event.target.value === "filterAZ") {
-            setFilterAZ(!filterAZ)
-            setFilterZA(false)
-            setFilterLocation(false)
-            setFilterAddress(false)
-            setAddress('')
-            setResultCoordinates(null)
-        }
-        if (event.target.value === "filterZA") {
-            setFilterAZ(false)
-            setFilterZA(!filterZA)
-            setFilterLocation(false)
-            setFilterAddress(false)
-            setAddress()
-            setResultCoordinates(null)
-        }
-        if (event.target.value === "filterLocation") {
-            setFilterAZ(false)
-            setFilterZA(false)
-            setFilterLocation(true)
-            setFilterAddress(false)
-            setAddress('')
-        }
-        if (event.target.value === "filterAddress") {
-            setFilterAZ(false)
-            setFilterZA(false)
-            setFilterLocation(false)
-            setFilterAddress(!filterAddress)
-            setResultCoordinates(null)
-        }
-    }
     
     const toggleRadio = () => {
         if (!filterAddress) {
@@ -453,6 +389,37 @@ function Markets() {
             return R * c; // Distance in miles
         }
     }
+
+    const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
+
+    const determineSeason = (market) => {
+        const today = new Date();
+        const seasonStart = new Date(market.season_start);
+        const seasonEnd = new Date(market.season_end);
+        const inSeason = market.year_round || (today >= seasonStart && today <= seasonEnd);
+
+        if (inSeason) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    const determineVendors = (market) => {
+        return market.market_days?.some(marketDay => 
+            marketDay.vendor_markets && marketDay.vendor_markets.length > 0
+        );
+    };
+
+    const determineFlagship = (market) => {
+        return market.is_flagship === true
+    };
+
+    const isFlagship = (market) => {
+        return market.some(marketDay => 
+            marketDay.is_flagship === true
+        );
+    };
 
     const sortedMarketsResults = useMemo(() => {
         let results = [...filteredMarketsResults];
