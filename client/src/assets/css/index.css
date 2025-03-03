@@ -906,6 +906,12 @@ ul {
   gap: 8;
 }
 
+.box-iframe {
+  border: 6px solid #dbdbdb !important;
+  border-radius: 8px;
+  min-height: 98vh;
+}
+
 .box-scroll {
   overflow: scroll;
   max-height: 488px;

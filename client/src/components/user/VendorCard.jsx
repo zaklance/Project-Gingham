@@ -21,7 +21,7 @@ function VendorCard({ vendorData, selectedProduct, products }) {
             )}
             <h2 className='center margin-t-8 margin-b-8'>{vendorData.name}</h2>
             <h4>{vendorData.city}, {vendorData.state}</h4>
-            <h4 className='margin-b-8'>
+            <h4>
                 {productList.length > 0
                     ? productList.map(p => p.product).join(', ')
                     : "No products available"}

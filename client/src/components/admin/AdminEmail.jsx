@@ -195,13 +195,6 @@ const AdminEmail = () => {
         }
     };
 
-    const togglePasswordVisibility = (field) => {
-        setShowPassword(true);
-        setTimeout(() => {
-            setShowPassword(false);
-        }, 8000);
-    };
-
     const handleBodyType = (event) => {
         setBodyType(event)
         if (event === 'plain') {
@@ -216,74 +209,77 @@ const AdminEmail = () => {
         <>
             <div>
                 <h1 className='margin-b-16'>Your Email</h1>
-                <h3 className='margin-b-8'>Send from {adminUserData?.email}</h3>
-                <h3 className='margin-r-8 margin-b-16'>How-to guide: <a className='link-underline' href="https://documentation.mjml.io/#standard-body-components" target="_blank">mjml.io</a></h3>
-                <div className='form-group'>
-                    <label>Plain or HTML:</label>
-                    <select
-                        name="body_type"
-                        value={bodyType}
-                        onChange={(e) => handleBodyType(e.target.value)}
-                    >
-                        <option value={'plain'}>Plain</option>
-                        <option value={'html'}>HTML/MJML</option>
-                    </select>
-                </div>
-                <div className='form-group'>
-                    <label>Sending Email:</label>
-                    <p className='margin-l-8'>{adminUserData?.email}</p>
-                </div>
-                <div className='form-group'>
-                    <label>Receiving Email:</label>
-                    <input
-                        type="text"
-                        name="singleEmail"
-                        placeholder='hello@gingham.nyc'
-                        value={singleEmail || ''}
-                        onChange={(e) => setSingleEmail(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className='form-group'>
-                    <label>Subject:</label>
-                    <input
-                        id="subject-input"
-                        value={newSubject}
-                        onChange={(e) => setNewSubject(e.target.value)}
-                        placeholder="Witty Subject"
-                    />
-                </div>
-                <div className='form-group'>
-                    <label>Message:</label>
-                    <textarea
-                        id="html-input"
-                        value={newEmail}
-                        onChange={(e) => setNewEmail(e.target.value)}
-                        placeholder="Type something..."
-                        ref={(el) => (textareasRef.current[0] = el)}
-                    />
-                </div>
-                <div className='flex-start'>
-                    {bodyType == 'html' && <button className='btn btn-small margin-t-8 margin-l-12 margin-b-16' onClick={previewEmail}>Preview Email</button>}
-                    {isLoading ? (
-                        <PulseLoader
-                            className='margin-l-24 margin-t-12'
-                            color={'#ff806b'}
-                            size={10}
-                            aria-label="Loading Spinner"
-                            data-testid="loader"
+                <div className='box-bounding'>
+                    <h3 className='margin-b-8'>Send from {adminUserData?.email}</h3>
+                    <h3 className='margin-r-8 margin-b-16'>How-to guide: <a className='link-underline' href="https://documentation.mjml.io/#standard-body-components" target="_blank">mjml.io</a></h3>
+                    <div className='form-group'>
+                        <label>Plain or HTML:</label>
+                        <select
+                            name="body_type"
+                            value={bodyType}
+                            onChange={(e) => handleBodyType(e.target.value)}
+                        >
+                            <option value={'plain'}>Plain</option>
+                            <option value={'html'}>HTML/MJML</option>
+                        </select>
+                    </div>
+                    <div className='form-group'>
+                        <label>Sending Email:</label>
+                        <p className='margin-l-8'>{adminUserData?.email}</p>
+                    </div>
+                    <div className='form-group'>
+                        <label>Receiving Email:</label>
+                        <input
+                            type="text"
+                            name="singleEmail"
+                            placeholder='hello@gingham.nyc'
+                            value={singleEmail || ''}
+                            onChange={(e) => setSingleEmail(e.target.value)}
+                            required
                         />
-                    ) : (
-                        <button className='btn btn-small margin-t-8 margin-l-16 margin-b-16' onClick={sendEmail}>Send Email</button>
+                    </div>
+                    <div className='form-group'>
+                        <label>Subject:</label>
+                        <input
+                            id="subject-input"
+                            value={newSubject}
+                            onChange={(e) => setNewSubject(e.target.value)}
+                            placeholder="Witty Subject"
+                        />
+                    </div>
+                    <div className='form-group'>
+                        <label>Message:</label>
+                        <textarea
+                            id="html-input"
+                            value={newEmail}
+                            onChange={(e) => setNewEmail(e.target.value)}
+                            placeholder="Type something..."
+                            ref={(el) => (textareasRef.current[0] = el)}
+                        />
+                    </div>
+                    <div className='flex-start'>
+                        {bodyType == 'html' && <button className='btn btn-small margin-t-8 margin-l-12 margin-b-16' onClick={previewEmail}>Preview Email</button>}
+                        {isLoading ? (
+                            <PulseLoader
+                                className='margin-l-24 margin-t-12'
+                                color={'#ff806b'}
+                                size={10}
+                                aria-label="Loading Spinner"
+                                data-testid="loader"
+                            />
+                        ) : (
+                            <button className='btn btn-small margin-t-8 margin-l-16 margin-b-16' onClick={sendEmail}>Send Email</button>
+                        )}
+                    </div>
+                    {bodyType === 'html' && (
+                        <iframe
+                            className='box-iframe'
+                            title="email-preview"
+                            srcDoc={previewHtml}
+                            style={{ width: '100%', height: '600px', border: '1px solid grey' }}
+                        />
                     )}
                 </div>
-                {bodyType === 'html' && (
-                    <iframe
-                        title="email-preview"
-                        srcDoc={previewHtml}
-                        style={{ width: '100%', height: '600px', border: '1px solid grey' }}
-                    />
-                )}
             </div>
         </>
     );
