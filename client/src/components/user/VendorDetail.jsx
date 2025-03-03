@@ -134,8 +134,8 @@ function VendorDetail() {
             setAmountInCart(updatedCartItems.length);
             setMarketBaskets(prevBaskets => prevBaskets.filter(item => item.id !== basketInCart.id));
             toast.success('Added to cart!', {
-                            autoClose: 2000,
-                        });
+                autoClose: 2000,
+            });
         } else {
             toast.error('All baskets are sold out!', {
                 autoClose: 2000,
@@ -335,14 +335,11 @@ function VendorDetail() {
                 <button onClick={handleBackButtonClick} className='btn btn-small'>Back</button>
             </div>
             <div className={events.length < 1 ? 'flex-start flex-start-align flex-gap-16' : 'flex-start flex-gap-16'}>
-                {events.length > 0 ? (
+                {events.length > 0 && (
                     <h2 className='color-4 margin-t-16'>Events:</h2>
-                ) : (
-                    <>
-                    </>
                 )}
                 <div className='flex-wrap margin-t-8'>
-                    {events.length > 0 ? (
+                    {events.length > 0 && (
                         events.map((event, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                 <div className='flex-start flex-center-align flex-gap-16 m-flex-wrap'>
@@ -357,9 +354,6 @@ function VendorDetail() {
                                 </div>
                             </div>
                         ))
-                    ) : (
-                        <>
-                        </>
                     )}
                 </div>
             </div>
@@ -371,20 +365,30 @@ function VendorDetail() {
                 )}
             </div>
             <div className='market-details'>
-                <h3 className='margin-t-8'>{productList?.length > 1 ? 'Products: ' : 'Product: '}{productList?.length > 0
-                    ? productList.map(p => p.product).join(', ')
-                    : "No products available"}
-                </h3>
-                <div className='flex-start'>
-                    <h4 className=''>Based out of: {vendor.city}, {vendor.state}</h4>
+                <div className='flex-start margin-t-8'>
+                    <h2 className='margin-r-8'>{productList?.length > 1 ? 'Products: ' : 'Product: '}</h2>
+                    <h3 className='margin-t-8'>{productList?.length > 0
+                        ? productList.map(p => p.product).join(', ')
+                        : "No products available"}
+                    </h3>
+                </div>
+                <div className='flex-start flex-center-align margin-t-4 margin-l-4'>
+                    <h3 className=''>Based out of: {vendor.city}, {vendor.state}</h3>
                     <button 
                         className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
                         onClick={handleClick}>&emsp;
                     </button>
                 </div>
             </div>
-            <h2 className='margin-t-16'>Vendor Bio</h2>
-            <p className='margin-t-8'>{vendor.bio}</p>
+            {vendor.website && (
+                <h3 className='margin-l-4'>Click <a className='link-underline' href={vendor.website} target='_blank' rel="noopener noreferrer">here</a> for {vendor.name} website!</h3>
+            )}
+            {vendor.bio && (
+                <>
+                    <h2 className='margin-t-16'>Vendor Bio</h2>
+                    <p className='margin-t-8 margin-l-4'>{vendor.bio}</p>
+                </>
+            )}
             <div>
                 <h2 className="margin-t-24" id="markets">Farmers Market Locations:</h2>
                 <div className='box-scroll'>
@@ -485,7 +489,6 @@ function VendorDetail() {
                         <p>No market locations at this time</p>
                     )}
                 </div>
-                <br />
                 <ReviewVendor vendor={vendor} />
             </div>
         </div>

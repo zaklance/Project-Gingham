@@ -3501,7 +3501,7 @@ def run():
             products=products,
             bio=bio,
             image=image,
-            website='www.google.com/',
+            website='https://www.google.com/',
             stripe_account_id=stripe_account_id
         )
         vendors.append(v)

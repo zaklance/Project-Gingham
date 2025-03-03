@@ -445,14 +445,11 @@ function MarketDetail ({ match }) {
                 <button onClick={handleBackButtonClick} className='btn btn-small m-hidden'>Back</button>
             </div>
             <div className={events.length < 1 ? 'flex-start flex-start-align flex-gap-16' : 'flex-start flex-gap-16'}>
-                {events.length > 0 ? (
+                {events.length > 0 && (
                     <h2 className='color-4 margin-t-16'>Events:</h2>
-                ) : (
-                    <>
-                    </>
                 )}
                 <div className='flex-wrap'>
-                    {events.length > 0 ? (
+                    {events.length > 0 && (
                         events.map((event, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                     <div className='flex-start flex-center-align flex-gap-16 m-flex-wrap'>
@@ -467,9 +464,6 @@ function MarketDetail ({ match }) {
                                     </div>
                             </div>
                         ))
-                    ) : (
-                        <>
-                        </>
                     )}
                 </div>
             </div>
@@ -521,7 +515,6 @@ function MarketDetail ({ match }) {
                     </Map>
                 </div>
             </div>
-            <p>{market.description}</p>
             <div className='flex-start market-details margin-t-8'>
                 <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}, {market.city}, {market.state}
@@ -563,6 +556,12 @@ function MarketDetail ({ match }) {
                         )
                     )}
             </div>
+            {market?.bio && (
+                <div className='flex-start flex-bottom-align m-flex-wrap'>
+                    <h4>About:&emsp;</h4>
+                    <p>{market.bio}</p>
+                </div>
+            )}
             <div id="vendors" className='flex-space-between margin-t-24'>
                 <h2>Vendors:</h2>
                 <select 
@@ -653,7 +652,6 @@ function MarketDetail ({ match }) {
             )}
             </div>
             <ReviewMarket market={market} />
-
         </div>
     );
 };
