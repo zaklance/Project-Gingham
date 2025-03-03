@@ -362,6 +362,10 @@ article {
   margin-right: 48px;
 }
 
+.margin-l-4 {
+  margin-left: 4px;
+}
+
 .margin-l-8 {
   margin-left: 8px;
 }
@@ -1686,8 +1690,9 @@ link {
 
 .link-underline:hover {
   text-decoration: underline;
+  text-underline-offset: .15em;
   background-color: transparent !important;
-  transition: 0.4s;
+  transition: all 0.4s;
 }
 
 .add-cart {
@@ -1921,8 +1926,8 @@ link {
 .form textarea {
   /* margin-bottom: 8px; */
   padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border: 1px solid #dbdbdb;
+  border-radius: 6px;
 }
 
 .form {
@@ -2875,7 +2880,7 @@ select:hover {
   top: -3px;
   right: -6px;
   padding: 2px 5px;
-  border-radius: 50%;
+  border-radius: 50px;
   background: #007BFF;
   color: white;
 }
@@ -3620,7 +3625,7 @@ select:hover {
 
   .form-group input,
   .form-login input {
-    min-width: 172px !important;
+    min-width: 148px !important;
   }
 
   .input-phone {
@@ -3657,7 +3662,7 @@ select:hover {
   .form-login label, .form-login input {
     display: table-cell;
     vertical-align: top;
-    margin-bottom: 5px;
+    /* margin-bottom: 5px; */
     padding: 8px;
     font-weight: 600;
     font-size: 10pt;

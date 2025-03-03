@@ -402,6 +402,7 @@ function VendorProfile () {
         if (!vendorEditMode) {
             setTempVendorData({
                 name: vendorData.name,
+                website: vendorData.website,
                 products: vendorData.products, 
                 bio: vendorData.bio,
                 city: vendorData.city,
@@ -1012,6 +1013,16 @@ function VendorProfile () {
                                         />
                                     </div>
                                     <div className='form-group'>
+                                        <label>Website</label>
+                                        <input 
+                                            type="text"
+                                            name="website"
+                                            placeholder='Include https://'
+                                            value={tempVendorData ? tempVendorData.website : ''}
+                                            onChange={handleVendorInputChange}
+                                        />
+                                    </div>
+                                    <div className='form-group'>
                                         <label>Product:</label>
                                         <select
                                             name="product"
@@ -1164,6 +1175,10 @@ function VendorProfile () {
                                                     <tr>
                                                         <td className='cell-title'>Name:</td>
                                                         <td className='cell-text'>{vendorData ? vendorData.name : ' Loading...'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className='cell-title'>Website:</td>
+                                                        <td className='cell-text'>{vendorData ? vendorData.website : ' Loading...'}</td>
                                                     </tr>
                                                     <tr>
                                                         <td className='cell-title'>Product:</td>

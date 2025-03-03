@@ -5,7 +5,7 @@ import PasswordChecklist from "react-password-checklist"
 import { states } from '../../utils/common';
 import { formatPhoneNumber } from '../../utils/helpers';
 import PulseLoader from 'react-spinners/PulseLoader';
-import PhoneInput from 'react-phone-number-input'
+import PhoneInput, { isPossiblePhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 
 function Login({ handlePopup }) {
@@ -92,6 +92,10 @@ function Login({ handlePopup }) {
         }
         if (!isValid) {
             alert("Password does not meet requirements.");
+            return;
+        }
+        if (!isPossiblePhoneNumber(signupPhone)) {
+            alert("Not a possible phone number");
             return;
         }
         if (!termsConditions) {
@@ -311,7 +315,7 @@ function Login({ handlePopup }) {
                         </div>
                         <div className='flex-center-align flex-center flex-gap-16 margin-t-16'>
                             <button className='btn-login' onClick={handleLogin}>Login</button>
-                            <button className='btn-login' onClick={() => setIsSignUp(!isSignUp)}>Signup</button>
+                            {!isSignUp && <button className='btn-login' onClick={() => setIsSignUp(!isSignUp)}>Signup</button>}
                             <p className="forgot-password" onClick={() => {
                                 navigate('/user/password-reset-request');
                                 window.location.reload();
@@ -478,6 +482,7 @@ function Login({ handlePopup }) {
                                 <label>State:</label>
                                 <select 
                                     className='select-state margin-l-8'
+                                    style={{borderRadius: '8px', marginBottom: '4px'}}
                                     name="state"
                                     value={signupState}
                                     onChange={(event => setSignupState(event.target.value))}

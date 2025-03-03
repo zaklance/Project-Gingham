@@ -4,7 +4,7 @@ import PasswordStrengthBar from 'react-password-strength-bar';
 import PasswordChecklist from "react-password-checklist"
 import { formatPhoneNumber } from '../../utils/helpers';
 import PulseLoader from 'react-spinners/PulseLoader';
-import PhoneInput from 'react-phone-number-input'
+import PhoneInput, { isPossiblePhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 
 function VendorLogin({ handlePopup }) {
@@ -79,6 +79,10 @@ function VendorLogin({ handlePopup }) {
         }
         if (!isValid) {
             alert("Password does not meet requirements.");
+            return;
+        }
+        if (!isPossiblePhoneNumber(signupPhone)) {
+            alert("Not a possible phone number");
             return;
         }
         if (!termsConditions) {
@@ -172,7 +176,7 @@ function VendorLogin({ handlePopup }) {
                         </div>
                         <div className='flex-center-align flex-center flex-gap-16 margin-t-16'>
                             <button className='btn-login' onClick={handleLogin}>Login</button>
-                            <button className='btn-login' onClick={() => setIsSignUp(!isSignUp)}>Signup</button>
+                            {!isSignUp && <button className='btn-login' onClick={() => setIsSignUp(!isSignUp)}>Signup</button>}
                             <p className="forgot-password" onClick={() => {
                                 navigate('/vendor/password-reset-request');
                                 window.location.reload();
@@ -242,7 +246,8 @@ function VendorLogin({ handlePopup }) {
                                     iconSize={14}
                                     validColor='#00bda4'
                                     invalidColor='#ff4b5a'
-                                /><PasswordStrengthBar className='password-bar' minLength={5} password={signupPassword} />
+                                />
+                                <PasswordStrengthBar className='password-bar' minLength={5} password={signupPassword} />
                             </div>
                             <div className="form-group form-login">
                                 <label>First Name: </label>
