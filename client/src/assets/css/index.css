@@ -3617,6 +3617,10 @@ select:hover {
     min-width: 172px !important;
   }
 
+  .input-phone {
+    width: 128px !important;
+  }
+
   .form-address input {
     display: table-cell;
     padding: 8px;
