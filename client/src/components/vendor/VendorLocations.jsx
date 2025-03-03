@@ -118,10 +118,24 @@ function VendorLocations({ vendors, vendorId, vendorUserData, allMarketDays, all
             <div>
                 <h2 className='margin-t-24 margin-b-16'>Locations</h2>
                 <ul className='ul-team'>
-                    {filteredMarketDays.map((market, index) => (
-                        <li key={index} value={market.id} className='li-team'>
-                            <strong>{market.markets.name}</strong> on <i>{weekDay[market.day_of_week]}s</i> from {timeConverter(market.hour_start)} to {timeConverter(market.hour_end)}
-                        </li>
+                    {filteredMarketDays
+                        .sort((a, b) => {
+                            const nameA = a.markets.name.toLowerCase();
+                            const nameB = b.markets.name.toLowerCase();
+
+                            const numA = nameA.match(/^\D*(\d+)/)?.[1];
+                            const numB = nameB.match(/^\D*(\d+)/)?.[1];
+
+                            if (numA && numB && nameA[0] >= "0" && nameA[0] <= "9" && nameB[0] >= "0" && nameB[0] <= "9") {
+                                return parseInt(numA) - parseInt(numB);
+                            }
+
+                            return nameA.localeCompare(nameB, undefined, { numeric: true });
+                        })
+                        .map((market, index) => (
+                            <li key={index} value={market.id} className='li-team'>
+                                <strong>{market.markets.name}</strong> on <i>{weekDay[market.day_of_week]}s</i> from {timeConverter(market.hour_start)} to {timeConverter(market.hour_end)}
+                            </li>
                     ))}
                 </ul>
                 {vendorUserData?.vendor_role[vendorUserData.active_vendor] <= 1 ? (
@@ -134,7 +148,22 @@ function VendorLocations({ vendors, vendorId, vendorUserData, allMarketDays, all
                                 <div className="dropdown-content">
                                     {
                                         queryMarkets &&
-                                        filteredQueryMarkets.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => setQueryMarkets(item.name)}>
+                                        filteredQueryMarkets
+                                            .slice(0, 10)
+                                            .sort((a, b) => {
+                                                const nameA = a.name.toLowerCase();
+                                                const nameB = b.name.toLowerCase();
+
+                                                const numA = nameA.match(/^\D*(\d+)/)?.[1];
+                                                const numB = nameB.match(/^\D*(\d+)/)?.[1];
+
+                                                if (numA && numB && nameA[0] >= "0" && nameA[0] <= "9" && nameB[0] >= "0" && nameB[0] <= "9") {
+                                                    return parseInt(numA) - parseInt(numB);
+                                                }
+
+                                                return nameA.localeCompare(nameB, undefined, { numeric: true });
+                                            })
+                                            .map(item => <div className="search-results" key={item.id} onClick={(e) => setQueryMarkets(item.name)}>
                                             {item.name}
                                         </div>)
                                     }
@@ -169,10 +198,24 @@ function VendorLocations({ vendors, vendorId, vendorUserData, allMarketDays, all
                                 {filteredMarketDays.length > 0 ? (
                                     <select id="marketSelect" name="market" onChange={(e) => handleMarketDaySelect(e)}>
                                         <option value="">Select Market</option>
-                                        {filteredMarketDays.map((market, index) => (
-                                            <option key={index} value={market.id}>
-                                                {market.markets.name} on {weekDay[market.day_of_week]}s
-                                            </option>
+                                        {filteredMarketDays
+                                            .sort((a, b) => {
+                                                const nameA = a.markets.name.toLowerCase();
+                                                const nameB = b.markets.name.toLowerCase();
+
+                                                const numA = nameA.match(/^\D*(\d+)/)?.[1];
+                                                const numB = nameB.match(/^\D*(\d+)/)?.[1];
+
+                                                if (numA && numB && nameA[0] >= "0" && nameA[0] <= "9" && nameB[0] >= "0" && nameB[0] <= "9") {
+                                                    return parseInt(numA) - parseInt(numB);
+                                                }
+
+                                                return nameA.localeCompare(nameB, undefined, { numeric: true });
+                                            })
+                                            .map((market, index) => (
+                                                <option key={index} value={market.id}>
+                                                    {market.markets.name} on {weekDay[market.day_of_week]}s
+                                                </option>
                                         ))}
                                     </select>
                                 ) : (

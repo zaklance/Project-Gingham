@@ -938,10 +938,24 @@ function VendorProfile () {
                                         {filteredMarketDays.length > 0 ? (
                                             <select id="marketSelect" name="market" onChange={(e) => handleMarketDaySelect(e)}>
                                                 <option value="">Select Market</option>
-                                                {filteredMarketDays.map((marketDay, index) => (
-                                                    <option key={index} value={marketDay.id}>
-                                                        {marketDay.markets.name} on {weekDay[marketDay.day_of_week]}s
-                                                    </option>
+                                                {filteredMarketDays
+                                                    .sort((a, b) => {
+                                                        const nameA = a.markets.name.toLowerCase();
+                                                        const nameB = b.markets.name.toLowerCase();
+
+                                                        const numA = nameA.match(/^\D*(\d+)/)?.[1];
+                                                        const numB = nameB.match(/^\D*(\d+)/)?.[1];
+
+                                                        if (numA && numB && nameA[0] >= "0" && nameA[0] <= "9" && nameB[0] >= "0" && nameB[0] <= "9") {
+                                                            return parseInt(numA) - parseInt(numB);
+                                                        }
+
+                                                        return nameA.localeCompare(nameB, undefined, { numeric: true });
+                                                    })
+                                                    .map((marketDay, index) => (
+                                                        <option key={index} value={marketDay.id}>
+                                                            {marketDay.markets.name} on {weekDay[marketDay.day_of_week]}s
+                                                        </option>
                                                 ))}
                                             </select>
                                         ) : (

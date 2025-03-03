@@ -274,7 +274,6 @@ class Vendor(db.Model, SerializerMixin):
     image = db.Column(db.String)
     image_default = db.Column(db.String, nullable=False, default=random_vendor)
     stripe_account_id = db.Column(db.String, nullable=True)  # bring back unique=True post deployment
-    # is_temporarily_closed = db.Column(db.Boolean, default=False, nullable=False)
 
     # Relationships
     reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic', cascade="all, delete")
@@ -928,12 +927,14 @@ class SettingsVendor(db.Model, SerializerMixin):
     site_basket_sold = db.Column(db.Boolean, default=True, nullable=False)
     site_new_review = db.Column(db.Boolean, default=True, nullable=False)
     site_new_blog = db.Column(db.Boolean, default=True, nullable=False)
+    site_new_statement = db.Column(db.Boolean, default=True, nullable=False)
 
     email_market_new_event = db.Column(db.Boolean, default=True, nullable=False)
     email_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
     email_basket_sold = db.Column(db.Boolean, default=False, nullable=False)
     email_new_review = db.Column(db.Boolean, default=False, nullable=False)
     email_new_blog = db.Column(db.Boolean, default=True, nullable=False)
+    email_new_statement = db.Column(db.Boolean, default=True, nullable=False)
 
     text_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
     text_basket_sold = db.Column(db.Boolean, default=True, nullable=False)

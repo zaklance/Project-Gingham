@@ -149,7 +149,7 @@ function Login({ handlePopup }) {
             <div className='wrapper'>
                 {/* <h1>WELCOME TO GINGHAM!</h1> */}
                 <div>
-                    <form onSubmit={handleLogin} className="form">
+                    <form className="form">
                         <h2 className='margin-b-24'>Login</h2>
                         <div className="form-group form-login">
                             <label>Email:</label>
@@ -175,8 +175,8 @@ function Login({ handlePopup }) {
                             </div>
                         </div>
                         <div className='flex-center-align flex-center flex-gap-16 margin-t-16'>
-                            <button className='btn-login' type="submit">Login</button>
-                            <button className='btn-login' onClick={() => setIsSignUp(true)}>Signup</button>
+                            <button className='btn-login' onClick={handleLogin}>Login</button>
+                            <button className='btn-login' onClick={() => setIsSignUp(!isSignUp)}>Signup</button>
                             <p className="forgot-password" onClick={() => {
                                 navigate('/admin/password-reset-request');
                                 window.location.reload();
@@ -188,7 +188,7 @@ function Login({ handlePopup }) {
                 </div>
                 {isSignUp === true && (
                     <div>
-                        <form onSubmit={handleSignup} className="form min-width">
+                        <form className="form min-width">
                             <h2 className='margin-b-24'>Signup</h2>
                             <div className="form-group form-login">
                                 <label>Email: </label>
@@ -275,6 +275,7 @@ function Login({ handlePopup }) {
                                     countryCallingCodeEditable={false}
                                     withCountryCallingCode
                                     country='US'
+                                    defaultCountry='US'
                                     placeholder="enter your phone number"
                                     value={signupPhone}
                                     onChange={(event) => setSignupPhone(event)}
@@ -298,7 +299,7 @@ function Login({ handlePopup }) {
                                     />
                                 ) : (
                                     <div className='flex-center-align flex-space-around margin-t-16 flex-gap-16'>
-                                        <button className='btn-login' type="submit">Signup</button>
+                                        <button className='btn-login' onClick={handleSignup}>Signup</button>
                                         <button className='btn-login' onClick={() => setIsSignUp(false)}>Cancel</button>
                                         <div className='flex-start flex-center-align'>
                                             <input
