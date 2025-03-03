@@ -17,6 +17,7 @@ function VendorCreate () {
     const [vendorImageURL, setVendorImageURL] = useState(null);
     const [products, setProducts] = useState([])
     const [newProducts, setNewProducts] = useState(null);
+    const [shwoNewProducts, setShowNewProducts] = useState(null);
     const [productRequest, setProductRequest] = useState('')
 
     const navigate = useNavigate();
@@ -230,6 +231,7 @@ function VendorCreate () {
             ...prev,
             products: prev.products.filter((id) => id !== productId),
         }));
+        if (Number(productId) === 1) {setShowNewProducts(false)}
     };
 
     const handleAddProduct = (newProductsId) => {
@@ -239,8 +241,10 @@ function VendorCreate () {
                 ? prev.products
                 : [...(prev.products || []), Number(newProductsId)],
         }));
+        if (Number(newProductsId) === 1) {setShowNewProducts(true)}
     };
     
+    console.log(shwoNewProducts)
 
     return (
         <div>
@@ -288,7 +292,7 @@ function VendorCreate () {
                     })}
                 </Stack>
             </div>
-            {Number(newProducts) === 1 && (
+            {shwoNewProducts && (
                 <div className="form-group">
                     <label>Other Product:</label>
                     <input
