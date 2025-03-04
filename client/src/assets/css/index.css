@@ -1607,7 +1607,8 @@ button:active {
 }
 
 .btn-nav:hover {
-  background: #fffa9c;
+  background-color: #fffa9c;
+  transition: background-color .2s;
 }
 
 .btn-nav:active {
@@ -2584,7 +2585,6 @@ select:hover {
   background-position: right 50% top 46%;
   background-size: 1.26rem auto;
   background-blend-mode: darken;
-
 }
 
 .icon-email {
@@ -2858,8 +2858,9 @@ select:hover {
   right: -6px;
   padding: 5px 9px;
   border-radius: 50px;
-  background: #ff4b5a;
+  background: #00bda4;
   color: white;
+  z-index: 5;
 }
 
 .badge-cart {
@@ -2874,6 +2875,18 @@ select:hover {
   z-index: 5;
 }
 
+.badge-pickup {
+  position: absolute;
+  font-size: .5em;
+  top: -8px;
+  right: 1px;
+  padding: 5px 9px;
+  border-radius: 50px;
+  background: #ff4b5a;
+  color: white;
+  z-index: 5;
+}
+
 .badge-votes {
   position: absolute;
   font-size: .5em;
@@ -2883,6 +2896,7 @@ select:hover {
   border-radius: 50px;
   background: #007BFF;
   color: white;
+  z-index: 5;
 }
 
 .badge-live {
@@ -2895,6 +2909,7 @@ select:hover {
   border-radius: 6px;
   background: #00bda4;
   color: white;
+  z-index: 5;
 }
 
 .badge-pending {
@@ -2907,18 +2922,21 @@ select:hover {
   border-radius: 6px;
   background: #6c7ae0;
   color: white;
+  z-index: 5;
 }
 
 .badge-arrows {
   position: absolute;
   top: 12px;
   right: 16px;
+  z-index: 2;
 }
 
 .badge-arrows-profile {
   position: absolute;
   top: -29px;
   right: 16px;
+  z-index: 2;
 }
 
 .login-bar {
