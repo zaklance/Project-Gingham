@@ -854,50 +854,50 @@ def handle_qr_code_deletion(mapper, connection, target):
 #     Timer(delay, reset_market_status).start()
     
 
-@listens_for(Vendor, 'after_update')
-def notify_fav_vendor_closure(mapper, connection, target):
-    session = Session(bind=connection)
-    try:
-        # Only trigger if the vendor was just marked as temporarily closed
-        if target.is_temporarily_closed:
+# @listens_for(Vendor, 'after_update')
+# def notify_fav_vendor_closure(mapper, connection, target):
+#     session = Session(bind=connection)
+#     try:
+#         # Only trigger if the vendor was just marked as temporarily closed
+#         if target.is_temporarily_closed:
 
-            # Retrieve all users who have favorited this vendor
-            favorited_users = session.query(User).join(VendorFavorite).filter(
-                VendorFavorite.vendor_id == target.id
-            ).all()
+#             # Retrieve all users who have favorited this vendor
+#             favorited_users = session.query(User).join(VendorFavorite).filter(
+#                 VendorFavorite.vendor_id == target.id
+#             ).all()
 
-            if not favorited_users:
-                print(f"No users have favorited Vendor ID {target.id}. No notifications will be created.")
-                return
+#             if not favorited_users:
+#                 print(f"No users have favorited Vendor ID {target.id}. No notifications will be created.")
+#                 return
 
-            # Prepare notifications
-            notifications = []
-            for user in favorited_users:
-                settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
+#             # Prepare notifications
+#             notifications = []
+#             for user in favorited_users:
+#                 settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
                 
-                if not settings or not settings.site_fav_vendor_schedule_change:
-                    print(f"User ID={user.id} has schedule change notifications disabled.")
-                    continue
+#                 if not settings or not settings.site_fav_vendor_schedule_change:
+#                     print(f"User ID={user.id} has schedule change notifications disabled.")
+#                     continue
 
-                notifications.append(UserNotification(
-                    subject="Vendor Temporarily Closed",
-                    message=f"One of your favorite vendors, {target.name}, is temporarily closed due to unforeseen circumstances.",
-                    link=f"/user/vendors/{target.id}",
-                    user_id=user.id,
-                    created_at=datetime.utcnow(),
-                    is_read=False
-                ))
+#                 notifications.append(UserNotification(
+#                     subject="Vendor Temporarily Closed",
+#                     message=f"One of your favorite vendors, {target.name}, is temporarily closed due to unforeseen circumstances.",
+#                     link=f"/user/vendors/{target.id}",
+#                     user_id=user.id,
+#                     created_at=datetime.utcnow(),
+#                     is_read=False
+#                 ))
 
-            # Save notifications
-            if notifications:
-                session.bulk_save_objects(notifications)
-                session.commit()
+#             # Save notifications
+#             if notifications:
+#                 session.bulk_save_objects(notifications)
+#                 session.commit()
 
-    except Exception as e:
-        session.rollback()
-        print(f"Error in notify_fav_vendor_closure: {e}")
-    finally:
-        session.close()
+#     except Exception as e:
+#         session.rollback()
+#         print(f"Error in notify_fav_vendor_closure: {e}")
+#     finally:
+#         session.close()
     
 @listens_for(Vendor, 'after_update')
 def remove_vendor_closure_notifications(mapper, connection, target):
