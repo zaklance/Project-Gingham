@@ -136,9 +136,9 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
                 # Create notification
                 notification = VendorNotification(
                     subject="Market Schedule Change" if is_schedule_change else "New Event in Your Market!",
-                    message=f"The market '{market_day.market.name}' has updated its schedule temporarily."
+                    message=f"The market, {market_day.market.name}, has updated its schedule temporarily."
                     if is_schedule_change
-                    else f"The market '{market_day.market.name}' has added a new event: {target.title}.",
+                    else f"The market, {market_day.market.name}, has added a new event: {target.title}.",
                     link=f"/user/markets/{market_day.market.id}?day={market_day.id}",
                     vendor_id=vendor.id,
                     vendor_user_id=vendor_user_id,
@@ -221,9 +221,9 @@ def track_fav_vendor_event(mapper, connection, target):
             # Create notification
             notification = UserNotification(
                 subject="Vendor Schedule Change" if is_schedule_change else "New Event from Your Favorite Vendor!",
-                message=f"The vendor '{vendor.name}' has updated their schedule temporarily."
+                message=f"The vendor, {vendor.name}, has updated their schedule temporarily."
                 if is_schedule_change
-                else f"The vendor '{vendor.name}' has added a new event: {target.title}",
+                else f"The vendor, {vendor.name}, has added a new event: {target.title}",
                 link=f"/user/vendors/{vendor.id}",
                 user_id=user.id,
                 vendor_id=vendor.id,
@@ -299,7 +299,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
 
             notifications.append(UserNotification(
                 subject="New Vendor in Your Favorite Market!",
-                message=f"The vendor '{vendor.name}' has been added to your favorite market '{market.name}'.",
+                message=f"The vendor, {vendor.name}, has been added to your favorite market: {market.name}.",
                 link=f"/user/markets/{market.id}?day={market_day.id}",
                 user_id=user.id,
                 market_id=market.id,
@@ -390,7 +390,7 @@ def notify_admin_market_review_reported(mapper, connection, target):
             for admin in admins:
                 notifications.append(AdminNotification(
                     subject="Reported Market Review",
-                    message=f"A review for market '{market.name}' has been reported.",
+                    message=f"A review for market, {market.name}, has been reported.",
                     link="/admin/report#markets",
                     admin_id=admin.id,
                     market_id=market.id,
@@ -442,7 +442,7 @@ def fav_vendor_new_baskets(mapper, connection, target):
 
         if basket_count >= 2:
             # Consolidate notification
-            message = f"{vendor.name} has added {basket_count} new baskets today! Check them out before they're gone!"
+            message = f"{vendor.name} has added new baskets today! Check them out before they're gone!"
         else:
             # Individual basket notification
             message = f"{vendor.name} has added a new basket! Check it out before it's gone!"
@@ -603,7 +603,7 @@ def vendor_market_new_event(mapper, connection, target):
 
                 notifications.append(VendorNotification(
                     subject="New Event in Your Market!",
-                    message=f"The market '{market_day.market.name}' has created a new event: '{target.title}'.",
+                    message=f"The market, {market_day.market.name}, has created a new event: {target.title}.",
                     link=f"/user/markets/{market_day.market.id}?day={market_day.id}",
                     vendor_id=vendor.id,
                     vendor_user_id=vendor_user.id,
@@ -676,7 +676,7 @@ def vendor_basket_sold(mapper, connection, target):
             for vendor_user in matched_vendor_users:
                 notifications.append(VendorNotification(
                     subject="Basket Sold!",
-                    message=f"One of your baskets has been sold for ${target.price:.2f}.",
+                    message=f"One of your baskets has sold.",
                     link=f"/vendor/dashboard",
                     vendor_id=vendor.id,
                     vendor_user_id=vendor_user.id,
@@ -746,7 +746,7 @@ def notify_vendor_users_new_market_location(mapper, connection, target):
 
                     notifications.append(VendorNotification(
                         subject="New Market Location Added",
-                        message=f"A new market location has been added to your notifications list: Market Day ID {target.market_day_id}.",
+                        message=f"A new market location has been added to your notifications list: {target.market_day.markets.name}. Go to profile settings to edit market location notifications.",
                         link="/vendor/dashboard",
                         vendor_id=target.vendor_id,
                         vendor_user_id=vendor_user.id,
@@ -868,7 +868,7 @@ def notify_fav_vendor_closure(mapper, connection, target):
 
                 notifications.append(UserNotification(
                     subject="Vendor Temporarily Closed",
-                    message=f"Your favorite vendor '{target.name}' is temporarily closed due to unforeseen circumstances.",
+                    message=f"One of your favorite vendors, {target.name}, is temporarily closed due to unforeseen circumstances.",
                     link=f"/user/vendors/{target.id}",
                     user_id=user.id,
                     created_at=datetime.utcnow(),
@@ -949,7 +949,7 @@ def notify_fav_market_new_baskets(mapper, connection, target):
 
             notifications.append(UserNotification(
                 subject="New Baskets for Sale!",
-                message=f"New baskets have been added to your favorite market '{market.name}'. Check them out!",
+                message=f"New baskets have been added to one of your favorite markets, {market.name}, check it out!",
                 link=f"/user/markets/{market.id}",
                 user_id=user.id,
                 market_id=market.id,
@@ -1009,7 +1009,7 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
                 # Send pickup reminder notification
                 notification = UserNotification(
                     subject="Time to Pick Up Your Basket!",
-                    message=f"Your purchased basket is ready for pickup. Don't forget to grab it!",
+                    message=f"Your purchased basket is ready for pickup. Don't forget to grab it by {basket.pickup_end}!",
                     link=f"/user/baskets/{basket.id}",
                     user_id=user.id,
                     created_at=datetime.utcnow(),
@@ -1078,7 +1078,7 @@ def notify_user_vendor_review_response(mapper, connection, target):
             return
 
         # Prepare notification message
-        message = f"The vendor '{vendor.name}' has responded to your review. Click to view."
+        message = f"The vendor, {vendor.name}, has responded to your review. Click to see their response!"
 
         # Prepare notifications (site, email, text)
         notifications = []
@@ -1126,7 +1126,7 @@ def notify_users_new_market_in_city(mapper, connection, target):
                 print(f"No settings found for User ID={user.id}. Skipping notification.")
                 continue
 
-            message = f"A new market, '{target.name}', has opened in your city! Click to explore."
+            message = f"A new market, {target.name}, has opened in your city! Click to explore."
 
             # Site Notification
             if settings.site_new_market_in_city:
