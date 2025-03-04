@@ -8,6 +8,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const [vendorNotifications, setVendorNotifications] = useState([]);
     const [isNotifPopup, setIsNotifPopup] = useState(false);
     const [adminUserData, setAdminUserData] = useState(null);
+    const [baskets, setBaskets] = useState([])
 
     const location = useLocation();
     const userId = globalThis.localStorage.getItem('user_id');
@@ -353,6 +354,36 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
         fetchUserData();
     }, [adminUserId]);
 
+    useEffect(() => {
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0];
+        console.log('Formatted date being sent:', formattedDate);
+        const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        console.log('Browser timezone:', browserTimezone);
+
+        fetch(`/api/baskets?user_id=${userId}&sale_date=${formattedDate}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Timezone': browserTimezone
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // console.log("Baskets received from API:", data);
+                const filteredData = data.filter(item => item.is_grabbed === false);
+                setBaskets(filteredData);
+            })
+            .catch(error => {
+                console.error('Error fetching today\'s baskets:', error);
+            });
+    }, [userId]);
+
     const handleNotifPopup = () => {
         if (notifications.length > 0) {
             setIsNotifPopup(!isNotifPopup);
@@ -397,32 +428,35 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {isUserLoggedIn && !isVendorPage && !isAdminPage &&  (
                     <>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav nowrap' to={`/user/pick-up`} title="Pick-Up">Pick-Up</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav' to={`/user/profile/${userId}`} title="Profile">Profile</NavLink>
                         </li>
-                        <li>
-                            <NavLink className='nav-tab color-2 btn-nav' to={`/user/profile/${userId}`} title="Profile">Profile</NavLink>
+                        <li className='badge-container'>
+                            <NavLink className='nav-tab color-2 btn-nav nowrap' to={`/user/pick-up`} title="Pick-Up">Pick-Up</NavLink>
+                            {baskets.length > 0 && (
+                                <p className='badge-pickup'>
+                                    {baskets.length}
+                                </p>
+                            )}
                         </li>
                     </>
                 )}
                 {!isNotUser && (
                     <>
-                        {amountInCart > 0 && (
-                            <li className='notification'>
-                                <NavLink className='nav-tab color-1 btn-nav nav-tab-wide nowrap icon-cart' to="/user/cart" title="Cart">&emsp;</NavLink>
-                                {amountInCart > 0 && (
-                                    <p className='badge-cart'>
-                                        {amountInCart}
-                                    </p>
-                                )}
-                            </li>
-                        )}
+                        <li className='notification'>
+                            <NavLink className='nav-tab color-5 btn-nav nav-tab-wide nowrap icon-cart' to="/user/cart" title="Cart">&emsp;</NavLink>
+                            {amountInCart > 0 && (
+                                <p className='badge-cart'>
+                                    {amountInCart}
+                                </p>
+                            )}
+                        </li>
                     </>
                 )}
                 {isUserLoggedIn && !isVendorPage && !isAdminPage &&  (
                     <>
                         {notifications.length > 0 &&
                             <li className='notification' onClick={handleNotifPopup}>
-                                <a className='nav-tab color-4 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
+                                <a className='nav-tab color-3 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
                                 {notifications.filter(notification => notification.is_read === false).length > 0 && (
                                     <p className='badge'>
                                         {notifications.filter(notification => notification.is_read === false).length}
@@ -515,12 +549,12 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li>
                             <NavLink className='nav-tab m-tab-left color-3 btn-nav' to={`/admin/profile/${adminUserId}`} title="Profile">Profile</NavLink>
                         </li>
-                        {adminUserData && adminUserData.admin_role <= 4 ? (
+                        {adminUserData && adminUserData.admin_role <= 4 && (
                             <li>
                                 <NavLink className='nav-tab color-5 btn-nav' to={`/admin/markets`} title="Markets">Markets</NavLink>
                             </li>
-                        ) : null}
-                        {adminUserData && adminUserData.admin_role <= 3 ? (
+                        )}
+                        {adminUserData && adminUserData.admin_role <= 3 && (
                             <>
                                 <li>
                                     <NavLink className='nav-tab color-4 btn-nav' to={`/admin/vendors`} title="Vendors">Vendors</NavLink>
@@ -529,8 +563,6 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                     <NavLink className='nav-tab color-1 btn-nav' to={`/admin/users`} title="Users">Users</NavLink>
                                 </li>
                             </>
-                        ) : (
-                            null
                         )}
                         <li>
                             <NavLink className='nav-tab color-2 btn-nav' to={`/admin/help`} title="Help">Help</NavLink>
@@ -550,12 +582,10 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li>
                             <NavLink className='nav-tab color-1 btn-nav icon-email' to={`/admin/email`} title="Email">&emsp;</NavLink>
                         </li>
-                        {adminUserData && adminUserData.admin_role <= 2 ? (
+                        {adminUserData && adminUserData.admin_role <= 2 && (
                             <li>
                                 <NavLink className='nav-tab color-4 btn-nav icon-stats' to={`/admin/stats`} title="Stats">&emsp;</NavLink>
                             </li>
-                        ) : (
-                            null
                         )}
                         {adminNotifications.length > 0 &&
                             <li className='notification' onClick={handleAdminNotifPopup}>
