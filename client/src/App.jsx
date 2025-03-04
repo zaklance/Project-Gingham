@@ -39,14 +39,14 @@ function App() {
     useEffect(() => {
         const checkExpiredItems = () => {
             const currentTime = new Date();
-            console.log("Current Time:", currentTime);
+            // console.log("Current Time:", currentTime);
         
             const updatedCart = cartItems.filter(cartItem => {
                 // Merge sale_date with pickup_end time
                 const pickupEndTime = new Date(`${cartItem.sale_date} ${cartItem.pickup_end}`);
                 
                 // Debug logs
-                console.log(`Checking item: ${cartItem.vendor_name}, Sale Date: ${cartItem.sale_date}, Pickup End: ${pickupEndTime}`);
+                // console.log(`Checking item: ${cartItem.vendor_name}, Sale Date: ${cartItem.sale_date}, Pickup End: ${pickupEndTime}`);
                 
                 if (isNaN(pickupEndTime)) {
                     console.error("Invalid Date detected:", cartItem.pickup_end);
@@ -54,21 +54,20 @@ function App() {
                 }
         
                 const timeDiff = (pickupEndTime - currentTime) / 60000; // Convert ms to minutes
-                console.log(`Time difference for ${cartItem.vendor_name}: ${timeDiff} minutes`);
+                // console.log(`Time difference for ${cartItem.vendor_name}: ${timeDiff} minutes`);
         
-                if (timeDiff <= 270) {
-                    console.log(`Removing item: ${cartItem.vendor_name}`);
+                if (timeDiff <= 1) {
+                    // console.log(`Removing item: ${cartItem.vendor_name}`);
                     toast.warning(`Removing the basket by ${cartItem.vendor_name}, the pickup time has ended.`, {
                         autoClose: 8000,
                     });
-                    cartItem.expiredMessage = "This basket is no longer within the time pickup period";
                     return false; // Remove expired item
                 }
                 return true; // Keep valid item
             });
         
             if (updatedCart.length !== cartItems.length) {
-                console.log("Cart updated! New Cart:", updatedCart);
+                // console.log("Cart updated! New Cart:", updatedCart);
                 setCartItems(updatedCart);
                 setAmountInCart(updatedCart.length);
                 globalThis.localStorage.setItem('cartItems', JSON.stringify(updatedCart));
