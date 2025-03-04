@@ -243,8 +243,7 @@ function MarketDetail ({ match }) {
             }];
             setCartItems(updatedCartItems);
             setAmountInCart(updatedCartItems.length);
-            setMarketBaskets(prev => prev.filter(item => item.id !== basketInCart.id)
-            );
+            setMarketBaskets(prev => prev.filter(item => item.id !== basketInCart.id));
             toast.success('Added to cart!', {
                 autoClose: 2000,
             });
