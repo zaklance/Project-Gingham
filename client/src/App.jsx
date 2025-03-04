@@ -11,6 +11,7 @@ import AdminLoginPopup from './components/admin/AdminLoginPopup.jsx';
 import { jwtDecode } from 'jwt-decode';
 import BrowserTimezone from './components/BrowserTimezone.jsx';
 import { ToastContainer, Slide } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 function App() {
     const location = useLocation();
@@ -55,8 +56,11 @@ function App() {
                 const timeDiff = (pickupEndTime - currentTime) / 60000; // Convert ms to minutes
                 console.log(`Time difference for ${cartItem.vendor_name}: ${timeDiff} minutes`);
         
-                if (timeDiff <= 20) {
+                if (timeDiff <= 270) {
                     console.log(`Removing item: ${cartItem.vendor_name}`);
+                    toast.warning(`Removing the basket by ${cartItem.vendor_name}, the pickup time has ended.`, {
+                        autoClose: 8000,
+                    });
                     cartItem.expiredMessage = "This basket is no longer within the time pickup period";
                     return false; // Remove expired item
                 }
