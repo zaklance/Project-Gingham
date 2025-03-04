@@ -95,7 +95,6 @@ function Cart() {
                                 {cartItems.map((item, index) => (
                                     <li className='cart-item' key={index}>
                                         <span><b>{item.vendor_name}</b> at <i>{item.market_name}</i>, {formatBasketDate(item.sale_date)} from {timeConverter(item.pickup_start)} - {timeConverter(item.pickup_end)}</span>
-                                        {item.expiredMessage && <span>{item.expiredMessage}</span>}
                                         <span><b>${item.price}</b></span>
                                         <button className='btn-cart' onClick={() => removeFromCart(item)}>Remove</button>
                                     </li>
