@@ -4,7 +4,7 @@ from sqlalchemy.event import listens_for
 from datetime import datetime, date , timezone, timedelta
 import json
 from threading import Timer
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, time
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
                     VendorReview, ReportedReview, MarketReviewRating, 
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
@@ -13,6 +13,19 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
                     Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
                     )
+
+def time_converter(time24):
+    if isinstance(time24, time):
+        time24 = time24.strftime("%H:%M:%S")
+
+    try:
+        hours, minutes, _ = map(int, time24.split(':'))
+        period = "AM" if hours < 12 else "PM"
+        hours = hours if 1 <= hours <= 12 else (hours - 12 if hours > 12 else 12)
+        return f"{hours}:{minutes:02d} {period}"
+    except Exception as e:
+        print(f"Error converting time: {e}")
+        return time24
 
 @listens_for(VendorFavorite, 'after_insert')
 def track_vendor_favorite(mapper, connection, target):
@@ -1009,7 +1022,7 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
                 # Send pickup reminder notification
                 notification = UserNotification(
                     subject="Time to Pick Up Your Basket!",
-                    message=f"Your purchased basket is ready for pickup. Don't forget to grab it by {basket.pickup_end}!",
+                    message=f"Your purchased basket is ready for pickup. Don't forget to grab it by {time_converter(basket.pickup_end)}!",
                     link=f"/user/baskets/{basket.id}",
                     user_id=user.id,
                     created_at=datetime.utcnow(),
