@@ -139,7 +139,7 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
                     message=f"The market, {market_day.market.name}, has updated its schedule temporarily."
                     if is_schedule_change
                     else f"The market, {market_day.market.name}, has added a new event: {target.title}.",
-                    link=f"/user/markets/{market_day.market.id}?day={market_day.id}",
+                    link=f"/user/markets/{market_day.market.id}",
                     vendor_id=vendor.id,
                     vendor_user_id=vendor_user_id,
                     market_id=market_day.market.id,
@@ -299,7 +299,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
 
             notifications.append(UserNotification(
                 subject="New Vendor in Your Favorite Market!",
-                message=f"The vendor, {vendor.name}, has been added to your favorite market: {market.name}.",
+                message=f"The vendor, {vendor.name}, has been added to one of your favorite markets: {market.name}.",
                 link=f"/user/markets/{market.id}?day={market_day.id}",
                 user_id=user.id,
                 market_id=market.id,
@@ -520,7 +520,7 @@ def schedule_blog_notifications(mapper, connection, target):
             VendorNotification(
                 subject="New Blog Post Alert!",
                 message=f"A new blog post, {target.title}, has been published. Check it out!",
-                link=f"/vendor/blog/{target.id}",
+                link=f"/vendor#blgo",
                 vendor_id=vendor_user.id,
                 created_at=datetime.utcnow(),
                 is_read=False
@@ -604,7 +604,7 @@ def vendor_market_new_event(mapper, connection, target):
                 notifications.append(VendorNotification(
                     subject="New Event in Your Market!",
                     message=f"The market, {market_day.market.name}, has created a new event: {target.title}.",
-                    link=f"/user/markets/{market_day.market.id}?day={market_day.id}",
+                    link=f"/user/markets/{market_day.market.id}",
                     vendor_id=vendor.id,
                     vendor_user_id=vendor_user.id,
                     market_id=market_day.market.id,
@@ -747,7 +747,7 @@ def notify_vendor_users_new_market_location(mapper, connection, target):
                     notifications.append(VendorNotification(
                         subject="New Market Location Added",
                         message=f"A new market location has been added to your notifications list: {target.market_day.markets.name}. Go to profile settings to edit market location notifications.",
-                        link="/vendor/dashboard",
+                        link="/vendor/profile",
                         vendor_id=target.vendor_id,
                         vendor_user_id=vendor_user.id,
                         created_at=datetime.utcnow(),
@@ -950,7 +950,7 @@ def notify_fav_market_new_baskets(mapper, connection, target):
             notifications.append(UserNotification(
                 subject="New Baskets for Sale!",
                 message=f"New baskets have been added to one of your favorite markets, {market.name}, check it out!",
-                link=f"/user/markets/{market.id}",
+                link=f"/user/markets/{market.id}?day={target.market_day_id}",
                 user_id=user.id,
                 market_id=market.id,
                 created_at=datetime.utcnow(),
@@ -1010,7 +1010,7 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
                 notification = UserNotification(
                     subject="Time to Pick Up Your Basket!",
                     message=f"Your purchased basket is ready for pickup. Don't forget to grab it by {basket.pickup_end}!",
-                    link=f"/user/baskets/{basket.id}",
+                    link=f"/user/pick-up",
                     user_id=user.id,
                     created_at=datetime.utcnow(),
                     is_read=False
