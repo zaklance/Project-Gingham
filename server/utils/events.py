@@ -1,8 +1,10 @@
 from sqlalchemy import event, func
 from sqlalchemy.orm import Session
 from sqlalchemy.event import listens_for
-from datetime import datetime
+from datetime import datetime, date , timezone, timedelta
 import json
+from threading import Timer
+from datetime import datetime, timedelta, timezone, time
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
                     VendorReview, ReportedReview, MarketReviewRating, 
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
@@ -12,106 +14,127 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
                     )
 
-# @listens_for(VendorFavorite, 'after_insert')
-# def track_vendor_favorite(mapper, connection, target):
-#     try:
-#         # print(f"New favorite detected: User ID={target.user_id}, Vendor ID={target.vendor_id}")
+def time_converter(time24):
+    if isinstance(time24, time):
+        time24 = time24.strftime("%H:%M:%S")
 
-#         # Retrieve the vendor
-#         vendor = connection.execute(
-#             Vendor.__table__.select().where(Vendor.id == target.vendor_id)
-#         ).fetchone()
-#         if not vendor:
-#             print(f"Vendor not found for Vendor ID: {target.vendor_id}")
-#             return
+    try:
+        hours, minutes, _ = map(int, time24.split(':'))
+        period = "AM" if hours < 12 else "PM"
+        hours = hours if 1 <= hours <= 12 else (hours - 12 if hours > 12 else 12)
+        return f"{hours}:{minutes:02d} {period}"
+    except Exception as e:
+        print(f"Error converting time: {e}")
+        return time24
 
-#         # Retrieve the user
-#         user = connection.execute(
-#             User.__table__.select().where(User.id == target.user_id)
-#         ).fetchone()
-#         if not user:
-#             print(f"User not found for User ID: {target.user_id}")
-#             return
+@listens_for(VendorFavorite, 'after_insert')
+def track_vendor_favorite(mapper, connection, target):
+    try:
 
-#         # Create a notification
-#         subject = "Favorite Vendor Added"
-#         message = f"{user.first_name} added {vendor.name} to their favorites!"
-#         # print(f"Creating notification for User ID={user.id} about Vendor ID={vendor.id}")
+        # Retrieve the vendor
+        vendor = connection.execute(
+            Vendor.__table__.select().where(Vendor.id == target.vendor_id)
+        ).fetchone()
+        if not vendor:
+            print(f"Vendor not found for Vendor ID: {target.vendor_id}")
+            return
 
-#         connection.execute(
-#             VendorNotification.__table__.insert().values(
-#                 subject=subject,
-#                 message=message,
-#                 user_id=user.id,
-#                 vendor_id=vendor.id,
-#                 created_at=datetime.utcnow(),
-#                 is_read=False
-#             )
-#         )
-#         # print("Notification successfully created.")
-#     except Exception as e:
-#         print(f"Error in track_vendor_favorite: {e}")
+        # Retrieve the user
+        user = connection.execute(
+            User.__table__.select().where(User.id == target.user_id)
+        ).fetchone()
+        if not user:
+            print(f"User not found for User ID: {target.user_id}")
+            return
 
-import json
+        # Create a notification
+        subject = "Favorite Vendor Added"
+        message = f"{user.first_name} added {vendor.name} to their favorites!"
+        # print(f"Creating notification for User ID={user.id} about Vendor ID={vendor.id}")
+
+        connection.execute(
+            VendorNotification.__table__.insert().values(
+                subject=subject,
+                message=message,
+                user_id=user.id,
+                vendor_id=vendor.id,
+                created_at=datetime.utcnow(),
+                is_read=False
+            )
+        )
+        # print("Notification successfully created.")
+    except Exception as e:
+        print(f"Error in track_vendor_favorite: {e}")
 
 # User - New Event in Fav Market 
 @listens_for(Event, 'after_insert')
 def vendor_market_event_or_schedule_change(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        # Retrieve the market
-        market = session.query(Market).get(target.market_id)
-        if not market:
-            print(f"Market with ID {target.market_id} not found. Aborting notification creation.")
+        # Retrieve the market day associated with the event
+        market_day = session.query(MarketDay).filter_by(market_id=target.market_id).first()
+        if not market_day:
+            print(f"Market Day not found for Market ID: {target.market_id}")
             return
 
         # Retrieve vendors associated with the market
         vendors = session.query(Vendor).join(VendorMarket).join(MarketDay).filter(
-            MarketDay.market_id == market.id
+            MarketDay.market_id == target.market_id
         ).all()
 
         if not vendors:
-            print(f"No vendors found for Market ID {market.id}. No notifications will be created.")
+            print(f"No vendors found for Market ID {target.market_id}. No notifications will be created.")
             return
 
         is_schedule_change = target.schedule_change
 
-        # Prepare notifications for each vendor user
         notifications = []
         for vendor in vendors:
-            # Retrieve all VendorUsers
-            vendor_users = session.query(VendorUser).all()
+            vendor_users = session.query(VendorUser).join(SettingsVendor).filter(
+                SettingsVendor.vendor_user_id == VendorUser.id
+            ).all()
 
-            # Filter VendorUsers where vendor_id in JSON matches vendor.id
             matched_vendor_users = []
             for vendor_user in vendor_users:
                 try:
-                    vendor_json = vendor_user.vendor_id  # This should be stored as a dict
-                    if isinstance(vendor_json, str):  # Ensure it's parsed correctly
-                        vendor_json = json.loads(vendor_json)
-                    
-                    # Extract the first key's value (since it's stored as {"1": 1})
-                    extracted_vendor_id = next(iter(vendor_json.values()), None)
+                    # Get the vendor_user's settings
+                    settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
 
-                    if extracted_vendor_id == vendor.id:
-                        matched_vendor_users.append(vendor_user)
+                    if not settings:
+                        print(f"No settings found for Vendor User ID={vendor_user.id}, skipping notification.")
+                        continue
+
+                    # Check if the user has notifications enabled for this type
+                    if is_schedule_change and not settings.site_market_schedule_change:
+                        print(f"Vendor User ID={vendor_user.id} has schedule change notifications disabled.")
+                        continue
+
+                    if not is_schedule_change and not settings.site_market_new_event:
+                        print(f"Vendor User ID={vendor_user.id} has new event notifications disabled.")
+                        continue
+
+                    # Ensure the vendor user's `market_locations` include the relevant `market_day_id`
+                    if market_day.id not in (settings.market_locations or []):
+                        print(f"Skipping Vendor User {vendor_user.id} - MarketDay ID {market_day.id} not in their market locations.")
+                        continue
+
+                    matched_vendor_users.append(vendor_user)
 
                 except Exception as e:
                     print(f"Error processing vendor_user {vendor_user.id}: {e}")
 
             if not matched_vendor_users:
-                print(f"No vendor users found for Vendor ID={vendor.id}, skipping notification.")
+                print(f"No vendor users with valid settings found for Vendor ID={vendor.id}, skipping notification.")
                 continue
 
             for vendor_user in matched_vendor_users:
-                # Assign vendor_user.id as vendor_user_id in notification
                 vendor_user_id = vendor_user.id
 
-                # Check if a notification already exists for this vendor user
+                # Check for existing notifications
                 existing_notification = session.query(VendorNotification).filter(
-                    VendorNotification.vendor_user_id == vendor_user_id,  # Using extracted vendor_user_id
+                    VendorNotification.vendor_user_id == vendor_user_id,
                     VendorNotification.vendor_id == vendor.id,
-                    VendorNotification.market_id == market.id,
+                    VendorNotification.market_id == market_day.market.id,
                     VendorNotification.created_at >= datetime.utcnow().date(),
                     VendorNotification.subject.in_([
                         "New Event in Your Market!",
@@ -122,16 +145,16 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
                 if existing_notification:
                     continue
 
-                # Create a separate notification for each vendor user
+                # Create notification
                 notification = VendorNotification(
                     subject="Market Schedule Change" if is_schedule_change else "New Event in Your Market!",
-                    message=f"The market '{market.name}' has updated its schedule temporarily."
+                    message=f"The market, {market_day.market.name}, has updated its schedule temporarily."
                     if is_schedule_change
-                    else f"The market '{market.name}' has added a new event: {target.title}.",
-                    link=f"/user/markets/{market.id}",
+                    else f"The market, {market_day.market.name}, has added a new event: {target.title}.",
+                    link=f"/user/markets/{market_day.market.id}",
                     vendor_id=vendor.id,
-                    vendor_user_id=vendor_user_id,  # Assigning correct vendor_user_id
-                    market_id=market.id,
+                    vendor_user_id=vendor_user_id,
+                    market_id=market_day.market.id,
                     created_at=datetime.utcnow(),
                     is_read=False
                 )
@@ -141,8 +164,7 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
         if notifications:
             session.bulk_save_objects(notifications)
             session.commit()
-            print(f"Successfully created {len(notifications)} vendor notifications.")
-
+            
     except Exception as e:
         session.rollback()
         print(f"Error in vendor_market_event_or_schedule_change: {e}")
@@ -153,18 +175,15 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
 @listens_for(Event, 'after_insert')
 def track_fav_vendor_event(mapper, connection, target):
     if not target.vendor_id:  # Ensure the event is associated with a vendor
-        print(f"Event ID={target.id} is not associated with a vendor. Skipping vendor notifications.")
+        print(f"Event ID={target.id} is not associated with a vendor. Skipping user notifications.")
         return
 
     session = Session(bind=connection)
     try:
-        # print(f"Vendor Event detected: ID={target.id}, Title='{target.title}', Vendor ID={target.vendor_id}")
-
         # Retrieve users who favorited the vendor
         favorited_users = session.query(User).join(VendorFavorite).filter(
             VendorFavorite.vendor_id == target.vendor_id
         ).all()
-        # print(f"Favorited users for Vendor ID {target.vendor_id}: {len(favorited_users)} users found.")
 
         if not favorited_users:
             print(f"No favorited users for Vendor ID {target.vendor_id}. No notifications will be created.")
@@ -175,14 +194,29 @@ def track_fav_vendor_event(mapper, connection, target):
         if not vendor:
             print(f"Vendor with ID {target.vendor_id} not found.")
             return
-        # print(f"Vendor found: ID={vendor.id}, Name='{vendor.name}'")
 
-#         # Check if the event is a schedule change
         is_schedule_change = target.schedule_change
 
         # Prepare notifications
         notifications = []
         for user in favorited_users:
+            # Retrieve user notification settings
+            settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
+
+            if not settings:
+                print(f"No settings found for User ID={user.id}, skipping notification.")
+                continue
+
+            # Check if the user has notifications enabled for this type
+            if is_schedule_change and not settings.site_fav_vendor_schedule_change:
+                print(f"User ID={user.id} has schedule change notifications disabled.")
+                continue
+
+            if not is_schedule_change and not settings.site_fav_vendor_new_event:
+                print(f"User ID={user.id} has new event notifications disabled.")
+                continue
+
+            # Check for existing notifications
             existing_notification = session.query(UserNotification).filter(
                 UserNotification.user_id == user.id,
                 UserNotification.vendor_id == vendor.id,
@@ -194,39 +228,28 @@ def track_fav_vendor_event(mapper, connection, target):
             ).first()
 
             if existing_notification:
-#                 print(f"Notification already exists for User ID={user.id}, Vendor ID={vendor.id}. Skipping.")
                 continue
 
-            if is_schedule_change:
-                notification = UserNotification(
-                    subject="Vendor Schedule Change",
-                    message=f"The vendor '{vendor.name}' has updated their schedule temporarily.",
-                    link=f"/user/vendors/{vendor.id}",
-                    user_id=user.id,
-                    vendor_id=vendor.id,
-                    created_at=datetime.utcnow(),
-                    is_read=False
-                )
-            else:
-                notification = UserNotification(
-                    subject="New Event from Your Favorite Vendor!",
-                    message=f"The vendor '{vendor.name}' has added a new event: {target.title}",
-                    link=f"/user/vendors/{vendor.id}",
-                    user_id=user.id,
-                    vendor_id=vendor.id,
-                    created_at=datetime.utcnow(),
-                    is_read=False
-                )
+            # Create notification
+            notification = UserNotification(
+                subject="Vendor Schedule Change" if is_schedule_change else "New Event from Your Favorite Vendor!",
+                message=f"The vendor, {vendor.name}, has updated their schedule temporarily."
+                if is_schedule_change
+                else f"The vendor, {vendor.name}, has added a new event: {target.title}",
+                link=f"/user/vendors/{vendor.id}",
+                user_id=user.id,
+                vendor_id=vendor.id,
+                created_at=datetime.utcnow(),
+                is_read=False
+            )
 
             notifications.append(notification)
-            # print(f"Prepared notification for User ID={user.id}, Email='{user.email}'")
 
         # Save notifications
         if notifications:
             session.bulk_save_objects(notifications)
             session.commit()
-            # print(f"Successfully created {len(notifications)} notifications for Vendor ID={vendor.id}")
-
+            
     except Exception as e:
         session.rollback()
         print(f"Error in track_fav_vendor_event: {e}")
@@ -236,42 +259,29 @@ def track_fav_vendor_event(mapper, connection, target):
 # User - New Vendor in Fav Market
 @listens_for(VendorMarket, 'after_insert')
 def notify_new_vendor_in_favorite_market(mapper, connection, target):
+    session = Session(bind=connection)
     try:
-        # print(f"New vendor detected: Vendor ID={target.vendor_id}, Market Day ID={target.market_day_id}")
-
         # Retrieve the market associated with the market day
-        market_day = connection.execute(
-            MarketDay.__table__.select().where(MarketDay.id == target.market_day_id)
-        ).fetchone()
+        market_day = session.query(MarketDay).filter_by(id=target.market_day_id).first()
         if not market_day:
             print(f"Market Day not found for Market Day ID: {target.market_day_id}")
             return
 
-        market = connection.execute(
-            Market.__table__.select().where(Market.id == market_day.market_id)
-        ).fetchone()
+        market = session.query(Market).filter_by(id=market_day.market_id).first()
         if not market:
             print(f"Market not found for Market ID associated with Market Day ID: {target.market_day_id}")
             return
-        # print(f"Market found: ID={market.id}, Name='{market.name}'")
 
         # Retrieve the vendor
-        vendor = connection.execute(
-            Vendor.__table__.select().where(Vendor.id == target.vendor_id)
-        ).fetchone()
+        vendor = session.query(Vendor).filter_by(id=target.vendor_id).first()
         if not vendor:
             print(f"Vendor not found for Vendor ID: {target.vendor_id}")
             return
-        # print(f"Vendor found: ID={vendor.id}, Name='{vendor.name}'")
 
         # Retrieve users who have favorited this market
-        favorited_users = connection.execute(
-            User.__table__.join(MarketFavorite, MarketFavorite.user_id == User.id)
-            .select()
-            .where(MarketFavorite.market_id == market.id)
-        ).fetchall()
-
-        # print(f"Favorited users for Market ID {market.id}: {len(favorited_users)} users found.")
+        favorited_users = session.query(User).join(MarketFavorite).filter(
+            MarketFavorite.market_id == market.id
+        ).all()
 
         if not favorited_users:
             print(f"No users have favorited Market ID {market.id}. No notifications will be created.")
@@ -280,191 +290,195 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
         # Prepare and insert notifications
         notifications = []
         for user in favorited_users:
-            notifications.append({
-                "subject": "New Vendor in Your Favorite Market!",
-                "message": f"The vendor '{vendor.name}' has been added to your favorite market '{market.name}'.",
-                "link": f"/user/markets/{market.id}?day={market_day.id}",
-                "user_id": user.id,
-                "market_id": market.id,
-                "vendor_id": vendor.id,
-                "created_at": datetime.utcnow(),
-                "is_read": False
-            })
-            # print(f"Prepared notification for User ID={user.id}, Email='{user.email}'")
+            # Retrieve user notification settings
+            settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
+
+            if not settings or not settings.site_fav_market_new_vendor:
+                print(f"User ID={user.id} has new vendor notifications disabled or no settings found.")
+                continue
+
+            # Check for existing notifications
+            existing_notification = session.query(UserNotification).filter(
+                UserNotification.user_id == user.id,
+                UserNotification.market_id == market.id,
+                UserNotification.vendor_id == vendor.id,
+                UserNotification.created_at >= datetime.utcnow().date(),
+                UserNotification.subject == "New Vendor in Your Favorite Market!"
+            ).first()
+
+            if existing_notification:
+                continue
+
+            notifications.append(UserNotification(
+                subject="New Vendor in Your Favorite Market!",
+                message=f"The vendor, {vendor.name}, has been added to one of your favorite markets: {market.name}.",
+                link=f"/user/markets/{market.id}?day={market_day.id}",
+                user_id=user.id,
+                market_id=market.id,
+                vendor_id=vendor.id,
+                created_at=datetime.utcnow(),
+                is_read=False
+            ))
 
         if notifications:
-            connection.execute(UserNotification.__table__.insert(), notifications)
-            # print(f"Successfully created {len(notifications)} notifications for Market ID={market.id}")
+            session.bulk_save_objects(notifications)
+            session.commit()
+            print(f"Successfully created {len(notifications)} notifications for Market ID={market.id}")
 
     except Exception as e:
+        session.rollback()
         print(f"Error in notify_new_vendor_in_favorite_market: {e}")
+    finally:
+        session.close()
 
 # Admin - Reported Vendor Review
 @listens_for(VendorReview, 'after_update')
 def notify_admin_vendor_review_reported(mapper, connection, target):
     if target.is_reported:
+        session = Session(bind=connection)
         try:
-            print(f"Vendor Review reported: ID={target.id}, Vendor ID={target.vendor_id}")
 
             # Retrieve the vendor
-            vendor = connection.execute(
-                Vendor.__table__.select().where(Vendor.id == target.vendor_id)
-            ).fetchone()
+            vendor = session.query(Vendor).filter_by(id=target.vendor_id).first()
             if not vendor:
                 print(f"Vendor not found for Vendor ID: {target.vendor_id}")
                 return
 
-            # Create admin notification
-            subject = "Reported Vendor Review"
-            message = f"A review for vendor '{vendor.name}' has been reported."
-            link = f"/admin/report#vendors"  # Adjust this link as per your app's routing
+            # Retrieve all admins with notification settings enabled
+            admins = session.query(AdminUser).join(SettingsAdmin).filter(
+                SettingsAdmin.site_report_review == True
+            ).all()
 
-            connection.execute(
-                AdminNotification.__table__.insert().values(
-                    subject=subject,
-                    link=link,
-                    message=message,
+            if not admins:
+                print("No admins have report review notifications enabled. No notifications will be created.")
+                return
+
+            # Prepare admin notifications
+            notifications = []
+            for admin in admins:
+                notifications.append(AdminNotification(
+                    subject="Reported Vendor Review",
+                    message=f"A review for vendor '{vendor.name}' has been reported.",
+                    link="/admin/report#vendors",
+                    admin_id=admin.id,
                     vendor_id=vendor.id,
                     created_at=datetime.utcnow(),
                     is_read=False
-                )
-            )
-            # print("Admin notification created for reported Vendor Review.")
+                ))
+
+            if notifications:
+                session.bulk_save_objects(notifications)
+                session.commit()
+
         except Exception as e:
+            session.rollback()
             print(f"Error creating admin notification for Vendor Review: {e}")
+        finally:
+            session.close()
 
 # Admin - Reported Market Review
 @listens_for(MarketReview, 'after_update')
 def notify_admin_market_review_reported(mapper, connection, target):
     if target.is_reported:
+        session = Session(bind=connection)
         try:
-            # print(f"Market Review reported: ID={target.id}, Market ID={target.market_id}")
-
             # Retrieve the market
-            market = connection.execute(
-                Market.__table__.select().where(Market.id == target.market_id)
-            ).fetchone()
+            market = session.query(Market).filter_by(id=target.market_id).first()
             if not market:
                 print(f"Market not found for Market ID: {target.market_id}")
                 return
 
-            # Create admin notification
-            subject = "Reported Market Review"
-            message = f"A review for market '{market.name}' has been reported."
-            link = f"/admin/report#markets"  # Adjust this link as per your app's routing
+            # Retrieve all admins with notification settings enabled
+            admins = session.query(AdminUser).join(SettingsAdmin).filter(
+                SettingsAdmin.site_report_review == True
+            ).all()
 
-            connection.execute(
-                AdminNotification.__table__.insert().values(
-                    subject=subject,
-                    message=message,
-                    link=link,
+            if not admins:
+                print("No admins have report review notifications enabled. No notifications will be created.")
+                return
+
+            # Prepare admin notifications
+            notifications = []
+            for admin in admins:
+                notifications.append(AdminNotification(
+                    subject="Reported Market Review",
+                    message=f"A review for market, {market.name}, has been reported.",
+                    link="/admin/report#markets",
+                    admin_id=admin.id,
                     market_id=market.id,
                     created_at=datetime.utcnow(),
                     is_read=False
-                )
-            )
-            # print("Admin notification created for reported Market Review.")
+                ))
+
+            if notifications:
+                session.bulk_save_objects(notifications)
+                session.commit()
+                print(f"Successfully created {len(notifications)} admin notifications for reported market review.")
+
         except Exception as e:
+            session.rollback()
             print(f"Error creating admin notification for Market Review: {e}")
+        finally:
+            session.close()
 
-# # User Fav Vendor Added Baskets
-# @listens_for(Basket, 'after_insert')
-# def fav_vendor_new_baskets(mapper, connection, target):
-#     session = Session(bind=connection)
-#     try:
-#         # print(f"New basket detected: ID={target.id}, Vendor ID={target.vendor_id}")
-
-#         vendor = session.query(Vendor).get(target.vendor_id)
-#         if not vendor:
-#             print(f"Vendor not found for Vendor ID: {target.vendor_id}")
-#             return
-
-#         # Retrieve users who favorited this vendor
-#         favorited_users = session.query(User).join(VendorFavorite).filter(
-#             VendorFavorite.vendor_id == target.vendor_id
-#         ).all()
-#         # print(f"Users favorited Vendor ID {vendor.id}: {len(favorited_users)} users found.")
-
-#         if not favorited_users:
-#             print(f"No users have favorited Vendor ID {vendor.id}. No notifications will be created.")
-#             return
-
-#         # Check for existing baskets for this vendor
-#         recent_baskets = session.query(Basket).filter(
-#             Basket.vendor_id == vendor.id,
-#             Basket.sale_date >= datetime.utcnow().date()
-#         ).all()
-
-#         basket_count = len(recent_baskets)
-#         # print(f"Vendor ID {vendor.id} has {basket_count} baskets created today.")
-
-#         # if basket_count >= 2:
-#         #     # Consolidate notification
-#         #     message = f"{vendor.name} has added {basket_count} new baskets today! Check them out before they're gone!"
-#         # else:
-#         #     # Individual basket notification
-#         #     message = f"{vendor.name} has added a new basket! Check it out before it's gone!"
-
-#         # Prepare notifications for favorited users
-#         notifications = []
-#         for user in favorited_users:
-#             existing_notification = session.query(UserNotification).filter(
-#                 UserNotification.user_id == user.id,
-#                 UserNotification.vendor_id == vendor.id,
-#                 UserNotification.created_at >= datetime.utcnow().date(),
-#                 UserNotification.subject == "New Baskets from Your Favorite Vendor!"
-#             ).first()
-
-#             if existing_notification:
-#                 # print(f"Notification already exists for User ID={user.id}, Vendor ID={vendor.id}. Skipping.")
-#                 continue
-
-#             notification = UserNotification(
-#                 subject="New Baskets from Your Favorite Vendor!",
-#                 message=message,
-#                 link=f"/user/vendors/{vendor.id}#markets",
-#                 user_id=user.id,
-#                 vendor_id=vendor.id,
-#                 created_at=datetime.utcnow(),
-#                 is_read=False
-#             )
-#             notifications.append(notification)
-#             # print(f"Prepared notification for User ID={user.id}, Email='{user.email}'")
-
-#         if notifications:
-#             session.bulk_save_objects(notifications)
-#             session.commit()
-#             # print(f"Successfully created {len(notifications)} notifications for Vendor ID={vendor.id}")
-
-#     except Exception as e:
-#         session.rollback()
-#         print(f"Error in fav_vendor_new_baskets: {e}")
-#     finally:
-#         session.close()
-
-# User - New Blog Post
-@listens_for(Blog, 'after_insert')
-def notify_users_new_blog(mapper, connection, target):
+# User Fav Vendor Added Baskets
+@listens_for(Basket, 'after_insert')
+def fav_vendor_new_baskets(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        # print(f"New blog post detected: ID={target.id}, Title='{target.title}'")
+        # print(f"New basket detected: ID={target.id}, Vendor ID={target.vendor_id}")
 
-        # Retrieve all users to notify
-        users = session.query(User).all()
-        # print(f"Total users to notify: {len(users)}")
-
-        if not users:
-            print("No users found. No notifications will be created.")
+        vendor = session.query(Vendor).get(target.vendor_id)
+        if not vendor:
+            print(f"Vendor not found for Vendor ID: {target.vendor_id}")
             return
 
-        # Prepare notifications
+        # Retrieve users who favorited this vendor
+        favorited_users = session.query(User).join(VendorFavorite).filter(
+            VendorFavorite.vendor_id == target.vendor_id
+        ).all()
+        # print(f"Users favorited Vendor ID {vendor.id}: {len(favorited_users)} users found.")
+
+        if not favorited_users:
+            print(f"No users have favorited Vendor ID {vendor.id}. No notifications will be created.")
+            return
+
+        # Check for existing baskets for this vendor
+        recent_baskets = session.query(Basket).filter(
+            Basket.vendor_id == vendor.id,
+            Basket.sale_date >= datetime.utcnow().date()
+        ).all()
+
+        basket_count = len(recent_baskets)
+        # print(f"Vendor ID {vendor.id} has {basket_count} baskets created today.")
+
+        if basket_count >= 2:
+            # Consolidate notification
+            message = f"{vendor.name} has added new baskets today! Check them out before they're gone!"
+        else:
+            # Individual basket notification
+            message = f"{vendor.name} has added a new basket! Check it out before it's gone!"
+
+        # Prepare notifications for favorited users
         notifications = []
-        for user in users:
+        for user in favorited_users:
+            existing_notification = session.query(UserNotification).filter(
+                UserNotification.user_id == user.id,
+                UserNotification.vendor_id == vendor.id,
+                UserNotification.created_at >= datetime.utcnow().date(),
+                UserNotification.subject == "New Baskets from Your Favorite Vendor!"
+            ).first()
+
+            if existing_notification:
+                # print(f"Notification already exists for User ID={user.id}, Vendor ID={vendor.id}. Skipping.")
+                continue
+
             notification = UserNotification(
-                subject="New Blog Post Alert!",
-                message=f"A new blog post, {target.title}, has been published. Check it out!",
-                link=f"/#blog",
+                subject="New Baskets from Your Favorite Vendor!",
+                message=message,
+                link=f"/user/vendors/{vendor.id}#markets",
                 user_id=user.id,
+                vendor_id=vendor.id,
                 created_at=datetime.utcnow(),
                 is_read=False
             )
@@ -474,11 +488,106 @@ def notify_users_new_blog(mapper, connection, target):
         if notifications:
             session.bulk_save_objects(notifications)
             session.commit()
-            # print(f"Successfully created {len(notifications)} notifications for the new blog post.")
+            # print(f"Successfully created {len(notifications)} notifications for Vendor ID={vendor.id}")
 
     except Exception as e:
         session.rollback()
-        print(f"Error in notify_users_new_blog: {e}")
+        print(f"Error in fav_vendor_new_baskets: {e}")
+    finally:
+        session.close()
+
+# User - New Blog Post
+@listens_for(Blog, 'after_insert')
+def schedule_blog_notifications(mapper, connection, target):
+    session = Session(bind=connection)
+    try:
+        post_date = target.post_date.date()  # Convert datetime to date
+        if post_date > datetime.utcnow().date():
+            return
+
+        # Retrieve users who have notifications enabled
+        users = session.query(User).join(SettingsUser).filter(SettingsUser.site_new_blog == True).all()
+        admins = session.query(AdminUser).join(SettingsAdmin).filter(SettingsAdmin.site_new_blog == True).all()
+        vendor_users = session.query(VendorUser).join(SettingsVendor).filter(SettingsVendor.site_new_blog == True).all()
+
+        if not users and not admins and not vendor_users:
+            print("No users have blog notifications enabled. No notifications will be created.")
+            return
+
+        # Prepare user notifications
+        user_notifications = [
+            UserNotification(
+                subject="New Blog Post Alert!",
+                message=f"A new blog post, {target.title}, has been published. Check it out!",
+                link=f"/#blog",
+                user_id=user.id,
+                created_at=datetime.utcnow(),
+                is_read=False
+            )
+            for user in users
+        ]
+
+        # Prepare vendor notifications separately
+        vendor_notifications = [
+            VendorNotification(
+                subject="New Blog Post Alert!",
+                message=f"A new blog post, {target.title}, has been published. Check it out!",
+                link=f"/vendor#blog",
+                vendor_id=vendor_user.id,
+                created_at=datetime.utcnow(),
+                is_read=False
+            )
+            for vendor_user in vendor_users
+        ]
+        
+        # Prepare admin notifications separately
+        admin_notifications = [
+            AdminNotification(
+                subject="New Blog Post Alert!",
+                message=f"A new blog post, {target.title}, has been published. Check it out!",
+                link=f"/vendor#blog",
+                vendor_id=admin.id,
+                created_at=datetime.utcnow(),
+                is_read=False
+            )
+            for admin in admins
+        ]
+
+        # Save notifications separately
+        if user_notifications:
+            session.bulk_save_objects(user_notifications)
+        if vendor_notifications:
+            session.bulk_save_objects(vendor_notifications)
+        if admin_notifications:
+            session.bulk_save_objects(admin_notifications)
+
+        session.commit()
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error in schedule_blog_notifications: {e}")
+    finally:
+        session.close()
+        
+# if blog is scheduled for the future and deleted before it is published
+@listens_for(Blog, 'before_delete')
+def delete_scheduled_blog_notifications(mapper, connection, target):
+    session = Session(bind=connection)
+    try:
+        if target.post_date > datetime.utcnow().date():
+            notifications = session.query(UserNotification).filter(
+                UserNotification.link == f"/#blog",
+                UserNotification.subject == "New Blog Post Alert!"
+            ).all()
+
+            if notifications:
+                for notification in notifications:
+                    session.delete(notification)
+                session.commit()
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error deleting scheduled blog notifications: {e}")
     finally:
         session.close()
 
@@ -487,45 +596,52 @@ def notify_users_new_blog(mapper, connection, target):
 def vendor_market_new_event(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        # print(f"New event detected: ID={target.id}, Title='{target.title}', Market ID={target.market_id}")
-
-        # Retrieve the market
-        market = session.query(Market).get(target.market_id)
-        if not market:
-            print(f"Market not found for Market ID: {target.market_id}")
+        # Retrieve the market day associated with the event
+        market_day = session.query(MarketDay).filter_by(market_id=target.market_id).first()
+        if not market_day:
+            print(f"Market Day not found for Market ID: {target.market_id}")
             return
-        # print(f"Market found: ID={market.id}, Name='{market.name}'")
 
         # Retrieve vendors associated with the market
         vendors = session.query(Vendor).join(VendorMarket).join(MarketDay).filter(
-            MarketDay.market_id == market.id
+            MarketDay.market_id == target.market_id
         ).all()
-        # print(f"Vendors associated with Market ID {market.id}: {len(vendors)} vendors found.")
 
         if not vendors:
-            print(f"No vendors found for Market ID {market.id}. No notifications will be created.")
+            print(f"No vendors found for Market ID {target.market_id}. No notifications will be created.")
             return
 
-        # Prepare notifications for vendors
+        # Prepare notifications for vendors who have enabled new event notifications
         notifications = []
         for vendor in vendors:
-            notification = VendorNotification(
-                subject="New Event in Your Market!",
-                message=f"The market '{market.name}' has created a new event: '{target.title}'.",
-                link=f"/user/markets/{market.id}",  # Adjust link as per your routing
-                vendor_id=vendor.id,
-                market_id=market.id,
-                created_at=datetime.utcnow(),
-                is_read=False
-            )
-            notifications.append(notification)
-            # print(f"Prepared notification for Vendor ID={vendor.id}, Name='{vendor.name}'")
+            vendor_users = session.query(VendorUser).join(SettingsVendor).filter(
+                SettingsVendor.vendor_user_id == VendorUser.id,
+                SettingsVendor.site_market_new_event == True
+            ).all()
 
-        # Save notifications
+            for vendor_user in vendor_users:
+                # Ensure vendor user is associated with the correct market day
+                settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
+                if not settings or not settings.market_locations:
+                    continue
+
+                if market_day.id not in settings.market_locations:
+                    continue
+
+                notifications.append(VendorNotification(
+                    subject="New Event in Your Market!",
+                    message=f"The market, {market_day.market.name}, has created a new event: {target.title}.",
+                    link=f"/user/markets/{market_day.market.id}",
+                    vendor_id=vendor.id,
+                    vendor_user_id=vendor_user.id,
+                    market_id=market_day.market.id,
+                    created_at=datetime.utcnow(),
+                    is_read=False
+                ))
+
         if notifications:
             session.bulk_save_objects(notifications)
             session.commit()
-            # print(f"Successfully created {len(notifications)} notifications for Market ID={market.id}")
 
     except Exception as e:
         session.rollback()
@@ -546,52 +662,613 @@ def vendor_basket_sold(mapper, connection, target):
                 print(f"Vendor not found for Vendor ID: {target.vendor_id}")
                 return
 
-            # Retrieve all vendor users associated with this vendor
-            vendor_users = session.query(VendorUser).all()
+            # Retrieve the market_day associated with the basket
+            market_day = session.query(MarketDay).filter_by(id=target.market_day_id).first()
+            if not market_day:
+                print(f"Market Day not found for MarketDay ID: {target.market_day_id}")
+                return
 
-            # Filter VendorUsers where vendor_id in JSON matches target.vendor_id
+            # Retrieve vendor users with notifications enabled
+            vendor_users = session.query(VendorUser).join(SettingsVendor).filter(
+                SettingsVendor.vendor_user_id == VendorUser.id,
+                SettingsVendor.site_basket_sold == True
+            ).all()
+
             matched_vendor_users = []
             for vendor_user in vendor_users:
-                try:
-                    vendor_json = vendor_user.vendor_id  # JSON field
-                    if isinstance(vendor_json, str):  # Parse if stored as string
-                        vendor_json = json.loads(vendor_json)
-                    
-                    # Extract the first key's value (since it's stored as {"1": 1})
-                    extracted_vendor_id = next(iter(vendor_json.values()), None)
+                settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
+                if not settings or not settings.market_locations:
+                    continue
 
-                    if extracted_vendor_id == vendor.id:
-                        matched_vendor_users.append(vendor_user)
+                # Ensure the market_day_id is in the user's market_locations list
+                if market_day.id not in settings.market_locations:
+                    print(f"Skipping Vendor User {vendor_user.id} - MarketDay ID {market_day.id} not in their market locations.")
+                    continue
 
-                except Exception as e:
-                    print(f"Error processing vendor_user {vendor_user.id}: {e}")
+                # Ensure vendor user is associated with the correct vendor
+                vendor_json = vendor_user.vendor_id
+                if isinstance(vendor_json, str):
+                    vendor_json = json.loads(vendor_json)
+
+                extracted_vendor_id = next(iter(vendor_json.values()), None)
+                if extracted_vendor_id == vendor.id:
+                    matched_vendor_users.append(vendor_user)
 
             if not matched_vendor_users:
-                print(f"No vendor users found for Vendor ID={vendor.id}, skipping notification.")
+                print(f"No vendor users found with basket sold notifications enabled for Vendor ID={vendor.id}, skipping notification.")
                 return
 
             # Prepare notifications for all vendor users
             notifications = []
             for vendor_user in matched_vendor_users:
-                notification = VendorNotification(
+                notifications.append(VendorNotification(
                     subject="Basket Sold!",
-                    message=f"One of your baskets has been sold for ${target.price:.2f}.",
+                    message=f"One of your baskets has sold.",
                     link=f"/vendor/dashboard",
                     vendor_id=vendor.id,
-                    vendor_user_id=vendor_user.id,  # Assign vendor_user_id
+                    vendor_user_id=vendor_user.id,
                     created_at=datetime.utcnow(),
                     is_read=False
-                )
-                notifications.append(notification)
+                ))
 
             # Save all notifications in bulk
             if notifications:
                 session.bulk_save_objects(notifications)
                 session.commit()
-                print(f"Successfully created {len(notifications)} vendor notifications for basket sale.")
 
     except Exception as e:
         session.rollback()
         print(f"Error in vendor_basket_sold: {e}")
+    finally:
+        session.close()
+
+# @listens_for(VendorUser, 'after_insert')
+# def update_vendor_user_market_locations(mapper, connection, target):
+#     session = Session(bind=connection)
+#     try:
+#         # Retrieve all market_day_ids associated with the vendor
+#         market_days = session.query(VendorMarket.market_day_id).filter_by(vendor_id=target.vendor_id).all()
+#         market_day_ids = [md.market_day_id for md in market_days]
+
+#         if not market_day_ids:
+#             print(f"No market locations found for Vendor ID={target.vendor_id}. Skipping update.")
+#             return
+
+#         # Update SettingsVendor for this vendor user
+#         settings = session.query(SettingsVendor).filter_by(vendor_user_id=target.id).first()
+#         if settings:
+#             existing_market_locations = set(settings.market_locations or [])
+#             updated_market_locations = list(existing_market_locations.union(set(market_day_ids)))
+
+#             settings.market_locations = updated_market_locations
+#             session.commit()
+
+#     except Exception as e:
+#         session.rollback()
+#         print(f"Error updating market locations for Vendor User ID={target.id}: {e}")
+#     finally:
+#         session.close()
+        
+@listens_for(VendorMarket, 'after_insert')
+def notify_vendor_users_new_market_location(mapper, connection, target):
+    session = Session(bind=connection)
+    try:
+        # Retrieve all vendor users associated with this vendor
+        vendor_users = session.query(VendorUser).filter_by(vendor_id=target.vendor_id).all()
+
+        if not vendor_users:
+            print(f"No vendor users found for Vendor ID={target.vendor_id}. Skipping update.")
+            return
+
+        notifications = []
+        for vendor_user in vendor_users:
+            # Settings
+            settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
+            if settings:
+                existing_market_locations = set(settings.market_locations or [])
+                if target.market_day_id not in existing_market_locations:
+                    updated_market_locations = list(existing_market_locations.union({target.market_day_id}))
+                    settings.market_locations = updated_market_locations
+                    session.commit()
+
+                    notifications.append(VendorNotification(
+                        subject="New Market Location Added",
+                        message=f"A new market location has been added to your notifications list: {target.market_day.markets.name}. Go to profile settings to edit market location notifications.",
+                        link="/vendor/profile",
+                        vendor_id=target.vendor_id,
+                        vendor_user_id=vendor_user.id,
+                        created_at=datetime.utcnow(),
+                        is_read=False
+                    ))
+                    
+        if notifications:
+            session.bulk_save_objects(notifications)
+            session.commit()
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error notifying vendor users for new VendorMarket entry: {e}")
+    finally:
+        session.close()
+        
+@listens_for(QRCode, "after_insert")
+def handle_qr_code_deletion(mapper, connection, target):
+    session = Session(bind=connection)  # Use the properly bound session
+    try:
+        # Get the current UTC time
+        current_time = datetime.now(timezone.utc)
+        delete_at = current_time.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=2)
+        
+        # Retrieve the sale_date of the associated basket
+        basket = session.query(Basket).filter_by(id=target.basket_id).first()
+        if not basket or not basket.sale_date:
+            print(f"Skipping QR Code deletion. No sale_date found for Basket ID {target.basket_id}.")
+            return
+
+        # Ensure sale_date is a datetime.date (if not already)
+        if isinstance(basket.sale_date, datetime):
+            sale_date = basket.sale_date.date()
+        elif isinstance(basket.sale_date, date):
+            sale_date = basket.sale_date
+        else:
+            print(f"Unexpected type for sale_date: {type(basket.sale_date)}")
+            return
+
+        # Function to delete the QR code
+        def delete_qr_code():
+            delete_session = Session()
+            try:
+                qr_code = delete_session.query(QRCode).filter_by(id=target.id).first()
+                if not qr_code:
+                    print(f"QR Code ID {target.id} already deleted or does not exist. Skipping.")
+                    return
+
+                delete_session.delete(qr_code)
+                delete_session.commit()
+                print(f"Successfully deleted QR Code ID {target.id}.")
+            except Exception as e:
+                delete_session.rollback()
+                print(f"Error deleting QR Code ID {target.id}: {e}")
+            finally:
+                delete_session.close()
+
+        # If sale_date + 2 days has already passed, delete immediately
+        if delete_at <= current_time:
+            delete_qr_code()
+        else:
+            # Otherwise, schedule deletion
+            delay = (delete_at - current_time).total_seconds()
+            Timer(delay, delete_qr_code).start()
+
+    except Exception as e:
+        print(f"Error handling QR Code deletion: {e}")
+    finally:
+        session.close()
+
+# def reset_market_status():
+#     session = db.session  # Use the SQLAlchemy session from your app
+#     try:
+#         # Set all Markets.is_current to False
+#         session.query(Market).update({Market.is_current: False})
+#         session.commit()
+#         print("All markets have been set to is_current=False for the new year.")
+
+#     except Exception as e:
+#         session.rollback()
+#         print(f"Error resetting market status: {e}")
+#     finally:
+#         session.close()
+
+# def schedule_new_year_reset():
+#     now = datetime.now(timezone.utc)
+#     next_reset = datetime(now.year + 1, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+#     delay = (next_reset - now).total_seconds()
+
+#     print(f"Market reset scheduled for {next_reset}.")
+#     Timer(delay, reset_market_status).start()
+    
+
+# @listens_for(Vendor, 'after_update')
+# def notify_fav_vendor_closure(mapper, connection, target):
+#     session = Session(bind=connection)
+#     try:
+#         # Only trigger if the vendor was just marked as temporarily closed
+#         if target.is_temporarily_closed:
+
+#             # Retrieve all users who have favorited this vendor
+#             favorited_users = session.query(User).join(VendorFavorite).filter(
+#                 VendorFavorite.vendor_id == target.id
+#             ).all()
+
+#             if not favorited_users:
+#                 print(f"No users have favorited Vendor ID {target.id}. No notifications will be created.")
+#                 return
+
+#             # Prepare notifications
+#             notifications = []
+#             for user in favorited_users:
+#                 settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
+                
+#                 if not settings or not settings.site_fav_vendor_schedule_change:
+#                     print(f"User ID={user.id} has schedule change notifications disabled.")
+#                     continue
+
+#                 notifications.append(UserNotification(
+#                     subject="Vendor Temporarily Closed",
+#                     message=f"One of your favorite vendors, {target.name}, is temporarily closed due to unforeseen circumstances.",
+#                     link=f"/user/vendors/{target.id}",
+#                     user_id=user.id,
+#                     created_at=datetime.utcnow(),
+#                     is_read=False
+#                 ))
+
+#             # Save notifications
+#             if notifications:
+#                 session.bulk_save_objects(notifications)
+#                 session.commit()
+
+#     except Exception as e:
+#         session.rollback()
+#         print(f"Error in notify_fav_vendor_closure: {e}")
+#     finally:
+#         session.close()
+    
+@listens_for(Vendor, 'after_update')
+def remove_vendor_closure_notifications(mapper, connection, target):
+    session = Session(bind=connection)
+    try:
+        if not target.is_temporarily_closed:  # Vendor has reopened
+            print(f"Vendor {target.name} (ID {target.id}) has reopened. Removing closure notifications.")
+
+            session.query(UserNotification).filter(
+                UserNotification.subject == "Vendor Temporarily Closed",
+                UserNotification.vendor_id == target.id
+            ).delete(synchronize_session=False)
+
+            session.commit()
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error removing vendor closure notifications: {e}")
+    finally:
+        session.close()
+        
+@listens_for(Basket, 'after_insert')
+def notify_fav_market_new_baskets(mapper, connection, target):
+    session = Session(bind=connection)
+    try:
+        # Retrieve the market associated with the basket
+        market = session.query(Market).join(MarketDay).filter(
+            MarketDay.id == target.market_day_id
+        ).first()
+
+        if not market:
+            print(f"Market not found for MarketDay ID: {target.market_day_id}. Skipping notification.")
+            return
+
+        # Retrieve users who have favorited this market
+        favorited_users = session.query(User).join(MarketFavorite).filter(
+            MarketFavorite.market_id == market.id
+        ).all()
+
+        if not favorited_users:
+            print(f"No users have favorited Market ID {market.id}. No notifications will be created.")
+            return
+
+        # Check if a notification for this market and basket type already exists today
+        existing_notification = session.query(UserNotification).filter(
+            UserNotification.market_id == market.id,
+            UserNotification.subject == "New Baskets for Sale!",
+            UserNotification.created_at >= datetime.utcnow().date()
+        ).first()
+
+        if existing_notification:
+            return
+
+        # Prepare notifications for favorited users
+        notifications = []
+        for user in favorited_users:
+            # Check user notification settings
+            settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
+            if not settings or not settings.site_fav_market_new_basket:
+                print(f"User ID={user.id} has new basket notifications disabled.")
+                continue
+
+            notifications.append(UserNotification(
+                subject="New Baskets for Sale!",
+                message=f"New baskets have been added to one of your favorite markets, {market.name}, check it out!",
+                link=f"/user/markets/{market.id}?day={target.market_day_id}",
+                user_id=user.id,
+                market_id=market.id,
+                created_at=datetime.utcnow(),
+                is_read=False
+            ))
+
+        # Save notifications
+        if notifications:
+            session.bulk_save_objects(notifications)
+            session.commit()
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error in notify_fav_market_new_baskets: {e}")
+    finally:
+        session.close()
+        
+
+@listens_for(Basket, 'after_insert')
+def schedule_and_notify_basket_pickup(mapper, connection, target):
+    try:
+        #Ensure basket has a pickup time
+        if not target.pickup_start:
+            print(f"Skipping notification. No pickup_time found for Basket ID {target.id}.")
+            return
+
+        #Convert pickup_start to full datetime object using today's date
+        now_utc = datetime.now(timezone.utc)  # Current UTC time
+        local_now = now_utc.astimezone()  # Convert to local time
+        today_local = local_now.date()  # Today's date in local timezone
+
+        pickup_datetime_local = datetime.combine(today_local, target.pickup_start)
+        pickup_end_local = datetime.combine(today_local, target.pickup_end)
+
+        #Calculate delay (time remaining until pickup)
+        delay = (pickup_datetime_local - local_now).total_seconds()
+
+        if delay <= 0:
+            print(f"Skipping notification: Pickup time for Basket ID {target.id} has already passed.")
+            return
+
+        print(f" Notification for Basket ID {target.id} scheduled in {delay} seconds.")
+
+        def send_notification():
+            with Session(bind=connection) as notif_session:
+                try:
+                    basket = notif_session.query(Basket).filter_by(id=target.id).first()
+                    if not basket or basket.is_picked_up:
+                        print(f"Skipping notification. Basket ID {target.id} does not exist or is already picked up.")
+                        return
+
+                    user = notif_session.query(User).filter_by(id=basket.user_id).first()
+                    if not user:
+                        print(f"User for Basket ID {target.id} not found. Skipping notification.")
+                        return
+
+                    #Check user notification settings
+                    settings = notif_session.query(SettingsUser).filter_by(user_id=user.id).first()
+                    if not settings or not settings.site_basket_pickup_time:
+                        print(f"User ID={user.id} has pickup notifications disabled.")
+                        return
+
+                    #Convert times for notification message
+                    pickup_time_str = time_converter(pickup_datetime_local.time())
+                    pickup_end_str = time_converter(pickup_end_local.time())
+                    current_month = datetime.now().strftime("%B") 
+                    current_day = datetime.now().strftime("%d")
+
+                    #Send pickup reminder notification
+                    notification = UserNotification(
+                        subject="Time to Pick Up Your Basket!",
+                        message=(
+                            f"Your purchased basket is ready for pickup! "
+                            f"Pick it up between {pickup_time_str} and {pickup_end_str} on {current_month} {current_day}."
+                        ),
+                        link=f"/user/pick-up",
+                        user_id=user.id,
+                        created_at=pickup_datetime_local,
+                        is_read=False
+                    )
+
+                    notif_session.add(notification)
+                    notif_session.commit()
+                    print(f"✅ Pickup reminder sent for Basket ID={target.id}")
+
+                except Exception as e:
+                    print(f"Error sending basket pickup notification: {e}")
+
+        # Schedule notification
+        Timer(delay, send_notification).start()
+
+    except Exception as e:
+        print(f"Error scheduling pickup notification: {e}")
+        
+@listens_for(User, 'after_insert')
+def create_user_settings(mapper, connection, target):
+    session = Session(bind=connection)
+    try:
+        # Check if settings already exist (just in case)
+        existing_settings = session.query(SettingsUser).filter_by(user_id=target.id).first()
+        if existing_settings:
+            return
+
+        # Create default settings for the new user
+        new_settings = SettingsUser(user_id=target.id)
+        session.add(new_settings)
+        session.commit()
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error creating settings for User ID {target.id}: {e}")
+    finally:
+        session.close()
+        
+@listens_for(VendorReview, 'after_update')
+def notify_user_vendor_review_response(mapper, connection, target):
+    session = Session(bind=connection)
+    try:
+        # Ensure the response field has been updated
+        if not target.response or target.response.strip() == "":
+            print(f"No response detected for Review ID {target.id}. Skipping notification.")
+            return
+
+        # Retrieve the user who wrote the review
+        user = session.query(User).filter_by(id=target.user_id).first()
+        if not user:
+            print(f"User for Review ID {target.id} not found. Skipping notification.")
+            return
+
+        # Retrieve the vendor details
+        vendor = session.query(Vendor).filter_by(id=target.vendor_id).first()
+        if not vendor:
+            print(f"Vendor for Review ID {target.id} not found. Skipping notification.")
+            return
+
+        # Retrieve user notification settings
+        settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
+        if not settings:
+            print(f"No settings found for User ID={user.id}. Skipping notification.")
+            return
+
+        # Prepare notification message
+        message = f"The vendor, {vendor.name}, has responded to your review. Click to see their response!"
+
+        # Prepare notifications (site, email, text)
+        notifications = []
+
+        # Site Notification
+        if settings.site_vendor_review_response:
+            notifications.append(UserNotification(
+                subject="Vendor Responded to Your Review",
+                message=message,
+                link=f"/user/vendor/{vendor.id}#reviews",
+                user_id=user.id,
+                created_at=datetime.utcnow(),
+                is_read=False
+            ))
+            
+        # Save site notifications
+        if notifications:
+            session.bulk_save_objects(notifications)
+            session.commit()
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error notifying user about vendor review response: {e}")
+    finally:
+        session.close()
+
+@listens_for(Market, 'after_insert')
+def notify_users_new_market_in_state(mapper, connection, target):
+    session = Session(bind=connection)
+    try:
+        # Retrieve users who reside in the same city as the new market
+        users_in_state = session.query(User).filter(User.state == target.state).all()
+
+        if not users_in_state:
+            print(f"No users found in city {target.state}. No notifications will be created.")
+            return
+
+        # Prepare notifications (site, email)
+        notifications = []
+        for user in users_in_state:
+            # Retrieve user notification settings
+            settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
+            if not settings:
+                print(f"No settings found for User ID={user.id}. Skipping notification.")
+                continue
+
+            # Site Notification
+            if settings.site_new_market_in_city:
+                notifications.append(UserNotification(
+                    subject=f"New Market in {user.state}",
+                    message=f"A new market, {target.name}, has opened in your {user.state}! Click to explore.",
+                    link=f"/user/markets/{target.id}",
+                    user_id=user.id,
+                    created_at=datetime.utcnow(),
+                    is_read=False
+                ))
+
+        # Save site notifications
+        if notifications:
+            session.bulk_save_objects(notifications)
+            session.commit()
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error notifying users about new market in city: {e}")
+    finally:
+        session.close()
+
+@listens_for(VendorUser, 'after_insert')
+def create_vendor_user_settings(mapper, connection, target):
+    session = Session(bind=connection)
+    try:
+        existing_settings = session.query(SettingsVendor).filter_by(vendor_user_id=target.id).first()
+        if existing_settings:
+            print(f"Settings already exist for Vendor User ID {target.id}. Skipping creation.")
+            return
+
+        new_settings = SettingsVendor(vendor_user_id=target.id)
+        session.add(new_settings)
+        session.commit()
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error creating settings for Vendor User ID {target.id}: {e}")
+    finally:
+        session.close()
+        
+@listens_for(VendorReview, 'after_insert')
+def notify_vendor_users_new_review(mapper, connection, target):
+    session = Session(bind=connection)
+    try:
+        # Retrieve vendor users associated with this vendor
+        vendor_users = session.query(VendorUser).filter_by(vendor_id=target.vendor_id).all()
+
+        if not vendor_users:
+            print(f"No vendor users found for Vendor ID {target.vendor_id}. No notifications will be created.")
+            return
+
+        # Prepare notifications (site, email, text)
+        notifications = []
+        for vendor_user in vendor_users:
+            # Retrieve vendor user notification settings
+            settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
+            if not settings:
+                print(f"No settings found for Vendor User ID={vendor_user.id}. Skipping notification.")
+                continue
+
+            message = f"A new review has been left for your vendor account. Click to view."
+
+            # Site Notification
+            if settings.site_new_review:
+                notifications.append(VendorNotification(
+                    subject="New Vendor Review!",
+                    message=message,
+                    link=f"/vendor/dashboard?tab=reviews",
+                    vendor_user_id=vendor_user.id,
+                    vendor_id=target.vendor_id,
+                    created_at=datetime.utcnow(),
+                    is_read=False
+                ))
+
+        # Save site notifications
+        if notifications:
+            session.bulk_save_objects(notifications)
+            session.commit()
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error notifying vendor users about new review: {e}")
+    finally:
+        session.close()
+        
+@listens_for(AdminUser, 'after_insert')
+def create_admin_settings(mapper, connection, target):
+    session = Session(bind=connection)
+    try:
+        # Check if settings already exist (just in case)
+        existing_settings = session.query(SettingsAdmin).filter_by(admin_id=target.id).first()
+        if existing_settings:
+            return
+
+        # Create default settings for the new admin
+        new_settings = SettingsAdmin(admin_id=target.id)
+        session.add(new_settings)
+        session.commit()
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error creating settings for Admin ID {target.id}: {e}")
     finally:
         session.close()

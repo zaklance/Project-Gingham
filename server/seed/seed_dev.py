@@ -11,7 +11,8 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     VendorMarket, VendorUser, AdminUser, Basket, Event, 
                     Product, UserNotification, VendorNotification, 
                     AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
-                    Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
+                    Receipt, SettingsUser, SettingsVendor, SettingsAdmin,
+                    UserIssue
                     )
 import json
 from datetime import datetime, timedelta, timezone, time, date
@@ -21,20 +22,15 @@ from pytz import timezone
 fake = Faker()
 
 def run():
-    User.query.delete()
-    Market.query.delete()
-    MarketDay.query.delete()
-    Vendor.query.delete()
-    MarketReview.query.delete()
-    VendorReview.query.delete()
-    ReportedReview.query.delete()
     MarketReviewRating.query.delete()
     VendorReviewRating.query.delete()
+    MarketReview.query.delete()
+    VendorReview.query.delete()
+    VendorMarket.query.delete()
+    MarketDay.query.delete()
+    ReportedReview.query.delete()
     MarketFavorite.query.delete()
     VendorFavorite.query.delete()
-    VendorMarket.query.delete()
-    VendorUser.query.delete()
-    AdminUser.query.delete()
     Basket.query.delete()
     Event.query.delete()
     Product.query.delete()
@@ -43,14 +39,105 @@ def run():
     AdminNotification.query.delete()
     QRCode.query.delete()
     FAQ.query.delete()
-    Blog.query.delete()
     BlogFavorite.query.delete()
+    Blog.query.delete()
     Receipt.query.delete()
+    Market.query.delete()
+    Vendor.query.delete()
+    UserIssue.query.delete()
     SettingsUser.query.delete()
     SettingsVendor.query.delete()
     SettingsAdmin.query.delete()
+    User.query.delete()
+    VendorUser.query.delete()
+    AdminUser.query.delete()
 
     db.session.commit()
+
+
+    # add fake users
+    users = []
+    users_settings = []
+    states = [
+         'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA', 
+         'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA', 
+         'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 
+         'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 
+         'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
+         ]
+    apartment = ['Apt', 'Suite', 'Floor', 'Building']
+    avatars = [
+        "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-cabbage-1.jpg", 
+        "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime-1.jpg", "avatar-melon-1.jpg",
+        "avatar-mangosteen-1.jpg", "avatar-mangosteen-2.jpg", "avatar-nectarine-1.jpg", 
+        "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-peach-1.jpg", 
+        "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
+        "avatar-watermelon-1.jpg"
+    ]
+
+    for i in range(50):
+        email = fake.ascii_safe_email()
+        # password = fake.password()
+        password = "lol"
+        first_name = fake.first_name()
+        last_name = fake.last_name()
+        phone = f'+1 {str(randint(1000000000,9999999999))}'
+        address_1 = fake.street_address()
+        address_2 = f'{choice(apartment)} {randint(1, 200)}'
+        city = choice(['Brooklyn', 'Brooklyn', 'Brooklyn', 'Bronx', 'Bronx', 'Far Rockaway', 'New York', 'New York', 'New York', 'New York', 'Queens', 'Queens', 'Staten Island'])
+        state = 'NY'
+        zipcode = fake.postcode()
+        # avatar = choice(avatars)
+        # avatar = f'_default-images/{choice(avatars)}'
+
+        u = User(
+            id=(i + 1),
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            phone=phone,
+            address_1=address_1,
+            address_2=address_2,
+            city=city,
+            state=state,
+            zipcode=zipcode,
+            coordinates={"lat": 40.726586, "lng": -73.988734}
+            # avatar=avatar
+        )
+        users.append(u)
+
+        # su = SettingsUser(
+        #     user_id=(i + 1)
+        # )
+        # users_settings.append(su)
+
+    db.session.add_all(users)
+    # db.session.add_all(users_settings)
+    db.session.commit()
+
+
+    # user for demo
+    user_demo = User(
+        email="hamging@gingham.nyc",
+        password="lol",
+        first_name="Ham-man",
+        last_name="Gingy",
+        phone="+12095553880",
+        address_1="11 Broadway",
+        address_2="Floor 2",
+        city="New York",
+        state="NY",
+        zipcode="10004",
+        coordinates={"lat": 40.726586, "lng": -73.988734}
+    )
+    # user_settings_demo = SettingsUser(
+    #     user_id=51
+    # )
+    db.session.add(user_demo)
+    # db.session.add(user_settings_demo)
+    db.session.commit()
+
 
     markets = [
         Market(
@@ -3438,7 +3525,7 @@ def run():
             products=products,
             bio=bio,
             image=image,
-            website='www.google.com/',
+            website='https://www.google.com/',
             stripe_account_id=stripe_account_id
         )
         vendors.append(v)
@@ -3446,88 +3533,6 @@ def run():
     db.session.add_all(vendors)
     db.session.commit()
 
-    # add fake users
-    users = []
-    users_settings = []
-    states = [
-         'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA', 
-         'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA', 
-         'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 
-         'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 
-         'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
-         ]
-    apartment = ['Apt', 'Suite', 'Floor', 'Building']
-    avatars = [
-        "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-cabbage-1.jpg", 
-        "avatar-kiwi-1.jpg", "avatar-kiwi-2.jpg", "avatar-lime-1.jpg", "avatar-melon-1.jpg",
-        "avatar-mangosteen-1.jpg", "avatar-mangosteen-2.jpg", "avatar-nectarine-1.jpg", 
-        "avatar-onion-1.jpg", "avatar-onion-2.jpg", "avatar-peach-1.jpg", 
-        "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
-        "avatar-watermelon-1.jpg"
-    ]
-
-    for i in range(50):
-        email = fake.ascii_safe_email()
-        # password = fake.password()
-        password = "lol"
-        first_name = fake.first_name()
-        last_name = fake.last_name()
-        phone = f'+1 {str(randint(1000000000,9999999999))}'
-        address_1 = fake.street_address()
-        address_2 = f'{choice(apartment)} {randint(1, 200)}'
-        city = fake.city()
-        state = choice(states)
-        zipcode = fake.postcode()
-        # avatar = choice(avatars)
-        # avatar = f'_default-images/{choice(avatars)}'
-
-        u = User(
-            id=(i + 1),
-            email=email,
-            password=password,
-            first_name=first_name,
-            last_name=last_name,
-            phone=phone,
-            address_1=address_1,
-            address_2=address_2,
-            city=city,
-            state=state,
-            zipcode=zipcode,
-            coordinates={"lat": 40.726586, "lng": -73.988734}
-            # avatar=avatar
-        )
-        users.append(u)
-
-        su = SettingsUser(
-            user_id=(i + 1)
-        )
-        users_settings.append(su)
-
-    db.session.add_all(users)
-    db.session.add_all(users_settings)
-    db.session.commit()
-
-
-    # user for demo
-    user_demo = User(
-        email="hamging@gingham.nyc",
-        password="lol",
-        first_name="Ham-man",
-        last_name="Gingy",
-        phone="+12095553880",
-        address_1="11 Broadway",
-        address_2="Floor 2",
-        city="New York",
-        state="NY",
-        zipcode="10004",
-        coordinates={"lat": 40.726586, "lng": -73.988734}
-    )
-    user_settings_demo = SettingsUser(
-        user_id=51
-    )
-    db.session.add(user_demo)
-    db.session.add(user_settings_demo)
-    db.session.commit()
 
     # add fake market reviews
     market_revs = []
@@ -3671,13 +3676,13 @@ def run():
         )
         vendor_users.append(vu)
 
-        svu = SettingsVendor(
-            vendor_user_id=(i + 1)
-        )
-        vendor_users_settings.append(svu)
+        # svu = SettingsVendor(
+        #     vendor_user_id=(i + 1)
+        # )
+        # vendor_users_settings.append(svu)
 
     db.session.add_all(vendor_users)
-    db.session.add_all(vendor_users_settings)
+    # db.session.add_all(vendor_users_settings)
     db.session.commit()
 
     # user for demo
@@ -3756,9 +3761,9 @@ def run():
             phone="+12095553880",
             admin_role=0
         ),
-        SettingsAdmin(
-            admin_id=1
-        ),
+        # SettingsAdmin(
+        #     admin_id=1
+        # ),
         AdminUser(
             email="zak@mufo.nyc",
             password="lol",
@@ -3767,9 +3772,9 @@ def run():
             phone="+10000000000",
             admin_role=1
         ),
-        SettingsAdmin(
-            admin_id=2
-        ),
+        # SettingsAdmin(
+        #     admin_id=2
+        # ),
         AdminUser(
             email="sandro@mufo.nyc",
             password="lol",
@@ -3778,9 +3783,9 @@ def run():
             phone="+10000000000",
             admin_role=1
         ),
-        SettingsAdmin(
-            admin_id=3
-        ),
+        # SettingsAdmin(
+        #     admin_id=3
+        # ),
         AdminUser(
             email="vinh@mufo.nyc",
             password="lol",
@@ -3789,9 +3794,9 @@ def run():
             phone="+10000000000",
             admin_role=1
         ),
-        SettingsAdmin(
-            admin_id=4
-        ),
+        # SettingsAdmin(
+        #     admin_id=4
+        # ),
         AdminUser(
             email="hello@mufo.nyc",
             password="lol",
@@ -3800,9 +3805,9 @@ def run():
             phone="+10000000000",
             admin_role=2
         ),
-        SettingsAdmin(
-            admin_id=5
-        ),
+        # SettingsAdmin(
+        #     admin_id=5
+        # ),
     ]
     
     db.session.add_all(admin_user_demo)

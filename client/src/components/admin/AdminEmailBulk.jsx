@@ -200,85 +200,88 @@ const AdminEmailBulk = () => {
         <>
             <div>
                 <h1 className='margin-b-16'>Bulk Email</h1>
-                <h3 className='margin-b-8'>Send from no-reply@gingham.nyc</h3>
-                <h3 className='margin-r-8 margin-b-16'>How-to guide: <a className='link-underline' href="https://documentation.mjml.io/#standard-body-components" target="_blank">mjml.io</a></h3>
-                <div className='form-group'>
-                    <label title="true or false">Single Email:</label>
-                    <select
-                        name="isSingleEmail"
-                        value={isSingleEmail}
-                        onChange={(e) => setIsSingleEmail(e.target.value)}
-                    >
-                        <option value={true}>Yes</option>
-                        <option value={false}>No</option>
-                    </select>
-                </div>
-                {isSingleEmail === 'true' ? (
-                    <>
-                        <div className='form-group'>
-                            <label>Email Address:</label>
-                            <input
-                                type="text"
-                                name="singleEmail"
-                                placeholder='hello@gingham.nyc'
-                                value={singleEmail || ''}
-                                onChange={(e) => setSingleEmail(e.target.value)}
-                                required
-                            />
-                        </div>
-                    </>
-                ) : (
+                <div className='box-bounding'>
+                    <h3 className='margin-b-8'>Send from no-reply@gingham.nyc</h3>
+                    <h3 className='margin-r-8 margin-b-16'>How-to guide: <a className='link-underline' href="https://documentation.mjml.io/#standard-body-components" target="_blank">mjml.io</a></h3>
                     <div className='form-group'>
-                        <label>Email All:</label>
-                        <select className='select-state'
-                            name="userType"
-                            value={userType}
-                            onChange={(e) => setUserType(e.target.value)}
+                        <label title="true or false">Single Email:</label>
+                        <select
+                            name="isSingleEmail"
+                            value={isSingleEmail}
+                            onChange={(e) => setIsSingleEmail(e.target.value)}
                         >
-                            <option value={'user'}>Users</option>
-                            <option value={'vendor'}>Vendor Users</option>
-                            <option value={'admin'}>Admins</option>
+                            <option value={true}>Yes</option>
+                            <option value={false}>No</option>
                         </select>
                     </div>
-                )}
-                <div className='form-group'>
-                    <label>Subject:</label>
-                    <input
-                        id="subject-input"
-                        value={newSubject}
-                        onChange={(e) => setNewSubject(e.target.value)}
-                        placeholder="Witty Newsletter Title"
-                    />
-                </div>
-                <div className='form-group'>
-                    <label>Message:</label>
-                    <textarea
-                        id="html-input"
-                        value={newEmail}
-                        onChange={(e) => setNewEmail(e.target.value)}
-                        placeholder="Type something..."
-                        ref={(el) => (textareasRef.current[0] = el)}
-                    />
-                </div>
-                <div className='flex-start'>
-                    <button className='btn btn-small margin-t-8 margin-l-12 margin-b-16' onClick={previewEmail}>Preview Email</button>
-                    {isLoading ? (
-                        <PulseLoader
-                            className='margin-l-24 margin-t-12'
-                            color={'#ff806b'}
-                            size={10}
-                            aria-label="Loading Spinner"
-                            data-testid="loader"
-                        />
+                    {isSingleEmail === 'true' ? (
+                        <>
+                            <div className='form-group'>
+                                <label>Email Address:</label>
+                                <input
+                                    type="text"
+                                    name="singleEmail"
+                                    placeholder='hello@gingham.nyc'
+                                    value={singleEmail || ''}
+                                    onChange={(e) => setSingleEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </>
                     ) : (
-                        <button className='btn btn-small margin-t-8 margin-l-16 margin-b-16' onClick={sendEmail}>Send Email</button>
+                        <div className='form-group'>
+                            <label>Email All:</label>
+                            <select className='select-state'
+                                name="userType"
+                                value={userType}
+                                onChange={(e) => setUserType(e.target.value)}
+                            >
+                                <option value={'user'}>Users</option>
+                                <option value={'vendor'}>Vendor Users</option>
+                                <option value={'admin'}>Admins</option>
+                            </select>
+                        </div>
                     )}
+                    <div className='form-group'>
+                        <label>Subject:</label>
+                        <input
+                            id="subject-input"
+                            value={newSubject}
+                            onChange={(e) => setNewSubject(e.target.value)}
+                            placeholder="Witty Newsletter Title"
+                        />
+                    </div>
+                    <div className='form-group'>
+                        <label>Message:</label>
+                        <textarea
+                            id="html-input"
+                            value={newEmail}
+                            onChange={(e) => setNewEmail(e.target.value)}
+                            placeholder="Type something..."
+                            ref={(el) => (textareasRef.current[0] = el)}
+                        />
+                    </div>
+                    <div className='flex-start'>
+                        <button className='btn btn-small margin-t-8 margin-l-12 margin-b-16' onClick={previewEmail}>Preview Email</button>
+                        {isLoading ? (
+                            <PulseLoader
+                                className='margin-l-24 margin-t-12'
+                                color={'#ff806b'}
+                                size={10}
+                                aria-label="Loading Spinner"
+                                data-testid="loader"
+                            />
+                        ) : (
+                            <button className='btn btn-small margin-t-8 margin-l-16 margin-b-16' onClick={sendEmail}>Send Email</button>
+                        )}
+                    </div>
+                    <iframe
+                        className='box-iframe'
+                        title="email-preview"
+                        srcDoc={previewHtml}
+                        style={{ width: '100%', height: '600px', border: '1px solid grey' }}
+                    />
                 </div>
-                <iframe
-                    title="email-preview"
-                    srcDoc={previewHtml}
-                    style={{ width: '100%', height: '600px', border: '1px solid grey' }}
-                />
             </div>
         </>
     );

@@ -10,7 +10,8 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     VendorMarket, VendorUser, AdminUser, Basket, Event, 
                     Product, UserNotification, VendorNotification, 
                     AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
-                    Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
+                    Receipt, SettingsUser, SettingsVendor, SettingsAdmin,
+                    UserIssue 
                     )
 import json
 from datetime import datetime, timedelta, timezone, time, date
@@ -18,20 +19,15 @@ from datetime import datetime, timedelta, timezone, time, date
 fake = Faker()
 
 def run():
-    User.query.delete()
-    Market.query.delete()
-    MarketDay.query.delete()
-    Vendor.query.delete()
-    MarketReview.query.delete()
-    VendorReview.query.delete()
-    ReportedReview.query.delete()
     MarketReviewRating.query.delete()
     VendorReviewRating.query.delete()
+    MarketReview.query.delete()
+    VendorReview.query.delete()
+    VendorMarket.query.delete()
+    MarketDay.query.delete()
+    ReportedReview.query.delete()
     MarketFavorite.query.delete()
     VendorFavorite.query.delete()
-    VendorMarket.query.delete()
-    VendorUser.query.delete()
-    AdminUser.query.delete()
     Basket.query.delete()
     Event.query.delete()
     Product.query.delete()
@@ -40,12 +36,18 @@ def run():
     AdminNotification.query.delete()
     QRCode.query.delete()
     FAQ.query.delete()
-    Blog.query.delete()
     BlogFavorite.query.delete()
+    Blog.query.delete()
     Receipt.query.delete()
+    Market.query.delete()
+    Vendor.query.delete()
+    UserIssue.query.delete()
     SettingsUser.query.delete()
     SettingsVendor.query.delete()
     SettingsAdmin.query.delete()
+    User.query.delete()
+    VendorUser.query.delete()
+    AdminUser.query.delete()
 
     db.session.commit()
 

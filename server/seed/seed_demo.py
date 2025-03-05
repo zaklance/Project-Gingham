@@ -7,7 +7,8 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     VendorMarket, VendorUser, AdminUser, Basket, Event, 
                     Product, UserNotification, VendorNotification, 
                     AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
-                    Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
+                    Receipt, SettingsUser, SettingsVendor, SettingsAdmin,
+                    UserIssue
                     )
 import json
 from datetime import datetime, timedelta, timezone, time, date
@@ -15,9 +16,8 @@ from datetime import datetime, timedelta, timezone, time, date
 fake = Faker()
 
 def run():
-    User.query.delete()
-    Market.query.delete()
     MarketDay.query.delete()
+    Market.query.delete()
     Vendor.query.delete()
     MarketReview.query.delete()
     VendorReview.query.delete()
@@ -27,8 +27,6 @@ def run():
     MarketFavorite.query.delete()
     VendorFavorite.query.delete()
     VendorMarket.query.delete()
-    VendorUser.query.delete()
-    AdminUser.query.delete()
     Basket.query.delete()
     Event.query.delete()
     Product.query.delete()
@@ -43,6 +41,10 @@ def run():
     SettingsUser.query.delete()
     SettingsVendor.query.delete()
     SettingsAdmin.query.delete()
+    UserIssue.query.delete()
+    User.query.delete()
+    VendorUser.query.delete()
+    AdminUser.query.delete()
 
     db.session.commit()
 
@@ -204,7 +206,7 @@ def run():
             products=products,
             bio=bio,
             image=image,
-            website='www.google.com/'
+            website='https://www.google.com/'
         )
         vendors.append(v)
 
