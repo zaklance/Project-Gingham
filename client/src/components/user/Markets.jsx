@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useOutletContext } from 'react-router-dom';
 import { formatDate } from '../../utils/helpers';
 import { weekDay } from '../../utils/common';
-import { Annotation, ColorScheme, FeatureVisibility, Map, Marker } from 'mapkit-react';
+import { ColorScheme, FeatureVisibility, Map } from 'mapkit-react';
 import MarketCard from './MarketCard';
 import MapAnnotation from './MapAnnotation';
 
@@ -500,8 +500,9 @@ function Markets() {
                                 longitudeDelta: 0.04
                             }}
                             colorScheme={ColorScheme.Auto}
-                            showsScale={FeatureVisibility.Visible}
+                            // showsScale={FeatureVisibility.Visible}
                             showsUserLocation={true}
+                            showsUserLocationControl={true}
                             tracksUserLocation={true}
                             onUserLocationChange={event => {setUserCoordinates({ 'lat': event.coordinate.latitude, 'lng': event.coordinate.longitude }); setFilterLocation(true)}}
                         >

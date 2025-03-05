@@ -77,11 +77,11 @@ class User(db.Model, SerializerMixin):
     join_date = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
 
     # Relationships
-    market_reviews = db.relationship('MarketReview', back_populates='user')
-    vendor_reviews = db.relationship('VendorReview', back_populates='user')
-    market_favorites = db.relationship('MarketFavorite', back_populates='user')
-    vendor_favorites = db.relationship('VendorFavorite', back_populates='user')
-    blog_favorites = db.relationship('BlogFavorite', back_populates='user')
+    market_reviews = db.relationship('MarketReview', back_populates='user', cascade="all, delete-orphan")
+    vendor_reviews = db.relationship('VendorReview', back_populates='user', cascade="all, delete-orphan")
+    market_favorites = db.relationship('MarketFavorite', back_populates='user', cascade="all, delete-orphan")
+    vendor_favorites = db.relationship('VendorFavorite', back_populates='user', cascade="all, delete-orphan")
+    blog_favorites = db.relationship('BlogFavorite', back_populates='user', cascade="all, delete-orphan")
     receipts = db.relationship('Receipt', back_populates='user', cascade="all, delete-orphan")
     user_issues = db.relationship('UserIssue', back_populates='user', cascade="all, delete-orphan")
 
@@ -202,9 +202,9 @@ class Market(db.Model, SerializerMixin):
     is_visible = db.Column(db.Boolean, nullable=False, default=True)
 
     # Relationships
-    reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic', cascade="all, delete")
-    market_favorites = db.relationship('MarketFavorite', back_populates='market', lazy='dynamic', cascade="all, delete")
-    market_days = db.relationship('MarketDay', back_populates='markets', cascade="all, delete")
+    reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic', cascade="all, delete-orphan")
+    market_favorites = db.relationship('MarketFavorite', back_populates='market', lazy='dynamic', cascade="all, delete-orphan")
+    market_days = db.relationship('MarketDay', back_populates='markets', cascade="all, delete-orphan")
 
     serialize_rules = (
         '-reviews.market', 
@@ -276,9 +276,9 @@ class Vendor(db.Model, SerializerMixin):
     stripe_account_id = db.Column(db.String, nullable=True)  # bring back unique=True post deployment
 
     # Relationships
-    reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic', cascade="all, delete")
-    vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic', cascade="all, delete")
-    vendor_markets = db.relationship('VendorMarket', back_populates='vendor', cascade="all, delete")
+    reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic', cascade="all, delete-orphan")
+    vendor_favorites = db.relationship('VendorFavorite', back_populates='vendor', lazy='dynamic', cascade="all, delete-orphan")
+    vendor_markets = db.relationship('VendorMarket', back_populates='vendor', cascade="all, delete-orphan")
 
     serialize_rules = (
         '-reviews.vendor', 
@@ -846,36 +846,6 @@ class Receipt(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<Receipt ID: {self.id}, User ID: {self.user_id}, Baskets: {self.baskets}, Created At: {self.created_at}>"
-    
-class UserIssue(db.Model, SerializerMixin): 
-    __tablename__ = 'user_issues'
-
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    basket_id = db.Column(db.Integer, db.ForeignKey('baskets.id'), nullable=True)
-    issue_type = db.Column(db.String, nullable=False)
-    issue_subtype = db.Column(db.String, nullable=False)
-    body = db.Column(db.String, nullable=False)
-    status = db.Column(db.String, default="Pending")
-    created_at = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
-
-    user = db.relationship('User', back_populates='user_issues')
-    basket = db.relationship('Basket', back_populates='user_issues')
-
-    serialize_rules = (
-        '-user.user_issues',
-        '-basket.user_issues',
-        '-user.blog_favorites', 
-        '-user.market_reviews', 
-        '-user.vendor_reviews',
-        '-baskets.market_day', 
-        '-baskets.vendor.reviews', 
-        '-baskets.vendor.vendor_favorites', 
-        '-baskets.vendor.vendor_markets'
-    )
-    
-    def __repr__(self) -> str: 
-        return f"<User Issues ID: {self.id}, User ID: {self.user_id}>"
 
 class SettingsUser(db.Model, SerializerMixin):
     __tablename__ = 'settings_users'
@@ -962,3 +932,33 @@ class SettingsAdmin(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<Admin Settings ID: {self.id} Admin ID: {self.admin_id}>"
+
+class UserIssue(db.Model, SerializerMixin): 
+    __tablename__ = 'user_issues'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    basket_id = db.Column(db.Integer, db.ForeignKey('baskets.id'), nullable=True)
+    issue_type = db.Column(db.String, nullable=False)
+    issue_subtype = db.Column(db.String, nullable=False)
+    body = db.Column(db.String, nullable=False)
+    status = db.Column(db.String, default="Pending")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
+
+    user = db.relationship('User', back_populates='user_issues')
+    basket = db.relationship('Basket', back_populates='user_issues')
+
+    serialize_rules = (
+        '-user.user_issues',
+        '-basket.user_issues',
+        '-user.blog_favorites', 
+        '-user.market_reviews', 
+        '-user.vendor_reviews',
+        '-baskets.market_day', 
+        '-baskets.vendor.reviews', 
+        '-baskets.vendor.vendor_favorites', 
+        '-baskets.vendor.vendor_markets'
+    )
+    
+    def __repr__(self) -> str: 
+        return f"<User Issues ID: {self.id}, User ID: {self.user_id}>"

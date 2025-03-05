@@ -11,7 +11,8 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     VendorMarket, VendorUser, AdminUser, Basket, Event, 
                     Product, UserNotification, VendorNotification, 
                     AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
-                    Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
+                    Receipt, SettingsUser, SettingsVendor, SettingsAdmin,
+                    UserIssue
                     )
 import json
 from datetime import datetime, timedelta, timezone, time, date
@@ -21,20 +22,15 @@ from pytz import timezone
 fake = Faker()
 
 def run():
-    User.query.delete()
-    Market.query.delete()
-    MarketDay.query.delete()
-    Vendor.query.delete()
-    MarketReview.query.delete()
-    VendorReview.query.delete()
-    ReportedReview.query.delete()
     MarketReviewRating.query.delete()
     VendorReviewRating.query.delete()
+    MarketReview.query.delete()
+    VendorReview.query.delete()
+    VendorMarket.query.delete()
+    MarketDay.query.delete()
+    ReportedReview.query.delete()
     MarketFavorite.query.delete()
     VendorFavorite.query.delete()
-    VendorMarket.query.delete()
-    VendorUser.query.delete()
-    AdminUser.query.delete()
     Basket.query.delete()
     Event.query.delete()
     Product.query.delete()
@@ -43,12 +39,18 @@ def run():
     AdminNotification.query.delete()
     QRCode.query.delete()
     FAQ.query.delete()
-    Blog.query.delete()
     BlogFavorite.query.delete()
+    Blog.query.delete()
     Receipt.query.delete()
+    Market.query.delete()
+    Vendor.query.delete()
+    UserIssue.query.delete()
     SettingsUser.query.delete()
     SettingsVendor.query.delete()
     SettingsAdmin.query.delete()
+    User.query.delete()
+    VendorUser.query.delete()
+    AdminUser.query.delete()
 
     db.session.commit()
 
@@ -105,13 +107,35 @@ def run():
         )
         users.append(u)
 
-        su = SettingsUser(
-            user_id=(i + 1)
-        )
-        users_settings.append(su)
+        # su = SettingsUser(
+        #     user_id=(i + 1)
+        # )
+        # users_settings.append(su)
 
     db.session.add_all(users)
-    db.session.add_all(users_settings)
+    # db.session.add_all(users_settings)
+    db.session.commit()
+
+
+    # user for demo
+    user_demo = User(
+        email="hamging@gingham.nyc",
+        password="lol",
+        first_name="Ham-man",
+        last_name="Gingy",
+        phone="+12095553880",
+        address_1="11 Broadway",
+        address_2="Floor 2",
+        city="New York",
+        state="NY",
+        zipcode="10004",
+        coordinates={"lat": 40.726586, "lng": -73.988734}
+    )
+    # user_settings_demo = SettingsUser(
+    #     user_id=51
+    # )
+    db.session.add(user_demo)
+    # db.session.add(user_settings_demo)
     db.session.commit()
 
 
@@ -3510,27 +3534,6 @@ def run():
     db.session.commit()
 
 
-    # user for demo
-    user_demo = User(
-        email="hamging@gingham.nyc",
-        password="lol",
-        first_name="Ham-man",
-        last_name="Gingy",
-        phone="+12095553880",
-        address_1="11 Broadway",
-        address_2="Floor 2",
-        city="New York",
-        state="NY",
-        zipcode="10004",
-        coordinates={"lat": 40.726586, "lng": -73.988734}
-    )
-    user_settings_demo = SettingsUser(
-        user_id=51
-    )
-    db.session.add(user_demo)
-    db.session.add(user_settings_demo)
-    db.session.commit()
-
     # add fake market reviews
     market_revs = []
     reported = (False, False, False, False, False, False, False, False, False, True)
@@ -3673,13 +3676,13 @@ def run():
         )
         vendor_users.append(vu)
 
-        svu = SettingsVendor(
-            vendor_user_id=(i + 1)
-        )
-        vendor_users_settings.append(svu)
+        # svu = SettingsVendor(
+        #     vendor_user_id=(i + 1)
+        # )
+        # vendor_users_settings.append(svu)
 
     db.session.add_all(vendor_users)
-    db.session.add_all(vendor_users_settings)
+    # db.session.add_all(vendor_users_settings)
     db.session.commit()
 
     # user for demo
@@ -3758,9 +3761,9 @@ def run():
             phone="+12095553880",
             admin_role=0
         ),
-        SettingsAdmin(
-            admin_id=1
-        ),
+        # SettingsAdmin(
+        #     admin_id=1
+        # ),
         AdminUser(
             email="zak@mufo.nyc",
             password="lol",
@@ -3769,9 +3772,9 @@ def run():
             phone="+10000000000",
             admin_role=1
         ),
-        SettingsAdmin(
-            admin_id=2
-        ),
+        # SettingsAdmin(
+        #     admin_id=2
+        # ),
         AdminUser(
             email="sandro@mufo.nyc",
             password="lol",
@@ -3780,9 +3783,9 @@ def run():
             phone="+10000000000",
             admin_role=1
         ),
-        SettingsAdmin(
-            admin_id=3
-        ),
+        # SettingsAdmin(
+        #     admin_id=3
+        # ),
         AdminUser(
             email="vinh@mufo.nyc",
             password="lol",
@@ -3791,9 +3794,9 @@ def run():
             phone="+10000000000",
             admin_role=1
         ),
-        SettingsAdmin(
-            admin_id=4
-        ),
+        # SettingsAdmin(
+        #     admin_id=4
+        # ),
         AdminUser(
             email="hello@mufo.nyc",
             password="lol",
@@ -3802,9 +3805,9 @@ def run():
             phone="+10000000000",
             admin_role=2
         ),
-        SettingsAdmin(
-            admin_id=5
-        ),
+        # SettingsAdmin(
+        #     admin_id=5
+        # ),
     ]
     
     db.session.add_all(admin_user_demo)
