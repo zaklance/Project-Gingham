@@ -4,7 +4,7 @@ import PasswordStrengthBar from 'react-password-strength-bar';
 import PasswordChecklist from "react-password-checklist"
 import { formatPhoneNumber } from '../../utils/helpers';
 import PulseLoader from 'react-spinners/PulseLoader';
-import PhoneInput from 'react-phone-number-input'
+import PhoneInput, { isPossiblePhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 
 function Login({ handlePopup }) {
@@ -21,6 +21,7 @@ function Login({ handlePopup }) {
     const [termsConditions, setTermsConditions] = useState(false);
     const [isValid, setIsValid] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isSignUp, setIsSignUp] = useState(false);
 
     const navigate = useNavigate();
 
@@ -79,6 +80,10 @@ function Login({ handlePopup }) {
         }
         if (!isValid) {
             alert("Password does not meet requirements.");
+            return;
+        }
+        if (!isPossiblePhoneNumber(signupPhone)) {
+            alert("Not a possible phone number");
             return;
         }
         if (!termsConditions) {
@@ -148,7 +153,7 @@ function Login({ handlePopup }) {
             <div className='wrapper'>
                 {/* <h1>WELCOME TO GINGHAM!</h1> */}
                 <div>
-                    <form onSubmit={handleLogin} className="form">
+                    <form className="form">
                         <h2 className='margin-b-24'>Login</h2>
                         <div className="form-group form-login">
                             <label>Email:</label>
@@ -173,8 +178,9 @@ function Login({ handlePopup }) {
                                 <i className={showPassword.pw1 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw1')}>&emsp;</i>
                             </div>
                         </div>
-                        <div className='flex-center-align flex-space-around margin-t-16'>
-                            <button className='btn btn-login' type="submit">Login</button>
+                        <div className='flex-center-align flex-center flex-gap-16 margin-t-16'>
+                            <button className='btn-login' onClick={handleLogin}>Login</button>
+                            {!isSignUp && <button className='btn-login' onClick={() => setIsSignUp(!isSignUp)}>Signup</button>}
                             <p className="forgot-password" onClick={() => {
                                 navigate('/admin/password-reset-request');
                                 window.location.reload();
@@ -184,138 +190,143 @@ function Login({ handlePopup }) {
                         </div>
                     </form>
                 </div>
-                <div>
-                    <form onSubmit={handleSignup} className="form min-width">
-                        <h2 className='margin-b-24'>Signup</h2>
-                        <div className="form-group form-login">
-                            <label>Email: </label>
-                            <input
-                                type="email"
-                                value={signupEmail}
-                                placeholder="enter your email"
-                                onChange={(event) => setSignupEmail(event.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="form-group form-login">
-                            <label></label>
-                            <input
-                                type="email"
-                                value={signupConfirmEmail}
-                                placeholder="re-enter your email"
-                                onChange={(event) => setSignupConfirmEmail(event.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="form-group form-login">
-                            <label>Password: </label>
-                            <div className='badge-container-strict'>
+                {isSignUp === true && (
+                    <div>
+                        <form className="form min-width">
+                            <h2 className='margin-b-24'>Signup</h2>
+                            <div className="form-group form-login">
+                                <label>Email: </label>
                                 <input
-                                    type={showPassword.pw2 ? 'text' : 'password'}
-                                    value={signupPassword}
-                                    placeholder='enter a password'
-                                    onChange={(event) => setSignupPassword(event.target.value)}
+                                    type="email"
+                                    value={signupEmail}
+                                    placeholder="enter your email"
+                                    onChange={(event) => setSignupEmail(event.target.value)}
                                     required
                                 />
-                                <i className={showPassword.pw2 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw2')}>&emsp;</i>
                             </div>
-                        </div>
-                        <div className="form-group form-login">
-                            <label></label>
-                            <div className='badge-container-strict'>
+                            <div className="form-group form-login">
+                                <label></label>
                                 <input
-                                    type={showPassword.pw3 ? 'text' : 'password'}
-                                    value={signupConfirmPassword}
-                                    placeholder="re-enter your password"
-                                    onChange={(event) => setSignupConfirmPassword(event.target.value)}
+                                    type="email"
+                                    value={signupConfirmEmail}
+                                    placeholder="re-enter your email"
+                                    onChange={(event) => setSignupConfirmEmail(event.target.value)}
                                     required
                                 />
-                                <i className={showPassword.pw3 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw3')}>&emsp;</i>
                             </div>
-                            <PasswordChecklist
-                                className='password-checklist'
-                                style={{ padding: '0 12px' }}
-                                rules={["minLength", "specialChar", "number", "capital", "match",]}
-                                minLength={5}
-                                value={signupPassword}
-                                valueAgain={signupConfirmPassword}
-                                onChange={(isValid) => { setIsValid(isValid) }}
-                                iconSize={14}
-                                validColor='#00bda4'
-                                invalidColor='#ff4b5a'
-                            /><PasswordStrengthBar className='password-bar' minLength={5} password={signupPassword} />
-                        </div>
-                        <div className="form-group form-login">
-                            <label>First Name: </label>
-                            <input
-                                type="text"
-                                value={signupFirstName}
-                                placeholder='enter your first name'
-                                onChange={(event) => setSignupFirstName(event.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className='form-group form-login'>
-                            <label>Last Name: </label>
-                            <input
-                                type="text"
-                                value={signupLastName}
-                                placeholder='enter your last name'
-                                onChange={(event) => setSignupLastName(event.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="form-group form-login">
-                            <label>Phone:</label>
-                            <PhoneInput
-                                className='input-phone margin-l-8'
-                                countryCallingCodeEditable={false}
-                                withCountryCallingCode
-                                country='US'
-                                placeholder="enter your phone number"
-                                value={signupPhone}
-                                onChange={(event) => setSignupPhone(event)}
-                            />
-                            {/* <input 
-                                type="text"
-                                value={signupPhone}
-                                placeholder='enter your phone number'
-                                onChange={(event => setSignupPhone(formatPhoneNumber(event.target.value)))}
-                                required
-                            /> */}
-                        </div>
-                        <div className='flex-center margin-t-16'>
-                            {isLoading ? (
-                                <PulseLoader
-                                    className='margin-t-12'
-                                    color={'#ff806b'}
-                                    size={10}
-                                    aria-label="Loading Spinner"
-                                    data-testid="loader"
-                                />
-                            ) : (
-                                <div className='flex-center-align flex-space-around margin-t-16 flex-gap-16'>
-                                    <button className='btn-login' type="submit">Signup</button>
-                                    <div className='flex-start flex-center-align'>
-                                        <input
-                                            type='checkbox'
-                                            name="terms"
-                                            value={termsConditions}
-                                            onChange={(event) => setTermsConditions(!termsConditions)}
-                                            className='scale-fix-125'
-                                        />
-                                        <p className="forgot-password" onClick={() => {
-                                            navigate('/terms-service');
-                                            window.location.reload();
-                                        }}>
-                                            Terms & Conditions
-                                        </p>
-                                    </div>
+                            <div className="form-group form-login">
+                                <label>Password: </label>
+                                <div className='badge-container-strict'>
+                                    <input
+                                        type={showPassword.pw2 ? 'text' : 'password'}
+                                        value={signupPassword}
+                                        placeholder='enter a password'
+                                        onChange={(event) => setSignupPassword(event.target.value)}
+                                        required
+                                    />
+                                    <i className={showPassword.pw2 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw2')}>&emsp;</i>
                                 </div>
-                            )}
-                        </div>
-                    </form>
-                </div>
+                            </div>
+                            <div className="form-group form-login">
+                                <label></label>
+                                <div className='badge-container-strict'>
+                                    <input
+                                        type={showPassword.pw3 ? 'text' : 'password'}
+                                        value={signupConfirmPassword}
+                                        placeholder="re-enter your password"
+                                        onChange={(event) => setSignupConfirmPassword(event.target.value)}
+                                        required
+                                    />
+                                    <i className={showPassword.pw3 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw3')}>&emsp;</i>
+                                </div>
+                                <PasswordChecklist
+                                    className='password-checklist'
+                                    style={{ padding: '0 12px' }}
+                                    rules={["minLength", "specialChar", "number", "capital", "match",]}
+                                    minLength={5}
+                                    value={signupPassword}
+                                    valueAgain={signupConfirmPassword}
+                                    onChange={(isValid) => { setIsValid(isValid) }}
+                                    iconSize={14}
+                                    validColor='#00bda4'
+                                    invalidColor='#ff4b5a'
+                                />
+                                <PasswordStrengthBar className='password-bar' minLength={5} password={signupPassword} />
+                            </div>
+                            <div className="form-group form-login">
+                                <label>First Name: </label>
+                                <input
+                                    type="text"
+                                    value={signupFirstName}
+                                    placeholder='enter your first name'
+                                    onChange={(event) => setSignupFirstName(event.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className='form-group form-login'>
+                                <label>Last Name: </label>
+                                <input
+                                    type="text"
+                                    value={signupLastName}
+                                    placeholder='enter your last name'
+                                    onChange={(event) => setSignupLastName(event.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group form-login">
+                                <label>Phone:</label>
+                                <PhoneInput
+                                    className='input-phone margin-l-8'
+                                    countryCallingCodeEditable={false}
+                                    withCountryCallingCode
+                                    country='US'
+                                    defaultCountry='US'
+                                    placeholder="enter your phone number"
+                                    value={signupPhone}
+                                    onChange={(event) => setSignupPhone(event)}
+                                />
+                                {/* <input 
+                                    type="text"
+                                    value={signupPhone}
+                                    placeholder='enter your phone number'
+                                    onChange={(event => setSignupPhone(formatPhoneNumber(event.target.value)))}
+                                    required
+                                /> */}
+                            </div>
+                            <div className='flex-center margin-t-16'>
+                                {isLoading ? (
+                                    <PulseLoader
+                                        className='margin-t-12'
+                                        color={'#ff806b'}
+                                        size={10}
+                                        aria-label="Loading Spinner"
+                                        data-testid="loader"
+                                    />
+                                ) : (
+                                    <div className='flex-center-align flex-space-around margin-t-16 flex-gap-16'>
+                                        <button className='btn-login' onClick={handleSignup}>Signup</button>
+                                        <button className='btn-login' onClick={() => setIsSignUp(false)}>Cancel</button>
+                                        <div className='flex-start flex-center-align'>
+                                            <input
+                                                type='checkbox'
+                                                name="terms"
+                                                value={termsConditions}
+                                                onChange={(event) => setTermsConditions(!termsConditions)}
+                                                className='scale-fix-125'
+                                            />
+                                            <p className="forgot-password" onClick={() => {
+                                                navigate('/terms-service');
+                                                window.location.reload();
+                                            }}>
+                                                Terms & Conditions
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </form>
+                    </div>
+                )}
             </div>
         </div>
     );

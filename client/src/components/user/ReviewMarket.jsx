@@ -17,7 +17,7 @@ function ReviewMarket({ market }) {
     const [reports, setReports] = useState([]);
     const [hotReviews, setHotReviews] = useState([]);
     const [showFilters, setShowFilters] = useState(false);
-    const [filterNew, setFilterNew] = useState(false);
+    const [filterNew, setFilterNew] = useState(true);
     const [filterOld, setFilterOld] = useState(false);
     const [filterUp, setFilterUp] = useState(false);
     const [filterDown, setFilterDown] = useState(false);
@@ -413,7 +413,7 @@ function ReviewMarket({ market }) {
 
     return (
         <>
-            <div className='flex-space-between flex-center-align margin-b-16 margin-t-24'>
+            <div id='reviews' className='flex-space-between flex-center-align margin-b-16 margin-t-24'>
                 <h2>Reviews</h2>
                 <div>
                     <button className='btn btn-filter-small' onClick={handleDropDownFilters}>&#9776;</button>
@@ -425,6 +425,7 @@ function ReviewMarket({ market }) {
                                     type="radio"
                                     name="filters"
                                     value={true}
+                                    checked={filterNew}
                                     onChange={handleFilterNew}
                                 />
                                 <label htmlFor='new'>Newest</label>
@@ -434,6 +435,7 @@ function ReviewMarket({ market }) {
                                     type="radio"
                                     name="filters"
                                     value={true}
+                                    checked={filterOld}
                                     onChange={handleFilterOld}
                                 />
                                 <label htmlFor='old'>Oldest</label>
@@ -443,6 +445,7 @@ function ReviewMarket({ market }) {
                                     type="radio"
                                     name="filters"
                                     value={true}
+                                    checked={filterUp}
                                     onChange={handleFilterUp}
                                 />
                                 <label htmlFor='upVotes'>Up-Votes</label>
@@ -452,6 +455,7 @@ function ReviewMarket({ market }) {
                                     type="radio"
                                     name="filters"
                                     value={true}
+                                    checked={filterDown}
                                     onChange={handleFilterDown}
                                 />
                                 <label htmlFor='downVotes'>Down-Votes</label>

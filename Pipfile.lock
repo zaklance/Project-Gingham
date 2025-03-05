@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "37efac40a90cae75dfedfd63dad4d0aa778e02cbd6ad711aa4b5a103bdf7fcb8"
+            "sha256": "aab557eeb46d93494bc91a221a9b174433f16ff40e649a0e42df54a64bdf11ee"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -756,6 +756,15 @@
             "markers": "python_version < '3.11' and platform_python_implementation == 'CPython'",
             "version": "==3.1.1"
         },
+        "gunicorn": {
+            "hashes": [
+                "sha256:ec400d38950de4dfd418cff8328b2c8faed0edb0d517d3394e457c317908ca4d",
+                "sha256:f014447a0101dc57e294f6c18ca6b40227a4c90e9bdb586042628030cba004ec"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.7'",
+            "version": "==23.0.0"
+        },
         "idna": {
             "hashes": [
                 "sha256:12f65c9b470abda6dc35cf8e63cc574b1c52b11df2c86030af0ac09b01b13ea9",
@@ -975,6 +984,14 @@
             ],
             "markers": "python_version >= '3.8'",
             "version": "==6.1.0"
+        },
+        "packaging": {
+            "hashes": [
+                "sha256:09abb1bccd265c01f4a3aa3f7a7db064b36514d2cba19a2f694fe6150451a759",
+                "sha256:c228a6dc5e932d346bc5739379109d49e8853dd8223571c7c5b55260edc0b97f"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==24.2"
         },
         "pillow": {
             "hashes": [
@@ -1344,12 +1361,12 @@
         },
         "stripe": {
             "hashes": [
-                "sha256:3b2cd47ed3002328249bff5cacaee38d5e756c3899ab425d3bd07acdaf32534a",
-                "sha256:bc3e0358ffc23d5ecfa8aafec1fa4f048ee8107c3237bcb00003e68c8c96fa02"
+                "sha256:0ced7cce23a6cb1a393c86a1f7f9435c9d83ae7cbd556362868caf62cb44a92c",
+                "sha256:6e6cf09ebb6d5fc2d708401cb8868fd7bff987a6d09a0433caaa92c62f97dbc5"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.6'",
-            "version": "==11.5.0"
+            "version": "==11.6.0"
         },
         "tldextract": {
             "hashes": [

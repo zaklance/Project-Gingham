@@ -11,6 +11,7 @@ import AdminLoginPopup from './components/admin/AdminLoginPopup.jsx';
 import { jwtDecode } from 'jwt-decode';
 import BrowserTimezone from './components/BrowserTimezone.jsx';
 import { ToastContainer, Slide } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 function App() {
     const location = useLocation();
@@ -34,6 +35,54 @@ function App() {
     useEffect(() => {
         globalThis.localStorage.setItem('cartItems', JSON.stringify(cartItems));
     }, [cartItems]);
+
+    useEffect(() => {
+        const checkExpiredItems = () => {
+            const currentTime = new Date();
+            // console.log("Current Time:", currentTime);
+        
+            const updatedCart = cartItems.filter(cartItem => {
+                // Merge sale_date with pickup_end time
+                const pickupEndTime = new Date(`${cartItem.sale_date} ${cartItem.pickup_end}`);
+                
+                // Debug logs
+                // console.log(`Checking item: ${cartItem.vendor_name}, Sale Date: ${cartItem.sale_date}, Pickup End: ${pickupEndTime}`);
+                
+                if (isNaN(pickupEndTime)) {
+                    console.error("Invalid Date detected:", cartItem.pickup_end);
+                    return true; // Keep item to avoid unintended removals
+                }
+        
+                const timeDiff = (pickupEndTime - currentTime) / 60000; // Convert ms to minutes
+                // console.log(`Time difference for ${cartItem.vendor_name}: ${timeDiff} minutes`);
+        
+                if (timeDiff <= 1) {
+                    // console.log(`Removing item: ${cartItem.vendor_name}`);
+                    toast.warning(`Removing the basket by ${cartItem.vendor_name}, the pickup time has ended.`, {
+                        autoClose: 8000,
+                    });
+                    return false; // Remove expired item
+                }
+                return true; // Keep valid item
+            });
+        
+            if (updatedCart.length !== cartItems.length) {
+                // console.log("Cart updated! New Cart:", updatedCart);
+                setCartItems(updatedCart);
+                setAmountInCart(updatedCart.length);
+                globalThis.localStorage.setItem('cartItems', JSON.stringify(updatedCart));
+                globalThis.localStorage.setItem('amountInCart', JSON.stringify(updatedCart.length));
+            }
+        };
+        
+    
+        checkExpiredItems();
+        // Check every minute
+        const interval = setInterval(checkExpiredItems, 60000);
+    
+        return () => clearInterval(interval);
+    }, [cartItems]);
+    
 
     const handlePopup = () => {
         setIsPopup(!isPopup);

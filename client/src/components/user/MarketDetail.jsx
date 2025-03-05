@@ -243,8 +243,7 @@ function MarketDetail ({ match }) {
             }];
             setCartItems(updatedCartItems);
             setAmountInCart(updatedCartItems.length);
-            setMarketBaskets(prev => prev.filter(item => item.id !== basketInCart.id)
-            );
+            setMarketBaskets(prev => prev.filter(item => item.id !== basketInCart.id));
             toast.success('Added to cart!', {
                 autoClose: 2000,
             });
@@ -363,32 +362,42 @@ function MarketDetail ({ match }) {
             handlePopup();
             return;
         }
-
+    
         try {
+            const payload = {
+                subject: 'basket-notify',
+                message: `A user is interested in buying a basket at ${market.name}, consider adding more for sale.`,
+                link: "/vendor/dashboard?tab=baskets",
+                user_id: userId,
+                market_id: market?.id, // Ensure market.id is defined
+                vendor_id: vendor?.id,  // Ensure vendor.id is defined
+            };
+    
+            console.log("Sending request with payload:", payload);
+    
             const response = await fetch('/api/notify-me-for-more-baskets', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    subject: 'basket-notify',
-                    message: `A user is interested in buying a basket at ${market.name}, consider adding more for sale.`,
-                    link: "/vendor/dashboard?tab=baskets",
-                    user_id: userId,
-                    market_id: market.id,
-                    vendor_id: vendor.id,
-                }),
+                body: JSON.stringify(payload),
             });
-
+    
+            let responseData;
+            try {
+                responseData = await response.json(); // Try to parse JSON
+            } catch (error) {
+                responseData = null; // Handle empty or non-JSON response
+            }
+    
             if (response.ok) {
-                const responseData = await response.json();
                 toast.success(`Your request has been sent to ${vendor.name}!`, {
                     autoClose: 5000,
                 });
             } else {
-                const errorData = await response.json();
-                toast.error(`Error sending request: ${errorData.message || 'Unknown error'}`, {
+                console.error("Error Response:", responseData);
+                toast.error(`Error sending request: ${responseData?.message || 'Unknown error'}`, {
                     autoClose: 4000,
                 });
             }
@@ -435,14 +444,11 @@ function MarketDetail ({ match }) {
                 <button onClick={handleBackButtonClick} className='btn btn-small m-hidden'>Back</button>
             </div>
             <div className={events.length < 1 ? 'flex-start flex-start-align flex-gap-16' : 'flex-start flex-gap-16'}>
-                {events.length > 0 ? (
+                {events.length > 0 && (
                     <h2 className='color-4 margin-t-16'>Events:</h2>
-                ) : (
-                    <>
-                    </>
                 )}
                 <div className='flex-wrap'>
-                    {events.length > 0 ? (
+                    {events.length > 0 && (
                         events.map((event, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                     <div className='flex-start flex-center-align flex-gap-16 m-flex-wrap'>
@@ -457,9 +463,6 @@ function MarketDetail ({ match }) {
                                     </div>
                             </div>
                         ))
-                    ) : (
-                        <>
-                        </>
                     )}
                 </div>
             </div>
@@ -511,7 +514,6 @@ function MarketDetail ({ match }) {
                     </Map>
                 </div>
             </div>
-            <p>{market.description}</p>
             <div className='flex-start market-details margin-t-8'>
                 <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}, {market.city}, {market.state}
@@ -539,7 +541,7 @@ function MarketDetail ({ match }) {
                     </select>
                 )}
                 {selectedDay && (
-                    <h4>Hours: {timeConverter(selectedDay.hour_start)} - {timeConverter(selectedDay.hour_end)}</h4>
+                    <h4>{timeConverter(selectedDay.hour_start)} - {timeConverter(selectedDay.hour_end)}</h4>
                 )}
             </div>
             <div className='flex-start'>
@@ -553,6 +555,12 @@ function MarketDetail ({ match }) {
                         )
                     )}
             </div>
+            {market?.bio && (
+                <div className='flex-start flex-bottom-align m-flex-wrap'>
+                    <h4>About:&emsp;</h4>
+                    <p>{market.bio}</p>
+                </div>
+            )}
             <div id="vendors" className='flex-space-between margin-t-24'>
                 <h2>Vendors:</h2>
                 <select 
@@ -643,7 +651,6 @@ function MarketDetail ({ match }) {
             )}
             </div>
             <ReviewMarket market={market} />
-
         </div>
     );
 };

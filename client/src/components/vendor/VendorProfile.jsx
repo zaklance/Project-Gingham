@@ -402,6 +402,7 @@ function VendorProfile () {
         if (!vendorEditMode) {
             setTempVendorData({
                 name: vendorData.name,
+                website: vendorData.website,
                 products: vendorData.products, 
                 bio: vendorData.bio,
                 city: vendorData.city,
@@ -915,6 +916,7 @@ function VendorProfile () {
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_market_schedule_change} onChange={() => handleSwitchChange('site_market_schedule_change')} color={'secondary'} />} label="Market changes schedule"/>
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_basket_sold} onChange={() => handleSwitchChange('site_basket_sold')} color={'secondary'} />} label="When a basket is sold"/>
                                         {/* <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_new_blog} onChange={() => handleSwitchChange('site_new_blog')} color={'secondary'} />} label="A new blog has been posted"/> */}
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_new_statement} onChange={() => handleSwitchChange('site_new_statement')} color={'secondary'} />} label="A new statement is available"/>
                                     </FormGroup>
                                 )}
                                 {activeTab === 'email' && (
@@ -923,6 +925,7 @@ function VendorProfile () {
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_market_schedule_change} onChange={() => handleSwitchChange('email_market_schedule_change')} color={'secondary'} />} label="Market changes schedule" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_basket_sold} onChange={() => handleSwitchChange('email_basket_sold')} color={'secondary'} />} label="When a basket is sold" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_new_blog} onChange={() => handleSwitchChange('email_new_blog')} color={'secondary'} />} label="A new blog has been posted" />
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_new_statement} onChange={() => handleSwitchChange('email_new_statement')} color={'secondary'} />} label="A new statement is available" />
                                     </FormGroup>
                                 )}
                                 {activeTab === 'text' && (
@@ -938,10 +941,24 @@ function VendorProfile () {
                                         {filteredMarketDays.length > 0 ? (
                                             <select id="marketSelect" name="market" onChange={(e) => handleMarketDaySelect(e)}>
                                                 <option value="">Select Market</option>
-                                                {filteredMarketDays.map((marketDay, index) => (
-                                                    <option key={index} value={marketDay.id}>
-                                                        {marketDay.markets.name} on {weekDay[marketDay.day_of_week]}s
-                                                    </option>
+                                                {filteredMarketDays
+                                                    .sort((a, b) => {
+                                                        const nameA = a.markets.name.toLowerCase();
+                                                        const nameB = b.markets.name.toLowerCase();
+
+                                                        const numA = nameA.match(/^\D*(\d+)/)?.[1];
+                                                        const numB = nameB.match(/^\D*(\d+)/)?.[1];
+
+                                                        if (numA && numB && nameA[0] >= "0" && nameA[0] <= "9" && nameB[0] >= "0" && nameB[0] <= "9") {
+                                                            return parseInt(numA) - parseInt(numB);
+                                                        }
+
+                                                        return nameA.localeCompare(nameB, undefined, { numeric: true });
+                                                    })
+                                                    .map((marketDay, index) => (
+                                                        <option key={index} value={marketDay.id}>
+                                                            {marketDay.markets.name} on {weekDay[marketDay.day_of_week]}s
+                                                        </option>
                                                 ))}
                                             </select>
                                         ) : (
@@ -994,6 +1011,16 @@ function VendorProfile () {
                                             type="text"
                                             name="name"
                                             value={tempVendorData ? tempVendorData.name : ''}
+                                            onChange={handleVendorInputChange}
+                                        />
+                                    </div>
+                                    <div className='form-group'>
+                                        <label>Website</label>
+                                        <input 
+                                            type="text"
+                                            name="website"
+                                            placeholder='Include https://'
+                                            value={tempVendorData ? tempVendorData.website : ''}
                                             onChange={handleVendorInputChange}
                                         />
                                     </div>
@@ -1150,6 +1177,10 @@ function VendorProfile () {
                                                     <tr>
                                                         <td className='cell-title'>Name:</td>
                                                         <td className='cell-text'>{vendorData ? vendorData.name : ' Loading...'}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className='cell-title'>Website:</td>
+                                                        <td className='cell-text'>{vendorData ? vendorData.website : ' Loading...'}</td>
                                                     </tr>
                                                     <tr>
                                                         <td className='cell-title'>Product:</td>

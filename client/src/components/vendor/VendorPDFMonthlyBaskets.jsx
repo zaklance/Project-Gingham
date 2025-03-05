@@ -46,7 +46,7 @@ const ReceiptDocument = ({ filteredBaskets, year, month }) => {
                 <Text style={styles.bold}>Items Purchased:</Text>
                 <View style={styles.divider} />
 
-                {/* ✅ Prevent mapping error by ensuring `basketItems` is always an array */}
+                {/* Prevent mapping error by ensuring `basketItems` is always an array */}
                 {filteredBaskets.length > 0 && (
                     filteredBaskets.map((item, index) => (
                         <View key={index} wrap={false}>

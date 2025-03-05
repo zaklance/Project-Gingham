@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useOutletContext } from 'react-router-dom';
 import { formatDate } from '../../utils/helpers';
 import { weekDay } from '../../utils/common';
-import { Annotation, ColorScheme, FeatureVisibility, Map, Marker } from 'mapkit-react';
+import { ColorScheme, FeatureVisibility, Map } from 'mapkit-react';
 import MarketCard from './MarketCard';
 import MapAnnotation from './MapAnnotation';
 
@@ -19,7 +19,6 @@ function Markets() {
     const [filterZA, setFilterZA] = useState(false);
     const [filterLocation, setFilterLocation] = useState(false);
     const [filterAddress, setFilterAddress] = useState(false);
-    const [filterRadio, setFilterRadio] = useState('az');
     const [address, setAddress] = useState("");
     const [selectedDay, setSelectedDay] = useState('');
     const [isInSeason, setIsInSeason] = useState(false);
@@ -27,7 +26,6 @@ function Markets() {
     const [showAddressDropdown, setShowAddressDropdown] = useState(false);
     const [resultCoordinates, setResultCoordinates] = useState();
     const [userCoordinates, setUserCoordinates] = useState();
-    const [markerViews, setMarkerViews] = useState({});
     const [marketCoordinates, setMarketCoordinates] = useState([]);
     const [showGingham, setShowGingham] = useState(true);
     const [showVendors, setShowVendors] = useState(true);
@@ -84,57 +82,6 @@ function Markets() {
             console.error('Failed to decode JWT:', error);
             return null;
         }
-    };
-
-    const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
-
-    const handleMarkerClickOn = (id) => {
-        setMarkerViews((prev) => {
-            const updatedViews = Object.keys(prev).reduce((acc, key) => {
-                acc[key] = false;
-                return acc;
-            }, {});
-
-            updatedViews[id] = true;
-            return updatedViews;
-        });
-    };
-
-    const handleMarkerClickOff = (id) => {
-        setMarkerViews((prev) => ({
-            ...prev,
-            [id]: false,
-        }));
-        // handleMarkerHoverOff(id)
-    };
-
-    const determineSeason = (market) => {
-        const today = new Date();
-        const seasonStart = new Date(market.season_start);
-        const seasonEnd = new Date(market.season_end);
-        const inSeason = market.year_round || (today >= seasonStart && today <= seasonEnd);
-
-        if (inSeason) {
-            return true
-        } else {
-            return false
-        }
-    }
-
-    const determineVendors = (market) => {
-        return market.market_days?.some(marketDay => 
-            marketDay.vendor_markets && marketDay.vendor_markets.length > 0
-        );
-    };
-
-    const determineFlagship = (market) => {
-        return market.is_flagship === true
-    };
-
-    const isFlagship = (market) => {
-        return market.some(marketDay => 
-            marketDay.is_flagship === true
-        );
     };
 
     useEffect(() => {
@@ -370,39 +317,6 @@ function Markets() {
             setResultCoordinates(null)
         }
     }
-
-    const handleFiltersAll = (event) => {
-        if (event.target.value === "filterAZ") {
-            setFilterAZ(!filterAZ)
-            setFilterZA(false)
-            setFilterLocation(false)
-            setFilterAddress(false)
-            setAddress('')
-            setResultCoordinates(null)
-        }
-        if (event.target.value === "filterZA") {
-            setFilterAZ(false)
-            setFilterZA(!filterZA)
-            setFilterLocation(false)
-            setFilterAddress(false)
-            setAddress()
-            setResultCoordinates(null)
-        }
-        if (event.target.value === "filterLocation") {
-            setFilterAZ(false)
-            setFilterZA(false)
-            setFilterLocation(true)
-            setFilterAddress(false)
-            setAddress('')
-        }
-        if (event.target.value === "filterAddress") {
-            setFilterAZ(false)
-            setFilterZA(false)
-            setFilterLocation(false)
-            setFilterAddress(!filterAddress)
-            setResultCoordinates(null)
-        }
-    }
     
     const toggleRadio = () => {
         if (!filterAddress) {
@@ -475,6 +389,37 @@ function Markets() {
             return R * c; // Distance in miles
         }
     }
+
+    const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
+
+    const determineSeason = (market) => {
+        const today = new Date();
+        const seasonStart = new Date(market.season_start);
+        const seasonEnd = new Date(market.season_end);
+        const inSeason = market.year_round || (today >= seasonStart && today <= seasonEnd);
+
+        if (inSeason) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    const determineVendors = (market) => {
+        return market.market_days?.some(marketDay => 
+            marketDay.vendor_markets && marketDay.vendor_markets.length > 0
+        );
+    };
+
+    const determineFlagship = (market) => {
+        return market.is_flagship === true
+    };
+
+    const isFlagship = (market) => {
+        return market.some(marketDay => 
+            marketDay.is_flagship === true
+        );
+    };
 
     const sortedMarketsResults = useMemo(() => {
         let results = [...filteredMarketsResults];
@@ -555,28 +500,35 @@ function Markets() {
                                 longitudeDelta: 0.04
                             }}
                             colorScheme={ColorScheme.Auto}
-                            showsScale={FeatureVisibility.Visible}
+                            // showsScale={FeatureVisibility.Visible}
                             showsUserLocation={true}
+                            showsUserLocationControl={true}
                             tracksUserLocation={true}
                             onUserLocationChange={event => {setUserCoordinates({ 'lat': event.coordinate.latitude, 'lng': event.coordinate.longitude }); setFilterLocation(true)}}
                         >
-                            {marketCoordinates.map((market) => (
-                                <>
-                                        <>
-                                            {determineFlagship(market) ? (
-                                                <MapAnnotation key={`marker-${market.id}`} market={market} markerType={"-flag"} showMarker={showFlagship} />
-                                            ) : (!determineSeason(market)
-                                            ) ? (
-                                                <MapAnnotation key={`marker-${market.id}`} market={market} markerType={"-off-season"} showMarker={showOffSeason} />
-                                            ) : (!determineVendors(market)
-                                            ) ? (
-                                                <MapAnnotation key={`marker-${market.id}`} market={market} markerType={"-vendors"} showMarker={showVendors} />
-                                            ) : (
-                                                <MapAnnotation key={`marker-${market.id}`} market={market} markerType={""} showMarker={showGingham} />
-                                            )}
-                                        </>
-                                </>
-                            ))}
+                            {marketCoordinates.map((market) => {
+                                const markerType = determineFlagship(market) 
+                                    ? "-flag" 
+                                    : !determineSeason(market) 
+                                    ? "-off-season" 
+                                    : !determineVendors(market) 
+                                    ? "-vendors" 
+                                    : "";
+
+                                return (
+                                    <MapAnnotation 
+                                        key={`marker-${market.id}`} 
+                                        market={market} 
+                                        markerType={markerType}
+                                        showMarker={
+                                            determineFlagship(market) ? showFlagship :
+                                            !determineSeason(market) ? showOffSeason :
+                                            !determineVendors(market) ? showVendors : 
+                                            showGingham
+                                        } 
+                                    />
+                                );
+                            })}
                         </Map>
                     </div>
                     <div className='box-key m-flex-wrap width-98 margin-auto'>
@@ -647,7 +599,7 @@ function Markets() {
                                                 .map(item => (
                                                     <li
                                                         className="search-results"
-                                                        key={item.id}
+                                                        key={`filters-${item.id}`}
                                                         onClick={() => {
                                                             setQuery(item.name);
                                                             setShowDropdown(false);
@@ -752,7 +704,7 @@ function Markets() {
                                             <select className='select-dropdown select-blue' value={selectedDay} onChange={handleDayChange}>
                                                 <option value="">Days Open</option>
                                                 {Array.isArray(weekDay) && weekDay.map((product, index) => (
-                                                    <option key={index} value={index}>
+                                                    <option key={`day-${index}`} value={index}>
                                                         {product}
                                                     </option>
                                                 ))}
@@ -770,7 +722,7 @@ function Markets() {
                 <div className="market-cards-container box-scroll-large margin-t-24">
                     {sortedMarketsResults
                         .map((marketData) => (
-                            <MarketCard key={marketData.id} marketData={marketData} user={user} haversineDistance={haversineDistance} resultCoordinates={resultCoordinates} userCoordinates={userCoordinates} filterAddress={filterAddress} />
+                            <MarketCard key={`market-${marketData.id}`} marketData={marketData} user={user} haversineDistance={haversineDistance} resultCoordinates={resultCoordinates} userCoordinates={userCoordinates} filterAddress={filterAddress} />
                     ))}
                 </div>
             </div>
