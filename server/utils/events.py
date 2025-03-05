@@ -30,7 +30,6 @@ def time_converter(time24):
 @listens_for(VendorFavorite, 'after_insert')
 def track_vendor_favorite(mapper, connection, target):
     try:
-        # print(f"New favorite detected: User ID={target.user_id}, Vendor ID={target.vendor_id}")
 
         # Retrieve the vendor
         vendor = connection.execute(
@@ -521,11 +520,11 @@ def schedule_blog_notifications(mapper, connection, target):
                 subject="New Blog Post Alert!",
                 message=f"A new blog post, {target.title}, has been published. Check it out!",
                 link=f"/#blog",
-                user_id=recipient.id,  # Only `User` and `AdminUser`
+                user_id=user.id,
                 created_at=datetime.utcnow(),
                 is_read=False
             )
-            for recipient in users + admins
+            for user in users
         ]
 
         # Prepare vendor notifications separately
@@ -533,12 +532,25 @@ def schedule_blog_notifications(mapper, connection, target):
             VendorNotification(
                 subject="New Blog Post Alert!",
                 message=f"A new blog post, {target.title}, has been published. Check it out!",
-                link=f"/vendor#blgo",
+                link=f"/vendor#blog",
                 vendor_id=vendor_user.id,
                 created_at=datetime.utcnow(),
                 is_read=False
             )
             for vendor_user in vendor_users
+        ]
+        
+        # Prepare admin notifications separately
+        admin_notifications = [
+            AdminNotification(
+                subject="New Blog Post Alert!",
+                message=f"A new blog post, {target.title}, has been published. Check it out!",
+                link=f"/vendor#blog",
+                vendor_id=admin.id,
+                created_at=datetime.utcnow(),
+                is_read=False
+            )
+            for admin in admins
         ]
 
         # Save notifications separately
@@ -546,6 +558,8 @@ def schedule_blog_notifications(mapper, connection, target):
             session.bulk_save_objects(user_notifications)
         if vendor_notifications:
             session.bulk_save_objects(vendor_notifications)
+        if admin_notifications:
+            session.bulk_save_objects(admin_notifications)
 
         session.commit()
 
@@ -984,64 +998,79 @@ def notify_fav_market_new_baskets(mapper, connection, target):
 
 @listens_for(Basket, 'after_insert')
 def schedule_and_notify_basket_pickup(mapper, connection, target):
-    session = Session(connection)  # Use active connection session
     try:
-        # Ensure the basket has a pickup time
+        #Ensure basket has a pickup time
         if not target.pickup_start:
             print(f"Skipping notification. No pickup_time found for Basket ID {target.id}.")
             return
 
-        # Convert pickup_start (datetime.time) to full datetime object
-        pickup_datetime = datetime.combine(datetime.utcnow().date(), target.pickup_start, tzinfo=timezone.utc)
-        current_time = datetime.now(timezone.utc)
-        delay = (pickup_datetime - current_time).total_seconds()
+        #Convert pickup_start to full datetime object using today's date
+        now_utc = datetime.now(timezone.utc)  # Current UTC time
+        local_now = now_utc.astimezone()  # Convert to local time
+        today_local = local_now.date()  # Today's date in local timezone
+
+        pickup_datetime_local = datetime.combine(today_local, target.pickup_start)
+        pickup_end_local = datetime.combine(today_local, target.pickup_end)
+
+        #Calculate delay (time remaining until pickup)
+        delay = (pickup_datetime_local - local_now).total_seconds()
 
         if delay <= 0:
             print(f"Skipping notification: Pickup time for Basket ID {target.id} has already passed.")
             return
-        
+
+        print(f" Notification for Basket ID {target.id} scheduled in {delay} seconds.")
+
         def send_notification():
-            notif_session = Session(connection)
-            try:
-                basket = notif_session.query(Basket).filter_by(id=target.id).first()
-                if not basket or basket.is_picked_up:
-                    print(f"Skipping notification. Basket ID {target.id} does not exist or is already picked up.")
-                    return
+            with Session(bind=connection) as notif_session:
+                try:
+                    basket = notif_session.query(Basket).filter_by(id=target.id).first()
+                    if not basket or basket.is_picked_up:
+                        print(f"Skipping notification. Basket ID {target.id} does not exist or is already picked up.")
+                        return
 
-                user = notif_session.query(User).filter_by(id=basket.user_id).first()
-                if not user:
-                    print(f"User for Basket ID {target.id} not found. Skipping notification.")
-                    return
+                    user = notif_session.query(User).filter_by(id=basket.user_id).first()
+                    if not user:
+                        print(f"User for Basket ID {target.id} not found. Skipping notification.")
+                        return
 
-                # Check user notification settings
-                settings = notif_session.query(SettingsUser).filter_by(user_id=user.id).first()
-                if not settings or not settings.site_basket_pickup_time:
-                    print(f"User ID={user.id} has pickup notifications disabled.")
-                    return
+                    #Check user notification settings
+                    settings = notif_session.query(SettingsUser).filter_by(user_id=user.id).first()
+                    if not settings or not settings.site_basket_pickup_time:
+                        print(f"User ID={user.id} has pickup notifications disabled.")
+                        return
 
-                # Send pickup reminder notification
-                notification = UserNotification(
-                    subject="Time to Pick Up Your Basket!",
-                    message=f"Your purchased basket is ready for pickup. Don't forget to grab it by {time_converter(basket.pickup_end)}!",
-                    link=f"/user/pick-up",
-                    user_id=user.id,
-                    created_at=datetime.utcnow(),
-                    is_read=False
-                )
+                    #Convert times for notification message
+                    pickup_time_str = time_converter(pickup_datetime_local.time())
+                    pickup_end_str = time_converter(pickup_end_local.time())
+                    current_month = datetime.now().strftime("%B") 
+                    current_day = datetime.now().strftime("%d")
 
-                notif_session.add(notification)
+                    #Send pickup reminder notification
+                    notification = UserNotification(
+                        subject="Time to Pick Up Your Basket!",
+                        message=(
+                            f"Your purchased basket is ready for pickup! "
+                            f"Pick it up between {pickup_time_str} and {pickup_end_str} on {current_month} {current_day}."
+                        ),
+                        link=f"/user/pick-up",
+                        user_id=user.id,
+                        created_at=pickup_datetime_local,
+                        is_read=False
+                    )
 
-            except Exception as e:
-                print(f"Error sending basket pickup notification: {e}")
-            finally:
-                notif_session.close()
+                    notif_session.add(notification)
+                    notif_session.commit()
+                    print(f"✅ Pickup reminder sent for Basket ID={target.id}")
 
+                except Exception as e:
+                    print(f"Error sending basket pickup notification: {e}")
+
+        # Schedule notification
         Timer(delay, send_notification).start()
 
     except Exception as e:
         print(f"Error scheduling pickup notification: {e}")
-    finally:
-        session.close()
         
 @listens_for(User, 'after_insert')
 def create_user_settings(mapper, connection, target):
@@ -1117,35 +1146,32 @@ def notify_user_vendor_review_response(mapper, connection, target):
         print(f"Error notifying user about vendor review response: {e}")
     finally:
         session.close()
-    
 
 @listens_for(Market, 'after_insert')
-def notify_users_new_market_in_city(mapper, connection, target):
+def notify_users_new_market_in_state(mapper, connection, target):
     session = Session(bind=connection)
     try:
         # Retrieve users who reside in the same city as the new market
-        users_in_city = session.query(User).filter(User.city == target.city).all()
+        users_in_state = session.query(User).filter(User.state == target.state).all()
 
-        if not users_in_city:
-            print(f"No users found in city {target.city}. No notifications will be created.")
+        if not users_in_state:
+            print(f"No users found in city {target.state}. No notifications will be created.")
             return
 
         # Prepare notifications (site, email)
         notifications = []
-        for user in users_in_city:
+        for user in users_in_state:
             # Retrieve user notification settings
             settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
             if not settings:
                 print(f"No settings found for User ID={user.id}. Skipping notification.")
                 continue
 
-            message = f"A new market, {target.name}, has opened in your city! Click to explore."
-
             # Site Notification
             if settings.site_new_market_in_city:
                 notifications.append(UserNotification(
-                    subject="New Market in Your City!",
-                    message=message,
+                    subject=f"New Market in {user.state}",
+                    message=f"A new market, {target.name}, has opened in your {user.state}! Click to explore.",
                     link=f"/user/markets/{target.id}",
                     user_id=user.id,
                     created_at=datetime.utcnow(),
