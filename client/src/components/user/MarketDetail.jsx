@@ -541,7 +541,7 @@ function MarketDetail ({ match }) {
                     </select>
                 )}
                 {selectedDay && (
-                    <h4>Hours: {timeConverter(selectedDay.hour_start)} - {timeConverter(selectedDay.hour_end)}</h4>
+                    <h4>{timeConverter(selectedDay.hour_start)} - {timeConverter(selectedDay.hour_end)}</h4>
                 )}
             </div>
             <div className='flex-start'>

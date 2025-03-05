@@ -916,6 +916,7 @@ function VendorProfile () {
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_market_schedule_change} onChange={() => handleSwitchChange('site_market_schedule_change')} color={'secondary'} />} label="Market changes schedule"/>
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_basket_sold} onChange={() => handleSwitchChange('site_basket_sold')} color={'secondary'} />} label="When a basket is sold"/>
                                         {/* <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_new_blog} onChange={() => handleSwitchChange('site_new_blog')} color={'secondary'} />} label="A new blog has been posted"/> */}
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_new_statement} onChange={() => handleSwitchChange('site_new_statement')} color={'secondary'} />} label="A new statement is available"/>
                                     </FormGroup>
                                 )}
                                 {activeTab === 'email' && (
@@ -924,6 +925,7 @@ function VendorProfile () {
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_market_schedule_change} onChange={() => handleSwitchChange('email_market_schedule_change')} color={'secondary'} />} label="Market changes schedule" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_basket_sold} onChange={() => handleSwitchChange('email_basket_sold')} color={'secondary'} />} label="When a basket is sold" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_new_blog} onChange={() => handleSwitchChange('email_new_blog')} color={'secondary'} />} label="A new blog has been posted" />
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_new_statement} onChange={() => handleSwitchChange('email_new_statement')} color={'secondary'} />} label="A new statement is available" />
                                     </FormGroup>
                                 )}
                                 {activeTab === 'text' && (
