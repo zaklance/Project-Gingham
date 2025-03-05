@@ -5096,5 +5096,5 @@ def export_pdf_vendor_baskets():
         return jsonify({"error": f"Error fetching baskets: {str(e)}"}), 500
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 10000)), debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5555)), debug=True)
     # app.run(port=5555, debug=True)
