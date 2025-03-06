@@ -1537,6 +1537,7 @@ div:has(.btn-unread)>.btn-notif {
 
 .btn-market-card:hover {
   background-color: #ff8300;
+  transition: .2s;
 }
 
 .btn-basket-save {

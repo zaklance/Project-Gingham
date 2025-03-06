@@ -171,8 +171,7 @@ function Markets() {
                     .map((market) => ({
                         id: market.id,
                         name: market.name,
-                        latitude: parseFloat(market.coordinates.lat),
-                        longitude: parseFloat(market.coordinates.lng),
+                        coordinates: market.coordinates,
                         schedule: market.schedule,
                         season_start: market.season_start,
                         season_end: market.season_end,
@@ -515,7 +514,7 @@ function Markets() {
                                 longitudeDelta: 0.04
                             }}
                             colorScheme={ColorScheme.Auto}
-                            // showsScale={FeatureVisibility.Visible}
+                            showsScale={FeatureVisibility.Visible}
                             showsUserLocation={true}
                             showsUserLocationControl={true}
                             tracksUserLocation={true}
