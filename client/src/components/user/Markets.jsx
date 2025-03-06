@@ -31,6 +31,7 @@ function Markets() {
     const [showVendors, setShowVendors] = useState(true);
     const [showOffSeason, setShowOffSeason] = useState(true);
     const [showFlagship, setShowFlagship] = useState(true);
+    const [isHover, setIsHover] = useState({});
 
     const dropdownRef = useRef(null);
     const dropdownAddressRef = useRef(null);
@@ -421,6 +422,20 @@ function Markets() {
         );
     };
 
+    const handleMarkerHoverOn = (id) => {
+        setIsHover((prev) => ({
+            ...prev,
+            [id]: true,
+        }));
+    };
+
+    const handleMarkerHoverOff = (id) => {
+        setIsHover((prev) => ({
+            ...prev,
+            [id]: false,
+        }));
+    };
+
     const sortedMarketsResults = useMemo(() => {
         let results = [...filteredMarketsResults];
 
@@ -517,7 +532,10 @@ function Markets() {
 
                                 return (
                                     <MapAnnotation 
-                                        key={`marker-${market.id}`} 
+                                        key={`marker-${market.id}`}
+                                        isHover={isHover}
+                                        handleMarkerHoverOn={handleMarkerHoverOn}
+                                        handleMarkerHoverOff={handleMarkerHoverOff}
                                         market={market} 
                                         markerType={markerType}
                                         showMarker={
@@ -534,35 +552,47 @@ function Markets() {
                     <div className='box-key m-flex-wrap width-98 margin-auto'>
                         {isFlagship && (
                             <div className='flex-start flex-center-align' onClick={() => setShowFlagship(!showFlagship)}>
-                                <div>
-                                    <div className={showFlagship ? "map-circle-flag" : "map-circle-flag-on"}></div>
-                                    <div className={showFlagship ? "map-inside-circle-flag" : "map-inside-circle-flag-on"}></div>
-                                    <div className={showFlagship ? "map-triangle-flag" : "map-triangle-flag-on"}></div>
+                                <div
+                                    onMouseEnter={() => handleMarkerHoverOn(1)}
+                                    onMouseLeave={() => handleMarkerHoverOff(1)}
+                                >
+                                    <div className={isHover[1] ? 'map-circle-flag-on' : showFlagship ? "map-circle-flag" : "map-circle-flag-on"}></div>
+                                    <div className={isHover[1] ? "map-inside-circle-flag-on" : showFlagship ? "map-inside-circle-flag" : "map-inside-circle-flag-on"}></div>
+                                    <div className={isHover[2] ? "map-triangle-flag-on" : showFlagship ? "map-triangle-flag" : "map-triangle-flag-on"}></div>
                                 </div>
                                 <h5 className='font-quicksand text-caps text-500 margin-l-12'>Flagship<br/>market</h5>
                             </div>
                         )}
                         <div className='flex-start flex-center-align' onClick={() => setShowGingham(!showGingham)}>
-                            <div>
-                                <div className={showGingham ? "map-circle" : "map-circle-on"}></div>
-                                <div className={showGingham ? "map-inside-circle" : "map-inside-circle-on"}></div>
-                                <div className={showGingham ? "map-triangle" : "map-triangle-on" }></div>
+                            <div
+                                onMouseEnter={() => handleMarkerHoverOn(2)}
+                                onMouseLeave={() => handleMarkerHoverOff(2)}
+                            >
+                                <div className={isHover[2] ? 'map-circle-on' : showGingham ? "map-circle" : "map-circle-on"}></div>
+                                <div className={isHover[2] ? "map-inside-circle-on" : showGingham ? "map-inside-circle" : "map-inside-circle-on"}></div>
+                                <div className={isHover[2] ? "map-triangle-on" : showGingham ? "map-triangle" : "map-triangle-on"}></div>
                             </div>
                             <h5 className='font-quicksand text-caps text-500 margin-l-12'>In season with <br/>Gingham vendors</h5>
                         </div>
                         <div className='flex-start flex-center-align' onClick={() => setShowVendors(!showVendors)}>
-                            <div>
-                                <div className={showVendors ? "map-circle-vendors" : "map-circle-vendors-on"} ></div>
-                                <div className={showVendors ? "map-inside-circle-vendors" : "map-inside-circle-vendors-on"}></div>
-                                <div className={showVendors ? "map-triangle-vendors" : "map-triangle-vendors-on"}></div>
+                            <div
+                                onMouseEnter={() => handleMarkerHoverOn(3)}
+                                onMouseLeave={() => handleMarkerHoverOff(3)}
+                            >
+                                <div className={isHover[3] ? 'map-circle-vendors-on' : showVendors ? "map-circle-vendors" : "map-circle-vendors-on"} ></div>
+                                <div className={isHover[3] ? 'map-inside-circle-vendors-on' : showVendors ? "map-inside-circle-vendors" : "map-inside-circle-vendors-on"}></div>
+                                <div className={isHover[3] ? "map-triangle-vendors-on" : showVendors ? "map-triangle-vendors" : "map-triangle-vendors-on"}></div>
                             </div>
                             <h5 className='font-quicksand text-caps text-500 margin-l-12'>In season without <br/>Gingham vendors</h5>
                         </div>
                         <div className='flex-start flex-center-align' onClick={() => setShowOffSeason(!showOffSeason)}>
-                            <div>
-                                <div className={showOffSeason ? "map-circle-off-season" : "map-circle-off-season-on"}></div>
-                                <div className={showOffSeason ? "map-inside-circle-off-season" : "map-inside-circle-off-season-on"}></div>
-                                <div className={showOffSeason ? "map-triangle-off-season" : "map-triangle-off-season-on"}></div>
+                            <div
+                                onMouseEnter={() => handleMarkerHoverOn(4)}
+                                onMouseLeave={() => handleMarkerHoverOff(4)}
+                            >
+                                <div className={isHover[4] ? 'map-circle-off-season-on' : showOffSeason ? "map-circle-off-season" : "map-circle-off-season-on"}></div>
+                                <div className={isHover[4] ? 'map-inside-circle-off-season-on' : showOffSeason ? "map-inside-circle-off-season" : "map-inside-circle-off-season-on"}></div>
+                                <div className={isHover[4] ? 'map-triangle-off-season-on' : showOffSeason ? "map-triangle-off-season" : "map-triangle-off-season-on"}></div>
                             </div>
                             <h5 className='font-quicksand text-caps text-500 margin-l-12'>Out of <br/>season</h5>
                         </div>
