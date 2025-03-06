@@ -623,7 +623,7 @@ function Profile({ marketData }) {
         <div>
             <h1>Welcome to Your Profile, {profileData.first_name}!</h1>
             <div className='box-bounding badge-container'>
-                <i className='icon-settings' onClick={handleSettingsToggle}>&emsp;</i>
+                <i className='icon-settings' title="notification settings" onClick={handleSettingsToggle}>&emsp;</i>
                 {!settingsMode ? (
                     <>
                         <h2 className='margin-b-16'>Profile Information</h2>

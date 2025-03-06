@@ -564,9 +564,9 @@ function MarketDetail ({ match }) {
                         <h4>Season: &emsp;{formatDate(market.season_start)} – {formatDate(market.season_end)}{!market.is_current && `, ${new Date().getFullYear() - 1}`}</h4>
                     ) : (
                         market.year_round === false && (!market.season_start || !market.season_end) ? (
-                            <h4>No Dates Available</h4>
+                            <h4>Season: &emsp;No Dates Available</h4>
                         ) : (
-                            <h4>Open Year Round {!market.is_current && `(${new Date().getFullYear() - 1})`}</h4>
+                            <h4>Season: &emsp;Open Year Round {!market.is_current && `(${new Date().getFullYear() - 1})`}</h4>
                         )
                     )}
             </div>

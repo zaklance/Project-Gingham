@@ -533,7 +533,7 @@ def schedule_blog_notifications(mapper, connection, target):
                 subject="New Blog Post Alert!",
                 message=f"A new blog post, {target.title}, has been published. Check it out!",
                 link=f"/vendor#blog",
-                vendor_id=vendor_user.id,
+                vendor_user_id=vendor_user.id,
                 created_at=datetime.utcnow(),
                 is_read=False
             )
@@ -545,8 +545,8 @@ def schedule_blog_notifications(mapper, connection, target):
             AdminNotification(
                 subject="New Blog Post Alert!",
                 message=f"A new blog post, {target.title}, has been published. Check it out!",
-                link=f"/vendor#blog",
-                vendor_id=admin.id,
+                link=f"/admin/profile/{admin.id}#blog",
+                admin_id=admin.id,
                 created_at=datetime.utcnow(),
                 is_read=False
             )
