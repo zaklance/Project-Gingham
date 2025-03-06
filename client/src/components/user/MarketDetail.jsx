@@ -6,6 +6,7 @@ import { timeConverter, formatEventDate, formatDate, marketDateConvert, formatPi
 import ReviewMarket from './ReviewMarket';
 import { Annotation, ColorScheme, FeatureVisibility, Map, Marker } from 'mapkit-react'
 import { toast } from 'react-toastify';
+import MapAnnotation from './MapAnnotation';
 
 function MarketDetail ({ match }) {
     const { id } = useParams();
@@ -23,7 +24,8 @@ function MarketDetail ({ match }) {
     const [marketBaskets, setMarketBaskets] = useState([]);
     const [products, setProducts] = useState([]);
     const [productList, setProductList] = useState({});
-    
+    const [isHover, setIsHover] = useState(false);
+
     const [searchParams, setSearchParams] = useSearchParams(); 
     
     const { handlePopup, amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
@@ -428,6 +430,30 @@ function MarketDetail ({ match }) {
         );
     };
 
+    const determineFlagship = (market) => {
+        return market.is_flagship === true
+    };
+
+    const isFlagship = (market) => {
+        return market.some(marketDay => 
+            marketDay.is_flagship === true
+        );
+    };
+
+    const handleMarkerHoverOn = (id) => {
+        setIsHover((prev) => ({
+            ...prev,
+            [id]: true,
+        }));
+    };
+
+    const handleMarkerHoverOff = (id) => {
+        setIsHover((prev) => ({
+            ...prev,
+            [id]: false,
+        }));
+    };
+
     if (!market) {
         return <div>Loading...</div>;
     }
@@ -486,36 +512,25 @@ function MarketDetail ({ match }) {
                         colorScheme={ColorScheme.Auto}
                         showsScale={FeatureVisibility.Visible}
                     >
-                        <Annotation
-                            latitude={marketLocation.lat}
-                            longitude={marketLocation.lng}
-                        >
-                            {!determineSeason(market) ? (
-                                <>
-                                    <div className="map-circle-off-season"></div>
-                                    <div className="map-inside-circle-off-season"></div>
-                                    <div className="map-triangle-off-season"></div>
-                                </>
-                            ) : (!determineVendors(market)
-                            ) ? (
-                                <>
-                                    <div className="map-circle-vendors"></div>
-                                    <div className="map-inside-circle-vendors"></div>
-                                    <div className="map-triangle-vendors"></div>
-                                </>
-                            ) : (
-                                <>
-                                    <div className="map-circle"></div>
-                                    <div className="map-inside-circle"></div>
-                                    <div className="map-triangle"></div>
-                                </>
-                            )}
-                        </Annotation>
+                        <MapAnnotation
+                            key={`marker-${market.id}`}
+                            isHover={isHover}
+                            handleMarkerHoverOn={handleMarkerHoverOn}
+                            handleMarkerHoverOff={handleMarkerHoverOff}
+                            market={market} 
+                            markerType={determineFlagship(market) 
+                                ? "-flag" 
+                                : !determineSeason(market) 
+                                ? "-off-season" 
+                                : !determineVendors(market) 
+                                ? "-vendors" 
+                                : ""}
+                        />
                     </Map>
                 </div>
             </div>
             <div className='flex-start market-details margin-t-8'>
-                <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
+                <h4>Location: &emsp;<a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}, {market.city}, {market.state}
                 </a></h4>
                 <button
@@ -545,13 +560,13 @@ function MarketDetail ({ match }) {
                 )}
             </div>
             <div className='flex-start'>
-                {market.year_round === false && market.season_start && market.season_end ? (
-                        <h4>Season: {formatDate(market.season_start)} – {formatDate(market.season_end)} {!market.is_current && `(${new Date().getFullYear() - 1} Season)`}</h4>
+                {market.year_round === true && market.season_start && market.season_end ? (
+                        <h4>Season: &emsp;{formatDate(market.season_start)} – {formatDate(market.season_end)}{!market.is_current && `, ${new Date().getFullYear() - 1}`}</h4>
                     ) : (
                         market.year_round === false && (!market.season_start || !market.season_end) ? (
                             <h4>No Dates Available</h4>
                         ) : (
-                            <h4>Open Year Round {!market.is_current && `(${new Date().getFullYear() - 1} Season)`}</h4>
+                            <h4>Open Year Round {!market.is_current && `(${new Date().getFullYear() - 1})`}</h4>
                         )
                     )}
             </div>
@@ -629,7 +644,7 @@ function MarketDetail ({ match }) {
                         </span>
                         ) : (
                         <span className="market-baskets d-nowrap margin-r-8">
-                            {availableBaskets.length > 0 ? `Available Baskets: ${availableBaskets.length}` : <a className="link-edit" onClick={() => handleNotifyMe(vendorDetail)}>Notify Me</a>}
+                            {availableBaskets.length > 0 ? `Available Baskets: ${availableBaskets.length}` : <a className="link-edit" title="Get notified if more baskets become available" onClick={() => handleNotifyMe(vendorDetail)}>Notify Me</a>}
                             <br />
                             {firstBasket && firstBasket.sale_date ? formatPickupText(firstBasket, timeConverter, marketDateConvert) : ""}
                         </span>

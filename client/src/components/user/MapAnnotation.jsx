@@ -8,8 +8,8 @@ function MapAnnotation({ handleMarkerHoverOn, handleMarkerHoverOff, isHover, mar
 
     return (
         <Annotation
-            latitude={market.latitude}
-            longitude={market.longitude}
+            latitude={parseFloat(market.coordinates.lat)}
+            longitude={parseFloat(market.coordinates.lng)}
             visible={showMarker}
             calloutElement={
                 <div className="marker-details">
