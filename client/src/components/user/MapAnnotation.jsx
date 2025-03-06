@@ -3,22 +3,7 @@ import { Link } from 'react-router-dom';
 import { Annotation } from 'mapkit-react';
 import { formatDate } from '../../utils/helpers';
 
-function MapAnnotation({ market, markerType, showMarker }) {
-    const [isHover, setIsHover] = useState({});
-
-    const handleMarkerHoverOn = (id) => {
-        setIsHover((prev) => ({
-            ...prev,
-            [id]: true,
-        }));
-    };
-
-    const handleMarkerHoverOff = (id) => {
-        setIsHover((prev) => ({
-            ...prev,
-            [id]: false,
-        }));
-    };
+function MapAnnotation({ handleMarkerHoverOn, handleMarkerHoverOff, isHover, market, markerType, showMarker }) {
 
 
     return (
