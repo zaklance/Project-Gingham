@@ -3359,7 +3359,7 @@ def reverse_basket_transfer():
 
         basket_id = data['basket_id']
         stripe_account_id = data['stripe_account_id']
-        reversal_amount = int(data['amount'] * 100) 
+        reversal_amount = int(data['amount'] * 100)
 
         print(f"Reversing transfer for Basket {basket_id} (Stripe ID: {stripe_account_id}) (Amount: {reversal_amount} cents)")
 
@@ -3376,7 +3376,9 @@ def reverse_basket_transfer():
             metadata={"reason": "Refunded to customer"}
         )
 
-        print(f"Reversal successful: {reversal['id']} for basket {basket_id}")
+        basket_record.is_refunded = True
+        db.session.commit()
+        print(f"✅ Updated basket {basket_id}: is_refunded = True")
 
         return jsonify({
             "id": reversal["id"],
@@ -3388,15 +3390,18 @@ def reverse_basket_transfer():
             "destination_payment_refund": reversal.get("destination_payment_refund"),
             "metadata": reversal["metadata"],
             "source_refund": reversal["source_refund"],
-            "transfer": stripe_transfer_id
+            "transfer": stripe_transfer_id,
+            "is_refunded": True
         }), 200
 
     except stripe.error.StripeError as e:
-        print(f"Stripe API Error: {e.user_message}")
+        db.session.rollback()
+        print(f"❌ Stripe API Error: {e.user_message}")
         return jsonify({'error': {'message': e.user_message}}), 400
 
     except Exception as e:
-        print(f"Unexpected Error: {str(e)}")
+        db.session.rollback()
+        print(f"❌ Unexpected Error: {str(e)}")
         return jsonify({'error': {'message': 'An unexpected error occurred.', 'details': str(e)}}), 500
 
 # @app.route('/api/refund', methods=['POST'])
