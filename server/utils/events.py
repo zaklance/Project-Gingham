@@ -546,7 +546,6 @@ def schedule_blog_notifications(mapper, connection, target):
                 subject="New Blog Post Alert!",
                 message=f"A new blog post, {target.title}, has been published. Check it out!",
                 link=f"/admin/profile/{admin.id}#blog",
-                admin_id=admin.id,
                 created_at=datetime.utcnow(),
                 is_read=False
             )

@@ -703,7 +703,7 @@ class AdminNotification(db.Model, SerializerMixin):
     message = db.Column(db.String, nullable=False)
     link = db.Column(db.String, nullable=True)
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=True)
-    admin_id = db.Column(db.Integer, db.ForeignKey('admin_users.id'), nullable=True)
+    admin_role = db.Column(db.Integer, nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
