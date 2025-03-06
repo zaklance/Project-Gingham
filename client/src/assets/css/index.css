@@ -1596,10 +1596,18 @@ button a.active {
   padding: 10px 20px 10px 20px;
 }
 
+button, .btn {
+  transition: .3s;
+}
+
+button:active, .btn:active {
+  transition: .1s;
+}
+
 button:hover {
-  background: #fffa9c;
+  background-color: #fffa9c;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
-  transition: .2s;
+  transition: all .2s;
 }
 
 button:active {
