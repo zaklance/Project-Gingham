@@ -2844,14 +2844,24 @@ def qr_codes():
             local_now = datetime.now(local_tz)
             local_midnight = local_now.replace(hour=23, minute=59, second=59, microsecond=999999)
 
-            query = query.filter(QRCode.user_id == user_id, QRCode.sale_date <= local_midnight)
+            query = query.filter(QRCode.user_id == user_id, Basket.sale_date <= local_midnight)
             qr_code_result = query.all()
             
             if qr_code_result:
                 qr_codes_list = []
                 for qr in qr_code_result:
                     qr_dict = qr.to_dict()
-                    qr_dict["sale_date"] = qr.sale_date.astimezone(local_tz).isoformat()
+
+                    basket = qr.baskets
+                    
+                    if basket and basket.sale_date:
+                        if isinstance(basket.sale_date, datetime):
+                            sale_date = basket.sale_date
+                        else:
+                            sale_date = datetime.combine(basket.sale_date, datetime.min.time())
+                        
+                        qr_dict["sale_date"] = sale_date.astimezone(local_tz).isoformat()
+
                     qr_codes_list.append(qr_dict)
 
                 return jsonify(qr_codes_list), 200
