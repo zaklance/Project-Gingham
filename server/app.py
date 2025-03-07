@@ -2007,7 +2007,7 @@ def all_vendor_reviews():
         elif is_reported is not None:
             reviews = VendorReview.query.filter_by(is_reported=bool(is_reported)).all()
         else:
-            reviews = []
+            reviews = VendorReview.query.all()
         return jsonify([review.to_dict() for review in reviews]), 200
 
     elif request.method == 'POST':
