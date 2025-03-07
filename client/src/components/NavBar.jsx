@@ -456,7 +456,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                     <>
                         {notifications.length > 0 &&
                             <li className='notification' onClick={handleNotifPopup}>
-                                <a className='nav-tab color-3 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
+                                <a className='nav-tab color-1 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
                                 {notifications.filter(notification => notification.is_read === false).length > 0 && (
                                     <p className='badge'>
                                         {notifications.filter(notification => notification.is_read === false).length}

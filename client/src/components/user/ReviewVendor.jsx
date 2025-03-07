@@ -337,7 +337,7 @@ function ReviewVendor({ vendor }) {
     useEffect(() => {
         const fetchTopReviews = async () => {
             try {
-                const response = await fetch('/api/top-vendor-reviews');
+                const response = await fetch(`/api/top-vendor-reviews?vendor_id=${vendor.id}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch reviews');
                 }

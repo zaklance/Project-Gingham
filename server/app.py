@@ -2007,7 +2007,7 @@ def all_vendor_reviews():
         elif is_reported is not None:
             reviews = VendorReview.query.filter_by(is_reported=bool(is_reported)).all()
         else:
-            reviews = VendorReview.query.all()
+            reviews = VendorReview.query.all
         return jsonify([review.to_dict() for review in reviews]), 200
 
     elif request.method == 'POST':
@@ -2080,6 +2080,10 @@ def get_top_market_reviews():
         .order_by(desc(vote_up_counts.c.vote_up_count))
         .all()
     )
+    market_id = request.args.get('market_id')
+    if market_id:
+        top_reviews = top_reviews.filter_by(market_id=market_id).all()
+        
     # Convert the reviews to dictionaries for JSON response
     response_data = [review.to_dict() for review in top_reviews]
     return jsonify(response_data)
@@ -2115,6 +2119,10 @@ def get_top_vendor_reviews():
         .order_by(desc(vote_up_counts.c.vote_up_count))
         .all()
     )
+    vendor_id = request.args.get('vendor_id')
+    if vendor_id:
+        top_reviews = top_reviews.filter_by(vendor_id=vendor_id).all()
+
     # print("Percentile value for top reviews:", percentile_value)
     # Convert the reviews to dictionaries for JSON response
     response_data = [review.to_dict() for review in top_reviews]
