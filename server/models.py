@@ -695,7 +695,7 @@ class VendorNotification(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
     market_day_id = db.Column(db.Integer, db.ForeignKey('market_days.id'), nullable=True)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
