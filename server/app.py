@@ -23,6 +23,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
 from datetime import datetime, date, time, timedelta
+from pytz import timezone, UnknownTimeZoneError
 from PIL import Image
 from io import BytesIO, StringIO
 from random import choice
@@ -2826,6 +2827,13 @@ def qr_codes():
         qr_code = request.args.get('qr_code', type=str)
         query = QRCode.query
 
+        client_timezone = request.headers.get('Timezone', 'UTC')
+        
+        try:
+            local_tz = timezone(client_timezone)
+        except UnknownTimeZoneError:
+            local_tz = timezone('UTC')
+        
         if qr_code:
             query = query.filter(QRCode.qr_code == qr_code, QRCode.vendor_id == vendor_id)
             qr_code_result = query.first()
@@ -2833,13 +2841,22 @@ def qr_codes():
                 return jsonify(qr_code_result.to_dict()), 200
             return jsonify({'error': 'QR code not found'}), 404
         elif user_id:
-            query = query.filter(QRCode.user_id == user_id)
+            local_now = datetime.now(local_tz)
+            local_midnight = local_now.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+            query = query.filter(QRCode.user_id == user_id, QRCode.sale_date <= local_midnight)
             qr_code_result = query.all()
+            
             if qr_code_result:
-                return jsonify([qr.to_dict() for qr in qr_code_result]), 200
+                qr_codes_list = []
+                for qr in qr_code_result:
+                    qr_dict = qr.to_dict()
+                    qr_dict["sale_date"] = qr.sale_date.astimezone(local_tz).isoformat()
+                    qr_codes_list.append(qr_dict)
+
+                return jsonify(qr_codes_list), 200
             return jsonify({'error': 'No QR codes found for the user'}), 404
         elif not user_id and not vendor_id and not qr_code:
-            # No parameters: Return all QR codes
             qr_code_result = query.all()
             if qr_code_result:
                 return jsonify([qr.to_dict() for qr in qr_code_result]), 200
