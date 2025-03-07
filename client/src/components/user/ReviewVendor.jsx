@@ -333,7 +333,6 @@ function ReviewVendor({ vendor }) {
             .catch(error => console.error('Error fetching reported review', error));
     }, [userId]);
 
-
     useEffect(() => {
         const fetchTopReviews = async () => {
             try {

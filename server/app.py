@@ -23,7 +23,6 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
 from datetime import datetime, date, time, timedelta
-from pytz import timezone, UnknownTimeZoneError
 from PIL import Image
 from io import BytesIO, StringIO
 from random import choice
@@ -2074,21 +2073,21 @@ def get_top_market_reviews():
         percentile_value = 0
     # print("Percentile value for top reviews:", percentile_value)
     # Get reviews with vote_up_count in the top 20%
-    top_reviews = (
+    query = (
         db.session.query(MarketReview)
         .join(vote_up_counts, MarketReview.id == vote_up_counts.c.review_id)
         .filter(vote_up_counts.c.vote_up_count >= max(percentile_value, 3))
         .order_by(desc(vote_up_counts.c.vote_up_count))
-        .all()
     )
     market_id = request.args.get('market_id')
     if market_id:
-        top_reviews = top_reviews.filter_by(market_id=market_id).all()
+        query = query.filter(MarketReview.market_id == market_id)
+    
+    top_reviews = query.all()
         
     # Convert the reviews to dictionaries for JSON response
     response_data = [review.to_dict() for review in top_reviews]
     return jsonify(response_data)
-
 
 @app.route('/api/top-vendor-reviews', methods=['GET'])
 def get_top_vendor_reviews():
@@ -2113,19 +2112,19 @@ def get_top_vendor_reviews():
     else:
         percentile_value = 0
     # Get reviews with vote_up_count in the top 20%
-    top_reviews = (
+    query = (
         db.session.query(VendorReview)
         .join(vote_up_counts, VendorReview.id == vote_up_counts.c.review_id)
         .filter(vote_up_counts.c.vote_up_count >= max(percentile_value, 3))
         .order_by(desc(vote_up_counts.c.vote_up_count))
-        .all()
     )
     vendor_id = request.args.get('vendor_id')
     if vendor_id:
-        top_reviews = top_reviews.filter_by(vendor_id=vendor_id).all()
+        query = query.filter(VendorReview.vendor_id == vendor_id)
+
+    top_reviews = query.all()
 
     # print("Percentile value for top reviews:", percentile_value)
-    # Convert the reviews to dictionaries for JSON response
     response_data = [review.to_dict() for review in top_reviews]
     return jsonify(response_data)
 
@@ -2835,13 +2834,6 @@ def qr_codes():
         qr_code = request.args.get('qr_code', type=str)
         query = QRCode.query
 
-        client_timezone = request.headers.get('Timezone', 'UTC')
-        
-        try:
-            local_tz = timezone(client_timezone)
-        except UnknownTimeZoneError:
-            local_tz = timezone('UTC')
-        
         if qr_code:
             query = query.filter(QRCode.qr_code == qr_code, QRCode.vendor_id == vendor_id)
             qr_code_result = query.first()
@@ -2849,32 +2841,13 @@ def qr_codes():
                 return jsonify(qr_code_result.to_dict()), 200
             return jsonify({'error': 'QR code not found'}), 404
         elif user_id:
-            local_now = datetime.now(local_tz)
-            local_midnight = local_now.replace(hour=23, minute=59, second=59, microsecond=999999)
-
-            query = query.filter(QRCode.user_id == user_id, Basket.sale_date <= local_midnight)
+            query = query.filter(QRCode.user_id == user_id)
             qr_code_result = query.all()
-            
             if qr_code_result:
-                qr_codes_list = []
-                for qr in qr_code_result:
-                    qr_dict = qr.to_dict()
-
-                    basket = qr.baskets
-                    
-                    if basket and basket.sale_date:
-                        if isinstance(basket.sale_date, datetime):
-                            sale_date = basket.sale_date
-                        else:
-                            sale_date = datetime.combine(basket.sale_date, datetime.min.time())
-                        
-                        qr_dict["sale_date"] = sale_date.astimezone(local_tz).isoformat()
-
-                    qr_codes_list.append(qr_dict)
-
-                return jsonify(qr_codes_list), 200
+                return jsonify([qr.to_dict() for qr in qr_code_result]), 200
             return jsonify({'error': 'No QR codes found for the user'}), 404
         elif not user_id and not vendor_id and not qr_code:
+            # No parameters: Return all QR codes
             qr_code_result = query.all()
             if qr_code_result:
                 return jsonify([qr.to_dict() for qr in qr_code_result]), 200
