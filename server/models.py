@@ -341,6 +341,8 @@ class MarketReview(db.Model, SerializerMixin):
     # Relationships
     market = db.relationship('Market', back_populates='reviews')
     user = db.relationship('User', back_populates='market_reviews')
+    ratings = db.relationship('MarketReviewRating', back_populates='review', cascade="all, delete-orphan")
+
 
     serialize_rules = (
         '-user', 
@@ -348,7 +350,8 @@ class MarketReview(db.Model, SerializerMixin):
         '-market.market_favorites', 
         '-market.vendor_markets', 
         '-user.market_reviews', 
-        '-user.vendor_reviews', 
+        '-user.vendor_reviews',
+        '-ratings.review',
         'user.first_name'
     )
 
@@ -377,6 +380,7 @@ class VendorReview(db.Model, SerializerMixin):
     # Relationships
     vendor = db.relationship('Vendor', back_populates='reviews')
     user = db.relationship('User', back_populates='vendor_reviews')
+    ratings = db.relationship('VendorReviewRating', back_populates='review', cascade="all, delete-orphan")
 
     serialize_rules = (
         '-vendor.reviews', 
@@ -384,7 +388,8 @@ class VendorReview(db.Model, SerializerMixin):
         '-user.vendor_reviews', 
         '-user.market_reviews', 
         '-vendor.vendor_markets', 
-        'user.first_name'
+        '-ratings.review',
+        'user.first_name',
     )
 
     def __repr__(self) -> str:
@@ -405,6 +410,11 @@ class MarketReviewRating(db.Model, SerializerMixin):
     vote_down = db.Column(db.Boolean, default=False)
     vote_up = db.Column(db.Boolean, default=False)
 
+    # Relationships
+    review = db.relationship('MarketReview', back_populates='ratings')
+
+    serialize_rules = ('-review.ratings',)
+
     def __repr__(self) -> str:
         return f"<VendorReviewRating {self.id}>"
 
@@ -416,6 +426,11 @@ class VendorReviewRating(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     vote_down = db.Column(db.Boolean, default=False)
     vote_up = db.Column(db.Boolean, default=False)
+
+    # Relationships
+    review = db.relationship('VendorReview', back_populates='ratings')
+    
+    serialize_rules = ('-review.ratings',)
 
     def __repr__(self) -> str:
         return f"<VendorReviewRating {self.id}>"
