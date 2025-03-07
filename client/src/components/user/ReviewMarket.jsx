@@ -337,7 +337,7 @@ function ReviewMarket({ market }) {
     useEffect(() => {
         const fetchTopReviews = async () => {
             try {
-                const response = await fetch('/api/top-market-reviews');
+                const response = await fetch(`/api/top-market-reviews?market_id=${id}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch reviews');
                 }
