@@ -35,6 +35,28 @@ function ReviewVendor({ vendor }) {
             .then(data => {
                 if (Array.isArray(data)) {
                     setReviews(data);
+
+                    const vendorRatings = data.map(review => review.ratings).flat();
+                    setVotes(vendorRatings);
+                    
+                    const userVotes = vendorRatings.filter(item => item.user_id === userId);
+                    setUpVoteRatings(userVotes);
+                    setDownVoteRatings(userVotes);
+
+                    const initialIsClickedUp = {};
+                    userVotes.forEach((vote) => {
+                        if (vote.vote_up) {
+                            initialIsClickedUp[vote.review_id] = true;
+                        }
+                    });
+                    const initialIsClickedDown = {};
+                    setIsClickedUp(initialIsClickedUp);
+                    userVotes.forEach((vote) => {
+                        if (vote.vote_down) {
+                            initialIsClickedDown[vote.review_id] = true;
+                        }
+                    });
+                    setIsClickedDown(initialIsClickedDown);
                 } else {
                     console.error('Unexpected response format:', data);
                     setReviews([]);
@@ -149,40 +171,6 @@ function ReviewVendor({ vendor }) {
             handlePopup()
         }
     };
-
-    // Ratings
-    useEffect(() => {
-        fetch(`/api/vendor-review-ratings`)
-            .then(response => response.json())
-            .then(data => {
-                if (Array.isArray(data)) {
-                    setVotes(data);
-
-                    const userVotes = data.filter(item => item.user_id === userId);
-                    setUpVoteRatings(userVotes);
-                    setDownVoteRatings(userVotes);
-
-                    const initialIsClickedUp = {};
-                    userVotes.forEach((vote) => {
-                        if (vote.vote_up) {
-                            initialIsClickedUp[vote.review_id] = true;
-                        }
-                    });
-                    const initialIsClickedDown = {};
-                    setIsClickedUp(initialIsClickedUp);
-                    userVotes.forEach((vote) => {
-                        if (vote.vote_down) {
-                            initialIsClickedDown[vote.review_id] = true;
-                        }
-                    });
-                    setIsClickedDown(initialIsClickedDown);
-                } else {
-                    console.error('Unexpected response format:', data);
-                    setVotes([]);
-                }
-            })
-            .catch(error => console.error('Error fetching reviews:', error));
-    }, [id, userId]);
 
     function filterRatingsUpVote(id) {
         const matchingReviews = votes.filter(item => item.review_id === id);
