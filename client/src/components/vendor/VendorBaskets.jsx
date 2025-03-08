@@ -108,12 +108,14 @@ function VendorBaskets({ vendorUserData }) {
                 return isToday;
             });
     
+            const todayFormatted = today.toISOString().split('T')[0];
+
             const futureMarketDays = marketDaysWithDates.filter((day) => {
-                const isToday = day.date && day.date.getTime() === today.getTime();
+                const isToday = day.date && day.date.toISOString().split('T')[0] === todayFormatted;
                 const hasSavedBasket = savedBaskets.some(basket => 
-                    new Date(basket.sale_date).getTime() === today.getTime()
+                    basket.sale_date.substring(0, 10) === todayFormatted
                 );
-    
+
                 return !isToday || (isToday && !hasSavedBasket);
             }).sort((a, b) => a.date - b.date);
     
@@ -124,7 +126,6 @@ function VendorBaskets({ vendorUserData }) {
             calculateNextMarketDays();
         }
     }, [filteredMarketDays]);
-    
     
     return (
         <div>
