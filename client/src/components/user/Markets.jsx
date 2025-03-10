@@ -552,6 +552,7 @@ function Markets() {
                         {isFlagship && (
                             <div className='flex-start flex-center-align' onClick={() => setShowFlagship(!showFlagship)}>
                                 <div
+                                    className='map-marker'
                                     onMouseEnter={() => handleMarkerHoverOn(1)}
                                     onMouseLeave={() => handleMarkerHoverOff(1)}
                                 >
@@ -564,6 +565,7 @@ function Markets() {
                         )}
                         <div className='flex-start flex-center-align' onClick={() => setShowGingham(!showGingham)}>
                             <div
+                                className='map-marker'
                                 onMouseEnter={() => handleMarkerHoverOn(2)}
                                 onMouseLeave={() => handleMarkerHoverOff(2)}
                             >
@@ -575,6 +577,7 @@ function Markets() {
                         </div>
                         <div className='flex-start flex-center-align' onClick={() => setShowVendors(!showVendors)}>
                             <div
+                                className='map-marker'
                                 onMouseEnter={() => handleMarkerHoverOn(3)}
                                 onMouseLeave={() => handleMarkerHoverOff(3)}
                             >
@@ -586,6 +589,7 @@ function Markets() {
                         </div>
                         <div className='flex-start flex-center-align' onClick={() => setShowOffSeason(!showOffSeason)}>
                             <div
+                                className='map-marker'
                                 onMouseEnter={() => handleMarkerHoverOn(4)}
                                 onMouseLeave={() => handleMarkerHoverOff(4)}
                             >

@@ -1597,7 +1597,7 @@ button a.active {
 }
 
 button, .btn {
-  transition: .3s;
+  transition: .2s;
 }
 
 button:active, .btn:active {
@@ -1902,7 +1902,11 @@ link {
   /* border-top: 16px solid #ffb600; */
 }
 
-.marker-details {
+.map-marker {
+  scale: 88%;
+}
+
+.map-marker-details {
   background-color: #fff;
   border-style: solid;
   border-color: #b5b5b5;
@@ -2742,6 +2746,11 @@ select:hover {
   background-position: right 56% top 46%;
   background-size: 1.8rem auto;
   background-blend-mode: darken;
+}
+
+.icon-cart:active {
+  background-position: right -100% top 46%;
+  transition: background-position .6s;
 }
 
 .icon-copy, .icon-copy:hover {
