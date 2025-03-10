@@ -12,7 +12,7 @@ function MapAnnotation({ handleMarkerHoverOn, handleMarkerHoverOff, isHover, mar
             longitude={parseFloat(market.coordinates.lng)}
             visible={showMarker}
             calloutElement={
-                <div className="marker-details">
+                <div className="map-marker-details">
                     <div className='text-center'>
                         <div className="marker-name"><Link className='link-underline link-scale-96' to={`/user/markets/${market.id}`}>{market.name}</Link></div>
                         <div className="marker-day">{market.schedule}</div>
@@ -31,9 +31,11 @@ function MapAnnotation({ handleMarkerHoverOn, handleMarkerHoverOff, isHover, mar
                 </div> 
             }
             calloutEnabled
+            size={{width: 36, height: 42}}
             // calloutOffsetY={-43}
         >
-            <div 
+            <div
+                className='map-marker'
                 onMouseEnter={() => handleMarkerHoverOn(market.id)}
                 onMouseLeave={() => handleMarkerHoverOff(market.id)}
             >
