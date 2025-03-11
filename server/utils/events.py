@@ -308,7 +308,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
             notifications.append(UserNotification(
                 subject="New Vendor in Your Favorite Market!",
                 message=f"The vendor, {vendor.name}, has been added to one of your favorite markets: {market.name}.",
-                link=f"/user/markets/{market.id}?day={market_day.id}",
+                link=f"/user/markets/{market.id}?day={market_day.id}#vendors",
                 user_id=user.id,
                 market_id=market.id,
                 vendor_id=vendor.id,
@@ -996,7 +996,7 @@ def notify_fav_market_new_baskets(mapper, connection, target):
             notifications.append(UserNotification(
                 subject="New Baskets for Sale!",
                 message=f"New baskets have been added to one of your favorite markets, {market.name}, check it out!",
-                link=f"/user/markets/{market.id}?day={target.market_day_id}",
+                link=f"/user/markets/{market.id}?day={target.market_day_id}#vendors",
                 user_id=user.id,
                 market_id=market.id,
                 created_at=datetime.utcnow(),
@@ -1190,7 +1190,7 @@ def notify_users_new_market_in_state(mapper, connection, target):
             if settings.site_new_market_in_city:
                 notifications.append(UserNotification(
                     subject=f"New Market in {user.state}",
-                    message=f"A new market, {target.name}, has opened in your {user.state}! Click to explore.",
+                    message=f"A new market, {target.name}, has opened in {user.city}! Click to explore.",
                     link=f"/user/markets/{target.id}",
                     user_id=user.id,
                     created_at=datetime.utcnow(),

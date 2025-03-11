@@ -3510,10 +3510,13 @@ def run():
     ]
 
     for i in range(150):
+        products_subcat_a = choice([None, None, choice(['Almonds', 'Apples', 'Berries', 'Garlic', 'Tomatoes', 'Vodka'])])
+        products_subcat_b = choice([None, None, choice(['Almonds', 'Apples', 'Berries', 'Garlic', 'Tomatoes', 'Vodka'])])
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
         city = str(fake.city())
         state = str(choice(states_ne))
         products = sample(range(1, 34), randint(1, 3))
+        products_subcategories = sample([products_subcat_a, products_subcat_b], 2)
         bio = str(fake.paragraph(nb_sentences=rev_len))
         image = choice(images) if randint(1, 8) > 1 else None
         stripe_account_id = str(choice(test_stripe_account))
@@ -3523,6 +3526,7 @@ def run():
             city=city,
             state=state,
             products=products,
+            products_subcategories=products_subcategories,
             bio=bio,
             image=image,
             website='https://www.google.com/',

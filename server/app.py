@@ -1880,14 +1880,18 @@ def all_vendors():
 
         if 'name' in data:
             vendor.name = data['name']
-        if 'products' in data:
-            vendor.product = data['products']
         if 'city' in data:
             vendor.city = data['city']
         if 'state' in data:
             vendor.state = data['state']
+        if 'products' in data:
+            vendor.product = data['products']
+        if 'products_subcategories' in data:
+            vendor.product_subcategories = data['products_subcategories']
         if 'bio' in data:
             vendor.bio = data['bio']
+        if 'website' in data:
+            vendor.website = data['website']
         if 'image' in data: 
             vendor.image = data['image']
         if 'image_default' in data: 
@@ -1917,14 +1921,18 @@ def vendor_by_id(id):
            
             if 'name' in data:
                 vendor.name = data['name']
-            if 'products' in data:
-                vendor.products = data['products']
             if 'city' in data:
                 vendor.city = data['city']
             if 'state' in data:
                 vendor.state = data['state']
+            if 'products' in data:
+                vendor.products = data['products']
+            if 'products_subcategories' in data:
+                vendor.products_subcategories = data['products_subcategories']
             if 'bio' in data:
                 vendor.bio = data['bio']
+            if 'website' in data:
+                vendor.website = data['website']
             if 'image' in data:
                 vendor.image = data['image']
             if 'image_default' in data: 

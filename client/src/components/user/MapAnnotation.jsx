@@ -31,7 +31,7 @@ function MapAnnotation({ handleMarkerHoverOn, handleMarkerHoverOff, isHover, mar
                 </div> 
             }
             calloutEnabled
-            size={{width: 36, height: 42}}
+            // size={{width: 32, height: 46}}
             // calloutOffsetY={-43}
         >
             <div
