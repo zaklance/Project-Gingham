@@ -1146,6 +1146,8 @@ ul {
   border: none;
   background-color: #ffd1d8;
   color: #ff4b5a;
+  transition: .2s;
+  transition-property: box-shadow, background-color;
 }
 
 .btn-like:hover, .btn-fav-filter:hover {
@@ -1226,8 +1228,8 @@ ul {
   border: none;
   background-color: #ffd1d8;
   color: #ff4b5a;
-  transition-property: box-shadow, background-color;
   transition: .2s;
+  transition-property: box-shadow, background-color;
 }
 
 .btn-fav-blog {

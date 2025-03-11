@@ -269,6 +269,7 @@ class Vendor(db.Model, SerializerMixin):
     city = db.Column(db.String, nullable=False)
     state = db.Column(db.String(2), nullable=False)
     products = db.Column(db.JSON, nullable=False)
+    products_subcategories = db.Column(db.JSON, nullable=True)
     bio = db.Column(db.String, nullable=True)
     website = db.Column(db.String, nullable=True)
     image = db.Column(db.String)
