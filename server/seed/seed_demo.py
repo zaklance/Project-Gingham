@@ -194,11 +194,15 @@ def run():
     for i in range(20):
         products_subcat_a = choice([None, None, choice(['Almonds', 'Apples', 'Berries', 'Garlic', 'Tomatoes', 'Vodka'])])
         products_subcat_b = choice([None, None, choice(['Almonds', 'Apples', 'Berries', 'Garlic', 'Tomatoes', 'Vodka'])])
+        subcat_dirty = sample([products_subcat_a, products_subcat_b], 2)
+        subcat_clean = [item for item in subcat_dirty if item is not None]
+        if not subcat_clean:
+            subcat_clean = None
         name = f"{fake.first_name_nonbinary()}'s {choice(companies)}"
         city = str(fake.city())
         state = str(choice(states_ne))
         products = sample(range(1, 34), randint(1, 3))
-        products_subcategories = sample([products_subcat_a, products_subcat_b], 2)
+        products_subcategories = subcat_clean
         bio = str(fake.paragraph(nb_sentences=rev_len))
         image = choice(images) if randint(1, 8) > 1 else None
 
