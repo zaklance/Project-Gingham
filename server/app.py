@@ -1859,6 +1859,8 @@ def all_vendors():
             city=data.get('city'),
             state=data.get('state'),
             products=data.get('products'),
+            products_subcategories=data.get('products_subcategories'),
+            website=data.get('website'),
             bio=data.get('bio'),
             image=data.get('image')
         )
@@ -1887,7 +1889,7 @@ def all_vendors():
         if 'products' in data:
             vendor.product = data['products']
         if 'products_subcategories' in data:
-            vendor.product_subcategories = data['products_subcategories']
+            vendor.products_subcategories = data['products_subcategories']
         if 'bio' in data:
             vendor.bio = data['bio']
         if 'website' in data:

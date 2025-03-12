@@ -111,7 +111,7 @@ function Home() {
                         By selling with Gingham, you're not only reducing food waste but also supporting local 
                         communities and economies. <strong>Join us in making a positive impact!</strong>
                     </p>
-                    <h3 className="box-portal-home margin-t-24 blue">Interested in becoming a vendor? <a className="link-underline scale-108" onClick={handlePopup}> Sign up here!</a></h3>
+                    <h3 className="box-portal-home margin-t-24 blue">Interested in becoming a vendor? <a className="link-underline-inverse" onClick={handlePopup}> Sign up here!</a></h3>
                 </div>
                 <br/>
             </div>

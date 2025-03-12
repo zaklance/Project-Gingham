@@ -17,6 +17,7 @@ function MarketDetail ({ match }) {
     const [marketFavs, setMarketFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState("");
+    const [selectedProductSubcat, setSelectedProductSubCat] = useState("");
     const [marketDays, setMarketDays] = useState([]);
     const [selectedDay, setSelectedDay] = useState(null);
     const [vendorMarkets, setVendorMarkets] = useState();
@@ -24,6 +25,7 @@ function MarketDetail ({ match }) {
     const [marketBaskets, setMarketBaskets] = useState([]);
     const [products, setProducts] = useState([]);
     const [productList, setProductList] = useState({});
+    const [productSubcat, setProductSubcat] = useState({});
     const [isHover, setIsHover] = useState(false);
 
     const [searchParams, setSearchParams] = useSearchParams(); 
@@ -157,6 +159,10 @@ function MarketDetail ({ match }) {
         setSelectedProduct(event.target.value);
     };
 
+    const handleProductSubcatChange = (event) => {
+        setSelectedProductSubCat(event.target.value);
+    };
+
     useEffect(() => {
         if (allVendorDetails.length > 0 && vendors.length > 0) {
             const filteredDetails = allVendorDetails.filter(vendor =>
@@ -176,22 +182,41 @@ function MarketDetail ({ match }) {
         return vendors.filter((vendorId, index, self) => {
             const vendorDetail = vendorDetailsMap[vendorId];
             if (!vendorDetail) return false;
-    
+
             const availableOnSelectedDay = vendorMarkets.filter(vendorMarket => 
                 vendorMarket.vendor_id === vendorId &&
                 vendorMarket.market_day.market_id === market.id &&
                 vendorMarket.market_day.day_of_week === selectedDay?.day_of_week
             );
+
             const isUnique = self.findIndex(v => v === vendorId) === index;
-            
+
             const hasSelectedProduct =
                 !selectedProduct ||
                 (Array.isArray(vendorDetail.products) &&
                     vendorDetail.products.map(Number).includes(Number(selectedProduct)));
 
-            return availableOnSelectedDay.length > 0 && hasSelectedProduct && isUnique;
+            const hasSelectedProductSubcat =
+                !selectedProductSubcat ||
+                (Array.isArray(vendorDetail.products_subcategories) &&
+                    vendorDetail.products_subcategories.includes(selectedProductSubcat));
+
+            return (
+                availableOnSelectedDay.length > 0 &&
+                hasSelectedProduct &&
+                hasSelectedProductSubcat &&
+                isUnique
+            );
         });
-    }, [vendors, vendorMarkets, selectedDay, selectedProduct, market, vendorDetailsMap]);
+    }, [
+        vendors,
+        vendorMarkets,
+        selectedDay,
+        selectedProduct,
+        selectedProductSubcat,
+        market,
+        vendorDetailsMap
+    ]);
     
 
     // Filter productList so that it only shows products that are in filteredVendorsList
@@ -215,7 +240,33 @@ function MarketDetail ({ match }) {
     
     useEffect(() => {
         setProductList(filteredProducts);
-    }, [filteredProducts]);  
+    }, [filteredProducts]);
+
+    const filteredProductsSubcat = useMemo(() => {
+        if (!vendorMarkets || !selectedDay) return [];
+
+        const filteredMarketsOnDay = vendorMarkets.filter(
+            vendorMarket =>
+                vendorMarket.market_day.day_of_week === selectedDay.day_of_week &&
+                vendorMarket.market_day.market_id === market.id
+        );
+
+        const allSubcategories = filteredMarketsOnDay.flatMap(vendorMarket => {
+            const subcategories = vendorMarket.vendor.products_subcategories;
+
+            return Array.isArray(subcategories) ? subcategories : [];
+        });
+
+        const uniqueSortedSubcategories = [...new Set(allSubcategories)].sort((a, b) =>
+            a.localeCompare(b)
+        );
+
+        return uniqueSortedSubcategories;
+    }, [vendorMarkets, selectedDay, market]);
+
+    useEffect(() => {
+        setProductSubcat(filteredProductsSubcat);
+    }, [filteredProductsSubcat]);
 
     // Gets rid of duplicate vendors (from different market_days)
     const uniqueFilteredVendorsList = [...new Set(filteredVendorsList)];
@@ -578,17 +629,30 @@ function MarketDetail ({ match }) {
             )}
             <div id="vendors" className='flex-space-between margin-t-24'>
                 <h2>Vendors:</h2>
-                <select 
-                    className='select-rounded'
-                    value={selectedProduct} 
-                    onChange={handleProductChange}>
-                    <option value="">All Products</option>
-                    {Array.isArray(productList) && productList.map((product) => (
-                        <option key={product.id} value={product.id}>
-                            {product.product}
-                        </option>
-                    ))}
-                </select>
+                <div className='flex-start flex-column'>
+                    <select 
+                        className='select-rounded'
+                        value={selectedProduct} 
+                        onChange={handleProductChange}>
+                        <option value="">All Products</option>
+                        {Array.isArray(productList) && productList.map((product) => (
+                            <option key={product.id} value={product.id}>
+                                {product.product}
+                            </option>
+                        ))}
+                    </select>
+                    <select 
+                        className='select-rounded'
+                        value={selectedProductSubcat} 
+                        onChange={handleProductSubcatChange}>
+                        <option value="">All Subcategories</option>
+                        {Array.isArray(productSubcat) && productSubcat.map((product) => (
+                            <option key={product} value={product}>
+                                {product}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
             <div className="box-scroll">
             {Array.isArray(uniqueFilteredVendorsList) && uniqueFilteredVendorsList.length > 0 ? (
@@ -623,6 +687,10 @@ function MarketDetail ({ match }) {
                                     .filter((product) => vendorDetail.products?.includes(product.id))
                                     .map((product) => product.product)
                                     .join(", ") || "No products listed"}
+                                {vendorDetail.products_subcategories && "; "}
+                                {vendorDetail.products_subcategories?.length > 0 &&
+                                    vendorDetail.products_subcategories.map(p => p).join(', ')
+                                }
                             </p>
                         </span>
                         {availableBaskets.length > 0 ? (

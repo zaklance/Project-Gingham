@@ -130,7 +130,7 @@ function AdminVendorDelete({ vendors }) {
                     <tbody>
                         <tr>
                             <td className='cell-title'>Image:</td>
-                            <td className='cell-text'>{vendorData ? <img className='img-market' style={{ maxWidth: '100%', height: 'auto' }} src={`/vendor-images/${vendorData.image}`} alt="Market Image" /> : ''}</td>
+                            <td className='cell-text'>{vendorData?.image ? <img className='img-market' style={{ maxWidth: '100%', height: 'auto' }} src={`/vendor-images/${vendorData.image}`} alt="Market Image" /> : ''}</td>
                         </tr>
                         <tr>
                             <td className='cell-title'>ID:</td>
@@ -139,6 +139,10 @@ function AdminVendorDelete({ vendors }) {
                         <tr>
                             <td className='cell-title'>Name:</td>
                             <td className='cell-text'>{vendorData ? `${vendorData.name}` : ''}</td>
+                        </tr>
+                        <tr>
+                            <td className='cell-title'>Website:</td>
+                            <td className='cell-text'>{vendorData ? vendorData.website : ''}</td>
                         </tr>
                         <tr>
                             <td className='cell-title'>City:</td>
@@ -154,6 +158,14 @@ function AdminVendorDelete({ vendors }) {
                                 {products
                                     .filter(p => vendorData?.products?.includes(p.id))
                                     .map(p => p.product)
+                                    .join(', ') || ''}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td className='cell-title'>Product Subcategories:</td>
+                            <td className='cell-text'>
+                                {vendorData?.products_subcategories
+                                    ?.map(p => p)
                                     .join(', ') || ''}
                             </td>
                         </tr>

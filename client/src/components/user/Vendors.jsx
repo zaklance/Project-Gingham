@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useLocation, useOutletContext } from 'react-router-dom';
 import VendorCard from './VendorCard';
 import '../../assets/css/index.css';
@@ -7,7 +7,9 @@ function Vendors() {
     const [vendors, setVendors] = useState([]);
     const [products, setProducts] = useState([]);
     const [productList, setProductList] = useState([]);
+    const [productSubcat, setProductSubcat] = useState({});
     const [selectedProduct, setSelectedProduct] = useState('');
+    const [selectedProductSubcat, setSelectedProductSubCat] = useState("");
     const [query, setQuery] = useState("");
     const [vendorFavs, setVendorFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
@@ -26,6 +28,28 @@ function Vendors() {
         setQuery(value);
         setShowDropdown(value.trim().length > 0); // Show dropdown if there's input
     };
+
+    const filteredProductsSubcat = useMemo(() => {
+
+        const allSubcategories = vendors.flatMap(vendor => {
+            const subcategories = vendor.products_subcategories;
+
+            return Array.isArray(subcategories) ? subcategories : [];
+        });
+        const uniqueSortedSubcategories = [...new Set(allSubcategories)].sort((a, b) =>
+            a.localeCompare(b)
+        );
+
+        return uniqueSortedSubcategories;
+    }, [vendors]);
+
+    useEffect(() => {
+        setProductSubcat(filteredProductsSubcat);
+    }, [filteredProductsSubcat]);
+
+    const handleProductSubcatChange = (event) => {
+        setSelectedProductSubCat(event.target.value);
+    };
     
     const filteredVendorsDropdown = vendors.filter(vendor =>
         vendor.name.toLowerCase().includes(query.toLowerCase()) &&
@@ -37,7 +61,11 @@ function Vendors() {
     const filteredVendorsResults = vendors.filter(vendor =>
         vendor.name.toLowerCase().includes(query.toLowerCase()) &&
         (!selectedProduct || vendor.products.includes(Number(selectedProduct))) &&
-        (!isClicked || vendorFavs.some(vendorFavs => vendorFavs.vendor_id === vendor.id))
+        (!selectedProductSubcat ||
+            (Array.isArray(vendor.products_subcategories) &&
+             vendor.products_subcategories.includes(selectedProductSubcat))
+        ) &&
+        (!isClicked || vendorFavs.some(vendorFav => vendorFav.vendor_id === vendor.id))
     );
 
     useEffect(() => {
@@ -127,6 +155,12 @@ function Vendors() {
         setShowFilters(!showFilters)
     }
 
+    const closePopup = () => {
+        if (showFilters) {
+            setShowFilters(false);
+        }
+    };
+
     // console.log(products)
 
     // useEffect(() => {
@@ -194,15 +228,36 @@ function Vendors() {
                                     onClick={handleClick}>&emsp;
                                 </button>
                             </td>
-                            <td>
-                                <select className='select-filter' value={selectedProduct} onChange={handleProductChange}>
-                                    <option value="">All Products</option>
-                                    {Array.isArray(productList) && productList.map((product) => (
-                                        <option key={product.id} value={product.id}>
-                                            {product.product}
-                                        </option>
-                                    ))}
-                                </select>
+                            <td className='badge-container'>
+                                <button className='btn btn-filter' onClick={handleDropDownFilters}>&#9776;</button>
+                                {showFilters && (
+                                    <div className='dropdown-content box-filters-vendors'>
+                                        <div className='flex-space-between flex-column'>
+                                            <select className='select-filter' value={selectedProduct} onChange={handleProductChange}>
+                                                <option value="">All Products</option>
+                                                {Array.isArray(productList) && productList.map((product) => (
+                                                    <option key={product.id} value={product.id}>
+                                                        {product.product}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <select 
+                                                className='select-filter'
+                                                value={selectedProductSubcat} 
+                                                onChange={handleProductSubcatChange}>
+                                                <option value="">All Subcategories</option>
+                                                {Array.isArray(productSubcat) && productSubcat.map((product) => (
+                                                    <option key={product} value={product}>
+                                                        {product}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                )}
+                                {showFilters && (
+                                    <div className="popup-overlay-clear" onClick={closePopup}></div>
+                                )}
                             </td>
                         </tr>
                     </tbody>
