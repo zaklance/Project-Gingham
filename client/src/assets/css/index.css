@@ -956,6 +956,10 @@ ul {
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
 }
 
+.box-filters-vendors {
+  right: 0;
+}
+
 .box-qr {
   background-color: white;
   /* width: 178px;
@@ -1710,7 +1714,20 @@ link {
   text-decoration: underline;
   text-underline-offset: .15em;
   background-color: transparent !important;
-  transition: all 0.4s;
+  transition: all 0.3s;
+}
+
+.link-underline-inverse {
+  text-decoration: underline;
+  text-underline-offset: .15em;
+  background-color: transparent !important;
+  transition: all 0.3s;
+}
+
+.link-underline-inverse:hover {
+  color: #007BFF;
+  text-decoration-color: #007BFF;
+  /* text-decoration-thickness: 0.75px; */
 }
 
 .add-cart {
@@ -2297,9 +2314,9 @@ select:hover {
 
 .select-filter {
   border-radius: 12px;
-  height: 48px;
-  width: 124px;
-
+  /* height: 24px; */
+  /* width: 124px; */
+  font-size: .8em;
 }
 
 .select-dropdown {

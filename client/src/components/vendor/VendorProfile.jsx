@@ -40,6 +40,7 @@ function VendorProfile () {
     const [products, setProducts] = useState([])
     const [newProduct, setNewProduct] = useState(null);
     const [productRequest, setProductRequest] = useState('')
+    const [newProductSubcat, setNewProductSubcat] = useState(null);
     const [activeTab, setActiveTab] = useState('website');
     const [changeEmail, setChangeEmail] = useState();
     const [changeConfirmEmail, setChangeConfirmEmail] = useState();
@@ -404,6 +405,7 @@ function VendorProfile () {
                 name: vendorData.name,
                 website: vendorData.website,
                 products: vendorData.products, 
+                products_subcategories: vendorData.products_subcategories, 
                 bio: vendorData.bio,
                 city: vendorData.city,
                 state: vendorData.state,
@@ -659,6 +661,13 @@ function VendorProfile () {
         }));
     };
 
+    const handleDeleteProductSubcat = (product) => {
+        setTempVendorData((prev) => ({
+            ...prev,
+            products_subcategories: prev.products_subcategories.filter((id) => id !== product),
+        }));
+    };
+
     const handleDeleteMarketDay = (marketDayId) => {
         setTempVendorUserSettings((prev) => ({
             ...prev,
@@ -673,6 +682,24 @@ function VendorProfile () {
                 ? prev.products
                 : [...(prev.products || []), Number(newProductId)],
         }));
+    };
+
+    const handleAddProductSubcat = (newProduct) => {
+        const toTitleCase = (str) => {
+            return str
+                .toLowerCase()
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        };
+        const formattedProduct = toTitleCase(newProduct);
+        setTempVendorData((prev) => ({
+            ...prev,
+            products_subcategories: (prev.products_subcategories || []).includes(formattedProduct)
+                ? prev.products_subcategories
+                : [...(prev.products_subcategories || []), formattedProduct],
+        }));
+        setNewProductSubcat('')
     };
 
     const handleMarketDaySelect = (event) => {
@@ -1070,6 +1097,32 @@ function VendorProfile () {
                                         </div>
                                     )}
                                     <div className='form-group'>
+                                        <label>Product Subcategories:</label>
+                                        <input
+                                            type="text"
+                                            name="product_subcat"
+                                            placeholder='If you focus on specific things; ex: "Apples"'
+                                            value={newProductSubcat ? newProductSubcat : ''}
+                                            onChange={(e) => setNewProductSubcat(e.target.value)}
+                                        />
+                                        <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddProductSubcat(newProductSubcat)}>Add</button>
+                                        <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                                            {tempVendorData.products_subcategories?.map((product) => {
+                                                return (
+                                                    <Chip
+                                                        key={product}
+                                                        style={{
+                                                            backgroundColor: "#eee", fontSize: ".9em"
+                                                        }}
+                                                        label={product || 'Unknown Product'}
+                                                        size="small"
+                                                        onDelete={() => handleDeleteProductSubcat(product)}
+                                                    />
+                                                );
+                                            })}
+                                        </Stack>
+                                    </div>
+                                    <div className='form-group'>
                                         <label>Bio:</label>
                                         <textarea
                                             className='textarea-edit'
@@ -1181,7 +1234,7 @@ function VendorProfile () {
                                                     </tr>
                                                     <tr>
                                                         <td className='cell-title'>Website:</td>
-                                                        <td className='cell-text'>{vendorData ? vendorData.website : ' Loading...'}</td>
+                                                        <td className='cell-text'>{vendorData ? vendorData.website : ''}</td>
                                                     </tr>
                                                     <tr>
                                                         <td className='cell-title'>Product:</td>
@@ -1189,6 +1242,14 @@ function VendorProfile () {
                                                             {products
                                                                 .filter(p => vendorData?.products?.includes(p.id))
                                                                 .map(p => p.product)
+                                                                .join(', ') || ''}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className='cell-title'>Product Subcategories:</td>
+                                                        <td className='cell-text'>
+                                                            {vendorData?.products_subcategories
+                                                                ?.map(p => p)
                                                                 .join(', ') || ''}
                                                         </td>
                                                     </tr>

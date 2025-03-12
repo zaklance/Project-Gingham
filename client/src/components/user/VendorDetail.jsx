@@ -372,8 +372,16 @@ function VendorDetail() {
                         : "No products available"}
                     </h3>
                 </div>
-                <div className='flex-start flex-center-align margin-t-4 margin-l-4'>
-                    <h3 className=''>Based out of: {vendor.city}, {vendor.state}</h3>
+                {vendor.products_subcategories && (
+                    <h3 className='margin-t-4 margin-l-4'>
+                        {vendor.products_subcategories?.length > 1 ? 'Subcategories:' : 'Subcategory:'}
+                        &emsp; {vendor.products_subcategories?.length > 0 &&
+                            vendor.products_subcategories.map(p => p).join(', ')
+                        }
+                    </h3>
+                )}
+                <div className='flex-start flex-center-align margin-l-4'>
+                    <h3 className=''>Based out of: &emsp;{vendor.city}, {vendor.state}</h3>
                     <button 
                         className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
                         onClick={handleClick}>&emsp;
@@ -381,7 +389,7 @@ function VendorDetail() {
                 </div>
             </div>
             {vendor.website && (
-                <h3 className='margin-l-4'>Click <a className='link-underline' href={vendor.website} target='_blank' rel="noopener noreferrer">here</a> for {vendor.name} website!</h3>
+                <h3 className='margin-l-4'>Click <a className='link-underline-inverse' href={vendor.website} target='_blank' rel="noopener noreferrer">here</a> for {vendor.name} website!</h3>
             )}
             {vendor.bio && (
                 <>

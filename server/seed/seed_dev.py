@@ -3704,9 +3704,9 @@ def run():
         vendor_id={1:1},
         vendor_role={1:0}
     )
-    vendor_user_settings_demo = SettingsVendor(
-        vendor_user_id=51
-    )
+    # vendor_user_settings_demo = SettingsVendor(
+    #     vendor_user_id=51
+    # )
     
     # vendor_user_demo_2 = VendorUser(
     #     email="zak@mufo.nyc",
