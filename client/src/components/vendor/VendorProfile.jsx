@@ -17,6 +17,7 @@ import VendorTeamLeave from './VendorTeamLeave';
 import { toast } from 'react-toastify';
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
+import DOMPurify from 'dompurify';
 
 function VendorProfile () {
     const { id } = useParams();
@@ -1178,7 +1179,7 @@ function VendorProfile () {
                                             <>
                                                 <img
                                                     className='img-vendor-edit'
-                                                    src={tempVendorData.image ? `/vendor-images/${tempVendorData.image}` : `/vendor-images/_default-images/${tempVendorData.image_default}`}
+                                                    src={tempVendorData.image ? `/vendor-images/${DOMPurify.sanitize(tempVendorData.image)}` : `/vendor-images/_default-images/${tempVendorData.image_default}`}
                                                     alt="Vendor"
                                                     style={{ maxWidth: '100%', height: 'auto' }}
                                                 />
