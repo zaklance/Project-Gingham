@@ -414,7 +414,11 @@ def delete_image():
         return {'error': 'Invalid type or missing ID. Ensure "type" and respective ID are provided.'}, 400
 
     # Ensure filename doesn't include the folder path again
-    file_path = os.path.join(upload_folder, os.path.basename(filename))
+    file_path = os.path.normpath(os.path.join(upload_folder, os.path.basename(filename)))
+
+    # Ensure the file path is within the upload folder
+    if not file_path.startswith(upload_folder):
+        return {'error': 'Invalid file path'}, 400
 
     try:
         print(f"Attempting to delete: {file_path}")  # Log the constructed file path
