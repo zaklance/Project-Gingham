@@ -925,7 +925,6 @@ class SettingsVendor(db.Model, SerializerMixin):
 
     text_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
     text_basket_sold = db.Column(db.Boolean, default=True, nullable=False)
-    text_new_review = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self) -> str:
         return f"<Vendor Settings ID: {self.id} Vendor User ID: {self.vendor_user_id}>"
