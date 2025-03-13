@@ -78,7 +78,7 @@ const VendorTeamRequest = ({ className, vendorUserId, vendorUserData }) => {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Notifications fetched:', data);
+                    // console.log('Notifications fetched:', data);
                     setTeamNotifications(data.notifications || []);
                 } else {
                     setTeamNotifications([]);

@@ -6,6 +6,7 @@ import { timeConverter, formatEventDate, formatDate, marketDateConvert, formatPi
 import ReviewMarket from './ReviewMarket';
 import { Annotation, ColorScheme, FeatureVisibility, Map, Marker } from 'mapkit-react'
 import { toast } from 'react-toastify';
+import MapAnnotation from './MapAnnotation';
 
 function MarketDetail ({ match }) {
     const { id } = useParams();
@@ -16,6 +17,7 @@ function MarketDetail ({ match }) {
     const [marketFavs, setMarketFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState("");
+    const [selectedProductSubcat, setSelectedProductSubCat] = useState("");
     const [marketDays, setMarketDays] = useState([]);
     const [selectedDay, setSelectedDay] = useState(null);
     const [vendorMarkets, setVendorMarkets] = useState();
@@ -23,7 +25,9 @@ function MarketDetail ({ match }) {
     const [marketBaskets, setMarketBaskets] = useState([]);
     const [products, setProducts] = useState([]);
     const [productList, setProductList] = useState({});
-    
+    const [productSubcat, setProductSubcat] = useState({});
+    const [isHover, setIsHover] = useState(false);
+
     const [searchParams, setSearchParams] = useSearchParams(); 
     
     const { handlePopup, amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
@@ -155,6 +159,10 @@ function MarketDetail ({ match }) {
         setSelectedProduct(event.target.value);
     };
 
+    const handleProductSubcatChange = (event) => {
+        setSelectedProductSubCat(event.target.value);
+    };
+
     useEffect(() => {
         if (allVendorDetails.length > 0 && vendors.length > 0) {
             const filteredDetails = allVendorDetails.filter(vendor =>
@@ -174,22 +182,41 @@ function MarketDetail ({ match }) {
         return vendors.filter((vendorId, index, self) => {
             const vendorDetail = vendorDetailsMap[vendorId];
             if (!vendorDetail) return false;
-    
+
             const availableOnSelectedDay = vendorMarkets.filter(vendorMarket => 
                 vendorMarket.vendor_id === vendorId &&
                 vendorMarket.market_day.market_id === market.id &&
                 vendorMarket.market_day.day_of_week === selectedDay?.day_of_week
             );
+
             const isUnique = self.findIndex(v => v === vendorId) === index;
-            
+
             const hasSelectedProduct =
                 !selectedProduct ||
                 (Array.isArray(vendorDetail.products) &&
                     vendorDetail.products.map(Number).includes(Number(selectedProduct)));
 
-            return availableOnSelectedDay.length > 0 && hasSelectedProduct && isUnique;
+            const hasSelectedProductSubcat =
+                !selectedProductSubcat ||
+                (Array.isArray(vendorDetail.products_subcategories) &&
+                    vendorDetail.products_subcategories.includes(selectedProductSubcat));
+
+            return (
+                availableOnSelectedDay.length > 0 &&
+                hasSelectedProduct &&
+                hasSelectedProductSubcat &&
+                isUnique
+            );
         });
-    }, [vendors, vendorMarkets, selectedDay, selectedProduct, market, vendorDetailsMap]);
+    }, [
+        vendors,
+        vendorMarkets,
+        selectedDay,
+        selectedProduct,
+        selectedProductSubcat,
+        market,
+        vendorDetailsMap
+    ]);
     
 
     // Filter productList so that it only shows products that are in filteredVendorsList
@@ -213,7 +240,33 @@ function MarketDetail ({ match }) {
     
     useEffect(() => {
         setProductList(filteredProducts);
-    }, [filteredProducts]);  
+    }, [filteredProducts]);
+
+    const filteredProductsSubcat = useMemo(() => {
+        if (!vendorMarkets || !selectedDay) return [];
+
+        const filteredMarketsOnDay = vendorMarkets.filter(
+            vendorMarket =>
+                vendorMarket.market_day.day_of_week === selectedDay.day_of_week &&
+                vendorMarket.market_day.market_id === market.id
+        );
+
+        const allSubcategories = filteredMarketsOnDay.flatMap(vendorMarket => {
+            const subcategories = vendorMarket.vendor.products_subcategories;
+
+            return Array.isArray(subcategories) ? subcategories : [];
+        });
+
+        const uniqueSortedSubcategories = [...new Set(allSubcategories)].sort((a, b) =>
+            a.localeCompare(b)
+        );
+
+        return uniqueSortedSubcategories;
+    }, [vendorMarkets, selectedDay, market]);
+
+    useEffect(() => {
+        setProductSubcat(filteredProductsSubcat);
+    }, [filteredProductsSubcat]);
 
     // Gets rid of duplicate vendors (from different market_days)
     const uniqueFilteredVendorsList = [...new Set(filteredVendorsList)];
@@ -428,6 +481,30 @@ function MarketDetail ({ match }) {
         );
     };
 
+    const determineFlagship = (market) => {
+        return market.is_flagship === true
+    };
+
+    const isFlagship = (market) => {
+        return market.some(marketDay => 
+            marketDay.is_flagship === true
+        );
+    };
+
+    const handleMarkerHoverOn = (id) => {
+        setIsHover((prev) => ({
+            ...prev,
+            [id]: true,
+        }));
+    };
+
+    const handleMarkerHoverOff = (id) => {
+        setIsHover((prev) => ({
+            ...prev,
+            [id]: false,
+        }));
+    };
+
     if (!market) {
         return <div>Loading...</div>;
     }
@@ -486,36 +563,25 @@ function MarketDetail ({ match }) {
                         colorScheme={ColorScheme.Auto}
                         showsScale={FeatureVisibility.Visible}
                     >
-                        <Annotation
-                            latitude={marketLocation.lat}
-                            longitude={marketLocation.lng}
-                        >
-                            {!determineSeason(market) ? (
-                                <>
-                                    <div className="map-circle-off-season"></div>
-                                    <div className="map-inside-circle-off-season"></div>
-                                    <div className="map-triangle-off-season"></div>
-                                </>
-                            ) : (!determineVendors(market)
-                            ) ? (
-                                <>
-                                    <div className="map-circle-vendors"></div>
-                                    <div className="map-inside-circle-vendors"></div>
-                                    <div className="map-triangle-vendors"></div>
-                                </>
-                            ) : (
-                                <>
-                                    <div className="map-circle"></div>
-                                    <div className="map-inside-circle"></div>
-                                    <div className="map-triangle"></div>
-                                </>
-                            )}
-                        </Annotation>
+                        <MapAnnotation
+                            key={`marker-${market.id}`}
+                            isHover={isHover}
+                            handleMarkerHoverOn={handleMarkerHoverOn}
+                            handleMarkerHoverOff={handleMarkerHoverOff}
+                            market={market} 
+                            markerType={determineFlagship(market) 
+                                ? "-flag" 
+                                : !determineSeason(market) 
+                                ? "-off-season" 
+                                : !determineVendors(market) 
+                                ? "-vendors" 
+                                : ""}
+                        />
                     </Map>
                 </div>
             </div>
             <div className='flex-start market-details margin-t-8'>
-                <h4>Location: <a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
+                <h4>Location: &emsp;<a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}, {market.city}, {market.state}
                 </a></h4>
                 <button
@@ -524,9 +590,9 @@ function MarketDetail ({ match }) {
                 </button>
             </div>
             <div className='flex-start m-flex-wrap'>
-                <label><h4>Schedule:</h4></label>
+                <label><h4>Schedule: &emsp;</h4></label>
                 {marketDays.length === 1 ? (
-                    <h4>&ensp; {weekDay[marketDays[0].day_of_week]}, &ensp;</h4>
+                    <h4>{weekDay[marketDays[0].day_of_week]}, &ensp;</h4>
                 ) : (
                     <select id="marketDaysSelect"
                     className='select-rounded margin-r-4'
@@ -546,12 +612,12 @@ function MarketDetail ({ match }) {
             </div>
             <div className='flex-start'>
                 {market.year_round === false && market.season_start && market.season_end ? (
-                        <h4>Season: {formatDate(market.season_start)} – {formatDate(market.season_end)} {!market.is_current && `(${new Date().getFullYear() - 1} Season)`}</h4>
+                        <h4>Season: &emsp;{formatDate(market.season_start)} – {formatDate(market.season_end)}{!market.is_current && `, ${new Date().getFullYear() - 1}`}</h4>
                     ) : (
-                        market.year_round === false && (!market.season_start || !market.season_end) ? (
-                            <h4>No Dates Available</h4>
+                        market.year_round === true ? (
+                            <h4>Season: &emsp;Open Year Round {!market.is_current && `(${new Date().getFullYear() - 1})`}</h4>
                         ) : (
-                            <h4>Open Year Round {!market.is_current && `(${new Date().getFullYear() - 1} Season)`}</h4>
+                            <h4>Season: &emsp;No Dates Available</h4>
                         )
                     )}
             </div>
@@ -563,17 +629,30 @@ function MarketDetail ({ match }) {
             )}
             <div id="vendors" className='flex-space-between margin-t-24'>
                 <h2>Vendors:</h2>
-                <select 
-                    className='select-rounded'
-                    value={selectedProduct} 
-                    onChange={handleProductChange}>
-                    <option value="">All Products</option>
-                    {Array.isArray(productList) && productList.map((product) => (
-                        <option key={product.id} value={product.id}>
-                            {product.product}
-                        </option>
-                    ))}
-                </select>
+                <div className='flex-start flex-column'>
+                    <select 
+                        className='select-rounded'
+                        value={selectedProduct} 
+                        onChange={handleProductChange}>
+                        <option value="">All Products</option>
+                        {Array.isArray(productList) && productList.map((product) => (
+                            <option key={product.id} value={product.id}>
+                                {product.product}
+                            </option>
+                        ))}
+                    </select>
+                    <select 
+                        className='select-rounded'
+                        value={selectedProductSubcat} 
+                        onChange={handleProductSubcatChange}>
+                        <option value="">All Subcategories</option>
+                        {Array.isArray(productSubcat) && productSubcat.map((product) => (
+                            <option key={product} value={product}>
+                                {product}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
             <div className="box-scroll">
             {Array.isArray(uniqueFilteredVendorsList) && uniqueFilteredVendorsList.length > 0 ? (
@@ -608,6 +687,10 @@ function MarketDetail ({ match }) {
                                     .filter((product) => vendorDetail.products?.includes(product.id))
                                     .map((product) => product.product)
                                     .join(", ") || "No products listed"}
+                                {vendorDetail.products_subcategories && "; "}
+                                {vendorDetail.products_subcategories?.length > 0 &&
+                                    vendorDetail.products_subcategories.map(p => p).join(', ')
+                                }
                             </p>
                         </span>
                         {availableBaskets.length > 0 ? (
@@ -629,7 +712,7 @@ function MarketDetail ({ match }) {
                         </span>
                         ) : (
                         <span className="market-baskets d-nowrap margin-r-8">
-                            {availableBaskets.length > 0 ? `Available Baskets: ${availableBaskets.length}` : <a className="link-edit" onClick={() => handleNotifyMe(vendorDetail)}>Notify Me</a>}
+                            {availableBaskets.length > 0 ? `Available Baskets: ${availableBaskets.length}` : <a className="link-edit" title="Get notified if more baskets become available" onClick={() => handleNotifyMe(vendorDetail)}>Notify Me</a>}
                             <br />
                             {firstBasket && firstBasket.sale_date ? formatPickupText(firstBasket, timeConverter, marketDateConvert) : ""}
                         </span>

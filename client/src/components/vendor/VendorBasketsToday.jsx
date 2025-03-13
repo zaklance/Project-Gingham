@@ -14,7 +14,7 @@ function VendorBasketsToday({vendorId, todaysMarketDays, entry}) {
     useEffect(() => {
         if (vendorId && todaysMarketDays) {   
             const today = new Date();
-            const formattedDate = today.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', }).split('/').reverse().join('-');
+            const formattedDate = today.toLocaleDateString('en-CA');
             console.log('Formatted date being sent:', formattedDate);
     
             const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -22,33 +22,60 @@ function VendorBasketsToday({vendorId, todaysMarketDays, entry}) {
     
             async function fetchTodaysBaskets() {
                 try {
-                    const response = await fetch(
-                        `/api/baskets?vendor_id=${vendorId}&date=${formattedDate}`
-                    );
-    
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (Array.isArray(data)) {
-                            const todayBaskets = data.filter(basket => {
-                                const basketDate = new Date(basket.sale_date).toISOString().split('T')[0];
-                                return basketDate === formattedDate && todaysMarketDays.some(marketDay => marketDay.id === basket.market_day_id);
-                            });                            
-    
-                            const groupedData = todayBaskets.reduce((acc, basket) => {
-                                const { market_day_id, market_name } = basket;
-                                if (!acc[market_day_id]) { acc[market_day_id] = { marketId: market_day_id, marketName: market_name, baskets: [] }; }
-                                acc[market_day_id].baskets.push(basket);
-                                return acc;
-                            }, {});
-                            setTodayBaskets(Object.values(groupedData));
-                        }
-                    } else {
-                        setErrorMessage('Failed to fetch today\'s baskets.');
+                    const today = new Date().toLocaleDateString('en-CA');
+                    
+                    console.log('Formatted date being sent:', formattedDate);
+            
+                    const response = await fetch(`/api/baskets?vendor_id=${vendorId}&sale_date=${formattedDate}`);
+                    
+                    if (!response.ok) {
+                        console.error('Error fetching baskets:', response.status, response.statusText);
+                        setErrorMessage("Failed to fetch today's baskets.");
+                        return;
                     }
+            
+                    const data = await response.json();
+                    console.log('Fetched basket data:', data);
+            
+                    if (!Array.isArray(data)) {
+                        console.error('Fetched data is not an array:', data);
+                        return;
+                    }
+            
+                    const todayBaskets = data.filter(basket => {
+                        const basketLocalDate = basket.sale_date.substring(0, 10);
+                    
+                        console.log(`Basket ID: ${basket.id}, Raw sale_date: ${basket.sale_date}, 
+                                     Extracted as local date: ${basketLocalDate}`);
+                    
+                        const isToday = basketLocalDate === today;
+                        const isMarketDayValid = todaysMarketDays.some(marketDay => marketDay.id === basket.market_day_id);
+                        
+                        console.log(`Basket ${basket.id} - isToday: ${isToday}, isMarketDayValid: ${isMarketDayValid}`);
+                    
+                        return isToday && isMarketDayValid;
+                    });
+            
+                    console.log('Filtered Today Baskets:', todayBaskets);
+            
+                    const groupedData = todayBaskets.reduce((acc, basket) => {
+                        const { market_day_id, market_name } = basket;
+                        if (!acc[market_day_id]) {
+                            acc[market_day_id] = { marketId: market_day_id, marketName: market_name, baskets: [] };
+                        }
+                        acc[market_day_id].baskets.push(basket);
+                        return acc;
+                    }, {});
+            
+                    console.log('Grouped Data:', groupedData);
+                    setTodayBaskets(Object.values(groupedData));
+            
                 } catch (error) {
-                    setErrorMessage('An error occurred while fetching today\'s baskets.');
+                    console.error('An error occurred while fetching today\'s baskets:', error);
+                    setErrorMessage("An error occurred while fetching today's baskets.");
                 }
-            }    
+            }
+            
             fetchTodaysBaskets();
         }
     }, [vendorId, todaysMarketDays]);

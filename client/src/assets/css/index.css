@@ -956,6 +956,10 @@ ul {
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
 }
 
+.box-filters-vendors {
+  right: 0;
+}
+
 .box-qr {
   background-color: white;
   /* width: 178px;
@@ -1146,6 +1150,8 @@ ul {
   border: none;
   background-color: #ffd1d8;
   color: #ff4b5a;
+  transition: .2s;
+  transition-property: box-shadow, background-color;
 }
 
 .btn-like:hover, .btn-fav-filter:hover {
@@ -1160,6 +1166,7 @@ ul {
   background-color: #ffd1d8;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
   transition: .2s;
+  transition-property: box-shadow, background-color;
 }
 
 .btn-like:active, .btn-fav-filter:active {
@@ -1190,9 +1197,10 @@ ul {
 .btn-like-on:hover, .btn-fav-filter-on:hover {
   background-image: url('../images/icons/heart-fill-red-svgrepo-com.svg');
   background-color: #ff7b8a;
-  transition: .2s;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
   color: #ff4b5a ;
+  transition: .2s;
+  transition-property: box-shadow, background-color, color;
 }
 
 .btn-fav-filter {
@@ -1207,6 +1215,8 @@ ul {
   border: none;
   background-color: #ffd1d8;
   color: #ff4b5a;
+  transition: .2s;
+  transition-property: box-shadow, background-color;
 }
 
 .btn-fav-filter-on {
@@ -1222,6 +1232,8 @@ ul {
   border: none;
   background-color: #ffd1d8;
   color: #ff4b5a;
+  transition: .2s;
+  transition-property: box-shadow, background-color;
 }
 
 .btn-fav-blog {
@@ -1537,6 +1549,7 @@ div:has(.btn-unread)>.btn-notif {
 
 .btn-market-card:hover {
   background-color: #ff8300;
+  transition: .2s;
 }
 
 .btn-basket-save {
@@ -1595,10 +1608,18 @@ button a.active {
   padding: 10px 20px 10px 20px;
 }
 
-button:hover {
-  background: #fffa9c;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+button, .btn {
   transition: .2s;
+}
+
+button:active, .btn:active {
+  transition: .1s;
+}
+
+button:hover {
+  background-color: #fffa9c;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+  transition: all .2s;
 }
 
 button:active {
@@ -1693,7 +1714,20 @@ link {
   text-decoration: underline;
   text-underline-offset: .15em;
   background-color: transparent !important;
-  transition: all 0.4s;
+  transition: all 0.3s;
+}
+
+.link-underline-inverse {
+  text-decoration: underline;
+  text-underline-offset: .15em;
+  background-color: transparent !important;
+  transition: all 0.3s;
+}
+
+.link-underline-inverse:hover {
+  color: #007BFF;
+  text-decoration-color: #007BFF;
+  /* text-decoration-thickness: 0.75px; */
 }
 
 .add-cart {
@@ -1750,7 +1784,7 @@ link {
 #map-main {
   overflow: hidden;
   width: 98%;
-  height: 60vh;
+  height: 50vh;
   min-height: 400px;
   margin-left: 1%;
   margin-bottom: 4px;
@@ -1893,7 +1927,11 @@ link {
   /* border-top: 16px solid #ffb600; */
 }
 
-.marker-details {
+.map-marker {
+  scale: 88%;
+}
+
+.map-marker-details {
   background-color: #fff;
   border-style: solid;
   border-color: #b5b5b5;
@@ -2276,9 +2314,9 @@ select:hover {
 
 .select-filter {
   border-radius: 12px;
-  height: 48px;
-  width: 124px;
-
+  /* height: 24px; */
+  /* width: 124px; */
+  font-size: .8em;
 }
 
 .select-dropdown {
@@ -2602,18 +2640,36 @@ select:hover {
   background-blend-mode: darken;
 }
 
-.icon-email-bulk, .icon-email-bulk:hover {
+.icon-email-bulk {
   background-image: url('../images/icons/mass-mailing-icon-vector.svg');
   background-repeat: no-repeat;
   background-position: right 50% top 46%;
   background-size: 2.8rem auto;
 }
+.icon-email-bulk:hover {
+  background-image: url('../images/icons/mass-mailing-icon-vector.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 46%;
+  background-size: 2.8rem auto;
+  animation-name: flying;
+  animation-duration: 4000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
 
-.icon-stats, .icon-stats:hover {
+.icon-stats {
   background-image: url('../images/icons/stats-svgrepo-com.svg');
   background-repeat: no-repeat;
   background-position: right 50% top 46%;
   background-size: 1.64rem auto;
+}
+
+.icon-stats:hover {
+  background-image: url('../images/icons/stats-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 46%;
+  background-size: 1.64rem auto;
+  animation: bouncing .75s linear;
 }
 
 .icon-settings {
@@ -2631,6 +2687,11 @@ select:hover {
 .icon-settings:hover {
   transform: rotate(360deg);
   transition: 3.4s;
+}
+
+.icon-settings:active {
+  transform: rotateZ(0deg);
+  transition: .2s;
 }
 
 /* .icon-settings:hover {
@@ -2710,6 +2771,13 @@ select:hover {
   background-position: right 56% top 46%;
   background-size: 1.8rem auto;
   background-blend-mode: darken;
+  transition: .2s;
+  transition-property: background-color, background-position;
+}
+
+.icon-cart:active {
+  background-position: right -100% top 46%;
+  transition: background-position .6s;
 }
 
 .icon-copy, .icon-copy:hover {
@@ -3030,6 +3098,37 @@ select:hover {
   }
 }
 
+@keyframes flying {
+  0% { background-position: right 50% top 46%; }
+  25% { background-position: right 26% top 76%; }
+  50% { background-position: right 75% top 52%; }
+  75% { background-position: right 30% top 18%; }
+  100% { background-position: right 50% top 46%; }
+}
+
+@keyframes bouncing {
+  0% {
+    background-position: right 50% top 46%;
+    transform: scaleX(1) scaleY(1);
+    }
+  35% {
+    background-position: right 50% top 10%;
+    transform: scaleX(.9) scaleY(1.2);
+    }
+  50% {
+    background-position: right 50% top 50%;
+    transform: scaleX(1.4) scaleY(.6);
+    }
+  75% {
+    background-position: right 50% top 35%;
+    transform: scaleX(.95) scaleY(1.1);
+    }
+  100% {
+    background-position: right 50% top 46%;
+    transform: scaleX(1) scaleY(1);
+    }
+}
+
 .banner-vendor-portal {
   background-color: #8f96eb;
   /* box-shadow: 0 3px 5px rgba(0, 0, 0, 0.28); */
@@ -3292,6 +3391,7 @@ select:hover {
 
 
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
+/* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 @media (min-width: 820px) {
 .d-flex-space-between {
     display: flex;
@@ -3310,6 +3410,7 @@ select:hover {
 
 
 
+/* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 @media (min-width: 640px) {
   .width-40 {
@@ -3333,6 +3434,7 @@ select:hover {
 
 
 
+/* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 @media screen and (max-width: 820px) {
   .m-hidden {
@@ -3481,6 +3583,7 @@ select:hover {
 
 
 
+/* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 @media screen and (max-width: 600px) {
   .m-hidden {
@@ -3657,10 +3760,6 @@ select:hover {
     max-width: 172px;
   }
 
-  /* .form-group input {
-    min-width: 208px;
-  } */
-
   .form-group textarea {
     background-color: white;
     border: #dbdbdb 1px solid;
@@ -3754,6 +3853,7 @@ select:hover {
 
 
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
+/* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 @media screen and (max-width: 444px) {
   .popup-notif-on {
     left: 5vw;
@@ -3785,7 +3885,7 @@ select:hover {
 
 
 
-
+/* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 @media screen and (max-width: 360px) {
   .img-market-card {

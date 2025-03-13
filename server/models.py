@@ -269,6 +269,7 @@ class Vendor(db.Model, SerializerMixin):
     city = db.Column(db.String, nullable=False)
     state = db.Column(db.String(2), nullable=False)
     products = db.Column(db.JSON, nullable=False)
+    products_subcategories = db.Column(db.JSON, nullable=True)
     bio = db.Column(db.String, nullable=True)
     website = db.Column(db.String, nullable=True)
     image = db.Column(db.String)
@@ -341,6 +342,8 @@ class MarketReview(db.Model, SerializerMixin):
     # Relationships
     market = db.relationship('Market', back_populates='reviews')
     user = db.relationship('User', back_populates='market_reviews')
+    ratings = db.relationship('MarketReviewRating', back_populates='review', cascade="all, delete-orphan")
+
 
     serialize_rules = (
         '-user', 
@@ -348,7 +351,8 @@ class MarketReview(db.Model, SerializerMixin):
         '-market.market_favorites', 
         '-market.vendor_markets', 
         '-user.market_reviews', 
-        '-user.vendor_reviews', 
+        '-user.vendor_reviews',
+        '-ratings.review',
         'user.first_name'
     )
 
@@ -377,6 +381,7 @@ class VendorReview(db.Model, SerializerMixin):
     # Relationships
     vendor = db.relationship('Vendor', back_populates='reviews')
     user = db.relationship('User', back_populates='vendor_reviews')
+    ratings = db.relationship('VendorReviewRating', back_populates='review', cascade="all, delete-orphan")
 
     serialize_rules = (
         '-vendor.reviews', 
@@ -384,7 +389,8 @@ class VendorReview(db.Model, SerializerMixin):
         '-user.vendor_reviews', 
         '-user.market_reviews', 
         '-vendor.vendor_markets', 
-        'user.first_name'
+        '-ratings.review',
+        'user.first_name',
     )
 
     def __repr__(self) -> str:
@@ -405,6 +411,11 @@ class MarketReviewRating(db.Model, SerializerMixin):
     vote_down = db.Column(db.Boolean, default=False)
     vote_up = db.Column(db.Boolean, default=False)
 
+    # Relationships
+    review = db.relationship('MarketReview', back_populates='ratings')
+
+    serialize_rules = ('-review.ratings',)
+
     def __repr__(self) -> str:
         return f"<VendorReviewRating {self.id}>"
 
@@ -416,6 +427,11 @@ class VendorReviewRating(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     vote_down = db.Column(db.Boolean, default=False)
     vote_up = db.Column(db.Boolean, default=False)
+
+    # Relationships
+    review = db.relationship('VendorReview', back_populates='ratings')
+    
+    serialize_rules = ('-review.ratings',)
 
     def __repr__(self) -> str:
         return f"<VendorReviewRating {self.id}>"
@@ -680,7 +696,7 @@ class VendorNotification(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
     market_day_id = db.Column(db.Integer, db.ForeignKey('market_days.id'), nullable=True)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
@@ -703,6 +719,7 @@ class AdminNotification(db.Model, SerializerMixin):
     message = db.Column(db.String, nullable=False)
     link = db.Column(db.String, nullable=True)
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=True)
+    admin_role = db.Column(db.Integer, nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
@@ -908,7 +925,6 @@ class SettingsVendor(db.Model, SerializerMixin):
 
     text_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
     text_basket_sold = db.Column(db.Boolean, default=True, nullable=False)
-    text_new_review = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self) -> str:
         return f"<Vendor Settings ID: {self.id} Vendor User ID: {self.vendor_user_id}>"
