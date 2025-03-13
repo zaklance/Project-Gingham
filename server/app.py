@@ -450,12 +450,17 @@ def delete_image():
 @app.route('/api/images/<filename>', methods=['GET'])
 def serve_image(filename):
     try:
-        if os.path.exists(os.path.join(VENDOR_UPLOAD_FOLDER, filename)):
-            return send_from_directory(VENDOR_UPLOAD_FOLDER, filename)
-        elif os.path.exists(os.path.join(MARKET_UPLOAD_FOLDER, filename)):
-            return send_from_directory(MARKET_UPLOAD_FOLDER, filename)
-        elif os.path.exists(os.path.join(USER_UPLOAD_FOLDER, filename)):
+        filename = secure_filename(filename)
+        user_image_path = os.path.normpath(os.path.join(USER_UPLOAD_FOLDER, filename))
+        vendor_image_path = os.path.normpath(os.path.join(VENDOR_UPLOAD_FOLDER, filename))
+        market_image_path = os.path.normpath(os.path.join(MARKET_UPLOAD_FOLDER, filename))
+
+        if user_image_path.startswith(USER_UPLOAD_FOLDER) and os.path.exists(user_image_path):
             return send_from_directory(USER_UPLOAD_FOLDER, filename)
+        elif vendor_image_path.startswith(VENDOR_UPLOAD_FOLDER) and os.path.exists(vendor_image_path):
+            return send_from_directory(VENDOR_UPLOAD_FOLDER, filename)
+        elif market_image_path.startswith(MARKET_UPLOAD_FOLDER) and os.path.exists(market_image_path):
+            return send_from_directory(MARKET_UPLOAD_FOLDER, filename)
         else:
             raise FileNotFoundError
 
