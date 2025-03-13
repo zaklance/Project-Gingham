@@ -943,6 +943,7 @@ function VendorProfile () {
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_market_new_event} onChange={() => handleSwitchChange('site_market_new_event')} color={'secondary'} />} label="Market creates an event"/>
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_market_schedule_change} onChange={() => handleSwitchChange('site_market_schedule_change')} color={'secondary'} />} label="Market changes schedule"/>
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_basket_sold} onChange={() => handleSwitchChange('site_basket_sold')} color={'secondary'} />} label="When a basket is sold"/>
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_new_review} onChange={() => handleSwitchChange('site_new_review')} color={'secondary'} />} label="When a new review has been posted"/>
                                         {/* <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_new_blog} onChange={() => handleSwitchChange('site_new_blog')} color={'secondary'} />} label="A new blog has been posted"/> */}
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_new_statement} onChange={() => handleSwitchChange('site_new_statement')} color={'secondary'} />} label="A new statement is available"/>
                                     </FormGroup>
@@ -952,6 +953,7 @@ function VendorProfile () {
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_market_new_event} onChange={() => handleSwitchChange('email_market_new_event')} color={'secondary'} />} label="Market creates an event" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_market_schedule_change} onChange={() => handleSwitchChange('email_market_schedule_change')} color={'secondary'} />} label="Market changes schedule" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_basket_sold} onChange={() => handleSwitchChange('email_basket_sold')} color={'secondary'} />} label="When a basket is sold" />
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_new_review} onChange={() => handleSwitchChange('email_new_review')} color={'secondary'} />} label="When a new review has been posted" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_new_blog} onChange={() => handleSwitchChange('email_new_blog')} color={'secondary'} />} label="A new blog has been posted" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_new_statement} onChange={() => handleSwitchChange('email_new_statement')} color={'secondary'} />} label="A new statement is available" />
                                     </FormGroup>
@@ -1234,7 +1236,7 @@ function VendorProfile () {
                                                     </tr>
                                                     <tr>
                                                         <td className='cell-title'>Website:</td>
-                                                        <td className='cell-text'>{vendorData ? vendorData.website : ''}</td>
+                                                        <td className='cell-text'><a className='link-underline' href={vendorData ? vendorData.website : ''} target='_blank' rel="noopener noreferrer">{vendorData ? vendorData.website : ''}</a></td>
                                                     </tr>
                                                     <tr>
                                                         <td className='cell-title'>Product:</td>
