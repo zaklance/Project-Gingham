@@ -232,13 +232,20 @@ def upload_file():
         market_id = request.form.get('market_id')
         upload_type = request.form.get('type')
         if upload_type == 'vendor':
-            upload_folder = os.path.join(os.getcwd(), f'../client/public/vendor-images/{vendor_id}')
+            base_folder = os.path.join(os.getcwd(), '../client/public/vendor-images')
+            upload_folder = os.path.normpath(os.path.join(base_folder, vendor_id))
         elif upload_type == 'market':
-            upload_folder = os.path.join(os.getcwd(), f'../client/public/market-images/{market_id}')
+            base_folder = os.path.join(os.getcwd(), '../client/public/market-images')
+            upload_folder = os.path.normpath(os.path.join(base_folder, market_id))
         elif upload_type == 'user':
-            upload_folder = os.path.join(os.getcwd(), f'../client/public/user-images/{user_id}')
+            base_folder = os.path.join(os.getcwd(), '../client/public/user-images')
+            upload_folder = os.path.normpath(os.path.join(base_folder, user_id))
         else:
             return {'error': 'Invalid type specified. Must be "vendor", "market", or "user"'}, 400
+
+        # Ensure the upload folder is within the base folder
+        if not upload_folder.startswith(base_folder):
+            return {'error': 'Invalid path specified'}, 400
 
         # Ensure the upload folder exists
         if not os.path.exists(upload_folder):
