@@ -73,10 +73,10 @@ function Cart() {
         }
     }
     
-    useEffect(() => {
-        console.log("Amount in cart:", amountInCart);
-        console.log("Cart items:", cartItems);
-    }, [amountInCart, cartItems]);
+    // useEffect(() => {
+    //     console.log("Amount in cart:", amountInCart);
+    //     console.log("Cart items:", cartItems);
+    // }, [amountInCart, cartItems]);
 
 
     return (

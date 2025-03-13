@@ -28,7 +28,9 @@ function PickUp() {
 
     useEffect(() => {
         const today = new Date();
-        const formattedDate = today.toISOString().split('T')[0];
+        const localDate = new Date(today.getFullYear(), today.getMonth(), today.getDate()); 
+        const formattedDate = localDate.toISOString().split('T')[0];
+        
         console.log('Formatted date being sent:', formattedDate);
         const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         console.log('Browser timezone:', browserTimezone);
@@ -48,7 +50,11 @@ function PickUp() {
             })
             .then(data => {
                 // console.log("Baskets received from API:", data);
-                const filteredData = data.filter(item => item.is_grabbed === false);
+                const todayFormatted = localDate.toISOString().split('T')[0];
+
+                const filteredData = data.filter(item => 
+                    item.is_grabbed === false && item.sale_date.substring(0, 10) === todayFormatted
+                );
                 setBaskets(filteredData);
             })
             .catch(error => {
@@ -100,10 +106,9 @@ function PickUp() {
         // console.log("Pickup End (Local):", isNaN(end) ? "Invalid Time" : end.toLocaleString('en-US', { timeZone }));
         
         let extendedEnd;
-
         if (extensionHours === "endOfDay") {
             extendedEnd = new Date(end);
-            extendedEnd.setHours(23, 59, 59, 999);
+            extendedEnd.setHours(23, 59, 59, 999); 
         } else {
             extendedEnd = new Date(end.getTime() + (extensionHours * 60 * 60 * 1000));
         }
@@ -120,7 +125,8 @@ function PickUp() {
                             baskets.map((basket, index) => {
                                 const matchingQRCode = qRCodes.find(qRCode => qRCode.basket_id === basket.id);
                                 const isSelected = showQR === basket.id;
-                                const inPickupWindow = isPickupTime(basket.pickup_start, basket.pickup_end, "endOfDay");
+                                const isEndOfDay = new Date().getHours() < 24;
+                                const inPickupWindow = isPickupTime(basket.pickup_start, basket.pickup_end, "endOfDay") || isEndOfDay;
                                 return (
                                     <div key={index} className='basket-card'>
                                         <div className='width-100'>

@@ -3,6 +3,7 @@ import json
 import smtplib
 import csv
 from flask import Flask, Response, request, jsonify, session, send_from_directory, send_file, redirect, url_for
+from markupsafe import escape
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
                     VendorReview, ReportedReview, MarketReviewRating, 
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
@@ -129,10 +130,10 @@ def handle_payment_success(payment_intent):
     # Retrieve metadata for baskets (if stored in frontend during checkout)
     baskets = payment_intent.get("metadata", {}).get("baskets", "[]")
 
-    print(f"Payment Successful: {payment_intent_id}")
-    print(f"Customer: {customer_email}")
-    print(f"Total Paid: ${total_amount} {currency}")
-    print(f"Card Last 4: {last4}")
+    # print(f"Payment Successful: {payment_intent_id}")
+    # print(f"Customer: {customer_email}")
+    # print(f"Total Paid: ${total_amount} {currency}")
+    # print(f"Card Last 4: {last4}")
 
     # If baskets metadata exists, convert it from JSON format
     import json
@@ -158,10 +159,10 @@ def handle_payment_success(payment_intent):
 
 def generate_receipt(email, total, currency, items, last4):
     """Generate structured receipt details."""
-    print("\n🧾 **Receipt Details:**")
-    print(f"Customer: {email}")
-    print(f"Total: ${total} {currency}")
-    print(f"Card Last 4: {last4}")
+    # print("\n **Receipt Details:**")
+    # print(f"Customer: {email}")
+    # print(f"Total: ${total} {currency}")
+    # print(f"Card Last 4: {last4}")
     for item in items:
         print(f"- {item['name']} (Basket ID: {item['basket_id']}) - ${item['price']:.2f}")
         print(f"  Pickup: {item['pickup_date']} {item['pickup_time']} from {item['vendor']}")
@@ -232,13 +233,20 @@ def upload_file():
         market_id = request.form.get('market_id')
         upload_type = request.form.get('type')
         if upload_type == 'vendor':
-            upload_folder = os.path.join(os.getcwd(), f'../client/public/vendor-images/{vendor_id}')
+            base_folder = os.path.join(os.getcwd(), '../client/public/vendor-images')
+            upload_folder = os.path.normpath(os.path.join(base_folder, vendor_id))
         elif upload_type == 'market':
-            upload_folder = os.path.join(os.getcwd(), f'../client/public/market-images/{market_id}')
+            base_folder = os.path.join(os.getcwd(), '../client/public/market-images')
+            upload_folder = os.path.normpath(os.path.join(base_folder, market_id))
         elif upload_type == 'user':
-            upload_folder = os.path.join(os.getcwd(), f'../client/public/user-images/{user_id}')
+            base_folder = os.path.join(os.getcwd(), '../client/public/user-images')
+            upload_folder = os.path.normpath(os.path.join(base_folder, user_id))
         else:
             return {'error': 'Invalid type specified. Must be "vendor", "market", or "user"'}, 400
+
+        # Ensure the upload folder is within the base folder
+        if not upload_folder.startswith(base_folder):
+            return {'error': 'Invalid path specified'}, 400
 
         # Ensure the upload folder exists
         if not os.path.exists(upload_folder):
@@ -307,7 +315,7 @@ def upload_file():
                 market.image = f'{market_id}/{os.path.basename(file_path)}'
                 db.session.commit()
 
-            return {'message': 'File successfully uploaded', 'filename': os.path.basename(file_path)}, 201
+            return {'message': 'File successfully uploaded', 'filename': escape(os.path.basename(file_path))}, 201
 
         except Exception as e:
             db.session.rollback()
@@ -414,7 +422,11 @@ def delete_image():
         return {'error': 'Invalid type or missing ID. Ensure "type" and respective ID are provided.'}, 400
 
     # Ensure filename doesn't include the folder path again
-    file_path = os.path.join(upload_folder, os.path.basename(filename))
+    file_path = os.path.normpath(os.path.join(upload_folder, os.path.basename(filename)))
+
+    # Ensure the file path is within the upload folder
+    if not file_path.startswith(upload_folder):
+        return {'error': 'Invalid file path'}, 400
 
     try:
         print(f"Attempting to delete: {file_path}")  # Log the constructed file path
@@ -450,12 +462,17 @@ def delete_image():
 @app.route('/api/images/<filename>', methods=['GET'])
 def serve_image(filename):
     try:
-        if os.path.exists(os.path.join(VENDOR_UPLOAD_FOLDER, filename)):
-            return send_from_directory(VENDOR_UPLOAD_FOLDER, filename)
-        elif os.path.exists(os.path.join(MARKET_UPLOAD_FOLDER, filename)):
-            return send_from_directory(MARKET_UPLOAD_FOLDER, filename)
-        elif os.path.exists(os.path.join(USER_UPLOAD_FOLDER, filename)):
+        filename = secure_filename(filename)
+        user_image_path = os.path.normpath(os.path.join(USER_UPLOAD_FOLDER, filename))
+        vendor_image_path = os.path.normpath(os.path.join(VENDOR_UPLOAD_FOLDER, filename))
+        market_image_path = os.path.normpath(os.path.join(MARKET_UPLOAD_FOLDER, filename))
+
+        if user_image_path.startswith(USER_UPLOAD_FOLDER) and os.path.exists(user_image_path):
             return send_from_directory(USER_UPLOAD_FOLDER, filename)
+        elif vendor_image_path.startswith(VENDOR_UPLOAD_FOLDER) and os.path.exists(vendor_image_path):
+            return send_from_directory(VENDOR_UPLOAD_FOLDER, filename)
+        elif market_image_path.startswith(MARKET_UPLOAD_FOLDER) and os.path.exists(market_image_path):
+            return send_from_directory(MARKET_UPLOAD_FOLDER, filename)
         else:
             raise FileNotFoundError
 
@@ -580,23 +597,24 @@ def signup():
 @app.route('/api/user/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
 def confirm_email(token):
     try:
-        print(f"Received token: {token}")
+        # print(f"Received token: {token}")
         data = serializer.loads(token, salt='user-confirmation-salt', max_age=3600)
+        website = os.environ['SITE_URL']
 
         user_id = data.get('user_id')  # Extract user ID
         email = data.get('email')  # Extract new email
 
         if request.method == 'GET':
-            print(f"GET request: Token verified, email extracted: {email}")
-            return redirect(f'http://localhost:5173/user/confirm-email/{token}')
+            # print(f"GET request: Token verified, email extracted: {email}")
+            return redirect(f'{website}/user/confirm-email/{token}')
 
         if request.method == 'POST':
-            print(f"POST request: Token verified, user data extracted: {data}")
+            # print(f"POST request: Token verified, user data extracted: {data}")
 
             existing_user = User.query.get(user_id)
 
             if existing_user:
-                print(f"POST request: User {user_id} exists, updating email to {email}")
+                # print(f"POST request: User {user_id} exists, updating email to {email}")
 
                 if User.query.filter(User.email == email, User.id != user_id).first():
                     return jsonify({"error": "This email is already in use by another account."}), 400
@@ -710,13 +728,14 @@ def confirm_vendor_email(token):
     try:
         print(f'Received token: {token}')
         data = serializer.loads(token, salt='vendor-confirmation-salt', max_age=3600)
+        website = os.environ['SITE_URL']
 
         vendor_id = data.get('vendor_id')
         email = data.get('email')
 
         if request.method == 'GET':
-            print(f"GET request: Token verified, email extracted: {email}")
-            return redirect(f'http://localhost:5173/vendor/confirm-email/{token}')
+            # print(f"GET request: Token verified, email extracted: {email}")
+            return redirect(f'{website}/vendor/confirm-email/{token}')
         
         if request.method == 'POST':
             print(f"POST request: Token verified, user data extracted: {data}")
@@ -836,13 +855,14 @@ def confirm_admin_email(token):
     try:
         print(f'Received token: {token}')
         data = serializer.loads(token, salt='admin-confirmation-salt', max_age=3600)
+        website = os.environ['SITE_URL']
 
         admin_id = data.get('admin_id')
         email = data.get('email')
 
         if request.method == 'GET':
             print(f"GET request: Token verified, email extracted: {email}")
-            return redirect(f'http://localhost:5173/admin/confirm-email/{token}')
+            return redirect(f'{website}/admin/confirm-email/{token}')
         
         if request.method == 'POST':
             print(f"POST request: Token verified, user data extracted: {data}")
@@ -1859,6 +1879,8 @@ def all_vendors():
             city=data.get('city'),
             state=data.get('state'),
             products=data.get('products'),
+            products_subcategories=data.get('products_subcategories'),
+            website=data.get('website'),
             bio=data.get('bio'),
             image=data.get('image')
         )
@@ -1880,14 +1902,18 @@ def all_vendors():
 
         if 'name' in data:
             vendor.name = data['name']
-        if 'products' in data:
-            vendor.product = data['products']
         if 'city' in data:
             vendor.city = data['city']
         if 'state' in data:
             vendor.state = data['state']
+        if 'products' in data:
+            vendor.product = data['products']
+        if 'products_subcategories' in data:
+            vendor.products_subcategories = data['products_subcategories']
         if 'bio' in data:
             vendor.bio = data['bio']
+        if 'website' in data:
+            vendor.website = data['website']
         if 'image' in data: 
             vendor.image = data['image']
         if 'image_default' in data: 
@@ -1917,14 +1943,18 @@ def vendor_by_id(id):
            
             if 'name' in data:
                 vendor.name = data['name']
-            if 'products' in data:
-                vendor.products = data['products']
             if 'city' in data:
                 vendor.city = data['city']
             if 'state' in data:
                 vendor.state = data['state']
+            if 'products' in data:
+                vendor.products = data['products']
+            if 'products_subcategories' in data:
+                vendor.products_subcategories = data['products_subcategories']
             if 'bio' in data:
                 vendor.bio = data['bio']
+            if 'website' in data:
+                vendor.website = data['website']
             if 'image' in data:
                 vendor.image = data['image']
             if 'image_default' in data: 
@@ -2007,7 +2037,7 @@ def all_vendor_reviews():
         elif is_reported is not None:
             reviews = VendorReview.query.filter_by(is_reported=bool(is_reported)).all()
         else:
-            reviews = []
+            reviews = VendorReview.query.all
         return jsonify([review.to_dict() for review in reviews]), 200
 
     elif request.method == 'POST':
@@ -2073,17 +2103,21 @@ def get_top_market_reviews():
         percentile_value = 0
     # print("Percentile value for top reviews:", percentile_value)
     # Get reviews with vote_up_count in the top 20%
-    top_reviews = (
+    query = (
         db.session.query(MarketReview)
         .join(vote_up_counts, MarketReview.id == vote_up_counts.c.review_id)
         .filter(vote_up_counts.c.vote_up_count >= max(percentile_value, 3))
         .order_by(desc(vote_up_counts.c.vote_up_count))
-        .all()
     )
+    market_id = request.args.get('market_id')
+    if market_id:
+        query = query.filter(MarketReview.market_id == market_id)
+    
+    top_reviews = query.all()
+        
     # Convert the reviews to dictionaries for JSON response
     response_data = [review.to_dict() for review in top_reviews]
     return jsonify(response_data)
-
 
 @app.route('/api/top-vendor-reviews', methods=['GET'])
 def get_top_vendor_reviews():
@@ -2108,15 +2142,19 @@ def get_top_vendor_reviews():
     else:
         percentile_value = 0
     # Get reviews with vote_up_count in the top 20%
-    top_reviews = (
+    query = (
         db.session.query(VendorReview)
         .join(vote_up_counts, VendorReview.id == vote_up_counts.c.review_id)
         .filter(vote_up_counts.c.vote_up_count >= max(percentile_value, 3))
         .order_by(desc(vote_up_counts.c.vote_up_count))
-        .all()
     )
+    vendor_id = request.args.get('vendor_id')
+    if vendor_id:
+        query = query.filter(VendorReview.vendor_id == vendor_id)
+
+    top_reviews = query.all()
+
     # print("Percentile value for top reviews:", percentile_value)
-    # Convert the reviews to dictionaries for JSON response
     response_data = [review.to_dict() for review in top_reviews]
     return jsonify(response_data)
 
@@ -3358,7 +3396,7 @@ def reverse_basket_transfer():
 
         basket_id = data['basket_id']
         stripe_account_id = data['stripe_account_id']
-        reversal_amount = int(data['amount'] * 100) 
+        reversal_amount = int(data['amount'] * 100)
 
         print(f"Reversing transfer for Basket {basket_id} (Stripe ID: {stripe_account_id}) (Amount: {reversal_amount} cents)")
 
@@ -3375,7 +3413,9 @@ def reverse_basket_transfer():
             metadata={"reason": "Refunded to customer"}
         )
 
-        print(f"Reversal successful: {reversal['id']} for basket {basket_id}")
+        basket_record.is_refunded = True
+        db.session.commit()
+        print(f"✅ Updated basket {basket_id}: is_refunded = True")
 
         return jsonify({
             "id": reversal["id"],
@@ -3387,15 +3427,18 @@ def reverse_basket_transfer():
             "destination_payment_refund": reversal.get("destination_payment_refund"),
             "metadata": reversal["metadata"],
             "source_refund": reversal["source_refund"],
-            "transfer": stripe_transfer_id
+            "transfer": stripe_transfer_id,
+            "is_refunded": True
         }), 200
 
     except stripe.error.StripeError as e:
-        print(f"Stripe API Error: {e.user_message}")
+        db.session.rollback()
+        print(f"❌ Stripe API Error: {e.user_message}")
         return jsonify({'error': {'message': e.user_message}}), 400
 
     except Exception as e:
-        print(f"Unexpected Error: {str(e)}")
+        db.session.rollback()
+        print(f"❌ Unexpected Error: {str(e)}")
         return jsonify({'error': {'message': 'An unexpected error occurred.', 'details': str(e)}}), 500
 
 # @app.route('/api/refund', methods=['POST'])
@@ -3696,9 +3739,10 @@ def password_reset_request():
 @app.route('/api/user/password-reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
     if request.method == 'GET':
-        print(f"GET request: Received token: {token}")
+        # print(f"GET request: Received token: {token}")
+        website = os.environ['SITE_URL']
         
-        return redirect(f'http://localhost:5173/user/password-reset/{token}')
+        return redirect(f'{website}/user/password-reset/{token}')
 
     if request.method == 'POST':
         try:
@@ -3758,7 +3802,8 @@ def vendor_password_reset_request():
 @app.route('/api/vendor/password-reset/<token>', methods=['GET', 'POST'])
 def vendor_password_reset(token):
     if request.method == 'GET':
-        return redirect(f'http://localhost:5173/vendor/password-reset/{token}')
+        website = os.environ['SITE_URL']
+        return redirect(f'{website}/vendor/password-reset/{token}')
 
     if request.method == 'POST':
         try:
@@ -3806,7 +3851,8 @@ def admin_password_reset_request():
 @app.route('/api/admin/password-reset/<token>', methods=['GET', 'POST'])
 def admin_password_reset(token):
     if request.method == 'GET':
-        return redirect(f'http://localhost:5173/admin/password-reset/{token}')
+        website = os.environ['SITE_URL']
+        return redirect(f'{website}/admin/password-reset/{token}')
 
     if request.method == 'POST':
         try:
@@ -5096,5 +5142,5 @@ def export_pdf_vendor_baskets():
         return jsonify({"error": f"Error fetching baskets: {str(e)}"}), 500
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5555)), debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5555)), debug=False)
     # app.run(port=5555, debug=True)

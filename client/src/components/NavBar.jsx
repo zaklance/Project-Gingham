@@ -355,13 +355,14 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     }, [adminUserId]);
 
     useEffect(() => {
-        const today = new Date();
-        const formattedDate = today.toISOString().split('T')[0];
-        console.log('Formatted date being sent:', formattedDate);
+        const today = new Date().toLocaleDateString('en-CA');
+        console.log('Formatted date being sent:', today);
+
         const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         console.log('Browser timezone:', browserTimezone);
 
-        fetch(`/api/baskets?user_id=${userId}&sale_date=${formattedDate}`, {
+
+        fetch(`/api/baskets?user_id=${userId}&sale_date=${today}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -456,7 +457,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                     <>
                         {notifications.length > 0 &&
                             <li className='notification' onClick={handleNotifPopup}>
-                                <a className='nav-tab color-3 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
+                                <a className='nav-tab color-1 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
                                 {notifications.filter(notification => notification.is_read === false).length > 0 && (
                                     <p className='badge'>
                                         {notifications.filter(notification => notification.is_read === false).length}

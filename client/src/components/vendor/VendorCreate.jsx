@@ -19,6 +19,7 @@ function VendorCreate () {
     const [newProducts, setNewProducts] = useState(null);
     const [shwoNewProducts, setShowNewProducts] = useState(null);
     const [productRequest, setProductRequest] = useState('')
+    const [newProductSubcat, setNewProductSubcat] = useState(null);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -90,7 +91,7 @@ function VendorCreate () {
     
     useEffect(() => {
         if (newVendor && !vendorData) {
-            setVendorData({ name: '', city: '', state: '', bio: '', product: '', image: '' });
+            setVendorData({ name: '', city: '', state: '', bio: '', products: '', products_subcategories: '', website: '', image: '' });
             setVendorEditMode(true); 
         } else if (vendorUserData) {
             setVendorData({ name: vendorUserData.name || '', city: vendorUserData.city || '', state: vendorUserData.state || '', bio: vendorUserData.bio || '', product: vendorUserData.product || '', image: vendorUserData.image || '' });
@@ -110,6 +111,31 @@ function VendorCreate () {
         setProductRequest(event.target.value);
     };
 
+    const handleAddProductSubcat = (newProduct) => {
+        const toTitleCase = (str) => {
+            return str
+                .toLowerCase()
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        };
+        const formattedProduct = toTitleCase(newProduct);
+        setVendorData((prev) => ({
+            ...prev,
+            products_subcategories: (prev.products_subcategories || []).includes(formattedProduct)
+                ? prev.products_subcategories
+                : [...(prev.products_subcategories || []), formattedProduct],
+        }));
+        setNewProductSubcat('')
+    };
+
+    const handleDeleteProductSubcat = (product) => {
+        setTempVendorData((prev) => ({
+            ...prev,
+            products_subcategories: prev.products_subcategories.filter((id) => id !== product),
+        }));
+    };
+
     const handleFileChange = (event) => {
         if (event.target.files) { setStatus('initial'); setImage(event.target.files[0]); }
     };
@@ -120,7 +146,16 @@ function VendorCreate () {
             return;
         }
 
-        const newVendorData = { name: vendorData.name, city: vendorData.city, state: vendorData.state, bio: vendorData.bio, products: vendorData.products, image: vendorImageURL, };
+        const newVendorData = {
+            name: vendorData.name,
+            city: vendorData.city,
+            state: vendorData.state,
+            bio: vendorData.bio,
+            products: vendorData.products,
+            products_subcategories: vendorData.products_subcategories,
+            website: vendorData.website,
+            image: vendorImageURL,
+        };
 
         try {
             const vendorResponse = await fetch('/api/vendors', {
@@ -194,6 +229,7 @@ function VendorCreate () {
                             subject: 'product-request',
                             vendor_id: createdVendor.id,
                             vendor_user_id: vendorUserId,
+                            admin_role: 3,
                             link: '/admin/vendors?tab=products', 
                             message: `${vendorData.name} has requested a new Product category: ${productRequest}.`,
                         }),
@@ -243,8 +279,7 @@ function VendorCreate () {
         }));
         if (Number(newProductsId) === 1) {setShowNewProducts(true)}
     };
-    
-    console.log(shwoNewProducts)
+
 
     return (
         <div>
@@ -258,6 +293,16 @@ function VendorCreate () {
                     name="name" 
                     value={vendorData?.name || ''} 
                     onChange={handleVendorInputChange} 
+                />
+            </div>
+            <div className='form-group'>
+                <label>Website</label>
+                <input 
+                    type="text"
+                    name="website"
+                    placeholder='Include https://'
+                    value={vendorData ? vendorData.website : ''}
+                    onChange={handleVendorInputChange}
                 />
             </div>
             <div className='form-group'>
@@ -304,6 +349,32 @@ function VendorCreate () {
                     />
                 </div>
             )}
+            <div className='form-group'>
+                <label>Product Subcategories:</label>
+                <input
+                    type="text"
+                    name="product_subcat"
+                    placeholder='If you focus on specific things; ex: "Apples"'
+                    value={newProductSubcat ? newProductSubcat : ''}
+                    onChange={(e) => setNewProductSubcat(e.target.value)}
+                />
+                <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddProductSubcat(newProductSubcat)}>Add</button>
+                <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                    {vendorData?.products_subcategories?.map((product) => {
+                        return (
+                            <Chip
+                                key={product}
+                                style={{
+                                    backgroundColor: "#eee", fontSize: ".9em"
+                                }}
+                                label={product || 'Unknown Product'}
+                                size="small"
+                                onDelete={() => handleDeleteProductSubcat(product)}
+                            />
+                        );
+                    })}
+                </Stack>
+            </div>
             <div className="form-group">
                 <label>Bio:</label>
                 <textarea 

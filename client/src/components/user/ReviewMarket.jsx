@@ -33,6 +33,28 @@ function ReviewMarket({ market }) {
             .then(data => {
                 if (Array.isArray(data)) {
                     setReviews(data);
+
+                    const marketRatings = data.map(review => review.ratings).flat();
+                    setVotes(marketRatings);
+
+                    const userVotes = marketRatings.filter(item => item.user_id === userId);
+                    setUpVoteRatings(userVotes);
+                    setDownVoteRatings(userVotes);
+
+                    const initialIsClickedUp = {};
+                    userVotes.forEach((vote) => {
+                        if (vote.vote_up) {
+                            initialIsClickedUp[vote.review_id] = true;
+                        }
+                    });
+                    const initialIsClickedDown = {};
+                    setIsClickedUp(initialIsClickedUp);
+                    userVotes.forEach((vote) => {
+                        if (vote.vote_down) {
+                            initialIsClickedDown[vote.review_id] = true;
+                        }
+                    });
+                    setIsClickedDown(initialIsClickedDown);
                 } else {
                     console.error('Unexpected response format:', data);
                     setReviews([]);
@@ -150,41 +172,6 @@ function ReviewMarket({ market }) {
     const handleNewToggle = () => {
         set(!reviewMode);
     };
-
-
-    // Ratings
-    useEffect(() => {
-        fetch(`/api/market-review-ratings`)
-            .then(response => response.json())
-            .then(data => {
-                if (Array.isArray(data)) {
-                    setVotes(data);
-
-                    const userVotes = data.filter(item => item.user_id === userId);
-                    setUpVoteRatings(userVotes);
-                    setDownVoteRatings(userVotes);
-
-                    const initialIsClickedUp = {};
-                    userVotes.forEach((vote) => {
-                        if (vote.vote_up) {
-                            initialIsClickedUp[vote.review_id] = true;
-                        }
-                    });
-                    const initialIsClickedDown = {};
-                    setIsClickedUp(initialIsClickedUp);
-                    userVotes.forEach((vote) => {
-                        if (vote.vote_down) {
-                            initialIsClickedDown[vote.review_id] = true;
-                        }
-                    });
-                    setIsClickedDown(initialIsClickedDown);
-                } else {
-                    console.error('Unexpected response format:', data);
-                    setVotes([]);
-                }
-            })
-            .catch(error => console.error('Error fetching reviews:', error));
-    }, [id, userId]);
 
     function filterRatingsUpVote(id) {
         const matchingReviews = votes.filter(item => item.review_id === id);
@@ -350,7 +337,7 @@ function ReviewMarket({ market }) {
     useEffect(() => {
         const fetchTopReviews = async () => {
             try {
-                const response = await fetch('/api/top-market-reviews');
+                const response = await fetch(`/api/top-market-reviews?market_id=${id}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch reviews');
                 }

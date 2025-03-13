@@ -3,31 +3,16 @@ import { Link } from 'react-router-dom';
 import { Annotation } from 'mapkit-react';
 import { formatDate } from '../../utils/helpers';
 
-function MapAnnotation({ market, markerType, showMarker }) {
-    const [isHover, setIsHover] = useState({});
-
-    const handleMarkerHoverOn = (id) => {
-        setIsHover((prev) => ({
-            ...prev,
-            [id]: true,
-        }));
-    };
-
-    const handleMarkerHoverOff = (id) => {
-        setIsHover((prev) => ({
-            ...prev,
-            [id]: false,
-        }));
-    };
+function MapAnnotation({ handleMarkerHoverOn, handleMarkerHoverOff, isHover, market, markerType, showMarker }) {
 
 
     return (
         <Annotation
-            latitude={market.latitude}
-            longitude={market.longitude}
+            latitude={parseFloat(market.coordinates.lat)}
+            longitude={parseFloat(market.coordinates.lng)}
             visible={showMarker}
             calloutElement={
-                <div className="marker-details">
+                <div className="map-marker-details">
                     <div className='text-center'>
                         <div className="marker-name"><Link className='link-underline link-scale-96' to={`/user/markets/${market.id}`}>{market.name}</Link></div>
                         <div className="marker-day">{market.schedule}</div>
@@ -46,9 +31,11 @@ function MapAnnotation({ market, markerType, showMarker }) {
                 </div> 
             }
             calloutEnabled
+            // size={{width: 32, height: 46}}
             // calloutOffsetY={-43}
         >
-            <div 
+            <div
+                className='map-marker'
                 onMouseEnter={() => handleMarkerHoverOn(market.id)}
                 onMouseLeave={() => handleMarkerHoverOff(market.id)}
             >

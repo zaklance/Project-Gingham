@@ -9,6 +9,7 @@ function AdminVendorEdit({ vendors }) {
     const [vendorData, setVendorData] = useState({});
     const [image, setImage] = useState(null)
     const [newProduct, setNewProduct] = useState(null);
+    const [newProductSubcat, setNewProductSubcat] = useState(null);
     const [status, setStatus] = useState('initial')
     const [products, setProducts] = useState([])
 
@@ -116,6 +117,13 @@ function AdminVendorEdit({ vendors }) {
         }));
     };
 
+    const handleDeleteProductSubcat = (product) => {
+        setVendorData((prev) => ({
+            ...prev,
+            products_subcategories: prev.products_subcategories.filter((id) => id !== product),
+        }));
+    };
+
     const handleAddProduct = (newProductId) => {
         setVendorData((prev) => ({
             ...prev,
@@ -123,6 +131,24 @@ function AdminVendorEdit({ vendors }) {
                 ? prev.products
                 : [...(prev.products || []), Number(newProductId)],
         }));
+    };
+
+    const handleAddProductSubcat = (newProduct) => {
+        const toTitleCase = (str) => {
+            return str
+                .toLowerCase()
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        };
+        const formattedProduct = toTitleCase(newProduct);
+        setVendorData((prev) => ({
+            ...prev,
+            products_subcategories: (prev.products_subcategories || []).includes(formattedProduct)
+                ? prev.products_subcategories
+                : [...(prev.products_subcategories || []), formattedProduct],
+        }));
+        setNewProductSubcat('')
     };
 
 
@@ -137,6 +163,16 @@ function AdminVendorEdit({ vendors }) {
                             type="text"
                             name="name"
                             value={vendorData.name || ''}
+                            onChange={handleInputChange}
+                        />
+                    </div>
+                    <div className='form-group'>
+                        <label>Website</label>
+                        <input 
+                            type="text"
+                            name="website"
+                            placeholder='Include https://'
+                            value={vendorData ? vendorData.website : ''}
                             onChange={handleInputChange}
                         />
                     </div>
@@ -191,6 +227,32 @@ function AdminVendorEdit({ vendors }) {
                                         label={product?.product || 'Unknown Product'}
                                         size="small"
                                         onDelete={() => handleDelete(productId)}
+                                    />
+                                );
+                            })}
+                        </Stack>
+                    </div>
+                    <div className='form-group'>
+                        <label>Product Subcategories:</label>
+                        <input
+                            type="text"
+                            name="product_subcat"
+                            placeholder='If you focus on specific things; ex: "Apples"'
+                            value={newProductSubcat ? newProductSubcat : ''}
+                            onChange={(e) => setNewProductSubcat(e.target.value)}
+                        />
+                        <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddProductSubcat(newProductSubcat)}>Add</button>
+                        <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                            {vendorData.products_subcategories?.map((product) => {
+                                return (
+                                    <Chip
+                                        key={product}
+                                        style={{
+                                            backgroundColor: "#eee", fontSize: ".9em"
+                                        }}
+                                        label={product || 'Unknown Product'}
+                                        size="small"
+                                        onDelete={() => handleDeleteProductSubcat(product)}
                                     />
                                 );
                             })}

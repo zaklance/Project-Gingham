@@ -17,6 +17,9 @@ import VendorTeamLeave from './VendorTeamLeave';
 import { toast } from 'react-toastify';
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
+import DOMPurify from 'dompurify';
+
+
 
 function VendorProfile () {
     const { id } = useParams();
@@ -40,6 +43,7 @@ function VendorProfile () {
     const [products, setProducts] = useState([])
     const [newProduct, setNewProduct] = useState(null);
     const [productRequest, setProductRequest] = useState('')
+    const [newProductSubcat, setNewProductSubcat] = useState(null);
     const [activeTab, setActiveTab] = useState('website');
     const [changeEmail, setChangeEmail] = useState();
     const [changeConfirmEmail, setChangeConfirmEmail] = useState();
@@ -404,6 +408,7 @@ function VendorProfile () {
                 name: vendorData.name,
                 website: vendorData.website,
                 products: vendorData.products, 
+                products_subcategories: vendorData.products_subcategories, 
                 bio: vendorData.bio,
                 city: vendorData.city,
                 state: vendorData.state,
@@ -504,6 +509,7 @@ function VendorProfile () {
                         body: JSON.stringify({
                             vendor_id: vendorId,
                             vendor_user_id: id,
+                            admin_role: 3,
                             link: '/admin/vendors?tab=products',
                             subject: 'product-request',
                             message: `${vendorData.name} has requested to for a new Product category: ${productRequest}.`,
@@ -658,6 +664,13 @@ function VendorProfile () {
         }));
     };
 
+    const handleDeleteProductSubcat = (product) => {
+        setTempVendorData((prev) => ({
+            ...prev,
+            products_subcategories: prev.products_subcategories.filter((id) => id !== product),
+        }));
+    };
+
     const handleDeleteMarketDay = (marketDayId) => {
         setTempVendorUserSettings((prev) => ({
             ...prev,
@@ -672,6 +685,24 @@ function VendorProfile () {
                 ? prev.products
                 : [...(prev.products || []), Number(newProductId)],
         }));
+    };
+
+    const handleAddProductSubcat = (newProduct) => {
+        const toTitleCase = (str) => {
+            return str
+                .toLowerCase()
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        };
+        const formattedProduct = toTitleCase(newProduct);
+        setTempVendorData((prev) => ({
+            ...prev,
+            products_subcategories: (prev.products_subcategories || []).includes(formattedProduct)
+                ? prev.products_subcategories
+                : [...(prev.products_subcategories || []), formattedProduct],
+        }));
+        setNewProductSubcat('')
     };
 
     const handleMarketDaySelect = (event) => {
@@ -915,6 +946,7 @@ function VendorProfile () {
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_market_new_event} onChange={() => handleSwitchChange('site_market_new_event')} color={'secondary'} />} label="Market creates an event"/>
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_market_schedule_change} onChange={() => handleSwitchChange('site_market_schedule_change')} color={'secondary'} />} label="Market changes schedule"/>
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_basket_sold} onChange={() => handleSwitchChange('site_basket_sold')} color={'secondary'} />} label="When a basket is sold"/>
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_new_review} onChange={() => handleSwitchChange('site_new_review')} color={'secondary'} />} label="When a new review has been posted"/>
                                         {/* <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_new_blog} onChange={() => handleSwitchChange('site_new_blog')} color={'secondary'} />} label="A new blog has been posted"/> */}
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_new_statement} onChange={() => handleSwitchChange('site_new_statement')} color={'secondary'} />} label="A new statement is available"/>
                                     </FormGroup>
@@ -924,6 +956,7 @@ function VendorProfile () {
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_market_new_event} onChange={() => handleSwitchChange('email_market_new_event')} color={'secondary'} />} label="Market creates an event" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_market_schedule_change} onChange={() => handleSwitchChange('email_market_schedule_change')} color={'secondary'} />} label="Market changes schedule" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_basket_sold} onChange={() => handleSwitchChange('email_basket_sold')} color={'secondary'} />} label="When a basket is sold" />
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_new_review} onChange={() => handleSwitchChange('email_new_review')} color={'secondary'} />} label="When a new review has been posted" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_new_blog} onChange={() => handleSwitchChange('email_new_blog')} color={'secondary'} />} label="A new blog has been posted" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_new_statement} onChange={() => handleSwitchChange('email_new_statement')} color={'secondary'} />} label="A new statement is available" />
                                     </FormGroup>
@@ -1069,6 +1102,32 @@ function VendorProfile () {
                                         </div>
                                     )}
                                     <div className='form-group'>
+                                        <label>Product Subcategories:</label>
+                                        <input
+                                            type="text"
+                                            name="product_subcat"
+                                            placeholder='If you focus on specific things; ex: "Apples"'
+                                            value={newProductSubcat ? newProductSubcat : ''}
+                                            onChange={(e) => setNewProductSubcat(e.target.value)}
+                                        />
+                                        <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddProductSubcat(newProductSubcat)}>Add</button>
+                                        <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                                            {tempVendorData.products_subcategories?.map((product) => {
+                                                return (
+                                                    <Chip
+                                                        key={product}
+                                                        style={{
+                                                            backgroundColor: "#eee", fontSize: ".9em"
+                                                        }}
+                                                        label={product || 'Unknown Product'}
+                                                        size="small"
+                                                        onDelete={() => handleDeleteProductSubcat(product)}
+                                                    />
+                                                );
+                                            })}
+                                        </Stack>
+                                    </div>
+                                    <div className='form-group'>
                                         <label>Bio:</label>
                                         <textarea
                                             className='textarea-edit'
@@ -1122,7 +1181,7 @@ function VendorProfile () {
                                             <>
                                                 <img
                                                     className='img-vendor-edit'
-                                                    src={tempVendorData.image ? `/vendor-images/${tempVendorData.image}` : `/vendor-images/_default-images/${tempVendorData.image_default}`}
+                                                    src={tempVendorData.image ? `/vendor-images/${DOMPurify.sanitize(tempVendorData.image, { SAFE_FOR_TEMPLATES: true })}` : `/vendor-images/_default-images/${tempVendorData.image_default}`}
                                                     alt="Vendor"
                                                     style={{ maxWidth: '100%', height: 'auto' }}
                                                 />
@@ -1180,7 +1239,7 @@ function VendorProfile () {
                                                     </tr>
                                                     <tr>
                                                         <td className='cell-title'>Website:</td>
-                                                        <td className='cell-text'>{vendorData ? vendorData.website : ' Loading...'}</td>
+                                                        <td className='cell-text'><a className='link-underline' href={vendorData ? vendorData.website : ''} target='_blank' rel="noopener noreferrer">{vendorData ? vendorData.website : ''}</a></td>
                                                     </tr>
                                                     <tr>
                                                         <td className='cell-title'>Product:</td>
@@ -1188,6 +1247,14 @@ function VendorProfile () {
                                                             {products
                                                                 .filter(p => vendorData?.products?.includes(p.id))
                                                                 .map(p => p.product)
+                                                                .join(', ') || ''}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className='cell-title'>Product Subcategories:</td>
+                                                        <td className='cell-text'>
+                                                            {vendorData?.products_subcategories
+                                                                ?.map(p => p)
                                                                 .join(', ') || ''}
                                                         </td>
                                                     </tr>
