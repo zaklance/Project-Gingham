@@ -19,14 +19,7 @@ import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 import DOMPurify from 'dompurify';
 
-function escapeHtml(unsafe) {
-    return unsafe
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
+
 
 function VendorProfile () {
     const { id } = useParams();
@@ -1188,7 +1181,7 @@ function VendorProfile () {
                                             <>
                                                 <img
                                                     className='img-vendor-edit'
-                                                    src={tempVendorData.image ? `/vendor-images/${escapeHtml(DOMPurify.sanitize(tempVendorData.image))}` : `/vendor-images/_default-images/${tempVendorData.image_default}`}
+                                                    src={tempVendorData.image ? `/vendor-images/${DOMPurify.sanitize(tempVendorData.image, { SAFE_FOR_TEMPLATES: true })}` : `/vendor-images/_default-images/${tempVendorData.image_default}`}
                                                     alt="Vendor"
                                                     style={{ maxWidth: '100%', height: 'auto' }}
                                                 />
