@@ -129,10 +129,10 @@ def handle_payment_success(payment_intent):
     # Retrieve metadata for baskets (if stored in frontend during checkout)
     baskets = payment_intent.get("metadata", {}).get("baskets", "[]")
 
-    print(f"Payment Successful: {payment_intent_id}")
-    print(f"Customer: {customer_email}")
-    print(f"Total Paid: ${total_amount} {currency}")
-    print(f"Card Last 4: {last4}")
+    # print(f"Payment Successful: {payment_intent_id}")
+    # print(f"Customer: {customer_email}")
+    # print(f"Total Paid: ${total_amount} {currency}")
+    # print(f"Card Last 4: {last4}")
 
     # If baskets metadata exists, convert it from JSON format
     import json
@@ -158,10 +158,10 @@ def handle_payment_success(payment_intent):
 
 def generate_receipt(email, total, currency, items, last4):
     """Generate structured receipt details."""
-    print("\n🧾 **Receipt Details:**")
-    print(f"Customer: {email}")
-    print(f"Total: ${total} {currency}")
-    print(f"Card Last 4: {last4}")
+    # print("\n **Receipt Details:**")
+    # print(f"Customer: {email}")
+    # print(f"Total: ${total} {currency}")
+    # print(f"Card Last 4: {last4}")
     for item in items:
         print(f"- {item['name']} (Basket ID: {item['basket_id']}) - ${item['price']:.2f}")
         print(f"  Pickup: {item['pickup_date']} {item['pickup_time']} from {item['vendor']}")
