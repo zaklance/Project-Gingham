@@ -2,7 +2,8 @@ import os
 import json
 import smtplib
 import csv
-from flask import Flask, Response, request, jsonify, session, send_from_directory, send_file, redirect, url_for, escape
+from flask import Flask, Response, request, jsonify, session, send_from_directory, send_file, redirect, url_for
+from markupsafe import escape
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
                     VendorReview, ReportedReview, MarketReviewRating, 
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
