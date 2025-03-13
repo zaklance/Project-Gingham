@@ -596,23 +596,24 @@ def signup():
 @app.route('/api/user/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
 def confirm_email(token):
     try:
-        print(f"Received token: {token}")
+        # print(f"Received token: {token}")
         data = serializer.loads(token, salt='user-confirmation-salt', max_age=3600)
+        website = os.environ['SITE_URL']
 
         user_id = data.get('user_id')  # Extract user ID
         email = data.get('email')  # Extract new email
 
         if request.method == 'GET':
-            print(f"GET request: Token verified, email extracted: {email}")
-            return redirect(f'http://localhost:5173/user/confirm-email/{token}')
+            # print(f"GET request: Token verified, email extracted: {email}")
+            return redirect(f'{website}/user/confirm-email/{token}')
 
         if request.method == 'POST':
-            print(f"POST request: Token verified, user data extracted: {data}")
+            # print(f"POST request: Token verified, user data extracted: {data}")
 
             existing_user = User.query.get(user_id)
 
             if existing_user:
-                print(f"POST request: User {user_id} exists, updating email to {email}")
+                # print(f"POST request: User {user_id} exists, updating email to {email}")
 
                 if User.query.filter(User.email == email, User.id != user_id).first():
                     return jsonify({"error": "This email is already in use by another account."}), 400
@@ -726,13 +727,14 @@ def confirm_vendor_email(token):
     try:
         print(f'Received token: {token}')
         data = serializer.loads(token, salt='vendor-confirmation-salt', max_age=3600)
+        website = os.environ['SITE_URL']
 
         vendor_id = data.get('vendor_id')
         email = data.get('email')
 
         if request.method == 'GET':
-            print(f"GET request: Token verified, email extracted: {email}")
-            return redirect(f'http://localhost:5173/vendor/confirm-email/{token}')
+            # print(f"GET request: Token verified, email extracted: {email}")
+            return redirect(f'{website}/vendor/confirm-email/{token}')
         
         if request.method == 'POST':
             print(f"POST request: Token verified, user data extracted: {data}")
@@ -852,13 +854,14 @@ def confirm_admin_email(token):
     try:
         print(f'Received token: {token}')
         data = serializer.loads(token, salt='admin-confirmation-salt', max_age=3600)
+        website = os.environ['SITE_URL']
 
         admin_id = data.get('admin_id')
         email = data.get('email')
 
         if request.method == 'GET':
             print(f"GET request: Token verified, email extracted: {email}")
-            return redirect(f'http://localhost:5173/admin/confirm-email/{token}')
+            return redirect(f'{website}/admin/confirm-email/{token}')
         
         if request.method == 'POST':
             print(f"POST request: Token verified, user data extracted: {data}")
@@ -3736,9 +3739,10 @@ def password_reset_request():
 @app.route('/api/user/password-reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
     if request.method == 'GET':
-        print(f"GET request: Received token: {token}")
+        # print(f"GET request: Received token: {token}")
+        website = os.environ['SITE_URL']
         
-        return redirect(f'http://localhost:5173/user/password-reset/{token}')
+        return redirect(f'{website}/user/password-reset/{token}')
 
     if request.method == 'POST':
         try:
@@ -3798,7 +3802,8 @@ def vendor_password_reset_request():
 @app.route('/api/vendor/password-reset/<token>', methods=['GET', 'POST'])
 def vendor_password_reset(token):
     if request.method == 'GET':
-        return redirect(f'http://localhost:5173/vendor/password-reset/{token}')
+        website = os.environ['SITE_URL']
+        return redirect(f'{website}/vendor/password-reset/{token}')
 
     if request.method == 'POST':
         try:
@@ -3846,7 +3851,8 @@ def admin_password_reset_request():
 @app.route('/api/admin/password-reset/<token>', methods=['GET', 'POST'])
 def admin_password_reset(token):
     if request.method == 'GET':
-        return redirect(f'http://localhost:5173/admin/password-reset/{token}')
+        website = os.environ['SITE_URL']
+        return redirect(f'{website}/admin/password-reset/{token}')
 
     if request.method == 'POST':
         try:
