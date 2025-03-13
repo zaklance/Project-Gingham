@@ -335,7 +335,6 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
     if target.is_reported:
         session = Session(bind=connection)
         try:
-
             # Retrieve the vendor
             vendor = session.query(Vendor).filter_by(id=target.vendor_id).first()
             if not vendor:
@@ -351,14 +350,18 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
                 print("No admins have report review notifications enabled. No notifications will be created.")
                 return
 
-            # Prepare admin notifications
+            # Prepare admin notifications with role filtering
             notifications = []
             for admin in admins:
+                if admin.admin_role < 3:
+                    continue
+
                 notifications.append(AdminNotification(
                     subject="Reported Vendor Review",
                     message=f"A review for vendor '{vendor.name}' has been reported.",
                     link="/admin/report#vendors",
                     admin_id=admin.id,
+                    admin_role=admin.admin_role,
                     vendor_id=vendor.id,
                     created_at=datetime.utcnow(),
                     is_read=False
@@ -395,14 +398,18 @@ def notify_admin_market_review_reported(mapper, connection, target):
                 print("No admins have report review notifications enabled. No notifications will be created.")
                 return
 
-            # Prepare admin notifications
+            # Prepare admin notifications with role filtering
             notifications = []
             for admin in admins:
+                if admin.admin_role < 3:
+                    continue
+
                 notifications.append(AdminNotification(
                     subject="Reported Market Review",
-                    message=f"A review for market, {market.name}, has been reported.",
+                    message=f"A review for market, '{market.name}', has been reported.",
                     link="/admin/report#markets",
                     admin_id=admin.id,
+                    admin_role=admin.admin_role,
                     market_id=market.id,
                     created_at=datetime.utcnow(),
                     is_read=False
@@ -411,7 +418,7 @@ def notify_admin_market_review_reported(mapper, connection, target):
             if notifications:
                 session.bulk_save_objects(notifications)
                 session.commit()
-                print(f"Successfully created {len(notifications)} admin notifications for reported market review.")
+                print(f"✅ Sent notifications to {len(notifications)} admins about reported market review.")
 
         except Exception as e:
             session.rollback()
@@ -650,66 +657,122 @@ def vendor_basket_sold(mapper, connection, target):
     session = Session(bind=connection)
     try:
         # Only notify if the basket was just marked as sold
-        if target.is_sold:
-            # Retrieve the vendor
-            vendor = session.query(Vendor).get(target.vendor_id)
-            if not vendor:
-                print(f"Vendor not found for Vendor ID: {target.vendor_id}")
-                return
+        if not target.is_sold:
+            return
 
-            # Retrieve the market_day associated with the basket
-            market_day = session.query(MarketDay).filter_by(id=target.market_day_id).first()
-            if not market_day:
-                print(f"Market Day not found for MarketDay ID: {target.market_day_id}")
-                return
+        # Retrieve the vendor
+        vendor = session.query(Vendor).get(target.vendor_id)
+        if not vendor:
+            print(f"Vendor not found for Vendor ID: {target.vendor_id}")
+            return
 
-            # Retrieve vendor users with notifications enabled
-            vendor_users = session.query(VendorUser).join(SettingsVendor).filter(
-                SettingsVendor.vendor_user_id == VendorUser.id,
-                SettingsVendor.site_basket_sold == True
-            ).all()
+        # Retrieve the market_day associated with the basket
+        market_day = session.query(MarketDay).filter_by(id=target.market_day_id).first()
+        if not market_day:
+            print(f"Market Day not found for MarketDay ID: {target.market_day_id}")
+            return
 
-            matched_vendor_users = []
-            for vendor_user in vendor_users:
-                settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
-                if not settings or not settings.market_locations:
-                    continue
+        # Ensure sale_date is a valid date
+        if not target.sale_date:
+            print(f"Skipping notification. No sale_date found for Basket ID {target.id}.")
+            return
 
-                # Ensure the market_day_id is in the user's market_locations list
-                if market_day.id not in settings.market_locations:
-                    print(f"Skipping Vendor User {vendor_user.id} - MarketDay ID {market_day.id} not in their market locations.")
-                    continue
+        sale_date = target.sale_date
+        now_utc = datetime.now(timezone.utc)
 
-                # Ensure vendor user is associated with the correct vendor
-                vendor_json = vendor_user.vendor_id
-                if isinstance(vendor_json, str):
-                    vendor_json = json.loads(vendor_json)
+        # Set the scheduled notification time for 6AM on the sale date (UTC)
+        sale_day_6am_utc = datetime.combine(sale_date, datetime.min.time()).replace(tzinfo=timezone.utc) + timedelta(hours=6)
 
-                extracted_vendor_id = next(iter(vendor_json.values()), None)
-                if extracted_vendor_id == vendor.id:
-                    matched_vendor_users.append(vendor_user)
+        # Retrieve vendor users with notifications enabled
+        vendor_users = session.query(VendorUser).join(SettingsVendor).filter(
+            SettingsVendor.vendor_user_id == VendorUser.id,
+            SettingsVendor.site_basket_sold == True
+        ).all()
 
-            if not matched_vendor_users:
-                print(f"No vendor users found with basket sold notifications enabled for Vendor ID={vendor.id}, skipping notification.")
-                return
+        matched_vendor_users = []
+        for vendor_user in vendor_users:
+            settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
+            if not settings or not settings.market_locations:
+                continue
 
-            # Prepare notifications for all vendor users
-            notifications = []
-            for vendor_user in matched_vendor_users:
-                notifications.append(VendorNotification(
-                    subject="Basket Sold!",
-                    message=f"One of your baskets has sold.",
-                    link=f"/vendor/dashboard",
-                    vendor_id=vendor.id,
-                    vendor_user_id=vendor_user.id,
-                    created_at=datetime.utcnow(),
-                    is_read=False
-                ))
+            # Ensure the market_day_id is in the user's market_locations list
+            if market_day.id not in settings.market_locations:
+                print(f"Skipping Vendor User {vendor_user.id} - MarketDay ID {market_day.id} not in their market locations.")
+                continue
 
-            # Save all notifications in bulk
-            if notifications:
-                session.bulk_save_objects(notifications)
-                session.commit()
+            # Ensure vendor user is associated with the correct vendor
+            vendor_json = vendor_user.vendor_id
+            if isinstance(vendor_json, str):
+                vendor_json = json.loads(vendor_json)
+
+            extracted_vendor_id = next(iter(vendor_json.values()), None)
+            if extracted_vendor_id == vendor.id:
+                matched_vendor_users.append(vendor_user)
+
+        if not matched_vendor_users:
+            print(f"No vendor users found with basket sold notifications enabled for Vendor ID={vendor.id}, skipping notification.")
+            return
+
+        # If the sale is before 6AM on sale_date, schedule a summary notification
+        if now_utc < sale_day_6am_utc:
+            print(f"Basket sold before 6AM on sale date. Scheduling summary notification at 6AM UTC on {sale_date}.")
+
+            def send_summary_notification():
+                with Session(bind=connection) as notif_session:
+                    try:
+                        # Get the total baskets sold so far for the vendor on that sale_date
+                        total_sold = notif_session.query(Basket).filter(
+                            Basket.vendor_id == vendor.id,
+                            Basket.sale_date == sale_date,
+                            Basket.is_sold == True
+                        ).count()
+
+                        if total_sold == 0:
+                            print(f"No baskets were sold before 6AM on sale_date {sale_date}. No summary notification needed.")
+                            return
+
+                        notifications = []
+                        for vendor_user in matched_vendor_users:
+                            notifications.append(VendorNotification(
+                                subject="Basket Sales Update!",
+                                message=f"You have sold {total_sold} baskets so far for today ({sale_date}).",
+                                link=f"/vendor/dashboard",
+                                vendor_id=vendor.id,
+                                vendor_user_id=vendor_user.id,
+                                created_at=datetime.utcnow(),
+                                is_read=False
+                            ))
+
+                        if notifications:
+                            notif_session.bulk_save_objects(notifications)
+                            notif_session.commit()
+                            print(f"✅ Summary notification sent to {len(notifications)} vendor users.")
+
+                    except Exception as e:
+                        print(f"Error sending summary notification: {e}")
+
+            # Schedule the summary notification for 6AM on the sale date
+            delay = (sale_day_6am_utc - now_utc).total_seconds()
+            Timer(delay, send_summary_notification).start()
+            return  # Skip the immediate notification in this case
+
+        # If it's after 6AM on sale_date, send an individual notification for each basket sold
+        notifications = []
+        for vendor_user in matched_vendor_users:
+            notifications.append(VendorNotification(
+                subject="Basket Sold!",
+                message=f"One of your baskets has sold.",
+                link=f"/vendor/dashboard",
+                vendor_id=vendor.id,
+                vendor_user_id=vendor_user.id,
+                created_at=datetime.utcnow(),
+                is_read=False
+            ))
+
+        # Save all notifications in bulk
+        if notifications:
+            session.bulk_save_objects(notifications)
+            session.commit()
 
     except Exception as e:
         session.rollback()
