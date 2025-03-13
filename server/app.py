@@ -2,7 +2,7 @@ import os
 import json
 import smtplib
 import csv
-from flask import Flask, Response, request, jsonify, session, send_from_directory, send_file, redirect, url_for
+from flask import Flask, Response, request, jsonify, session, send_from_directory, send_file, redirect, url_for, escape
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
                     VendorReview, ReportedReview, MarketReviewRating, 
                     VendorReviewRating, MarketFavorite, VendorFavorite, 
@@ -314,7 +314,7 @@ def upload_file():
                 market.image = f'{market_id}/{os.path.basename(file_path)}'
                 db.session.commit()
 
-            return {'message': 'File successfully uploaded', 'filename': os.path.basename(file_path)}, 201
+            return {'message': 'File successfully uploaded', 'filename': escape(os.path.basename(file_path))}, 201
 
         except Exception as e:
             db.session.rollback()
