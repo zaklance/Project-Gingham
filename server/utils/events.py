@@ -50,7 +50,6 @@ def track_vendor_favorite(mapper, connection, target):
         # Create a notification
         subject = "Favorite Vendor Added"
         message = f"{user.first_name} added {vendor.name} to their favorites!"
-        # print(f"Creating notification for User ID={user.id} about Vendor ID={vendor.id}")
 
         connection.execute(
             VendorNotification.__table__.insert().values(
@@ -62,7 +61,6 @@ def track_vendor_favorite(mapper, connection, target):
                 is_read=False
             )
         )
-        # print("Notification successfully created.")
     except Exception as e:
         print(f"Error in track_vendor_favorite: {e}")
 
@@ -71,13 +69,13 @@ def track_vendor_favorite(mapper, connection, target):
 def vendor_market_event_or_schedule_change(mapper, connection, target):
     session = Session(bind=connection)
     try:
+        # Retrieve the market day associated with the event
         market_day = session.query(MarketDay).filter_by(market_id=target.market_id).first()
         if not market_day:
             print(f"Market Day not found for Market ID: {target.market_id}")
             return
 
-        market_day_id = market_day.id
-
+        # Retrieve vendors associated with the market
         vendors = session.query(Vendor).join(VendorMarket).join(MarketDay).filter(
             MarketDay.market_id == target.market_id
         ).all()
@@ -89,7 +87,6 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
         is_schedule_change = target.schedule_change
 
         notifications = []
-
         for vendor in vendors:
             vendor_users = session.query(VendorUser).join(SettingsVendor).filter(
                 SettingsVendor.vendor_user_id == VendorUser.id
@@ -98,22 +95,25 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
             matched_vendor_users = []
             for vendor_user in vendor_users:
                 try:
+                    # Get the vendor_user's settings
                     settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
 
                     if not settings:
                         print(f"No settings found for Vendor User ID={vendor_user.id}, skipping notification.")
                         continue
 
-                    if not settings.market_locations or market_day_id not in settings.market_locations:
-                        print(f"Skipping Vendor User {vendor_user.id} - MarketDay ID {market_day_id} not in their market locations.")
-                        continue
-
+                    # Check if the user has notifications enabled for this type
                     if is_schedule_change and not settings.site_market_schedule_change:
                         print(f"Vendor User ID={vendor_user.id} has schedule change notifications disabled.")
                         continue
 
                     if not is_schedule_change and not settings.site_market_new_event:
                         print(f"Vendor User ID={vendor_user.id} has new event notifications disabled.")
+                        continue
+
+                    # Ensure the vendor user's `market_locations` include the relevant `market_day_id`
+                    if market_day.id not in (settings.market_locations or []):
+                        print(f"Skipping Vendor User {vendor_user.id} - MarketDay ID {market_day.id} not in their market locations.")
                         continue
 
                     matched_vendor_users.append(vendor_user)
@@ -127,7 +127,8 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
 
             for vendor_user in matched_vendor_users:
                 vendor_user_id = vendor_user.id
- 
+
+                # Check for existing notifications
                 existing_notification = session.query(VendorNotification).filter(
                     VendorNotification.vendor_user_id == vendor_user_id,
                     VendorNotification.vendor_id == vendor.id,
@@ -142,6 +143,7 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
                 if existing_notification:
                     continue
 
+                # Create notification
                 notification = VendorNotification(
                     subject="Market Schedule Change" if is_schedule_change else "New Event in Your Market!",
                     message=f"The market, {market_day.market.name}, has updated its schedule temporarily."
@@ -160,7 +162,7 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
         if notifications:
             session.bulk_save_objects(notifications)
             session.commit()
-
+            
     except Exception as e:
         session.rollback()
         print(f"Error in vendor_market_event_or_schedule_change: {e}")
@@ -422,8 +424,6 @@ def notify_admin_market_review_reported(mapper, connection, target):
 def fav_vendor_new_baskets(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        # print(f"New basket detected: ID={target.id}, Vendor ID={target.vendor_id}")
-
         vendor = session.query(Vendor).get(target.vendor_id)
         if not vendor:
             print(f"Vendor not found for Vendor ID: {target.vendor_id}")
@@ -433,7 +433,6 @@ def fav_vendor_new_baskets(mapper, connection, target):
         favorited_users = session.query(User).join(VendorFavorite).filter(
             VendorFavorite.vendor_id == target.vendor_id
         ).all()
-        # print(f"Users favorited Vendor ID {vendor.id}: {len(favorited_users)} users found.")
 
         if not favorited_users:
             print(f"No users have favorited Vendor ID {vendor.id}. No notifications will be created.")
@@ -446,7 +445,6 @@ def fav_vendor_new_baskets(mapper, connection, target):
         ).all()
 
         basket_count = len(recent_baskets)
-        # print(f"Vendor ID {vendor.id} has {basket_count} baskets created today.")
 
         if basket_count >= 2:
             # Consolidate notification
@@ -466,7 +464,6 @@ def fav_vendor_new_baskets(mapper, connection, target):
             ).first()
 
             if existing_notification:
-                # print(f"Notification already exists for User ID={user.id}, Vendor ID={vendor.id}. Skipping.")
                 continue
 
             notification = UserNotification(
@@ -479,12 +476,10 @@ def fav_vendor_new_baskets(mapper, connection, target):
                 is_read=False
             )
             notifications.append(notification)
-            # print(f"Prepared notification for User ID={user.id}, Email='{user.email}'")
 
         if notifications:
             session.bulk_save_objects(notifications)
             session.commit()
-            # print(f"Successfully created {len(notifications)} notifications for Vendor ID={vendor.id}")
 
     except Exception as e:
         session.rollback()
@@ -497,7 +492,8 @@ def fav_vendor_new_baskets(mapper, connection, target):
 def schedule_blog_notifications(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        post_date = target.post_date.date()  # Convert datetime to date
+        # Ensure the blog post date is today or earlier
+        post_date = target.post_date.date()
         if post_date > datetime.utcnow().date():
             return
 
@@ -523,7 +519,7 @@ def schedule_blog_notifications(mapper, connection, target):
             for user in users
         ]
 
-        # Prepare vendor notifications separately
+        # Prepare vendor notifications
         vendor_notifications = [
             VendorNotification(
                 subject="New Blog Post Alert!",
@@ -536,19 +532,23 @@ def schedule_blog_notifications(mapper, connection, target):
             for vendor_user in vendor_users
         ]
         
-        # Prepare admin notifications separately
-        admin_notifications = [
-            AdminNotification(
+        # Prepare admin notifications, ensuring admin_role is included
+        admin_notifications = []
+        for admin in admins:
+            if not hasattr(admin, "admin_role"):
+                print(f"Skipping Admin ID {admin.id} due to missing admin_role.")
+                continue
+
+            admin_notifications.append(AdminNotification(
                 subject="New Blog Post Alert!",
                 message=f"A new blog post, {target.title}, has been published. Check it out!",
                 link=f"/admin/profile/{admin.id}#blog",
+                admin_role=admin.admin_role,
                 created_at=datetime.utcnow(),
                 is_read=False
-            )
-            for admin in admins
-        ]
+            ))
 
-        # Save notifications separately
+        # Save notifications
         if user_notifications:
             session.bulk_save_objects(user_notifications)
         if vendor_notifications:
@@ -591,13 +591,13 @@ def delete_scheduled_blog_notifications(mapper, connection, target):
 def vendor_market_new_event(mapper, connection, target):
     session = Session(bind=connection)
     try:
+        # Retrieve the market day associated with the event
         market_day = session.query(MarketDay).filter_by(market_id=target.market_id).first()
         if not market_day:
             print(f"Market Day not found for Market ID: {target.market_id}")
             return
 
-        market_day_id = market_day.id
-
+        # Retrieve vendors associated with the market
         vendors = session.query(Vendor).join(VendorMarket).join(MarketDay).filter(
             MarketDay.market_id == target.market_id
         ).all()
@@ -606,49 +606,41 @@ def vendor_market_new_event(mapper, connection, target):
             print(f"No vendors found for Market ID {target.market_id}. No notifications will be created.")
             return
 
+        # Prepare notifications for vendors who have enabled new event notifications
         notifications = []
-
         for vendor in vendors:
             vendor_users = session.query(VendorUser).join(SettingsVendor).filter(
                 SettingsVendor.vendor_user_id == VendorUser.id,
+                SettingsVendor.site_market_new_event == True
             ).all()
 
             for vendor_user in vendor_users:
-                try:
-                    settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
+                # Ensure vendor user is associated with the correct market day
+                settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
+                if not settings or not settings.market_locations:
+                    continue
 
-                    if not settings or not settings.market_locations:
-                        print(f"Skipping Vendor User {vendor_user.id} - No market locations found.")
-                        continue
+                if market_day.id not in settings.market_locations:
+                    continue
 
-                    if market_day_id not in settings.market_locations:
-                        print(f"Skipping Vendor User {vendor_user.id} - MarketDay ID {market_day_id} not in their market locations.")
-                        continue
-
-                    notification = VendorNotification(
-                        subject="New Event in Your Market!",
-                        message=f"The market, {market_day.market.name}, has created a new event: {target.title}.",
-                        link=f"/user/markets/{market_day.market.id}",
-                        vendor_id=vendor.id,
-                        vendor_user_id=vendor_user.id,
-                        market_id=market_day.market.id,
-                        created_at=datetime.utcnow(),
-                        is_read=False
-                    )
-
-                    notifications.append(notification)
-
-                except Exception as e:
-                    print(f"Error processing vendor_user {vendor_user.id}: {e}")
+                notifications.append(VendorNotification(
+                    subject="New Event in Your Market!",
+                    message=f"The market, {market_day.market.name}, has created a new event: {target.title}.",
+                    link=f"/user/markets/{market_day.market.id}",
+                    vendor_id=vendor.id,
+                    vendor_user_id=vendor_user.id,
+                    market_id=market_day.market.id,
+                    created_at=datetime.utcnow(),
+                    is_read=False
+                ))
 
         if notifications:
             session.bulk_save_objects(notifications)
             session.commit()
-            print(f"✅ Successfully created {len(notifications)} vendor notifications for MarketDay ID={market_day_id}")
 
     except Exception as e:
         session.rollback()
-        print(f"❌ Error in vendor_market_new_event: {e}")
+        print(f"Error in vendor_market_new_event: {e}")
     finally:
         session.close()
 
@@ -724,62 +716,28 @@ def vendor_basket_sold(mapper, connection, target):
         print(f"Error in vendor_basket_sold: {e}")
     finally:
         session.close()
-
-# @listens_for(VendorUser, 'after_insert')
-# def update_vendor_user_market_locations(mapper, connection, target):
-#     session = Session(bind=connection)
-#     try:
-#         # Retrieve all market_day_ids associated with the vendor
-#         market_days = session.query(VendorMarket.market_day_id).filter_by(vendor_id=target.vendor_id).all()
-#         market_day_ids = [md.market_day_id for md in market_days]
-
-#         if not market_day_ids:
-#             print(f"No market locations found for Vendor ID={target.vendor_id}. Skipping update.")
-#             return
-
-#         # Update SettingsVendor for this vendor user
-#         settings = session.query(SettingsVendor).filter_by(vendor_user_id=target.id).first()
-#         if settings:
-#             existing_market_locations = set(settings.market_locations or [])
-#             updated_market_locations = list(existing_market_locations.union(set(market_day_ids)))
-
-#             settings.market_locations = updated_market_locations
-#             session.commit()
-
-#     except Exception as e:
-#         session.rollback()
-#         print(f"Error updating market locations for Vendor User ID={target.id}: {e}")
-#     finally:
-#         session.close()
         
 @listens_for(VendorMarket, 'after_insert')
 def notify_vendor_users_new_market_location(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        vendor_users = session.query(VendorUser).join(SettingsVendor).filter(
-            VendorUser.vendor_id == target.vendor_id
-        ).all()
+        # Retrieve all vendor users associated with this vendor
+        vendor_users = session.query(VendorUser).filter_by(vendor_id=target.vendor_id).all()
 
         if not vendor_users:
             print(f"No vendor users found for Vendor ID={target.vendor_id}. Skipping update.")
             return
 
         notifications = []
-        settings_updates = []
-
         for vendor_user in vendor_users:
-            try:
-                settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
-
-                if not settings:
-                    print(f"No settings found for Vendor User ID={vendor_user.id}, skipping.")
-                    continue
-
+            # Settings
+            settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
+            if settings:
                 existing_market_locations = set(settings.market_locations or [])
                 if target.market_day_id not in existing_market_locations:
                     updated_market_locations = list(existing_market_locations.union({target.market_day_id}))
                     settings.market_locations = updated_market_locations
-                    settings_updates.append(settings)
+                    session.commit()
 
                     notifications.append(VendorNotification(
                         subject="New Market Location Added",
@@ -790,145 +748,68 @@ def notify_vendor_users_new_market_location(mapper, connection, target):
                         created_at=datetime.utcnow(),
                         is_read=False
                     ))
-
-            except Exception as e:
-                print(f"Error processing vendor_user {vendor_user.id}: {e}")
-
-        if settings_updates:
-            session.bulk_save_objects(settings_updates)
-            session.commit()
-            print(f"✅ Updated market locations for {len(settings_updates)} vendor users.")
-
+                    
         if notifications:
             session.bulk_save_objects(notifications)
             session.commit()
-            print(f"✅ Successfully created {len(notifications)} vendor notifications.")
 
     except Exception as e:
         session.rollback()
-        print(f"❌ Error in notify_vendor_users_new_market_location: {e}")
+        print(f"Error notifying vendor users for new VendorMarket entry: {e}")
     finally:
         session.close()
         
-@listens_for(QRCode, "after_insert")
-def handle_qr_code_deletion(mapper, connection, target):
-    session = Session(bind=connection)  # Use the properly bound session
-    try:
-        # Get the current UTC time
-        current_time = datetime.now(timezone.utc)
-        delete_at = current_time.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=2)
-        
-        # Retrieve the sale_date of the associated basket
-        basket = session.query(Basket).filter_by(id=target.basket_id).first()
-        if not basket or not basket.sale_date:
-            print(f"Skipping QR Code deletion. No sale_date found for Basket ID {target.basket_id}.")
-            return
-
-        # Ensure sale_date is a datetime.date (if not already)
-        if isinstance(basket.sale_date, datetime):
-            sale_date = basket.sale_date.date()
-        elif isinstance(basket.sale_date, date):
-            sale_date = basket.sale_date
-        else:
-            print(f"Unexpected type for sale_date: {type(basket.sale_date)}")
-            return
-
-        # Function to delete the QR code
-        def delete_qr_code():
-            delete_session = Session()
-            try:
-                qr_code = delete_session.query(QRCode).filter_by(id=target.id).first()
-                if not qr_code:
-                    print(f"QR Code ID {target.id} already deleted or does not exist. Skipping.")
-                    return
-
-                delete_session.delete(qr_code)
-                delete_session.commit()
-                print(f"Successfully deleted QR Code ID {target.id}.")
-            except Exception as e:
-                delete_session.rollback()
-                print(f"Error deleting QR Code ID {target.id}: {e}")
-            finally:
-                delete_session.close()
-
-        # If sale_date + 2 days has already passed, delete immediately
-        if delete_at <= current_time:
-            delete_qr_code()
-        else:
-            # Otherwise, schedule deletion
-            delay = (delete_at - current_time).total_seconds()
-            Timer(delay, delete_qr_code).start()
-
-    except Exception as e:
-        print(f"Error handling QR Code deletion: {e}")
-    finally:
-        session.close()
-
-# def reset_market_status():
-#     session = db.session  # Use the SQLAlchemy session from your app
-#     try:
-#         # Set all Markets.is_current to False
-#         session.query(Market).update({Market.is_current: False})
-#         session.commit()
-#         print("All markets have been set to is_current=False for the new year.")
-
-#     except Exception as e:
-#         session.rollback()
-#         print(f"Error resetting market status: {e}")
-#     finally:
-#         session.close()
-
-# def schedule_new_year_reset():
-#     now = datetime.now(timezone.utc)
-#     next_reset = datetime(now.year + 1, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
-#     delay = (next_reset - now).total_seconds()
-
-#     print(f"Market reset scheduled for {next_reset}.")
-#     Timer(delay, reset_market_status).start()
-    
-
-# @listens_for(Vendor, 'after_update')
-# def notify_fav_vendor_closure(mapper, connection, target):
+# @listens_for(QRCode, "after_insert")
+# def handle_qr_code_deletion(mapper, connection, target):
 #     session = Session(bind=connection)
 #     try:
-#         # Only trigger if the vendor was just marked as temporarily closed
-#         if target.is_temporarily_closed:
+#         # Get the current UTC time
+#         current_time = datetime.now(timezone.utc)
+#         delete_at = current_time.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=2)
+        
+#         # Retrieve the sale_date of the associated basket
+#         basket = session.query(Basket).filter_by(id=target.basket_id).first()
+#         if not basket or not basket.sale_date:
+#             print(f"Skipping QR Code deletion. No sale_date found for Basket ID {target.basket_id}.")
+#             return
 
-#             # Retrieve all users who have favorited this vendor
-#             favorited_users = session.query(User).join(VendorFavorite).filter(
-#                 VendorFavorite.vendor_id == target.id
-#             ).all()
+#         # Ensure sale_date is a datetime.date (if not already)
+#         if isinstance(basket.sale_date, datetime):
+#             sale_date = basket.sale_date.date()
+#         elif isinstance(basket.sale_date, date):
+#             sale_date = basket.sale_date
+#         else:
+#             print(f"Unexpected type for sale_date: {type(basket.sale_date)}")
+#             return
 
-#             if not favorited_users:
-#                 print(f"No users have favorited Vendor ID {target.id}. No notifications will be created.")
-#                 return
+#         # Function to delete the QR code
+#         def delete_qr_code():
+#             delete_session = Session()
+#             try:
+#                 qr_code = delete_session.query(QRCode).filter_by(id=target.id).first()
+#                 if not qr_code:
+#                     print(f"QR Code ID {target.id} already deleted or does not exist. Skipping.")
+#                     return
 
-#             # Prepare notifications
-#             notifications = []
-#             for user in favorited_users:
-#                 settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
-                
-#                 if not settings or not settings.site_fav_vendor_schedule_change:
-#                     print(f"User ID={user.id} has schedule change notifications disabled.")
-#                     continue
+#                 delete_session.delete(qr_code)
+#                 delete_session.commit()
+#                 print(f"Successfully deleted QR Code ID {target.id}.")
+#             except Exception as e:
+#                 delete_session.rollback()
+#                 print(f"Error deleting QR Code ID {target.id}: {e}")
+#             finally:
+#                 delete_session.close()
 
-#                 notifications.append(UserNotification(
-#                     subject="Vendor Temporarily Closed",
-#                     message=f"One of your favorite vendors, {target.name}, is temporarily closed due to unforeseen circumstances.",
-#                     link=f"/user/vendors/{target.id}",
-#                     user_id=user.id,
-#                     created_at=datetime.utcnow(),
-#                     is_read=False
-#                 ))
-
-#             # Save notifications
-#             if notifications:
-#                 session.bulk_save_objects(notifications)
-#                 session.commit()
+#         # If sale_date + 2 days has already passed, delete immediately
+#         if delete_at <= current_time:
+#             delete_qr_code()
+#         else:
+#             # Otherwise, schedule deletion
+#             delay = (delete_at - current_time).total_seconds()
+#             Timer(delay, delete_qr_code).start()
 
 #     except Exception as e:
-#         session.rollback()
-#         print(f"Error in notify_fav_vendor_closure: {e}")
+#         print(f"Error handling QR Code deletion: {e}")
 #     finally:
 #         session.close()
     
@@ -1018,27 +899,26 @@ def notify_fav_market_new_baskets(mapper, connection, target):
 @listens_for(Basket, 'after_insert')
 def schedule_and_notify_basket_pickup(mapper, connection, target):
     try:
-        #Ensure basket has a pickup time
+        # Ensure basket has a pickup time
         if not target.pickup_start:
             print(f"Skipping notification. No pickup_time found for Basket ID {target.id}.")
             return
 
-        #Convert pickup_start to full datetime object using today's date
-        now_utc = datetime.now(timezone.utc)  # Current UTC time
-        local_now = now_utc.astimezone()  # Convert to local time
-        today_local = local_now.date()  # Today's date in local timezone
+        # Get current UTC time
+        now_utc = datetime.now(timezone.utc)
 
-        pickup_datetime_local = datetime.combine(today_local, target.pickup_start)
-        pickup_end_local = datetime.combine(today_local, target.pickup_end)
+        # Ensure pickup_start and pickup_end are timezone-aware (assuming they are stored as naive times)
+        pickup_datetime_utc = datetime.combine(now_utc.date(), target.pickup_start).replace(tzinfo=timezone.utc)
+        pickup_end_utc = datetime.combine(now_utc.date(), target.pickup_end).replace(tzinfo=timezone.utc)
 
-        #Calculate delay (time remaining until pickup)
-        delay = (pickup_datetime_local - local_now).total_seconds()
+        # Calculate delay (time remaining until pickup)
+        delay = (pickup_datetime_utc - now_utc).total_seconds()
 
         if delay <= 0:
             print(f"Skipping notification: Pickup time for Basket ID {target.id} has already passed.")
             return
 
-        print(f" Notification for Basket ID {target.id} scheduled in {delay} seconds.")
+        print(f"Notification for Basket ID {target.id} scheduled in {delay} seconds.")
 
         def send_notification():
             with Session(bind=connection) as notif_session:
@@ -1053,19 +933,19 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
                         print(f"User for Basket ID {target.id} not found. Skipping notification.")
                         return
 
-                    #Check user notification settings
+                    # Check user notification settings
                     settings = notif_session.query(SettingsUser).filter_by(user_id=user.id).first()
                     if not settings or not settings.site_basket_pickup_time:
                         print(f"User ID={user.id} has pickup notifications disabled.")
                         return
 
-                    #Convert times for notification message
-                    pickup_time_str = time_converter(pickup_datetime_local.time())
-                    pickup_end_str = time_converter(pickup_end_local.time())
-                    current_month = datetime.now().strftime("%B") 
-                    current_day = datetime.now().strftime("%d")
+                    # Convert times for notification message
+                    pickup_time_str = time_converter(pickup_datetime_utc.time())
+                    pickup_end_str = time_converter(pickup_end_utc.time())
+                    current_month = datetime.now(timezone.utc).strftime("%B")
+                    current_day = datetime.now(timezone.utc).strftime("%d")
 
-                    #Send pickup reminder notification
+                    # Send pickup reminder notification
                     notification = UserNotification(
                         subject="Time to Pick Up Your Basket!",
                         message=(
@@ -1074,7 +954,7 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
                         ),
                         link=f"/user/pick-up",
                         user_id=user.id,
-                        created_at=pickup_datetime_local,
+                        created_at=pickup_datetime_utc,
                         is_read=False
                     )
 
@@ -1276,7 +1156,7 @@ def notify_vendor_users_new_review(mapper, connection, target):
 def create_admin_settings(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        # Check if settings already exist (just in case)
+        # Check if settings already exist
         existing_settings = session.query(SettingsAdmin).filter_by(admin_id=target.id).first()
         if existing_settings:
             return
@@ -1291,3 +1171,117 @@ def create_admin_settings(mapper, connection, target):
         print(f"Error creating settings for Admin ID {target.id}: {e}")
     finally:
         session.close()
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+# def reset_market_status():
+#     session = db.session  # Use the SQLAlchemy session from your app
+#     try:
+#         # Set all Markets.is_current to False
+#         session.query(Market).update({Market.is_current: False})
+#         session.commit()
+#         print("All markets have been set to is_current=False for the new year.")
+
+#     except Exception as e:
+#         session.rollback()
+#         print(f"Error resetting market status: {e}")
+#     finally:
+#         session.close()
+
+# def schedule_new_year_reset():
+#     now = datetime.now(timezone.utc)
+#     next_reset = datetime(now.year + 1, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+#     delay = (next_reset - now).total_seconds()
+
+#     print(f"Market reset scheduled for {next_reset}.")
+#     Timer(delay, reset_market_status).start()
+    
+
+# @listens_for(Vendor, 'after_update')
+# def notify_fav_vendor_closure(mapper, connection, target):
+#     session = Session(bind=connection)
+#     try:
+#         # Only trigger if the vendor was just marked as temporarily closed
+#         if target.is_temporarily_closed:
+
+#             # Retrieve all users who have favorited this vendor
+#             favorited_users = session.query(User).join(VendorFavorite).filter(
+#                 VendorFavorite.vendor_id == target.id
+#             ).all()
+
+#             if not favorited_users:
+#                 print(f"No users have favorited Vendor ID {target.id}. No notifications will be created.")
+#                 return
+
+#             # Prepare notifications
+#             notifications = []
+#             for user in favorited_users:
+#                 settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
+                
+#                 if not settings or not settings.site_fav_vendor_schedule_change:
+#                     print(f"User ID={user.id} has schedule change notifications disabled.")
+#                     continue
+
+#                 notifications.append(UserNotification(
+#                     subject="Vendor Temporarily Closed",
+#                     message=f"One of your favorite vendors, {target.name}, is temporarily closed due to unforeseen circumstances.",
+#                     link=f"/user/vendors/{target.id}",
+#                     user_id=user.id,
+#                     created_at=datetime.utcnow(),
+#                     is_read=False
+#                 ))
+
+#             # Save notifications
+#             if notifications:
+#                 session.bulk_save_objects(notifications)
+#                 session.commit()
+
+#     except Exception as e:
+#         session.rollback()
+#         print(f"Error in notify_fav_vendor_closure: {e}")
+#     finally:
+#         session.close()
+
+# @listens_for(VendorUser, 'after_insert')
+# def update_vendor_user_market_locations(mapper, connection, target):
+#     session = Session(bind=connection)
+#     try:
+#         # Retrieve all market_day_ids associated with the vendor
+#         market_days = session.query(VendorMarket.market_day_id).filter_by(vendor_id=target.vendor_id).all()
+#         market_day_ids = [md.market_day_id for md in market_days]
+
+#         if not market_day_ids:
+#             print(f"No market locations found for Vendor ID={target.vendor_id}. Skipping update.")
+#             return
+
+#         # Update SettingsVendor for this vendor user
+#         settings = session.query(SettingsVendor).filter_by(vendor_user_id=target.id).first()
+#         if settings:
+#             existing_market_locations = set(settings.market_locations or [])
+#             updated_market_locations = list(existing_market_locations.union(set(market_day_ids)))
+
+#             settings.market_locations = updated_market_locations
+#             session.commit()
+
+#     except Exception as e:
+#         session.rollback()
+#         print(f"Error updating market locations for Vendor User ID={target.id}: {e}")
+#     finally:
+#         session.close()

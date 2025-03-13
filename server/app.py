@@ -3293,7 +3293,8 @@ def create_payment_intent():
 
         return jsonify({
             'clientSecret': payment_intent['client_secret'],
-            'transfer_group': transfer_group
+            'transfer_group': transfer_group,
+            'total_fee_vendor': total_fee_vendor
         }), 200
 
     except stripe.error.StripeError as e:
@@ -3306,7 +3307,7 @@ def create_payment_intent():
 def process_transfers():
     try:
         data = request.get_json()
-        print("Received data for transfer processing:", data) 
+        print("THIS IS WHAT YOU ARE LOOKING FOR !!!!!!!!!:", data) 
 
         if not data or 'payment_intent_id' not in data or 'baskets' not in data:
             return jsonify({'error': {'message': 'Missing required data.'}}), 400
@@ -3323,28 +3324,44 @@ def process_transfers():
                     'payment_intent_status': payment_intent['status']
                 }
             }), 400
-
+        
         vendor_ids = [basket['vendor_id'] for basket in data['baskets']]
         vendor_accounts = get_vendor_stripe_accounts(vendor_ids)
         print(f"Vendor accounts retrieved: {vendor_accounts}")
 
         transfer_data = []
         for basket in data['baskets']:
-            vendor_id = basket['vendor_id']
+            vendor_id = basket.get('vendor_id')
+            price = basket.get('price', 0)
+            fee_vendor = basket.get('fee_vendor', 0)
+            
+            if vendor_id is None or price == 0:
+                print(f"Skipping invalid basket: {basket}")
+                continue
+            
             stripe_account_id = vendor_accounts.get(vendor_id)
 
             if not stripe_account_id:
                 print(f"Vendor {vendor_id} has no Stripe account! Skipping...")
                 continue
-            transfer_amount = int((basket['price'] - basket['fee_vendor']) * 100)
-            print(f"Creating transfer for vendor {vendor_id} (Stripe ID: {stripe_account_id}): {transfer_amount} cents")
+
+            # Calculate transfer amount (excluding the vendor fee)
+            transfer_amount = int((price - fee_vendor) * 100)
+
+            # Set fee for this specific basket transfer
+            application_fee = int(fee_vendor * 100)
+
+            print(f"Creating transfer for vendor {vendor_id} (Stripe ID: {stripe_account_id}):")
+            print(f"  - Transfer Amount: {transfer_amount} cents")
+            print(f"  - Application Fee: {application_fee} cents")
 
             try:
                 transfer = stripe.Transfer.create(
-                    amount=transfer_amount,
+                    amount=transfer_amount + application_fee,  # Total amount to transfer
                     currency="usd",
                     destination=stripe_account_id,
-                    transfer_group=f"group_pi_{payment_intent_id}"
+                    transfer_group=f"group_pi_{payment_intent_id}",
+                    application_fee_amount=application_fee  # Assign fee per transfer
                 )
 
                 print(f"Stripe Transfer Response: {transfer}") 
@@ -3358,9 +3375,12 @@ def process_transfers():
                     "destination": stripe_account_id,
                     "payment_intent_id": payment_intent_id,
                     "transfer_group": f"group_pi_{payment_intent_id}",
-                    "platform_fee": int(basket['fee_vendor'] * 100),
+                    "application_fee_amount": application_fee,
                 })
                 
+                print("LOOK AT THIS ONE TOO", transfer_data)
+
+                # Update the basket record in the database
                 basket_record = Basket.query.filter_by(id=basket['id']).first()
                 if basket_record:
                     basket_record.stripe_transfer_id = transfer.id 

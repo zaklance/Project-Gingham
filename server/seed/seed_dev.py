@@ -3751,7 +3751,7 @@ def run():
     # )
 
     db.session.add(vendor_user_demo)
-    db.session.add(vendor_user_settings_demo)
+    # db.session.add(vendor_user_settings_demo)
     # db.session.add(vendor_user_demo_2)
     # db.session.add(vendor_user_settings_demo_2)
     # db.session.add(vendor_user_demo_3)
