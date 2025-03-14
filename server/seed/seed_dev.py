@@ -3573,7 +3573,7 @@ def run():
         rev_len = randint(2, 5)
 
         review_text = fake.paragraph(nb_sentences=rev_len)
-        vendor_id = str(randint(1, 200))
+        vendor_id = str(randint(1, 150))
         user_id = str(randint(1, 50))
         is_reported = choice(reported)
         last_year = randint(0, 365)

@@ -17,7 +17,7 @@ export function timeConverter(time24) {
 export function blogTimeConverter(postedAt) {
     const [date] = postedAt.split(/T| /);
     const [year, month, day] = date.split('-');
-    const formattedDate = `${year}/${month}/${day}`;
+    const formattedDate = `${year}.${month}.${day}`;
     return formattedDate;
 }
 

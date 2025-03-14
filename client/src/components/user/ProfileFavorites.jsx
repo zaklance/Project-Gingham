@@ -269,7 +269,7 @@ function ProfileFavorites() {
                             }}
                         >
                             <summary>
-                                {blog?.blog ? `${blogTimeConverter(blog.blog.post_date)}, ${blog.blog.type === 'General' ? '' : `${blog.blog.type}: `} ${blog.blog.title}` : null}
+                                {blog?.blog ? `${blog.blog.type === 'General' ? '' : ` ${blog.blog.type}: `} ${blog.blog.title}, ${blogTimeConverter(blog.blog.post_date)}` : null}
                                 <button
                                     className={`btn-fav-blog margin-l-8 ${isClickedBlog[blog.blog_id] || blogFavs.some(fav => fav.blog_id === blog.blog_id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
                                     title="remove blog from favorites"
