@@ -529,7 +529,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                                         {notification.subject == 'team-request' ?
                                                             <button className='btn btn-unreport btn-notif' onClick={() => handleVendorNotificationIsRead(notification.id)}>&#9675;</button>
                                                             : <button className='btn btn-unreport btn-notif' onClick={() => handleVendorNotificationDelete(notification.id)}>x</button>}
-                                                        {notification.link ? <NavLink className="link-plain scale-102" to={notification.link} onClick={() => handleVendorNotificationIsRead(notification.id)}>{notification.message}</NavLink>
+                                                        {notification.link ? <NavLink className="link-plain scale-98" to={notification.link} onClick={() => handleVendorNotificationIsRead(notification.id)}>{notification.message}</NavLink>
                                                             : <p onClick={() => handleVendorNotificationIsRead(notification.id)}>{notification.message}</p>}
                                                         {!notification.is_read && <button className='btn btn-unread' onClick={() => handleVendorNotificationIsRead(notification.id)}>&emsp;</button>}
                                                     </div>
@@ -609,7 +609,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                                                     {notification.subject == 'product-request' ?
                                                         <button className='btn btn-unreport btn-notif' onClick={() => handleAdminNotificationIsRead(notification.id)}>o</button>
                                                         : <button className='btn btn-unreport btn-notif' onClick={() => handleAdminNotificationDelete(notification.id)}>x</button>}
-                                                    <NavLink className='link-plain scale-102' to={notification.link} onClick={() => handleAdminNotificationIsRead(notification.id)}>{notification.message}</NavLink>
+                                                    <NavLink className='link-plain scale-98' to={notification.link} onClick={() => handleAdminNotificationIsRead(notification.id)}>{notification.message}</NavLink>
                                                     {!notification.is_read && <button className='btn btn-unread' onClick={() => handleAdminNotificationIsRead(notification.id)}>&emsp;</button>}
                                                 </div>
                                             </li>
