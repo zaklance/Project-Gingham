@@ -3168,8 +3168,11 @@ def send_sendgrid_email_client():
     
     if body_type == 'plain':
         compiled_html = body
-
+    
     if body_type == 'html':
+        compiled_html = body
+
+    if body_type == 'mjml':
         try:
             # Run MJML CLI to compile MJML to HTML
             result = subprocess.run(
@@ -3196,6 +3199,13 @@ def send_sendgrid_email_client():
             plain_text_content=compiled_html,
             )
     if body_type == 'html':
+        message = Mail(
+            from_email=from_email,
+            to_emails=to_email,
+            subject=subject,
+            html_content=compiled_html,
+            )
+    if body_type == 'mjml':
         message = Mail(
             from_email=from_email,
             to_emails=to_email,
