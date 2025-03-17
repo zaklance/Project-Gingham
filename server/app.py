@@ -1995,7 +1995,7 @@ def all_market_reviews():
         elif is_reported is not None:
             reviews = MarketReview.query.filter_by(is_reported=bool(is_reported)).all()
         else:
-            reviews = []  # Default to an empty list if no parameters are provided
+            reviews = MarketReview.query.all()
         return jsonify([review.to_dict() for review in reviews]), 200
 
     elif request.method == 'POST':
@@ -2037,7 +2037,7 @@ def all_vendor_reviews():
         elif is_reported is not None:
             reviews = VendorReview.query.filter_by(is_reported=bool(is_reported)).all()
         else:
-            reviews = VendorReview.query.all
+            reviews = VendorReview.query.all()
         return jsonify([review.to_dict() for review in reviews]), 200
 
     elif request.method == 'POST':
@@ -2050,7 +2050,6 @@ def all_vendor_reviews():
         db.session.add(new_review)
         db.session.commit()
         return new_review.to_dict(), 201
-
 
 @app.route('/api/vendor-reviews/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def vendor_review_by_id(id):

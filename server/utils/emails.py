@@ -66,12 +66,22 @@ EMAIL_STYLES = """
             border: 0;
             border-top: 4px solid #ff806b;
         }
-        p, h1, h2, h3, h4, h5, h6 {
+        p, h1, h2, h3, h4, h5, h6, article {
             color: #ff806b;
         }
-        .img-hero {
+        .img-hero, .img-blog {
             width: 100%;
             height: auto;
+        }
+        article {
+          margin-bottom: 1em;
+          widows: 2;
+        }
+        .first-letter::first-letter {
+          -webkit-initial-letter: 2;
+          initial-letter: 2;
+          font-family: inherit;
+          padding-right: 4px;
         }
         .center {
             text-align: center;
@@ -85,6 +95,12 @@ EMAIL_STYLES = """
         }
         .flex-gap-16 {
             gap: 16px;
+        }
+        .margin-4-0 {
+            margin: 4px;
+        }
+        .margin-12-0 {
+            margin: 12px;
         }
         .link-underline {
             color: #ff806b;
@@ -577,9 +593,9 @@ def send_email_fav_market_new_event(email, user, market, event, link):
                         <p>One of your favorite markets, <strong><a class="link-underline" href={full_link}>{market.name}</a></strong>, has a new event, check it out: </p>
                         <div class="content flex-center">
                             <div class="box-callout">
-                                <h3>{event.title}</h3>
-                                <h5>{date_display}</h5>
-                                <p>{event.message}</p>
+                                <h3 class="margin-4-0">{event.title}</h3>
+                                <h5 class="margin-4-0">{date_display}</h5>
+                                <p class="margin-12-0">{event.message}</p>
                             </div>
                         </div>
                         <p>— The Gingham Team</p>
@@ -651,9 +667,9 @@ def send_email_fav_market_schedule_change(email, user, market, event, link):
                         <p>One of your favorite markets, <strong><a class="link-underline" href={full_link}>{market.name}</a></strong>, has temporarily changed their schedule, check it out: </p>
                         <div class="content flex-center">
                             <div class="box-callout">
-                                <h3>{event.title}</h3>
-                                <h5>{date_display}</h5>
-                                <p>{event.message}</p>
+                                <h3 class="margin-4-0">{event.title}</h3>
+                                <h5 class="margin-4-0">{date_display}</h5>
+                                <p class="margin-12-0">{event.message}</p>
                             </div>
                         </div>
                         <p>— The Gingham Team</p>
@@ -732,11 +748,11 @@ def send_email_fav_market_new_vendor(email, user, market, vendor, link_market, l
                         <p>One of your favorite markets, <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>, has a new vendor: <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong>. Check it out!</p>
                         <div class="content flex-center">
                             <div class="box-callout">
-                                <h3>{vendor.name}</h3>
-                                <h5>{vendor.city}, {vendor.state}</h5>
-                                <h5>Products: {products_display}</h5>
+                                <h3 class="margin-4-0">{vendor.name}</h3>
+                                <h5 class="margin-4-0">{vendor.city}, {vendor.state}</h5>
+                                <h5 class="margin-4-0">Products: {products_display}</h5>
                                 {subcategories_html}
-                                <p>{vendor.bio}</p>
+                                <p class="margin-12-0">{vendor.bio}</p>
                             </div>
                         </div>
                         <p>— The Gingham Team</p>
@@ -787,17 +803,17 @@ def send_email_fav_market_new_basket(email, user, market, vendor, link_market, l
 
         if vendor.products_subcategories:
             subcategories_display = ', '.join(vendor.products_subcategories)
-            subcategories_html = f"<h5>Product Subcategories: {subcategories_display}</h5>"
+            subcategories_html = f"<h5 class='margin-4-0'>Product Subcategories: {subcategories_display}</h5>"
         else:
             subcategories_html = ""
         
         if market.bio:
-            market_bio_html = f"<p>{market.bio}</p>"
+            market_bio_html = f"<p class='margin-12-0'>{market.bio}</p>"
         else:
             market_bio_html = ""
 
         if vendor.bio:
-            vendor_bio_html = f"<p>{vendor.bio}</p>"
+            vendor_bio_html = f"<p class='margin-4-0'>{vendor.bio}</p>"
         else:
             vendor_bio_html = ""
 
@@ -825,17 +841,17 @@ def send_email_fav_market_new_basket(email, user, market, vendor, link_market, l
                         <p>One of your favorite markets, <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>, has a new basket available at <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong>. Check it out before it's gone!</p>
                         <div class="content flex-center flex-gap-16">
                             <div class="box-callout">
-                                <h3>{vendor.name}</h3>
-                                <h5>{vendor.city}, {vendor.state}</h5>
-                                <h5>Products: {products_display}</h5>
+                                <h3 class="margin-4-0">{vendor.name}</h3>
+                                <h5 class="margin-4-0">{vendor.city}, {vendor.state}</h5>
+                                <h5 class="margin-4-0">Products: {products_display}</h5>
                                 {subcategories_html}
                                 {vendor_bio_html}
                             </div>
                             <div class="box-callout">
-                                <h3>{market.name}</h3>
-                                <h5>{market.location}</h5>
-                                <h5>{market.city}, {vendor.state}</h5>
-                                <h5>{market.schedule}</h5>
+                                <h3 class="margin-4-0">{market.name}</h3>
+                                <h5 class="margin-4-0">{market.location}</h5>
+                                <h5 class="margin-4-0">{market.city}, {market.state}</h5>
+                                <h5 class="margin-4-0">{market.schedule}</h5>
                                 {market_bio_html}
                             </div>
                         </div>
@@ -908,9 +924,9 @@ def send_email_fav_vendor_new_event(email, user, vendor, event, link_vendor):
                         <p>One of your favorite vendors, <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong>, has a new event, check it out!</p>
                         <div class="content flex-center">
                             <div class="box-callout">
-                                <h3>{event.title}</h3>
-                                <h5>{date_display}</h5>
-                                <p>{event.message}</p>
+                                <h3 class="margin-4-0">{event.title}</h3>
+                                <h5 class="margin-4-0">{date_display}</h5>
+                                <p class="margin-12-0">{event.message}</p>
                             </div>
                         </div>
                         <p>— The Gingham Team</p>
@@ -982,9 +998,9 @@ def send_email_fav_vendor_schedule_change(email, user, vendor, event, link_vendo
                         <p>One of your favorite markets, <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong>, has temporarily changed their schedule, check it out: </p>
                         <div class="content flex-center">
                             <div class="box-callout">
-                                <h3>{event.title}</h3>
-                                <h5>{date_display}</h5>
-                                <p>{event.message}</p>
+                                <h3 class="margin-4-0">{event.title}</h3>
+                                <h5 class="margin-4-0">{date_display}</h5>
+                                <p class="margin-12-0">{event.message}</p>
                             </div>
                         </div>
                         <p>— The Gingham Team</p>
@@ -1035,17 +1051,17 @@ def send_email_fav_vendor_new_basket(email, user, market, vendor, link_market, l
 
         if vendor.products_subcategories:
             subcategories_display = ', '.join(vendor.products_subcategories)
-            subcategories_html = f"<h5>Product Subcategories: {subcategories_display}</h5>"
+            subcategories_html = f"<h5 class='margin-4-0'>Product Subcategories: {subcategories_display}</h5>"
         else:
             subcategories_html = ""
         
         if market.bio:
-            market_bio_html = f"<p>{market.bio}</p>"
+            market_bio_html = f"<p class='margin-12-0'>{market.bio}</p>"
         else:
             market_bio_html = ""
 
         if vendor.bio:
-            vendor_bio_html = f"<p>{vendor.bio}</p>"
+            vendor_bio_html = f"<p class='margin-12-0'>{vendor.bio}</p>"
         else:
             vendor_bio_html = ""
 
@@ -1073,17 +1089,279 @@ def send_email_fav_vendor_new_basket(email, user, market, vendor, link_market, l
                         <p>One of your favorite vendors, <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong>, has a new basket available at <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>. Check it out before it's gone!</p>
                         <div class="content flex-center flex-gap-16">
                             <div class="box-callout">
-                                <h3>{vendor.name}</h3>
-                                <h5>{vendor.city}, {vendor.state}</h5>
-                                <h5>Products: {products_display}</h5>
+                                <h3 class="margin-4-0">{vendor.name}</h3>
+                                <h5 class="margin-4-0">{vendor.city}, {vendor.state}</h5>
+                                <h5 class="margin-4-0">Products: {products_display}</h5>
                                 {subcategories_html}
                                 {vendor_bio_html}
                             </div>
                             <div class="box-callout">
-                                <h3>{market.name}</h3>
-                                <h5>{market.location}</h5>
-                                <h5>{market.city}, {vendor.state}</h5>
-                                <h5>{market.schedule}</h5>
+                                <h3 class="margin-4-0">{market.name}</h3>
+                                <h5 class="margin-4-0">{market.location}</h5>
+                                <h5 class="margin-4-0">{market.city}, {market.state}</h5>
+                                <h5 class="margin-4-0">{market.schedule}</h5>
+                                {market_bio_html}
+                            </div>
+                        </div>
+                        <p>— The Gingham Team</p>
+                    </div>
+                    <div class="footer">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
+                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        # print("Attempting to send vendor email...")
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Vendor confirmation email sent successfully.'}
+    
+    except Exception as e:
+        print(f"Error during vendor email sending: {str(e)}")
+        return {'error': f'Failed to send vendor email: {str(e)}'}
+
+def send_email_basket_pickup_time(email, user, market, vendor, basket, link_market, link_vendor):
+    try:
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+        
+        full_link_market = f'https://www.gingham.nyc/{link_market}'
+        full_link_vendor = f'https://www.gingham.nyc/{link_vendor}'
+
+        msg = MIMEMultipart()
+        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'Almost Time to Pickup Your Basket'
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Almost Time to Pickup Your Basket</title>
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {user.name},</p>
+                        <p>It's almost time to pickup your basket! <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong> set the pickup time from {basket.pickup_start} to {basket.pickup_end} at <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>. If it is a large farmers market, be sure to allot time to find the vendor.</p>
+                        <p>— The Gingham Team</p>
+                    </div>
+                    <div class="footer">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
+                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        # print("Attempting to send vendor email...")
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Vendor confirmation email sent successfully.'}
+    
+    except Exception as e:
+        print(f"Error during vendor email sending: {str(e)}")
+        return {'error': f'Failed to send vendor email: {str(e)}'}
+
+def send_email_vendor_review_response(email, user, vendor, review, link_vendor):
+    try:
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+        
+        full_link_vendor = f'https://www.gingham.nyc/{link_vendor}'
+
+        msg = MIMEMultipart()
+        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'Response to on of your Reviews'
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Response to a Vendor Review</title>
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {user.name},</p>
+                        <p>A vendor responded to your review! Check out what <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong> said.</p>
+                        <div class="content flex-center">
+                            <div class='box-callout'>
+                                {review.review_text}
+                            </div>
+                        </div>
+                        <p>— The Gingham Team</p>
+                    </div>
+                    <div class="footer">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
+                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        # print("Attempting to send vendor email...")
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Vendor confirmation email sent successfully.'}
+    
+    except Exception as e:
+        print(f"Error during vendor email sending: {str(e)}")
+        return {'error': f'Failed to send vendor email: {str(e)}'}
+
+def send_email_new_blog(email, user, blog):
+    try:
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+
+        msg = MIMEMultipart()
+        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'New Gingham Blog Post!'
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>New Gingham Blog Post</title>
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {user.name},</p>
+                        <p>A new blog post is out, check out <strong><a class="link-underline" href='https://www.gingham.nyc/'>{blog.title}</a></strong>!</p>
+                        <div class="content flex-center">
+                            <div class='box-callout'>
+                                {blog.body}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
+                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        # print("Attempting to send vendor email...")
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Vendor confirmation email sent successfully.'}
+    
+    except Exception as e:
+        print(f"Error during vendor email sending: {str(e)}")
+        return {'error': f'Failed to send vendor email: {str(e)}'}
+
+def send_email_new_market_in_city(email, user, market, link_market):
+    try:
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+        
+        full_link_market = f'https://www.gingham.nyc/{link_market}'
+
+        if market.bio:
+            market_bio_html = f"<p class='margin-12-0'>{market.bio}</p>"
+        else:
+            market_bio_html = ""
+
+        msg = MIMEMultipart()
+        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'New Market in {market.city}'
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>New Market in Your City</title>
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {user.name},</p>
+                        <p>There is a new farmers market in your city, {market.city}, <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>. Check it out!</p>
+                        <div class="content flex-center">
+                            <div class="box-callout">
+                                <h3 class="margin-4-0">{market.name}</h3>
+                                <h5 class="margin-4-0">{market.location}</h5>
+                                <h5 class="margin-4-0">{market.city}, {market.state}</h5>
+                                <h5 class="margin-4-0">{market.schedule}</h5>
                                 {market_bio_html}
                             </div>
                         </div>
