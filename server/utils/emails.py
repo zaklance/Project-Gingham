@@ -1,11 +1,15 @@
 import os
 import smtplib
+from io import BytesIO, StringIO
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
+import csv
 from flask import url_for
 from itsdangerous import URLSafeTimedSerializer
+from sqlalchemy import extract
 from datetime import datetime
-from models import Product
+from models import Product, Basket
 
 serializer = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
 
@@ -15,6 +19,22 @@ def format_event_date(date_string):
         return date.strftime("%b %d, %Y")
     except ValueError:
         return "Invalid Date"
+
+def time_converter(time24):
+    # Handle both "HH:MM" and "HH:MM:SS"
+    time_format = "%H:%M:%S" if len(time24.split(':')) == 3 else "%H:%M"
+    
+    # Parse the time string into a datetime object
+    time_obj = datetime.strptime(time24, time_format)
+    
+    # Convert to 12-hour format (with AM/PM)
+    time12 = time_obj.strftime("%-I:%M %p")  # %-I removes leading zeros on Unix systems
+    
+    # Remove ':00' if minutes are zero (on the hour)
+    if time12.endswith(":00 AM") or time12.endswith(":00 PM"):
+        time12 = time_obj.strftime("%-I %p")
+    
+    return time12
 
 EMAIL_STYLES = """
     <style>
@@ -550,7 +570,7 @@ def send_admin_confirmation_email(email, admin_data):
 #  USER EMAILS USER EMAILS USER EMAILS USER EMAILS
 #  USER EMAILS USER EMAILS USER EMAILS USER EMAILS
 
-def send_email_fav_market_new_event(email, user, market, event, link):
+def send_email_user_fav_market_new_event(email, user, market, event, link):
     try:
 
         sender_email = os.getenv('EMAIL_USER')
@@ -618,13 +638,13 @@ def send_email_fav_market_new_event(email, user, market, event, link):
         server.quit()
 
         # print("Vendor email sent successfully")
-        return {'message': 'Vendor confirmation email sent successfully.'}
+        return {'message': 'User notification email sent successfully.'}
 
     except Exception as e:
-        print(f"Error during vendor email sending: {str(e)}")
-        return {'error': f'Failed to send vendor email: {str(e)}'}
+        print(f"Error during user email sending: {str(e)}")
+        return {'error': f'Failed to send user email: {str(e)}'}
 
-def send_email_fav_market_schedule_change(email, user, market, event, link):
+def send_email_user_fav_market_schedule_change(email, user, market, event, link):
     try:
 
         sender_email = os.getenv('EMAIL_USER')
@@ -692,13 +712,13 @@ def send_email_fav_market_schedule_change(email, user, market, event, link):
         server.quit()
 
         # print("Vendor email sent successfully")
-        return {'message': 'Vendor confirmation email sent successfully.'}
+        return {'message': 'User notification email sent successfully.'}
 
     except Exception as e:
-        print(f"Error during vendor email sending: {str(e)}")
-        return {'error': f'Failed to send vendor email: {str(e)}'}
+        print(f"Error during user email sending: {str(e)}")
+        return {'error': f'Failed to send user email: {str(e)}'}
 
-def send_email_fav_market_new_vendor(email, user, market, vendor, link_market, link_vendor):
+def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_market, link_vendor):
     try:
 
         sender_email = os.getenv('EMAIL_USER')
@@ -775,13 +795,13 @@ def send_email_fav_market_new_vendor(email, user, market, vendor, link_market, l
         server.quit()
 
         # print("Vendor email sent successfully")
-        return {'message': 'Vendor confirmation email sent successfully.'}
+        return {'message': 'User notification email sent successfully.'}
 
     except Exception as e:
-        print(f"Error during vendor email sending: {str(e)}")
-        return {'error': f'Failed to send vendor email: {str(e)}'}
+        print(f"Error during user email sending: {str(e)}")
+        return {'error': f'Failed to send user email: {str(e)}'}
 
-def send_email_fav_market_new_basket(email, user, market, vendor, link_market, link_vendor):
+def send_email_user_fav_market_new_basket(email, user, market, vendor, link_market, link_vendor):
     try:
 
         sender_email = os.getenv('EMAIL_USER')
@@ -875,13 +895,13 @@ def send_email_fav_market_new_basket(email, user, market, vendor, link_market, l
         server.quit()
 
         # print("Vendor email sent successfully")
-        return {'message': 'Vendor confirmation email sent successfully.'}
+        return {'message': 'User notification email sent successfully.'}
     
     except Exception as e:
-        print(f"Error during vendor email sending: {str(e)}")
-        return {'error': f'Failed to send vendor email: {str(e)}'}
+        print(f"Error during user email sending: {str(e)}")
+        return {'error': f'Failed to send user email: {str(e)}'}
 
-def send_email_fav_vendor_new_event(email, user, vendor, event, link_vendor):
+def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor):
     try:
 
         sender_email = os.getenv('EMAIL_USER')
@@ -949,13 +969,13 @@ def send_email_fav_vendor_new_event(email, user, vendor, event, link_vendor):
         server.quit()
 
         # print("Vendor email sent successfully")
-        return {'message': 'Vendor confirmation email sent successfully.'}
+        return {'message': 'User notification email sent successfully.'}
 
     except Exception as e:
-        print(f"Error during vendor email sending: {str(e)}")
-        return {'error': f'Failed to send vendor email: {str(e)}'}
+        print(f"Error during user email sending: {str(e)}")
+        return {'error': f'Failed to send user email: {str(e)}'}
 
-def send_email_fav_vendor_schedule_change(email, user, vendor, event, link_vendor):
+def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_vendor):
     try:
 
         sender_email = os.getenv('EMAIL_USER')
@@ -1023,13 +1043,13 @@ def send_email_fav_vendor_schedule_change(email, user, vendor, event, link_vendo
         server.quit()
 
         # print("Vendor email sent successfully")
-        return {'message': 'Vendor confirmation email sent successfully.'}
+        return {'message': 'User notification email sent successfully.'}
 
     except Exception as e:
-        print(f"Error during vendor email sending: {str(e)}")
-        return {'error': f'Failed to send vendor email: {str(e)}'}
+        print(f"Error during user email sending: {str(e)}")
+        return {'error': f'Failed to send user email: {str(e)}'}
 
-def send_email_fav_vendor_new_basket(email, user, market, vendor, link_market, link_vendor):
+def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_market, link_vendor):
     try:
 
         sender_email = os.getenv('EMAIL_USER')
@@ -1054,16 +1074,16 @@ def send_email_fav_vendor_new_basket(email, user, market, vendor, link_market, l
             subcategories_html = f"<h5 class='margin-4-0'>Product Subcategories: {subcategories_display}</h5>"
         else:
             subcategories_html = ""
-        
-        if market.bio:
-            market_bio_html = f"<p class='margin-12-0'>{market.bio}</p>"
-        else:
-            market_bio_html = ""
 
         if vendor.bio:
             vendor_bio_html = f"<p class='margin-12-0'>{vendor.bio}</p>"
         else:
             vendor_bio_html = ""
+        
+        if market.bio:
+            market_bio_html = f"<p class='margin-12-0'>{market.bio}</p>"
+        else:
+            market_bio_html = ""
 
         msg = MIMEMultipart()
         msg['From'] = f'Gingham NYC <{sender_email}>'
@@ -1123,13 +1143,13 @@ def send_email_fav_vendor_new_basket(email, user, market, vendor, link_market, l
         server.quit()
 
         # print("Vendor email sent successfully")
-        return {'message': 'Vendor confirmation email sent successfully.'}
+        return {'message': 'User notification email sent successfully.'}
     
     except Exception as e:
-        print(f"Error during vendor email sending: {str(e)}")
-        return {'error': f'Failed to send vendor email: {str(e)}'}
+        print(f"Error during user email sending: {str(e)}")
+        return {'error': f'Failed to send user email: {str(e)}'}
 
-def send_email_basket_pickup_time(email, user, market, vendor, basket, link_market, link_vendor):
+def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link_market, link_vendor):
     try:
 
         sender_email = os.getenv('EMAIL_USER')
@@ -1184,13 +1204,13 @@ def send_email_basket_pickup_time(email, user, market, vendor, basket, link_mark
         server.quit()
 
         # print("Vendor email sent successfully")
-        return {'message': 'Vendor confirmation email sent successfully.'}
+        return {'message': 'User notification email sent successfully.'}
     
     except Exception as e:
-        print(f"Error during vendor email sending: {str(e)}")
-        return {'error': f'Failed to send vendor email: {str(e)}'}
+        print(f"Error during user email sending: {str(e)}")
+        return {'error': f'Failed to send user email: {str(e)}'}
 
-def send_email_vendor_review_response(email, user, vendor, review, link_vendor):
+def send_email_user_vendor_review_response(email, user, vendor, review, link_review):
     try:
 
         sender_email = os.getenv('EMAIL_USER')
@@ -1200,7 +1220,7 @@ def send_email_vendor_review_response(email, user, vendor, review, link_vendor):
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link_vendor = f'https://www.gingham.nyc/{link_vendor}'
+        full_link_review = f'https://www.gingham.nyc/{link_review}'
 
         msg = MIMEMultipart()
         msg['From'] = f'Gingham NYC <{sender_email}>'
@@ -1223,7 +1243,7 @@ def send_email_vendor_review_response(email, user, vendor, review, link_vendor):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.name},</p>
-                        <p>A vendor responded to your review! Check out what <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong> said.</p>
+                        <p>A vendor responded to your review! Check out what <strong><a class="link-underline" href={full_link_review}>{vendor.name}</a></strong> said.</p>
                         <div class="content flex-center">
                             <div class='box-callout'>
                                 {review.review_text}
@@ -1249,13 +1269,13 @@ def send_email_vendor_review_response(email, user, vendor, review, link_vendor):
         server.quit()
 
         # print("Vendor email sent successfully")
-        return {'message': 'Vendor confirmation email sent successfully.'}
+        return {'message': 'User notification email sent successfully.'}
     
     except Exception as e:
-        print(f"Error during vendor email sending: {str(e)}")
-        return {'error': f'Failed to send vendor email: {str(e)}'}
+        print(f"Error during user email sending: {str(e)}")
+        return {'error': f'Failed to send user email: {str(e)}'}
 
-def send_email_new_blog(email, user, blog):
+def send_email_user_new_blog(email, user, blog):
     try:
 
         sender_email = os.getenv('EMAIL_USER')
@@ -1311,13 +1331,13 @@ def send_email_new_blog(email, user, blog):
         server.quit()
 
         # print("Vendor email sent successfully")
-        return {'message': 'Vendor confirmation email sent successfully.'}
+        return {'message': 'User notification email sent successfully.'}
     
     except Exception as e:
-        print(f"Error during vendor email sending: {str(e)}")
-        return {'error': f'Failed to send vendor email: {str(e)}'}
+        print(f"Error during user email sending: {str(e)}")
+        return {'error': f'Failed to send user email: {str(e)}'}
 
-def send_email_new_market_in_city(email, user, market, link_market):
+def send_email_user_new_market_in_city(email, user, market, link_market):
     try:
 
         sender_email = os.getenv('EMAIL_USER')
@@ -1385,19 +1405,452 @@ def send_email_new_market_in_city(email, user, market, link_market):
         server.quit()
 
         # print("Vendor email sent successfully")
-        return {'message': 'Vendor confirmation email sent successfully.'}
+        return {'message': 'User notification email sent successfully.'}
+    
+    except Exception as e:
+        print(f"Error during user email sending: {str(e)}")
+        return {'error': f'Failed to send user email: {str(e)}'}
+
+#  VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS
+#  VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS
+#  VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS
+#  VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS
+#  VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS
+
+def send_email_vendor_fav_market_new_event(email, user, market, event, link):
+    try:
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+        
+        full_link = f'https://www.gingham.nyc/{link}'
+
+        start_date_formatted = format_event_date(event.start_date)
+        end_date_formatted = format_event_date(event.end_date)
+        if event.start_date != event.end_date:
+            date_display = f"{start_date_formatted} — {end_date_formatted}"
+        else:
+            date_display = start_date_formatted
+
+        msg = MIMEMultipart()
+        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'New Event at {market.name}'
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>New Event at Favorite Market</title>
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {user.name},</p>
+                        <p>One of your the markets you are in, <strong><a class="link-underline" href={full_link}>{market.name}</a></strong>, has a new event, check it out: </p>
+                        <div class="content flex-center">
+                            <div class="box-callout">
+                                <h3 class="margin-4-0">{event.title}</h3>
+                                <h5 class="margin-4-0">{date_display}</h5>
+                                <p class="margin-12-0">{event.message}</p>
+                            </div>
+                        </div>
+                        <p>— The Gingham Team</p>
+                    </div>
+                    <div class="footer">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
+                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        # print("Attempting to send vendor email...")
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Vendor notification email sent successfully.'}
+
+    except Exception as e:
+        print(f"Error during vendor email sending: {str(e)}")
+        return {'error': f'Failed to send vendor email: {str(e)}'}
+
+def send_email_vendor_fav_market_schedule_change(email, user, market, event, link):
+    try:
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+        
+        full_link = f'https://www.gingham.nyc/{link}'
+
+        start_date_formatted = format_event_date(event.start_date)
+        end_date_formatted = format_event_date(event.end_date)
+        if event.start_date != event.end_date:
+            date_display = f"{start_date_formatted} — {end_date_formatted}"
+        else:
+            date_display = start_date_formatted
+
+        msg = MIMEMultipart()
+        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'Schedule Change at {market.name}'
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Schedule Change at Favorite Market</title>
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {user.name},</p>
+                        <p>One of the markets you are in, <strong><a class="link-underline" href={full_link}>{market.name}</a></strong>, has temporarily changed their schedule, check it out: </p>
+                        <div class="content flex-center">
+                            <div class="box-callout">
+                                <h3 class="margin-4-0">{event.title}</h3>
+                                <h5 class="margin-4-0">{date_display}</h5>
+                                <p class="margin-12-0">{event.message}</p>
+                            </div>
+                        </div>
+                        <p>— The Gingham Team</p>
+                    </div>
+                    <div class="footer">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
+                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        # print("Attempting to send vendor email...")
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Vendor notification email sent successfully.'}
+
+    except Exception as e:
+        print(f"Error during vendor email sending: {str(e)}")
+        return {'error': f'Failed to send vendor email: {str(e)}'}
+
+def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pickup_start, pickup_end, sale_date):
+    try:
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+
+        if basket_count > 1:
+            basket_text = "baskets"
+        else:
+            basket_text = "basket"
+
+        msg = MIMEMultipart()
+        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'Basket sold'
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Basket Sold</title>
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {user.name},</p>
+                        <p>{vendor.name} has sold {basket_count} {basket_text} at {market.name} on {format_event_date(sale_date)}. You set the pickup time from {time_converter(pickup_start)} to {time_converter(pickup_end)}.</p>
+                        <div class="flex-center">
+                            <p><strong><a class="button" href='https://www.gingham.nyc/vendor/scan'>Scan basket QR codes here!</a></strong></p>
+                        </div>
+                        <p>— The Gingham Team</p>
+                    </div>
+                    <div class="footer">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
+                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        # print("Attempting to send vendor email...")
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Vendor notification email sent successfully.'}
     
     except Exception as e:
         print(f"Error during vendor email sending: {str(e)}")
         return {'error': f'Failed to send vendor email: {str(e)}'}
 
-#  VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS
-#  VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS
-#  VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS
-#  VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS
-#  VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS VENDOR EMAILS
+def send_email_vendor_new_review(email, user, vendor, review, link_review):
+    try:
 
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
 
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+        
+        full_link_review = f'https://www.gingham.nyc/{link_review}'
+
+        msg = MIMEMultipart()
+        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'New Review on Gingham!'
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>New Review on Gingham</title>
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {user.name},</p>
+                        <p>A user posted a new <strong><a class="link-underline" href={full_link_review}>review</a></strong> about {vendor.name}!</p>
+                        <div class="content flex-center">
+                            <div class='box-callout'>
+                                {review.review_text}
+                            </div>
+                        </div>
+                        <p>— The Gingham Team</p>
+                    </div>
+                    <div class="footer">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
+                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        # print("Attempting to send vendor email...")
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Vendor notification email sent successfully.'}
+    
+    except Exception as e:
+        print(f"Error during vendor email sending: {str(e)}")
+        return {'error': f'Failed to send vendor email: {str(e)}'}
+
+def send_email_vendor_new_blog(email, user, blog):
+    try:
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+
+        msg = MIMEMultipart()
+        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'New Gingham Vendor Blog Post!'
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>New Gingham Blog Post</title>
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {user.name},</p>
+                        <p>A new blog post is out, check out <strong><a class="link-underline" href='https://www.gingham.nyc/vendor#blog'>{blog.title}</a></strong>!</p>
+                        <div class="content flex-center">
+                            <div class='box-callout'>
+                                {blog.body}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
+                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        # print("Attempting to send vendor email...")
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Vendor notification email sent successfully.'}
+    
+    except Exception as e:
+        print(f"Error during vendor email sending: {str(e)}")
+        return {'error': f'Failed to send vendor email: {str(e)}'}
+
+def send_email_vendor_new_statement(email, user, vendor, month, year):
+    try:
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+
+        msg = MIMEMultipart()
+        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'Gingham Monthly Statement'
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>New Gingham Monthly Statement</title>
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {user.name},</p>
+                        <p>A new monthly statement for {vendor.name} is out. Attached is a CSV with last months sales data. For a PDF summary, graphs, and previous months statements check the <strong><a class="link-underline" href='https://www.gingham.nyc/vendor/sales'>sales</a></strong> page.</p>
+                    </div>
+                    <div class="footer">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
+                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        output = StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+
+        headers = ['ID', 'Sale Date', 'Pickup Start', 'Pickup End', 'Price',
+                   'Value', 'Fee', 'Is Sold', 'Is Grabbed', 'Is Refunded']
+        writer.writerow(headers)
+
+        baskets = Basket.query.filter(
+            Basket.vendor_id == vendor.id,
+            extract('month', Basket.sale_date) == month,
+            extract('year', Basket.sale_date) == year
+        ).all()
+
+        for basket in baskets:
+            writer.writerow([
+                basket.id,
+                basket.sale_date.strftime('%Y-%m-%d') if basket.sale_date else '',
+                basket.pickup_start.strftime('%H:%M') if basket.pickup_start else '',
+                basket.pickup_end.strftime('%H:%M') if basket.pickup_end else '',
+                basket.price,
+                basket.value,
+                basket.fee_vendor,
+                'Yes' if basket.is_sold else 'No',
+                'Yes' if basket.is_grabbed else 'No',
+                'Yes' if basket.is_refunded else 'No'
+            ])
+
+        csv_bytes = BytesIO()
+        csv_bytes.write(output.getvalue().encode('utf-8'))
+        csv_bytes.seek(0)
+        output.close()
+
+        csv_filename = f'gingham_vendor-statement_{year}-{month:02d}.csv'
+        part = MIMEApplication(csv_bytes.read(), Name=csv_filename)
+        part['Content-Disposition'] = f'attachment; filename="{csv_filename}"'
+        msg.attach(part)
+
+        # print("Attempting to send vendor email...")
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Vendor notification email sent successfully.'}
+    
+    except Exception as e:
+        print(f"Error during vendor email sending: {str(e)}")
+        return {'error': f'Failed to send vendor email: {str(e)}'}
 
 #  ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS
 #  ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS
@@ -1405,3 +1858,220 @@ def send_email_new_market_in_city(email, user, market, link_market):
 #  ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS
 #  ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS
 
+def send_email_admin_reported_review(email, user, market, vendor, review, link_review):
+    try:
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+        
+        full_link_review = f'https://www.gingham.nyc/{link_review}'
+
+        if market:
+            review_about = f"{market.name}"
+        if vendor:
+            review_about = f"{vendor.name}"
+
+        msg = MIMEMultipart()
+        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'New Reported Review on Gingham :('
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>New Reported Review on Gingham</title>
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {user.name},</p>
+                        <p>A user reported a <strong><a class="link-underline" href={full_link_review}>review</a></strong> about {review_about}!</p>
+                        <div class="content flex-center">
+                            <div class='box-callout'>
+                                {review.review_text}
+                            </div>
+                        </div>
+                        <p>— The Gingham Team</p>
+                    </div>
+                    <div class="footer">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
+                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        # print("Attempting to send vendor email...")
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Admin notification email sent successfully.'}
+    
+    except Exception as e:
+        print(f"Error during admin email sending: {str(e)}")
+        return {'error': f'Failed to send admin email: {str(e)}'}
+
+def send_email_admin_product_request(email, user, vendor, product, link_product):
+    try:
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+        
+        full_link_product = f'https://www.gingham.nyc/{link_product}'
+
+        if vendor.products:
+            product_names = [product.name for product in Product.query.filter(Product.id.in_(vendor.products)).all()]
+            products_display = ', '.join(product_names) if product_names else 'N/A'
+        else:
+            products_display = 'N/A'
+
+        if vendor.products_subcategories:
+            subcategories_display = ', '.join(vendor.products_subcategories)
+            subcategories_html = f"<h5 class='margin-4-0'>Product Subcategories: {subcategories_display}</h5>"
+        else:
+            subcategories_html = ""
+
+        if vendor.bio:
+            vendor_bio_html = f"<p class='margin-12-0'>{vendor.bio}</p>"
+        else:
+            vendor_bio_html = ""
+
+        msg = MIMEMultipart()
+        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'New Product Request on Gingham'
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>New Product Request on Gingham</title>
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {user.name},</p>
+                        <p>A vendor, {vendor.name}, requested a new product <strong><a class="link-underline" href={full_link_product}>{product}</a></strong>!</p>
+                        <div class="content flex-center">
+                            <div class="box-callout">
+                                <h3 class="margin-4-0">{vendor.name}</h3>
+                                <h5 class="margin-4-0">{vendor.city}, {vendor.state}</h5>
+                                <h5 class="margin-4-0">Products: {products_display}</h5>
+                                {subcategories_html}
+                                {vendor_bio_html}
+                            </div>
+                        </div>
+                        <p>— The Gingham Team</p>
+                    </div>
+                    <div class="footer">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
+                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        # print("Attempting to send vendor email...")
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Admin notification email sent successfully.'}
+    
+    except Exception as e:
+        print(f"Error during admin email sending: {str(e)}")
+        return {'error': f'Failed to send admin email: {str(e)}'}
+
+def send_email_admin_new_blog(email, user, blog):
+    try:
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+
+        msg = MIMEMultipart()
+        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'New Gingham Admin Blog Post!'
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>New Gingham Admin Blog Post</title>
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {user.name},</p>
+                        <p>A new blog post is out, check out <strong><a class="link-underline" href='https://www.gingham.nyc/admin/profile/{user.id}'>{blog.title}</a></strong>!</p>
+                        <div class="content flex-center">
+                            <div class='box-callout'>
+                                {blog.body}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
+                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        # print("Attempting to send vendor email...")
+        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Admin notification email sent successfully.'}
+
+    except Exception as e:
+        print(f"Error during admin email sending: {str(e)}")
+        return {'error': f'Failed to send admin email: {str(e)}'}
