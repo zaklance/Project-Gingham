@@ -19,6 +19,7 @@ email = 'zak@mufo.nyc'
 
 with app.app_context():
 
+    user = db.session.get(User, 1)
     market = db.session.get(Market, 1)
     vendor = db.session.get(Vendor, 1)
     event = db.session.get(Event, 1)
