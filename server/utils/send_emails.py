@@ -19,13 +19,12 @@ email = 'zak@mufo.nyc'
 
 with app.app_context():
 
-    user = User.query.get(1)
-    market = Market.query.get(1)
-    vendor = Vendor.query.get(1)
-    event = Event.query.get(1)
-    basket = Basket.query.get(1)
-    review = VendorReview.query.get(1)
-    blog = Blog.query.get(1)
+    market = db.session.get(Market, 1)
+    vendor = db.session.get(Vendor, 1)
+    event = db.session.get(Event, 1)
+    basket = db.session.get(Basket, 1)
+    review = db.session.get(VendorReview, 1)
+    blog = db.session.get(Blog, 1)
 
     send_email_user_fav_market_new_event(email=email, user=user, market=market, event=event, link=f"markets/{market.id}")
     send_email_user_fav_market_schedule_change(email=email, user=user, market=market, event=event, link=f"markets/{market.id}")

@@ -106,7 +106,7 @@ const AdminBlog = () => {
             <div>
                 <div className='flex-start flex-top-align flex-gap-24 m-flex-wrap'>
                     <h1 className='margin-b-16'>Blogs!</h1>
-                    <div className='tabs margin-t-20'>
+                    <div className='margin-t-20'>
                         <Link to="/admin/blog?tab=user" onClick={() => setActiveTab('user')} className={activeTab === 'user' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                             User
                         </Link>
@@ -118,7 +118,7 @@ const AdminBlog = () => {
                         </Link>
                     </div>
                     <h1>|</h1>
-                    <div className='tabs margin-t-20'>
+                    <div className='margin-t-20'>
                         <Link onClick={() => setActiveTabMode('add')} className={activeTabMode === 'add' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                             add
                         </Link>
