@@ -80,11 +80,11 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
                 <li>Freshly ground black pepper</li>
             </ul>
             <h5 class="text-underline">Instructions</h5>
-            <ul class="ul-numbers">
+            <ol class="ul-numbers">
                 <li>Heat oil in a large pot over medium heat. Add onion, salt, and pepper; sauté 5–8 mins. Add squash and cook 8–10 mins, stirring.</li>
                 <li>Add garlic, sage, rosemary, and ginger; cook 30 secs to 1 min until fragrant. Add 3 cups broth, bring to a boil, cover, and simmer 20–30 mins until squash is tender.</li>
                 <li>Cool slightly, blend until smooth (in batches if needed). Adjust thickness with more broth, season, and serve.</li>
-            </ul>
+            </ol>
             <article>
                 <p>
                     Enjoy this creamy, cozy soup!
