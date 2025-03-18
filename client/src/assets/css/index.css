@@ -505,7 +505,7 @@ article {
 .scale-98:hover {
   display: inline-block;
   scale: 98%;
-  transition: 0.4s;
+  transition: 0.3s;
 }
 
 .scale-102:hover {
@@ -641,8 +641,8 @@ ul {
 
 .li-notif .link-plain:hover {
   font-weight: 400;
-  letter-spacing: -0.015em;
-  transition: 0.4s;
+  letter-spacing: -0.014em;
+  transition: 0.3s;
 }
 
 .li-cart {
@@ -1529,7 +1529,7 @@ div:has(.btn-unread)>.btn-notif {
 .btn-unread:hover {
   background-color: #006FE6;
   scale: 116%;
-  transition: .2s;
+  transition: .3s;
 }
 
 .btn-market-card {
@@ -1699,10 +1699,6 @@ link {
   display: inline-block;
   scale: 96%;
   transition: 0.4s;
-}
-
-.link-plain {
-  text-decoration: none;
 }
 
 .link-underline {
