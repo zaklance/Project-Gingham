@@ -72,12 +72,22 @@ const AdminEmail = () => {
                     border: 0;
                     border-top: 4px solid #ff806b;
                 }
-                p, h1, h2, h3, h4, h5, h6 {
+                p, h1, h2, h3, h4, h5, h6, article {
                     color: #ff806b;
                 }
-                .img-hero {
+                .img-hero, .img-blog {
                     width: 100%;
                     height: auto;
+                }
+                article {
+                  margin-bottom: 1em;
+                  widows: 2;
+                }
+                .first-letter::first-letter {
+                  -webkit-initial-letter: 2;
+                  initial-letter: 2;
+                  font-family: inherit;
+                  padding-right: 4px;
                 }
                 .center {
                     text-align: center;
@@ -91,6 +101,12 @@ const AdminEmail = () => {
                 }
                 .flex-gap-16 {
                     gap: 16px;
+                }
+                .margin-4-0 {
+                    margin: 4px;
+                }
+                .margin-12-0 {
+                    margin: 12px;
                 }
                 .link-underline {
                     color: #ff806b;

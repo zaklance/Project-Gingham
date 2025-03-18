@@ -18,30 +18,39 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
     const defaultBlog = `
         <div class="column-3">
             <article class="first-letter">
-                Do you love supporting local farmers, enjoying fresh produce, and finding great 
-                deals? Meet Gingham, the innovative platform that connects you with discounted 
-                baskets from farmers market vendors while helping reduce food waste.
+                <p>
+                    Do you love supporting local farmers, enjoying fresh produce, and finding great 
+                    deals? Meet Gingham, the innovative platform that connects you with discounted 
+                    baskets from farmers market vendors while helping reduce food waste.
+                </p>
             </article>
             <article>
-                Here’s how it works: Farmers market vendors often have surplus items at the end 
-                of the day. With Gingham, they bundle these items into discounted baskets for you 
-                to browse, reserve, and pick up at your convenience. Think of it as your personal 
-                gateway to fresh, local, and sustainable food.
+                <p>
+                    Here’s how it works: Farmers market vendors often have surplus items at the end 
+                    of the day. With Gingham, they bundle these items into discounted baskets for you 
+                    to browse, reserve, and pick up at your convenience. Think of it as your personal 
+                    gateway to fresh, local, and sustainable food.
+                </p>
             </article>
             <article>
-                Gingham isn’t just about savings—it’s about creating a positive impact. By 
-                purchasing a basket, you’re rescuing perfectly good food from going to waste, 
-                supporting local businesses, and embracing a more sustainable way of living. Plus, 
-                with fresh ingredients at your fingertips, you can enjoy cooking, meal prep, or 
-                even a spontaneous picnic with ease.
+                <p>
+                    Gingham isn’t just about savings—it’s about creating a positive impact. By 
+                    purchasing a basket, you’re rescuing perfectly good food from going to waste, 
+                    supporting local businesses, and embracing a more sustainable way of living. Plus, 
+                    with fresh ingredients at your fingertips, you can enjoy cooking, meal prep, or 
+                    even a spontaneous picnic with ease.
+                </p>
             </article>
             <article>
-                Signing up is quick and simple. Join the Gingham community today to start saving, 
-                reducing waste, and supporting your local farmers markets. Together, we can create 
-                a more sustainable future—one basket at a time!
+                <p>
+                    Signing up is quick and simple. Join the Gingham community today to start saving, 
+                    reducing waste, and supporting your local farmers markets. Together, we can create 
+                    a more sustainable future—one basket at a time!
             </article>
             <article>
-                <span class='font-gingham text-size-1'>—The Gin<span class="kern-1-5">g</span><span class="kern-05">h</span>am Team</span>
+                <p>
+                    <span class='font-gingham text-size-1'>—The Gin<span class="kern-1-5">g</span><span class="kern-05">h</span>am Team</span>
+                </p>
             </article>
             <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
         </div>
@@ -53,7 +62,9 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
             <h5 class="divider-b">Prep Time: 10 mins | Cook Time: 35 mins | Total: 45 mins | Serves: 6</h5>
             <br/>
             <article class="first-letter">
-                This vegan butternut squash soup is the perfect fall comfort food! Store in the fridge for 4 days or freeze for months.
+                <p>
+                    This vegan butternut squash soup is the perfect fall comfort food! Store in the fridge for 4 days or freeze for months.
+                </p>
             </article>
             <h5 class="text-underline">Ingredients</h5>
             <ul class="ul-bullet">
@@ -75,7 +86,9 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
                 <li>Cool slightly, blend until smooth (in batches if needed). Adjust thickness with more broth, season, and serve.</li>
             </ul>
             <article>
-                Enjoy this creamy, cozy soup!
+                <p>
+                    Enjoy this creamy, cozy soup!
+                </p>
             </article>
             <article>
                 <span class='font-gingham text-size-1'>—The Gin<span class="kern-1-5">g</span><span class="kern-05">h</span>am Team</span>
