@@ -875,26 +875,6 @@ def notify_vendor_users_new_market_location(mapper, connection, target):
 #         print(f"Error handling QR Code deletion: {e}")
 #     finally:
 #         session.close()
-    
-@listens_for(Vendor, 'after_update')
-def remove_vendor_closure_notifications(mapper, connection, target):
-    session = Session(bind=connection)
-    try:
-        if not target.is_temporarily_closed:  # Vendor has reopened
-            print(f"Vendor {target.name} (ID {target.id}) has reopened. Removing closure notifications.")
-
-            session.query(UserNotification).filter(
-                UserNotification.subject == "Vendor Temporarily Closed",
-                UserNotification.vendor_id == target.id
-            ).delete(synchronize_session=False)
-
-            session.commit()
-
-    except Exception as e:
-        session.rollback()
-        print(f"Error removing vendor closure notifications: {e}")
-    finally:
-        session.close()
         
 @listens_for(Basket, 'after_insert')
 def notify_fav_market_new_baskets(mapper, connection, target):

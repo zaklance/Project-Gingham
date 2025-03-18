@@ -3252,10 +3252,10 @@ def incoming_sms():
                     db.session.commit()
                     resp.message("You have been unsubscribed from all text notifications ;)")
                 else:
-                    resp.message("Error unsubscribing from text all notifications. Please turn them off on the website. ¯\_(ツ)_/¯")
+                    resp.message(r"Error unsubscribing from text all notifications. Please turn them off on the website. ¯\_(ツ)_/¯")
             else:
                 print("No user found with this phone number.")
-                resp.message("Error unsubscribing from all text notifications. Please turn them off on the website. ¯\_(ツ)_/¯")
+                resp.message(r"Error unsubscribing from all text notifications. Please turn them off on the website. ¯\_(ツ)_/¯")
         except Exception as e:
             db.session.rollback()
             print(f"An error occurred: {str(e)}")
@@ -4308,6 +4308,7 @@ def create_admin_notification():
             subject=data['subject'],
             message=data['message'],
             link=data['link'],
+            admin_role=data['admin_role'],
             vendor_user_id=data['vendor_user_id'],
             vendor_id=data['vendor_id'],
             created_at=datetime.utcnow(),
@@ -4341,12 +4342,16 @@ def create_admin_notification():
 @app.route('/api/admin-notifications', methods=['GET', 'DELETE'])
 @jwt_required()
 def get_admin_notifications():
+    admin_id = request.args.get('admin_id')
+
     if request.method == 'GET':
         notifications = AdminNotification.query.all()
+        if admin_id:
+            query = query.filter_by(admin_id=admin_id)
+
         return jsonify([notif.to_dict() for notif in notifications]), 200
     
     if request.method == 'DELETE':
-        admin_id = request.args.get('admin_id')
         query = AdminNotification.query
         if admin_id:
             query = query.filter(AdminNotification.subject != "product-request")
