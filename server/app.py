@@ -3214,6 +3214,7 @@ def send_sendgrid_email_client():
 
     try:
         sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+        print(os.environ.get('SENDGRID_API_KEY'))
         response = sg.send(message)
         print(response.status_code)
         print(response.body)
@@ -5176,5 +5177,5 @@ def export_pdf_vendor_baskets():
         return jsonify({"error": f"Error fetching baskets: {str(e)}"}), 500
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5555)), debug=False)
-    # app.run(port=5555, debug=True)
+    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
+    app.run(port=5555, debug=debug_mode)
