@@ -12,7 +12,7 @@ def send_sms(body: str, to: str):
         message = client.messages.create(
             body=body,
             from_=from_phone_number,
-            to=f'+1{to}'
+            to={to}
         )
         return message.sid
     except Exception as e:

@@ -130,7 +130,7 @@ function VendorCreate () {
     };
 
     const handleDeleteProductSubcat = (product) => {
-        setTempVendorData((prev) => ({
+        setVendorData((prev) => ({
             ...prev,
             products_subcategories: prev.products_subcategories.filter((id) => id !== product),
         }));

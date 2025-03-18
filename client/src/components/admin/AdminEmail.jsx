@@ -18,6 +18,140 @@ const AdminEmail = () => {
     const adminId = localStorage.getItem('admin_user_id');
     const token = localStorage.getItem('admin_jwt-token');
 
+    const htmlEmail = `<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Contact Form Submission</title>
+            <style>
+                .email-container {
+                    font-family: helvetica, sans-serif;
+                    line-height: 1.6;
+                    color: #3b4752;
+                    background-color: #fbf7eb;
+                    padding: 20px;
+                    border-radius: 24px;
+                }
+                .header {
+                    color: white;
+                    text-align: center;
+                    border-radius: 16px;
+                }
+                .content {
+                    padding: 20px;
+                    color: #3b4752;
+                }
+                .footer {
+                    font-size: 12px;
+                    text-align: center;
+                    margin-top: 20px;
+                    margin-bottom: -10px;
+                    color: #777;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .button {
+                    display: inline-block;
+                    background-color: #ff806b;
+                    color: #ffffff !important;
+                    text-decoration: none !important;
+                    padding: 8px 12px;
+                    border-radius: 5px;
+                    margin-top: 10px;
+                }
+                .img-logo {
+                    height: 120px;
+                    width: 120px;
+                }
+                .img-logo-small {
+                    height: 32px;
+                    width: 32px;
+                }
+                .divider {
+                    border: 0;
+                    border-top: 4px solid #ff806b;
+                }
+                p, h1, h2, h3, h4, h5, h6, article {
+                    color: #ff806b;
+                }
+                .img-hero, .img-blog {
+                    width: 100%;
+                    height: auto;
+                }
+                article {
+                  margin-bottom: 1em;
+                  widows: 2;
+                }
+                .first-letter::first-letter {
+                  -webkit-initial-letter: 2;
+                  initial-letter: 2;
+                  font-family: inherit;
+                  padding-right: 4px;
+                }
+                .center {
+                    text-align: center;
+                }
+                .flex-center {
+                    display: flex;
+                    justify-content: center;
+                }
+                .flex-gap-8 {
+                    gap: 8px;
+                }
+                .flex-gap-16 {
+                    gap: 16px;
+                }
+                .margin-4-0 {
+                    margin: 4px;
+                }
+                .margin-12-0 {
+                    margin: 12px;
+                }
+                .link-underline {
+                    color: #ff806b;
+                    text-decoration: none;
+                }
+                .link-underline:hover {
+                    text-decoration: underline;
+                    text-underline-offset: .15em;
+                    background-color: transparent;
+                    transition: all 0.3s;
+                }
+                .box-callout {
+                    border: 4px solid #ff806b;
+                    border-radius: 20px;
+                    padding: 12px 24px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="email-container">
+                <div class="header">
+                    <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                </div>
+                <hr class="divider"/>
+                <div>
+                    <p>Hi {user_data.name},</p>
+                    <p>One of your favorite markets, <strong><a class="link-underline" href={full_link}>{market_data.name}</a></strong>, has a new event, check it out: </p>
+                    <div class="content flex-center">
+                        <div class="box-callout">
+                            <h3>{event.title}</h3>
+                            <h5>{event.start_date} — {event.end_date}</h5>
+                            <p>{event.message}</p>
+                        </div>
+                    </div>
+                    <p>— The Gingham Team</p>
+                </div>
+                <div class="footer flex-center">
+                    <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_2.png" alt="logo"/>
+                    <p>&copy; 2024 GINGHAM.NYC. All Rights Reserved.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        `
+
     const mjmlEmail = `<mjml>
         <mj-head>
             <mj-attributes>
@@ -199,6 +333,8 @@ const AdminEmail = () => {
         setBodyType(event)
         if (event === 'plain') {
             setNewEmail('')
+        } else if (event === 'html') {
+            setNewEmail(htmlEmail)
         } else {
             setNewEmail(mjmlEmail)
         }
@@ -220,7 +356,8 @@ const AdminEmail = () => {
                             onChange={(e) => handleBodyType(e.target.value)}
                         >
                             <option value={'plain'}>Plain</option>
-                            <option value={'html'}>HTML/MJML</option>
+                            <option value={'html'}>HTML</option>
+                            <option value={'mjml'}>MJML</option>
                         </select>
                     </div>
                     <div className='form-group'>
@@ -258,7 +395,7 @@ const AdminEmail = () => {
                         />
                     </div>
                     <div className='flex-start'>
-                        {bodyType == 'html' && <button className='btn btn-small margin-t-8 margin-l-12 margin-b-16' onClick={previewEmail}>Preview Email</button>}
+                        {bodyType === 'mjml' && <button className='btn btn-small margin-t-8 margin-l-12 margin-b-16' onClick={previewEmail}>Preview Email</button>}
                         {isLoading ? (
                             <PulseLoader
                                 className='margin-l-24 margin-t-12'
@@ -272,6 +409,14 @@ const AdminEmail = () => {
                         )}
                     </div>
                     {bodyType === 'html' && (
+                        <iframe
+                            className='box-iframe'
+                            title="email-preview"
+                            srcDoc={newEmail}
+                            style={{ width: '100%', height: '600px', border: '1px solid grey' }}
+                        />
+                    )}
+                    {bodyType === 'mjml' && (
                         <iframe
                             className='box-iframe'
                             title="email-preview"

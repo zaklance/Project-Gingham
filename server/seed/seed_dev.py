@@ -3573,7 +3573,7 @@ def run():
         rev_len = randint(2, 5)
 
         review_text = fake.paragraph(nb_sentences=rev_len)
-        vendor_id = str(randint(1, 200))
+        vendor_id = str(randint(1, 150))
         user_id = str(randint(1, 50))
         is_reported = choice(reported)
         last_year = randint(0, 365)
@@ -3751,7 +3751,7 @@ def run():
     # )
 
     db.session.add(vendor_user_demo)
-    db.session.add(vendor_user_settings_demo)
+    # db.session.add(vendor_user_settings_demo)
     # db.session.add(vendor_user_demo_2)
     # db.session.add(vendor_user_settings_demo_2)
     # db.session.add(vendor_user_demo_3)
@@ -4238,7 +4238,9 @@ def run():
                     <h5 class="divider-b">Prep Time: 10 mins | Cook Time: 35 mins | Total: 45 mins | Serves: 6</h5>
                     <br/>
                     <article class="first-letter">
-                        This vegan butternut squash soup is the perfect fall comfort food! Store in the fridge for 4 days or freeze for months.
+                        <p>
+                            This vegan butternut squash soup is the perfect fall comfort food! Store in the fridge for 4 days or freeze for months.
+                        </p>
                     </article>
                     <h5 class="text-underline">Ingredients</h5>
                     <ul class="ul-bullet">
@@ -4254,16 +4256,20 @@ def run():
                         <li>Freshly ground black pepper</li>
                     </ul>
                     <h5 class="text-underline">Instructions</h5>
-                    <ul class="ul-numbers">
+                    <ol class="ul-numbers">
                         <li>Heat oil in a large pot over medium heat. Add onion, salt, and pepper; sauté 5–8 mins. Add squash and cook 8–10 mins, stirring.</li>
                         <li>Add garlic, sage, rosemary, and ginger; cook 30 secs to 1 min until fragrant. Add 3 cups broth, bring to a boil, cover, and simmer 20–30 mins until squash is tender.</li>
                         <li>Cool slightly, blend until smooth (in batches if needed). Adjust thickness with more broth, season, and serve.</li>
-                    </ul>
+                    </ol>
                     <article>
-                        Enjoy this creamy, cozy soup!
+                        <p>
+                            Enjoy this creamy, cozy soup!
+                        </p>
                     </article>
                     <article>
-                        —The Gingham Team
+                        <p>
+                            —The Gingham Team
+                        </p>
                     </article>
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
                 </div>
@@ -4278,30 +4284,38 @@ def run():
             body="""
                 <div class="column-3">
                     <article class="first-letter">
-                        Do you love supporting local farmers, enjoying fresh produce, and finding great 
-                        deals? Meet Gingham, the innovative platform that connects you with discounted 
-                        baskets from farmers market vendors while helping reduce food waste.
+                        <p>
+                            Do you love supporting local farmers, enjoying fresh produce, and finding great 
+                            deals? Meet Gingham, the innovative platform that connects you with discounted 
+                            baskets from farmers market vendors while helping reduce food waste.
+                        </p>
                     </article>
                     <article>
-                        Here’s how it works: Farmers market vendors often have surplus items at the end 
-                        of the day. With Gingham, they bundle these items into discounted baskets for you 
-                        to browse, reserve, and pick up at your convenience. Think of it as your personal 
-                        gateway to fresh, local, and sustainable food.
+                        <p>
+                            Here’s how it works: Farmers market vendors often have surplus items at the end 
+                            of the day. With Gingham, they bundle these items into discounted baskets for you 
+                            to browse, reserve, and pick up at your convenience. Think of it as your personal 
+                            gateway to fresh, local, and sustainable food.
+                        </p>
                     </article>
                     <article>
-                        Gingham isn’t just about savings—it’s about creating a positive impact. By 
-                        purchasing a basket, you’re rescuing perfectly good food from going to waste, 
-                        supporting local businesses, and embracing a more sustainable way of living. Plus, 
-                        with fresh ingredients at your fingertips, you can enjoy cooking, meal prep, or 
-                        even a spontaneous picnic with ease.
+                        <p>
+                            Gingham isn’t just about savings—it’s about creating a positive impact. By 
+                            purchasing a basket, you’re rescuing perfectly good food from going to waste, 
+                            supporting local businesses, and embracing a more sustainable way of living. Plus, 
+                            with fresh ingredients at your fingertips, you can enjoy cooking, meal prep, or 
+                            even a spontaneous picnic with ease.
+                        </p>
                     </article>
                     <article>
-                        Signing up is quick and simple. Join the Gingham community today to start saving, 
-                        reducing waste, and supporting your local farmers markets. Together, we can create 
-                        a more sustainable future—one basket at a time!
+                        <p>
+                            Signing up is quick and simple. Join the Gingham community today to start saving, 
+                            reducing waste, and supporting your local farmers markets. Together, we can create 
+                            a more sustainable future—one basket at a time!
+                        </p>
                     </article>
                     <article>
-                        —The Gingham Team
+                        <p>—The Gingham Team</p>
                     </article>
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
                 </div>
@@ -4316,21 +4330,27 @@ def run():
             body="""
                 <div class="column-3">
                     <article class="first-letter">
-                        The world-famous Union Square Greenmarket began with just a few farmers in 1976, has grown 
-                        exponentially; in peak season 140 regional farmers, fishers, and bakers sell their products 
-                        to a dedicated legion of city dwellers. 
+                        <p>
+                            The world-famous Union Square Greenmarket began with just a few farmers in 1976, has grown 
+                            exponentially; in peak season 140 regional farmers, fishers, and bakers sell their products 
+                            to a dedicated legion of city dwellers. 
+                        </p>
                     </article>
                     <article>
-                        As Greenmarket's flagship market, the seasonal bounty is unparalleled, with hundreds of 
-                        varieties to choose from during any given season. From just-picked fresh fruits and vegetables, 
-                        to heritage meats and award-winning farmstead cheeses, artisan breads, jams, pickles, a profusion 
-                        of cut flowers and plants, wine, ciders, maple syrup and much more. 
+                        <p>
+                            As Greenmarket's flagship market, the seasonal bounty is unparalleled, with hundreds of 
+                            varieties to choose from during any given season. From just-picked fresh fruits and vegetables, 
+                            to heritage meats and award-winning farmstead cheeses, artisan breads, jams, pickles, a profusion 
+                            of cut flowers and plants, wine, ciders, maple syrup and much more. 
+                        </p>
                     </article>
                     <article>
-                        Located in one of New York City's great public spaces, the atmosphere at Union Square on a market 
-                        day is electric: 60,000 market shoppers shop and chat with farmers; students of all ages tour the 
-                        market and learn about seasonality; visitors watch and taste cooking demonstrations by some of 
-                        New York's hottest local chefs. 
+                        <p>
+                            Located in one of New York City's great public spaces, the atmosphere at Union Square on a market 
+                            day is electric: 60,000 market shoppers shop and chat with farmers; students of all ages tour the 
+                            market and learn about seasonality; visitors watch and taste cooking demonstrations by some of 
+                            New York's hottest local chefs. 
+                        </p>
                     </article>
                 </div>
             """,
