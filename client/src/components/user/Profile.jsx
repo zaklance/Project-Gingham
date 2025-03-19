@@ -204,10 +204,16 @@ function Profile({ marketData }) {
                                 setProfileData(updatedData);
                                 setEditMode(false);
                                 console.log('Profile data updated successfully:', updatedData);
+                                toast.success('Profile updated successfully.', {
+                                    autoClose: 4000,
+                                });
                             } else {
                                 console.log('Failed to save changes');
                                 console.log('Response status:', response.status);
                                 console.log('Response text:', await response.text());
+                                toast.error('Profile failed to update successfully.', {
+                                    autoClose: 4000,
+                                });
                             }
                         }
                     }
@@ -237,10 +243,16 @@ function Profile({ marketData }) {
                         setProfileData(updatedData);
                         setEditMode(false);
                         console.log('Profile data updated successfully:', updatedData);
+                        toast.success('Profile updated successfully.', {
+                            autoClose: 4000,
+                        });
                     } else {
                         console.log('Failed to save changes');
                         console.log('Response status:', response.status);
                         console.log('Response text:', await response.text());
+                        toast.error('Profile failed to update successfully.', {
+                            autoClose: 4000,
+                        });
                     }
                 }
             } catch (error) {
@@ -288,11 +300,17 @@ function Profile({ marketData }) {
                         console.log('Image upload failed');
                         console.log('Response:', await result.text());
                         setStatus('fail');
+                        toast.error('Image failed to upload successfully.', {
+                            autoClose: 4000,
+                        });
                         return;
                     }
                 } catch (error) {
                     console.error('Error uploading image:', error);
                     setStatus('fail');
+                    toast.error('Image failed to upload successfully.', {
+                        autoClose: 4000,
+                    });
                     return;
                 }
                 window.location.reload()

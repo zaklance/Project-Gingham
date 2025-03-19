@@ -21,7 +21,6 @@ python-dotenv = "*"
 flask-jwt-extended = "*"
 sendgrid = "*"
 twilio = "*"
-jwt = "*"
 pyjwt = "<3.0,>=2.0"
 gunicorn = "*"
 
