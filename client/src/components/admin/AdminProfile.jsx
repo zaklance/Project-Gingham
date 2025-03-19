@@ -515,9 +515,9 @@ function AdminProfile () {
                             </>
                         ) : (
                             <>
-                                <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
-                                    <h2 className='margin-b-16'>Settings</h2>
-                                    <div className='tabs margin-t-20'>                
+                                <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap margin-b-16'>
+                                    <h2>Settings</h2>
+                                    <div className='tabs'>                
                                         <Link to="#" onClick={() => setActiveTab('website')} className={activeTab === 'website' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                                             Website
                                         </Link>

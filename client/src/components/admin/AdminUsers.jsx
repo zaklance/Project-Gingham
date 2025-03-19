@@ -52,7 +52,7 @@ function AdminUsers() {
                 <>
                     <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
                         <h1>User Management</h1>
-                        <div className='tabs margin-t-20 m-scroll'>
+                        <div className='tabs'>
                             <Link to="/admin/users?tab=user" onClick={() => setActiveTab('user')} className={activeTab === 'user' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                                 User
                             </Link>
