@@ -13,6 +13,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.8",
     "@mui/material": "^6.4.2",
     "@react-pdf/renderer": "^4.1.6",
     "@stripe/react-stripe-js": "^2.8.1",
@@ -21,6 +22,7 @@
     "@vitejs/plugin-react": "^4.3.1",
     "@yudiel/react-qr-scanner": "^2.0.8",
     "chart.js": "^4.4.6",
+    "dompurify": "^3.2.4",
     "dotenv": "^16.4.5",
     "jwt-decode": "^4.0.0",
     "mapkit-react": "^1.15.3",
@@ -36,8 +38,7 @@
     "react-router-dom": "^6.24.1",
     "react-scripts": "^5.0.1",
     "react-spinners": "^0.15.0",
-    "react-toastify": "^11.0.3",
-    "dompurify": "^3.2.4"
+    "react-toastify": "^11.0.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
