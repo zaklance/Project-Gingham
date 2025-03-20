@@ -193,6 +193,8 @@ class Market(db.Model, SerializerMixin):
     state = db.Column(db.String, nullable=False)
     zipcode = db.Column(db.String, nullable=True)
     coordinates = db.Column(db.JSON, nullable=True)
+    maps = db.Column(MutableDict.as_mutable(JSON), nullable=True)
+    maps_organizer = db.Column(db.String, nullable=True)
     schedule = db.Column(db.String, nullable=True) # LOCAL TIME (user input via template)
     year_round = db.Column(db.Boolean, nullable=True)
     season_start = db.Column(db.Date, nullable=True) # LOCAL TIME (user input)

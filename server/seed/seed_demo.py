@@ -92,6 +92,7 @@ def run():
         Market(
             name='Union Square Greenmarket',
             image='Union_Square_Farmers_Market.jpg',
+            bio="Compost Program Hours: 8:00 a.m. - 5:00 p.m. In partnership with LES Ecology Center.",
             location='E. 17th St. & Union Square W.',
             city="New York",
             state="NY",
@@ -99,6 +100,8 @@ def run():
             coordinates={"lat": "40.736358642578125", "lng": "-73.99076080322266"},
             schedule='Monday, Wednesday, Friday & Saturday (8 a.m. - 6 p.m.)',
             year_round=True,
+            maps_organizer="GrowNYC",
+            maps={"1": "https://www.grownyc.org/files/gmkt/usqmaps/unsq-mon.pdf", "3": "https://www.grownyc.org/files/gmkt/usqmaps/unsq-wed.pdf","5": "https://www.grownyc.org/files/gmkt/usqmaps/unsq-fri.pdf", "6": "https://www.grownyc.org/files/gmkt/usqmaps/unsq-sat.pdf"},
             is_visible=True
         )
     ]

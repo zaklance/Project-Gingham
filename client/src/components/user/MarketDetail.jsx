@@ -6,6 +6,8 @@ import { timeConverter, formatEventDate, formatDate, marketDateConvert, formatPi
 import ReviewMarket from './ReviewMarket';
 import { Annotation, ColorScheme, FeatureVisibility, Map, Marker } from 'mapkit-react'
 import { toast } from 'react-toastify';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 import MapAnnotation from './MapAnnotation';
 
 function MarketDetail ({ match }) {
@@ -621,9 +623,32 @@ function MarketDetail ({ match }) {
                         )
                     )}
             </div>
+            {market.maps && (
+                <div className='flex-start m-flex-wrap'>
+                    <h4>Maps: &emsp;</h4>
+                    <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                        {market.maps && Object.entries(market.maps).map(([dayKey, mapValue]) => (
+                            <Chip
+                                key={dayKey}
+                                component="a"
+                                style={{
+                                    backgroundColor: "#eee",
+                                    fontSize: ".9em"
+                                }}
+                                label={weekDay[dayKey]}
+                                size="small"
+                                href={mapValue}
+                                target="_blank"
+                                rel="noreferrer"
+                                clickable
+                            />
+                        ))}
+                    </Stack>
+                </div>
+            )}
             {market?.bio && (
                 <div className='flex-start flex-bottom-align m-flex-wrap'>
-                    <h4>About:&emsp;</h4>
+                    <h4>About: &emsp;</h4>
                     <p>{market.bio}</p>
                 </div>
             )}
