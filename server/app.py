@@ -1745,18 +1745,13 @@ def market_by_id(id):
                 market.zipcode = data['zipcode']
             if 'coordinates' in data:
                 market.coordinates = data['coordinates']
-            # if 'maps' in data:
-            #     market.maps = data['maps']
             if 'maps_organizer' in data:
-                market.maps_organizer = data['maps__organizer']
+                market.maps_organizer = data['maps_organizer']
             if 'maps' in data:
                 maps_links = data['maps']
-                market_day = str(data.get('market_day'))
-                if market_day is None:
-                    return jsonify({'error': 'market day is required when setting map links'}), 400
-                if not isinstance(market.maps, dict):
-                    market.maps = {}
-                market.maps[market_day] = maps_links
+                if not isinstance(maps_links, dict):
+                    return jsonify({'error': 'maps must be a dictionary'}), 400
+                market.maps = maps_links
             if 'schedule' in data:
                 market.schedule = data['schedule']
             if 'year_round' in data:

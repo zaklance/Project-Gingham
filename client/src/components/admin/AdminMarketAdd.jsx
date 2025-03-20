@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { states } from '../../utils/common';
+import { states, weekDay } from '../../utils/common';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 
 function AdminMarketAdd({ markets, weekDayReverse }) {
     const [marketDays, setMarketDays] = useState([])
@@ -8,6 +10,8 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
     const [status, setStatus] = useState('initial')
     const [query, setQuery] = useState("");
     const [adminMarketDayData, setAdminMarketDayData] = useState(null);
+    const [newMapDay, setNewMapDay] = useState(0);
+    const [newMapLink, setNewMapLink] = useState(null);
     const [newMarket, setNewMarket] = useState({
         name: '',
         website: '',
@@ -15,6 +19,8 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
         zipcode: '',
         coordinates: { lat: '', lng: '' },
         schedule: '',
+        maps_organizer: '',
+        maps: '',
         year_round: '',
         is_flagship: '',
         is_current: '',
@@ -71,6 +77,27 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
             [name]: value,
             market_id: matchingMarketId
         }));
+    };
+
+    const handleAddMap = () => {
+        setNewMarket((prevData) => ({
+            ...prevData,
+            maps: {
+                ...prevData.maps,
+                [newMapDay]: newMapLink,
+            },
+        }));
+    };
+
+    const handleDeleteMap = (mapId) => {
+        setNewMarket((prev) => {
+            const newMaps = { ...prev.maps };
+            delete newMaps[mapId];
+            return {
+                ...prev,
+                maps: newMaps
+            };
+        });
     };
 
     const handleCreateMarket = async (event) => {
@@ -302,6 +329,64 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                                 value={newMarket ? newMarket.schedule : ''}
                                 onChange={handleInputMarketChange}
                             />
+                        </div>
+                        <div className='form-group'>
+                            <label>Maps Organizer:</label>
+                            <input
+                                type="text"
+                                name="maps_organizer"
+                                placeholder='GrowNYC'
+                                value={newMarket ? newMarket.maps_organizer : ''}
+                                onChange={handleInputMarketChange}
+                            />
+                        </div>
+                        <div className='form-group'>
+                            <label>Maps:</label>
+                            <select
+                                id="marketSelect"
+                                name="map_day"
+                                value={newMapDay || ""}
+                                onChange={(e) => setNewMapDay(e.target.value)}
+                            >
+                                {weekDay.map((day, index) => (
+                                  <option key={index} value={index}>
+                                    {day}
+                                  </option>
+                                ))}
+                            </select>
+                            <input
+                                type="text"
+                                name="map_link"
+                                placeholder='If you focus on specific things; ex: "Apples"'
+                                value={newMapLink ? newMapLink : ''}
+                                onChange={(e) => setNewMapLink(e.target.value)}
+                            />
+                            <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddMap()}>Add</button>
+                            <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                                {newMarket?.maps &&
+                                Object.entries(newMarket.maps).map(([dayKey, mapValue]) => (
+                                  <Chip
+                                    key={dayKey}
+                                    style={{
+                                      backgroundColor: "#eee",
+                                      fontSize: ".9em"
+                                    }}
+                                    label={
+                                      <a
+                                        href={mapValue}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        onClick={(e) => e.stopPropagation()}
+                                        style={{ textDecoration: 'none', color: 'inherit' }}
+                                      >
+                                        {weekDay[dayKey]}
+                                      </a>
+                                    }
+                                    size="small"
+                                    onDelete={() => handleDeleteMap(dayKey)}
+                                  />
+                                ))}
+                            </Stack>
                         </div>
                         <div className='form-group'>
                             <label title="true or false">Is Flagship:</label>

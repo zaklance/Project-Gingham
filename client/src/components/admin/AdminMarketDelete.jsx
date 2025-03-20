@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { weekDay } from '../../utils/common';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 
-function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
+function AdminMarketDelete({ markets }) {
     const [query, setQuery] = useState("");
     const [adminMarketData, setAdminMarketData] = useState(null);
     const [marketDays, setMarketDays] = useState([])
@@ -136,6 +139,33 @@ function AdminMarketDelete({ markets, weekDay, weekDayReverse }) {
                         <tr>
                             <td className='cell-title'>Location:</td>
                             <td className='cell-text'>{adminMarketData ? adminMarketData.location : ''}</td>
+                        </tr>
+                        <tr>
+                            <td className='cell-title'>Maps Organizer:</td>
+                            <td className='cell-text'>{adminMarketData ? adminMarketData.maps_organizer : ''}</td>
+                        </tr>
+                        <tr>
+                            <td className='cell-title'>Maps:</td>
+                            <td className='cell-text'>
+                                <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                                    {adminMarketData?.maps && Object.entries(adminMarketData.maps).map(([dayKey, mapValue]) => (
+                                        <Chip
+                                            key={dayKey}
+                                            component="a"
+                                            style={{
+                                                backgroundColor: "#eee",
+                                                fontSize: ".9em"
+                                            }}
+                                            label={weekDay[dayKey]}
+                                            size="small"
+                                            href={mapValue}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            clickable
+                                        />
+                                    ))}
+                                </Stack>
+                            </td>
                         </tr>
                         <tr>
                             <td className='cell-title'>City:</td>
