@@ -30,6 +30,8 @@ import VendorDetail from './components/user/VendorDetail.jsx';
 import UserFAQs from './components/user/UserFAQs.jsx';
 import UserEmailVerification from './components/user/UserEmailVerification.jsx';
 import Logout from './components/user/Logout.jsx';
+import Return from './components/user/Return.jsx';
+import Refresh from './components/user/Refresh.jsx';
 
 // vendor routes
 import VendorHome from './components/vendor/VendorHome.jsx';
@@ -169,41 +171,6 @@ const AdminAuthRoute = ({ children }) => {
     return children;
 };
 
-const Return = () => {
-    const [status, setStatus] = useState(null);
-    const [customerEmail, setCustomerEmail] = useState('');
-
-    useEffect(() => {
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
-        const sessionId = urlParams.get('session_id');
-
-        fetch(`/session-status?session_id=${sessionId}`)
-            .then((res) => res.json())
-            .then((data) => {
-                setStatus(data.status);
-                setCustomerEmail(data.customer_email);
-            });
-    }, []);
-
-    if (status === 'open') {
-        return <Navigate to="/checkout" />;
-    }
-
-    if (status === 'complete') {
-        return (
-            <section id="success">
-                <p>
-                    We appreciate your business! A confirmation email will be sent to {customerEmail}.
-                    If you have any questions, please email <a href="mailto:orders@example.com">orders@example.com</a>.
-                </p>
-            </section>
-        );
-    }
-
-    return null;
-};
-
 const router = createBrowserRouter([
     {
         path: "/",
@@ -215,6 +182,8 @@ const router = createBrowserRouter([
             { path: "contact", element: <Contact /> },
             { path: "terms-service", element: <TermsOfService /> },
             { path: "privacy-policy", element: <PrivacyPolicy /> },
+            { path: "return/:accountId", element: <Return />},
+            { path: "refresh/:accountId", element: <Refresh />},
             {
                 path: "user",
                 children: [
@@ -231,7 +200,6 @@ const router = createBrowserRouter([
                     { path: "payment", element: <Payment /> },
                     { path: "check-session", element: <CheckSession /> },
                     { path: "completion", element: <Completion />},
-                    { path: "return", element: <Return />},
                     { path: "password-reset-request", element: <PasswordResetRequest user={'user'} /> },
                     { path: "password-reset/:token", element: <PasswordReset user={'user'} path={'/'} /> },
                     { path: "confirm-email/:token", element: <UserEmailVerification user={'user'} path={'/'} /> },

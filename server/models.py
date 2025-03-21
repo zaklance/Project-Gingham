@@ -277,6 +277,9 @@ class Vendor(db.Model, SerializerMixin):
     image = db.Column(db.String)
     image_default = db.Column(db.String, nullable=False, default=random_vendor)
     stripe_account_id = db.Column(db.String, nullable=True)  # bring back unique=True post deployment
+    is_onboarded = db.Column(db.Boolean, nullable=False, default=False)
+    charges_enabled = db.Column(db.Boolean, nullable=False, default=False)
+    payouts_enabled = db.Column(db.Boolean, nullable=False, default=False)
 
     # Relationships
     reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic', cascade="all, delete-orphan")
@@ -292,7 +295,6 @@ class Vendor(db.Model, SerializerMixin):
         '-vendor_vendor_users.email',
     )
 
-    # Validations
     @validates('name', 'products')
     def validates_not_empty(self, key, value):
         if not value:

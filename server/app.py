@@ -1973,7 +1973,9 @@ def vendor_by_id(id):
                 vendor.image = data['image']
             if 'image_default' in data: 
                 vendor.image_default = data['image_default']
-
+            if 'is_onboarded' in data:
+                vendor.is_onboarded = data['is_onboarded']
+                
             db.session.commit()
             return jsonify(vendor.to_dict()), 200
         except Exception as e: 
@@ -3459,7 +3461,6 @@ def reverse_basket_transfer():
 
         basket_record.is_refunded = True
         db.session.commit()
-        print(f"✅ Updated basket {basket_id}: is_refunded = True")
 
         return jsonify({
             "id": reversal["id"],
@@ -3484,6 +3485,54 @@ def reverse_basket_transfer():
         db.session.rollback()
         print(f"❌ Unexpected Error: {str(e)}")
         return jsonify({'error': {'message': 'An unexpected error occurred.', 'details': str(e)}}), 500
+
+
+@app.route('/api/create-stripe-account', methods=['POST'])
+def create_stripe_account():
+    vendor_id = request.json.get("vendor_id")
+    vendor_email = request.json.get("vendor_email")
+    vendor_name = request.json.get("vendor_name")
+
+    account = stripe.Account.create(
+        type="standard",
+        country="US",
+        email=vendor_email,
+        capabilities={
+            "card_payments": {"requested": True},
+            "transfers": {"requested": True},
+        },
+        business_profile= {
+            "name": vendor_name,
+            "support_email": vendor_email,
+        },
+    )
+
+    vendor = Vendor.query.get(vendor_id)
+    if vendor:
+        vendor.stripe_account_id = account.id
+        db.session.commit()
+
+    return jsonify({"stripe_account_id": account.id})
+
+@app.route('/api/account_link', methods=['POST'])
+def create_account_link():
+    try:
+        stripe_account_id = request.get_json().get('stripe_account_id')
+
+        account_link = stripe.AccountLink.create(
+          account=stripe_account_id,
+          return_url=f"http://localhost:5173/return/{stripe_account_id}",
+          refresh_url=f"http://localhost:5173/refresh/{stripe_account_id}",
+          type="account_onboarding",
+          collect= 'eventually_due'
+        )
+
+        return jsonify({
+          'url': account_link.url,
+        })
+    except Exception as e:
+        print('An error occurred when calling the Stripe API to create an account link: ', e)
+        return jsonify(error=str(e)), 500
 
 # @app.route('/api/refund', methods=['POST'])
 # def process_refund():
@@ -3570,70 +3619,97 @@ def stripe_webhook():
         return jsonify({'error': 'Invalid signature'}), 400
 
     event_type = event['type']
-    # print(f"\n[Event Received]: {event_type}")
+    print(f"\n[Event Received]: {event_type}")
 
-    # Handle `payment_intent.created`
-    if event_type == 'payment_intent.created':
-        payment_intent = event['data']['object']
-        # print("Payment Intent Created:", payment_intent['id'])
-        return jsonify({'message': 'Payment Intent created'}), 200
+    try:
+        # Handle `payment_intent.created`
+        if event_type == 'payment_intent.created':
+            payment_intent = event['data']['object']
+            print(f"Payment Intent created: {payment_intent['id']}")
+            return jsonify({'message': 'Payment Intent created'}), 200
 
-    # Handle `payment_intent.succeeded`
-    elif event_type == 'payment_intent.succeeded':
-        payment_intent = event['data']['object']
-        # print("Payment Succeeded:", payment_intent['id'])
-        # print("Amount:", payment_intent['amount'])
-        # print("Currency:", payment_intent['currency'])
-        # print("Status:", payment_intent['status'])
-        return jsonify({'message': 'Payment processed'}), 200
+        # Handle `payment_intent.succeeded`
+        elif event_type == 'payment_intent.succeeded':
+            payment_intent = event['data']['object']
+            print(f"Payment Intent succeeded: {payment_intent['id']}")
+            handle_payment_success(payment_intent)
+            return jsonify({'message': 'Payment processed'}), 200
 
-    # Handle `charge.succeeded`
-    elif event_type == 'charge.succeeded':
-        charge = event['data']['object']
-        # print("\nCharge Succeeded:")
-        # print(json.dumps(charge, indent=2))
-        return jsonify({'message': 'Charge processed'}), 200
+        # Handle `charge.succeeded`
+        elif event_type == 'charge.succeeded':
+            charge = event['data']['object']
+            print(f"Charge succeeded: {charge['id']}")
+            # Additional charge processing if needed
+            return jsonify({'message': 'Charge processed'}), 200
 
-    # Handle `charge.updated`
-    elif event_type == 'charge.updated':
-        charge = event['data']['object']
-        # print("Charge Updated:", charge['id'])
-        return jsonify({'message': 'Charge updated'}), 200
+        # Handle `charge.updated`
+        elif event_type == 'charge.updated':
+            charge = event['data']['object']
+            print(f"Charge updated: {charge['id']}")
+            # Handle charge updates if needed
+            return jsonify({'message': 'Charge updated'}), 200
 
-    # Handle `payment.created`
-    elif event_type == 'payment.created':
-        payment = event['data']['object']
-        # print("\nPayment Created:")
-        # print(json.dumps(payment, indent=2))
-        return jsonify({'message': 'Payment created'}), 200
+        # Handle `payment.created`
+        elif event_type == 'payment.created':
+            payment = event['data']['object']
+            print(f"Payment created: {payment['id']}")
+            # Handle payment creation if needed
+            return jsonify({'message': 'Payment created'}), 200
 
-    # Handle `transfer.created`
-    elif event_type == 'transfer.created':
-        transfer = event['data']['object']
-        # print("\nTransfer Created:")
-        # print(json.dumps(transfer, indent=2))
-        return jsonify({'message': 'Transfer created'}), 200
+        # Handle `transfer.created`
+        elif event_type == 'transfer.created':
+            transfer = event['data']['object']
+            print(f"Transfer created: {transfer['id']}")
+            # Update basket with transfer ID if needed
+            if transfer.get('metadata', {}).get('basket_id'):
+                basket = Basket.query.filter_by(id=transfer['metadata']['basket_id']).first()
+                if basket:
+                    basket.stripe_transfer_id = transfer['id']
+                    db.session.commit()
+            return jsonify({'message': 'Transfer created'}), 200
 
-    # Handle `application_fee.created`
-    elif event_type == 'application_fee.created':
-        application_fee = event['data']['object']
-        # print("\nApplication Fee Created:")
-        # print(json.dumps(application_fee, indent=2))
-        return jsonify({'message': 'Application fee created'}), 200
-    
-    elif event_type == "balance.available":
-        balance_data = event["data"]["object"]
-        available_funds = balance_data["available"]
-        print(f"Available Balance Updated: {available_funds}")
-        return jsonify({'message': 'Balance Available'})
-    
-    else:
-        print("Unhandled event type:", event_type)
-        return jsonify({'message': f'Unhandled event {event_type}'}), 200 
-    
+        # Handle `application_fee.created`
+        elif event_type == 'application_fee.created':
+            application_fee = event['data']['object']
+            print(f"Application fee created: {application_fee['id']}")
+            # Handle application fee if needed
+            return jsonify({'message': 'Application fee created'}), 200
+        
+        # Handle `balance.available`
+        elif event_type == "balance.available":
+            balance_data = event["data"]["object"]
+            available_funds = balance_data["available"]
+            print(f"Available Balance Updated: {available_funds}")
+            # Handle balance updates if needed
+            return jsonify({'message': 'Balance Available'}), 200
+        
+        # Handle `account.updated`
+        elif event_type == "account.updated":
+            account_data = event["data"]["object"]
+            stripe_account_id = account_data["id"]
+            charges_enabled = account_data.get("charges_enabled", False)
+            payouts_enabled = account_data.get("payouts_enabled", False)
+            
+            # Update vendor's Stripe account status
+            vendor = Vendor.query.filter_by(stripe_account_id=stripe_account_id).first()
+            if vendor:
+                vendor.charges_enabled = charges_enabled
+                vendor.payouts_enabled = payouts_enabled
+                db.session.commit()
+                print(f"Updated vendor {vendor.id} Stripe account status")
+            
+            return jsonify({"message": "Account updated"}), 200
+        
+        else: 
+            print("Unhandled event type:", event_type)
+            return jsonify({'message': f'Unhandled event {event_type}'}), 200
+
+    except Exception as e:
+        print(f"Error processing webhook event {event_type}: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/stripe-transaction', methods=['GET'])
 def get_stripe_transaction():
-    """Fetch live transaction details from Stripe using PaymentIntent ID."""
     payment_intent_id = request.args.get("payment_intent_id")
 
     if not payment_intent_id:
@@ -3642,14 +3718,12 @@ def get_stripe_transaction():
     try:
         # Fetch PaymentIntent from Stripe
         payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
-        # print(f"Payment Intent Found: {payment_intent.id}")
 
         if not payment_intent or "latest_charge" not in payment_intent:
             return jsonify({"error": "Invalid PaymentIntent or charge not found"}), 404
 
         # Fetch Charge details
         charge = stripe.Charge.retrieve(payment_intent["latest_charge"])
-        # print(f"Charge Found: {charge.id}")
 
         # Try getting balance_transaction from charge
         balance_transaction_id = charge.get("balance_transaction")
@@ -3672,7 +3746,6 @@ def get_stripe_transaction():
 
         # Fetch Balance Transaction details from Stripe
         balance_transaction = stripe.BalanceTransaction.retrieve(balance_transaction_id)
-        # print(f"Balance Transaction Found: {balance_transaction_id}")
 
         # Extract Fees & Taxes
         fee_processor = sum(fee['amount'] / 100 for fee in balance_transaction.fee_details if fee['type'] == 'stripe_fee')
@@ -3783,7 +3856,6 @@ def password_reset_request():
 @app.route('/api/user/password-reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
     if request.method == 'GET':
-        # print(f"GET request: Received token: {token}")
         website = os.environ['SITE_URL']
         
         return redirect(f'{website}/user/password-reset/{token}')
