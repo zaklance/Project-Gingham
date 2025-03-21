@@ -3,6 +3,9 @@ import { useOutletContext } from 'react-router-dom';
 import { markets_default, states } from '../../utils/common';
 import { formatDate } from '../../utils/helpers';
 import { toast } from 'react-toastify';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
+import DeleteIcon from '@mui/icons-material/Cancel';
 
 function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const [marketDays, setMarketDays] = useState([])
@@ -18,6 +21,8 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const [editDayMode, setEditDayMode] = useState(false);
     const [adminMarketData, setAdminMarketData] = useState(null);
     const [tempMarketData, setTempMarketData] = useState(null);
+    const [newMapDay, setNewMapDay] = useState(0);
+    const [newMapLink, setNewMapLink] = useState(null);
     const [image, setImage] = useState(null)
     const [showDropdown, setShowDropdown] = useState(false);
     const [status, setStatus] = useState('initial')
@@ -274,6 +279,27 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         });
     };
 
+    const handleAddMap = () => {
+        setTempMarketData((prevData) => ({
+            ...prevData,
+            maps: {
+                ...prevData.maps,
+                [newMapDay]: newMapLink,
+            },
+        }));
+    };
+
+    const handleDeleteMap = (mapId) => {
+        setTempMarketData((prev) => {
+            const newMaps = { ...prev.maps };
+            delete newMaps[mapId];
+            return {
+                ...prev,
+                maps: newMaps
+            };
+        });
+    };
+
     const handleEditToggle = () => {
         if (!editMode) {
             setTempMarketData({
@@ -283,8 +309,11 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                     lng: adminMarketData?.coordinates?.lng || '',
                 },
             });
+            setNewMapDay(0)
         } else {
             setTempMarketData(null);
+            setNewMapDay(null)
+            setNewMapLink(null)
         }
         setEditMode(!editMode);
     };
@@ -654,6 +683,64 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 />
                             </div>
                             <div className='form-group'>
+                                <label>Maps Organizer:</label>
+                                <input
+                                    type="text"
+                                    name="maps_organizer"
+                                    placeholder='GrowNYC'
+                                    value={tempMarketData ? tempMarketData.maps_organizer : ''}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                            <div className='form-group'>
+                                <label>Maps:</label>
+                                <select
+                                    id="marketSelect"
+                                    name="map_day"
+                                    value={newMapDay || ""}
+                                    onChange={(e) => setNewMapDay(e.target.value)}
+                                >
+                                    {weekDay.map((day, index) => (
+                                        <option key={index} value={index}>
+                                            {day}
+                                        </option>
+                                    ))}
+                                </select>
+                                <input
+                                    type="text"
+                                    name="map_link"
+                                    placeholder='If you focus on specific things; ex: "Apples"'
+                                    value={newMapLink ? newMapLink : ''}
+                                    onChange={(e) => setNewMapLink(e.target.value)}
+                                />
+                                <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddMap()}>Add</button>
+                                <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                                    {tempMarketData?.maps &&
+                                    Object.entries(tempMarketData.maps).map(([dayKey, mapValue]) => (
+                                      <Chip
+                                        key={dayKey}
+                                        style={{
+                                          backgroundColor: "#eee",
+                                          fontSize: ".9em"
+                                        }}
+                                        label={
+                                          <a
+                                            href={mapValue}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            onClick={(e) => e.stopPropagation()}
+                                            style={{ textDecoration: 'none', color: 'inherit' }}
+                                          >
+                                            {weekDay[dayKey]}
+                                          </a>
+                                        }
+                                        size="small"
+                                        onDelete={() => handleDeleteMap(dayKey)}
+                                      />
+                                    ))}
+                                </Stack>
+                            </div>
+                            <div className='form-group'>
                                 <label title="true or false">Year Round:</label>
                                 <select
                                     name="year_round"
@@ -797,6 +884,33 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     <tr>
                                         <td className='cell-title'>Location:</td>
                                         <td className='cell-text'>{adminMarketData ? adminMarketData.location : ''}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='cell-title'>Maps Organizer:</td>
+                                        <td className='cell-text'>{adminMarketData ? adminMarketData.maps_organizer : ''}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='cell-title'>Maps:</td>
+                                        <td className='cell-text'>
+                                            <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                                                {adminMarketData?.maps && Object.entries(adminMarketData.maps).map(([dayKey, mapValue]) => (
+                                                    <Chip
+                                                        key={dayKey}
+                                                        component="a"
+                                                        style={{
+                                                            backgroundColor: "#eee",
+                                                            fontSize: ".9em"
+                                                        }}
+                                                        label={weekDay[dayKey]}
+                                                        size="small"
+                                                        href={mapValue}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        clickable
+                                                    />
+                                                ))}
+                                            </Stack>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title'>City:</td>
