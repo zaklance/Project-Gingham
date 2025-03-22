@@ -3491,9 +3491,9 @@ def run():
             phone="+12095053880",
             admin_role=0
         ),
-        SettingsAdmin(
-            admin_id=1
-        ),
+        # SettingsAdmin(
+        #     admin_id=1
+        # ),
         AdminUser(
             email="zak@mufo.nyc",
             password="lol",
@@ -3502,9 +3502,9 @@ def run():
             phone="+10000000000",
             admin_role=1
         ),
-        SettingsAdmin(
-            admin_id=2
-        ),
+        # SettingsAdmin(
+        #     admin_id=2
+        # ),
         AdminUser(
             email="sandro@mufo.nyc",
             password="lol",
@@ -3513,9 +3513,9 @@ def run():
             phone="+10000000000",
             admin_role=1
         ),
-        SettingsAdmin(
-            admin_id=3
-        ),
+        # SettingsAdmin(
+        #     admin_id=3
+        # ),
         AdminUser(
             email="vinh@mufo.nyc",
             password="lol",
@@ -3524,9 +3524,9 @@ def run():
             phone="+10000000000",
             admin_role=1
         ),
-        SettingsAdmin(
-            admin_id=4
-        ),
+        # SettingsAdmin(
+        #     admin_id=4
+        # ),
     ]
     
     db.session.add_all(admin_user_demo)

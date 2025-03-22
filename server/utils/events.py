@@ -1097,7 +1097,7 @@ def notify_users_new_market_in_state(mapper, connection, target):
         users_in_state = session.query(User).filter(User.state == target.state).all()
 
         if not users_in_state:
-            print(f"No users found in city {target.state}. No notifications will be created.")
+            print(f"No users found in {target.city} {target.state}. No notifications will be created.")
             return
 
         # Prepare notifications (site, email)

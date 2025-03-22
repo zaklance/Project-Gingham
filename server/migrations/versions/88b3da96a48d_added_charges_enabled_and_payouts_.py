@@ -24,8 +24,8 @@ def upgrade():
         batch_op.add_column(sa.Column('payouts_enabled', sa.Boolean(), nullable=True))
     
     # Update existing rows with default values
-    op.execute("UPDATE vendors SET charges_enabled = 0")
-    op.execute("UPDATE vendors SET payouts_enabled = 0")
+    op.execute("UPDATE vendors SET charges_enabled = FALSE")
+    op.execute("UPDATE vendors SET payouts_enabled = FALSE")
     
     # Then make columns NOT NULL
     with op.batch_alter_table('vendors', schema=None) as batch_op:
