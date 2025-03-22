@@ -67,7 +67,7 @@ function VendorDashboard({ marketId }) {
                         if (vendorResponse.ok) {
                             const vendorData = await vendorResponse.json();
                             setStripeAccountId(vendorData.stripe_account_id);
-                            setIsOnboarded(vendorData.is_onboarded);
+                            setIsOnboarded(vendorData.stripe_is_onboarded);
                         }
                     }
                 } else {

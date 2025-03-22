@@ -1968,8 +1968,8 @@ def vendor_by_id(id):
                 vendor.image = data['image']
             if 'image_default' in data: 
                 vendor.image_default = data['image_default']
-            if 'is_onboarded' in data:
-                vendor.is_onboarded = data['is_onboarded']
+            if 'stripe_is_onboarded' in data:
+                vendor.stripe_is_onboarded = data['stripe_is_onboarded']
                 
             db.session.commit()
             return jsonify(vendor.to_dict()), 200

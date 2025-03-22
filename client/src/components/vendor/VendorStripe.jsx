@@ -253,10 +253,10 @@ function VendorStripe({ vendorId, vendorUserData, stripeAccountId }) {
                                     </tr>
                                     <tr>
                                         <td>
-                                            {!vendorData?.charges_enabled && <span className="warning-icon">⚠️</span>} Charges Enabled
+                                            {!vendorData?.stripe_charges_enabled && <span className="warning-icon">⚠️</span>} Charges Enabled
                                         </td>
                                         <td>
-                                            {vendorData?.charges_enabled ? (
+                                            {vendorData?.stripe_charges_enabled ? (
                                                 <span className="status-icon status-true">✓</span>
                                             ) : (
                                                 <span className="status-icon status-false">✕</span>
@@ -265,10 +265,10 @@ function VendorStripe({ vendorId, vendorUserData, stripeAccountId }) {
                                     </tr>
                                     <tr>
                                         <td>
-                                            {!vendorData?.payouts_enabled && <span className="warning-icon">⚠️</span>} Payouts Enabled
+                                            {!vendorData?.stripe_payouts_enabled && <span className="warning-icon">⚠️</span>} Payouts Enabled
                                         </td>
                                         <td>
-                                            {vendorData?.payouts_enabled ? (
+                                            {vendorData?.stripe_payouts_enabled ? (
                                                 <span className="status-icon status-true">✓</span>
                                             ) : (
                                                 <span className="status-icon status-false">✕</span>

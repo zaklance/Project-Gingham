@@ -18,11 +18,11 @@ pillow = "*"
 stripe = "*"
 pytz = "*"
 python-dotenv = "*"
-flask-jwt-extended = "*"
 sendgrid = "*"
 twilio = "*"
 pyjwt = "<3.0,>=2.0"
 gunicorn = "*"
+flask-jwt-extended = "*"
 
 [dev-packages]
 
