@@ -113,7 +113,7 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
 
                     # Ensure the vendor user's `market_locations` include the relevant `market_day_id`
                     if market_day.id not in (settings.market_locations or []):
-                        print(f"Skipping Vendor User {vendor_user.id} - MarketDay ID {market_day.id} not in their market locations.")
+                        # print(f"Skipping Vendor User {vendor_user.id} - MarketDay ID {market_day.id} not in their market locations.")
                         continue
 
                     matched_vendor_users.append(vendor_user)
@@ -122,7 +122,7 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
                     print(f"Error processing vendor_user {vendor_user.id}: {e}")
 
             if not matched_vendor_users:
-                print(f"No vendor users with valid settings found for Vendor ID={vendor.id}, skipping notification.")
+                # print(f"No vendor users with valid settings found for Vendor ID={vendor.id}, skipping notification.")
                 continue
 
             for vendor_user in matched_vendor_users:
@@ -282,7 +282,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
         ).all()
 
         if not favorited_users:
-            print(f"No users have favorited Market ID {market.id}. No notifications will be created.")
+            # print(f"No users have favorited Market ID {market.id}. No notifications will be created.")
             return
 
         # Prepare and insert notifications
@@ -321,7 +321,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
         if notifications:
             session.bulk_save_objects(notifications)
             session.commit()
-            print(f"Successfully created {len(notifications)} notifications for Market ID={market.id}")
+            # print(f"Successfully created {len(notifications)} notifications for Market ID={market.id}")
 
     except Exception as e:
         session.rollback()
@@ -788,7 +788,7 @@ def notify_vendor_users_new_market_location(mapper, connection, target):
         vendor_users = session.query(VendorUser).filter_by(vendor_id=target.vendor_id).all()
 
         if not vendor_users:
-            print(f"No vendor users found for Vendor ID={target.vendor_id}. Skipping update.")
+            # print(f"No vendor users found for Vendor ID={target.vendor_id}. Skipping update.")
             return
 
         notifications = []
@@ -958,10 +958,10 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
         delay = (pickup_datetime_utc - now_utc).total_seconds()
 
         if delay <= 0:
-            print(f"Skipping notification: Pickup time for Basket ID {target.id} has already passed.")
+            # print(f"Skipping notification: Pickup time for Basket ID {target.id} has already passed.")
             return
 
-        print(f"Notification for Basket ID {target.id} scheduled in {delay} seconds.")
+        # print(f"Notification for Basket ID {target.id} scheduled in {delay} seconds.")
 
         def send_notification():
             with Session(bind=connection) as notif_session:
@@ -1158,7 +1158,7 @@ def notify_vendor_users_new_review(mapper, connection, target):
         vendor_users = session.query(VendorUser).filter_by(vendor_id=target.vendor_id).all()
 
         if not vendor_users:
-            print(f"No vendor users found for Vendor ID {target.vendor_id}. No notifications will be created.")
+            # print(f"No vendor users found for Vendor ID {target.vendor_id}. No notifications will be created.")
             return
 
         # Prepare notifications (site, email, text)
