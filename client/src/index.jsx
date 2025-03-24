@@ -30,8 +30,6 @@ import VendorDetail from './components/user/VendorDetail.jsx';
 import UserFAQs from './components/user/UserFAQs.jsx';
 import UserEmailVerification from './components/user/UserEmailVerification.jsx';
 import Logout from './components/user/Logout.jsx';
-import Return from './components/user/Return.jsx';
-import Refresh from './components/user/Refresh.jsx';
 
 // vendor routes
 import VendorHome from './components/vendor/VendorHome.jsx';
@@ -41,6 +39,8 @@ import VendorDashboard from './components/vendor/VendorDashboard.jsx';
 import VendorSales from './components/vendor/VendorSales.jsx';
 import VendorScan from './components/vendor/VendorScan.jsx';
 import VendorProfile from './components/vendor/VendorProfile.jsx';
+import VendorStripeReturn from './components/vendor/VendorStripeReturn.jsx';
+import VendorStripeRefresh from './components/vendor/VendorStripeRefresh.jsx';
 import VendorHelpCenter from './components/vendor/VendorHelpCenter.jsx';
 import VendorLoginPopup from './components/vendor/VendorLoginPopup.jsx';
 import VendorEmailVerification from './components/vendor/VendorEmailVerification.jsx';
@@ -182,8 +182,6 @@ const router = createBrowserRouter([
             { path: "contact", element: <Contact /> },
             { path: "terms-service", element: <TermsOfService /> },
             { path: "privacy-policy", element: <PrivacyPolicy /> },
-            { path: "return/:accountId", element: <Return />},
-            { path: "refresh/:accountId", element: <Refresh />},
             {
                 path: "user",
                 children: [
@@ -217,6 +215,8 @@ const router = createBrowserRouter([
                     { path: "help", element: <VendorHelpCenter /> },
                     { path: "contact", element: <Contact /> },
                     { path: "vendor-create", element: <VendorAuthRoute><VendorCreate /></VendorAuthRoute> },
+                    { path: "return/:accountId", element: <VendorStripeReturn />},
+                    { path: "refresh/:accountId", element: <VendorStripeRefresh />},
                     { path: "logout", element: <VendorLogout />},
                     { path: "password-reset-request", element: <PasswordResetRequest user={'vendor'} /> },
                     { path: "password-reset/:token", element: <PasswordReset user={'vendor'} path={'/vendor'} /> },
