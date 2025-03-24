@@ -5,7 +5,6 @@ import VendorEvents from './VendorEvents';
 import VendorTeam from './VendorTeam';
 import VendorActiveVendor from './VendorActiveVendor';
 import VendorReviews from './VendorReviews';
-import VendorStripe from './VendorStripe';
 
 function VendorDashboard({ marketId }) {
     const [vendorId, setVendorId] = useState(null);
@@ -13,8 +12,6 @@ function VendorDashboard({ marketId }) {
     const [vendorUserData, setVendorUserData] = useState(null);
     const [newVendor, setNewVendor] = useState(false);
     const [notifications, setNotifications] = useState([]);
-    const [stripeAccountId, setStripeAccountId] = useState(null);
-    const [isOnboarded, setIsOnboarded] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
 
     const vendorUserId = localStorage.getItem('vendor_user_id');
@@ -122,167 +119,7 @@ function VendorDashboard({ marketId }) {
         fetchNotifications();
     }, [vendorId]);
 
-    const handleStripeConnect = async () => {
-        if (!vendorId || !isAdmin) {
-            console.error("Vendor ID not found or user is not admin!");
-            return;
-        }
-        
-        setLoadingStripe(true);  // Set loading state
-        const token = localStorage.getItem('vendor_jwt-token');
-
-        try {
-            if (stripeAccountId) {
-                // If stripe account exists, create an account link for the dashboard
-                const response = await fetch('/api/account_link', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ stripe_account_id: stripeAccountId })
-                });
-
-                if (response.ok) {
-                    const text = await response.text(); // Get response as text first
-                    console.log('Account link response:', text); // Debug log
-                    let data;
-                    try {
-                        data = text ? JSON.parse(text) : {};
-                    } catch (e) {
-                        console.error('Failed to parse response:', text);
-                        throw new Error('Invalid response from server');
-                    }
-                    
-                    if (!data.url) {
-                        throw new Error('No URL returned from server');
-                    }
-
-                    if (!updateResponse.ok) {
-                        console.error('Failed to update vendor onboarding status:', await updateResponse.text());
-                    } else {
-                        console.log('Successfully updated vendor onboarding status');
-                        setIsOnboarded(true);
-                    }
-
-                    window.location.href = data.url; // Redirect to Stripe dashboard
-                } else {
-                    const text = await response.text();
-                    console.error('Error response from server:', text); // Debug log
-                    let errorMessage = 'Failed to create account link';
-                    try {
-                        const errorData = text ? JSON.parse(text) : {};
-                        errorMessage = errorData.error || errorMessage;
-                    } catch (e) {
-                        console.error('Failed to parse error response:', text);
-                    }
-                    throw new Error(errorMessage);
-                }
-            } else {
-                // If no stripe account, create a new one
-                const response = await fetch('/api/create-stripe-account', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ vendor_id: vendorId })
-                });
-
-                if (response.ok) {
-                    const text = await response.text(); // Get response as text first
-                    console.log('Create account response:', text); // Debug log
-                    let data;
-                    try {
-                        data = text ? JSON.parse(text) : {};
-                    } catch (e) {
-                        console.error('Failed to parse response:', text);
-                        throw new Error('Invalid response from server');
-                    }
-
-                    if (!data.stripe_account_id) {
-                        throw new Error('No Stripe account ID returned from server');
-                    }
-
-                    setStripeAccountId(data.stripe_account_id);
-                    
-                    // Create account link for onboarding
-                    const linkResponse = await fetch('/api/account_link', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ stripe_account_id: data.stripe_account_id })
-                    });
-
-                    if (linkResponse.ok) {
-                        const linkText = await linkResponse.text();
-                        console.log('Account link response:', linkText);
-                        let linkData;
-                        try {
-                            linkData = linkText ? JSON.parse(linkText) : {};
-                        } catch (e) {
-                            console.error('Failed to parse link response:', linkText);
-                            throw new Error('Invalid response from server');
-                        }
-
-                        if (!linkData.url) {
-                            throw new Error('No URL returned from server');
-                        }
-
-                        if (!updateResponse.ok) {
-                            console.error('Failed to update vendor onboarding status:', await updateResponse.text());
-                        } else {
-                            console.log('Successfully updated vendor onboarding status');
-                            setIsOnboarded(true);
-                        }
-
-                        window.location.href = linkData.url; // Redirect to Stripe onboarding
-                    } else {
-                        const text = await linkResponse.text();
-                        console.error('Error response from server:', text);
-                        let errorMessage = 'Failed to create account link';
-                        try {
-                            const errorData = text ? JSON.parse(text) : {};
-                            errorMessage = errorData.error || errorMessage;
-                        } catch (e) {
-                            console.error('Failed to parse error response:', text);
-                        }
-                        throw new Error(errorMessage);
-                    }
-                } else {
-                    const text = await response.text();
-                    console.error('Error response from server:', text); // Debug log
-                    let errorMessage = 'Failed to create Stripe account';
-                    try {
-                        const errorData = text ? JSON.parse(text) : {};
-                        errorMessage = errorData.error || errorMessage;
-                    } catch (e) {
-                        console.error('Failed to parse error response:', text);
-                    }
-                    throw new Error(errorMessage);
-                }
-            }
-        } catch (error) {
-            console.error("Error with Stripe connection:", error);
-            alert(error.message || "An error occurred. Please try again.");
-        } finally {
-            setLoadingStripe(false);
-        }
-    };
-
-    const getStripeButtonStyle = () => {
-        if (loadingStripe) return "btn-edit";
-        if (stripeAccountId) return "btn-edit stripe-connected"; // Add this class to CSS
-        return "btn-edit";
-    };
-
-    const getStripeButtonText = () => {
-        if (loadingStripe) return "Connecting...";
-        if (stripeAccountId) return "Go to Stripe";
-        return "Connect Stripe Account";
-    };
+    
 
     return (
         <>
@@ -291,9 +128,6 @@ function VendorDashboard({ marketId }) {
                 <h1 className=''>Vendor Dashboard</h1>
                 {vendorUserData && vendorUserData.active_vendor !== null && vendorUserData.vendor_role[vendorUserData.active_vendor] <= 1 ? (
                     <div className='tabs margin-l-24 m-flex-wrap'>
-                        <Link to="/vendor/dashboard?tab=stripe" onClick={() => setActiveTab('stripe')} className={activeTab === 'stripe' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
-                            Stripe
-                        </Link>
                         <Link to="/vendor/dashboard?tab=baskets" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                             Baskets
                         </Link>
@@ -319,7 +153,6 @@ function VendorDashboard({ marketId }) {
             {activeTab === 'events' && <VendorEvents vendorId={vendorId} vendorUserData={vendorUserData} />}
             {activeTab === 'team' && <VendorTeam vendorId={vendorId} vendorUserData={vendorUserData} notifications={notifications} setNotifications={setNotifications} />}
             {activeTab === 'reviews' && <VendorReviews vendorId={vendorId} vendorUserData={vendorUserData} notifications={notifications} setNotifications={setNotifications} />}
-            {activeTab === 'stripe' && <VendorStripe vendorId={vendorId} vendorUserData={vendorUserData} stripeAccountId={stripeAccountId} />}
         </>
     );
 }
