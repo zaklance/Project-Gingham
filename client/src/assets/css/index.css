@@ -3383,6 +3383,80 @@ select:hover {
   padding: 0 10px;
 }
 
+.stripe-status-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.stripe-status-table th,
+.stripe-status-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.stripe-status-table th {
+  background-color: #f1f3f5;
+  font-weight: 600;
+}
+
+.stripe-status-table tr:last-child td {
+  border-bottom: none;
+}
+
+.status-icon {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.status-true {
+  color: #00bda4;
+}
+
+.status-false {
+  color: #ff4b5a;
+}
+
+.stripe-requirements {
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+.stripe-requirements h3 {
+  margin-bottom: 16px;;
+}
+
+.stripe-links {
+  display: flex;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.stripe-btn {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #635bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  border: none;
+  font-weight: 700;
+  transition: background-color 0.2s;
+}
+
+.stripe-btn:hover {
+  background-color: #4f46e5;
+}
+
+.stripe-actions {
+  margin: 24px 0;
+}
+
 
 
 
@@ -3845,95 +3919,7 @@ select:hover {
   }
 }
 
-/* STRIPE STRIPE STRIPE STRIPE STRIPE STRIPE */
-/* STRIPE STRIPE STRIPE STRIPE STRIPE STRIPE */
-.stripe-status-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 16px 0;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  overflow: hidden;
-}
 
-.stripe-status-table th,
-.stripe-status-table td {
-  padding: 12px 16px;
-  text-align: left;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.stripe-status-table th {
-  background-color: #f1f3f5;
-  font-weight: 600;
-  color: #495057;
-}
-
-.stripe-status-table tr:last-child td {
-  border-bottom: none;
-}
-
-.status-icon {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.status-true {
-  color: #28a745;
-}
-
-.status-false {
-  color: #dc3545;
-}
-
-.stripe-requirements {
-  margin: 24px 0;
-  padding: 16px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.stripe-requirements h3 {
-  margin-bottom: 16px;
-  color: #212529;
-}
-
-.stripe-links {
-  display: flex;
-  gap: 16px;
-  margin: 24px 0;
-}
-
-.stripe-link {
-  display: inline-block;
-  padding: 8px 16px;
-  background-color: #635bff;
-  color: white;
-  text-decoration: none;
-  border-radius: 4px;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.stripe-link:hover {
-  background-color: #4f46e5;
-}
-
-.stripe-actions {
-  margin: 24px 0;
-}
-
-.stripe-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.stripe-header .title {
-  margin: 0;
-} 
 
 
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
@@ -3965,6 +3951,9 @@ select:hover {
     width: 272px;
   }
 }
+
+
+
 
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */

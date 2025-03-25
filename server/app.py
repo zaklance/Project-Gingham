@@ -3517,11 +3517,12 @@ def create_stripe_account():
 def create_account_link():
     try:
         stripe_account_id = request.get_json().get('stripe_account_id')
+        website = os.environ['SITE_URL']
 
         account_link = stripe.AccountLink.create(
           account=stripe_account_id,
-          return_url=f"http://localhost:5173/return/{stripe_account_id}",
-          refresh_url=f"http://localhost:5173/refresh/{stripe_account_id}",
+          return_url=f"{website}/vendor/sales?tab=payout{stripe_account_id}",
+          refresh_url=f"{website}/refresh/{stripe_account_id}",
           type="account_onboarding",
           collect= 'eventually_due'
         )
