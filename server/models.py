@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData, func, Text
+from sqlalchemy import MetaData, func, Text, LargeBinary
 from sqlalchemy.orm import validates, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict, MutableList
@@ -59,7 +59,8 @@ class User(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String, unique=True, nullable=False)
-    _password = db.Column(db.String, nullable=False)
+    # _password = db.Column(db.String, nullable=False)
+    _password = db.Column(LargeBinary, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     phone = db.Column(db.String, nullable=False)
@@ -498,7 +499,8 @@ class VendorUser(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String, unique=True, nullable=False)
-    _password = db.Column(db.String, nullable=False)
+    # _password = db.Column(db.String, nullable=False)
+    _password = db.Column(LargeBinary, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     phone = db.Column(db.String, nullable=False)
@@ -558,7 +560,8 @@ class AdminUser(db.Model, SerializerMixin):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
-    _password = db.Column(db.String, nullable=False)
+    # _password = db.Column(db.String, nullable=False)
+    _password = db.Column(LargeBinary, nullable=False)
     phone = db.Column(db.String, nullable=True)
     admin_role = db.Column(db.Integer, default=5)
     login_count = db.Column(db.Integer, default=0)
