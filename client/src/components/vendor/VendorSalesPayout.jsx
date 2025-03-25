@@ -180,6 +180,17 @@ function VendorSalesPayout({ vendorId }) {
         }
     };
 
+    useEffect(() => {
+        if (vendorId) {
+            fetch(`/api/vendors/${vendorId}`)
+                .then(response => response.json())
+                .then(data => {
+                    setIsOnboarded(data.is_onboarded)
+                })
+                .catch(error => console.error('Error fetching baskets', error));
+        }
+    }, [vendorId]);
+
 
     return (
         <>
@@ -220,9 +231,12 @@ function VendorSalesPayout({ vendorId }) {
                     </div>
                 ) : (
                     <>
-                        <div className="stripe-container">
+                        <div>
                             <div className="stripe-requirements">
                                 <h3>Account Requirements</h3>
+                                <p>
+                                    Stripe enables you to accept payments and manage your business finances.
+                                </p>
                                 <table className="stripe-status-table">
                                     <thead>
                                         <tr>
@@ -233,6 +247,7 @@ function VendorSalesPayout({ vendorId }) {
                                     <tbody>
                                         <tr>
                                             <td>
+                                                
                                                 {!isOnboarded && <span className="warning-icon">⚠️</span>} Onboarded
                                             </td>
                                             <td>
@@ -275,11 +290,6 @@ function VendorSalesPayout({ vendorId }) {
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
-                            <div className="stripe-info">
-                                <p>
-                                    Stripe Connect enables you to accept payments and manage your business finances.
-                                </p>
                             </div>
                         </div>
                     </>

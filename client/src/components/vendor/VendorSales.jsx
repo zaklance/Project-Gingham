@@ -10,6 +10,7 @@ function VendorSales() {
     const [activeTab, setActiveTab] = useState('history');
     const [baskets, setBaskets] = useState([]);
     const [vendorId, setVendorId] = useState(null);
+    const [isOnboarded, setIsOnboarded] = useState(false);
 
     const vendorUserId = localStorage.getItem('vendor_user_id');
 
@@ -55,6 +56,17 @@ function VendorSales() {
                 .then(data => {
                     setBaskets(data)
                     organizeByMonth(data);
+                })
+                .catch(error => console.error('Error fetching baskets', error));
+        }
+    }, [vendorId]);
+
+    useEffect(() => {
+        if (vendorId) {
+            fetch(`/api/vendors/${vendorId}`)
+                .then(response => response.json())
+                .then(data => {
+                    setIsOnboarded(data.is_onboarded)
                 })
                 .catch(error => console.error('Error fetching baskets', error));
         }
