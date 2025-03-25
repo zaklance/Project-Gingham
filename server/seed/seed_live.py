@@ -65,7 +65,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 26),
             season_end=date(2025, 11, 20),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -81,7 +81,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 7),
             season_end=date(2025, 11, 22),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -96,7 +96,7 @@ def run():
             coordinates={"lat": "40.782040858828", "lng": "-73.9759752811397"},
             schedule='Sunday (9 AM - 4 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -110,7 +110,7 @@ def run():
             coordinates={"lat": "40.77397099020891", "lng": "-73.95064361322936"},
             schedule='Saturday (9 AM - 2:30 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -139,7 +139,7 @@ def run():
             coordinates={"lat": "40.79433392796688", "lng": "-73.96852339557134"},
             schedule='Friday (8 AM - 2 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -153,7 +153,7 @@ def run():
             coordinates={"lat": "40.737268845844085", "lng": "-74.00531736212757"},
             schedule='Saturday (8 AM - 2 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -167,8 +167,8 @@ def run():
             coordinates={"lat": "40.729830818573944", "lng": "-73.99109568735417"},
             schedule='Tuesday (8 AM - 5 PM)',
             year_round=False,
-            season_start=date(2025, 6, 3),
-            season_end=date(2025, 11, 25),
+            season_start=date(2024, 6, 3),
+            season_end=date(2024, 11, 25),
             is_visible=False,
             is_current=True
         ),
@@ -185,7 +185,7 @@ def run():
             year_round=False,
             season_start=date(2025, 4, 15),
             season_end=date(2024, 11, 25),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -217,7 +217,7 @@ def run():
             year_round=False,
             season_start=date(2025, 4, 19),
             season_end=date(2025, 12, 20),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -248,7 +248,7 @@ def run():
             coordinates={"lat": "40.80711550674964", "lng": "-73.9643334908912"},
             schedule='Thursday & Sunday (8 AM - 4 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -262,7 +262,7 @@ def run():
             coordinates={"lat": "40.752106980482026", "lng": "-73.96813449641382"},
             schedule='Wednesday (8 AM - 3 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -278,7 +278,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 3),
             season_end=date(2025, 11, 23),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -293,7 +293,7 @@ def run():
             coordinates={"lat": "40.70614940342313", "lng": "-74.00349962702734"},
             schedule='Monday - Saturday (11:30 AM - 5 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -464,7 +464,7 @@ def run():
             coordinates={"lat": "40.801382884379336", "lng": "-73.95970142371496"},
             schedule='Saturday (9 AM - 2 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -480,7 +480,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 18),
             season_end=date(2025, 11, 26),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -570,7 +570,7 @@ def run():
             year_round=False,
             season_start=date(2025, 5, 11),
             season_end=date(2025, 12, 14),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -585,7 +585,7 @@ def run():
             coordinates={"lat": "40.72606737678102", "lng": "-73.98333751481684"},
             schedule='Sunday (9 AM - 4 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -600,7 +600,7 @@ def run():
             coordinates={"lat": "40.71690089948348", "lng": "-74.01090464424209"},
             schedule='Saturday (8 AM - 2 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -614,8 +614,8 @@ def run():
             coordinates={"lat": "40.77367979894632", "lng": "-73.9819555713842"},
             schedule='Thursday (8 AM - 3 PM); Saturday (8 AM - 4 PM)',
             year_round=True,
-            is_visible=False,
-            is_current=False
+            is_visible=True,
+            is_current=True
         ),
         Market(
             id=38,
@@ -663,7 +663,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 12),
             season_end=date(2025, 10, 30),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -679,7 +679,7 @@ def run():
             year_round=False,
             season_start=date(2025, 4, 15),
             season_end=date(2025, 11, 25),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -693,7 +693,7 @@ def run():
             coordinates={"lat": "40.80493954076873", "lng": "-73.93903600281972"},
             schedule='Wednesday (1:30 - 7 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -707,7 +707,7 @@ def run():
             coordinates={"lat": "40.76668271329556", "lng": "-73.95721258190501"},
             schedule='Thursday (12 AM - 5 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -723,7 +723,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 22),
             season_end=date(2025, 11, 23),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -739,7 +739,7 @@ def run():
             year_round=False,
             season_start=date(2025, 8, 13),
             season_end=date(2025, 10, 29),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -755,7 +755,7 @@ def run():
             year_round=False,
             season_start=date(2025, 7, 19),
             season_end=date(2025, 11, 22),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -770,7 +770,7 @@ def run():
             coordinates={"lat": "40.64611854880164", "lng": "-74.00210232700428"},
             schedule='Saturday (8 AM - 3 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -785,7 +785,7 @@ def run():
             coordinates={"lat": "40.66093347326259", "lng": "-73.97983995813392"},
             schedule='Wednesday & Sunday (8 AM - 2 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -801,7 +801,7 @@ def run():
             year_round=False,
             season_start=date(2025, 5, 3),
             season_end=date(2025, 11, 22),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -817,7 +817,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 1),
             season_end=date(2025, 11, 23),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -833,7 +833,7 @@ def run():
             year_round=False,
             season_start=date(2025, 7, 10),
             season_end=date(2025, 11, 20),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -848,7 +848,7 @@ def run():
             coordinates={"lat": "40.69373734346325", "lng": "-73.99028138467902"},
             schedule='Tuesday & Saturday (8 AM - 3 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -862,7 +862,7 @@ def run():
             coordinates={"lat": "40.68066564582587", "lng": "-73.99492222793602"},
             schedule='Sunday (8 AM - 2 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -877,7 +877,7 @@ def run():
             coordinates={"lat": "40.64066550667735", "lng": "-73.96617270509422"},
             schedule='Sunday (8 AM - 2 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -894,7 +894,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 15),
             season_end=date(2025, 11, 23),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -909,7 +909,7 @@ def run():
             coordinates={"lat": "40.68975009223109", "lng": "-73.97325242641791"},
             schedule='Saturday (8 AM - 3 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -924,7 +924,7 @@ def run():
             coordinates={"lat": "40.67245689931319", "lng": "-73.96983563878808"},
             schedule='Saturday (8 AM - 4 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -939,7 +939,7 @@ def run():
             coordinates={"lat": "40.719618944319244", "lng": "-73.95254269383604"},
             schedule='Saturday (8 AM - 3 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -953,7 +953,7 @@ def run():
             coordinates={"lat": "40.681341936525094", "lng": "-73.93488186255223"},
             schedule='Saturday (9 AM - 2:30 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -969,7 +969,7 @@ def run():
             year_round=False,
             season_start=date(2025, 7, 6),
             season_end=date(2025, 11, 23),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -985,7 +985,7 @@ def run():
             year_round=False,
             season_start=date(2025, 7, 5),
             season_end=date(2025, 11, 22),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1001,7 +1001,7 @@ def run():
             year_round=False,
             season_start=date(2025, 7, 3),
             season_end=date(2025, 11, 27),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1015,7 +1015,7 @@ def run():
             coordinates={"lat": "40.66642777862011", "lng": "-73.95098824442748"},
             schedule='Friday (9 AM - 2:30 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1031,7 +1031,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 14),
             season_end=date(2025, 11, 22),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1047,7 +1047,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 3),
             season_end=date(2025, 11, 25),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1095,7 +1095,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 24),
             season_end=date(2025, 11, 25),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1141,7 +1141,7 @@ def run():
             coordinates={"lat": "40.88205803262807", "lng": "-73.88043055713167"},
             schedule='Thursday (9:30 AM - 3 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1157,7 +1157,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 13),
             season_end=date(2025, 11, 29),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1173,7 +1173,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 10),
             season_end=date(2025, 11, 25),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1189,7 +1189,7 @@ def run():
             year_round=False,
             season_start=date(2025, 7, 16),
             season_end=date(2025, 11, 26),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1204,7 +1204,7 @@ def run():
             coordinates={"lat": "40.72188032218282", "lng": "-73.84677718219234"},
             schedule='Sunday (8 AM - 2 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1219,7 +1219,7 @@ def run():
             coordinates={"lat": "40.75356895340519", "lng": "-73.88775343357531"},
             schedule='Sunday (8 AM - 3 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1234,7 +1234,7 @@ def run():
             coordinates={"lat": "40.74702085787132", "lng": "-73.92090207753752"},
             schedule='Saturday (8 AM - 3 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1280,7 +1280,7 @@ def run():
             coordinates={"lat": "40.64152934585844", "lng": "-74.07776631907625"},
             schedule='Saturday (8 AM - 1 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1296,7 +1296,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 7),
             season_end=date(2025, 11, 22),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1329,7 +1329,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 28),
             season_end=date(2025, 11, 22),
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1487,7 +1487,7 @@ def run():
             coordinates={"lat": "40.72446645270602", "lng": "-73.9433875621265"},
             schedule='Sunday (9 AM - 2 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -1501,7 +1501,7 @@ def run():
             coordinates={"lat": "40.6728301883349", "lng": "-73.98508204366652"},
             schedule='Saturday (9 AM - 2 PM)',
             year_round=True,
-            is_visible=False,
+            is_visible=True,
             is_current=True
         ),
         Market(
@@ -2029,7 +2029,7 @@ def run():
             year_round=False,
             season_start=date(2025, 3, 30),
             season_end=date(2025, 11, 22),
-            is_visible=False,
+            is_visible=True,
             is_current=False
         ),
         Market(
@@ -2077,7 +2077,7 @@ def run():
             year_round=False,
             season_start=date(2025, 4, 20),
             season_end=date(2025, 11, 22),
-            is_visible=False,
+            is_visible=True,
             is_current=False
         ),
         Market(

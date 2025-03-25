@@ -415,8 +415,8 @@ function Markets() {
         return market.is_flagship === true
     };
 
-    const isFlagship = (market) => {
-        return market.some(marketDay => 
+    const isFlagship = () => {
+        return markets.some(marketDay => 
             marketDay.is_flagship === true
         );
     };
