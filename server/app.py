@@ -67,7 +67,7 @@ serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 
 db.init_app(app)
 Migrate(app, db)
-CORS(app, supports_credentials=True)
+CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
 jwt = JWTManager(app)
 
@@ -521,7 +521,13 @@ def homepage():
 @app.route('/api/login', methods=['POST'])
 def login():
     
-    data = request.get_json()
+    try:
+        data = request.get_json()
+        print("Received data:", json.dumps(data, indent=2))
+    except Exception as e:
+        print("Error parsing request:", str(e))
+        return jsonify({"error": "Invalid request format"}), 400
+    
     user = User.query.filter(User.email == data['email']).first()
     if not user:
         return {'error': ' Incorrect email or password—or both!'}, 401
