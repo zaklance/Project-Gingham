@@ -23,7 +23,7 @@ const AdminEmailBulk = () => {
             <mj-section>
                 <mj-column background-color="#fbf7eb">
 
-                    <mj-image width="120px" src="https://www.gingham.nyc/public/gingham-logo-A_3.png"></mj-image>
+                    <mj-image width="120px" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png"></mj-image>
                     
                     <mj-divider></mj-divider>
                     
@@ -46,7 +46,7 @@ const AdminEmailBulk = () => {
                     <mj-text>
                         —The Gingham Team
                     </mj-text>
-                    <mj-image width="400px" src="https://www.gingham.nyc/public/GINGHAM_VENDOR_FARMERSMARKET.png"></mj-image>
+                    <mj-image width="400px" src="https://www.gingham.nyc/site-images/GINGHAM_VENDOR_FARMERSMARKET.png"></mj-image>
                     <mj-section padding="0px">
                         <mj-section mj-class="footer">
                             <mj-navbar>
