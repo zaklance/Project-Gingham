@@ -14,7 +14,7 @@ function Footer() {
             <br className='m-br'/>
             <div className='footer'>
                 <div className='flex-space-around flex-center-align box-blue'>
-                    <ul className='ul-footer'>
+                    <ul className='ul-footer column-footer'>
                         <li className='footer-li'>
                             <NavLink to="/">User Portal</NavLink>
                         </li>
@@ -24,11 +24,6 @@ function Footer() {
                         <li className='footer-li'>
                             <NavLink to="/admin">Admin Portal</NavLink>
                         </li>
-                        {/* <li className='footer-li'>
-                            <a href='https://www.mufo.nyc/' target='_blank' rel="noreferrer noopener">Mû.F.O. Inc</a>
-                            </li> */}
-                    </ul>
-                    <ul className='ul-footer'>
                         <li className='footer-li'>
                             <NavLink to="/about">About</NavLink>
                         </li>
@@ -57,9 +52,6 @@ function Footer() {
                                 <NavLink to="/vendor/contact">Contact</NavLink>
                             </li>
                         )}
-                        
-                    </ul>
-                    <ul className='ul-footer'>
                         <li className='footer-li'>
                             <NavLink to="/terms-service">Terms & Conditions</NavLink>
                         </li>
