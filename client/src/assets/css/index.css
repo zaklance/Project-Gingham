@@ -532,6 +532,10 @@ article {
   column-count: 3;
 }
 
+.column-footer {
+  column-count: 3;
+}
+
 .hidden {
   visibility: hidden;
 }
@@ -3902,6 +3906,10 @@ select:hover {
 
   .column-3 {
     column-count: 1;
+  }
+
+  .column-footer {
+    column-count: 2;
   }
 
   .grid-3 {
