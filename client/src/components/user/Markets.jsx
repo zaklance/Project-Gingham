@@ -415,11 +415,9 @@ function Markets() {
         return market.is_flagship === true
     };
 
-    const isFlagship = () => {
-        return markets.some(marketDay => 
-            marketDay.is_flagship === true
-        );
-    };
+    const isFlagship = useMemo(() => {
+        return markets.some(market => market.is_flagship === true);
+    }, [markets]);
 
     const handleMarkerHoverOn = (id) => {
         setIsHover((prev) => ({
