@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import VendorActiveVendor from './VendorActiveVendor';
 
-function VendorStripe({ vendorId, vendorUserData, stripeAccountId }) {
+function VendorSalesPayout({ vendorId }) {
     const [loadingStripe, setLoadingStripe] = useState(false);
     const [isOnboarded, setIsOnboarded] = useState(false);
     const [vendorData, setVendorData] = useState(null);
+    const [stripeAccountId, setStripeAccountId] = useState(null);
+
 
     useEffect(() => {
         const fetchVendorData = async () => {
             if (!vendorId) return;
-            
+
             try {
                 const token = localStorage.getItem('vendor_jwt-token');
                 const response = await fetch(`/api/vendors/${vendorId}`, {
@@ -37,7 +40,9 @@ function VendorStripe({ vendorId, vendorUserData, stripeAccountId }) {
             console.error("Vendor ID not found!");
             return;
         }
-        
+
+        const newTab = window.open('', '_blank');
+
         setLoadingStripe(true);
         const token = localStorage.getItem('vendor_jwt-token');
 
@@ -62,7 +67,7 @@ function VendorStripe({ vendorId, vendorUserData, stripeAccountId }) {
                         console.error('Failed to parse response:', text);
                         throw new Error('Invalid response from server');
                     }
-                    
+
                     if (!data.url) {
                         throw new Error('No URL returned from server');
                     }
@@ -73,7 +78,10 @@ function VendorStripe({ vendorId, vendorUserData, stripeAccountId }) {
                         throw new Error('No redirect URL available');
                     }
 
-                    window.location.href = redirectUrl;
+                    console.log('data:', data);
+                    console.log('redirectUrl:', redirectUrl);
+
+                    newTab.location.href = redirectUrl.url;
                 } else {
                     const text = await response.text();
                     console.error('Error response from server:', text);
@@ -137,7 +145,7 @@ function VendorStripe({ vendorId, vendorUserData, stripeAccountId }) {
                             throw new Error('No URL returned from server');
                         }
 
-                        window.location.href = linkData.url;
+                        newTab.location.href = linkData.url;
                     } else {
                         const text = await linkResponse.text();
                         console.error('Error response from server:', text);
@@ -166,129 +174,129 @@ function VendorStripe({ vendorId, vendorUserData, stripeAccountId }) {
         } catch (error) {
             console.error("Error with Stripe connection:", error);
             toast.error(error.message || "An error occurred. Please try again.");
+            if (newTab) newTab.close();
         } finally {
             setLoadingStripe(false);
         }
     };
 
+    useEffect(() => {
+        if (vendorId) {
+            fetch(`/api/vendors/${vendorId}`)
+                .then(response => response.json())
+                .then(data => {
+                    setIsOnboarded(data.is_onboarded)
+                })
+                .catch(error => console.error('Error fetching baskets', error));
+        }
+    }, [vendorId]);
+
+
     return (
-        <div className="box-bounding">
-            {!stripeAccountId ? (
-                <div className="stripe-connect-prompt" style={{ textAlign: 'center', padding: '2rem' }}>
-                    <div className="stripe-message" style={{ maxWidth: '600px', margin: '0 auto' }}>
-                        <p style={{ marginBottom: '1rem' }}>Gingham requires all vendors to connect their Stripe account to process payments securely.</p>
-                        <p style={{ marginBottom: '1rem' }}>By connecting your Stripe account, you'll be able to:</p>
-                        <ul style={{ listStyle: 'none', padding: 0, marginBottom: '2rem' }}>
-                            <li style={{ marginBottom: '0.5rem' }}>Accept payments from customers</li>
-                            <li style={{ marginBottom: '0.5rem' }}>Receive payouts directly to your bank account</li>
-                            <li style={{ marginBottom: '0.5rem' }}>Track your sales and revenue</li>
-                        </ul>
+        <>
+            <VendorActiveVendor className={'box-bounding'} />
+            <div className='box-bounding'>
+                <div className='flex-space-between flex-bottom-align'>
+                    <h2 className='margin-b-16'>Stripe Payouts</h2>
+                    {stripeAccountId ? (
                         <button 
-                            className="btn-edit"
-                            onClick={handleStripeConnect} 
-                            disabled={loadingStripe}
-                            style={{
-                                backgroundColor: '#635BFF',
-                                color: 'white',
-                                padding: '1rem 2rem',
-                                fontSize: '1.2rem',
-                                borderRadius: '8px',
-                                border: 'none',
-                                cursor: loadingStripe ? 'not-allowed' : 'pointer',
-                                width: '100%',
-                                maxWidth: '300px',
-                                margin: '0 auto',
-                                display: 'block',
-                                transition: 'background-color 0.2s',
-                                opacity: loadingStripe ? 0.7 : 1
-                            }}
-                            onMouseOver={e => !loadingStripe && (e.target.style.backgroundColor = '#4B45C6')}
-                            onMouseOut={e => !loadingStripe && (e.target.style.backgroundColor = '#635BFF')}
-                        >
-                            {loadingStripe ? "Connecting..." : "Connect to Stripe"}
-                        </button>
-                    </div>
-                </div>
-            ) : (
-                <>
-                    <div className="stripe-header">
-                        <h2 className="title">Stripe Connect</h2>
-                        <a 
                             href={`https://dashboard.stripe.com/${stripeAccountId}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="stripe-link"
+                            className="stripe-btn"
                         >
                             Go To Stripe
-                        </a>
-                    </div>
-                    <div className="stripe-container">
-                        <div className="stripe-requirements">
-                            <h3>Account Requirements</h3>
-                            <table className="stripe-status-table">
-                                <thead>
-                                    <tr>
-                                        <th>Requirement</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            {!isOnboarded && <span className="warning-icon">⚠️</span>} Onboarded
-                                        </td>
-                                        <td>
-                                            {isOnboarded ? (
-                                                <span className="status-icon status-true">✓</span>
-                                            ) : (
-                                                <button 
-                                                    className="btn-edit"
-                                                    onClick={handleStripeConnect}
-                                                    disabled={loadingStripe}
-                                                >
-                                                    {loadingStripe ? "Connecting..." : "Finish Onboarding"}
-                                                </button>
-                                            )}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            {!vendorData?.stripe_charges_enabled && <span className="warning-icon">⚠️</span>} Charges Enabled
-                                        </td>
-                                        <td>
-                                            {vendorData?.stripe_charges_enabled ? (
-                                                <span className="status-icon status-true">✓</span>
-                                            ) : (
-                                                <span className="status-icon status-false">✕</span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            {!vendorData?.stripe_payouts_enabled && <span className="warning-icon">⚠️</span>} Payouts Enabled
-                                        </td>
-                                        <td>
-                                            {vendorData?.stripe_payouts_enabled ? (
-                                                <span className="status-icon status-true">✓</span>
-                                            ) : (
-                                                <span className="status-icon status-false">✕</span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div className="stripe-info">
-                            <p>
-                                Stripe Connect enables you to accept payments and manage your business finances.
-                            </p>
+                        </button>
+                    ) : (
+                        <button 
+                            className="stripe-btn"
+                            onClick={handleStripeConnect} 
+                            disabled={loadingStripe}
+                        >
+                            {loadingStripe ? "Connecting..." : "Connect to Stripe"}
+                        </button>
+                    )}
+                </div>
+                {!stripeAccountId ? (
+                    <div className="stripe-connect-prompt">
+                        <div className="stripe-message">
+                            <p className='text-500'>Gingham requires all vendors to create or connect their Stripe account to process payments securely. You cannot sell baskets until this process is completed.</p>
+                            <p className='text-500 margin-t-12'>By connecting your Stripe account, you'll be able to:</p>
+                            <ul className='ul-bullet margin-t-8'>
+                                <li>Accept payments from customers</li>
+                                <li>Receive payouts directly to your bank account</li>
+                                <li>Track your sales and revenue</li>
+                            </ul>
                         </div>
                     </div>
-                </>
-            )}
-        </div>
+                ) : (
+                    <>
+                        <div>
+                            <div className="stripe-requirements">
+                                <h3>Account Requirements</h3>
+                                <p>
+                                    Stripe enables you to accept payments and manage your business finances.
+                                </p>
+                                <table className="stripe-status-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Requirement</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                
+                                                {!isOnboarded && <span className="warning-icon">⚠️</span>} Onboarded
+                                            </td>
+                                            <td>
+                                                {isOnboarded ? (
+                                                    <span className="status-icon status-true">✓</span>
+                                                ) : (
+                                                    <button 
+                                                        className="btn-edit"
+                                                        onClick={handleStripeConnect}
+                                                        disabled={loadingStripe}
+                                                    >
+                                                        {loadingStripe ? "Connecting..." : "Finish Onboarding"}
+                                                    </button>
+                                                )}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                {!vendorData?.stripe_charges_enabled && <span className="warning-icon">⚠️</span>} Charges Enabled
+                                            </td>
+                                            <td>
+                                                {vendorData?.stripe_charges_enabled ? (
+                                                    <span className="status-icon status-true">✓</span>
+                                                ) : (
+                                                    <span className="status-icon status-false">✕</span>
+                                                )}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                {!vendorData?.stripe_payouts_enabled && <span className="warning-icon">⚠️</span>} Payouts Enabled
+                                            </td>
+                                            <td>
+                                                {vendorData?.stripe_payouts_enabled ? (
+                                                    <span className="status-icon status-true">✓</span>
+                                                ) : (
+                                                    <span className="status-icon status-false">✕</span>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </>
+                )}
+            </div>
+        </>
     );
 }
 
-export default VendorStripe;
+export default VendorSalesPayout;
