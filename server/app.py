@@ -41,7 +41,7 @@ from twilio.twiml.messaging_response import MessagingResponse
 
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='public')
 
 STRIPE_WEBHOOK_SECRET = "whsec_0fd1e4d74c18b3685bd164fe766c292f8ec7a73a887dd83f598697be422a2875"
 STRIPE_ALLOWED_IPS = {
