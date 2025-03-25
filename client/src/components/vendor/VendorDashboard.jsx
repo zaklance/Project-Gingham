@@ -5,6 +5,7 @@ import VendorEvents from './VendorEvents';
 import VendorTeam from './VendorTeam';
 import VendorActiveVendor from './VendorActiveVendor';
 import VendorReviews from './VendorReviews';
+import VendorSalesPayout from './VendorSalesPayout';
 
 function VendorDashboard({ marketId }) {
     const [vendorId, setVendorId] = useState(null);
@@ -13,6 +14,7 @@ function VendorDashboard({ marketId }) {
     const [newVendor, setNewVendor] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isOnboarded, setIsOnboarded] = useState(false);
 
     const vendorUserId = localStorage.getItem('vendor_user_id');
 
@@ -119,7 +121,20 @@ function VendorDashboard({ marketId }) {
         fetchNotifications();
     }, [vendorId]);
 
-    
+    useEffect(() => {
+        if (vendorId) {
+            fetch(`/api/vendors/${vendorId}`)
+                .then(response => response.json())
+                .then(data => {
+                    setIsOnboarded(data.is_onboarded)
+                    if (!data.is_onboarded) {
+                        setActiveTab('payout')
+                    }
+                })
+                .catch(error => console.error('Error fetching baskets', error));
+        }
+    }, [vendorId]);
+
 
     return (
         <>
@@ -128,28 +143,46 @@ function VendorDashboard({ marketId }) {
                 <h1 className=''>Vendor Dashboard</h1>
                 {vendorUserData && vendorUserData.active_vendor !== null && vendorUserData.vendor_role[vendorUserData.active_vendor] <= 1 ? (
                     <div className='tabs margin-l-24 m-flex-wrap'>
-                        <Link to="/vendor/dashboard?tab=baskets" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
-                            Baskets
-                        </Link>
+                        {isOnboarded ? (
+                            <Link to="/vendor/dashboard?tab=baskets" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                                Baskets
+                            </Link>
+                        ) : (
+                            <Link to="/vendor/dashboard?tab=payout" onClick={() => setActiveTab('payout')} className={activeTab === 'payout' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                                Payout
+                            </Link>
+                        )}
                         {vendorUserData?.vendor_role[vendorUserData.active_vendor] <= 1 && (
                             <>
-                                <Link to="/vendor/dashboard?tab=events" onClick={() => setActiveTab('events')} className={activeTab === 'events' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
-                                    Events
-                                </Link>
+                                {isOnboarded && (
+                                    <Link to="/vendor/dashboard?tab=events" onClick={() => setActiveTab('events')} className={activeTab === 'events' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                                        Events
+                                    </Link>
+                                )}
                                 <Link to="/vendor/dashboard?tab=team" onClick={() => setActiveTab('team')} className={activeTab === 'team' ? 'notification active-tab btn btn-reset btn-tab' : 'notification btn btn-reset btn-tab'}>
                                     Team
                                     {notifications.length > 0 && <p className='badge'>{notifications.length}</p>}
                                 </Link>
-                                <Link to="/vendor/dashboard?tab=reviews" onClick={() => setActiveTab('reviews')} className={activeTab === 'reviews' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
-                                    Reviews
-                                </Link>
+                                {isOnboarded && (
+                                    <Link to="/vendor/dashboard?tab=reviews" onClick={() => setActiveTab('reviews')} className={activeTab === 'reviews' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                                        Reviews
+                                    </Link>
+                                )}
                             </>
                         )}
                     </div>
                 ) : null}
             </div>
-
-            {activeTab === 'baskets' && <VendorBaskets marketId={marketId} vendorId={vendorId} vendorUserData={vendorUserData} newVendor={newVendor} setNewVendor={setNewVendor} />}
+            
+            {isOnboarded ? (
+                <>
+                    {activeTab === 'baskets' && <VendorBaskets marketId={marketId} vendorId={vendorId} vendorUserData={vendorUserData} newVendor={newVendor} setNewVendor={setNewVendor} />}
+                </>
+            ) : (   
+                 <>
+                    {activeTab === 'payout' && <VendorSalesPayout vendorId={vendorId} />}
+                </>
+            )}
             {activeTab === 'events' && <VendorEvents vendorId={vendorId} vendorUserData={vendorUserData} />}
             {activeTab === 'team' && <VendorTeam vendorId={vendorId} vendorUserData={vendorUserData} notifications={notifications} setNotifications={setNotifications} />}
             {activeTab === 'reviews' && <VendorReviews vendorId={vendorId} vendorUserData={vendorUserData} notifications={notifications} setNotifications={setNotifications} />}

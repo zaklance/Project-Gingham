@@ -6,9 +6,6 @@ export default function Return() {
 
   return (
     <div className="container">
-      <div className="banner">
-        <h2>Gingham</h2>
-      </div>
       <div className="content">
         <h2>Details submitted</h2>
         <p>That's everything we need for now</p>
