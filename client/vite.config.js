@@ -11,8 +11,8 @@ export default defineConfig(({ mode }) => {
         server: {
             proxy: {
                 '/api': {
-                    target: 'http://127.0.0.1:5555'
-                    // target: 'https://gingham-nyc.onrender.com'
+                    // target: 'http://127.0.0.1:5555'
+                    target: 'https://gingham-client.onrender.com'
                     // target: 'https://www.gingham.nyc'
                 }
             }
