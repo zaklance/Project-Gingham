@@ -185,7 +185,7 @@ def send_contact_email(name, email, subject, message):
                         <a href="mailto:{email}" class="button">Reply to {name}</a>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -241,14 +241,14 @@ def send_user_password_reset_email(email):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div class="content center">
                         <p><strong>Please click the link to reset your password <br/></strong> <a class="button" href={reset_link}>Password Reset</a></p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -300,14 +300,14 @@ def send_vendor_password_reset_email(email):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div class="content center">
                         <p><strong>Please click the link to reset your password <br/></strong> <a class="button" href={reset_link}>Password Reset</a></p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -359,14 +359,14 @@ def send_admin_password_reset_email(email):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div class="content center">
                         <p><strong>Please click the link to reset your password <br/></strong> <a class="button" href={reset_link}>Password Reset</a></p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -419,14 +419,14 @@ def send_user_confirmation_email(email, user_data):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div class="content center">
                         <p><strong>Please confirm your email by clicking this link: <br/></strong> <a class="button" href={confirmation_link}>Verify Email</a></p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -478,14 +478,14 @@ def send_vendor_confirmation_email(email, vendor_data):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div class="content center">
                         <p><strong>Please confirm your email by clicking this link: <br/></strong> <a class="button" href={confirmation_link}>Verify Email</a></p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -537,14 +537,14 @@ def send_admin_confirmation_email(email, admin_data):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div class="content center">
                         <p><strong>Please confirm your email by clicking this link: <br/></strong> <a class="button" href={confirmation_link}>Verify Email</a></p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -608,7 +608,7 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -624,7 +624,7 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -681,7 +681,7 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -697,7 +697,7 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -761,7 +761,7 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -779,7 +779,7 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -853,7 +853,7 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -878,7 +878,7 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -935,7 +935,7 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -951,7 +951,7 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -1008,7 +1008,7 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -1024,7 +1024,7 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -1098,7 +1098,7 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -1123,7 +1123,7 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -1174,7 +1174,7 @@ def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -1183,7 +1183,7 @@ def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -1233,7 +1233,7 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -1247,7 +1247,7 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -1295,7 +1295,7 @@ def send_email_user_new_blog(email, user, blog):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -1308,7 +1308,7 @@ def send_email_user_new_blog(email, user, blog):
                         </div>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -1363,7 +1363,7 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -1381,7 +1381,7 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -1444,7 +1444,7 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -1460,7 +1460,7 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -1517,7 +1517,7 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -1533,7 +1533,7 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -1586,7 +1586,7 @@ def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pic
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -1598,7 +1598,7 @@ def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pic
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -1648,7 +1648,7 @@ def send_email_vendor_new_review(email, user, vendor, review, link_review):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -1662,7 +1662,7 @@ def send_email_vendor_new_review(email, user, vendor, review, link_review):
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -1710,7 +1710,7 @@ def send_email_vendor_new_blog(email, user, blog):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -1723,7 +1723,7 @@ def send_email_vendor_new_blog(email, user, blog):
                         </div>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -1771,7 +1771,7 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -1780,7 +1780,7 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -1878,7 +1878,7 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -1892,7 +1892,7 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -1959,7 +1959,7 @@ def send_email_admin_product_request(email, user, vendor, product, link_product)
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -1977,7 +1977,7 @@ def send_email_admin_product_request(email, user, vendor, product, link_product)
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -2025,7 +2025,7 @@ def send_email_admin_new_blog(email, user, blog):
             <body>
                 <div class="email-container">
                     <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                     </div>
                     <hr class="divider"/>
                     <div>
@@ -2038,7 +2038,7 @@ def send_email_admin_new_blog(email, user, blog):
                         </div>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/public/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/public/site-images/gingham-logo-A_3.png" alt="logo"/>
                         <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
