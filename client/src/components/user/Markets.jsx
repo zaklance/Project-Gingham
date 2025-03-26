@@ -45,7 +45,7 @@ function Markets() {
     const onUpdateQuery = (event) => {
         const value = event.target.value;
         setQuery(value);
-        setShowDropdown(value.trim().length > 0); // Show dropdown if there's input
+        setShowDropdown(value.trim().length > 0);
     };
 
     const filteredMarketsDropdown = markets.filter(market =>
@@ -360,7 +360,6 @@ function Markets() {
 
                 if (data.addresses && data.addresses.length > 0) {
                     const { latitude, longitude } = data.addresses[0];
-                    // console.log('Coordinates:', latitude, longitude);
                 }
             }
         } catch (error) {
