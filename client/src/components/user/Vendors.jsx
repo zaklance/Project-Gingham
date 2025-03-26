@@ -26,7 +26,7 @@ function Vendors() {
     const onUpdateQuery = (event) => {
         const value = event.target.value;
         setQuery(value);
-        setShowDropdown(value.trim().length > 0); // Show dropdown if there's input
+        setShowDropdown(value.trim().length > 0);
     };
 
     const filteredProductsSubcat = useMemo(() => {
@@ -161,8 +161,6 @@ function Vendors() {
         }
     };
 
-    // console.log(products)
-
     // useEffect(() => {
     //     const uniqueProducts = [...new Set(vendors.map(item => item.product))];
     //     setProductList(uniqueProducts.sort());
@@ -265,7 +263,7 @@ function Vendors() {
             </div>
             <div className="market-cards-container box-scroll-large">
                 {filteredVendorsResults
-                    .slice() // Create a shallow copy to avoid mutating the original array
+                    .slice()
                     .sort((a, b) => {
                         const nameA = (a?.name || '').toLowerCase();
                         const nameB = (b?.name || '').toLowerCase();
