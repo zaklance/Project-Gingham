@@ -4917,7 +4917,7 @@ def top_10_cities():
     try:
         city_state_counts = (
             db.session.query(
-                func.initcap(User.city).label("city"),
+                func.lower(User.city).label("city"),
                 func.upper(User.state).label("state"),
                 func.count().label("count")
             )
@@ -4928,7 +4928,7 @@ def top_10_cities():
         )
 
         city_data = [
-            {"city": city, "state": state, "count": count}
+            {"city": city.title(), "state": state, "count": count}
             for city, state, count in city_state_counts
         ]
 
