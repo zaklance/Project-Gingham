@@ -28,6 +28,7 @@ from PIL import Image
 from io import BytesIO, StringIO
 from random import choice
 import stripe
+import logging
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 import utils.events as events
 from utils.emails import ( send_contact_email, send_user_password_reset_email, 
@@ -4920,11 +4921,13 @@ def basket_top_10_users():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500        
-    
+
+logging.basicConfig(level=logging.INFO)
 @app.route('/api/users/top-10-cities', methods=['GET'])
 @jwt_required()
 def top_10_cities():
     try:
+        logging.info("Fetching top 10 cities...")
         city_state_counts = (
             db.session.query(
                 func.lower(User.city).label("city"),
@@ -4936,12 +4939,12 @@ def top_10_cities():
             .limit(10)
             .all()
         )
-
+        logging.info(f"Raw city data: {city_state_counts}")
         city_data = [
             {"city": city.title(), "state": state, "count": count}
             for city, state, count in city_state_counts
         ]
-
+        logging.info(f"Processed city data: {city_data}")
         return jsonify(city_data), 200
 
     except Exception as e:
