@@ -118,7 +118,9 @@ function VendorLogin({ handlePopup }) {
                 setSignupFirstName('');
                 setSignupLastName('');
                 setSignupPhone('');
-                alert("Sign Up Successful. A confirmation email has been sent.");
+                setTermsConditions(false);
+                setIsSignUp(false);
+                alert("Signup successful! A verification email has been sent. Please click the link to activate your account.");
             } else {
                 const errorData = await response.json();
                 console.log('Full error response:', errorData);
@@ -310,10 +312,7 @@ function VendorLogin({ handlePopup }) {
                                                 onChange={(event) => setTermsConditions(!termsConditions)}
                                                 className='scale-fix-125'
                                             />
-                                            <p className="forgot-password" onClick={() => {
-                                                navigate('/terms-service');
-                                                window.location.reload();
-                                            }}>
+                                            <p className="forgot-password" onClick={() => window.open('/terms-service', '_blank')}>
                                                 Terms & Conditions
                                             </p>
                                         </div>

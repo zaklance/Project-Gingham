@@ -594,10 +594,10 @@ def signup():
         if existing_user:
             return jsonify({'error': 'This email is already registered. Please log in or use a different email.'}), 400
 
-        all_users = User.query.all()
-        for user in all_users:
-            if bcrypt.check_password_hash(user.password, password):
-                return jsonify({'error': 'This password has already been used. Please choose a different password.'}), 400
+        # all_users = User.query.all()
+        # for user in all_users:
+        #     if bcrypt.check_password_hash(user.password, password):
+        #         return jsonify({'error': 'This password has already been used. Please choose a different password.'}), 400
 
         result = send_user_confirmation_email(email, data)
 
@@ -753,7 +753,7 @@ def confirm_vendor_email(token):
             return redirect(f'{website}/vendor/confirm-email/{token}')
         
         if request.method == 'POST':
-            print(f"POST request: Token verified, user data extracted: {data}")
+            # print(f"POST request: Token verified, user data extracted: {data}")
             
             existing_vendor = VendorUser.query.get(vendor_id)
             
@@ -4942,15 +4942,19 @@ def basket_top_10_users():
 def top_10_cities():
     try:
         city_state_counts = (
-            db.session.query(User.city, User.state, func.count().label("count"))
-            .group_by(User.city, User.state)
+            db.session.query(
+                func.lower(User.city).label("city"),
+                func.upper(User.state).label("state"),
+                func.count().label("count")
+            )
+            .group_by(func.lower(User.city), func.upper(User.state))
             .order_by(func.count().desc())
             .limit(10)
             .all()
         )
 
         city_data = [
-            {"city": city, "state": state, "count": count}
+            {"city": city.title(), "state": state, "count": count}
             for city, state, count in city_state_counts
         ]
 
