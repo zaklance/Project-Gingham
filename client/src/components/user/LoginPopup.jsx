@@ -94,6 +94,10 @@ function Login({ handlePopup }) {
             alert("Password does not meet requirements.");
             return;
         }
+        if (!signupAddress1 | !signupCity | !signupState | !signupZipCode) {
+            alert("Please fill in the missing fields");
+            return;
+        }
         if (!isPossiblePhoneNumber(signupPhone)) {
             alert("Not a possible phone number");
             return;
@@ -194,7 +198,7 @@ function Login({ handlePopup }) {
                 }
     
                 resetSignupForm();
-                alert("Signup successful! A confirmation email has been sent.");
+                alert("Signup successful! A verification email has been sent. Please click the link to activate your account.");
             }
         } catch (error) {
             console.error("Error during signup:", error);
@@ -218,6 +222,8 @@ function Login({ handlePopup }) {
         setSignupCity('');
         setSignupState('');
         setSignupZipCode('');
+        setTermsConditions(false);
+        setIsSignUp(false);
     };
 
     const togglePasswordVisibility = (field) => {
@@ -286,7 +292,6 @@ function Login({ handlePopup }) {
         <div className='login-bar'>
             <button className="btn btn-large x-btn" onClick={handlePopup}>X</button>
             <div className='wrapper'>
-                {/* <h1>WELCOME TO GINGHAM!</h1> */}
                 <div>
                     <form className="form">
                         <h2 className='margin-b-24'>Login</h2>
@@ -526,10 +531,7 @@ function Login({ handlePopup }) {
                                                 onChange={(event) => setTermsConditions(!termsConditions)}
                                                 className='scale-fix-125'
                                             />
-                                            <p className="forgot-password" onClick={() => {
-                                                navigate('/terms-service');
-                                                window.location.reload();
-                                            }}>
+                                            <p className="forgot-password" onClick={() => window.open('/terms-service', '_blank')}>
                                                 Terms & Conditions
                                             </p>
                                         </div>
