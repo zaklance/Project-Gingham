@@ -608,7 +608,7 @@ def signup():
 def confirm_email(token):
     try:
         # print(f"Received token: {token}")
-        data = serializer.loads(token, salt='user-confirmation-salt', max_age=3600)
+        data = serializer.loads(token, salt='user-confirmation-salt', max_age=86400)
         website = os.environ['SITE_URL']
 
         user_id = data.get('user_id')  # Extract user ID
@@ -737,7 +737,7 @@ def change_vendor_email():
 def confirm_vendor_email(token):
     try:
         print(f'Received token: {token}')
-        data = serializer.loads(token, salt='vendor-confirmation-salt', max_age=3600)
+        data = serializer.loads(token, salt='vendor-confirmation-salt', max_age=86400)
         website = os.environ['SITE_URL']
 
         vendor_id = data.get('vendor_id')
@@ -864,7 +864,7 @@ def change_admin_email():
 def confirm_admin_email(token):
     try:
         print(f'Received token: {token}')
-        data = serializer.loads(token, salt='admin-confirmation-salt', max_age=3600)
+        data = serializer.loads(token, salt='admin-confirmation-salt', max_age=86400)
         website = os.environ['SITE_URL']
 
         admin_id = data.get('admin_id')
