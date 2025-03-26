@@ -393,11 +393,11 @@ def send_admin_password_reset_email(email):
 def send_user_confirmation_email(email, user_data):
     try:
         token = serializer.dumps(user_data, salt='user-confirmation-salt')  # Generate the token
-        confirmation_link = url_for('confirm_email', token=token, _external=True)
-        # print(f"Generated confirmation link: {confirmation_link}")
-
+        SITE_URL = os.getenv('SITE_URL')
+        confirmation_link = f"{SITE_URL}/user/confirm-email/{token}"
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        # print(f"Generated confirmation link: {confirmation_link}")
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -452,7 +452,8 @@ def send_user_confirmation_email(email, user_data):
 def send_vendor_confirmation_email(email, vendor_data):
     try:
         token = serializer.dumps(vendor_data, salt='vendor-confirmation-salt')
-        confirmation_link = url_for('confirm_vendor_email', token=token, _external=True)
+        SITE_URL = os.getenv('SITE_URL')
+        confirmation_link = f"{SITE_URL}/vendor/confirm-email/{token}"
         # print(f"Generated vendor confirmation link: {confirmation_link}")
 
         sender_email = os.getenv('EMAIL_USER')
@@ -511,7 +512,8 @@ def send_vendor_confirmation_email(email, vendor_data):
 def send_admin_confirmation_email(email, admin_data):
     try:
         token = serializer.dumps(admin_data, salt='admin-confirmation-salt')
-        confirmation_link = url_for('confirm_admin_email', token=token, _external=True)
+        SITE_URL = os.getenv('SITE_URL')
+        confirmation_link = f"{SITE_URL}/admin/confirm-email/{token}"
         # print(f"Generated admin confirmation link: {confirmation_link}")
 
         sender_email = os.getenv('EMAIL_USER')
