@@ -466,6 +466,10 @@ article {
   padding: 12px;
 }
 
+.padding-96 {
+  padding: 96px;
+}
+
 .margin-auto {
   margin: auto;
 }
@@ -912,6 +916,15 @@ ul {
   display: flex;
   justify-content: space-evenly;
   gap: 8;
+}
+
+.box-maintenance {
+  background-color: #fff;
+  border-radius: 16px;
+  margin-top: 96px;
+  padding: 8px 16px;
+  width: fit-content;
+  height: fit-content;
 }
 
 .box-iframe {
@@ -2574,6 +2587,17 @@ select:hover {
   border-radius: 16px
 }
 
+.img-maintenance {
+  background-image: url('../images/backgrounds/market-default-4_1600px.png');
+  background-size: cover;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background-position: right 50% top 50%;
+  position: relative;
+  border-radius: 16px;
+  min-height: 600px;
+}
+
 .img-portal {
   width: 100%;
   border-radius: 12px;
@@ -3924,6 +3948,14 @@ select:hover {
 
   .textarea-issue {
     height: 16em;
+  }
+
+  .box-maintenance>h1 {
+    font-size: 1.4rem;
+  }
+
+  .img-maintenance {
+    min-height: 400px;
   }
 }
 
