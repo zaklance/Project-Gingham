@@ -748,7 +748,7 @@ def confirm_vendor_email(token):
             return redirect(f'{website}/vendor/confirm-email/{token}')
         
         if request.method == 'POST':
-            print(f"POST request: Token verified, user data extracted: {data}")
+            # print(f"POST request: Token verified, user data extracted: {data}")
             
             existing_vendor = VendorUser.query.get(vendor_id)
             
@@ -4926,8 +4926,12 @@ def basket_top_10_users():
 def top_10_cities():
     try:
         city_state_counts = (
-            db.session.query(User.city, User.state, func.count().label("count"))
-            .group_by(User.city, User.state)
+            db.session.query(
+                func.initcap(User.city).label("city"),
+                func.upper(User.state).label("state"),
+                func.count().label("count")
+            )
+            .group_by(func.lower(User.city), func.upper(User.state))
             .order_by(func.count().desc())
             .limit(10)
             .all()
