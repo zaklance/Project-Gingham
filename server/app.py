@@ -523,7 +523,7 @@ def login():
     
     try:
         data = request.get_json()
-        print("Received data:", json.dumps(data, indent=2))
+        # print("Received data:", json.dumps(data, indent=2))
     except Exception as e:
         print("Error parsing request:", str(e))
         return jsonify({"error": "Invalid request format"}), 400
