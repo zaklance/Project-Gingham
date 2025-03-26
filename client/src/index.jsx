@@ -12,7 +12,7 @@ import TermsOfService from './components/TermsOfService.jsx';
 import PrivacyPolicy from './components/PrivacyPolicy.jsx';
 import PasswordResetRequest from './components/PasswordResetRequest.jsx';
 import PasswordReset from './components/PasswordReset.jsx';
-// import EmailVerification from './components/EmailVerification.jsx';
+import Maintenance from './components/Maintenance.jsx';
 import ErrorPage from './components/ErrorPage.jsx';
 
 // user routes
@@ -182,6 +182,7 @@ const router = createBrowserRouter([
             { path: "contact", element: <Contact /> },
             { path: "terms-service", element: <TermsOfService /> },
             { path: "privacy-policy", element: <PrivacyPolicy /> },
+            { path: "maintenance", element: <Maintenance /> },
             {
                 path: "user",
                 children: [
