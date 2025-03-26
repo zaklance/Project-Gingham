@@ -589,10 +589,10 @@ def signup():
         if existing_user:
             return jsonify({'error': 'This email is already registered. Please log in or use a different email.'}), 400
 
-        all_users = User.query.all()
-        for user in all_users:
-            if bcrypt.check_password_hash(user.password, password):
-                return jsonify({'error': 'This password has already been used. Please choose a different password.'}), 400
+        # all_users = User.query.all()
+        # for user in all_users:
+        #     if bcrypt.check_password_hash(user.password, password):
+        #         return jsonify({'error': 'This password has already been used. Please choose a different password.'}), 400
 
         result = send_user_confirmation_email(email, data)
 
