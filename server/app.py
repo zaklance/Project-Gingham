@@ -232,25 +232,39 @@ def upload_file():
         vendor_id = request.form.get('vendor_id')
         market_id = request.form.get('market_id')
         upload_type = request.form.get('type')
+        
+        # Get the current working directory
+        cwd = os.getcwd()
+        print(f"Current working directory: {cwd}")  # Debug log
+        
         if upload_type == 'vendor':
-            base_folder = os.path.join(os.getcwd(), '../client/public/vendor-images')
-            upload_folder = os.path.normpath(os.path.join(base_folder, vendor_id))
+            base_folder = os.path.join(cwd, '../client/public/vendor-images')
+            upload_folder = os.path.join(base_folder, str(vendor_id))
         elif upload_type == 'market':
-            base_folder = os.path.join(os.getcwd(), '../client/public/market-images')
-            upload_folder = os.path.normpath(os.path.join(base_folder, market_id))
+            base_folder = os.path.join(cwd, '../client/public/market-images')
+            upload_folder = os.path.join(base_folder, str(market_id))
         elif upload_type == 'user':
-            base_folder = os.path.join(os.getcwd(), '../client/public/user-images')
-            upload_folder = os.path.normpath(os.path.join(base_folder, user_id))
+            base_folder = os.path.join(cwd, '../client/public/user-images')
+            upload_folder = os.path.join(base_folder, str(user_id))
         else:
             return {'error': 'Invalid type specified. Must be "vendor", "market", or "user"'}, 400
 
+        # Normalize paths for comparison
+        base_folder = os.path.normpath(base_folder)
+        upload_folder = os.path.normpath(upload_folder)
+        
+        print(f"Base folder: {base_folder}")  # Debug log
+        print(f"Upload folder: {upload_folder}")  # Debug log
+
         # Ensure the upload folder is within the base folder
         if not upload_folder.startswith(base_folder):
+            print(f"Path validation failed: {upload_folder} does not start with {base_folder}")  # Debug log
             return {'error': 'Invalid path specified'}, 400
 
         # Ensure the upload folder exists
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
+            print(f"Created upload folder: {upload_folder}")  # Debug log
 
         # Check if there's an existing image and delete it
         existing_files = [f for f in os.listdir(upload_folder) if os.path.isfile(os.path.join(upload_folder, f))]
@@ -319,6 +333,7 @@ def upload_file():
 
         except Exception as e:
             db.session.rollback()
+            print(f"Error during file upload: {str(e)}")  # Debug log
             return {'error': f'Failed to upload image: {str(e)}'}, 500
 
     return {'error': 'File type not allowed'}, 400
@@ -3993,16 +4008,27 @@ def admin_password_reset(token):
 @app.route('/api/user-notifications', methods=['GET', 'DELETE'])
 @jwt_required()
 def get_user_notifications():
-    user_id = request.args.get('user_id')
-    if request.method == 'GET':
+    print("Request Headers:", request.headers)
+    print("Authorization Header:", request.headers.get('Authorization'))
+    
+    try:
+        current_user = get_jwt_identity()
+        print("JWT Identity (User):", current_user)
+    except Exception as e:
+        print("JWT Error:", str(e))
+        return jsonify({"error": "JWT validation failed"}), 401
 
+    user_id = request.args.get('user_id')
+    print("Requested user_id:", user_id)
+    
+    if request.method == 'GET':
         query = UserNotification.query
         if user_id:
             query = query.filter_by(user_id=user_id)
 
         notifications = query.order_by(UserNotification.created_at.desc()).all()
+        print("Found notifications count:", len(notifications))
         
-        # notifications = UserNotification.query.all()
         return jsonify([notif.to_dict() for notif in notifications]), 200
     
     if request.method == 'DELETE':
