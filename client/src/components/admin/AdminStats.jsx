@@ -26,8 +26,6 @@ function AdminStats() {
     const adminUserId = localStorage.getItem('admin_user_id')
     const token = localStorage.getItem('admin_jwt-token');
 
-    console.log(top10Cities);
-
     useEffect(() => {
         if (!adminUserId) return
         const fetchUserData = async () => {
