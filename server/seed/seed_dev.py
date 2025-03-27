@@ -4271,7 +4271,7 @@ def run():
                     </article>
                     <article>
                         <p>
-                            —The Gingham Team
+                            <span class='font-gingham text-size-1'>—The Gin<span class="kern-1-5">g</span><span class="kern-05">h</span>am Team</span>
                         </p>
                     </article>
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
@@ -4318,7 +4318,9 @@ def run():
                         </p>
                     </article>
                     <article>
-                        <p>—The Gingham Team</p>
+                        <p>
+                            <span class='font-gingham text-size-1'>—The Gin<span class="kern-1-5">g</span><span class="kern-05">h</span>am Team</span>
+                        </p>
                     </article>
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
                 </div>
@@ -4353,6 +4355,11 @@ def run():
                             day is electric: 60,000 market shoppers shop and chat with farmers; students of all ages tour the 
                             market and learn about seasonality; visitors watch and taste cooking demonstrations by some of 
                             New York's hottest local chefs. 
+                        </p>
+                    </article>
+                    <article>
+                        <p>
+                            <span class='font-gingham text-size-1'>—The Gin<span class="kern-1-5">g</span><span class="kern-05">h</span>am Team</span>
                         </p>
                     </article>
                 </div>
