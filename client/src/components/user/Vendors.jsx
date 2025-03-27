@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useLocation, useOutletContext } from 'react-router-dom';
 import VendorCard from './VendorCard';
 import '../../assets/css/index.css';
+import VendorSignUpCard from './VendorSignUpCard';
 
 function Vendors() {
     const [vendors, setVendors] = useState([]);
@@ -262,6 +263,7 @@ function Vendors() {
                 </table>
             </div>
             <div className="market-cards-container box-scroll-large">
+                {!userId && <VendorSignUpCard />}
                 {filteredVendorsResults
                     .slice()
                     .sort((a, b) => {
