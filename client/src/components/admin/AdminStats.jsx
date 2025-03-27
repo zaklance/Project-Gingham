@@ -17,11 +17,15 @@ function AdminStats() {
     const [top10VendorFavs, setTop10VendorFavs] = useState(null)
     const [top10Users, setTop10Users] = useState(null)
     const [top10Cities, setTop10Cities] = useState(null)
+    const [joinDates, setJoinDates] = useState({})
+    const [joinDatesFiltered, setJoinDatesFiltered] = useState({})
     const [baskets, setBaskets] = useState([]);
     const [selectedRangeGraph, setSelectedRangeGraph] = useState(7);
+    const [selectedUserRangeGraph, setSelectedUserRangeGraph] = useState(7);
     const [userData, setUserData] = useState(null);
 
     const chartRef = useRef();
+    const chartUserRef = useRef();
 
     const adminUserId = localStorage.getItem('admin_user_id')
     const token = localStorage.getItem('admin_jwt-token');
@@ -249,6 +253,21 @@ function AdminStats() {
             .catch(error => console.error('Error fetching vendor data:', error));
     }, []);
 
+
+    useEffect(() => {
+        fetch('/api/users/join-date-user-count', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                setJoinDates(data);
+            })
+            .catch(error => console.error('Error fetching market data:', error));
+    }, []);
+
     const handleDownloadCSV = async (route) => {
         try {
             const response = await fetch(`/api/export-csv/${route}`, {
@@ -332,100 +351,179 @@ function AdminStats() {
         setSelectedRangeGraph(event.target.value);
     };
 
+    const handleUserDateChangeGraph = (event) => {
+        setSelectedUserRangeGraph(event.target.value);
+    };
+
     useEffect(() => {
-            const ctx = document.getElementById(`chart-baskets`);
-    
+        const ctx = document.getElementById(`chart-baskets`);
+
+        if (chartRef.current) {
+            chartRef.current.destroy();
+        }
+
+        // Process baskets and filter based on the selected date range
+        function processBaskets(baskets) {
+            const isFuture = selectedRangeGraph < 0;
+
+            // Get allowed dates based on the range
+            const allowedDates = getDatesForRange(selectedRangeGraph).map((date) =>
+                new Date(date).toDateString()
+            );
+
+            // Filter baskets based on allowed dates
+            const filteredBaskets = baskets.filter((basket) => {
+                const basketDate = new Date(basket.sale_date).toDateString();
+                return allowedDates.includes(basketDate);
+            });
+
+            const soldData = {};
+            const unsoldData = {};
+
+            // Group baskets by sale_date and categorize into sold/unsold
+            filteredBaskets.forEach((basket) => {
+                const basketDate = new Date(basket.sale_date).toDateString(); // Normalize date
+                if (basket.is_sold) {
+                    soldData[basketDate] = (soldData[basketDate] || 0) + 1;
+                } else {
+                    unsoldData[basketDate] = (unsoldData[basketDate] || 0) + 1;
+                }
+            });
+
+            return { soldData, unsoldData };
+        }
+        
+        const { soldData, unsoldData } = processBaskets(baskets);
+        
+        const data = {
+            labels: getDatesForRange(selectedRangeGraph),
+            datasets: [
+                {
+                    label: 'Sold Baskets',
+                    data: getDatesForRange(selectedRangeGraph).map(date => soldData[date] || 0),
+                    borderColor: "#007BFF",
+                    backgroundColor: "#6c7ae0",
+                    borderWidth: 2,
+                    borderRadius: 2,
+                    borderSkipped: false,
+                    tension: 0.1,
+                },
+                {
+                    label: 'Unsold Baskets',
+                    data: getDatesForRange(selectedRangeGraph).map(date => unsoldData[date] || 0),
+                    borderColor: "#ff6699",
+                    backgroundColor: "#ff806b",
+                    borderWidth: 2,
+                    borderRadius: 2,
+                    borderSkipped: false,
+                    tension: 0.1,
+                }
+            ]
+        };
+
+        chartRef.current = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: {
+                scales: {
+                    x: {
+                        stacked: true,
+                    },
+                    y: {
+                        stacked: true,
+                        min: 0,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                }
+            }
+        });
+
+        return () => {
             if (chartRef.current) {
                 chartRef.current.destroy();
             }
-    
-            // Process baskets and filter based on the selected date range
-            function processBaskets(baskets) {
-                const isFuture = selectedRangeGraph < 0;
-    
-                // Get allowed dates based on the range
-                const allowedDates = getDatesForRange(selectedRangeGraph).map((date) =>
-                    new Date(date).toDateString()
-                );
-    
-                // Filter baskets based on allowed dates
-                const filteredBaskets = baskets.filter((basket) => {
-                    const basketDate = new Date(basket.sale_date).toDateString();
-                    return allowedDates.includes(basketDate);
-                });
-    
-                const soldData = {};
-                const unsoldData = {};
-    
-                // Group baskets by sale_date and categorize into sold/unsold
-                filteredBaskets.forEach((basket) => {
-                    const basketDate = new Date(basket.sale_date).toDateString(); // Normalize date
-                    if (basket.is_sold) {
-                        soldData[basketDate] = (soldData[basketDate] || 0) + 1;
-                    } else {
-                        unsoldData[basketDate] = (unsoldData[basketDate] || 0) + 1;
-                    }
-                });
-    
-                return { soldData, unsoldData };
+        };
+    }, [baskets, selectedRangeGraph]);
+
+    function processJoinDates(dates) {
+        if (!Array.isArray(dates)) {
+            console.error("Expected an array for 'dates', but got:", dates);
+            return {};
+        }
+
+        const allowedDates = getDatesForRange(selectedUserRangeGraph).map(date =>
+            new Date(date).toDateString()
+        );
+
+        const joinData = {};
+
+        dates.forEach(({ join_date, user_count }) => {
+            const formattedDate = new Date(join_date).toDateString();
+            if (allowedDates.includes(formattedDate)) {
+                joinData[formattedDate] = user_count;
             }
-            
-            const { soldData, unsoldData } = processBaskets(baskets);
-            
-            const data = {
-                labels: getDatesForRange(selectedRangeGraph),
-                datasets: [
-                    {
-                        label: 'Sold Baskets',
-                        data: getDatesForRange(selectedRangeGraph).map(date => soldData[date] || 0),
-                        borderColor: "#007BFF",
-                        backgroundColor: "#6c7ae0",
-                        borderWidth: 2,
-                        borderRadius: 2,
-                        borderSkipped: false,
-                    },
-                    {
-                        label: 'Unsold Baskets',
-                        data: getDatesForRange(selectedRangeGraph).map(date => unsoldData[date] || 0),
-                        borderColor: "#ff6699",
-                        backgroundColor: "#ff806b",
-                        borderWidth: 2,
-                        borderRadius: 2,
-                        borderSkipped: false,
+        });
+
+        return joinData;
+    }
+
+    useEffect(() => {
+        if(joinDates) {
+            setJoinDatesFiltered(processJoinDates(joinDates));
+        }
+    }, [joinDates, selectedUserRangeGraph]);
+
+    const data = {
+        labels: getDatesForRange(selectedUserRangeGraph),
+        datasets: [
+            {
+                label: 'New Users',
+                data: getDatesForRange(selectedUserRangeGraph).map(date => joinDatesFiltered[date] || 0),
+                borderColor: "#00bda4",
+                backgroundColor: "#6cdd6e",
+                borderWidth: 2,
+                borderRadius: 2,
+                borderSkipped: false,
+                tension: 0.1,
+            }
+        ]
+    };
+
+    useEffect(() => {
+        if (!chartUserRef.current) return;
+
+        const ctx = chartUserRef.current.getContext("2d");
+        if (!ctx) return;
+
+        const chartInstance = new Chart(ctx, {
+            type: "line",
+            data: data,
+            options: {
+                scales: {
+                    x: { stacked: true },
+                    y: {
+                        stacked: true,
+                        min: 0,
+                        ticks: { stepSize: 1 }
                     }
-                ]
-            };
-    
-            chartRef.current = new Chart(ctx, {
-                type: 'bar',
-                data: data,
-                options: {
-                    scales: {
-                        x: {
-                            stacked: true,
-                        },
-                        y: {
-                            stacked: true,
-                            min: 0,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: true
-                        }
-                    }
+                },
+                plugins: {
+                    legend: { display: true }
                 }
-            });
-    
-            return () => {
-                if (chartRef.current) {
-                    chartRef.current.destroy();
-                }
-            };
-        }, [baskets, selectedRangeGraph]);
+            }
+        });
+
+        return () => {
+            chartInstance.destroy();
+        };
+    }, [joinDates, joinDatesFiltered, selectedUserRangeGraph]);
 
 
     return (
@@ -526,26 +624,17 @@ function AdminStats() {
                 </>
             )}
             <div className='box-bounding'>
-                <h3>General Count</h3>
-                <table className='table-stats'>
-                    <thead>
-                        <tr>
-                            <th>&emsp;</th>
-                            <th>Markets</th>
-                            <th>Market Days</th>
-                            <th>Vendors</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>Total:</th>
-                            <td className='table-center'>{marketCount?.count}</td>
-                            <td className='table-center'>{marketDayCount?.count}</td>
-                            <td className='table-center'>{vendorCount?.count}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <h3 className='margin-t-16'>User Totals</h3>
+                <div className='flex-space-between flex-bottom-align'>
+                    <h3 className='margin-t-16'>User Totals</h3>
+                    <select className='' value={selectedUserRangeGraph} onChange={handleUserDateChangeGraph}>
+                        {Object.entries(dateRange).map(([label, value]) => (
+                            <option key={value} value={value}>
+                                {label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <canvas ref={chartUserRef} />
                 <table className='table-stats'>
                     <thead>
                         <tr>
@@ -625,6 +714,25 @@ function AdminStats() {
                         </table>
                     </div>
                 </div>
+                <h3>General Count</h3>
+                <table className='table-stats'>
+                    <thead>
+                        <tr>
+                            <th>&emsp;</th>
+                            <th>Markets</th>
+                            <th>Market Days</th>
+                            <th>Vendors</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>Total:</th>
+                            <td className='table-center'>{marketCount?.count}</td>
+                            <td className='table-center'>{marketDayCount?.count}</td>
+                            <td className='table-center'>{vendorCount?.count}</td>
+                        </tr>
+                    </tbody>
+                </table>
                 <div className='flex-space-between flex-gap-16 m-flex-wrap'>
                     <div className='flex-grow-1'>
                         <h3 className='margin-t-16'>Top 10 Markets</h3>

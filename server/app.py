@@ -4945,8 +4945,34 @@ def basket_top_10_users():
         return jsonify(users_data), 200
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500        
+        return jsonify({"error": str(e)}), 500
 
+@app.route('/api/users/join-date-user-count', methods=['GET'])
+@jwt_required()
+def get_user_join_date_counts():
+    try:
+        join_date_user_counts = (
+            db.session.query(
+                func.date(User.join_date).label("join_date"),
+                func.count(User.id).label("user_count")
+            )
+            .filter(User.join_date.isnot(None))
+            .group_by(func.date(User.join_date))
+            .order_by(func.date(User.join_date).asc())
+            .all()
+        )
+
+        result = [
+            {"join_date": str(join_date), "user_count": user_count}
+            for join_date, user_count in join_date_user_counts
+        ]
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+    
 @app.route('/api/users/top-10-cities', methods=['GET'])
 @jwt_required()
 def top_10_cities():
