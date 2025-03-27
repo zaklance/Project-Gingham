@@ -191,7 +191,13 @@ p, li, div, form, input, select, button, textarea, td {
 
 .font-gingham {
   font-family: nf-le-petit-cochon;
-  margin-bottom: -24px;
+  margin-bottom: -.25em;
+}
+
+.font-gingham-large {
+	font-size: 10rem;
+  font-family: nf-le-petit-cochon;
+  margin-bottom: -.25em;
 }
 
 .font-lilita {
@@ -200,12 +206,6 @@ p, li, div, form, input, select, button, textarea, td {
 
 .font-quicksand {
   font-family: "Quicksand", sans-serif;
-}
-
-.font-gingham-large {
-	font-size: 10rem;
-  font-family: nf-le-petit-cochon;
-  margin-bottom: -24px;
 }
 
 .text-light {
