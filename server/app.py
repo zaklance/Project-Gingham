@@ -4937,11 +4937,6 @@ def basket_top_10_users():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-from flask import jsonify
-from sqlalchemy import func
-from models import db, User  # Assuming User model and db are defined
-from flask_jwt_extended import jwt_required
-
 @app.route('/api/users/join-date-user-count', methods=['GET'])
 @jwt_required()
 def get_user_join_date_counts():
