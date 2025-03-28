@@ -51,7 +51,7 @@ const AdminBlog = () => {
                 const data = await response.json();
                 console.log('Images uploaded successfully:', data);
                 fetchImages();
-                window.location.reload()
+                // window.location.reload()
             } else {
                 console.error('Failed to upload images');
             }

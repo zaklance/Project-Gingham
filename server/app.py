@@ -383,6 +383,7 @@ def upload_files():
                 uploaded_files.append(os.path.basename(file_path))
 
             except Exception as e:
+                print(f'Failed to upload image: {str(e)}')
                 return {'error': f'Failed to upload image: {str(e)}'}, 500
 
     return {'message': 'Files successfully uploaded', 'filenames': uploaded_files}, 201
@@ -406,6 +407,8 @@ def get_blog_images():
         
         if images:
             images_by_folder[folder] = images
+            print(images_by_folder)
+            print(images)
 
     return {'folders': images_by_folder}
 
