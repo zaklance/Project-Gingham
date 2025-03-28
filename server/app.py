@@ -50,7 +50,7 @@ STRIPE_ALLOWED_IPS = {
     "54.88.130.237", "54.187.174.169", "54.187.205.235", "54.187.216.72"
 }
 
-UPLOAD_FOLDER = "../client/public"
+UPLOAD_FOLDER = "/var/data/uploads"
 USER_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "user-images")
 VENDOR_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "vendor-images")
 MARKET_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "market-images")
