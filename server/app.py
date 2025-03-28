@@ -438,16 +438,12 @@ def delete_image():
     vendor_id = data.get('vendor_id')
     market_id = data.get('market_id')
 
-    # Base directory for your project
-    base_dir = os.path.abspath(os.path.join(os.getcwd(), "../client/public"))
-
-    # Determine the upload folder based on the type
     if file_type == 'vendor' and vendor_id:
-        upload_folder = os.path.join(base_dir, f'vendor-images/{vendor_id}')
+        upload_folder = os.path.join(VENDOR_UPLOAD_FOLDER, str(vendor_id))
     elif file_type == 'market' and market_id:
-        upload_folder = os.path.join(base_dir, f'market-images/{market_id}')
+        upload_folder = os.path.join(MARKET_UPLOAD_FOLDER, str(market_id))
     elif file_type == 'user' and user_id:
-        upload_folder = os.path.join(base_dir, f'user-images/{user_id}')
+        upload_folder = os.path.join(USER_UPLOAD_FOLDER, str(user_id))
     else:
         return {'error': 'Invalid type or missing ID. Ensure "type" and respective ID are provided.'}, 400
 
