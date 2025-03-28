@@ -407,7 +407,7 @@ function AdminVendorEdit({ vendors }) {
                                         <img
                                             className='img-market'
                                             style={{ maxWidth: '100%', height: 'auto' }}
-                                            src={tempVendorData.image ? `/vendor-images/${tempVendorData.image}` : `/vendor-images/_default-images/${tempVendorData.image_default}`}
+                                            src={tempVendorData.image ? `https://www.gingham.nyc/api/uploads/vendor-images/${tempVendorData.image}` : `/vendor-images/_default-images/${tempVendorData.image_default}`}
                                             alt="Vendor Image"
                                         />
                                     </div>
@@ -436,7 +436,7 @@ function AdminVendorEdit({ vendors }) {
                                     <tr>
                                         <td className='cell-title'>Image:</td>
                                         <td className='cell-text'>
-                                            {vendorData ? <img style={{ maxWidth: '100%', height: 'auto' }} src={vendorData.image ? `/vendor-images/${vendorData.image}` : `/vendor-images/_default-images/${vendorData.image_default}`} alt="Vendor Image" /> : ''}
+                                            {vendorData ? <img style={{ maxWidth: '100%', height: 'auto' }} src={vendorData.image ? `https://www.gingham.nyc/api/uploads/vendor-images/${vendorData.image}` : `/vendor-images/_default-images/${vendorData.image_default}`} alt="Vendor Image" /> : ''}
                                         </td>
                                     </tr>
                                     <tr>
