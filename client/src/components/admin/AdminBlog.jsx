@@ -42,7 +42,7 @@ const AdminBlog = () => {
         formData.append('type', 'blog');
 
         try {
-            const response = await fetch('/api/upload-files', {
+            const response = await fetch('/api/upload-blog-images', {
                 method: 'POST',
                 body: formData,
             });
