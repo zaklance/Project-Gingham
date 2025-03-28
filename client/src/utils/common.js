@@ -62,11 +62,20 @@ export const markets_default = {
     "Market City 1": "market-default-1_1600px.png",
     "Market City 2": "market-default-2_1600px.png",
     "Market City 3": "market-default-3_1600px.png",
-    "Market City 4": "market-default-4_1600px.png"
+    "Market City 4": "market-default-4_1600px.png",
+    "Market City 5": "market-default-5_1600px.png",
+    "Market City 6": "market-default-6_1600px.png",
+    "Market City 7": "market-default-7_1600px.png",
+    "Market City 8": "market-default-8_1600px.png"
 }
 
 export const vendors_default = {
     "Vendor 1": "vendor-default-1_1600px.png",
     "Vendor 2": "vendor-default-2_1600px.png",
-    "Vendor 3": "vendor-default-3_1600px.png"
+    "Vendor 3": "vendor-default-3_1600px.png",
+    "Vendor 4": "vendor-default-4_1600px.png",
+    "Vendor 5": "vendor-default-5_1600px.png",
+    "Vendor 6": "vendor-default-6_1600px.png",
+    "Vendor 7": "vendor-default-7_1600px.png",
+    "Vendor 8": "vendor-default-8_1600px.png"
 }
