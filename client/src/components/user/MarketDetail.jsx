@@ -548,7 +548,7 @@ function MarketDetail ({ match }) {
             <div className='flex-space-around flex-end margin-t-24 m-flex-wrap'>
                 <div className='width-100'>
                     {market.image !== null ? (
-                        <img className="img-market" src={`https://www.gingham.nyc/api/uploads/market-images/${market.image}`} alt="Market Image" />
+                        <img className="img-market" src={`https://www.gingham.nyc${market.image}`} alt="Market Image" />
                     ) : (
                         <img className="img-market" src={`/market-images/_default-images/${market.image_default}`} alt="Market Image" />
                     )}
