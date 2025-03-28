@@ -123,7 +123,7 @@ function AdminReport() {
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                 <div className='flex-start'>
                                     {review.user.avatar !== null ? (
-                                        <img className='img-avatar margin-r-8' src={`https://www.gingham.nyc/api/uploads/user-images/${review.user.avatar}`} alt="Avatar" />
+                                        <img className='img-avatar margin-r-8' src={`https://www.gingham.nyc${review.user.avatar}`} alt="Avatar" />
                                     ) : (
                                         <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
                                     )}
@@ -148,7 +148,7 @@ function AdminReport() {
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                 <div className='flex-start'>
                                     {review.user.avatar !== null ? (
-                                        <img className='img-avatar margin-r-8' src={`https://www.gingham.nyc/api/uploads/user-images/${review.user.avatar}`} alt="Avatar" />
+                                        <img className='img-avatar margin-r-8' src={`https://www.gingham.nyc${review.user.avatar}`} alt="Avatar" />
                                     ) : (
                                         <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
                                     )}

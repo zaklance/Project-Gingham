@@ -396,7 +396,7 @@ const AdminUsersUsers = () => {
                                 <label>Avatar:</label>
                                     <img
                                         className='img-avatar-profile'
-                                        src={tempUserData.avatar ? `https://www.gingham.nyc/api/uploads/user-images/${tempUserData.avatar}` : `/user-images/_default-images/${tempUserData.avatar_default}`}
+                                        src={tempUserData.avatar ? `https://www.gingham.nyc${tempUserData.avatar}` : `/user-images/_default-images/${tempUserData.avatar_default}`}
                                         alt="Avatar"
                                         style={{ maxWidth: '100%', height: 'auto', padding: '4px' }}
                                     />
@@ -459,7 +459,7 @@ const AdminUsersUsers = () => {
                                     </table>
                                     <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                                 </div>
-                                {userData ? <img className='img-avatar-profile' src={userData.avatar ? `https://www.gingham.nyc/api/uploads/user-images/${userData.avatar}` : `/user-images/_default-images/${userData.avatar_default}`} alt="Avatar" /> : ""}
+                                {userData ? <img className='img-avatar-profile' src={userData.avatar ? `https://www.gingham.nyc${userData.avatar}` : `/user-images/_default-images/${userData.avatar_default}`} alt="Avatar" /> : ""}
                             </div>
                         </>
                     )}
