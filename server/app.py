@@ -50,10 +50,15 @@ STRIPE_ALLOWED_IPS = {
     "54.88.130.237", "54.187.174.169", "54.187.205.235", "54.187.216.72"
 }
 
-USER_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/user-images')
-VENDOR_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/vendor-images')
-MARKET_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/market-images')
-BLOG_UPLOAD_FOLDER = os.path.join(os.getcwd(), '../client/public/blog-images')
+UPLOAD_FOLDER = "/var/data/uploads"
+USER_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "user-images")
+VENDOR_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "vendor-images")
+MARKET_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "market-images")
+BLOG_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, 'blog-images')
+os.makedirs(USER_UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(VENDOR_UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(MARKET_UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(BLOG_UPLOAD_FOLDER, exist_ok=True)
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'svg', 'heic'}
 MAX_SIZE = 1.5 * 1024 * 1024
 MAX_RES = (1800, 1800)
@@ -213,6 +218,14 @@ def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
     temp_output.seek(0)
     return Image.open(temp_output)
 
+@app.route('/api/hello', methods=['GET'])
+def hello_world():
+    return 'Hello World'
+
+@app.route('/api/uploads/<path:filename>')
+def uploaded_file(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
+
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
@@ -238,23 +251,23 @@ def upload_file():
         print(f"Current working directory: {cwd}")  # Debug log
         
         if upload_type == 'vendor':
-            base_folder = os.path.join(cwd, '../client/public/vendor-images')
+            base_folder = VENDOR_UPLOAD_FOLDER
             upload_folder = os.path.join(base_folder, str(vendor_id))
         elif upload_type == 'market':
-            base_folder = os.path.join(cwd, '../client/public/market-images')
+            base_folder = MARKET_UPLOAD_FOLDER
             upload_folder = os.path.join(base_folder, str(market_id))
         elif upload_type == 'user':
-            base_folder = os.path.join(cwd, '../client/public/user-images')
+            base_folder = USER_UPLOAD_FOLDER
             upload_folder = os.path.join(base_folder, str(user_id))
         else:
             return {'error': 'Invalid type specified. Must be "vendor", "market", or "user"'}, 400
 
+        # Ensure the upload folder exists
+        os.makedirs(upload_folder, exist_ok=True)
+
         # Normalize paths for comparison
         base_folder = os.path.normpath(base_folder)
         upload_folder = os.path.normpath(upload_folder)
-        
-        print(f"Base folder: {base_folder}")  # Debug log
-        print(f"Upload folder: {upload_folder}")  # Debug log
 
         # Ensure the upload folder is within the base folder
         if not upload_folder.startswith(base_folder):
@@ -302,7 +315,7 @@ def upload_file():
                 if not user:
                     return {'error': 'User not found'}, 404
 
-                user.avatar = f'{user_id}/{os.path.basename(file_path)}'
+                user.avatar = f'/api/uploads/user-images/{user_id}/{os.path.basename(file_path)}'
                 db.session.commit()
 
             elif upload_type == 'vendor':
@@ -314,7 +327,7 @@ def upload_file():
                 if not vendor:
                     return {'error': 'Vendor not found'}, 404
 
-                vendor.image = f'{vendor_id}/{os.path.basename(file_path)}'
+                vendor.image = f'/api/uploads/vendor-images/{vendor_id}/{os.path.basename(file_path)}'
                 db.session.commit()
 
             elif upload_type == 'market':
@@ -326,7 +339,7 @@ def upload_file():
                 if not market:
                     return {'error': 'Market not found'}, 404
 
-                market.image = f'{market_id}/{os.path.basename(file_path)}'
+                market.image = f'/api/uploads/market-images/{market_id}/{os.path.basename(file_path)}'
                 db.session.commit()
 
             return {'message': 'File successfully uploaded', 'filename': escape(os.path.basename(file_path))}, 201
@@ -338,8 +351,8 @@ def upload_file():
 
     return {'error': 'File type not allowed'}, 400
 
-@app.route('/api/upload-files', methods=['POST'])
-def upload_files():
+@app.route('/api/upload-blog-images', methods=['POST'])
+def upload_blog_images():
     if 'files' not in request.files:
         return {'error': 'No files part in the request'}, 400
 
@@ -349,7 +362,7 @@ def upload_files():
         return {'error': 'No files selected'}, 400
 
     formatted_date = datetime.now().strftime("%Y-%m%d")
-    upload_folder = os.path.join(os.getcwd(), f'../client/public/blog-images/{formatted_date}')
+    upload_folder = os.path.join(BLOG_UPLOAD_FOLDER, formatted_date)
 
     if not os.path.exists(upload_folder):
         os.makedirs(upload_folder)
@@ -376,9 +389,10 @@ def upload_files():
                     image = resize_image(image)
                     image.save(file_path)
 
-                uploaded_files.append(os.path.basename(file_path))
+                uploaded_files.append(f'/api/uploads/blog-images/{formatted_date}/{os.path.basename(file_path)}')
 
             except Exception as e:
+                print(f'Failed to upload image: {str(e)}')
                 return {'error': f'Failed to upload image: {str(e)}'}, 500
 
     return {'message': 'Files successfully uploaded', 'filenames': uploaded_files}, 201
@@ -390,18 +404,19 @@ def get_blog_images():
     if not os.path.exists(blog_folder):
         return {'folders': {}}
 
-    folders = [f for f in os.listdir(blog_folder) if os.path.isdir(os.path.join(blog_folder, f))]
-
+    folders = [f for f in os.listdir(BLOG_UPLOAD_FOLDER) if os.path.isdir(os.path.join(BLOG_UPLOAD_FOLDER, f))]
     folders.sort(reverse=True, key=lambda x: int(x.replace("-", "")) if x.replace("-", "").isdigit() else 0)
 
     images_by_folder = {}
 
     for folder in folders:
-        folder_path = os.path.join(blog_folder, folder)
-        images = [f'/blog-images/{folder}/{img}' for img in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, img))]
+        folder_path = os.path.join(BLOG_UPLOAD_FOLDER, folder)
+        images = [f'/api/uploads/blog-images/{folder}/{img}' for img in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, img))]
         
         if images:
             images_by_folder[folder] = images
+            print(images_by_folder)
+            print(images)
 
     return {'folders': images_by_folder}
 
@@ -423,16 +438,12 @@ def delete_image():
     vendor_id = data.get('vendor_id')
     market_id = data.get('market_id')
 
-    # Base directory for your project
-    base_dir = os.path.abspath(os.path.join(os.getcwd(), "../client/public"))
-
-    # Determine the upload folder based on the type
     if file_type == 'vendor' and vendor_id:
-        upload_folder = os.path.join(base_dir, f'vendor-images/{vendor_id}')
+        upload_folder = os.path.join(VENDOR_UPLOAD_FOLDER, str(vendor_id))
     elif file_type == 'market' and market_id:
-        upload_folder = os.path.join(base_dir, f'market-images/{market_id}')
+        upload_folder = os.path.join(MARKET_UPLOAD_FOLDER, str(market_id))
     elif file_type == 'user' and user_id:
-        upload_folder = os.path.join(base_dir, f'user-images/{user_id}')
+        upload_folder = os.path.join(USER_UPLOAD_FOLDER, str(user_id))
     else:
         return {'error': 'Invalid type or missing ID. Ensure "type" and respective ID are provided.'}, 400
 

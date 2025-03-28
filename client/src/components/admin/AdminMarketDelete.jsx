@@ -118,7 +118,7 @@ function AdminMarketDelete({ markets }) {
                     <tbody>
                         <tr>
                             <td className='cell-title'>Image:</td>
-                            <td className='cell-text'>{adminMarketData ? <img className='img-market' src={adminMarketData.image ? `/market-images/${adminMarketData.image}` : `/market-images/_default-images/${adminMarketData.image_default}`} alt="Market Image" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
+                            <td className='cell-text'>{adminMarketData ? <img className='img-market' src={adminMarketData.image ? `https://www.gingham.nyc/api/uploads/market-images/${adminMarketData.image}` : `/market-images/_default-images/${adminMarketData.image_default}`} alt="Market Image" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
                         </tr>
                         <tr>
                             <td className='cell-title'>ID:</td>

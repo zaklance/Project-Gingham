@@ -486,9 +486,9 @@ function ReviewVendor({ vendor }) {
                                     <>
                                         <div className='flex-start flex-center-align'>
                                             {review.user.avatar !== null ? (
-                                                <img className='img-avatar margin-r-8' src={`/user-images/${review.user.avatar}`} alt="Avatar" />
+                                                <img className='img-avatar margin-r-8' src={`https://www.gingham.nyc/api/uploads/user-images/${review.user.avatar}`} alt="Avatar" />
                                             ) : (
-                                                    <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
+                                                <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
                                             )}
                                             <h4 className='margin-r-8'>{review.user ? review.user.first_name : 'Anonymous'}</h4>
                                             <p className='margin-r-8'>{review ? convertToLocalDate(review.post_date) : ''}</p>
@@ -534,9 +534,9 @@ function ReviewVendor({ vendor }) {
                                 ) : (
                                     <div className='flex-start flex-center-align'>
                                             {review.user.avatar !== null ? (
-                                                <img className='img-avatar margin-r-8' src={`/user-images/${review.user.avatar}`} alt="Avatar" />
+                                                <img className='img-avatar margin-r-8' src={`https://www.gingham.nyc/api/uploads/user-images/${review.user.avatar}`} alt="Avatar" />
                                             ) : (
-                                                    <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
+                                                <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
                                             )}
                                         <h4 className='margin-r-8'>You</h4>
                                         <p className='margin-r-8'>{review ? convertToLocalDate(review.post_date) : ''}</p>
