@@ -827,6 +827,17 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                         </option>
                                     ))}
                                 </select>
+                                <button 
+                                    type="button"
+                                    className='btn btn-small margin-l-8'
+                                    onClick={() => {
+                                        const keys = Object.keys(markets_default);
+                                        const randomKey = keys[Math.floor(Math.random() * keys.length)];
+                                        handleInputChange({ target: { name: "image_default", value: markets_default[randomKey] } });
+                                    }}
+                                >
+                                    Randomize
+                                </button>
                             </div>
                             <div className='form-group'>
                                 <label>Market Image:</label>
