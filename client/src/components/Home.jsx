@@ -144,6 +144,8 @@ function Home() {
                     <p> Our mission: reduce waste, support vendors, and provide fresh, affordable food. Every 
                         basket purchased helps reduce waste and strengthen your community.
                     </p>
+                    <br/>
+                    <h3><a className="link-underline-inverse" onClick={handlePopup}> Sign up here!</a></h3>
                 </div>
             </div>
             {currentBlog ? (

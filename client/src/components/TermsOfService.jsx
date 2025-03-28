@@ -4,20 +4,20 @@ function TermsOfService() {
     const [activeSection, setActiveSection] = useState("");
 
     const sections = [
-        "Introduction", 
-        "Eligibility and Account Registration",
-        "Use of Platform",
-        "Purchases and Payment Terms",
-        "Return and Exchange Policy",
-        "Vendor Terms",
-        "Consumer Terms",
-        "Text Messaging Policy",
-        "Limitation of Liability",
-        "Intellectual Property",
-        "Termination of Accounts",
-        "Changes to Terms of Service",
-        "Dispute Resolution",
-        "Contact Information"
+        "introduction", 
+        "eligibility-and-account-registration",
+        "use-of-platform",
+        "purchases-and-payment-terms",
+        "return-and-exchange-policy",
+        "vendor-terms",
+        "consumer-terms",
+        "text-messaging-policy",
+        "limitation-of-liability",
+        "intellectual-property",
+        "termination-of-accounts",
+        "changes-to-terms-and-conditions",
+        "dispute-resolution",
+        "contact-information"
     ];
 
     useEffect(() => {
@@ -52,7 +52,7 @@ function TermsOfService() {
                 </ul>
             </aside>
             <div className="help-content">
-                <section id="Introduction" className="section-help">
+                <section id="introduction" className="section-help">
                     <h3 className="margin-b-16">Introduction</h3>
                         <p className="margin-b-16">
                             <span className="text-500">Effective Date: March 1, 2025</span>
@@ -63,7 +63,7 @@ function TermsOfService() {
                         </p>
                 </section>
 
-                <section id="Eligibility and Account Registration" className="section-help">
+                <section id="eligibility-and-account-registration" className="section-help">
                     <h3 className="margin-b-16">Eligibility and Account Registration</h3>
                         <p className="margin-b-16">
                             To use Gingham, you must be <strong>at least 18 years old</strong> or have the consent of a legal guardian. By creating an account, 
@@ -72,7 +72,7 @@ function TermsOfService() {
                         </p>
                 </section>
 
-                <section id="Use of Platform" className="section-help">
+                <section id="use-of-platform" className="section-help">
                     <h3 className="margin-b-16">Use of Platform</h3>
                         <p className="margin-b-16">
                             Gingham provides a platform that connects consumers with local vendors and farmers. Users agree not to engage in fraudulent, 
@@ -80,7 +80,7 @@ function TermsOfService() {
                         </p>
                 </section>
 
-                <section id="Purchases and Payment Terms" className="section-help">
+                <section id="purchases-and-payment-terms" className="section-help">
                     <h3 className="margin-b-16">Purchases and Payment Terms</h3>
                         <p className="margin-b-16">
                             All purchases made through Gingham are processed securely through Stripe. By placing an order, you agree to pay the total amount, 
@@ -89,7 +89,7 @@ function TermsOfService() {
                         </p>
                 </section>
 
-                <section id="Return and Exchange Policy" className="section-help">
+                <section id="return-and-exchange-policy" className="section-help">
                     <h3 className="margin-b-16">Return and Exchange Policy</h3>
                         <p className="margin-b-16">
                             At Gingham, all sales are final, and we do not accept returns, refunds, or exchanges for any purchases.
@@ -110,7 +110,7 @@ function TermsOfService() {
                         </p>
                 </section>
 
-                <section id="Vendor Terms" className="section-help">
+                <section id="vendor-terms" className="section-help">
                     <h3 className="margin-b-16">Vendor Terms</h3>
                         <p className="margin-b-16">
                             Vendors are responsible for ensuring that the products they list comply with all applicable laws and regulations. Vendors must fulfill orders 
@@ -119,7 +119,7 @@ function TermsOfService() {
                         </p>
                 </section>
 
-                <section id="Consumer Terms" className="section-help">
+                <section id="consumer-terms" className="section-help">
                     <h3 className="margin-b-16">Consumer Terms</h3>
                         <p className="margin-b-16">
                             Consumers are expected to provide accurate information when making purchases and to respect the terms set by vendors. Any disputes regarding product 
@@ -128,7 +128,7 @@ function TermsOfService() {
                         </p>
                 </section>
 
-                <section id="Text Messaging Policy" className="section-help">
+                <section id="text-messaging-policy" className="section-help">
                     <h3 className="margin-b-16">Text Messaging Policy</h3>
                         <p className="margin-b-16">
                             By using our services, you agree to receive text messages from Gingham related to your orders, account status, and promotions. Message frequency may vary.
@@ -138,7 +138,7 @@ function TermsOfService() {
                         </p>
                 </section>
 
-                <section id="Limitation of Liability" className="section-help">
+                <section id="limitation-of-liability" className="section-help">
                     <h3 className="margin-b-16">Limitation of Liability</h3>
                         <p className="margin-b-16">
                             To the fullest extent permitted by law, Gingham and its affiliates shall not be liable for any indirect, incidental, or consequential damages arising from 
@@ -146,7 +146,7 @@ function TermsOfService() {
                         </p>
                 </section>
 
-                <section id="Intellectual Property" className="section-help">
+                <section id="intellectual-property" className="section-help">
                     <h3 className="margin-b-16">Intellectual Property</h3>
                         <p className="margin-b-16">
                             All content, trademarks, and intellectual property displayed on the Gingham platform belong to Gingham or respective licensors. Users may not use, reproduce, 
@@ -154,7 +154,7 @@ function TermsOfService() {
                         </p>
                 </section>
 
-                <section id="Termination of Accounts" className="section-help">
+                <section id="termination-of-accounts" className="section-help">
                     <h3 className="margin-b-16">Termination of Accounts</h3>
                         <p className="margin-b-16">
                         We reserve the right to suspend or terminate your account at our sole discretion if you violate these Terms of Service, engage in fraudulent activities, 
@@ -163,15 +163,15 @@ function TermsOfService() {
                         </p>
                 </section>
 
-                <section id="Changes to Terms of Service" className="section-help">
-                    <h3 className="margin-b-16">Changes to Terms of Service</h3>
+                <section id="changes-to-terms-and-conditions" className="section-help">
+                    <h3 className="margin-b-16">Changes to Terms and Conditions</h3>
                     <p className="margin-b-16">
-                            We may update this Terms of Service from time to time. Any significant changes will be communicated via email or through a notification on the platform.
+                            We may update this Terms and Conditions from time to time. Any significant changes will be communicated via email or through a notification on the platform.
                             Please review this page periodically for updates.
                         </p>
                 </section>
 
-                <section id="Dispute Resolution" className="section-help">
+                <section id="dispute-resolution" className="section-help">
                     <h3 className="margin-b-16">Dispute Resolution</h3>
                         <p className="margin-b-16">
                             Any disputes arising from the use of our services shall be governed by and construed in accordance with the laws of the state of New York, regardless of where 
@@ -180,7 +180,7 @@ function TermsOfService() {
                         </p>
                 </section>
 
-                <section id="Contact Information" className="section-help">
+                <section id="contact-information" className="section-help">
                     <h3 className="margin-b-16">Contact Information</h3>
                         <p className="margin-b-16">
                             If you have any questions or concerns about this Terms of Service, please contact us at: <span className="text-500">
