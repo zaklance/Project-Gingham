@@ -3705,6 +3705,20 @@ select:hover {
   .box-key {
     justify-content: space-between;
   }
+
+  .vendor-guide {
+    display: block;
+    /* grid-template-columns: 204px 1fr; */
+    /* gap: 16px; */
+  }
+
+  .help-content {
+    padding: 0px;
+  }
+
+  .section-help {
+    margin-left: 0px;
+  }
 }
 
 
