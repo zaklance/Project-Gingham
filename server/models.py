@@ -40,6 +40,10 @@ markets = [
     "market-default-2_1600px.png",
     "market-default-3_1600px.png",
     "market-default-4_1600px.png"
+    "market-default-5_1600px.png"
+    "market-default-6_1600px.png"
+    "market-default-7_1600px.png"
+    "market-default-8_1600px.png"
 ]
 
 def random_market():
@@ -49,6 +53,11 @@ vendors = [
     "vendor-default-1_1600px.png",
     "vendor-default-2_1600px.png",
     "vendor-default-3_1600px.png"
+    "vendor-default-4_1600px.png"
+    "vendor-default-5_1600px.png"
+    "vendor-default-6_1600px.png"
+    "vendor-default-7_1600px.png"
+    "vendor-default-8_1600px.png"
 ]
 
 def random_vendor():
