@@ -130,7 +130,7 @@ function AdminVendorDelete({ vendors }) {
                     <tbody>
                         <tr>
                             <td className='cell-title'>Image:</td>
-                            <td className='cell-text'>{vendorData?.image ? <img className='img-market' style={{ maxWidth: '100%', height: 'auto' }} src={`https://www.gingham.nyc/api/uploads/vendor-images/${vendorData.image}`} alt="Market Image" /> : ''}</td>
+                            <td className='cell-text'>{vendorData?.image ? <img className='img-market' style={{ maxWidth: '100%', height: 'auto' }} src={`https://www.gingham.nyc${vendorData.image}`} alt="Market Image" /> : ''}</td>
                         </tr>
                         <tr>
                             <td className='cell-title'>ID:</td>

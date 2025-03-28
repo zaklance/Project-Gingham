@@ -1181,7 +1181,7 @@ function VendorProfile () {
                                             <>
                                                 <img
                                                     className='img-vendor-edit'
-                                                    src={tempVendorData.image ? `https://www.gingham.nyc/api/uploads/vendor-images/${DOMPurify.sanitize(tempVendorData.image, { SAFE_FOR_TEMPLATES: true })}` : `/vendor-images/_default-images/${tempVendorData.image_default}`}
+                                                    src={tempVendorData.image ? `https://www.gingham.nyc${DOMPurify.sanitize(tempVendorData.image, { SAFE_FOR_TEMPLATES: true })}` : `/vendor-images/_default-images/${tempVendorData.image_default}`}
                                                     alt="Vendor"
                                                     style={{ maxWidth: '100%', height: 'auto' }}
                                                 />
@@ -1268,7 +1268,7 @@ function VendorProfile () {
                                                     </tr>
                                                     <tr>
                                                         <td className='cell-title'>Image:</td>
-                                                        <td className='cell-text'>{vendorData ? <img src={vendorData.image ? `https://www.gingham.nyc/api/uploads/vendor-images/${vendorData.image}` : `/vendor-images/_default-images/${vendorData.image_default}`} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
+                                                        <td className='cell-text'>{vendorData ? <img src={vendorData.image ? `https://www.gingham.nyc${vendorData.image}` : `/vendor-images/_default-images/${vendorData.image_default}`} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>

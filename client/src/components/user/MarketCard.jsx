@@ -23,7 +23,7 @@ function MarketCard({ marketData, user, haversineDistance, resultCoordinates, us
         <div className="market-card flex-space-between flex-column">
             <div>
                     {marketData.image !== null ? (
-                        <img className="img-market-card" src={`https://www.gingham.nyc/api/uploads/market-images/${marketData.image}`} alt="Market Image" />
+                        <img className="img-market-card" src={`https://www.gingham.nyc${marketData.image}`} alt="Market Image" />
                     ) : (
                         <img className="img-market-card" src={`/market-images/_default-images/${marketData.image_default}`} alt="Market Image" />
                     )}
