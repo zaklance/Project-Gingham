@@ -14,7 +14,7 @@ function VendorCard({ vendorData, selectedProduct, products }) {
     return (
         <div className="market-card flex-space-between flex-column text-center">
             {vendorData.image !== null ? (
-                <img className='img-market-card' src={`https://www.gingham.nyc/api/uploads/vendor-images/${vendorData.image}`} alt="Vendor Image" />
+                <img className='img-market-card' src={`https://www.gingham.nyc${vendorData.image}`} alt="Vendor Image" />
             ) : (
                 <img className='img-market-card' src={`/vendor-images/_default-images/${vendorData.image_default}`} alt="Vendor Image" />
             )}

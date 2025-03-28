@@ -359,7 +359,7 @@ function VendorDetail() {
             </div>
             <div className='width-100 margin-t-24'>
                 {vendor.image !== null ? (
-                    <img className='img-vendor' src={`https://www.gingham.nyc/api/uploads/vendor-images/${vendor.image}`} alt="Vendor Image"/>
+                    <img className='img-vendor' src={`https://www.gingham.nyc${vendor.image}`} alt="Vendor Image"/>
                 ) : (
                     <img className='img-vendor' src={`/vendor-images/_default-images/${vendor.image_default}`} alt="Vendor Image"/>
                 )}
