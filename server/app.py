@@ -3710,14 +3710,19 @@ def stripe_webhook():
             stripe_account_id = account_data["id"]
             charges_enabled = account_data.get("charges_enabled", False)
             payouts_enabled = account_data.get("payouts_enabled", False)
+            is_onboarded = account_data.get("details_submitted", False)
             
             # Update vendor's Stripe account status
             vendor = Vendor.query.filter_by(stripe_account_id=stripe_account_id).first()
             if vendor:
-                vendor.charges_enabled = charges_enabled
-                vendor.payouts_enabled = payouts_enabled
+                vendor.stripe_charges_enabled = charges_enabled
+                vendor.stripe_payouts_enabled = payouts_enabled
+                vendor.stripe_is_onboarded = is_onboarded
                 db.session.commit()
-                print(f"Updated vendor {vendor.id} Stripe account status")
+                print(f"Updated vendor {vendor.id} Stripe account status:")
+                print(f"- Charges enabled: {charges_enabled}")
+                print(f"- Payouts enabled: {payouts_enabled}")
+                print(f"- Onboarded: {is_onboarded}")
             
             return jsonify({"message": "Account updated"}), 200
         

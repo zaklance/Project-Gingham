@@ -1,13 +1,38 @@
-import React from 'react';
-import { useRouteError, NavLink } from "react-router-dom";
+import React, { useState } from 'react';
+import { useRouteError, NavLink, useLocation } from "react-router-dom";
 import '../assets/css/index.css';
 
 function Footer() {
+    const [clickedPath, setClickedPath] = useState(null);
+
+    const location = useLocation();
+
     const isNotUser = location.pathname.startsWith('/vendor') || location.pathname.startsWith('/admin');
     const isVendorPage = location.pathname.startsWith('/vendor');
     const isAdminPage = location.pathname.startsWith('/admin');
     const adminUserId = globalThis.localStorage.getItem('admin_user_id');
     const isAdminLoggedIn = adminUserId;
+
+    const navItems = [
+        { path: "/", label: "User Portal" },
+        { path: "/vendor", label: "Vendor Portal" },
+        { path: "/admin", label: "Admin Portal" },
+        { path: "/about", label: "About" },
+        { path: "/user/help", label: "User Help", condition: !isNotUser },
+        { path: "/vendor/help", label: "Vendor Help", condition: isVendorPage },
+        { path: "/admin/faqs", label: "Admin Help", condition: isAdminLoggedIn && isAdminPage },
+        { path: "/contact", label: "Contact", condition: !isNotUser },
+        { path: "/vendor/contact", label: "Contact", condition: isVendorPage },
+        { path: "/terms-service", label: "Terms & Conditions" },
+        { path: "/privacy-policy", label: "Privacy Policy" }
+    ];
+
+    const handleClick = (path) => {
+        setClickedPath(path);
+        setTimeout(() => {
+            setClickedPath(null);
+        }, 2500);
+    };
 
     return (
         <>
@@ -15,56 +40,30 @@ function Footer() {
             <div className='footer'>
                 <div className='flex-space-around flex-center-align box-blue'>
                     <ul className='ul-footer column-footer'>
-                        <li className='footer-li'>
-                            <NavLink to="/">User Portal</NavLink>
-                        </li>
-                        <li className='footer-li'>
-                            <NavLink to="/vendor">Vendor Portal</NavLink>
-                        </li>
-                        <li className='footer-li'>
-                            <NavLink to="/admin">Admin Portal</NavLink>
-                        </li>
-                        <li className='footer-li'>
-                            <NavLink to="/about">About</NavLink>
-                        </li>
-                        {!isNotUser && (
-                            <li className='footer-li'>
-                                <NavLink to="/user/help">User Help</NavLink>
-                            </li>
+                        {navItems.map(({ path, label, condition }) =>
+                            condition !== false ? (
+                                <li key={path} className="footer-li link-underline">
+                                    <NavLink 
+                                        to={path} 
+                                        className={({ isActive }) => isActive ? "active-link" : ""}
+                                        onClick={() => handleClick(path)}
+                                    >
+                                        {label}
+                                    </NavLink>
+                                    {clickedPath === path && location.pathname === path && (
+                                        <div className="notification-box">
+                                            <div className="notification-triangle"></div>
+                                            You are here!
+                                        </div>
+                                    )}
+                                </li>
+                            ) : null
                         )}
-                        {isVendorPage && (
-                            <li className='footer-li'>
-                                <NavLink to="/vendor/help">Vendor Help</NavLink>
-                            </li>
-                        )}
-                        {isAdminLoggedIn && isAdminPage && (
-                            <li className='footer-li'>
-                                <NavLink to="/admin/faqs">Admin Help</NavLink>
-                            </li>
-                        )}
-                        {!isNotUser && (
-                            <li className='footer-li'>
-                                <NavLink to="/contact">Contact</NavLink>
-                            </li>
-                        )}
-                        {isVendorPage && (
-                            <li className='footer-li'>
-                                <NavLink to="/vendor/contact">Contact</NavLink>
-                            </li>
-                        )}
-                        <li className='footer-li'>
-                            <NavLink to="/terms-service">Terms & Conditions</NavLink>
-                        </li>
-                        <li className='footer-li'>
-                            <NavLink to="/privacy-policy">Privacy Policy</NavLink>
-                        </li>
-                        <li className='footer-li-copy'>
-                            &copy; Gingham, 2025
-                        </li>
-                    </ul>
-                    <div>
-                        <img className='small-logo m-hidden' src="/site-images/gingham-logo-A_3.svg" alt="Gingham Logo"></img>
-                    </div>
+                            <li className="footer-li-copy">&copy; Gingham, 2025</li>
+                        </ul>
+                        <div>
+                            <img className="small-logo m-hidden" src="/site-images/gingham-logo-A_3.svg" alt="Gingham Logo" />
+                        </div>
                 </div>
             </div>
         </>
