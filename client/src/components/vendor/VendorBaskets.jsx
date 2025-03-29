@@ -129,30 +129,24 @@ function VendorBaskets({ vendorUserData }) {
     
     return (
         <div>
-            {!vendorUserData || !vendorUserData.vendor_id ? (
-                <div className="box-bounding">
-                    <VendorCreate />
+            <div className="box-bounding">
+                <h2>Today's Baskets:</h2>
+                    {/* <button className='btn-add nowrap'>Add A Basket for Today</button> */}
+                <br/>
+                <div className="flex flex-nowrap box-scroll-x">
+                    <VendorBasketsToday vendorId={vendorId} todaysMarketDays={nextMarketDays?.todaysMarketDays} />
                 </div>
-            ) : (
-                <div className="box-bounding">
-                    <h2>Today's Baskets:</h2>
-                        {/* <button className='btn-add nowrap'>Add A Basket for Today</button> */}
-                    <br/>
-                    <div className="flex flex-nowrap box-scroll-x">
-                        <VendorBasketsToday vendorId={vendorId} todaysMarketDays={nextMarketDays?.todaysMarketDays} />
-                    </div>
-                    <h2 className="margin-t-48 margin-b-16">Future Baskets:</h2>
-                    <div className="flex flex-nowrap box-scroll-x">
-                        {nextMarketDays?.futureMarketDays.length > 0 ? (
-                            nextMarketDays.futureMarketDays.map((marketDay, index) => (
-                                <VendorBasketCard key={index} vendorId={vendorId} marketDay={marketDay} weekDay={weekDay} />
-                            ))
-                        ) : (
-                            <p>No upcoming market days available.</p>
-                        )}
-                    </div>
+                <h2 className="margin-t-48 margin-b-16">Future Baskets:</h2>
+                <div className="flex flex-nowrap box-scroll-x">
+                    {nextMarketDays?.futureMarketDays.length > 0 ? (
+                        nextMarketDays.futureMarketDays.map((marketDay, index) => (
+                            <VendorBasketCard key={index} vendorId={vendorId} marketDay={marketDay} weekDay={weekDay} />
+                        ))
+                    ) : (
+                        <p>No upcoming market days available.</p>
+                    )}
                 </div>
-            )}
+            </div>
         </div>
     );
 }

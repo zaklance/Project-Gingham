@@ -38,7 +38,7 @@ function PrivacyPolicy() {
         <div className="box-bounding">
             <h1 className="title-med margin-b-24">Privacy Policy</h1>
             <div className="vendor-guide">
-            <aside className="toc">
+            <aside className="toc m-hidden">
                 <p className='margin-b-24'><strong className='text-blue'>Table of Contents</strong></p>
                 <ul>
                 {sections.map((section, index) => (
