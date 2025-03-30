@@ -17,8 +17,12 @@ function AdminStats() {
     const [top10VendorFavs, setTop10VendorFavs] = useState(null)
     const [top10Users, setTop10Users] = useState(null)
     const [top10Cities, setTop10Cities] = useState(null)
-    const [joinDates, setJoinDates] = useState({})
-    const [joinDatesFiltered, setJoinDatesFiltered] = useState({})
+    const [userJoinDates, setUserJoinDates] = useState({})
+    const [userJoinDatesFiltered, setUserJoinDatesFiltered] = useState({})
+    const [vendorUserJoinDates, setVendorUserJoinDates] = useState({})
+    const [vendorUserJoinDatesFiltered, setVendorUserJoinDatesFiltered] = useState({})
+    const [adminUserJoinDates, setAdminUserJoinDates] = useState({})
+    const [adminUserJoinDatesFiltered, setAdminUserJoinDatesFiltered] = useState({})
     const [baskets, setBaskets] = useState([]);
     const [selectedRangeGraph, setSelectedRangeGraph] = useState(7);
     const [selectedUserRangeGraph, setSelectedUserRangeGraph] = useState(7);
@@ -253,7 +257,6 @@ function AdminStats() {
             .catch(error => console.error('Error fetching vendor data:', error));
     }, []);
 
-
     useEffect(() => {
         fetch('/api/users/join-date-user-count', {
             method: 'GET',
@@ -263,7 +266,35 @@ function AdminStats() {
         })
             .then(response => response.json())
             .then(data => {
-                setJoinDates(data);
+                setUserJoinDates(data);
+            })
+            .catch(error => console.error('Error fetching market data:', error));
+    }, []);
+
+    useEffect(() => {
+        fetch('/api/vendor-users/join-date-user-count', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                setVendorUserJoinDates(data);
+            })
+            .catch(error => console.error('Error fetching market data:', error));
+    }, []);
+
+    useEffect(() => {
+        fetch('/api/admin-users/join-date-user-count', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                setAdminUserJoinDates(data);
             })
             .catch(error => console.error('Error fetching market data:', error));
     }, []);
@@ -403,6 +434,7 @@ function AdminStats() {
                     data: getDatesForRange(selectedRangeGraph).map(date => soldData[date] || 0),
                     borderColor: "#007BFF",
                     backgroundColor: "#6c7ae0",
+                    fill: true,
                     borderWidth: 2,
                     borderRadius: 2,
                     borderSkipped: false,
@@ -413,6 +445,7 @@ function AdminStats() {
                     data: getDatesForRange(selectedRangeGraph).map(date => unsoldData[date] || 0),
                     borderColor: "#ff6699",
                     backgroundColor: "#ff806b",
+                    fill: true,
                     borderWidth: 2,
                     borderRadius: 2,
                     borderSkipped: false,
@@ -433,7 +466,7 @@ function AdminStats() {
                         stacked: true,
                         min: 0,
                         ticks: {
-                            stepSize: 1
+                            // stepSize: 1
                         }
                     }
                 },
@@ -475,19 +508,51 @@ function AdminStats() {
     }
 
     useEffect(() => {
-        if(joinDates) {
-            setJoinDatesFiltered(processJoinDates(joinDates));
+        if(userJoinDates) {
+            setUserJoinDatesFiltered(processJoinDates(userJoinDates));
         }
-    }, [joinDates, selectedUserRangeGraph]);
+    }, [userJoinDates, selectedUserRangeGraph]);
+
+    useEffect(() => {
+        if(vendorUserJoinDates) {
+            setVendorUserJoinDatesFiltered(processJoinDates(vendorUserJoinDates));
+        }
+    }, [vendorUserJoinDates, selectedUserRangeGraph]);
+
+    useEffect(() => {
+        if(adminUserJoinDates) {
+            setAdminUserJoinDatesFiltered(processJoinDates(adminUserJoinDates));
+        }
+    }, [adminUserJoinDates, selectedUserRangeGraph]);
 
     const data = {
         labels: getDatesForRange(selectedUserRangeGraph),
         datasets: [
             {
                 label: 'New Users',
-                data: getDatesForRange(selectedUserRangeGraph).map(date => joinDatesFiltered[date] || 0),
+                data: getDatesForRange(selectedUserRangeGraph).map(date => userJoinDatesFiltered[date] || 0),
                 borderColor: "#00bda4",
                 backgroundColor: "#6cdd6e",
+                borderWidth: 2,
+                borderRadius: 2,
+                borderSkipped: false,
+                tension: 0.1,
+            },
+            {
+                label: 'New Vendor Users',
+                data: getDatesForRange(selectedUserRangeGraph).map(date => vendorUserJoinDatesFiltered[date] || 0),
+                borderColor: "#007BFF",
+                backgroundColor: "#80BBFF",
+                borderWidth: 2,
+                borderRadius: 2,
+                borderSkipped: false,
+                tension: 0.1,
+            },
+            {
+                label: 'New Admin Users',
+                data: getDatesForRange(selectedUserRangeGraph).map(date => adminUserJoinDatesFiltered[date] || 0),
+                borderColor: "#ff4b5a",
+                backgroundColor: "#ff7b8a",
                 borderWidth: 2,
                 borderRadius: 2,
                 borderSkipped: false,
@@ -509,9 +574,8 @@ function AdminStats() {
                 scales: {
                     x: { stacked: true },
                     y: {
-                        stacked: true,
                         min: 0,
-                        ticks: { stepSize: 1 }
+                        // ticks: { stepSize: 1 }
                     }
                 },
                 plugins: {
@@ -523,7 +587,7 @@ function AdminStats() {
         return () => {
             chartInstance.destroy();
         };
-    }, [joinDates, joinDatesFiltered, selectedUserRangeGraph]);
+    }, [userJoinDates, userJoinDatesFiltered, selectedUserRangeGraph]);
 
 
     return (

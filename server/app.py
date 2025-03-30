@@ -4958,32 +4958,6 @@ def basket_top_10_users():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-@app.route('/api/users/join-date-user-count', methods=['GET'])
-@jwt_required()
-def get_user_join_date_counts():
-    try:
-        join_date_user_counts = (
-            db.session.query(
-                func.date(User.join_date).label("join_date"),
-                func.count(User.id).label("user_count")
-            )
-            .filter(User.join_date.isnot(None))
-            .group_by(func.date(User.join_date))
-            .order_by(func.date(User.join_date).asc())
-            .all()
-        )
-
-        result = [
-            {"join_date": str(join_date), "user_count": user_count}
-            for join_date, user_count in join_date_user_counts
-        ]
-
-        return jsonify(result), 200
-
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        return jsonify({"error": str(e)}), 500
     
 @app.route('/api/users/top-10-cities', methods=['GET'])
 @jwt_required()
@@ -5061,6 +5035,84 @@ def get_top_favorited_vendors():
         return jsonify(result), 200
 
     except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/users/join-date-user-count', methods=['GET'])
+@jwt_required()
+def get_user_join_date_counts():
+    try:
+        join_date_user_counts = (
+            db.session.query(
+                func.date(User.join_date).label("join_date"),
+                func.count(User.id).label("user_count")
+            )
+            .filter(User.join_date.isnot(None))
+            .group_by(func.date(User.join_date))
+            .order_by(func.date(User.join_date).asc())
+            .all()
+        )
+
+        result = [
+            {"join_date": str(join_date), "user_count": user_count}
+            for join_date, user_count in join_date_user_counts
+        ]
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/vendor-users/join-date-user-count', methods=['GET'])
+@jwt_required()
+def get_vendor_user_join_date_counts():
+    try:
+        join_date_user_counts = (
+            db.session.query(
+                func.date(VendorUser.join_date).label("join_date"),
+                func.count(VendorUser.id).label("user_count")
+            )
+            .filter(VendorUser.join_date.isnot(None))
+            .group_by(func.date(VendorUser.join_date))
+            .order_by(func.date(VendorUser.join_date).asc())
+            .all()
+        )
+
+        result = [
+            {"join_date": str(join_date), "user_count": user_count}
+            for join_date, user_count in join_date_user_counts
+        ]
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/admin-users/join-date-user-count', methods=['GET'])
+@jwt_required()
+def get_admin_user_join_date_counts():
+    try:
+        join_date_user_counts = (
+            db.session.query(
+                func.date(AdminUser.join_date).label("join_date"),
+                func.count(AdminUser.id).label("user_count")
+            )
+            .filter(AdminUser.join_date.isnot(None))
+            .group_by(func.date(AdminUser.join_date))
+            .order_by(func.date(AdminUser.join_date).asc())
+            .all()
+        )
+
+        result = [
+            {"join_date": str(join_date), "user_count": user_count}
+            for join_date, user_count in join_date_user_counts
+        ]
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        print(f"Error: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/export-csv/users', methods=['GET'])
