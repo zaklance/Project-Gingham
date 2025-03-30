@@ -1327,6 +1327,16 @@ ul {
   color:#3b4752
 }
 
+.btn-search {
+  height: 48px;
+  padding-bottom: 6px;
+  font-weight: 600;
+  border-radius: 12px;
+  border: none;
+  background-color: #eee;
+  color: #3b4752
+}
+
 .x-btn {
   padding: 2px 8px;
   margin-top: 4px;
@@ -3718,6 +3728,7 @@ select:hover {
 
   .section-help {
     margin-left: 0px;
+    color: #ff7b8a
   }
 }
 
