@@ -17,6 +17,8 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const [isCurrent, setIsCurrent] = useState("");
     const [isVisible, setIsVisible] = useState("");
     const [isYearRound, setIsYearRound] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [matchingMarketId, setMatchingMarketId] = useState("");
     const [editMode, setEditMode] = useState(false);
     const [editDayMode, setEditDayMode] = useState(false);
     const [adminMarketData, setAdminMarketData] = useState(null);
@@ -25,10 +27,12 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const [newMapLink, setNewMapLink] = useState(null);
     const [image, setImage] = useState(null)
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showLocationDropdown, setShowLocationDropdown] = useState(false);
     const [status, setStatus] = useState('initial')
     const [showFilters, setShowFilters] = useState(false)
 
     const dropdownRef = useRef(null);
+    const locationDropdownRef = useRef(null);
     const { handlePopup } = useOutletContext();
 
     const onUpdateQuery = (event) => {
@@ -40,7 +44,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const onUpdateLocationQuery = (event) => {
         const value = event.target.value;
         setCityQuery(prev => prev);
-        setShowDropdown(value.trim().length > 0);
+        setShowLocationDropdown(value.trim().length > 0);
     };
 
     const filteredMarketsDropdown = markets.filter(market => {
@@ -90,7 +94,10 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     });
 
     const matchingMarket = markets.find(market => (market.name.toLowerCase() === query.toLowerCase()) && (market.city.toLowerCase().includes(cityQuery.toLowerCase()) && (market.state.toLowerCase() === stateQuery.toLowerCase())));
-    const matchingMarketId = matchingMarket ? matchingMarket.id : null;
+    
+    const handleSearchQuery = () => {
+        setMatchingMarketId(matchingMarket ? matchingMarket.id : null)
+    };
 
     const handleVisibilityChange = (value) => {
         setIsVisible(prev => (prev === value ? "" : value));
@@ -393,12 +400,25 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         }
     };
 
+    const handleClickOutsideLocationDropdown = (event) => {
+        if (locationDropdownRef.current && !locationDropdownRef.current.contains(event.target)) {
+            setShowLocationDropdown(false);
+        }
+    };
+
     useEffect(() => {
         document.addEventListener("mousedown", handleClickOutsideDropdown);
         return () => {
             document.removeEventListener("mousedown", handleClickOutsideDropdown);
         };
     }, [showDropdown]);
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutsideLocationDropdown);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutsideLocationDropdown);
+        };
+    }, [showLocationDropdown]);
 
     
     return(
@@ -409,9 +429,16 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                 <table className='margin-t-16'>
                     <tbody>
                         <tr>
-                            <td className='cell-title'>Search:</td>
+                            {/* <td className='cell-title'>Search:</td> */}
                             <td className='cell-text search-bar-markets'>
-                                <input id='search' className="search-bar-markets" type="text" placeholder="Search market names..." value={query} onChange={onUpdateQuery} />
+                                <input
+                                    id='search'
+                                    className="search-bar-markets"
+                                    type="text"
+                                    placeholder="Search market names..."
+                                    value={query}
+                                    onChange={onUpdateQuery}
+                                />
                                 {showDropdown && (
                                     <div className="dropdown-content" ref={dropdownRef}>
                                         {
@@ -425,14 +452,21 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                             </td>
                             <td className='cell-text search-bar-city'>
                                 <div className='flex-space-between'>
-                                    <input id='search' className="search-bar-city" type="text" placeholder="Search cities..." value={cityQuery} onChange={(e) => setCityQuery(e.target.value)} />
+                                    <input
+                                        id='search'
+                                        className="search-bar-city"
+                                        type="text"
+                                        placeholder="Search cities..."
+                                        value={cityQuery}
+                                        onChange={(e) => { setCityQuery(e.target.value); setShowLocationDropdown(true);}}
+                                    />
                                     <select
                                         key={stateQuery}
                                         className='select-state'
                                         style={{borderRadius: '8px'}}
                                         name="state"
                                         value={stateQuery || ''}
-                                        onChange={(e) => setStateQuery(e.target.value)}
+                                        onChange={(e) => {setStateQuery(e.target.value); setShowLocationDropdown(true);}}
                                     >
                                         <option value="">Select</option>
                                         {states.map(state => (
@@ -442,14 +476,15 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                         ))}
                                     </select>
                                 </div>
-                                <div className="dropdown-content">
-                                    {
-                                        (cityQuery || stateQuery) &&
-                                        filteredLocationDropdown.slice(0, 10).map(item => <div className="search-results-city" key={item.id} onClick={(e) => { setCityQuery(item.city); setStateQuery(item.state.trim());}}>
-                                            {item.city}, {item.state}
-                                        </div>)
-                                    }
-                                </div>
+                                {showLocationDropdown && (
+                                    <div className="dropdown-content" ref={locationDropdownRef}>
+                                            {(cityQuery || stateQuery) && (
+                                                filteredLocationDropdown.slice(0, 10).map(item => <div className="search-results-city" key={item.id} onClick={(e) => { setCityQuery(item.city); setStateQuery(item.state.trim()); setShowLocationDropdown(false);}}>
+                                                    {item.city}, {item.state}
+                                                </div>)
+                                            )}
+                                    </div>
+                                )}
                             </td>
                             <td>
                                 <button className='btn btn-filter' onClick={handleDropDownFilters}>&#9776;</button>
@@ -519,6 +554,9 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     </div>
                                 )}
                             </td>
+                            <td>
+                                <button className='btn btn-small btn-search' onClick={handleSearchQuery}>Search</button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -573,7 +611,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                             </table>
                                         </div>
                                         <div className='text-center margin-t-8'>
-                                            <button className='btn btn-file' onClick={(e) => setQuery(market.name)}>Select</button>
+                                            <button className='btn btn-file' onClick={(e) => setMatchingMarketId(market.id)}>Select</button>
                                         </div>
                                     </div>
                                 ))}
