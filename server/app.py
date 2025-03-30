@@ -1781,8 +1781,8 @@ def market_by_id(id):
                 market.maps_organizer = data['maps_organizer']
             if 'maps' in data:
                 maps_links = data['maps']
-                if not isinstance(maps_links, dict):
-                    return jsonify({'error': 'maps must be a dictionary'}), 400
+                if maps_links is not None and not isinstance(maps_links, dict):
+                    return jsonify({'error': 'maps must be a dictionary or null'}), 400
                 market.maps = maps_links
             if 'schedule' in data:
                 market.schedule = data['schedule']
