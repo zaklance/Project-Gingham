@@ -6,6 +6,7 @@ import VendorTeam from './VendorTeam';
 import VendorActiveVendor from './VendorActiveVendor';
 import VendorReviews from './VendorReviews';
 import VendorSalesPayout from './VendorSalesPayout';
+import VendorCreate from './VendorCreate';
 
 function VendorDashboard({ marketId }) {
     const [vendorId, setVendorId] = useState(null);
@@ -186,6 +187,11 @@ function VendorDashboard({ marketId }) {
             {activeTab === 'events' && <VendorEvents vendorId={vendorId} vendorUserData={vendorUserData} />}
             {activeTab === 'team' && <VendorTeam vendorId={vendorId} vendorUserData={vendorUserData} notifications={notifications} setNotifications={setNotifications} />}
             {activeTab === 'reviews' && <VendorReviews vendorId={vendorId} vendorUserData={vendorUserData} notifications={notifications} setNotifications={setNotifications} />}
+            {!vendorUserData || !vendorUserData.vendor_id && (
+                <div className="box-bounding">
+                    <VendorCreate />
+                </div>
+            )}
         </>
     );
 }
