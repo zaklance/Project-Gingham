@@ -330,7 +330,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     };
 
     const handleSaveChanges = async (event) => {
-        if (confirm(`Are you sure you want to edit ${adminMarketData.name}'s account?`)) {
+        if (confirm(`Are you sure you want to edit ${adminMarketData.name}'s information?`)) {
             try {
                 const response = await fetch(`/api/markets/${matchingMarketId}`, {
                     method: 'PATCH',
