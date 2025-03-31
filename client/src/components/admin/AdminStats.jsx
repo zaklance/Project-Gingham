@@ -17,11 +17,11 @@ function AdminStats() {
     const [top10VendorFavs, setTop10VendorFavs] = useState(null)
     const [top10Users, setTop10Users] = useState(null)
     const [top10Cities, setTop10Cities] = useState(null)
-    const [userJoinDates, setUserJoinDates] = useState({})
+    const [userJoinDates, setUserJoinDates] = useState([])
     const [userJoinDatesFiltered, setUserJoinDatesFiltered] = useState({})
-    const [vendorUserJoinDates, setVendorUserJoinDates] = useState({})
+    const [vendorUserJoinDates, setVendorUserJoinDates] = useState([])
     const [vendorUserJoinDatesFiltered, setVendorUserJoinDatesFiltered] = useState({})
-    const [adminUserJoinDates, setAdminUserJoinDates] = useState({})
+    const [adminUserJoinDates, setAdminUserJoinDates] = useState([])
     const [adminUserJoinDatesFiltered, setAdminUserJoinDatesFiltered] = useState({})
     const [baskets, setBaskets] = useState([]);
     const [selectedRangeGraph, setSelectedRangeGraph] = useState(7);
@@ -525,43 +525,44 @@ function AdminStats() {
         }
     }, [adminUserJoinDates, selectedUserRangeGraph]);
 
-    const data = {
-        labels: getDatesForRange(selectedUserRangeGraph),
-        datasets: [
-            {
-                label: 'New Users',
-                data: getDatesForRange(selectedUserRangeGraph).map(date => userJoinDatesFiltered[date] || 0),
-                borderColor: "#00bda4",
-                backgroundColor: "#6cdd6e",
-                borderWidth: 2,
-                borderRadius: 2,
-                borderSkipped: false,
-                tension: 0.1,
-            },
-            {
-                label: 'New Vendor Users',
-                data: getDatesForRange(selectedUserRangeGraph).map(date => vendorUserJoinDatesFiltered[date] || 0),
-                borderColor: "#007BFF",
-                backgroundColor: "#80BBFF",
-                borderWidth: 2,
-                borderRadius: 2,
-                borderSkipped: false,
-                tension: 0.1,
-            },
-            {
-                label: 'New Admin Users',
-                data: getDatesForRange(selectedUserRangeGraph).map(date => adminUserJoinDatesFiltered[date] || 0),
-                borderColor: "#ff4b5a",
-                backgroundColor: "#ff7b8a",
-                borderWidth: 2,
-                borderRadius: 2,
-                borderSkipped: false,
-                tension: 0.1,
-            }
-        ]
-    };
 
     useEffect(() => {
+        const data = {
+            labels: getDatesForRange(selectedUserRangeGraph),
+            datasets: [
+                {
+                    label: 'New Users',
+                    data: getDatesForRange(selectedUserRangeGraph).map(date => userJoinDatesFiltered[date] || 0),
+                    borderColor: "#00bda4",
+                    backgroundColor: "#6cdd6e",
+                    borderWidth: 2,
+                    borderRadius: 2,
+                    borderSkipped: false,
+                    tension: 0.1,
+                },
+                {
+                    label: 'New Vendor Users',
+                    data: getDatesForRange(selectedUserRangeGraph).map(date => vendorUserJoinDatesFiltered[date] || 0),
+                    borderColor: "#007BFF",
+                    backgroundColor: "#80BBFF",
+                    borderWidth: 2,
+                    borderRadius: 2,
+                    borderSkipped: false,
+                    tension: 0.1,
+                },
+                {
+                    label: 'New Admin Users',
+                    data: getDatesForRange(selectedUserRangeGraph).map(date => adminUserJoinDatesFiltered[date] || 0),
+                    borderColor: "#ff4b5a",
+                    backgroundColor: "#ff7b8a",
+                    borderWidth: 2,
+                    borderRadius: 2,
+                    borderSkipped: false,
+                    tension: 0.1,
+                }
+            ]
+        };
+        
         if (!chartUserRef.current) return;
 
         const ctx = chartUserRef.current.getContext("2d");
@@ -715,7 +716,11 @@ function AdminStats() {
                             <td className='table-center'>{userCount?.count}</td>
                             <td className='table-center'>{vendorUserCount?.count}</td>
                             <td className='table-center'>{adminUserCount?.count}</td>
-                            <td className='table-center'>{userCount?.count + vendorUserCount?.count + adminUserCount?.count}</td>
+                            <td className='table-center'>
+                              {userCount && vendorUserCount && adminUserCount
+                                ? userCount.count + vendorUserCount.count + adminUserCount.count
+                                : 0}
+                            </td>
                         </tr>
                         <tr>
                             <th>Banned</th>
