@@ -24,6 +24,8 @@ pyjwt = "==2.9.0"
 gunicorn = "*"
 flask-jwt-extended = "*"
 jwt = "*"
+celery = "*"
+redis = "*"
 
 [dev-packages]
 
