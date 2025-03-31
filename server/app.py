@@ -38,6 +38,15 @@ import subprocess
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from twilio.twiml.messaging_response import MessagingResponse
+from tasks import ( send_mjml_email_task, send_html_email_task,
+                         send_sendgrid_email_task, export_csv_users_task,
+                         export_csv_vendor_users_task, export_csv_markets_task,
+                         export_csv_vendors_task, export_csv_baskets_task,
+                         export_csv_products_task, generate_vendor_baskets_csv,
+                         )
+from celery.result import AsyncResult
+from celery_config import celery
+
 
 load_dotenv()
 
@@ -221,6 +230,11 @@ def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
 @app.route('/api/hello', methods=['GET'])
 def hello_world():
     return 'Hello World'
+
+@app.route('/api/task-status/<task_id>', methods=['GET'])
+def get_task_status(task_id):
+    task = AsyncResult(task_id, app=celery)
+    return jsonify({"task_id": task_id, "status": task.status, "result": task.result})
 
 @app.route('/api/uploads/<path:filename>')
 def uploaded_file(filename):
@@ -3012,59 +3026,8 @@ def send_mjml_email():
     subject = data.get('subject', '')
     email_address = data.get('email_address', '')
 
-    try:
-        # Run MJML CLI to compile MJML to HTML
-        result = subprocess.run(
-            ['mjml', '--stdin'],
-            input=mjml.encode(),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-
-        if result.returncode != 0:
-            return jsonify({'error': result.stderr.decode()}), 400
-
-        compiled_html = result.stdout.decode()
-
-        try: 
-            sender_email = os.getenv('EMAIL_USER')
-            password = os.getenv('EMAIL_PASS')
-            recipient_email = email_address
-
-            msg = MIMEMultipart()
-            msg['From'] = f'Gingham NYC <{sender_email}>'
-            msg['To'] = recipient_email
-            msg['Subject'] = subject
-
-            body = compiled_html
-            msg.attach(MIMEText(body, 'html'))
-
-            server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
-            # server = smtplib.SMTP('smtp.gmail.com', 587)
-            server.starttls()
-            server.login(sender_email, password)
-            # server.login("wosewick@gmail.com", "A1@s10*77#6O06L3")
-            # print("SMTP Server is unreachable")
-
-            try:
-                server.sendmail(sender_email, recipient_email, msg.as_string())
-                # server.sendmail("wosewick@gmail.com", recipient_email, msg.as_string())
-                server.quit()
-                return {"message": "Email sent successfully!"}, 201 
-            except smtplib.SMTPException as e:
-                print("SMTP Error:", e)
-                return jsonify({"error": f"SMTP Error: {str(e)}"}), 500
-            except Exception as e:
-                print("General Error:", e)
-                return jsonify({"error": f"General Error: {str(e)}"}), 500
-        
-        except Exception as e: 
-            print("Error occured:", str(e))
-            return jsonify({"error": str(e)}), 500
-
-    except Exception as e: 
-        print("Error occured:", str(e))
-        return jsonify({"error": str(e)}), 500
+    task = send_mjml_email_task.apply_async(args=[mjml, subject, email_address])
+    return jsonify({"message": "Email processing started", "task_id": task.id}), 202
 
 @app.route('/api/send-html-email', methods=['POST'])
 @jwt_required()
@@ -3074,41 +3037,8 @@ def send_html_email():
     subject = data.get('subject', '')
     email_address = data.get('emailAddress', '')
 
-    try: 
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        recipient_email = email_address
-
-        msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
-        msg['To'] = recipient_email
-        msg['Subject'] = subject
-
-        body = html
-        msg.attach(MIMEText(body, 'html'))
-
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
-        # server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(sender_email, password)
-        # server.login("wosewick@gmail.com", "A1@s10*77#6O06L3")
-        # print("SMTP Server is unreachable")
-
-        try:
-            server.sendmail(sender_email, recipient_email, msg.as_string())
-            # server.sendmail("wosewick@gmail.com", recipient_email, msg.as_string())
-            server.quit()
-            return {"message": "Email sent successfully!"}, 201 
-        except smtplib.SMTPException as e:
-            print("SMTP Error:", e)
-            return jsonify({"error": f"SMTP Error: {str(e)}"}), 500
-        except Exception as e:
-            print("General Error:", e)
-            return jsonify({"error": f"General Error: {str(e)}"}), 500
-    
-    except Exception as e: 
-        print("Error occured:", str(e))
-        return jsonify({"error": str(e)}), 500
+    task = send_html_email_task.apply_async(args=[html, subject, email_address])
+    return jsonify({"message": "Email processing started", "task_id": task.id}), 202
 
 @app.route('/api/sendgrid-email', methods=['POST'])
 @jwt_required()
@@ -3116,81 +3046,10 @@ def send_sendgrid_email():
     data = request.json
     html = data.get('html', '')
     subject = data.get('subject', '')
-    sender_email = os.getenv('EMAIL_USER')
-
-    try:
-        # Run MJML CLI to compile MJML to HTML
-        result = subprocess.run(
-            ['mjml', '--stdin'],
-            input=html.encode(),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-
-        if result.returncode != 0:
-            return jsonify({'error': result.stderr.decode()}), 400
-    
-    except Exception as e: 
-        print("Error occured:", str(e))
-        return jsonify({"error": str(e)}), 500
-
-    compiled_html = result.stdout.decode()
     user_type = request.args.get('user_type')
-    single_email = request.args.get('single_email')
 
-    if user_type == 'user':
-        try:
-            users = User.query.with_entities(User.email).all()
-            email_list = [user.email for user in users]
-            if not email_list:
-                return jsonify({"error": "No users found to send emails to."}), 404
-            
-        except Exception as e:
-            print("Database Error:", str(e))
-            return jsonify({"error": str(e)}), 500
-
-    if user_type == 'vendor':
-        try:
-            users = VendorUser.query.with_entities(VendorUser.email).all()
-            email_list = [user.email for user in users]
-            if not email_list:
-                return jsonify({"error": "No vendor users found to send emails to."}), 404
-            
-        except Exception as e:
-            print("Database Error:", str(e))
-            return jsonify({"error": str(e)}), 500
-
-    if user_type == 'admin':
-        try:
-            users = AdminUser.query.with_entities(AdminUser.email).all()
-            email_list = [user.email for user in users]
-            if not email_list:
-                return jsonify({"error": "No admin users found to send emails to."}), 404
-            
-        except Exception as e:
-            print("Database Error:", str(e))
-            return jsonify({"error": str(e)}), 500
-    
-    if single_email:
-        email_list = single_email
-
-    message = Mail(
-        from_email=f'Gingham NYC <{sender_email}>',
-        to_emails=email_list,
-        subject=subject,
-        html_content=compiled_html,
-        is_multiple=True
-        )
-    try:
-        sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
-        response = sg.send(message)
-        print(response.status_code)
-        print(response.body)
-        print(response.headers)
-        return jsonify({"message": "Email sent successfully", "status_code": response.status_code}), 202
-    except Exception as e:
-        print(e.message)
-        return jsonify({"error": str(e)}), 500
+    task = send_sendgrid_email_task.apply_async(args=[html, subject, user_type])
+    return jsonify({"message": "Bulk email process started", "task_id": task.id}), 202
     
 @app.route('/api/sendgrid-email-client', methods=['POST'])
 @jwt_required()
@@ -5111,253 +4970,94 @@ def get_admin_user_join_date_counts():
 
 @app.route('/api/export-csv/users', methods=['GET'])
 def export_csv_users():
-    try:
-        users = User.query.all()
-        csv_data = []
-
-        headers = ["id", "email", "first_name", "last_name", "phone", "address_1", "address_2", 
-                   "city", "state", "zipcode", "coordinates", "avatar_default", "status", 
-                   "login_count", "last_login", "join_date"]
-
-        for user in users:
-            csv_data.append([
-                user.id, user.email, user.first_name, user.last_name, user.phone,
-                user.address_1, user.address_2, user.city, user.state, user.zipcode,
-                user.coordinates, user.avatar_default, user.status,
-                user.login_count, user.last_login, user.join_date
-            ])
-
-        output = StringIO()
-        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
-        writer.writerow(headers)
-        writer.writerows(csv_data)
-
-        csv_content = output.getvalue()
-        output.close()
-
-        today_date = datetime.now().strftime("%Y-%m-%d")
-        filename = f"database_export_users_{today_date}.csv"
-
-        response = Response(csv_content, mimetype="text/csv")
-        response.headers["Content-Disposition"] = f"attachment; filename={filename}"
-
-        return jsonify({"csv": csv_content, "filename": filename})
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    task = export_csv_users_task.delay()
+    return jsonify({"message": "CSV generation started!", "task_id": task.id}), 202
 
 @app.route('/api/export-csv/vendor-users', methods=['GET'])
 def export_csv_vendor_users():
-    try:
-        vendor_users = VendorUser.query.all()
-        csv_data = []
-
-        headers = ["id", "email", "first_name", "last_name", "phone", 
-                   "vendor_id", "vendor_role", "login_count", "last_login", "join_date"]
-
-        for user in vendor_users:
-            csv_data.append([
-                user.id, user.email, user.first_name, user.last_name, user.phone,
-                json.dumps(user.vendor_id),
-                json.dumps(user.vendor_role),
-                user.login_count, user.last_login, user.join_date
-            ])
-
-        output = StringIO()
-        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
-        writer.writerow(headers)
-        writer.writerows(csv_data)
-
-        csv_content = output.getvalue()
-        output.close()
-
-        today_date = datetime.now().strftime("%Y-%m-%d")
-        filename = f"database_export_vendor_users_{today_date}.csv"
-
-        return jsonify({"csv": csv_content, "filename": filename})
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    task = export_csv_vendor_users_task.delay()
+    return jsonify({"message": "CSV generation started!", "task_id": task.id}), 202
 
 @app.route('/api/export-csv/markets', methods=['GET'])
 def export_csv_markets():
-    try:
-        markets = Market.query.all()
-        csv_data = []
-
-        headers = ["id", "name", "image_default", "location", "city",
-                   "state", "zipcode", "coordinates", "schedule", 
-                   "year_round", "season_start", "season_end", 
-                   "is_visible"]
-
-        for market in markets:
-            csv_data.append([
-                market.id, market.name, market.image_default, market.location,
-                market.city, market.state, market.zipcode, json.dumps(market.coordinates),
-                market.schedule, market.year_round, market.season_start,
-                market.season_end, market.is_visible
-            ])
-
-        output = StringIO()
-        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
-        writer.writerow(headers)
-        writer.writerows(csv_data)
-
-        csv_content = output.getvalue()
-        output.close()
-
-        today_date = datetime.now().strftime("%Y-%m-%d")
-        filename = f"database_export_markets_{today_date}.csv"
-
-        return jsonify({"csv": csv_content, "filename": filename})
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    task = export_csv_markets_task.delay()
+    return jsonify({"message": "CSV generation started!", "task_id": task.id}), 202
 
 @app.route('/api/export-csv/vendors', methods=['GET'])
 def export_csv_vendors():
-    try:
-        vendors = Vendor.query.all()
-        csv_data = []
-
-        headers = ["id", "name", "city", "state", "products", "bio", "website", "image_default"]
-
-        for vendor in vendors:
-            csv_data.append([
-                vendor.id, vendor.name, vendor.city, vendor.state,
-                json.dumps(vendor.products), vendor.bio, vendor.website, vendor.image_default
-            ])
-
-        output = StringIO()
-        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
-        writer.writerow(headers)
-        writer.writerows(csv_data)
-
-        csv_content = output.getvalue()
-        output.close()
-
-        today_date = datetime.now().strftime("%Y-%m-%d")
-        filename = f"database_export_vendors_{today_date}.csv"
-
-        return jsonify({"csv": csv_content, "filename": filename})
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
+    task = export_csv_vendors_task.delay()
+    return jsonify({"message": "CSV generation started!", "task_id": task.id}), 202
 
 @app.route('/api/export-csv/baskets', methods=['GET'])
 def export_csv_baskets():
-    try:
-        baskets = Basket.query.all()
-        csv_data = []
-
-        headers = ["id", "vendor_id", "market_day_id", "sale_date", "pickup_start", "pickup_end", 
-                   "user_id", "is_sold", "is_grabbed", "is_refunded", "price", "value", "fee_vendor"]
-
-        for basket in baskets:
-            csv_data.append([
-                basket.id, basket.vendor_id, basket.market_day_id, basket.sale_date, 
-                basket.pickup_start, basket.pickup_end, basket.user_id, 
-                basket.is_sold, basket.is_grabbed, basket.is_refunded, basket.price, 
-                basket.value, basket.fee_vendor
-            ])
-
-        output = StringIO()
-        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
-        writer.writerow(headers)
-        writer.writerows(csv_data)
-
-        csv_content = output.getvalue()
-        output.close()
-
-        today_date = datetime.now().strftime("%Y-%m-%d")
-        filename = f"database_export_baskets_{today_date}.csv"
-
-        return jsonify({"csv": csv_content, "filename": filename})
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    task = export_csv_baskets_task.delay()
+    return jsonify({"message": "CSV generation started!", "task_id": task.id}), 202
 
 @app.route('/api/export-csv/products', methods=['GET'])
 def export_csv_products():
-    try:
-        products = Product.query.all()
-        csv_data = []
+    task = export_csv_products_task.delay()
+    return jsonify({"message": "CSV generation started!", "task_id": task.id}), 202
 
-        headers = ["id", "product"]
-
-        for product in products:
-            csv_data.append([
-                product.id, product.product
-            ])
-
-        output = StringIO()
-        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
-        writer.writerow(headers)
-        writer.writerows(csv_data)
-
-        csv_content = output.getvalue()
-        output.close()
-
-        today_date = datetime.now().strftime("%Y-%m-%d")
-        filename = f"database_export_products_{today_date}.csv"
-
-        return jsonify({"csv": csv_content, "filename": filename})
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/export-csv/for-vendor/baskets', methods=['GET'])
-def export_csv_vendor_baskets():
-    vendor_id = request.args.get('vendor_id', type=int)
-    month = request.args.get('month', type=int)
-    year = request.args.get('year', type=int)
+@app.route('/api/export-csv/for-vendor/baskets', methods=['POST'])
+def queue_export_csv_vendor_baskets():
+    vendor_id = request.json.get('vendor_id')
+    month = request.json.get('month')
+    year = request.json.get('year')
     
     if not all([vendor_id, month, year]):
         return jsonify({'error': 'Missing required parameters'}), 400
     
-    # Query baskets for given vendor and month/year
-    baskets = Basket.query.filter(
-        Basket.vendor_id == vendor_id,
-        extract('month', Basket.sale_date) == month,
-        extract('year', Basket.sale_date) == year
-    ).all()
+    # Queue the Celery task
+    task = generate_vendor_baskets_csv.delay(vendor_id, month, year)
     
-    # Create CSV in memory
-    output = StringIO()
-    writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+    return jsonify({
+        'task_id': task.id,
+        'status': 'queued'
+    }), 202
+
+@app.route('/api/export-csv/status/<task_id>', methods=['GET'])
+def check_csv_export_status(task_id):
+    task_result = AsyncResult(task_id)
     
-    # Write headers
-    headers = ['ID', 'Sale Date', 'Pickup Start', 'Pickup End', 'Price', 
-              'Value', 'Fee', 'Is Sold', 'Is Grabbed', "Is Refunded"]
-    writer.writerow(headers)
+    if task_result.ready():
+        result = task_result.get()
+        if result.get('status') == 'success':
+            return jsonify({
+                'status': 'completed',
+                'download_url': f'/api/export-csv/download/{task_id}'
+            })
+        else:
+            return jsonify({
+                'status': 'failed',
+                'error': result.get('error')
+            }), 500
+    else:
+        return jsonify({
+            'status': 'processing'
+        })
+
+@app.route('/api/export-csv/download/<task_id>', methods=['GET'])
+def download_csv_export(task_id):
+    task_result = AsyncResult(task_id)
     
-    # Write data
-    for basket in baskets:
-        writer.writerow([
-            basket.id,
-            basket.sale_date.strftime('%Y-%m-%d') if basket.sale_date else '',
-            basket.pickup_start.strftime('%H:%M') if basket.pickup_start else '',
-            basket.pickup_end.strftime('%H:%M') if basket.pickup_end else '',
-            basket.price,
-            basket.value,
-            basket.fee_vendor,
-            'Yes' if basket.is_sold else 'No',
-            'Yes' if basket.is_grabbed else 'No',
-            'Yes' if basket.is_refunded else 'No'
-        ])
+    if not task_result.ready():
+        return jsonify({'error': 'Task not completed yet'}), 400
     
-    # Convert to BytesIO for send_file
-    mem = BytesIO()
-    mem.write(output.getvalue().encode('utf-8'))
-    mem.seek(0)
-    output.close()
+    result = task_result.get()
+    if result.get('status') != 'success':
+        return jsonify({'error': 'Task failed'}), 500
+    
+    file_path = result.get('file_path')
+    filename = result.get('filename')
+    
+    if not os.path.exists(file_path):
+        return jsonify({'error': 'File not found'}), 404
     
     return send_file(
-        mem,
+        file_path,
         mimetype='text/csv',
         as_attachment=True,
-        download_name=f'gingham_vendor-statement_{year}-{month:02d}.csv'
+        download_name=filename
     )
 
 @app.route('/api/export-pdf/for-vendor/baskets', methods=['GET'])
