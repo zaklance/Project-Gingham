@@ -49,6 +49,7 @@ from celery.result import AsyncResult
 from celery_config import celery
 
 
+
 load_dotenv()
 
 app = Flask(__name__, static_folder='public')
@@ -156,7 +157,7 @@ def handle_payment_success(payment_intent):
     import json
     try:
         basket_data = json.loads(baskets)
-    except json.JSONDecodeError:
+    except json.JSONDecordeError:
         basket_data = []
 
     purchased_items = [
@@ -3981,7 +3982,7 @@ def notify_me_for_more_baskets():
             elif isinstance(vendor_data, str):
                 try:
                     vendor_dict = json.loads(vendor_data)  # Convert JSON string to dict
-                except json.JSONDecodeError:
+                except json.JSONDecordeError:
                     print(f"Invalid JSON format in vendor_id for VendorUser ID {vendor_user.id}")
                     continue  # Skip this record
             else:
