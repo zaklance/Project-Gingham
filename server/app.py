@@ -156,7 +156,7 @@ def handle_payment_success(payment_intent):
     import json
     try:
         basket_data = json.loads(baskets)
-    except json.JSONPyJWTError:
+    except json.JSONDecodeError:
         basket_data = []
 
     purchased_items = [
@@ -3981,7 +3981,7 @@ def notify_me_for_more_baskets():
             elif isinstance(vendor_data, str):
                 try:
                     vendor_dict = json.loads(vendor_data)  # Convert JSON string to dict
-                except json.JSONPyJWTError:
+                except json.JSONDecodeError:
                     print(f"Invalid JSON format in vendor_id for VendorUser ID {vendor_user.id}")
                     continue  # Skip this record
             else:
