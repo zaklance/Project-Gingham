@@ -114,8 +114,6 @@ function VendorSalesHistory({ baskets, vendorId }) {
     const handleDateChangeTable = (event) => {
         setSelectedRangeTable(event.target.value);
     };
-    
-    console.log(baskets)
 
     useEffect(() => {
         const ctx = document.getElementById(`chart-baskets`);

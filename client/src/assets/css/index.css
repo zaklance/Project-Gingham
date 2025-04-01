@@ -382,6 +382,10 @@ article {
   margin-left: 24px;
 }
 
+.margin-l-40 {
+  margin-left: 40px;
+}
+
 .margin-l-48 {
   margin-left: 48px;
 }
@@ -464,6 +468,10 @@ article {
 
 .padding-12 {
   padding: 12px;
+}
+
+.padding-18-32 {
+  padding: 18px 32px;
 }
 
 .padding-96 {
