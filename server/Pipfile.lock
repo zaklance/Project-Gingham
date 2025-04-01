@@ -1537,7 +1537,7 @@
                 "sha256:0a4ac55a5820789d87e297727d229866c9650f6521b64206413c4fbada24d95b",
                 "sha256:c8dd92cc0d6425a97c18fbb9d1954e5ff92c1ca881a309c45f06ebc0b79058e5"
             ],
-            "markers": "python_version >= '3.7'",
+            "markers": "python_version >= '3.8'",
             "version": "==4.13.0"
         },
         "tzdata": {
