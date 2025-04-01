@@ -1,5 +1,5 @@
 aiohappyeyeballs==2.6.1
-aiohttp==3.11.14
+aiohttp==3.11.15
 aiohttp-retry==2.9.1
 aiosignal==1.3.2
 alembic==1.15.2
@@ -8,7 +8,8 @@ attrs==25.3.0
 bcrypt==4.3.0
 billiard==4.2.1
 blinker==1.9.0
-celery==5.4.0
+cachelib==0.13.0
+celery==5.5.0
 certifi==2025.1.31
 cffi==1.17.1
 charset-normalizer==3.4.1
@@ -23,6 +24,7 @@ Faker==37.1.0
 filelock==3.18.0
 Flask==3.1.0
 Flask-Bcrypt==1.0.1
+Flask-Caching==2.3.1
 flask-cors==5.0.1
 Flask-DotEnv==0.1.2
 Flask-JWT-Extended==4.7.1
@@ -40,9 +42,9 @@ jwt==1.3.1
 kombu==5.5.2
 Mako==1.3.9
 MarkupSafe==3.0.2
-multidict==6.2.0
+multidict==6.3.0
 packaging==24.2
-pillow==11.1.0
+pillow==11.2.0
 prompt_toolkit==3.0.50
 propcache==0.3.1
 psycopg2-binary==2.9.9

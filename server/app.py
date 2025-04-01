@@ -19,6 +19,7 @@ from sqlalchemy.orm import joinedload, Session
 from sqlalchemy.dialects.postgresql import JSONB
 from flask_migrate import Migrate
 from flask_cors import CORS
+from flask_caching import Cache
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -51,6 +52,8 @@ from celery_config import celery
 load_dotenv()
 
 app = Flask(__name__, static_folder='public')
+
+cache = Cache(app, config={"CACHE_TYPE": "simple"})
 
 STRIPE_WEBHOOK_SECRET = "whsec_0fd1e4d74c18b3685bd164fe766c292f8ec7a73a887dd83f598697be422a2875"
 STRIPE_ALLOWED_IPS = {
@@ -2129,6 +2132,7 @@ def vendor_review_by_id(id):
         return {}, 204
 
 @app.route('/api/top-market-reviews', methods=['GET'])
+@cache.cached(timeout=600)
 def get_top_market_reviews():
     # Subquery: Calculate total vote_up count per review_id
     vote_up_counts = (
@@ -2170,6 +2174,7 @@ def get_top_market_reviews():
     return jsonify(response_data)
 
 @app.route('/api/top-vendor-reviews', methods=['GET'])
+@cache.cached(timeout=600)
 def get_top_vendor_reviews():
     # Subquery: Calculate total vote_up count per review_id
     vote_up_counts = (
@@ -4729,6 +4734,7 @@ def vendor_count():
 
 @app.route('/api/baskets/count', methods=['GET'])
 @jwt_required()
+@cache.cached(timeout=600)
 def basket_count():
     try:
         count = db.session.query(Basket).count()
@@ -4752,6 +4758,7 @@ def basket_count():
 
 @app.route('/api/baskets/top-10-markets', methods=['GET'])
 @jwt_required()
+@cache.cached(timeout=600)
 def basket_top_10_markets():
     try:
         market_counts = (
@@ -4772,6 +4779,7 @@ def basket_top_10_markets():
 
 @app.route('/api/baskets/top-10-vendors', methods=['GET'])
 @jwt_required()
+@cache.cached(timeout=600)
 def basket_top_10_vendors():
     try:
         vendor_counts = (
@@ -4791,6 +4799,7 @@ def basket_top_10_vendors():
 
 @app.route('/api/baskets/top-10-users', methods=['GET'])
 @jwt_required()
+@cache.cached(timeout=600)
 def basket_top_10_users():
     try:
         top_users = db.session.query(
@@ -4814,6 +4823,7 @@ def basket_top_10_users():
     
 @app.route('/api/users/top-10-cities', methods=['GET'])
 @jwt_required()
+@cache.cached(timeout=600)
 def top_10_cities():
     try:
         city_state_counts = (
@@ -4839,6 +4849,7 @@ def top_10_cities():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/market-favorites/top-10-markets', methods=['GET'])
+@cache.cached(timeout=600)
 def get_top_favorited_markets():
     try:
         top_markets = (
@@ -4865,6 +4876,7 @@ def get_top_favorited_markets():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/vendor-favorites/top-10-vendors', methods=['GET'])
+@cache.cached(timeout=600)
 def get_top_favorited_vendors():
     try:
         top_vendors = (
@@ -4892,6 +4904,7 @@ def get_top_favorited_vendors():
 
 @app.route('/api/users/join-date-user-count', methods=['GET'])
 @jwt_required()
+@cache.cached(timeout=600)
 def get_user_join_date_counts():
     try:
         join_date_user_counts = (
@@ -4918,6 +4931,7 @@ def get_user_join_date_counts():
 
 @app.route('/api/vendor-users/join-date-user-count', methods=['GET'])
 @jwt_required()
+@cache.cached(timeout=600)
 def get_vendor_user_join_date_counts():
     try:
         join_date_user_counts = (
@@ -4944,6 +4958,7 @@ def get_vendor_user_join_date_counts():
 
 @app.route('/api/admin-users/join-date-user-count', methods=['GET'])
 @jwt_required()
+@cache.cached(timeout=600)
 def get_admin_user_join_date_counts():
     try:
         join_date_user_counts = (
@@ -4998,7 +5013,34 @@ def export_csv_products():
     task = export_csv_products_task.delay()
     return jsonify({"message": "CSV generation started!", "task_id": task.id}), 202
 
-@app.route('/api/export-csv/for-vendor/baskets', methods=['POST'])
+@app.route('/api/export-csv/<route>/status/<task_id>', methods=['GET'])
+def check_export_status(task_id, route):
+    if route == 'users':
+        task_result = export_csv_users_task.AsyncResult(task_id)
+    if route == 'vendor-users':
+        task_result = export_csv_vendor_users_task.AsyncResult(task_id)
+    if route == 'markets':
+        task_result = export_csv_markets_task.AsyncResult(task_id)
+    if route == 'vendors':
+        task_result = export_csv_vendors_task.AsyncResult(task_id)
+    if route == 'baskets':
+        task_result = export_csv_baskets_task.AsyncResult(task_id)
+    if route == 'products':
+        task_result = export_csv_products_task.AsyncResult(task_id)
+    
+    if task_result.ready():
+        result = task_result.get()
+        if 'error' in result:
+            return jsonify({'status': 'failed', 'error': result['error']}), 500
+        return jsonify({
+            'status': 'completed',
+            'csv': result['csv'],
+            'filename': result['filename']
+        })
+    else:
+        return jsonify({'status': 'processing'}), 202
+
+@app.route('/api/export-csv/vendor-baskets/baskets', methods=['POST'])
 def queue_export_csv_vendor_baskets():
     vendor_id = request.json.get('vendor_id')
     month = request.json.get('month')
@@ -5015,40 +5057,46 @@ def queue_export_csv_vendor_baskets():
         'status': 'queued'
     }), 202
 
-@app.route('/api/export-csv/status/<task_id>', methods=['GET'])
+@app.route('/api/export-csv/vendor-baskets/status/<task_id>', methods=['GET'])
 def check_csv_export_status(task_id):
-    task_result = AsyncResult(task_id)
+    # task_result = AsyncResult(task_id)
+    task_result = generate_vendor_baskets_csv.AsyncResult(task_id)
     
     if task_result.ready():
         result = task_result.get()
         if result.get('status') == 'success':
             return jsonify({
                 'status': 'completed',
-                'download_url': f'/api/export-csv/download/{task_id}'
+                'file_path': result.get('file_path'),
+                'download_url': f'/api/export-csv/vendor-baskets/download/{task_id}'
             })
-        else:
+        elif result.get('error'):
             return jsonify({
                 'status': 'failed',
                 'error': result.get('error')
             }), 500
+        else:
+            return jsonify({'status': 'failed', 'error': 'Unknown error'}), 500
     else:
-        return jsonify({
-            'status': 'processing'
-        })
+        return jsonify({'status': 'processing'})
 
-@app.route('/api/export-csv/download/<task_id>', methods=['GET'])
+@app.route('/api/export-csv/vendor-baskets/download/<task_id>', methods=['GET'])
 def download_csv_export(task_id):
-    task_result = AsyncResult(task_id)
-    
+    # task_result = AsyncResult(task_id)
+    task_result = generate_vendor_baskets_csv.AsyncResult(task_id)
     if not task_result.ready():
         return jsonify({'error': 'Task not completed yet'}), 400
     
     result = task_result.get()
     if result.get('status') != 'success':
-        return jsonify({'error': 'Task failed'}), 500
+        return jsonify({'error': result.get('error', 'Task failed')}), 500
     
     file_path = result.get('file_path')
     filename = result.get('filename')
+
+    if not os.path.exists(file_path):
+        print(f"File not found: {file_path}")
+        return jsonify({'error': 'File not found'}), 404
     
     if not os.path.exists(file_path):
         return jsonify({'error': 'File not found'}), 404
