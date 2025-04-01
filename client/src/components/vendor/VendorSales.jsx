@@ -55,7 +55,6 @@ function VendorSales() {
                 .then(response => response.json())
                 .then(data => {
                     setBaskets(data)
-                    organizeByMonth(data);
                 })
                 .catch(error => console.error('Error fetching baskets', error));
         }

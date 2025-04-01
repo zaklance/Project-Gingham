@@ -27,6 +27,8 @@ function AdminStats() {
     const [selectedRangeGraph, setSelectedRangeGraph] = useState(7);
     const [selectedUserRangeGraph, setSelectedUserRangeGraph] = useState(7);
     const [userData, setUserData] = useState(null);
+    const [isExporting, setIsExporting] = useState(false);
+    const [exportMessaage, setExportMessage] = useState("");
 
     const chartRef = useRef();
     const chartUserRef = useRef();
@@ -301,6 +303,8 @@ function AdminStats() {
 
     const handleDownloadCSV = async (route) => {
         try {
+            setIsExporting(prev => ({ ...prev, [route]: true }));
+            // Step 1: Start the CSV generation task
             const response = await fetch(`/api/export-csv/${route}`, {
                 method: 'GET',
                 headers: {
@@ -310,30 +314,73 @@ function AdminStats() {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to download file');
+                throw new Error('Failed to start CSV generation');
             }
 
-            const json = await response.json();
+            const data = await response.json();
+            const taskId = data.task_id;
 
-            if (!json.csv) {
-                throw new Error('Invalid CSV data received');
-            }
+            // Step 2: Poll for task completion
+            const checkAndDownload = async () => {
+                const statusResponse = await fetch(`/api/export-csv/${route}/status/${taskId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
 
-            const filename = json.filename || "export.csv";
-            const csvData = json.csv;
+                if (!statusResponse.ok) {
+                    throw new Error('Failed to check export status');
+                }
 
-            const blob = new Blob([csvData], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
+                const statusData = await statusResponse.json();
 
-            const a = document.createElement('a');
-            a.href = url;
-            a.setAttribute('download', filename);
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
+                if (statusData.status === 'completed') {
+                    // Download the CSV when ready
+                    const csvData = statusData.csv;
+                    const filename = statusData.filename;
+
+                    const blob = new Blob([csvData], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.setAttribute('download', filename);
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+
+                    return true; // Task complete
+                } else if (statusData.status === 'failed') {
+                    throw new Error(statusData.error || 'CSV generation failed');
+                }
+
+                return false; // Still processing
+            };
+
+            // Show loading state to user
+            setExportMessage('Generating CSV...');
+
+            // Poll every 2 seconds until the file is ready
+            const pollInterval = setInterval(async () => {
+                try {
+                    const isComplete = await checkAndDownload();
+                    if (isComplete) {
+                        clearInterval(pollInterval);
+                        setIsExporting(prev => ({ ...prev, [route]: false }));
+                        setExportMessage('');
+                    }
+                } catch (error) {
+                    clearInterval(pollInterval);
+                    setIsExporting(prev => ({ ...prev, [route]: false }));
+                    setExportMessage('');
+                    console.error('Error checking export status:', error);
+                }
+            }, 2000);
+
         } catch (error) {
             console.error('Error downloading file:', error);
+            setIsExporting(prev => ({ ...prev, [route]: false }));
         }
     };
 
@@ -598,20 +645,53 @@ function AdminStats() {
                 <>
                     <div className='box-bounding'>
                         <h2>Export Database</h2>
-                        <div className='flex-space-between flex-wrap'>
+                        <div className='flex-space-between flex-center-align flex-wrap'>
                             <table>
                                 <tbody>
                                     <tr>
                                         <td><p>Export Users table as CSV &emsp;</p></td>
-                                        <td><button className='btn btn-add' onClick={() => handleDownloadCSV("users")}>Download</button></td>
+                                        {isExporting['users'] ? (
+                                            <td className='padding-18-32'>
+                                                <PulseLoader
+                                                    color={'#ff806b'}
+                                                    size={10}
+                                                    aria-label="Loading Spinner"
+                                                    data-testid="loader"
+                                                />
+                                            </td>
+                                        ) : (
+                                            <td><button className='btn btn-add' onClick={() => handleDownloadCSV("users")}>Download</button></td>
+                                        )}
                                     </tr>
                                     <tr>
                                         <td><p>Export Markets table as CSV &emsp;</p></td>
-                                        <td><button className='btn btn-add' onClick={() => handleDownloadCSV('markets')}>Download</button></td>
+                                        {isExporting['markets'] ? (
+                                            <td className='padding-18-32'>
+                                                <PulseLoader
+                                                    color={'#ff806b'}
+                                                    size={10}
+                                                    aria-label="Loading Spinner"
+                                                    data-testid="loader"
+                                                />
+                                            </td>
+                                        ) : (
+                                            <td><button className='btn btn-add' onClick={() => handleDownloadCSV('markets')}>Download</button></td>
+                                        )}
                                     </tr>
                                     <tr>
                                         <td><p>Export Vendors table as CSV &emsp;</p></td>
-                                        <td><button className='btn btn-add' onClick={() => handleDownloadCSV('vendors')}>Download</button></td>
+                                        {isExporting['vendors'] ? (
+                                            <td className='padding-18-32'>
+                                                <PulseLoader
+                                                    color={'#ff806b'}
+                                                    size={10}
+                                                    aria-label="Loading Spinner"
+                                                    data-testid="loader"
+                                                />
+                                            </td>
+                                        ) : (
+                                            <td><button className='btn btn-add' onClick={() => handleDownloadCSV('vendors')}>Download</button></td>
+                                        )}
                                     </tr>
                                 </tbody>
                             </table>
@@ -619,15 +699,48 @@ function AdminStats() {
                                 <tbody>
                                     <tr>
                                         <td><p>Export Vendor Users table as CSV &emsp;</p></td>
-                                        <td><button className='btn btn-add' onClick={() => handleDownloadCSV("vendor-users")}>Download</button></td>
+                                        {isExporting['vendor-users'] ? (
+                                            <td className='padding-18-32'>
+                                                <PulseLoader
+                                                    color={'#ff806b'}
+                                                    size={10}
+                                                    aria-label="Loading Spinner"
+                                                    data-testid="loader"
+                                                />
+                                            </td>
+                                        ) : (
+                                            <td><button className='btn btn-add' onClick={() => handleDownloadCSV("vendor-users")}>Download</button></td>
+                                        )}
                                     </tr>
                                     <tr>
                                         <td><p>Export Baskets table as CSV &emsp;</p></td>
-                                        <td><button className='btn btn-add' onClick={() => handleDownloadCSV("baskets")}>Download</button></td>
+                                        {isExporting['baskets'] ? (
+                                            <td className='padding-18-32'>
+                                                <PulseLoader
+                                                    color={'#ff806b'}
+                                                    size={10}
+                                                    aria-label="Loading Spinner"
+                                                    data-testid="loader"
+                                                />
+                                            </td>
+                                        ) : (
+                                            <td><button className='btn btn-add' onClick={() => handleDownloadCSV("baskets")}>Download</button></td>
+                                        )}
                                     </tr>
                                     <tr>
                                         <td><p>Export Products table as CSV &emsp;</p></td>
-                                        <td><button className='btn btn-add' onClick={() => handleDownloadCSV("products")}>Download</button></td>
+                                        {isExporting['products'] ? (
+                                            <td className='padding-18-32'>
+                                                <PulseLoader
+                                                    color={'#ff806b'}
+                                                    size={10}
+                                                    aria-label="Loading Spinner"
+                                                    data-testid="loader"
+                                                />
+                                            </td>
+                                        ) : (
+                                            <td><button className='btn btn-add' onClick={() => handleDownloadCSV("products")}>Download</button></td>
+                                        )}
                                     </tr>
                                 </tbody>
                             </table>
