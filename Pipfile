@@ -4,6 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+celery = "*"
+redis = "*"
+flask-caching = "*"
 
 [dev-packages]
 
