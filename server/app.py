@@ -54,6 +54,7 @@ from tasks import ( send_mjml_email_task, send_html_email_task,
                          )
 from celery.result import AsyncResult
 from celery_config import celery
+import base64
 
 
 load_dotenv()
@@ -302,6 +303,23 @@ def upload_file():
                 # Process and resize image for non-SVG files
                 image_bytes = file.read()
                 task = process_image.delay(image_bytes, original_filename, upload_folder)
+
+                # Poll Celery to get processed image
+                import time
+                task_result = None
+                while not task_result:
+                    task_state = task.state
+                    if task_state == 'SUCCESS':
+                        task_result = task.get()
+                    elif task_state == 'FAILURE':
+                        return {'error': 'Image processing failed'}, 500
+                    time.sleep(2)  # Wait before checking again
+
+                # Decode processed image and save it
+                processed_image_bytes = base64.b64decode(task_result['image_data'])
+                file_path = os.path.join(upload_folder, task_result['filename'])
+                with open(file_path, "wb") as f:
+                    f.write(processed_image_bytes)
 
                 # image = Image.open(file)
                 # image = resize_image(image)

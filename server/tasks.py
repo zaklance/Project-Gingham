@@ -30,6 +30,7 @@ from celery.schedules import crontab
 from sqlalchemy.orm import Session
 from sqlalchemy import event
 from PIL import Image
+import base64
 
 serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 
@@ -782,41 +783,37 @@ def generate_vendor_baskets_csv(vendor_id, month, year):
             }
 
 @celery.task
-def process_image(image_bytes, filename, upload_folder, max_size=MAX_SIZE, resolution=MAX_RES):
-    """Resizes and saves an image asynchronously."""
-    from app import app
-    with app.app_context():
-        image = Image.open(BytesIO(image_bytes))
-        image.thumbnail(resolution, Image.LANCZOS)
+def process_image(image_bytes, filename, max_size=MAX_SIZE, resolution=MAX_RES):
+    """Resizes and optimizes an image asynchronously and returns it as bytes."""
+    image = Image.open(BytesIO(image_bytes))
+    image.thumbnail(resolution, Image.LANCZOS)
 
+    temp_output = BytesIO()
+    
+    if image.format == 'PNG':
+        image.save(temp_output, format='PNG', optimize=True)
+    else:
+        image.save(temp_output, format='JPEG', quality=50)
+
+    file_size = temp_output.tell()
+    step = 0.9
+
+    while file_size > max_size:
         temp_output = BytesIO()
-        
         if image.format == 'PNG':
             image.save(temp_output, format='PNG', optimize=True)
         else:
-            image.save(temp_output, format='JPEG', quality=50)
-
+            quality = max(10, int(85 * step))
+            image.save(temp_output, format='JPEG', quality=quality)
         file_size = temp_output.tell()
-        step = 0.9
+        step -= 0.05
 
-        while file_size > max_size:
-            temp_output = BytesIO()
-            if image.format == 'PNG':
-                image.save(temp_output, format='PNG', optimize=True)
-            else:
-                quality = max(10, int(85 * step))
-                image.save(temp_output, format='JPEG', quality=quality)
-            file_size = temp_output.tell()
-            step -= 0.05
+    temp_output.seek(0)
 
-        temp_output.seek(0)
+    # Convert image to Base64 to send back to Flask
+    encoded_image = base64.b64encode(temp_output.getvalue()).decode('utf-8')
 
-        # Save the processed image to disk
-        file_path = os.path.join(upload_folder, filename)
-        with open(file_path, "wb") as f:
-            f.write(temp_output.getvalue())
-
-        return file_path
+    return {"filename": filename, "image_data": encoded_image}
             
 ### Configure Celery with scheduled tasks ###
 celery.conf.update(
