@@ -434,6 +434,7 @@ def send_mjml_email_task(mjml, subject, compiled_html, recipient_email):
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
         smtp = os.getenv('EMAIL_SMTP')
+        port = os.getenv('EMAIL_PORT')
 
         msg = MIMEMultipart()
         msg['From'] = f'Gingham NYC <{sender_email}>'
@@ -441,7 +442,7 @@ def send_mjml_email_task(mjml, subject, compiled_html, recipient_email):
         msg['Subject'] = subject
         msg.attach(MIMEText(compiled_html, 'html'))
 
-        server = smtplib.SMTP(smtp, 587)
+        server = smtplib.SMTP(smtp, port)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, recipient_email, msg.as_string())
@@ -458,6 +459,8 @@ def send_html_email_task(html, subject, recipient_email):
     try: 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
+        port = os.getenv('EMAIL_PORT')
 
         msg = MIMEMultipart()
         msg['From'] = f'Gingham NYC <{sender_email}>'
@@ -467,7 +470,7 @@ def send_html_email_task(html, subject, recipient_email):
         body = html
         msg.attach(MIMEText(body, 'html'))
 
-        server = smtplib.SMTP(smtp, 587)
+        server = smtplib.SMTP(smtp, port)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, recipient_email, msg.as_string())

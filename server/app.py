@@ -2948,14 +2948,13 @@ def send_sendgrid_email_client():
 
     try:
         sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
-        print(os.environ.get('SENDGRID_API_KEY'))
         response = sg.send(message)
         print(response.status_code)
         print(response.body)
         print(response.headers)
         return jsonify({"message": "Email sent successfully", "status_code": response.status_code}), 202
     except Exception as e:
-        print(e.message)
+        print(str(e))
         return jsonify({"error": str(e)}), 500
 
 @app.route("/api/sms", methods=['GET', 'POST'])
