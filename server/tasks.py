@@ -5,7 +5,7 @@ import json
 import subprocess
 from io import StringIO, BytesIO
 from celery_config import celery
-from celery import shared_task
+from celery import Celery
 from flask import jsonify, send_file
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -17,26 +17,423 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
                     Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
                     UserIssue, bcrypt )
+from utils.emails import ( send_contact_email, send_user_password_reset_email, 
+                          send_vendor_password_reset_email, send_admin_password_reset_email, 
+                          send_user_confirmation_email, send_vendor_confirmation_email, 
+                          send_admin_confirmation_email )
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from sqlalchemy.sql.expression import extract
 from datetime import datetime
 
-@celery.task(name="tasks.add")  # Explicit name to avoid import issues
-def add(x, y):
-    return x + y
+serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 
 @celery.task
-def send_mjml_email_task(mjml, subject, recipient_email):
+def contact_task(name, email, subject, message):
+    try:
+        print(f"Processing contact request - Name: {name}, Email: {email}, Subject: {subject}, Message: {message}")
+
+        result = send_contact_email(name, email, subject, message)
+
+        if "error" in result:
+            return {"error": result["error"]}
+
+        return {"message": result["message"]}
+
+    except Exception as e:
+        return {"error": f"An unexpected error occurred: {str(e)}"}
+
+@celery.task
+def user_signup_task(data):
+    from app import app
+    with app.app_context():
+        try:
+            email = data.get('email')
+            password = data.get('password')
+
+            if not email or not password:
+                return {'error': 'Email and password are required'}
+
+            existing_user = User.query.filter_by(email=email).first()
+            if existing_user:
+                return {'error': 'This email is already registered. Please log in or use a different email.'}
+
+            # Send user confirmation email
+            result = send_user_confirmation_email(email, data)
+            if 'error' in result:
+                return {"error": result["error"]}
+
+            return {"message": result["message"]}
+
+        except Exception as e:
+            return {"error": str(e)}
+
+@celery.task
+def confirm_user_email_task(token, request_method):
+    from app import app
+    with app.app_context():
+        try:
+            # Decode the token to get user data
+            data = serializer.loads(token, salt='user-confirmation-salt', max_age=86400)
+            website = os.environ['SITE_URL']
+
+            user_id = data.get('user_id')  # Extract user ID
+            email = data.get('email')  # Extract new email
+
+            if request_method == 'GET':
+                # Return a redirect response (or perform another action as needed)
+                return {'redirect': f'{website}/user/confirm-email/{token}'}
+
+            if request_method == 'POST':
+                existing_user = User.query.get(user_id)
+
+                if existing_user:
+                    # Check if the email is already taken by another user
+                    if User.query.filter(User.email == email, User.id != user_id).first():
+                        return {"error": "This email is already in use by another account."}
+
+                    existing_user.email = email
+                    db.session.commit()
+
+                    return {
+                        "message": "Email updated successfully. Verification required for the new email.",
+                        "isNewUser": False,
+                        "user_id": existing_user.id,
+                        "email": existing_user.email
+                    }
+
+                if "password" not in data:
+                    return {"error": "Password is required to create a new account."}
+
+                # Create a new user (only if password and required fields exist)
+                new_user = User(
+                    email=email,
+                    password=data['password'],
+                    first_name=data.get('first_name', ""),
+                    last_name=data.get('last_name', ""),
+                    phone=data.get('phone', ""),
+                    address_1=data.get('address1', ""),
+                    address_2=data.get('address2', ""),
+                    city=data.get('city', ""),
+                    state=data.get('state', ""),
+                    zipcode=data.get('zipcode', ""),
+                    coordinates=data.get('coordinates')
+                )
+                db.session.add(new_user)
+                db.session.commit()
+
+                return {
+                    'message': 'Email confirmed and account created successfully.',
+                    'isNewUser': True,
+                    'user_id': new_user.id
+                }
+
+        except SignatureExpired:
+            return {'error': 'The token has expired'}
+        except Exception as e:
+            return {'error': f'Failed to confirm or update email: {str(e)}'}
+
+@celery.task
+def change_user_email_task(data):
+    from app import app
+    with app.app_context():
+        try:
+            email = data.get('email')
+            if not email:
+                return {"error": "Email is required"}
+
+            result = send_user_confirmation_email(email, data)
+
+            if 'error' in result:
+                return {"error": result["error"]}
+
+            return {"message": result["message"]}
+
+        except Exception as e:
+            return {"error": f"An unexpected error occurred: {str(e)}"}
+
+@celery.task
+def user_password_reset_request_task(email):
+    from app import app
+    with app.app_context():
+        try:
+            if not email:
+                return {"error": "Email is required"}
+
+            user = User.query.filter_by(email=email).first()
+            if not user:
+                return {"error": "User not found"}
+
+            result = send_user_password_reset_email(email)
+
+            if "error" in result:
+                return {"error": result["error"]}
+
+            return {"message": result["message"]}
+
+        except Exception as e:
+            return {"error": f"An unexpected error occurred: {str(e)}"}
+
+@celery.task
+def vendor_signup_task(data):
+    from app import app
+    with app.app_context():
+        try:
+            email = data.get('email')
+            password = data.get('password')
+
+            if not email or not password:
+                return {'error': 'Email and password are required'}
+
+            existing_user = User.query.filter_by(email=email).first()
+            if existing_user:
+                return {'error': 'This email is already registered. Please log in or use a different email.'}
+
+            # Send user confirmation email
+            result = send_vendor_confirmation_email(email, data)
+            if 'error' in result:
+                return {"error": result["error"]}
+
+            return {"message": result["message"]}
+
+        except Exception as e:
+            return {"error": str(e)}
+
+@celery.task
+def confirm_vendor_email_task(token, request_method):
+    from app import app
+    with app.app_context():
+        try:
+            # Decode the token to get user data
+            data = serializer.loads(token, salt='vendor-confirmation-salt', max_age=86400)
+            website = os.environ['SITE_URL']
+
+            vendor_id = data.get('vendor_id')  # Extract user ID
+            email = data.get('email')  # Extract new email
+
+            if request_method == 'GET':
+                # Return a redirect response (or perform another action as needed)
+                return {'redirect': f'{website}/vendor/confirm-email/{token}'}
+            
+            if request_method == 'POST':
+                existing_vendor = VendorUser.query.get(vendor_id)
+
+                if existing_vendor:
+                    print(f"POST request: User {vendor_id} exists, updating email to {email}")
+
+                    if VendorUser.query.filter(VendorUser.email == email, VendorUser.id != vendor_id).first():
+                        return {"error": "This email is already in use by another account."}
+
+                    existing_vendor.email = email
+                    db.session.commit()
+
+                    return {
+                        "message": "Email updated successfully. Verification required for the new email.",
+                        "isNewUser": False,
+                        "user_id": existing_vendor.id,
+                        "email": existing_vendor.email
+                    }
+
+                if "password" not in data:
+                    return {"error": "Password is required to create a new account."}
+
+                new_vendor_user = VendorUser(
+                    email=email,
+                    password=data['password'], 
+                    first_name=data['first_name'],
+                    last_name=data['last_name'],
+                    phone=data['phone'],
+                )
+                db.session.add(new_vendor_user)
+                db.session.commit()
+
+                
+                return {
+                    'message': 'Email confirmed and account created successfully.',
+                    'isNewVendor': True,
+                    'vendor_id': new_vendor_user.id
+                }
+
+        except SignatureExpired:
+            return {'error': 'The token has expired'}
+        except Exception as e:
+            return {'error': f'Failed to confirm or update email: {str(e)}'}
+
+@celery.task
+def change_vendor_email_task(data):
+    from app import app
+    with app.app_context():
+        try:
+            email = data.get('email')
+            if not email:
+                return {"error": "Email is required"}
+
+            result = send_vendor_confirmation_email(email, data)
+
+            if 'error' in result:
+                return {"error": result["error"]}
+
+            return {"message": result["message"]}
+
+        except Exception as e:
+            return {"error": f"An unexpected error occurred: {str(e)}"}
+
+@celery.task
+def vendor_password_reset_request_task(email):
+    from app import app
+    with app.app_context():
+        try:
+            if not email:
+                return {"error": "Email is required"}
+
+            user = VendorUser.query.filter_by(email=email).first()
+            if not user:
+                return {"error": "User not found"}
+
+            result = send_vendor_password_reset_email(email)
+
+            if "error" in result:
+                return {"error": result["error"]}
+
+            return {"message": result["message"]}
+
+        except Exception as e:
+            return {"error": f"An unexpected error occurred: {str(e)}"}
+
+@celery.task
+def admin_signup_task(data):
+    from app import app
+    with app.app_context():
+        try:
+            email = data.get('email')
+            password = data.get('password')
+
+            if not email or not password:
+                return {'error': 'Email and password are required'}
+
+            existing_user = AdminUser.query.filter_by(email=email).first()
+            if existing_user:
+                return {'error': 'This email is already registered. Please log in or use a different email.'}
+
+            # Send user confirmation email
+            result = send_admin_confirmation_email(email, data)
+            if 'error' in result:
+                return {"error": result["error"]}
+
+            return {"message": result["message"]}
+
+        except Exception as e:
+            return {"error": str(e)}
+
+@celery.task
+def confirm_admin_email_task(token, request_method):
+    from app import app
+    with app.app_context():
+        try:
+            # Decode the token to get user data
+            data = serializer.loads(token, salt='admin-confirmation-salt', max_age=86400)
+            website = os.environ['SITE_URL']
+
+            admin_id = data.get('admin_id')
+            email = data.get('email')
+
+            if request_method == 'GET':
+                # Return a redirect response (or perform another action as needed)
+                return {'redirect': f'{website}/admin/confirm-email/{token}'}
+            
+            if request_method == 'POST':
+                existing_admin = AdminUser.query.get(admin_id)
+
+                if existing_admin:
+                    print(f"POST request: User {admin_id} exists, updating email to {email}")
+
+                    if AdminUser.query.filter(AdminUser.email == email, AdminUser.id != admin_id).first():
+                        return {"error": "This email is already in use by another account."}
+
+                    existing_admin.email = email
+                    db.session.commit()
+
+                    return {
+                        "message": "Email updated successfully. Verification required for the new email.",
+                        "isNewUser": False,
+                        "user_id": existing_admin.id,
+                        "email": existing_admin.email
+                    }
+
+                if "password" not in data:
+                    return {"error": "Password is required to create a new account."}
+
+                new_admin_user = AdminUser(
+                    email=email,
+                    password=data['password'], 
+                    first_name=data['first_name'],
+                    last_name=data['last_name'],
+                    phone=data['phone'],
+                )
+                db.session.add(new_admin_user)
+                db.session.commit()
+
+                
+                return {
+                    'message': 'Email confirmed and account created successfully.',
+                    'isNewAdmin': True,
+                    'admin_id': new_admin_user.id
+                }
+
+        except SignatureExpired:
+            return {'error': 'The token has expired'}
+        except Exception as e:
+            return {'error': f'Failed to confirm or update email: {str(e)}'}
+
+@celery.task
+def change_admin_email_task(data):
+    from app import app
+    with app.app_context():
+        try:
+            email = data.get('email')
+            if not email:
+                return {"error": "Email is required"}
+
+            result = send_admin_confirmation_email(email, data)
+
+            if 'error' in result:
+                return {"error": result["error"]}
+
+            return {"message": result["message"]}
+
+        except Exception as e:
+            return {"error": f"An unexpected error occurred: {str(e)}"}
+
+@celery.task
+def admin_password_reset_request_task(email):
+    from app import app
+    with app.app_context():
+        try:
+            if not email:
+                return {"error": "Email is required"}
+
+            user = AdminUser.query.filter_by(email=email).first()
+            if not user:
+                return {"error": "User not found"}
+
+            result = send_admin_password_reset_email(email)
+
+            if "error" in result:
+                return {"error": result["error"]}
+
+            return {"message": result["message"]}
+
+        except Exception as e:
+            return {"error": f"An unexpected error occurred: {str(e)}"}
+
+@celery.task
+def send_mjml_email_task(mjml, subject, compiled_html, recipient_email):
     """Process MJML email rendering and send via SMTP."""
     try:
-        result = subprocess.run(['mjml', '--stdin'], input=mjml.encode(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if result.returncode != 0:
-            return {'error': result.stderr.decode()}
-
-        compiled_html = result.stdout.decode()
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         msg = MIMEMultipart()
         msg['From'] = f'Gingham NYC <{sender_email}>'
@@ -44,7 +441,7 @@ def send_mjml_email_task(mjml, subject, recipient_email):
         msg['Subject'] = subject
         msg.attach(MIMEText(compiled_html, 'html'))
 
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, recipient_email, msg.as_string())
@@ -70,7 +467,7 @@ def send_html_email_task(html, subject, recipient_email):
         body = html
         msg.attach(MIMEText(body, 'html'))
 
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, recipient_email, msg.as_string())
@@ -120,6 +517,8 @@ def send_sendgrid_email_task(html, subject, user_type):
     
     except Exception as e:
         return {"error": str(e)}
+
+
 
 @celery.task
 def export_csv_users_task():

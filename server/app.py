@@ -44,6 +44,13 @@ from tasks import ( send_mjml_email_task, send_html_email_task,
                          export_csv_vendor_users_task, export_csv_markets_task,
                          export_csv_vendors_task, export_csv_baskets_task,
                          export_csv_products_task, generate_vendor_baskets_csv,
+                         user_signup_task, confirm_user_email_task, 
+                         change_user_email_task, vendor_signup_task,
+                         confirm_vendor_email_task, change_vendor_email_task,
+                         admin_signup_task, confirm_admin_email_task,
+                         change_admin_email_task, user_password_reset_request_task,
+                         vendor_password_reset_request_task, admin_password_reset_request_task,
+                         contact_task,
                          )
 from celery.result import AsyncResult
 from celery_config import celery
@@ -590,50 +597,14 @@ def logout():
     session.pop('user_id', None)
     return {}, 204
 
-@app.route('/api/change-email', methods=['POST'])
-def change_email():
-    try:
-        data = request.get_json()
-
-        email = data.get('email')
-        if not email:
-            return jsonify({'error': 'Email is required'}), 400
-
-        result = send_user_confirmation_email(email, data)
-
-        if 'error' in result:
-            return jsonify({"error": result["error"]}), 500
-
-        return jsonify({"message": result["message"]}), 200
-
-    except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
-
 @app.route('/api/signup', methods=['POST'])
 def signup():
     try:
         data = request.get_json()
-        email = data.get('email')
-        password = data.get('password')
 
-        if not email or not password:
-            return jsonify({'error': 'Email and password are required'}), 400
+        result = user_signup_task.apply_async(args=[data])
 
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
-            return jsonify({'error': 'This email is already registered. Please log in or use a different email.'}), 400
-
-        # all_users = User.query.all()
-        # for user in all_users:
-        #     if bcrypt.check_password_hash(user.password, password):
-        #         return jsonify({'error': 'This password has already been used. Please choose a different password.'}), 400
-
-        result = send_user_confirmation_email(email, data)
-
-        if 'error' in result:
-            return jsonify({"error": result["error"]}), 500
-
-        return jsonify({"message": result["message"]}), 200
+        return jsonify({"message": "Signup in progress, check your email for confirmation."}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -641,77 +612,36 @@ def signup():
 @app.route('/api/user/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
 def confirm_email(token):
     try:
-        # print(f"Received token: {token}")
-        data = serializer.loads(token, salt='user-confirmation-salt', max_age=86400)
-        website = os.environ['SITE_URL']
+        request_method = request.method
+        result = confirm_user_email_task.apply_async(args=[token, request_method])
 
-        user_id = data.get('user_id')  # Extract user ID
-        email = data.get('email')  # Extract new email
+        result = result.get()
 
-        if request.method == 'GET':
-            # print(f"GET request: Token verified, email extracted: {email}")
-            return redirect(f'{website}/user/confirm-email/{token}')
-
-        if request.method == 'POST':
-            # print(f"POST request: Token verified, user data extracted: {data}")
-
-            existing_user = User.query.get(user_id)
-
-            if existing_user:
-                # print(f"POST request: User {user_id} exists, updating email to {email}")
-
-                if User.query.filter(User.email == email, User.id != user_id).first():
-                    return jsonify({"error": "This email is already in use by another account."}), 400
-
-                existing_user.email = email
-                db.session.commit()
-
-                return jsonify({
-                    "message": "Email updated successfully. Verification required for the new email.",
-                    "isNewUser": False,
-                    "user_id": existing_user.id,
-                    "email": existing_user.email
-                }), 200
-
-            if "password" not in data:
-                print("POST request failed: Missing password field for new account creation.")
-                return jsonify({"error": "Password is required to create a new account."}), 400
-
-            # Create a new user (only if password and required fields exist)
-            new_user = User(
-                email=email,
-                password=data['password'],
-                first_name=data.get('first_name', ""),
-                last_name=data.get('last_name', ""),
-                phone=data.get('phone', ""),
-                address_1=data.get('address1', ""),
-                address_2=data.get('address2', ""),
-                city=data.get('city', ""),
-                state=data.get('state', ""),
-                zipcode=data.get('zipcode', ""),
-                coordinates=data.get('coordinates')
-            )
-            db.session.add(new_user)
-            db.session.commit()
-
-            print("POST request: New user created and committed to the database")
-            return jsonify({
-                'message': 'Email confirmed and account created successfully.',
-                'isNewUser': True,
-                'user_id': new_user.id
-            }), 201
-
-    except SignatureExpired:
-        print("Request: The token has expired")
-        return jsonify({'error': 'The token has expired'}), 400
+        if 'redirect' in result:
+            return redirect(result['redirect'])
+        elif 'message' in result:
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 400
 
     except Exception as e:
-        print(f"Request: An error occurred: {str(e)}")
-        return jsonify({'error': f'Failed to confirm or update email: {str(e)}'}), 500
+        return jsonify({'error': f'Error: {str(e)}'}), 500
+
+@app.route('/api/change-email', methods=['POST'])
+def change_email():
+    try:
+        data = request.get_json()
+
+        task = change_user_email_task.apply_async(args=[data])
+
+        return jsonify({"message": "Email change request has been processed. Check your email for confirmation."}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
 # VENDOR PORTAL
 @app.route('/api/vendor/login', methods=['POST'])
-def vendorLogin():
+def vendo_login():
 
     data = request.get_json()
     vendor_user = VendorUser.query.filter(VendorUser.email == data['email']).first()
@@ -735,110 +665,55 @@ def vendorLogin():
     return jsonify(access_token=access_token, vendor_user_id=vendor_user.id), 200
 
 @app.route('/api/vendor-signup', methods=['POST'])
-def vendorSignup():
-    data = request.get_json()
-    email = data.get('email')
-    
-    if not email:
-        return {'error': 'Email is required'}, 400
-    
-    result = send_vendor_confirmation_email(email, data)
-    
-    if 'error' in result:
-        return jsonify({'error': result["error"]}), 500
-    return jsonify({'message': result['message']}), 200
+def vendor_signup():
+    try:
+        data = request.get_json()
+
+        result = vendor_signup_task.apply_async(args=[data])
+
+        return jsonify({"message": "Signup in progress, check your email for confirmation."}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/vendor/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
+def confirm_vendor_email(token):
+    try:
+        request_method = request.method
+        result = confirm_vendor_email_task.apply_async(args=[token, request_method])
+
+        result = result.get()
+
+        if 'redirect' in result:
+            return redirect(result['redirect'])
+        elif 'message' in result:
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 400
+
+    except Exception as e:
+        return jsonify({'error': f'Error: {str(e)}'}), 500
 
 @app.route('/api/change-vendor-email', methods=['POST'])
 def change_vendor_email():
     try:
         data = request.get_json()
 
-        email = data.get('email')
-        if not email:
-            return jsonify({'error': 'Email is required'}), 400
+        task = change_vendor_email_task.apply_async(args=[data])
 
-        result = send_vendor_confirmation_email(email, data)
-
-        if 'error' in result:
-            return jsonify({"error": result["error"]}), 500
-
-        return jsonify({"message": result["message"]}), 200
+        return jsonify({"message": "Email change request has been processed. Check your email for confirmation."}), 200
 
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
-@app.route('/api/vendor/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
-def confirm_vendor_email(token):
-    try:
-        print(f'Received token: {token}')
-        data = serializer.loads(token, salt='vendor-confirmation-salt', max_age=86400)
-        website = os.environ['SITE_URL']
-
-        vendor_id = data.get('vendor_id')
-        email = data.get('email')
-
-        if request.method == 'GET':
-            # print(f"GET request: Token verified, email extracted: {email}")
-            return redirect(f'{website}/vendor/confirm-email/{token}')
-        
-        if request.method == 'POST':
-            # print(f"POST request: Token verified, user data extracted: {data}")
-            
-            existing_vendor = VendorUser.query.get(vendor_id)
-            
-            if existing_vendor:
-                print(f"POST request: User {vendor_id} exists, updating email to {email}")
-                
-                if VendorUser.query.filter(VendorUser.email == email, VendorUser.id != vendor_id).first():
-                    return jsonify({"error": "This email is already in use by another account."}), 400
-                
-                existing_vendor.email = email
-                db.session.commit()
-                
-                return jsonify({
-                    "message": "Email updated successfully. Verification required for the new email.",
-                    "isNewUser": False,
-                    "user_id": existing_vendor.id,
-                    "email": existing_vendor.email
-                }), 200
-            
-            if "password" not in data:
-                print("POST request failed: Missing password field for new account creation.")
-                return jsonify({"error": "Password is required to create a new account."}), 400
-
-            new_vendor_user = VendorUser(
-                email=email,
-                password=data['password'], 
-                first_name=data['first_name'],
-                last_name=data['last_name'],
-                phone=data['phone'],
-            )
-            db.session.add(new_vendor_user)
-            db.session.commit()
-
-            print("POST request: VendorUser created and committed to the database")
-            return jsonify({
-                'message': 'Email confirmed and account created successfully.', 
-                'isNewVendor': True, 
-                'vendor_id': new_vendor_user.id
-            }), 201
-
-    except SignatureExpired:
-        print("Request: The token has expired")
-        return jsonify({'error': 'The token has expired'}), 400
-
-    except Exception as e:
-        print(f"Request: An error occurred: {str(e)}")
-        return jsonify({'error': f'Failed to confirm or update email: {str(e)}'}), 500
-    
 @app.route('/api/vendor/logout', methods=['DELETE'])
-def vendorLogout():
+def vendor_logout():
     session.pop('vendor_user_id', None)
     return {}, 204
-    
+
 # ADMIN PORTAL
 @app.route('/api/admin/login', methods=['POST'])
-def adminLogin():
+def admin_login():
 
     data = request.get_json()
     admin_user = AdminUser.query.filter(AdminUser.email == data['email']).first()
@@ -862,104 +737,49 @@ def adminLogin():
     return jsonify(access_token=access_token, admin_user_id=admin_user.id), 200
 
 @app.route('/api/admin-signup', methods=['POST'])
-def adminSignup():
-    data = request.get_json()
-    email = data.get('email')
-    
-    if not email:
-        return {'error': 'Email is required'}, 400
-    
-    result = send_admin_confirmation_email(email, data)
-    
-    if 'error' in result:
-        return jsonify({'error': result["error"]}), 500
-    return jsonify({'message': result['message']}), 200
+def admin_signup():
+    try:
+        data = request.get_json()
+
+        result = admin_signup_task.apply_async(args=[data])
+
+        return jsonify({"message": "Signup in progress, check your email for confirmation."}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/admin/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
+def confirm_admin_email(token):
+    try:
+        request_method = request.method
+        result = confirm_admin_email_task.apply_async(args=[token, request_method])
+
+        result = result.get()
+
+        if 'redirect' in result:
+            return redirect(result['redirect'])
+        elif 'message' in result:
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 400
+
+    except Exception as e:
+        return jsonify({'error': f'Error: {str(e)}'}), 500
 
 @app.route('/api/change-admin-email', methods=['POST'])
 def change_admin_email():
     try:
         data = request.get_json()
 
-        email = data.get('email')
-        if not email:
-            return jsonify({'error': 'Email is required'}), 400
+        task = change_admin_email_task.apply_async(args=[data])
 
-        result = send_admin_confirmation_email(email, data)
-
-        if 'error' in result:
-            return jsonify({"error": result["error"]}), 500
-
-        return jsonify({"message": result["message"]}), 200
+        return jsonify({"message": "Email change request has been processed. Check your email for confirmation."}), 200
 
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
-@app.route('/api/admin/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
-def confirm_admin_email(token):
-    try:
-        print(f'Received token: {token}')
-        data = serializer.loads(token, salt='admin-confirmation-salt', max_age=86400)
-        website = os.environ['SITE_URL']
-
-        admin_id = data.get('admin_id')
-        email = data.get('email')
-
-        if request.method == 'GET':
-            print(f"GET request: Token verified, email extracted: {email}")
-            return redirect(f'{website}/admin/confirm-email/{token}')
-        
-        if request.method == 'POST':
-            print(f"POST request: Token verified, user data extracted: {data}")
-            
-            existing_admin = AdminUser.query.get(admin_id)
-            
-            if existing_admin:
-                print(f"POST request: User {admin_id} exists, updating email to {email}")
-                
-                if AdminUser.query.filter(AdminUser.email == email, AdminUser.id != admin_id).first():
-                    return jsonify({"error": "This email is already in use by another account."}), 400
-                
-                existing_admin.email = email
-                db.session.commit()
-                
-                return jsonify({
-                    "message": "Email updated successfully. Verification required for the new email.",
-                    "isNewUser": False,
-                    "user_id": existing_admin.id,
-                    "email": existing_admin.email
-                }), 200
-            
-            if "password" not in data:
-                print("POST request failed: Missing password field for new account creation.")
-                return jsonify({"error": "Password is required to create a new account."}), 400
-
-            new_admin_user = AdminUser(
-                email=email,
-                password=data['password'], 
-                first_name=data['first_name'],
-                last_name=data['last_name'],
-                phone=data['phone'],
-            )
-            db.session.add(new_admin_user)
-            db.session.commit()
-
-            print("POST request: VendorUser created and committed to the database")
-            return jsonify({
-                'message': 'Email confirmed and account created successfully.', 
-                'isNewVendor': True, 
-                'vendor_id': new_admin_user.id
-            }), 201
-
-    except SignatureExpired:
-        print("Request: The token has expired")
-        return jsonify({'error': 'The token has expired'}), 400
-
-    except Exception as e:
-        print(f"Request: An error occurred: {str(e)}")
-        return jsonify({'error': f'Failed to confirm or update email: {str(e)}'}), 500
-
 @app.route('/api/admin/logout', methods=['DELETE'])
-def adminLogout():
+def admin_logout():
     session.pop('admin_user_id', None)
     return {}, 204
 
@@ -1008,7 +828,6 @@ def check_admin_session():
 @app.route('/api/settings-users', methods=['GET', 'POST'])
 @jwt_required()
 def post_settings_user():
-
     try:
         if request.method == 'GET':
 
@@ -1061,7 +880,6 @@ def post_settings_user():
 @app.route('/api/settings-users/<int:id>', methods=['GET', 'PATCH'])
 @jwt_required()
 def settings_user(id):
-    
     if not check_role('user') and not check_role('admin'):
         return {'error': "Access forbidden: User only"}, 403
     
@@ -1091,7 +909,6 @@ def settings_user(id):
 @app.route('/api/settings-vendor-users', methods=['GET', 'POST'])
 @jwt_required()
 def post_settings_vendor_user():
-
     try:
         if request.method == 'GET':
 
@@ -1145,7 +962,6 @@ def post_settings_vendor_user():
 @app.route('/api/settings-vendor-users/<int:id>', methods=['GET', 'PATCH'])
 @jwt_required()
 def settings_vendor_user(id):
-    
     if not check_role('vendor') and not check_role('admin'):
         return {'error': "Access forbidden: Vendor User only"}, 403
     
@@ -1175,7 +991,6 @@ def settings_vendor_user(id):
 @app.route('/api/settings-admins', methods=['GET', 'POST'])
 @jwt_required()
 def post_settings_admin_user():
-
     try:
         if request.method == 'GET':
 
@@ -1228,7 +1043,6 @@ def post_settings_admin_user():
 @app.route('/api/settings-admins/<int:id>', methods=['GET', 'PATCH'])
 @jwt_required()
 def settings_admin(id):
-    
     if not check_role('admin') and not check_role('admin'):
         return {'error': "Access forbidden: User only"}, 403
     
@@ -1270,7 +1084,6 @@ def all_users():
 @app.route('/api/users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
 @jwt_required()
 def profile(id):
-    
     if not check_role('user') and not check_role('admin'):
         return {'error': "Access forbidden: User only"}, 403
     
@@ -2980,21 +2793,27 @@ def qr_code(id):
             return {'error': f'Failed to delete QR code: {str(e)}'}, 500
 
 @app.route('/api/contact', methods=['POST'])
-def contact(): 
-    data = request.get_json()
-    print("received data:", data)
-    name = data.get('name')
-    email = data.get('email')
-    subject = data.get('subject')
-    message = data.get('message')
+def contact():
+    try:
+        data = request.get_json()
+        print("Received data:", data)
 
-    print(f"Name: {name}, Email: {email}, Subject: {subject}, Message: {message}")
+        name = data.get('name')
+        email = data.get('email')
+        subject = data.get('subject')
+        message = data.get('message')
 
-    result = send_contact_email(name, email, subject, message)
-    
-    if "error" in result:
-        return jsonify({"error": result["error"]}), 500
-    return jsonify({"message": result["message"]}), 200
+        if not name or not email or not subject or not message:
+            return jsonify({'error': 'All fields (name, email, subject, message) are required'}), 400
+
+        print(f"Submitting contact request to Celery - Name: {name}, Email: {email}, Subject: {subject}, Message: {message}")
+
+        task = contact_task.apply_async(args=[name, email, subject, message])
+
+        return jsonify({"message": "Your message has been received. We will get back to you shortly."}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
 # MJML Backend
 @app.route('/api/preview-email', methods=['POST'])
@@ -3016,6 +2835,7 @@ def preview_email():
             return jsonify({'error': result.stderr.decode()}), 400
 
         compiled_html = result.stdout.decode()
+        print(compiled_html)
         return compiled_html
 
     except Exception as e:
@@ -3032,7 +2852,13 @@ def send_mjml_email():
     subject = data.get('subject', '')
     email_address = data.get('email_address', '')
 
-    task = send_mjml_email_task.apply_async(args=[mjml, subject, email_address])
+    result = subprocess.run(['mjml', '--stdin'], input=mjml.encode(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if result.returncode != 0:
+        return {'error': result.stderr.decode()}
+
+    compiled_html = result.stdout.decode()
+
+    task = send_mjml_email_task.apply_async(args=[mjml, subject, compiled_html, email_address])
     return jsonify({"message": "Email processing started", "task_id": task.id}), 202
 
 @app.route('/api/send-html-email', methods=['POST'])
@@ -3728,22 +3554,21 @@ def get_stripe_transaction():
 
 # Password reset for User
 @app.route('/api/user/password-reset-request', methods=['POST'])
-def password_reset_request():
-    data = request.get_json()
-    email = data.get('email')
-    
-    if not email:
-        return {'error': 'Email is required'}, 400
-    
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        return jsonify({'error': 'User not found'}), 400
-    else:
-        result = send_user_password_reset_email(email)
-    
-    if "error" in result:
-        return jsonify({"error": result["error"]}), 500
-    return jsonify({"message": result["message"]}), 200
+def user_password_reset_request():
+    try:
+        data = request.get_json()
+        email = data.get('email')
+
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+
+        # Send the task to Celery
+        task = user_password_reset_request_task.apply_async(args=[email])
+
+        return jsonify({"message": "Password reset request has been processed. Check your email for further instructions."}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
 @app.route('/api/user/password-reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
@@ -3790,22 +3615,21 @@ def password_reset(token):
 
 # Password reset for VendorUser
 @app.route('/api/vendor/password-reset-request', methods=['POST'])
-def vendor_password_reset_request():
-    data = request.get_json()
-    email = data.get('email')
+def password_reset_request():
+    try:
+        data = request.get_json()
+        email = data.get('email')
 
-    if not email:
-        return {'error': 'Email is required'}, 400
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
 
-    vendor_user = VendorUser.query.filter_by(email=email).first()
-    if not vendor_user:
-        return jsonify({'error': 'Vendor not found'}), 400
-    else:
-        result = send_vendor_password_reset_email(email)
-    
-    if "error" in result:
-        return jsonify({"error": result["error"]}), 500
-    return jsonify({"message": result["message"]}), 200
+        # Send the task to Celery
+        task = vendor_password_reset_request_task.apply_async(args=[email])
+
+        return jsonify({"message": "Password reset request has been processed. Check your email for further instructions."}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
 @app.route('/api/vendor/password-reset/<token>', methods=['GET', 'POST'])
 def vendor_password_reset(token):
@@ -3840,21 +3664,20 @@ def vendor_password_reset(token):
 # Password reset for AdminUser
 @app.route('/api/admin/password-reset-request', methods=['POST'])
 def admin_password_reset_request():
-    data = request.get_json()
-    email = data.get('email')
+    try:
+        data = request.get_json()
+        email = data.get('email')
 
-    if not email:
-        return {'error': 'Email is required'}, 400
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
 
-    admin_user = AdminUser.query.filter_by(email=email).first()
-    if not admin_user:
-        return jsonify({'error': 'Admin not found'}), 400
-    else:
-        result = send_admin_password_reset_email(email)
-    
-    if "error" in result:
-        return jsonify({"error": result["error"]}), 500
-    return jsonify({"message": result["message"]}), 200
+        # Send the task to Celery
+        task = admin_password_reset_request_task.apply_async(args=[email])
+
+        return jsonify({"message": "Password reset request has been processed. Check your email for further instructions."}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
     
 @app.route('/api/admin/password-reset/<token>', methods=['GET', 'POST'])
 def admin_password_reset(token):
