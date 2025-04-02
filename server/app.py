@@ -303,6 +303,7 @@ def upload_file():
                 # Process and resize image for non-SVG files
                 image_bytes = file.read()
                 task = process_image.delay(image_bytes, original_filename, MAX_SIZE, MAX_RES)
+                task_id = task.id
 
                 # Poll Celery to get processed image
                 import time
@@ -362,7 +363,7 @@ def upload_file():
                 market.image = f'/api/uploads/market-images/{market_id}/{os.path.basename(file_path)}'
                 db.session.commit()
 
-            return {'message': 'File successfully uploaded', 'filename': escape(os.path.basename(file_path))}, 201
+            return {'message': 'File successfully uploaded', 'filename': escape(os.path.basename(file_path)), 'task_id': task_id}, 201
 
         except Exception as e:
             db.session.rollback()
@@ -3792,13 +3793,13 @@ def get_user_notifications():
     
     try:
         current_user = get_jwt_identity()
-        print("JWT Identity (User):", current_user)
+        # print("JWT Identity (User):", current_user)
     except Exception as e:
         print("JWT Error:", str(e))
         return jsonify({"error": "JWT validation failed"}), 401
 
     user_id = request.args.get('user_id')
-    print("Requested user_id:", user_id)
+    # print("Requested user_id:", user_id)
     
     if request.method == 'GET':
         query = UserNotification.query
@@ -3806,7 +3807,7 @@ def get_user_notifications():
             query = query.filter_by(user_id=user_id)
 
         notifications = query.order_by(UserNotification.created_at.desc()).all()
-        print("Found notifications count:", len(notifications))
+        # print("Found notifications count:", len(notifications))
         
         return jsonify([notif.to_dict() for notif in notifications]), 200
     

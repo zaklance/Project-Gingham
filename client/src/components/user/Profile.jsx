@@ -293,7 +293,7 @@ function Profile({ marketData }) {
                             await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before checking again
                             const statusResponse = await fetch(`/api/task-status/${taskId}`);
                             const statusData = await statusResponse.json();
-                            taskStatus = statusData.task_status;
+                            taskStatus = statusData.status;
                             console.log(`Checking task status: ${taskStatus}`);
 
                             if (taskStatus === 'FAILURE') {
