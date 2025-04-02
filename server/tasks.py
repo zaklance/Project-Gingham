@@ -26,8 +26,15 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from sqlalchemy.sql.expression import extract
 from datetime import datetime
+from celery.schedules import crontab
+from sqlalchemy.orm import Session
+from sqlalchemy import event
+from PIL import Image
 
 serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
+
+MAX_SIZE = 1.5 * 1024 * 1024
+MAX_RES = (1800, 1800)
 
 @celery.task
 def contact_task(name, email, subject, message):
@@ -521,8 +528,6 @@ def send_sendgrid_email_task(html, subject, user_type):
     except Exception as e:
         return {"error": str(e)}
 
-
-
 @celery.task
 def export_csv_users_task():
     """Exports user data to a CSV file asynchronously."""
@@ -775,3 +780,192 @@ def generate_vendor_baskets_csv(vendor_id, month, year):
                 'status': 'error',
                 'error': str(e)
             }
+
+@celery.task
+def process_image(image_bytes, filename, upload_folder, max_size=MAX_SIZE, resolution=MAX_RES):
+    """Resizes and saves an image asynchronously."""
+    from app import app
+    with app.app_context():
+        image = Image.open(BytesIO(image_bytes))
+        image.thumbnail(resolution, Image.LANCZOS)
+
+        temp_output = BytesIO()
+        
+        if image.format == 'PNG':
+            image.save(temp_output, format='PNG', optimize=True)
+        else:
+            image.save(temp_output, format='JPEG', quality=50)
+
+        file_size = temp_output.tell()
+        step = 0.9
+
+        while file_size > max_size:
+            temp_output = BytesIO()
+            if image.format == 'PNG':
+                image.save(temp_output, format='PNG', optimize=True)
+            else:
+                quality = max(10, int(85 * step))
+                image.save(temp_output, format='JPEG', quality=quality)
+            file_size = temp_output.tell()
+            step -= 0.05
+
+        temp_output.seek(0)
+
+        # Save the processed image to disk
+        file_path = os.path.join(upload_folder, filename)
+        with open(file_path, "wb") as f:
+            f.write(temp_output.getvalue())
+
+        return file_path
+            
+### Configure Celery with scheduled tasks ###
+celery.conf.update(
+    beat_schedule={
+        'reset-market-status': {
+            'task': 'server.tasks.reset_market_status',
+            'schedule': crontab(hour=0, minute=0, day_of_month=1, month_of_year=1),
+        },
+    }
+)
+
+@celery.task
+def reset_market_status():
+    """Reset all markets' is_current status to False at the start of each year."""
+    session = Session()
+    try:
+        # Set all Markets.is_current to False
+        session.query(Market).update({Market.is_current: False})
+        session.commit()
+        print("All markets have been set to is_current=False for the new year.")
+    except Exception as e:
+        session.rollback()
+        print(f"Error resetting market status: {e}")
+    finally:
+        session.close()
+
+@celery.task
+def update_vendor_user_market_locations(vendor_user_id):
+    """Update market locations for a vendor user when they are created."""
+    session = Session()
+    try:
+        # Get the vendor user
+        vendor_user = session.query(VendorUser).get(vendor_user_id)
+        if not vendor_user:
+            print(f"Vendor User ID={vendor_user_id} not found.")
+            return
+
+        # Retrieve all market_day_ids associated with the vendor
+        market_days = session.query(VendorMarket.market_day_id).filter_by(vendor_id=vendor_user.vendor_id).all()
+        market_day_ids = [md.market_day_id for md in market_days]
+
+        if not market_day_ids:
+            print(f"No market locations found for Vendor ID={vendor_user.vendor_id}. Skipping update.")
+            return
+
+        # Update SettingsVendor for this vendor user
+        settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user_id).first()
+        if settings:
+            existing_market_locations = set(settings.market_locations or [])
+            updated_market_locations = list(existing_market_locations.union(set(market_day_ids)))
+            settings.market_locations = updated_market_locations
+            session.commit()
+            print(f"Updated market locations for Vendor User ID={vendor_user_id}")
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error updating market locations for Vendor User ID={vendor_user_id}: {e}")
+    finally:
+        session.close()
+
+# Register event listeners
+@event.listens_for(VendorUser, 'after_insert')
+def handle_vendor_user_creation(mapper, connection, target):
+    """Event listener to trigger market location update when a new vendor user is created."""
+    update_vendor_user_market_locations.delay(target.id)
+
+@celery.task
+def send_blog_notifications(blog_id):
+    """Send blog notifications to users when a new blog post is created."""
+    session = Session()
+    try:
+        # Get the blog post
+        blog = session.query(Blog).get(blog_id)
+        if not blog:
+            print(f"Blog ID={blog_id} not found.")
+            return
+
+        # Check if post_date matches current date
+        current_date = datetime.utcnow().date()
+        if not blog.post_date or blog.post_date.date() != current_date:
+            print(f"Blog ID={blog_id} post_date ({blog.post_date}) does not match current date ({current_date}). Skipping notifications.")
+            return
+
+        # Get users who have notifications enabled based on blog type
+        if blog.for_user:
+            users = session.query(User).join(SettingsUser).filter(SettingsUser.site_new_blog == True).all()
+        else:
+            users = []
+
+        if blog.for_vendor:
+            vendor_users = session.query(VendorUser).join(SettingsVendor).filter(SettingsVendor.site_new_blog == True).all()
+        else:
+            vendor_users = []   
+
+        if blog.for_admin:
+            admins = session.query(AdminUser).join(SettingsAdmin).filter(SettingsAdmin.site_new_blog == True).all()
+        else:
+            admins = []
+            
+        if not users and not admins and not vendor_users:
+            print("No users have blog notifications enabled. No notifications will be created.")
+            return
+        
+        # Prepare user notifications
+        user_notifications = [
+            UserNotification(
+                subject="New Blog Post Alert!",
+                message=f"A new blog post, {blog.title}, has been published. Check it out!",
+                link=f"/#blog",
+                user_id=user.id,
+                created_at=datetime.utcnow(),
+                is_read=False
+            )
+            for user in users
+        ]
+        
+        # Prepare vendor notifications
+        vendor_notifications = [
+            VendorNotification(
+                subject="New Blog Post Alert!",
+                message=f"A new blog post, {blog.title}, has been published. Check it out!",
+                link=f"/#blog",
+                vendor_user_id=vendor_user.id,
+                created_at=datetime.utcnow(),
+                is_read=False
+            )
+            for vendor_user in vendor_users
+        ]
+        
+        # Prepare admin notifications
+        admin_notifications = [
+            AdminNotification(
+                subject="New Blog Post Alert!",
+                message=f"A new blog post, {blog.title}, has been published. Check it out!",
+                link=f"/#blog",
+                admin_id=admin.id,
+                created_at=datetime.utcnow(),
+                is_read=False   
+            )
+            for admin in admins
+        ]
+        
+        # Save notifications to the database
+        session.bulk_save_objects(user_notifications + vendor_notifications + admin_notifications)  
+        session.commit()
+        print(f"Blog ID={blog_id} notifications have been sent.")
+        
+    except Exception as e:
+        session.rollback()
+        print(f"Error sending blog notifications for Blog ID={blog_id}: {e}")
+    finally:
+        session.close()

@@ -50,11 +50,10 @@ from tasks import ( send_mjml_email_task, send_html_email_task,
                          admin_signup_task, confirm_admin_email_task,
                          change_admin_email_task, user_password_reset_request_task,
                          vendor_password_reset_request_task, admin_password_reset_request_task,
-                         contact_task,
+                         contact_task, process_image,
                          )
 from celery.result import AsyncResult
 from celery_config import celery
-
 
 
 load_dotenv()
@@ -213,31 +212,6 @@ def generate_csv(model, fields, filename_prefix):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
-    image.thumbnail(resolution, Image.LANCZOS)
-
-    temp_output = BytesIO()
-
-    if image.format == 'PNG':
-        image.save(temp_output, format='PNG', optimize=True)
-    else:
-        image.save(temp_output, format='JPEG', quality=50)
-
-    file_size = temp_output.tell()
-
-    while file_size > max_size:
-        temp_output = BytesIO()
-        if image.format == 'PNG':
-            image.save(temp_output, format='PNG', optimize=True)
-        else:
-            quality = max(10, int(85 * step))
-            image.save(temp_output, format='JPEG', quality=quality)
-        file_size = temp_output.tell()
-        step -= 0.05
-
-    temp_output.seek(0)
-    return Image.open(temp_output)
-
 @app.route('/api/hello', methods=['GET'])
 def hello_world():
     return 'Hello World'
@@ -326,9 +300,12 @@ def upload_file():
                 file.save(file_path)
             else:
                 # Process and resize image for non-SVG files
-                image = Image.open(file)
-                image = resize_image(image)
-                image.save(file_path)
+                image_bytes = file.read()
+                task = process_image.delay(image_bytes, original_filename, upload_folder)
+
+                # image = Image.open(file)
+                # image = resize_image(image)
+                # image.save(file_path)
 
             # Update the database record based on upload type
             if upload_type == 'user':
@@ -410,9 +387,11 @@ def upload_blog_images():
                 if original_filename.rsplit('.', 1)[1].lower() == 'svg':
                     file.save(file_path)
                 else:
-                    image = Image.open(file)
-                    image = resize_image(image)
-                    image.save(file_path)
+                    # image = Image.open(file)
+                    # image = resize_image(image)
+                    # image.save(file_path)
+                    image_bytes = file.read()
+                    task = process_image.delay(image_bytes, original_filename, upload_folder)
 
                 uploaded_files.append(f'/api/uploads/blog-images/{formatted_date}/{os.path.basename(file_path)}')
 
@@ -2957,8 +2936,8 @@ def send_sendgrid_email_client():
         print(str(e))
         return jsonify({"error": str(e)}), 500
 
-@app.route("/api/sms", methods=['GET', 'POST'])
-def incoming_sms():
+@app.route("/api/sms-user", methods=['GET', 'POST'])
+def incoming_user_sms():
     # Get the message the user sent our Twilio number
     body = request.values.get('Body', None)
     sender_phone = request.values.get('From', None)
@@ -2982,6 +2961,82 @@ def incoming_sms():
                     settings.text_fav_market_new_basket = False
                     settings.text_fav_vendor_schedule_change = False
                     settings.text_basket_pickup_time = False
+                    db.session.commit()
+                    resp.message("You have been unsubscribed from all text notifications ;)")
+                else:
+                    resp.message(r"Error unsubscribing from text all notifications. Please turn them off on the website. ¯\_(ツ)_/¯")
+            else:
+                print("No user found with this phone number.")
+                resp.message(r"Error unsubscribing from all text notifications. Please turn them off on the website. ¯\_(ツ)_/¯")
+        except Exception as e:
+            db.session.rollback()
+            print(f"An error occurred: {str(e)}")
+    else:
+        resp.message("I didn't understand that prompt :/")
+
+    return str(resp)
+
+@app.route("/api/sms-vendor", methods=['GET', 'POST'])
+def incoming_vendor_sms():
+    # Get the message the user sent our Twilio number
+    body = request.values.get('Body', None)
+    sender_phone = request.values.get('From', None)
+
+    if sender_phone.startswith("+1"):
+        sender_phone = sender_phone[2:]
+    elif sender_phone.startswith("+"):
+        sender_phone = sender_phone[1:]
+
+    # Start our TwiML response
+    resp = MessagingResponse()
+
+    # Determine the right reply for this message
+    if body == 'stop':
+        try:
+            user = VendorUser.query.filter_by(phone=sender_phone).first()
+            if user:
+                settings = SettingsVendor.query.filter_by(user_id=user.id).first()
+                if settings:
+                    settings.text_market_schedule_change = False
+                    settings.text_basket_sold = False
+                    db.session.commit()
+                    resp.message("You have been unsubscribed from all text notifications ;)")
+                else:
+                    resp.message(r"Error unsubscribing from text all notifications. Please turn them off on the website. ¯\_(ツ)_/¯")
+            else:
+                print("No user found with this phone number.")
+                resp.message(r"Error unsubscribing from all text notifications. Please turn them off on the website. ¯\_(ツ)_/¯")
+        except Exception as e:
+            db.session.rollback()
+            print(f"An error occurred: {str(e)}")
+    else:
+        resp.message("I didn't understand that prompt :/")
+
+    return str(resp)
+
+@app.route("/api/sms-admin", methods=['GET', 'POST'])
+def incoming_admin_sms():
+    # Get the message the user sent our Twilio number
+    body = request.values.get('Body', None)
+    sender_phone = request.values.get('From', None)
+
+    if sender_phone.startswith("+1"):
+        sender_phone = sender_phone[2:]
+    elif sender_phone.startswith("+"):
+        sender_phone = sender_phone[1:]
+
+    # Start our TwiML response
+    resp = MessagingResponse()
+
+    # Determine the right reply for this message
+    if body == 'stop':
+        try:
+            user = AdminUser.query.filter_by(phone=sender_phone).first()
+            if user:
+                settings = SettingsAdmin.query.filter_by(user_id=user.id).first()
+                if settings:
+                    settings.text_market_schedule_change = False
+                    settings.text_basket_sold = False
                     db.session.commit()
                     resp.message("You have been unsubscribed from all text notifications ;)")
                 else:
