@@ -27,6 +27,7 @@ function Profile({ marketData }) {
     const [passwordMode, setPasswordMode] = useState(false);
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
+    const [uploading, setUploading] = useState(false)
     const [salesHistory, setSalesHistory] = useState([]);
     const [activeTab, setActiveTab] = useState('website');
     const [addressResults, setAddressResults] = useState();
@@ -259,8 +260,7 @@ function Profile({ marketData }) {
                 console.error('Geocoding Error:', error);
             }
             if (image) {
-
-                const maxFileSize = 25 * 1024 * 1024
+                const maxFileSize = 25 * 1024 * 1024;
                 if (image.size > maxFileSize) {
                     toast.warning('File size exceeds 25 MB. Please upload a smaller file.', {
                         autoClose: 6000,
@@ -270,14 +270,11 @@ function Profile({ marketData }) {
 
                 console.log('Uploading file...');
                 setStatus('uploading');
+                setUploading(true)
                 const formData = new FormData();
                 formData.append('file', image);
                 formData.append('type', 'user');
                 formData.append('user_id', id);
-
-                for (const [key, value] of formData.entries()) {
-                    console.log(`${key}:`, value);
-                }
 
                 try {
                     const result = await fetch('/api/upload', {
@@ -285,32 +282,50 @@ function Profile({ marketData }) {
                         body: formData,
                     });
 
-                    console.log('Request Body:', formData);
-
                     if (result.ok) {
                         const data = await result.json();
-                        uploadedFilename = `${userId}/${data.filename}`;
-                        console.log('Image uploaded:', uploadedFilename);
+                        const taskId = data.task_id;
+                        console.log('Image processing started. Task ID:', taskId);
+
+                        // Poll for task completion
+                        let taskStatus = 'PENDING';
+                        while (taskStatus !== 'SUCCESS') {
+                            await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before checking again
+                            const statusResponse = await fetch(`/api/task-status/${taskId}`);
+                            const statusData = await statusResponse.json();
+                            taskStatus = statusData.task_status;
+                            console.log(`Checking task status: ${taskStatus}`);
+
+                            if (taskStatus === 'FAILURE') {
+                                toast.error('Image processing failed.', { autoClose: 4000 });
+                                setStatus('fail');
+                                setUploading(false)
+                                return;
+                            }
+                        }
+
+                        uploadedFilename = `/api/uploads/user-images/${id}/${data.filename}`;
+                        console.log('Image processing complete:', uploadedFilename);
                         setStatus('success');
+                        setUploading(false)
+
                         setProfileData((prevData) => ({
                             ...prevData,
-                            avatar: uploadedFilename, // Update avatar with the new filename
+                            avatar: uploadedFilename,
                         }));
                     } else {
                         console.log('Image upload failed');
                         console.log('Response:', await result.text());
                         setStatus('fail');
-                        toast.error('Image failed to upload successfully.', {
-                            autoClose: 4000,
-                        });
+                        setUploading(false)
+                        toast.error('Image failed to upload successfully.', { autoClose: 4000 });
                         return;
                     }
                 } catch (error) {
                     console.error('Error uploading image:', error);
                     setStatus('fail');
-                    toast.error('Image failed to upload successfully.', {
-                        autoClose: 4000,
-                    });
+                    setUploading(false)
+                    toast.error('Image failed to upload successfully.', { autoClose: 4000 });
                     return;
                 }
                 window.location.reload()
@@ -801,7 +816,17 @@ function Profile({ marketData }) {
                                         />
                                     </div>
                                 </div>
-                                <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
+                                {uploading ? (
+                                    <PulseLoader
+                                        className='margin-t-16'
+                                        color={'#ff806b'}
+                                        size={10}
+                                        aria-label="Loading Spinner"
+                                        data-testid="loader"
+                                    />
+                                ) : (
+                                    <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
+                                )}
                                 <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
                             </div>
                         ) : (
