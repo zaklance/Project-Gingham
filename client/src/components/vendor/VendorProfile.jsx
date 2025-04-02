@@ -39,6 +39,7 @@ function VendorProfile () {
     const [vendorData, setVendorData] = useState(null);
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
+    const [uploading, setUploading] = useState(false)
     const [vendorImageURL, setVendorImageURL] = useState(null);
     const [products, setProducts] = useState([])
     const [newProduct, setNewProduct] = useState(null);
@@ -432,6 +433,7 @@ function VendorProfile () {
     
             console.log('Uploading file...');
             setStatus('uploading');
+            setUploading(true)
             const formData = new FormData();
             formData.append('file', image);
             formData.append('type', 'vendor');
@@ -451,21 +453,48 @@ function VendorProfile () {
     
                 if (result.ok) {
                     const data = await result.json();
-                    uploadedFilename = data.filename;
-                    console.log('Image uploaded:', uploadedFilename);
+                    const taskId = data.task_id;
+                    console.log('Image processing started. Task ID:', taskId);
+                    console.log(data)
+
+                    // Poll for task completion
+                    let taskStatus = 'PENDING';
+                    while (taskStatus !== 'SUCCESS') {
+                        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before checking again
+                        const statusResponse = await fetch(`/api/task-status/${taskId}`);
+                        const statusData = await statusResponse.json();
+                        taskStatus = statusData.status;
+                        console.log(`Checking task status: ${taskStatus}`);
+
+                        if (taskStatus === 'FAILURE') {
+                            toast.error('Image processing failed.', { autoClose: 4000 });
+                            setStatus('fail');
+                            setUploading(false)
+                            return;
+                        }
+                    }
+
+                    uploadedFilename = `/api/uploads/vendor-images/${vendorData.id}/${data.filename}`;
+                    console.log('Image processing complete:', uploadedFilename);
                     setStatus('success');
+                    setUploading(false)
+
                     setVendorImageURL(`${vendorData.id}/${uploadedFilename}`);
-    
+
                     window.location.reload();
                 } else {
                     console.log('Image upload failed');
                     console.log('Response:', await result.text());
                     setStatus('fail');
+                    setUploading(false)
+                    toast.error('Image failed to upload successfully.', { autoClose: 4000 });
                     return;
                 }
             } catch (error) {
                 console.error('Error uploading image:', error);
                 setStatus('fail');
+                setUploading(false)
+                toast.error('Image failed to upload successfully.', { autoClose: 4000 });
                 return;
             }
         }
