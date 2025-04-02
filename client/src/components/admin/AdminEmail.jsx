@@ -10,6 +10,7 @@ const AdminEmail = () => {
     const [newSubject, setNewSubject] = useState('')
     const [singleEmail, setSingleEmail] = useState('')
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingMjml, setIsLoadingMjml] = useState(false);
     const [adminUserData, setAdminUserData] = useState(null);
     const [newEmail, setNewEmail] = useState('');
 
@@ -234,6 +235,7 @@ const AdminEmail = () => {
     
     const previewEmail = async () => {
         try {
+            setIsLoadingMjml(true)
             const response = await fetch('/api/preview-email', {
                 method: 'POST',
                 headers: {
@@ -247,11 +249,14 @@ const AdminEmail = () => {
             });
 
             if (!response.ok) {
+                setIsLoadingMjml(false)
                 throw new Error(`Error: ${response.statusText}`);
             }
-
-            const html = await response.text();
-            setPreviewHtml(html);
+            if (response.ok) {
+                const html = await response.text();
+                setIsLoadingMjml(false)
+                setPreviewHtml(html);
+            }
         } catch (error) {
             console.error('Error generating preview:', error);
         }
@@ -395,7 +400,21 @@ const AdminEmail = () => {
                         />
                     </div>
                     <div className='flex-start'>
-                        {bodyType === 'mjml' && <button className='btn btn-small margin-t-8 margin-l-12 margin-b-16' onClick={previewEmail}>Preview Email</button>}
+                        {bodyType === 'mjml' && (
+                            <>
+                                {isLoadingMjml ? (
+                                    <PulseLoader
+                                        className='margin-l-24 margin-t-12'
+                                        color={'#ff806b'}
+                                        size={10}
+                                        aria-label="Loading Spinner"
+                                        data-testid="loader"
+                                    />
+                                ) : (
+                                    <button className='btn btn-small margin-t-8 margin-l-12 margin-b-16' onClick={previewEmail}>Preview Email</button>
+                                )}
+                            </>
+                        )}
                         {isLoading ? (
                             <PulseLoader
                                 className='margin-l-24 margin-t-12'

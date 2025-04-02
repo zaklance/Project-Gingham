@@ -156,6 +156,7 @@ def send_contact_email(name, email, subject, message):
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
         recipient_email = "admin@gingham.nyc"
+        smtp = os.getenv('EMAIL_SMTP')
 
         msg = MIMEMultipart()
         msg['From'] = f'Gingham NYC <{sender_email}>'
@@ -194,7 +195,7 @@ def send_contact_email(name, email, subject, message):
             """
         msg.attach(MIMEText(body, 'html'))
 
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         # print("SMTP Server is unreachable")
@@ -224,6 +225,7 @@ def send_user_password_reset_email(email):
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
         recipient_email = email
+        smtp = os.getenv('EMAIL_SMTP')
 
         msg = MIMEMultipart()
         msg['From'] = f'Gingham NYC <{sender_email}>'
@@ -258,7 +260,7 @@ def send_user_password_reset_email(email):
         msg.attach(MIMEText(body, 'html'))
 
         # Send email
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, recipient_email, msg.as_string())
@@ -283,6 +285,7 @@ def send_vendor_password_reset_email(email):
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
         recipient_email = email
+        smtp = os.getenv('EMAIL_SMTP')
 
         msg = MIMEMultipart()
         msg['From'] = f'Gingham NYC <{sender_email}>'
@@ -317,7 +320,7 @@ def send_vendor_password_reset_email(email):
         msg.attach(MIMEText(body, 'html'))
 
         # Send email
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, recipient_email, msg.as_string())
@@ -342,6 +345,7 @@ def send_admin_password_reset_email(email):
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
         recipient_email = email
+        smtp = os.getenv('EMAIL_SMTP')
 
         msg = MIMEMultipart()
         msg['From'] = f'Gingham NYC <{sender_email}>'
@@ -376,7 +380,7 @@ def send_admin_password_reset_email(email):
         msg.attach(MIMEText(body, 'html'))
 
         # Send email
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, recipient_email, msg.as_string())
@@ -397,7 +401,8 @@ def send_user_confirmation_email(email, user_data):
         confirmation_link = f"{SITE_URL}/user/confirm-email/{token}"
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
-        # print(f"Generated confirmation link: {confirmation_link}")
+        smtp = os.getenv('EMAIL_SMTP')
+
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -436,7 +441,7 @@ def send_user_confirmation_email(email, user_data):
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -454,10 +459,10 @@ def send_vendor_confirmation_email(email, vendor_data):
         token = serializer.dumps(vendor_data, salt='vendor-confirmation-salt')
         SITE_URL = os.getenv('SITE_URL')
         confirmation_link = f"{SITE_URL}/vendor/confirm-email/{token}"
-        # print(f"Generated vendor confirmation link: {confirmation_link}")
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -496,7 +501,7 @@ def send_vendor_confirmation_email(email, vendor_data):
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -514,10 +519,10 @@ def send_admin_confirmation_email(email, admin_data):
         token = serializer.dumps(admin_data, salt='admin-confirmation-salt')
         SITE_URL = os.getenv('SITE_URL')
         confirmation_link = f"{SITE_URL}/admin/confirm-email/{token}"
-        # print(f"Generated admin confirmation link: {confirmation_link}")
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -556,7 +561,7 @@ def send_admin_confirmation_email(email, admin_data):
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send admin email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -580,6 +585,7 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -636,7 +642,7 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -654,6 +660,7 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -709,7 +716,7 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -727,6 +734,7 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -791,7 +799,7 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -809,6 +817,7 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -890,7 +899,7 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -908,6 +917,7 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -963,7 +973,7 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -981,6 +991,7 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -1036,7 +1047,7 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -1054,6 +1065,7 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -1135,7 +1147,7 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -1153,6 +1165,7 @@ def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -1195,7 +1208,7 @@ def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -1213,6 +1226,7 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -1259,7 +1273,7 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -1277,6 +1291,7 @@ def send_email_user_new_blog(email, user, blog):
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -1320,7 +1335,7 @@ def send_email_user_new_blog(email, user, blog):
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -1338,6 +1353,7 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -1393,7 +1409,7 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -1417,6 +1433,7 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -1472,7 +1489,7 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -1490,6 +1507,7 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -1545,7 +1563,7 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -1563,6 +1581,7 @@ def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pic
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -1610,7 +1629,7 @@ def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pic
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -1628,6 +1647,7 @@ def send_email_vendor_new_review(email, user, vendor, review, link_review):
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -1674,7 +1694,7 @@ def send_email_vendor_new_review(email, user, vendor, review, link_review):
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -1692,6 +1712,7 @@ def send_email_vendor_new_blog(email, user, blog):
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -1735,7 +1756,7 @@ def send_email_vendor_new_blog(email, user, blog):
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -1753,6 +1774,7 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -1829,7 +1851,7 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
         msg.attach(part)
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -1853,6 +1875,7 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -1904,7 +1927,7 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -1922,6 +1945,7 @@ def send_email_admin_product_request(email, user, vendor, product, link_product)
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -1989,7 +2013,7 @@ def send_email_admin_product_request(email, user, vendor, product, link_product)
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
@@ -2007,6 +2031,7 @@ def send_email_admin_new_blog(email, user, blog):
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
 
         if not sender_email or not password:
             print("Email credentials are missing")
@@ -2050,7 +2075,7 @@ def send_email_admin_new_blog(email, user, blog):
         msg.attach(MIMEText(body, 'html'))
 
         # print("Attempting to send vendor email...")
-        server = smtplib.SMTP('smtp.oxcs.bluehost.com', 587)
+        server = smtplib.SMTP(smtp, 587)
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, email, msg.as_string())
