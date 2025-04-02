@@ -785,6 +785,8 @@ def generate_vendor_baskets_csv(vendor_id, month, year):
 @celery.task
 def process_image(image_bytes, filename, max_size=MAX_SIZE, resolution=MAX_RES):
     """Resizes and optimizes an image asynchronously and returns it as bytes."""
+    max_size = int(max_size)
+    
     image = Image.open(BytesIO(image_bytes))
     image.thumbnail(resolution, Image.LANCZOS)
 
