@@ -504,10 +504,21 @@ def schedule_blog_notifications(mapper, connection, target):
         if post_date > datetime.utcnow().date():
             return
 
-        # Retrieve users who have notifications enabled
-        users = session.query(User).join(SettingsUser).filter(SettingsUser.site_new_blog == True).all()
-        admins = session.query(AdminUser).join(SettingsAdmin).filter(SettingsAdmin.site_new_blog == True).all()
-        vendor_users = session.query(VendorUser).join(SettingsVendor).filter(SettingsVendor.site_new_blog == True).all()
+        # Retrieve users who have notifications enabled based on blog type
+        if target.for_user:
+            users = session.query(User).join(SettingsUser).filter(SettingsUser.site_new_blog == True).all()
+        else:
+            users = []
+
+        if target.for_vendor:
+            vendor_users = session.query(VendorUser).join(SettingsVendor).filter(SettingsVendor.site_new_blog == True).all()
+        else:
+            vendor_users = []
+
+        if target.for_admin:
+            admins = session.query(AdminUser).join(SettingsAdmin).filter(SettingsAdmin.site_new_blog == True).all()
+        else:
+            admins = []
 
         if not users and not admins and not vendor_users:
             print("No users have blog notifications enabled. No notifications will be created.")
@@ -1093,8 +1104,8 @@ def notify_user_vendor_review_response(mapper, connection, target):
 def notify_users_new_market_in_state(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        # Retrieve users who reside in the same city as the new market
-        users_in_state = session.query(User).filter(User.state == target.state).all()
+        # Retrieve users who reside in the same city as the new market (case-insensitive)
+        users_in_state = session.query(User).filter(func.lower(User.state) == func.lower(target.state)).all()
 
         if not users_in_state:
             print(f"No users found in {target.city} {target.state}. No notifications will be created.")
