@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom';
 import AdminBlogAdmin from './AdminBlogAdmin';
 import AdminBlogUser from './AdminBlogUser';
 import AdminBlogVendor from './AdminBlogVendor';
+import PulseLoader from 'react-spinners/PulseLoader';
+
 
 const AdminBlog = () => {
     const [blogs, setBlogs] = useState([]);
     const [activeTab, setActiveTab] = useState('user');
     const [activeTabMode, setActiveTabMode] = useState('add');
     const [images, setImages] = useState([]);
+    const [uploading, setUploading] = useState(false);
     const [uploadedFolders, setUploadedFolders] = useState({});
     const [copied, setCopied] = useState({});
     const [openFolder, setOpenFolder] = useState({});
@@ -32,31 +35,44 @@ const AdminBlog = () => {
     const handleFileChange = (event) => {
         const files = Array.from(event.target.files);
         setImages(files);
+        setUploadError(null);
     };
 
     const handleImageUpload = async () => {
+        if (images.length === 0) {
+            setUploadError("Please select at least one image.");
+            return;
+        }
+
         const formData = new FormData();
         images.forEach((image) => {
-            formData.append('files', image);
+            formData.append("files", image);
         });
-        formData.append('type', 'blog');
+
+        setUploading(true);
+        setProgress(0);
 
         try {
-            const response = await fetch('/api/upload-blog-images', {
-                method: 'POST',
+            const response = await fetch("/api/upload-blog-images", {
+                method: "POST",
                 body: formData,
             });
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Images uploaded successfully:', data);
+                console.log("Images uploaded successfully:", data);
+                setUploadedFiles(data.filenames);
                 fetchImages();
-                window.location.reload()
+                setImages([]);
             } else {
-                console.error('Failed to upload images');
+                const errorData = await response.json();
+                setUploadError(errorData.error || "Failed to upload images.");
             }
         } catch (error) {
-            console.error('Error uploading images:', error);
+            setUploadError("Error uploading images. Please try again.");
+            console.error("Upload error:", error);
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -99,7 +115,7 @@ const AdminBlog = () => {
     const handleToggle = (name) => {
         setOpenFolder((prev) => (prev === name ? null : name));
     };
-    
+
 
     return (
         <>
@@ -148,7 +164,17 @@ const AdminBlog = () => {
                         </div>
                     </div>
                     <div>
-                        <button className='btn btn-file' onClick={handleImageUpload}>Save Images</button>
+                        {uploading ? (
+                            <PulseLoader
+                                className='margin-t-16'
+                                color={'#ff806b'}
+                                size={10}
+                                aria-label="Loading Spinner"
+                                data-testid="loader"
+                            />
+                        ) : (
+                            <button className='btn btn-file' onClick={handleImageUpload}>Save Images</button>
+                        )}
                     </div>
                 </div>
                 {uploadedFolders && Object.keys(uploadedFolders).length > 0 && (
@@ -156,7 +182,7 @@ const AdminBlog = () => {
                         <details className='details-images box-scroll'>
                             <summary>Uploaded Images</summary>
                             {Object.keys(uploadedFolders).map((folder) => (
-                                <details 
+                                <details
                                     key={folder}
                                     className='details-images'
                                     open={openFolder === folder}
@@ -173,8 +199,8 @@ const AdminBlog = () => {
                                                 <img src={img} alt={`Uploaded ${index}`} className='img-blog' />
                                                 <div className='flex-space-between'>
                                                     <p className='text-break-all text-size-088'>
-                                                        <button 
-                                                            className={copied[index] ? "btn icon-copy-success" : "btn icon-copy"} 
+                                                        <button
+                                                            className={copied[index] ? "btn icon-copy-success" : "btn icon-copy"}
                                                             onClick={() => handleCopy(img, index)}
                                                             title="copy"
                                                         >
