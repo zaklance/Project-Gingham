@@ -302,7 +302,7 @@ def upload_file():
             else:
                 # Process and resize image for non-SVG files
                 image_bytes = file.read()
-                task = process_image.delay(image_bytes, original_filename, upload_folder)
+                task = process_image.delay(image_bytes, original_filename, MAX_SIZE, MAX_RES)
 
                 # Poll Celery to get processed image
                 import time
@@ -409,7 +409,7 @@ def upload_blog_images():
                     # image = resize_image(image)
                     # image.save(file_path)
                     image_bytes = file.read()
-                    task = process_image.delay(image_bytes, original_filename, upload_folder)
+                    task = process_image.delay(image_bytes, original_filename, MAX_SIZE, MAX_RES)
 
                 uploaded_files.append(f'/api/uploads/blog-images/{formatted_date}/{os.path.basename(file_path)}')
 
