@@ -303,6 +303,7 @@ def upload_file():
                 # Process and resize image for non-SVG files
                 image_bytes = file.read()
                 task = process_image.delay(image_bytes, original_filename, MAX_SIZE, MAX_RES)
+                task_id = task.id
 
                 # Poll Celery to get processed image
                 import time
@@ -362,7 +363,7 @@ def upload_file():
                 market.image = f'/api/uploads/market-images/{market_id}/{os.path.basename(file_path)}'
                 db.session.commit()
 
-            return {'message': 'File successfully uploaded', 'filename': escape(os.path.basename(file_path))}, 201
+            return {'message': 'File successfully uploaded', 'filename': escape(os.path.basename(file_path)), 'task_id': task_id}, 201
 
         except Exception as e:
             db.session.rollback()
@@ -370,6 +371,8 @@ def upload_file():
             return {'error': f'Failed to upload image: {str(e)}'}, 500
 
     return {'error': 'File type not allowed'}, 400
+
+import base64
 
 @app.route('/api/upload-blog-images', methods=['POST'])
 def upload_blog_images():
@@ -392,24 +395,24 @@ def upload_blog_images():
     for file in files:
         if file and allowed_file(file.filename):
             original_filename = secure_filename(file.filename)
-            file_path = os.path.join(upload_folder, original_filename)
-
-            if os.path.exists(file_path):
-                base, ext = os.path.splitext(original_filename)
-                counter = 1
-                while os.path.exists(file_path):
-                    file_path = os.path.join(upload_folder, f"{base}_{counter}{ext}")
-                    counter += 1
 
             try:
                 if original_filename.rsplit('.', 1)[1].lower() == 'svg':
+                    # Directly save SVG files without processing
+                    file_path = os.path.join(upload_folder, original_filename)
                     file.save(file_path)
                 else:
-                    # image = Image.open(file)
-                    # image = resize_image(image)
-                    # image.save(file_path)
+                    # Read file bytes and send to Celery for processing
                     image_bytes = file.read()
                     task = process_image.delay(image_bytes, original_filename, MAX_SIZE, MAX_RES)
+                    result = task.get(timeout=30)  # Wait for Celery
+
+                    # Decode the Base64 response from Celery and save it locally
+                    processed_image_data = base64.b64decode(result["image_data"])
+                    file_path = os.path.join(upload_folder, result["filename"])
+
+                    with open(file_path, "wb") as f:
+                        f.write(processed_image_data)
 
                 uploaded_files.append(f'/api/uploads/blog-images/{formatted_date}/{os.path.basename(file_path)}')
 
@@ -418,6 +421,7 @@ def upload_blog_images():
                 return {'error': f'Failed to upload image: {str(e)}'}, 500
 
     return {'message': 'Files successfully uploaded', 'filenames': uploaded_files}, 201
+
 
 @app.route('/api/blog-images', methods=['GET'])
 def get_blog_images():
@@ -3795,13 +3799,13 @@ def get_user_notifications():
     
     try:
         current_user = get_jwt_identity()
-        print("JWT Identity (User):", current_user)
+        # print("JWT Identity (User):", current_user)
     except Exception as e:
         print("JWT Error:", str(e))
         return jsonify({"error": "JWT validation failed"}), 401
 
     user_id = request.args.get('user_id')
-    print("Requested user_id:", user_id)
+    # print("Requested user_id:", user_id)
     
     if request.method == 'GET':
         query = UserNotification.query
@@ -3809,7 +3813,7 @@ def get_user_notifications():
             query = query.filter_by(user_id=user_id)
 
         notifications = query.order_by(UserNotification.created_at.desc()).all()
-        print("Found notifications count:", len(notifications))
+        # print("Found notifications count:", len(notifications))
         
         return jsonify([notif.to_dict() for notif in notifications]), 200
     

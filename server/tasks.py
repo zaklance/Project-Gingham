@@ -798,6 +798,8 @@ def process_image(image_bytes, filename, max_size=MAX_SIZE, resolution=MAX_RES):
         image.save(temp_output, format='JPEG', quality=50)
 
     file_size = temp_output.tell()
+    if not isinstance(file_size, int):
+        raise ValueError(f"Unexpected file_size type: {type(file_size)}")
     step = 0.9
 
     while file_size > max_size:
@@ -809,6 +811,10 @@ def process_image(image_bytes, filename, max_size=MAX_SIZE, resolution=MAX_RES):
             image.save(temp_output, format='JPEG', quality=quality)
         file_size = temp_output.tell()
         step -= 0.05
+    
+        if not isinstance(file_size, int):
+            raise ValueError(f"Unexpected file_size type after compression: {type(file_size)}")
+
 
     temp_output.seek(0)
 
