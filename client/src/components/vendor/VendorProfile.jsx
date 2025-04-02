@@ -437,7 +437,7 @@ function VendorProfile () {
             const formData = new FormData();
             formData.append('file', image);
             formData.append('type', 'vendor');
-            formData.append('vendor_id', id);
+            formData.append('vendor_id', vendorId);
     
             for (const [key, value] of formData.entries()) {
                 console.log(`${key}:`, value);
@@ -474,7 +474,7 @@ function VendorProfile () {
                         }
                     }
 
-                    uploadedFilename = `/api/uploads/vendor-images/${vendorData.id}/${data.filename}`;
+                    uploadedFilename = `/api/uploads/vendor-images/${vendorId}/${data.filename}`;
                     console.log('Image processing complete:', uploadedFilename);
                     setStatus('success');
                     setUploading(false)
@@ -501,8 +501,8 @@ function VendorProfile () {
         
         const updatedVendorData = { ...tempVendorData };
         if (uploadedFilename) {
-            updatedVendorData.image = `${vendorData.id}/${uploadedFilename}`;
-            tempVendorData.image = `${vendorData.id}/${uploadedFilename}`;
+            updatedVendorData.image = `${uploadedFilename}`;
+            tempVendorData.image = `${uploadedFilename}`;
         }
         
         try {
