@@ -535,6 +535,7 @@ function AdminProfile () {
                                         <FormControlLabel control={<Switch checked={tempAdminSettings.site_report_review} onChange={() => handleSwitchChange('site_report_review')} color={'secondary'} />} label="Review is reported"/>
                                         <FormControlLabel control={<Switch checked={tempAdminSettings.site_product_request} onChange={() => handleSwitchChange('site_product_request')} color={'secondary'} />} label="Vendor requests new product category"/>
                                         {/* <FormControlLabel control={<Switch checked={tempAdminSettings.site_new_blog} onChange={() => handleSwitchChange('site_new_blog')} color={'secondary'} />} label="A new blog has been posted"/> */}
+                                        <FormControlLabel control={<Switch checked={tempAdminSettings.site_new_vendor} onChange={() => handleSwitchChange('site_new_vendor')} color={'secondary'} />} label="A new vendor has joined"/>
                                     </FormGroup>
                                 )}
                                 {activeTab === 'email' && (
@@ -542,6 +543,7 @@ function AdminProfile () {
                                         <FormControlLabel control={<Switch checked={tempAdminSettings.email_report_review} onChange={() => handleSwitchChange('email_report_review')} color={'secondary'} />} label="Review is reported"/>
                                         <FormControlLabel control={<Switch checked={tempAdminSettings.email_product_request} onChange={() => handleSwitchChange('email_product_request')} color={'secondary'} />} label="Vendor requests new product category" />
                                         <FormControlLabel control={<Switch checked={tempAdminSettings.email_new_blog} onChange={() => handleSwitchChange('email_new_blog')} color={'secondary'} />} label="A new blog has been posted" />
+                                        <FormControlLabel control={<Switch checked={tempAdminSettings.email_new_vendor} onChange={() => handleSwitchChange('email_new_vendor')} color={'secondary'} />} label="A new vendor has joined"/>
                                     </FormGroup>
                                 )}
                                 {activeTab === 'text' && (
