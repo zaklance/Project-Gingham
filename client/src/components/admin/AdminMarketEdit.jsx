@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import DeleteIcon from '@mui/icons-material/Cancel';
+import PulseLoader from 'react-spinners/PulseLoader';
 
 function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const [marketDays, setMarketDays] = useState([])
@@ -26,6 +27,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const [newMapDay, setNewMapDay] = useState(0);
     const [newMapLink, setNewMapLink] = useState(null);
     const [image, setImage] = useState(null)
+    const [uploading, setUploading] = useState(false)
     const [showDropdown, setShowDropdown] = useState(false);
     const [showLocationDropdown, setShowLocationDropdown] = useState(false);
     const [status, setStatus] = useState('initial')
@@ -164,7 +166,8 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
 
     const handleImageUpload = async (marketId) => {
         if (!image) return;
-    
+
+        setUploading(true)
         const formData = new FormData();
         formData.append('file', image);
         formData.append('type', 'market'); // Indicate it's a market image
@@ -178,21 +181,41 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     
             if (response.ok) {
                 const data = await response.json();
+                const taskId = data.task_id;
+                // Poll for task completion
+                let taskStatus = 'PENDING';
+                while (taskStatus !== 'SUCCESS') {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    const statusResponse = await fetch(`/api/task-status/${taskId}`);
+                    const statusData = await statusResponse.json();
+                    taskStatus = statusData.status;
+                    console.log(`Checking task status: ${taskStatus}`);
+
+                    if (taskStatus === 'FAILURE') {
+                        toast.error('Image processing failed.', { autoClose: 4000 });
+                        setStatus('fail');
+                        setUploading(false)
+                        return;
+                    }
+                }
                 setAdminMarketData((prevData) => ({
                     ...prevData,
-                    image: `${matchingMarketId}/${data.filename}`, // Update the image in the state
+                    image: `${matchingMarketId}/${data.filename}`,
                 }));
                 setTempMarketData((prevData) => ({
                     ...prevData,
                     image: `${matchingMarketId}/${data.filename}`,
                 }));
+                setUploading(false)
                 setStatus('success');
             } else {
                 setStatus('fail');
+                setUploading(false)
                 console.error('Failed to upload image:', await response.text());
             }
         } catch (error) {
             setStatus('fail');
+            setUploading(false)
             console.error('Error uploading image:', error);
         }
     };
@@ -342,15 +365,14 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         
                 if (response.ok) {
                     const updatedData = await response.json();
-                    setAdminMarketData(updatedData);
+                    if (image) {
+                        await handleImageUpload(matchingMarketId);
+                    }
+                    setTempMarketData(updatedData);
                     setEditMode(false);
                     toast.success('Market details updated successfully.', {
                         autoClose: 5000,
                     });
-        
-                    if (image) {
-                        await handleImageUpload(matchingMarketId);
-                    }
                 } else {
                     console.error('Failed to save market details:', await response.text());
                 }
@@ -903,8 +925,20 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     />
                                 </div>
                             </div>
-                            <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
-                            <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
+                            <div className='flex-start flex-gap-16'>
+                                {uploading ? (
+                                    <PulseLoader
+                                        className='margin-t-16'
+                                        color={'#ff806b'}
+                                        size={10}
+                                        aria-label="Loading Spinner"
+                                        data-testid="loader"
+                                    />
+                                ) : (
+                                    <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
+                                )}
+                                <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
+                            </div>
                         </>
                     ) : (
                         <>
