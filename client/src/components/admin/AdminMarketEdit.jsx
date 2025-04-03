@@ -252,6 +252,11 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                     image: null,
                 }));
     
+                setTempMarketData((prevData) => ({
+                    ...prevData,
+                    image: null,
+                }));
+    
                 toast.success('Image deleted successfully.', {
                     autoClose: 4000,
                 });
