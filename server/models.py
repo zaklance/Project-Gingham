@@ -954,10 +954,12 @@ class SettingsAdmin(db.Model, SerializerMixin):
     site_report_review = db.Column(db.Boolean, default=True, nullable=False)
     site_product_request = db.Column(db.Boolean, default=True, nullable=False)
     site_new_blog = db.Column(db.Boolean, default=True, nullable=False)
+    site_new_vendor = db.Column(db.Boolean, default=True, nullable=False)
     
     email_report_review = db.Column(db.Boolean, default=False, nullable=False)
     email_product_request = db.Column(db.Boolean, default=True, nullable=False)
     email_new_blog = db.Column(db.Boolean, default=True, nullable=False)
+    email_new_vendor = db.Column(db.Boolean, default=True, nullable=False)
     
     text_report_review = db.Column(db.Boolean, default=False, nullable=False)
     text_product_request = db.Column(db.Boolean, default=False, nullable=False)
