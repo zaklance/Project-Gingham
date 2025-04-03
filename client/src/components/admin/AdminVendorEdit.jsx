@@ -155,6 +155,10 @@ function AdminVendorEdit({ vendors }) {
                     ...prevData,
                     image: null, 
                 }));
+                setTempVendorData((prevData) => ({
+                    ...prevData,
+                    image: null, 
+                }));
                 toast.success('Image deleted successfully.', {
                     autoClose: 4000,
                 });
