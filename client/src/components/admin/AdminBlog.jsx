@@ -202,6 +202,13 @@ const AdminBlog = () => {
                                                             title="copy"
                                                         >
                                                             &emsp;
+                                                        </button>
+                                                        <button
+                                                            className="btn icon-delete-img"
+                                                            onClick={() => handleCopy(img, index)}
+                                                            title="delete"
+                                                        >
+                                                            &emsp;
                                                         </button> <span className='text-500'>src=</span>{img}
                                                     </p>
                                                 </div>
