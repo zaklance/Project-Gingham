@@ -356,10 +356,10 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
 
     useEffect(() => {
         const today = new Date().toLocaleDateString('en-CA');
-        console.log('Formatted date being sent:', today);
+        // console.log('Formatted date being sent:', today);
 
         const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        console.log('Browser timezone:', browserTimezone);
+        // console.log('Browser timezone:', browserTimezone);
 
 
         fetch(`/api/baskets?user_id=${userId}&sale_date=${today}`, {
