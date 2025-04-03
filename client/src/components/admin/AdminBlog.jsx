@@ -35,7 +35,6 @@ const AdminBlog = () => {
     const handleFileChange = (event) => {
         const files = Array.from(event.target.files);
         setImages(files);
-        setUploadError(null);
     };
 
     const handleImageUpload = async () => {
@@ -50,7 +49,6 @@ const AdminBlog = () => {
         });
 
         setUploading(true);
-        setProgress(0);
 
         try {
             const response = await fetch("/api/upload-blog-images", {
@@ -61,15 +59,14 @@ const AdminBlog = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log("Images uploaded successfully:", data);
-                setUploadedFiles(data.filenames);
                 fetchImages();
                 setImages([]);
             } else {
                 const errorData = await response.json();
-                setUploadError(errorData.error || "Failed to upload images.");
+                console.log(errorData.error || "Failed to upload images.");
             }
         } catch (error) {
-            setUploadError("Error uploading images. Please try again.");
+            console.log("Error uploading images. Please try again.");
             console.error("Upload error:", error);
         } finally {
             setUploading(false);
