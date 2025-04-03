@@ -204,6 +204,7 @@ chrome-user-data
 .vscode
 *.swp
 *.swo
+dump.rdb
 
 packages/react-devtools-core/dist
 packages/react-devtools-extensions/chrome/build
