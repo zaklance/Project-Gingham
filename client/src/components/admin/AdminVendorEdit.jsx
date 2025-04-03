@@ -3,6 +3,7 @@ import { states, vendors_default } from '../../utils/common';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { toast } from 'react-toastify';
+import PulseLoader from 'react-spinners/PulseLoader';
 
 function AdminVendorEdit({ vendors }) {
     const [query, setQuery] = useState("");
@@ -14,6 +15,7 @@ function AdminVendorEdit({ vendors }) {
     const [image, setImage] = useState(null);
     const [status, setStatus] = useState('initial');
     const [products, setProducts] = useState([])
+    const [uploading, setUploading] = useState(false);
 
     const onUpdateQuery = event => setQuery(event.target.value);
     const filteredVendors = vendors.filter(vendor => vendor.name.toLowerCase().includes(query.toLowerCase()) && vendor.name !== query)
@@ -75,6 +77,7 @@ function AdminVendorEdit({ vendors }) {
         if (!image) return;
     
         const formData = new FormData();
+        setUploading(true)
         formData.append('file', image);
         formData.append('type', 'vendor');
         formData.append('vendor_id', vendorId);
@@ -87,17 +90,37 @@ function AdminVendorEdit({ vendors }) {
     
             if (response.ok) {
                 const data = await response.json();
-                setVendorData((prevData) => ({
+                const taskId = data.task_id;
+                // Poll for task completion
+                let taskStatus = 'PENDING';
+                while (taskStatus !== 'SUCCESS') {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    const statusResponse = await fetch(`/api/task-status/${taskId}`);
+                    const statusData = await statusResponse.json();
+                    taskStatus = statusData.status;
+                    console.log(`Checking task status: ${taskStatus}`);
+
+                    if (taskStatus === 'FAILURE') {
+                        toast.error('Image processing failed.', { autoClose: 4000 });
+                        setStatus('fail');
+                        setUploading(false)
+                        return;
+                    }
+                }
+                setTempVendorData((prevData) => ({
                     ...prevData,
-                    image: `${matchingVendorId}/${data.filename}`,
+                    image: `/api/uploads/user-images/${matchingVendorId}/${data.filename}`,
                 }));
                 setStatus('success');
+                setUploading(false)
             } else {
                 setStatus('fail');
+                setUploading(false)
                 console.error('Failed to upload image:', await response.text());
             }
         } catch (error) {
-            setStatus('fail');
+            setStatus('fail')
+            setUploading(false)
             console.error('Error uploading image:', error);
         }
     };
@@ -183,15 +206,14 @@ function AdminVendorEdit({ vendors }) {
         
                 if (response.ok) {
                     const updatedData = await response.json();
-                    setVendorData(updatedData);
-                    setEditMode(false);
-                    toast.success('Vendor details updated successfully.', {
-                        autoClose: 4000,
-                    });
-        
                     if (image) {
                         await handleImageUpload(matchingVendorId);
                     }
+                    setEditMode(false);
+                    setVendorData(updatedData);
+                    toast.success('Vendor details updated successfully.', {
+                        autoClose: 4000,
+                    });
                 } else {
                     console.error('Failed to save vendor details:', await response.text());
                 }
@@ -426,7 +448,17 @@ function AdminVendorEdit({ vendors }) {
                                     onChange={handleFileChange}
                                 />
                             </div>
-                            <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
+                            {uploading ? (
+                                <PulseLoader
+                                    className='margin-t-16'
+                                    color={'#ff806b'}
+                                    size={10}
+                                    aria-label="Loading Spinner"
+                                    data-testid="loader"
+                                />
+                            ) : (
+                                <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
+                            )}
                             <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
                         </>
                     ) : (
