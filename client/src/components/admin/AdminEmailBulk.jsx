@@ -198,6 +198,7 @@ const AdminEmailBulk = () => {
 
     return (
         <>
+            <title>Gingham • Admin Email Bulk</title>
             <div>
                 <h1 className='margin-b-16'>Bulk Email</h1>
                 <div className='box-bounding'>

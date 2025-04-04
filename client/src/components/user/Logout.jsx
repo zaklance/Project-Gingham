@@ -24,6 +24,7 @@ function Logout() {
 
     return (
         <div>
+            <title>Gingham • Logout</title>
             Logging out...
         </div>
     );

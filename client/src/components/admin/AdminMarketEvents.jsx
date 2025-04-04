@@ -163,6 +163,7 @@ function AdminMarketEvents({ markets }) {
 
     return(
         <>
+            <title>Gingham • Admin Markets • Events</title>
             <div className='box-bounding'>
                 <h2>Search Markets</h2>
                 <table className='margin-t-16'>

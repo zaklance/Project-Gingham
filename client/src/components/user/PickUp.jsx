@@ -118,6 +118,7 @@ function PickUp() {
     return (
         <>
             <div>
+                <title>Gingham • Basket Pick-Up</title>
                 <h2 className='margin-b-24'>Baskets for Pick-Up Today</h2>
                 {baskets.length > 0 ? (
                     <div className='basket-cards-container'>

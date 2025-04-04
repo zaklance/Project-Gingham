@@ -36,6 +36,7 @@ function PrivacyPolicy() {
 
     return (
         <div className="box-bounding">
+            <title>Gingham • Privacy Policy</title>
             <h1 className="title-med margin-b-24">Privacy Policy</h1>
             <div className="vendor-guide">
             <aside className="toc m-hidden">

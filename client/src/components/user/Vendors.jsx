@@ -193,6 +193,7 @@ function Vendors() {
         
     return (
         <div className="markets-container">
+            <title>Gingham • Vendors</title>
             <div className='header margin-b-24'>
                 <div className='flex-space-between'>
                     <h2>Find A Market Vendor Today</h2>
