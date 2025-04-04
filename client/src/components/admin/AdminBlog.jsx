@@ -4,6 +4,7 @@ import AdminBlogAdmin from './AdminBlogAdmin';
 import AdminBlogUser from './AdminBlogUser';
 import AdminBlogVendor from './AdminBlogVendor';
 import PulseLoader from 'react-spinners/PulseLoader';
+import { toast } from 'react-toastify';
 
 
 const AdminBlog = () => {
@@ -70,6 +71,54 @@ const AdminBlog = () => {
             console.error("Upload error:", error);
         } finally {
             setUploading(false);
+        }
+    };
+
+    const handleDeleteImage = async (date_folder, img) => {
+        const token = localStorage.getItem('user_jwt-token');
+        if (!token) {
+            toast.warning('User is not authenticated. Please log in again.', {
+                autoClose: 4000,
+            });
+            return;
+        }
+
+        try {
+            console.log('Deleting image with filename:', img);
+
+            const response = await fetch(`/api/delete-image`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    filename: img,
+                    date_folder: date_folder,
+                    type: 'blog',
+                }),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Image deleted response:', result);
+
+                toast.success('Image deleted successfully.', {
+                    autoClose: 4000,
+                });
+                window.location.reload()
+            } else {
+                const errorText = await response.text();
+                console.error('Failed to delete image:', errorText);
+                toast.error(`Failed to delete the image: ${JSON.parse(errorText).error}`, {
+                    autoClose: 4000,
+                });
+            }
+        } catch (error) {
+            console.error('Error deleting image:', error);
+            toast.warning('An unexpected error occurred while deleting the image.', {
+                autoClose: 4000,
+            });
         }
     };
 
@@ -178,20 +227,20 @@ const AdminBlog = () => {
                     <div className='margin-t-12 margin-b-32'>
                         <details className='details-images box-scroll'>
                             <summary>Uploaded Images</summary>
-                            {Object.keys(uploadedFolders).map((folder) => (
+                            {Object.keys(uploadedFolders).map((dateFolder) => (
                                 <details
-                                    key={folder}
+                                    key={dateFolder}
                                     className='details-images'
-                                    open={openFolder === folder}
+                                    open={openFolder === dateFolder}
                                 >
                                     <summary onClick={(e) => {
                                         e.preventDefault();
-                                        handleToggle(folder);
+                                        handleToggle(dateFolder);
                                     }}>
-                                        {folder}
+                                        {dateFolder}
                                     </summary>
                                     <div className='grid-3'>
-                                        {uploadedFolders[folder]?.map((img, index) => (
+                                        {uploadedFolders[dateFolder]?.map((img, index) => (
                                             <div key={index} className='img-blog-array'>
                                                 <img src={img} alt={`Uploaded ${index}`} className='img-blog' />
                                                 <div className='flex-space-between'>
@@ -200,6 +249,13 @@ const AdminBlog = () => {
                                                             className={copied[index] ? "btn icon-copy-success" : "btn icon-copy"}
                                                             onClick={() => handleCopy(img, index)}
                                                             title="copy"
+                                                        >
+                                                            &emsp;
+                                                        </button>
+                                                        <button
+                                                            className="btn icon-delete-img"
+                                                            onClick={() => handleDeleteImage(dateFolder, img)}
+                                                            title="delete"
                                                         >
                                                             &emsp;
                                                         </button> <span className='text-500'>src=</span>{img}

@@ -1964,7 +1964,7 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
         print(f"Error during admin reported review email sending: {str(e)}")
         return {'error': f'Failed to send admin email: {str(e)}'}
 
-def send_email_admin_product_request(email, user, vendor, product, link_product):
+def send_email_admin_product_request(email, user, vendor, new_product, link_product):
     try:
 
         sender_email = os.getenv('EMAIL_USER')
@@ -2015,7 +2015,7 @@ def send_email_admin_product_request(email, user, vendor, product, link_product)
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>A vendor, {vendor.name}, requested a new product <strong><a class="link-underline" href={full_link_product}>{product}</a></strong>!</p>
+                        <p>A vendor, {vendor.name}, requested a new product <strong><a class="link-underline" href={full_link_product}>{new_product}</a></strong>!</p>
                         <div class="content flex-center">
                             <div class="box-callout">
                                 <h3 class="margin-4-0">{vendor.name}</h3>
@@ -2112,4 +2112,91 @@ def send_email_admin_new_blog(email, user, blog):
 
     except Exception as e:
         print(f"Error during admin new blog email sending: {str(e)}")
+        return {'error': f'Failed to send admin email: {str(e)}'}
+
+def send_email_admin_new_vendor(email, user, vendor, link_vendor):
+    try:
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
+        port = os.getenv('EMAIL_PORT')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+        
+        full_link_vendor = f'https://www.gingham.nyc/{link_vendor}'
+
+        if vendor.products:
+            product_names = [product.product for product in Product.query.filter(Product.id.in_(vendor.products)).all()]
+            products_display = ', '.join(product_names) if product_names else 'N/A'
+        else:
+            products_display = 'N/A'
+
+        if vendor.products_subcategories:
+            subcategories_display = ', '.join(vendor.products_subcategories)
+            subcategories_html = f"<h5 class='margin-4-0'>Product Subcategories: {subcategories_display}</h5>"
+        else:
+            subcategories_html = ""
+
+        if vendor.bio:
+            vendor_bio_html = f"<p class='margin-12-0'>{vendor.bio}</p>"
+        else:
+            vendor_bio_html = ""
+
+        msg = MIMEMultipart()
+        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'New Product Request on Gingham'
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {user.first_name},</p>
+                        <p>A new vendor joined gingham, check <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong> out!</p>
+                        <div class="content flex-center">
+                            <div class="box-callout">
+                                <h3 class="margin-4-0">{vendor.name}</h3>
+                                <h5 class="margin-4-0">{vendor.city}, {vendor.state}</h5>
+                                <h5 class="margin-4-0">Products: {products_display}</h5>
+                                {subcategories_html}
+                                {vendor_bio_html}
+                            </div>
+                        </div>
+                        <p>— The Gingham Team</p>
+                    </div>
+                    <div class="footer">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        # print("Attempting to send vendor email...")
+        server = smtplib.SMTP(smtp, port)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Admin notification email sent successfully.'}
+    
+    except Exception as e:
+        print(f"Error during admin product request email sending: {str(e)}")
         return {'error': f'Failed to send admin email: {str(e)}'}
