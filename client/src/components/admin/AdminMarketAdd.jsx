@@ -220,6 +220,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
 
     return (
         <>
+            <title>Gingham • Admin Markets • Add</title>
             <div className='box-bounding flex-start flex-gap-48 flex-wrap'>
                 <div>
                     <h2>Add Market</h2>

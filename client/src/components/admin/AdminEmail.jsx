@@ -348,6 +348,7 @@ const AdminEmail = () => {
 
     return (
         <>
+            <title>Gingham • Admin Email</title>
             <div>
                 <h1 className='margin-b-16'>Your Email</h1>
                 <div className='box-bounding'>

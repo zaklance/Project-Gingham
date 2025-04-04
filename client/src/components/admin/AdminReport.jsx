@@ -114,6 +114,7 @@ function AdminReport() {
 
     return (
         <div>
+            <title>Gingham • Admin Reported Reviews</title>
             <h1>Review Management</h1>
             <div className='box-bounding'>
                 <h2 className='margin-b-24' id="markets">Reported Market Reviews</h2>

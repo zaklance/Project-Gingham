@@ -91,6 +91,7 @@ const UserEmailVerification = () => {
 
 	return (
 		<div className="email-verification-container">
+			<title>Gingham • Email Verification</title>
 			{!isConfirmed ? (
 				<div className="box-bounding text-center">
 					<h1 className="title-med text-center">

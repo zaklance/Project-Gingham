@@ -452,6 +452,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
         <>
 
             <div className='box-bounding'>
+                <title>Gingham • Admin Markets • Edit</title>
                 <h2>Edit Markets</h2>
                 <table className='margin-t-16'>
                     <tbody>

@@ -499,6 +499,7 @@ function Markets() {
     
     return (
         <>
+            <title>Gingham • Markets</title>
             <div className="markets-container">
                 <div className='header'>
                     <div id="map-main">

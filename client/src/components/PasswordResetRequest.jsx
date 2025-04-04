@@ -41,6 +41,7 @@ function PasswordResetRequest({ user }) {
 
     return (
         <div className="reset-request center-container">
+            <title>Gingham • Password Reset Request</title>
             <h2>Password Reset</h2>
             <div onSubmit={handlePasswordResetRequest} className="form">
                 <div className="form-group">

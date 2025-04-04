@@ -283,6 +283,7 @@ function VendorCreate () {
 
     return (
         <div>
+            <title>Gingham • Vendor Create Vendor</title>
             <div className='tab-content margin-b-24'>
                 <h2>Create a Vendor Profile</h2>
             </div>
