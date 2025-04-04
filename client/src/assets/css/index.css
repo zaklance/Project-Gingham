@@ -2823,6 +2823,20 @@ select:hover {
   transition: background-position .6s;
 }
 
+.icon-delete-img {
+  background-image: url('../images/icons/delete-photo-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.4rem auto;
+  height: 28px;
+  width: 28px;
+  transition: opacity .4s ease;
+}
+
+.icon-delete-img:hover {
+  background-color: #ff4b5a;
+}
+
 .icon-copy, .icon-copy:hover {
   background-image: url('../images/icons/copy-svgrepo-com.svg');
   background-repeat: no-repeat;
