@@ -3257,7 +3257,7 @@ select:hover {
 .user-portal-background {
   background-size:cover;
   width: 100%;
-  height: 632px;
+  height: 100%;
   border-radius: 16px;
   transition: background-image 1s;
 }
@@ -3779,11 +3779,6 @@ select:hover {
   .title-big-gingham {
     font-size: 6em;
   }
-
-
-  .user-portal-background {
-    height: 680px;
-  }
 }
 
 
@@ -4068,10 +4063,6 @@ select:hover {
 
   .img-maintenance {
     min-height: 400px;
-  }
-
-  .user-portal-background {
-    height: 800px;
   }
 }
 

@@ -152,6 +152,7 @@ function Home() {
                     {/* <h1 className="title-big m-title-big">Welcome to</h1> */}
                     <h1 className=" font-gingham title-big-gingham padding-b-32">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</h1>
                 </div>
+                <br className="m-br"/>
                 <div className="box-home box-inside">
                     <h2 className="text-transparent">Make A Positive Impact By Minimizing Food Waste </h2><br/>
                     <p> Do you love fresh, local produce at a great price? Meet Gingham, the platform connecting 
@@ -162,6 +163,8 @@ function Home() {
                     <br/>
                     <p> Our mission: reduce waste, support vendors, and provide fresh, affordable food. Every 
                         basket purchased helps reduce waste and strengthen your community. &emsp;
+                        <br className="m-br"/>
+                        <br className="m-br"/>
                         <span>
                             {!token && (
                                 <a className="link-underline-inverse text-600" onClick={handlePopup}> Sign up here!</a>
@@ -169,6 +172,7 @@ function Home() {
                         </span>
                     </p>
                 </div>
+                <br className="m-br"/>
             </div>
             {/* <div className="d-flex-space-between">
                 <div className="m-flex-center">
