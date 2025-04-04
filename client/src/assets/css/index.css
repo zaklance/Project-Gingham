@@ -177,6 +177,10 @@ p, li, div, form, input, select, button, textarea, td {
   font-style: normal;
 }
 
+.title-big-gingham {
+  font-size: 9em;
+}
+
 .title-big {
   font-size: 6em;
 }
@@ -255,6 +259,10 @@ p, li, div, form, input, select, button, textarea, td {
 
 .text-blue {
   color: #007BFF !important;
+}
+
+.text-transparent {
+  background-color: transparent;
 }
 
 .text-timezone {
@@ -402,6 +410,10 @@ article {
   margin-top: -4px;
 }
 
+.margin-t--32 {
+  margin-top: -32px;
+}
+
 .margin-t-4 {
   margin-top: 4px;
 }
@@ -476,6 +488,10 @@ article {
 
 .padding-96 {
   padding: 96px;
+}
+
+.padding-b-32 {
+  padding-bottom: 32px;
 }
 
 .margin-auto {
@@ -874,7 +890,7 @@ ul {
   float: none;
   background-color: #d8f4fe;
   padding: 24px;
-  border-radius: 12px;
+  border-radius: 16px;
 }
 
 .box-blue {
@@ -902,6 +918,15 @@ ul {
   border-radius: 24px;
 }
 
+.box-home {
+  background-color: white;
+  width: fit-content;
+  margin-left: 48px;
+  margin-right: 48px;
+  padding: 16px 24px;
+  border-radius: 24px;
+}
+
 .box-bounding {
   margin-top: 20px;
   padding: 20px;
@@ -912,7 +937,7 @@ ul {
 .box-blog {
   background-color: #fbf7eb;
   padding: 16px;
-  border-radius: 12px;
+  border-radius: 16px;
   height: min-content;
 }
 
@@ -2823,20 +2848,6 @@ select:hover {
   transition: background-position .6s;
 }
 
-.icon-delete-img {
-  background-image: url('../images/icons/delete-photo-svgrepo-com.svg');
-  background-repeat: no-repeat;
-  background-position: right 50% top 50%;
-  background-size: 1.4rem auto;
-  height: 28px;
-  width: 28px;
-  transition: opacity .4s ease;
-}
-
-.icon-delete-img:hover {
-  background-color: #ff4b5a;
-}
-
 .icon-copy, .icon-copy:hover {
   background-image: url('../images/icons/copy-svgrepo-com.svg');
   background-repeat: no-repeat;
@@ -3243,6 +3254,14 @@ select:hover {
   height: 600px;
 }
 
+.user-portal-background {
+  background-size:cover;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  transition: background-image 1s;
+}
+
 .footer {
   position: absolute;
   background-color: white;
@@ -3405,6 +3424,10 @@ select:hover {
 
 .m-br {
   display: none;
+}
+
+.d-br {
+  display: block;
 }
 
 .vendor-guide {
@@ -3752,6 +3775,10 @@ select:hover {
     margin-left: 0px;
     color: #ff7b8a
   }
+
+  .title-big-gingham {
+    font-size: 6em;
+  }
 }
 
 
@@ -3766,6 +3793,10 @@ select:hover {
 
   .m-br {
     display: block;
+  }
+
+  .d-br {
+    display: none;
   }
 
   .m-wrap {
