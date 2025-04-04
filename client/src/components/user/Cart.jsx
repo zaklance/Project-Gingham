@@ -81,6 +81,7 @@ function Cart() {
 
     return (
         <div>
+            <title>Gingham • Cart</title>
             <h2>Shopping Cart</h2>
             <div className='box-bounding'>
                 {cartItems.length === 0 ? (

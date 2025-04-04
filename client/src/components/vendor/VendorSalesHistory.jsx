@@ -228,6 +228,7 @@ function VendorSalesHistory({ baskets, vendorId }) {
 
     return (
         <>
+            <title>Gingham • Vendor Sales History</title>
             <div className='box-bounding'>
                 <div className='flex-space-between flex-bottom-align'>
                     <h2>Sales History</h2>

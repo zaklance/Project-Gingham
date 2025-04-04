@@ -71,6 +71,7 @@ function PasswordReset({ user, path }) {
 
     return (
         <div className="password-reset">
+            <title>Gingham • Password Reset</title>
             <h2>Reset Your Password</h2>
             <form onSubmit={handlePasswordReset} className="form">
                 <div className="form-group form-reset">

@@ -24,6 +24,7 @@ function Payment() {
 
     return (
         <>
+            <title>Gingham • Payment</title>
             {clientSecret && stripePromise ? (
                 <Elements stripe={stripePromise} options={{ clientSecret, appearance }}>
                     <CheckoutForm 

@@ -8,7 +8,7 @@ import App from './App.jsx';
 import About from './components/About.jsx';
 import Home from './components/Home.jsx';
 import Contact from './components/Contact.jsx';
-import TermsOfService from './components/TermsOfService.jsx';
+import TermsAndConditions from './components/TermsAndConditions.jsx';
 import PrivacyPolicy from './components/PrivacyPolicy.jsx';
 import PasswordResetRequest from './components/PasswordResetRequest.jsx';
 import PasswordReset from './components/PasswordReset.jsx';
@@ -56,7 +56,6 @@ import AdminHelp from './components/admin/AdminHelp.jsx';
 import AdminEmailBulk from './components/admin/AdminEmailBulk.jsx';
 import AdminEmail from './components/admin/AdminEmail.jsx';
 import AdminBlog from './components/admin/AdminBlog.jsx';
-import AdminBaskets from './components/admin/AdminBaskets.jsx';
 import AdminReport from './components/admin/AdminReport.jsx';
 import AdminStats from './components/admin/AdminStats.jsx';
 import AdminEmailVerification from './components/admin/AdminEmailVerification.jsx';
@@ -180,7 +179,7 @@ const router = createBrowserRouter([
             { path: "/", element: <Home /> },
             { path: "about", element: <About /> },
             { path: "contact", element: <Contact /> },
-            { path: "terms-service", element: <TermsOfService /> },
+            { path: "terms-service", element: <TermsAndConditions /> },
             { path: "privacy-policy", element: <PrivacyPolicy /> },
             { path: "maintenance", element: <Maintenance /> },
             {
@@ -234,7 +233,6 @@ const router = createBrowserRouter([
                     { path: "users", element: <AdminAuthRoute><AdminUsers /></AdminAuthRoute>},
                     { path: "help", element: <AdminAuthRoute><AdminHelp /></AdminAuthRoute>},
                     { path: "blog", element: <AdminAuthRoute><AdminBlog /></AdminAuthRoute>},
-                    { path: "baskets", element: <AdminAuthRoute><AdminBaskets /></AdminAuthRoute>},
                     { path: "report", element: <AdminAuthRoute><AdminReport /></AdminAuthRoute>},
                     { path: "email-bulk", element: <AdminAuthRoute><AdminEmailBulk /></AdminAuthRoute>},
                     { path: "email", element: <AdminAuthRoute><AdminEmail /></AdminAuthRoute>},

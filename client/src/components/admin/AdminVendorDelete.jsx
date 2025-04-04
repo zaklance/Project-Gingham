@@ -106,6 +106,7 @@ function AdminVendorDelete({ vendors }) {
 
     return (
         <>
+            <title>Gingham • Admin Vendors • Delete</title>
             <div className='box-bounding'>
                 <h2>Delete Vendors</h2>
                 <table className='margin-t-16'>

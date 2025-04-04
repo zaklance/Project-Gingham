@@ -91,6 +91,7 @@ function VendorScan() {
 
     return (
         <>
+            <title>Gingham • Vendor Scan Baskets</title>
             <VendorActiveVendor className="box-bounding margin-b-16" />
             <div className='flex-center'>
                 <Scanner

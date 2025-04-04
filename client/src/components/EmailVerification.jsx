@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-const UserEmailVerification = () => {
+const EmailVerification = () => {
 	const { token: confirmationToken } = useParams();
 	const [isLoading, setIsLoading] = useState(false);
 	const [isConfirmed, setIsConfirmed] = useState(false);
@@ -91,6 +91,7 @@ const UserEmailVerification = () => {
 
 	return (
 		<div className="email-verification-container">
+			<title>Gingham • Email Verification</title>
 			{!isConfirmed ? (
 				<div className="box-bounding text-center">
 					<h1 className="title-med text-center">
@@ -129,4 +130,4 @@ const UserEmailVerification = () => {
 	);
 };
 
-export default UserEmailVerification;
+export default EmailVerification;

@@ -239,6 +239,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
 
     return (
         <>
+            <title>Gingham • Vendor Events</title>
             <div className='box-bounding'>
                 <h2>Add Events</h2>
                 <div className='margin-t-24'>

@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 
-function TermsOfService() {
+function TermsAndConditions() {
     const [activeSection, setActiveSection] = useState("");
 
     const sections = [
@@ -15,7 +15,7 @@ function TermsOfService() {
         "Limitation of Liability",
         "Intellectual Property",
         "Termination of Accounts",
-        "Changes to Terms of Service",
+        "Changes to Terms and Conditions",
         "Dispute Resolution",
         "Contact Information"
     ];
@@ -42,7 +42,8 @@ function TermsOfService() {
 
     return (
         <div className='box-bounding'>
-            <h1 className="title-med margin-b-24">Terms of Service</h1>
+            <title>Gingham • Terms & Conditions</title>
+            <h1 className="title-med margin-b-24">Terms & Conditions</h1>
             <div className='vendor-guide'>
             <aside className="toc m-hidden">
                 <p className='margin-b-24'><strong className='text-blue'>Table of Contents</strong></p>
@@ -170,7 +171,7 @@ function TermsOfService() {
                 </section>
 
                 <section id="changes-to-terms-and-conditions" className="section-help">
-                    <h3 className="margin-b-16">Changes to Terms and Conditions</h3>
+                    <h3 className="margin-b-16">Changes to Terms & Conditions</h3>
                     <p className="margin-b-16">
                             We may update this Terms and Conditions from time to time. Any significant changes will be communicated via email or through a notification on the platform.
                             Please review this page periodically for updates.
@@ -199,4 +200,4 @@ function TermsOfService() {
     )
 }
 
-export default TermsOfService
+export default TermsAndConditions

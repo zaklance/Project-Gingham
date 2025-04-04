@@ -107,6 +107,7 @@ const AdminHelpTab = ({ fAQs, setFAQs, forUser, forVendor, forAdmin, userType })
 
     return (
         <>
+            <title>Gingham • Admin Help • {userType}</title>
             <div className='box-bounding'>
                 <h2>Add {userType} FAQs</h2>
                 <div className='margin-t-24'>
