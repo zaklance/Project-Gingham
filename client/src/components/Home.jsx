@@ -8,8 +8,7 @@ function Home() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isClicked, setIsClicked] = useState(false);
     const [blogFavs, setBlogFavs] = useState([]);
-    const [alertMessage, setAlertMessage] = useState(null);
-    const [showAlert, setShowAlert] = useState(false);
+    const [bgIndex, setBgIndex] = useState(0);
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const token = localStorage.getItem('user_jwt-token');
@@ -125,10 +124,53 @@ function Home() {
 
     const currentBlog = blogs[currentIndex];
 
+    const backgroundImages =[
+        './site-images/LzYeux_120719_0032_1800px.jpg',
+        './site-images/LzYeux_120719_0033_1800px.jpg',
+        './site-images/LzYeux_120719_0036_1800px.jpg'
+    ]
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setBgIndex(prev => (prev + 1) % backgroundImages.length);
+        }, 4000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const backgroundStyle = {
+        backgroundImage: `url(${backgroundImages[bgIndex]})`
+    }
+
     return (
         <div>
             <title>Gingham • Home</title>
-            <div className="d-flex-space-between">
+            <div className="user-portal-background" style={{ backgroundImage: `url(${backgroundImages[bgIndex]})` }}>
+                <br className="d-br"/>
+                <br className="d-br" />
+                <br/>
+                <div className="box-portal-home text-blend-lighten text-center">
+                    {/* <h1 className="title-big m-title-big">Welcome to</h1> */}
+                    <h1 className=" font-gingham title-big-gingham padding-b-32">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</h1>
+                </div>
+                <div className="box-home box-inside">
+                    <h2 className="text-transparent">Make A Positive Impact By Minimizing Food Waste </h2><br/>
+                    <p> Do you love fresh, local produce at a great price? Meet Gingham, the platform connecting 
+                        you with vendors in farmers markets. <span className="text-500">With Gingham, you can 
+                        pre-order mystery baskets filled with surplus or seasonal goods and pick them up directly 
+                        at the market.</span>
+                    </p>
+                    <br/>
+                    <p> Our mission: reduce waste, support vendors, and provide fresh, affordable food. Every 
+                        basket purchased helps reduce waste and strengthen your community. &emsp;
+                        <span>
+                            {!token && (
+                                <a className="link-underline-inverse text-600" onClick={handlePopup}> Sign up here!</a>
+                            )}
+                        </span>
+                    </p>
+                </div>
+            </div>
+            {/* <div className="d-flex-space-between">
                 <div className="m-flex-center">
                     <img className='big-logo' src="/site-images/gingham-logo-A_2.svg" alt="Gingham Logo"></img>
                 </div>
@@ -150,7 +192,7 @@ function Home() {
                         <h3><a className="link-underline-inverse" onClick={handlePopup}> Sign up here!</a></h3>
                     )}
                 </div>
-            </div>
+            </div> */}
             {currentBlog ? (
                 <div className="box-blog margin-t-24 badge-container no-float" id="blog">
                     <div className="badge-arrows">
