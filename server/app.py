@@ -1364,7 +1364,7 @@ def get_vendor_user(id):
                 if 'active_vendor' in data:
                     vendor_user.active_vendor = data['active_vendor']
                 if 'join_date' in data:
-                    data['join_date'] = datetime.strptime(data['join_date'], "%Y-%m-%d %H:%M:%S")
+                    vendor_user.join_date = datetime.strptime(data['join_date'], "%Y-%m-%d").date()
                 if 'last_login' in data:
                     data['last_login'] = datetime.strptime(data['last_login'], "%Y-%m-%d %H:%M:%S")
                     
@@ -1471,7 +1471,7 @@ def handle_admin_user_by_id(id):
 
             if 'join_date' in data:
                 try:
-                    data['join_date'] = datetime.strptime(data['join_date'], "%Y-%m-%d %H:%M:%S")
+                    data['join_date'] = datetime.strptime(data['join_date'], "%Y-%m-%d").date()
                 except ValueError:
                     return jsonify({'error': 'Invalid date format for join_date. Expected YYYY-MM-DD HH:MM:SS'}), 400
 

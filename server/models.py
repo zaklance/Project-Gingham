@@ -84,7 +84,7 @@ class User(db.Model, SerializerMixin):
     status = db.Column(db.String(10), nullable=False, default="active")
     login_count = db.Column(db.Integer, default=0)
     last_login = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
-    join_date = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
+    join_date = db.Column(db.Date, nullable=True, default=date.today) # LOCAL DATE
 
     # Relationships
     market_reviews = db.relationship('MarketReview', back_populates='user', cascade="all, delete-orphan")
@@ -518,7 +518,7 @@ class VendorUser(db.Model, SerializerMixin):
     vendor_role = db.Column(MutableDict.as_mutable(JSON), nullable=True)
     login_count = db.Column(db.Integer, default=0)
     last_login = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
-    join_date = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
+    join_date = db.Column(db.Date, nullable=True, default=date.today) # LOCAL DATE
 
     # notifications = db.relationship('VendorNotification', back_populates='vendor_user')
 
@@ -575,7 +575,7 @@ class AdminUser(db.Model, SerializerMixin):
     admin_role = db.Column(db.Integer, default=5)
     login_count = db.Column(db.Integer, default=0)
     last_login = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
-    join_date = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
+    join_date = db.Column(db.Date, nullable=True, default=date.today) # LOCAL DATE
 
     serialize_rules = ('-_password',)
 
