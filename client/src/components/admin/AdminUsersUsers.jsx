@@ -242,6 +242,7 @@ const AdminUsersUsers = () => {
 
     return (
         <div>
+            <title>Gingham • Admin Users • Users</title>
             <div className='box-bounding'>
                 <h2>Edit Users</h2>
                 <table className='margin-t-16'>

@@ -222,6 +222,7 @@ const AdminBlogAdmin = ({ blogs, activeTabMode }) => {
 
     return (
         <>
+            <title>Gingham • Admin Blogs • Admins</title>
             {activeTabMode === 'add' && (
                 <>
                     <h2 className='margin-b-16'>Add Admin Blog</h2>

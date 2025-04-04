@@ -3,6 +3,7 @@ import React from 'react';
 function About() {
     return(
         <div>
+            <title>Gingham • About</title>
             <br/>
             <h2>Return and Exchange Policy</h2>
             <div className="box-bounding">

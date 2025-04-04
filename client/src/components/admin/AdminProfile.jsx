@@ -346,6 +346,7 @@ function AdminProfile () {
 
     return(
         <div>
+            <title>Gingham • Admin Profile</title>
             <div className="tab-content">
                 <div>
                     <div className='box-bounding badge-container'>

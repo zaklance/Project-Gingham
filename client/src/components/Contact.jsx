@@ -44,6 +44,7 @@ function Contact() {
 
     return(
         <div className=''>
+            <title>Gingham • Contact</title>
             <div>
                 <h2 className='margin-t-16 margin-b-16'>Contact Us!</h2>
                 <p>Is there something you love, dislike, or have a question for us? Feel Free to send us an message using the form below:</p>

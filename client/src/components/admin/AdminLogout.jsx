@@ -21,6 +21,7 @@ function AdminLogout () {
 
     return(
         <div>
+            <title>Gingham • Admin Logout</title>
             Logging out...
         </div>
     )

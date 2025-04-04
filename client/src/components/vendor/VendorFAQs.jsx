@@ -20,6 +20,7 @@ function VendorFAQs() {
 
     return (
         <div className='box-bounding'>
+            <title>Gingham • Vendor FAQs</title>
             <h1 className='title-med margin-b-24'>Vendor FAQs</h1>
             {Array.isArray(fAQs) && fAQs.map((faq) => (
                 <details

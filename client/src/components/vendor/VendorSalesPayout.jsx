@@ -129,6 +129,7 @@ function VendorSalesPayout({ vendorId }) {
 
     return (
         <>
+            <title>Gingham • Vendor Payout</title>
             <VendorActiveVendor className={'box-bounding'} />
             <div className='box-bounding'>
                 <div className='flex-space-between flex-bottom-align'>

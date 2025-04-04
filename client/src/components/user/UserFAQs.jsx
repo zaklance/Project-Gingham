@@ -20,6 +20,7 @@ function UserFAQs() {
     
     return (
         <div>
+            <title>Gingham • User Help</title>
             <h1 className='title-med margin-b-24'>User FAQs</h1>
             {Array.isArray(fAQs) && fAQs.map((faq) => (
                 <details

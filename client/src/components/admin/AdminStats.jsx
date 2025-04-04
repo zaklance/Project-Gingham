@@ -640,6 +640,7 @@ function AdminStats() {
 
     return (
         <>
+            <title>Gingham • Admin Stats</title>
             <h1>Admin Statistics</h1>
             {userData?.admin_role <= 3 && (
                 <>

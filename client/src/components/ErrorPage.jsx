@@ -6,6 +6,7 @@ function ErrorPage() {
     const error = useRouteError();
     return(
         <div className='wrapper-error'>
+            <title>Gingham • Error</title>
             <h1>ERROR. PAGE DOESN'T EXIST.</h1>
         </div>
     )
