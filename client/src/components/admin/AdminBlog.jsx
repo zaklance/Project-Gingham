@@ -75,7 +75,7 @@ const AdminBlog = () => {
     };
 
     const handleDeleteImage = async (date_folder, img) => {
-        const token = localStorage.getItem('user_jwt-token');
+        const token = localStorage.getItem('admin_jwt-token');
         if (!token) {
             toast.warning('User is not authenticated. Please log in again.', {
                 autoClose: 4000,
