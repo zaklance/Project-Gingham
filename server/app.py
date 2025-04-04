@@ -463,6 +463,7 @@ def delete_image():
     user_id = data.get('user_id')
     vendor_id = data.get('vendor_id')
     market_id = data.get('market_id')
+    date_folder = data.get('date_folder')
 
     if file_type == 'vendor' and vendor_id:
         upload_folder = os.path.join(VENDOR_UPLOAD_FOLDER, str(vendor_id))
@@ -470,6 +471,8 @@ def delete_image():
         upload_folder = os.path.join(MARKET_UPLOAD_FOLDER, str(market_id))
     elif file_type == 'user' and user_id:
         upload_folder = os.path.join(USER_UPLOAD_FOLDER, str(user_id))
+    elif file_type == 'blog' and date_folder:
+        upload_folder = os.path.join(BLOG_UPLOAD_FOLDER, date_folder)
     else:
         return {'error': 'Invalid type or missing ID. Ensure "type" and respective ID are provided.'}, 400
 
@@ -502,6 +505,10 @@ def delete_image():
                 if user:
                     user.avatar = None
                     db.session.commit()
+            
+            if os.path.isdir(upload_folder) and not os.listdir(upload_folder):
+                print(f"Removing empty folder: {upload_folder}")
+                os.rmdir(upload_folder)
 
             return {'message': 'Image deleted successfully'}, 200
         else:
