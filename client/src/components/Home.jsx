@@ -146,7 +146,9 @@ function Home() {
                         basket purchased helps reduce waste and strengthen your community.
                     </p>
                     <br/>
-                    <h3><a className="link-underline-inverse" onClick={handlePopup}> Sign up here!</a></h3>
+                    {!token && (
+                        <h3><a className="link-underline-inverse" onClick={handlePopup}> Sign up here!</a></h3>
+                    )}
                 </div>
             </div>
             {currentBlog ? (
