@@ -102,11 +102,10 @@ const AdminBlog = () => {
             if (response.ok) {
                 const result = await response.json();
                 console.log('Image deleted response:', result);
-
                 toast.success('Image deleted successfully.', {
                     autoClose: 4000,
                 });
-                window.location.reload()
+                fetchImages();
             } else {
                 const errorText = await response.text();
                 console.error('Failed to delete image:', errorText);
@@ -247,6 +246,7 @@ const AdminBlog = () => {
                                                     <p className='text-break-all text-size-088'>
                                                         <button
                                                             className={copied[index] ? "btn icon-copy-success" : "btn icon-copy"}
+                                                            type="button"
                                                             onClick={() => handleCopy(img, index)}
                                                             title="copy"
                                                         >
@@ -254,6 +254,7 @@ const AdminBlog = () => {
                                                         </button>
                                                         <button
                                                             className="btn icon-delete-img"
+                                                            type="button"
                                                             onClick={() => handleDeleteImage(dateFolder, img)}
                                                             title="delete"
                                                         >
