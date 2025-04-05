@@ -8,7 +8,6 @@ function Home() {
     return (
         <div className="admin-portal-background">
             <title>Gingham • Admin Portal</title>
-            {/* <img className='img-portal' src={strawberryImage} alt="Strawberries"></img> */}
             <br/>
             <br/>
             <br/>
