@@ -19,7 +19,6 @@ from sqlalchemy.orm import joinedload, Session
 from sqlalchemy.dialects.postgresql import JSONB
 from flask_migrate import Migrate
 from flask_cors import CORS
-from flask_caching import Cache
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -44,24 +43,14 @@ from tasks import ( send_mjml_email_task, send_html_email_task,
                          export_csv_vendor_users_task, export_csv_markets_task,
                          export_csv_vendors_task, export_csv_baskets_task,
                          export_csv_products_task, generate_vendor_baskets_csv,
-                         user_signup_task, confirm_user_email_task, 
-                         change_user_email_task, vendor_signup_task,
-                         confirm_vendor_email_task, change_vendor_email_task,
-                         admin_signup_task, confirm_admin_email_task,
-                         change_admin_email_task, user_password_reset_request_task,
-                         vendor_password_reset_request_task, admin_password_reset_request_task,
-                         contact_task, process_image,
                          )
 from celery.result import AsyncResult
 from celery_config import celery
-import base64
 
 
 load_dotenv()
 
 app = Flask(__name__, static_folder='public')
-
-cache = Cache(app, config={"CACHE_TYPE": "simple"})
 
 STRIPE_WEBHOOK_SECRET = "whsec_0fd1e4d74c18b3685bd164fe766c292f8ec7a73a887dd83f598697be422a2875"
 STRIPE_ALLOWED_IPS = {
@@ -164,7 +153,7 @@ def handle_payment_success(payment_intent):
     import json
     try:
         basket_data = json.loads(baskets)
-    except json.JSONDecordeError:
+    except json.JSONDecodeError:
         basket_data = []
 
     purchased_items = [
@@ -212,6 +201,31 @@ def generate_csv(model, fields, filename_prefix):
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def resize_image(image, max_size=MAX_SIZE, resolution=MAX_RES, step=0.9):
+    image.thumbnail(resolution, Image.LANCZOS)
+
+    temp_output = BytesIO()
+
+    if image.format == 'PNG':
+        image.save(temp_output, format='PNG', optimize=True)
+    else:
+        image.save(temp_output, format='JPEG', quality=50)
+
+    file_size = temp_output.tell()
+
+    while file_size > max_size:
+        temp_output = BytesIO()
+        if image.format == 'PNG':
+            image.save(temp_output, format='PNG', optimize=True)
+        else:
+            quality = max(10, int(85 * step))
+            image.save(temp_output, format='JPEG', quality=quality)
+        file_size = temp_output.tell()
+        step -= 0.05
+
+    temp_output.seek(0)
+    return Image.open(temp_output)
 
 @app.route('/api/hello', methods=['GET'])
 def hello_world():
@@ -301,30 +315,9 @@ def upload_file():
                 file.save(file_path)
             else:
                 # Process and resize image for non-SVG files
-                image_bytes = file.read()
-                task = process_image.delay(image_bytes, original_filename, MAX_SIZE, MAX_RES)
-                task_id = task.id
-
-                # Poll Celery to get processed image
-                import time
-                task_result = None
-                while not task_result:
-                    task_state = task.state
-                    if task_state == 'SUCCESS':
-                        task_result = task.get()
-                    elif task_state == 'FAILURE':
-                        return {'error': 'Image processing failed'}, 500
-                    time.sleep(2)  # Wait before checking again
-
-                # Decode processed image and save it
-                processed_image_bytes = base64.b64decode(task_result['image_data'])
-                file_path = os.path.join(upload_folder, task_result['filename'])
-                with open(file_path, "wb") as f:
-                    f.write(processed_image_bytes)
-
-                # image = Image.open(file)
-                # image = resize_image(image)
-                # image.save(file_path)
+                image = Image.open(file)
+                image = resize_image(image)
+                image.save(file_path)
 
             # Update the database record based on upload type
             if upload_type == 'user':
@@ -363,7 +356,7 @@ def upload_file():
                 market.image = f'/api/uploads/market-images/{market_id}/{os.path.basename(file_path)}'
                 db.session.commit()
 
-            return {'message': 'File successfully uploaded', 'filename': escape(os.path.basename(file_path)), 'task_id': task_id}, 201
+            return {'message': 'File successfully uploaded', 'filename': escape(os.path.basename(file_path))}, 201
 
         except Exception as e:
             db.session.rollback()
@@ -371,8 +364,6 @@ def upload_file():
             return {'error': f'Failed to upload image: {str(e)}'}, 500
 
     return {'error': 'File type not allowed'}, 400
-
-import base64
 
 @app.route('/api/upload-blog-images', methods=['POST'])
 def upload_blog_images():
@@ -395,24 +386,22 @@ def upload_blog_images():
     for file in files:
         if file and allowed_file(file.filename):
             original_filename = secure_filename(file.filename)
+            file_path = os.path.join(upload_folder, original_filename)
+
+            if os.path.exists(file_path):
+                base, ext = os.path.splitext(original_filename)
+                counter = 1
+                while os.path.exists(file_path):
+                    file_path = os.path.join(upload_folder, f"{base}_{counter}{ext}")
+                    counter += 1
 
             try:
                 if original_filename.rsplit('.', 1)[1].lower() == 'svg':
-                    # Directly save SVG files without processing
-                    file_path = os.path.join(upload_folder, original_filename)
                     file.save(file_path)
                 else:
-                    # Read file bytes and send to Celery for processing
-                    image_bytes = file.read()
-                    task = process_image.delay(image_bytes, original_filename, MAX_SIZE, MAX_RES)
-                    result = task.get(timeout=30)  # Wait for Celery
-
-                    # Decode the Base64 response from Celery and save it locally
-                    processed_image_data = base64.b64decode(result["image_data"])
-                    file_path = os.path.join(upload_folder, result["filename"])
-
-                    with open(file_path, "wb") as f:
-                        f.write(processed_image_data)
+                    image = Image.open(file)
+                    image = resize_image(image)
+                    image.save(file_path)
 
                 uploaded_files.append(f'/api/uploads/blog-images/{formatted_date}/{os.path.basename(file_path)}')
 
@@ -421,7 +410,6 @@ def upload_blog_images():
                 return {'error': f'Failed to upload image: {str(e)}'}, 500
 
     return {'message': 'Files successfully uploaded', 'filenames': uploaded_files}, 201
-
 
 @app.route('/api/blog-images', methods=['GET'])
 def get_blog_images():
@@ -463,7 +451,6 @@ def delete_image():
     user_id = data.get('user_id')
     vendor_id = data.get('vendor_id')
     market_id = data.get('market_id')
-    date_folder = data.get('date_folder')
 
     if file_type == 'vendor' and vendor_id:
         upload_folder = os.path.join(VENDOR_UPLOAD_FOLDER, str(vendor_id))
@@ -471,8 +458,6 @@ def delete_image():
         upload_folder = os.path.join(MARKET_UPLOAD_FOLDER, str(market_id))
     elif file_type == 'user' and user_id:
         upload_folder = os.path.join(USER_UPLOAD_FOLDER, str(user_id))
-    elif file_type == 'blog' and date_folder:
-        upload_folder = os.path.join(BLOG_UPLOAD_FOLDER, date_folder)
     else:
         return {'error': 'Invalid type or missing ID. Ensure "type" and respective ID are provided.'}, 400
 
@@ -505,10 +490,6 @@ def delete_image():
                 if user:
                     user.avatar = None
                     db.session.commit()
-            
-            if os.path.isdir(upload_folder) and not os.listdir(upload_folder):
-                print(f"Removing empty folder: {upload_folder}")
-                os.rmdir(upload_folder)
 
             return {'message': 'Image deleted successfully'}, 200
         else:
@@ -611,14 +592,50 @@ def logout():
     session.pop('user_id', None)
     return {}, 204
 
+@app.route('/api/change-email', methods=['POST'])
+def change_email():
+    try:
+        data = request.get_json()
+
+        email = data.get('email')
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+
+        result = send_user_confirmation_email(email, data)
+
+        if 'error' in result:
+            return jsonify({"error": result["error"]}), 500
+
+        return jsonify({"message": result["message"]}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+
 @app.route('/api/signup', methods=['POST'])
 def signup():
     try:
         data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
 
-        result = user_signup_task.apply_async(args=[data])
+        if not email or not password:
+            return jsonify({'error': 'Email and password are required'}), 400
 
-        return jsonify({"message": "Signup in progress, check your email for confirmation."}), 200
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            return jsonify({'error': 'This email is already registered. Please log in or use a different email.'}), 400
+
+        # all_users = User.query.all()
+        # for user in all_users:
+        #     if bcrypt.check_password_hash(user.password, password):
+        #         return jsonify({'error': 'This password has already been used. Please choose a different password.'}), 400
+
+        result = send_user_confirmation_email(email, data)
+
+        if 'error' in result:
+            return jsonify({"error": result["error"]}), 500
+
+        return jsonify({"message": result["message"]}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -626,36 +643,77 @@ def signup():
 @app.route('/api/user/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
 def confirm_email(token):
     try:
-        request_method = request.method
-        result = confirm_user_email_task.apply_async(args=[token, request_method])
+        # print(f"Received token: {token}")
+        data = serializer.loads(token, salt='user-confirmation-salt', max_age=86400)
+        website = os.environ['SITE_URL']
 
-        result = result.get()
+        user_id = data.get('user_id')  # Extract user ID
+        email = data.get('email')  # Extract new email
 
-        if 'redirect' in result:
-            return redirect(result['redirect'])
-        elif 'message' in result:
-            return jsonify(result), 200
-        else:
-            return jsonify(result), 400
+        if request.method == 'GET':
+            # print(f"GET request: Token verified, email extracted: {email}")
+            return redirect(f'{website}/user/confirm-email/{token}')
+
+        if request.method == 'POST':
+            # print(f"POST request: Token verified, user data extracted: {data}")
+
+            existing_user = User.query.get(user_id)
+
+            if existing_user:
+                # print(f"POST request: User {user_id} exists, updating email to {email}")
+
+                if User.query.filter(User.email == email, User.id != user_id).first():
+                    return jsonify({"error": "This email is already in use by another account."}), 400
+
+                existing_user.email = email
+                db.session.commit()
+
+                return jsonify({
+                    "message": "Email updated successfully. Verification required for the new email.",
+                    "isNewUser": False,
+                    "user_id": existing_user.id,
+                    "email": existing_user.email
+                }), 200
+
+            if "password" not in data:
+                print("POST request failed: Missing password field for new account creation.")
+                return jsonify({"error": "Password is required to create a new account."}), 400
+
+            # Create a new user (only if password and required fields exist)
+            new_user = User(
+                email=email,
+                password=data['password'],
+                first_name=data.get('first_name', ""),
+                last_name=data.get('last_name', ""),
+                phone=data.get('phone', ""),
+                address_1=data.get('address1', ""),
+                address_2=data.get('address2', ""),
+                city=data.get('city', ""),
+                state=data.get('state', ""),
+                zipcode=data.get('zipcode', ""),
+                coordinates=data.get('coordinates')
+            )
+            db.session.add(new_user)
+            db.session.commit()
+
+            print("POST request: New user created and committed to the database")
+            return jsonify({
+                'message': 'Email confirmed and account created successfully.',
+                'isNewUser': True,
+                'user_id': new_user.id
+            }), 201
+
+    except SignatureExpired:
+        print("Request: The token has expired")
+        return jsonify({'error': 'The token has expired'}), 400
 
     except Exception as e:
-        return jsonify({'error': f'Error: {str(e)}'}), 500
-
-@app.route('/api/change-email', methods=['POST'])
-def change_email():
-    try:
-        data = request.get_json()
-
-        task = change_user_email_task.apply_async(args=[data])
-
-        return jsonify({"message": "Email change request has been processed. Check your email for confirmation."}), 200
-
-    except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+        print(f"Request: An error occurred: {str(e)}")
+        return jsonify({'error': f'Failed to confirm or update email: {str(e)}'}), 500
 
 # VENDOR PORTAL
 @app.route('/api/vendor/login', methods=['POST'])
-def vendo_login():
+def vendorLogin():
 
     data = request.get_json()
     vendor_user = VendorUser.query.filter(VendorUser.email == data['email']).first()
@@ -679,55 +737,110 @@ def vendo_login():
     return jsonify(access_token=access_token, vendor_user_id=vendor_user.id), 200
 
 @app.route('/api/vendor-signup', methods=['POST'])
-def vendor_signup():
-    try:
-        data = request.get_json()
-
-        result = vendor_signup_task.apply_async(args=[data])
-
-        return jsonify({"message": "Signup in progress, check your email for confirmation."}), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/vendor/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
-def confirm_vendor_email(token):
-    try:
-        request_method = request.method
-        result = confirm_vendor_email_task.apply_async(args=[token, request_method])
-
-        result = result.get()
-
-        if 'redirect' in result:
-            return redirect(result['redirect'])
-        elif 'message' in result:
-            return jsonify(result), 200
-        else:
-            return jsonify(result), 400
-
-    except Exception as e:
-        return jsonify({'error': f'Error: {str(e)}'}), 500
+def vendorSignup():
+    data = request.get_json()
+    email = data.get('email')
+    
+    if not email:
+        return {'error': 'Email is required'}, 400
+    
+    result = send_vendor_confirmation_email(email, data)
+    
+    if 'error' in result:
+        return jsonify({'error': result["error"]}), 500
+    return jsonify({'message': result['message']}), 200
 
 @app.route('/api/change-vendor-email', methods=['POST'])
 def change_vendor_email():
     try:
         data = request.get_json()
 
-        task = change_vendor_email_task.apply_async(args=[data])
+        email = data.get('email')
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
 
-        return jsonify({"message": "Email change request has been processed. Check your email for confirmation."}), 200
+        result = send_vendor_confirmation_email(email, data)
+
+        if 'error' in result:
+            return jsonify({"error": result["error"]}), 500
+
+        return jsonify({"message": result["message"]}), 200
 
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
+@app.route('/api/vendor/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
+def confirm_vendor_email(token):
+    try:
+        print(f'Received token: {token}')
+        data = serializer.loads(token, salt='vendor-confirmation-salt', max_age=86400)
+        website = os.environ['SITE_URL']
+
+        vendor_id = data.get('vendor_id')
+        email = data.get('email')
+
+        if request.method == 'GET':
+            # print(f"GET request: Token verified, email extracted: {email}")
+            return redirect(f'{website}/vendor/confirm-email/{token}')
+        
+        if request.method == 'POST':
+            # print(f"POST request: Token verified, user data extracted: {data}")
+            
+            existing_vendor = VendorUser.query.get(vendor_id)
+            
+            if existing_vendor:
+                print(f"POST request: User {vendor_id} exists, updating email to {email}")
+                
+                if VendorUser.query.filter(VendorUser.email == email, VendorUser.id != vendor_id).first():
+                    return jsonify({"error": "This email is already in use by another account."}), 400
+                
+                existing_vendor.email = email
+                db.session.commit()
+                
+                return jsonify({
+                    "message": "Email updated successfully. Verification required for the new email.",
+                    "isNewUser": False,
+                    "user_id": existing_vendor.id,
+                    "email": existing_vendor.email
+                }), 200
+            
+            if "password" not in data:
+                print("POST request failed: Missing password field for new account creation.")
+                return jsonify({"error": "Password is required to create a new account."}), 400
+
+            new_vendor_user = VendorUser(
+                email=email,
+                password=data['password'], 
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                phone=data['phone'],
+            )
+            db.session.add(new_vendor_user)
+            db.session.commit()
+
+            print("POST request: VendorUser created and committed to the database")
+            return jsonify({
+                'message': 'Email confirmed and account created successfully.', 
+                'isNewVendor': True, 
+                'vendor_id': new_vendor_user.id
+            }), 201
+
+    except SignatureExpired:
+        print("Request: The token has expired")
+        return jsonify({'error': 'The token has expired'}), 400
+
+    except Exception as e:
+        print(f"Request: An error occurred: {str(e)}")
+        return jsonify({'error': f'Failed to confirm or update email: {str(e)}'}), 500
+    
 @app.route('/api/vendor/logout', methods=['DELETE'])
-def vendor_logout():
+def vendorLogout():
     session.pop('vendor_user_id', None)
     return {}, 204
-
+    
 # ADMIN PORTAL
 @app.route('/api/admin/login', methods=['POST'])
-def admin_login():
+def adminLogin():
 
     data = request.get_json()
     admin_user = AdminUser.query.filter(AdminUser.email == data['email']).first()
@@ -751,49 +864,104 @@ def admin_login():
     return jsonify(access_token=access_token, admin_user_id=admin_user.id), 200
 
 @app.route('/api/admin-signup', methods=['POST'])
-def admin_signup():
-    try:
-        data = request.get_json()
-
-        result = admin_signup_task.apply_async(args=[data])
-
-        return jsonify({"message": "Signup in progress, check your email for confirmation."}), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/admin/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
-def confirm_admin_email(token):
-    try:
-        request_method = request.method
-        result = confirm_admin_email_task.apply_async(args=[token, request_method])
-
-        result = result.get()
-
-        if 'redirect' in result:
-            return redirect(result['redirect'])
-        elif 'message' in result:
-            return jsonify(result), 200
-        else:
-            return jsonify(result), 400
-
-    except Exception as e:
-        return jsonify({'error': f'Error: {str(e)}'}), 500
+def adminSignup():
+    data = request.get_json()
+    email = data.get('email')
+    
+    if not email:
+        return {'error': 'Email is required'}, 400
+    
+    result = send_admin_confirmation_email(email, data)
+    
+    if 'error' in result:
+        return jsonify({'error': result["error"]}), 500
+    return jsonify({'message': result['message']}), 200
 
 @app.route('/api/change-admin-email', methods=['POST'])
 def change_admin_email():
     try:
         data = request.get_json()
 
-        task = change_admin_email_task.apply_async(args=[data])
+        email = data.get('email')
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
 
-        return jsonify({"message": "Email change request has been processed. Check your email for confirmation."}), 200
+        result = send_admin_confirmation_email(email, data)
+
+        if 'error' in result:
+            return jsonify({"error": result["error"]}), 500
+
+        return jsonify({"message": result["message"]}), 200
 
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
+@app.route('/api/admin/confirm-email/<token>', methods=['GET', 'POST', 'PATCH'])
+def confirm_admin_email(token):
+    try:
+        print(f'Received token: {token}')
+        data = serializer.loads(token, salt='admin-confirmation-salt', max_age=86400)
+        website = os.environ['SITE_URL']
+
+        admin_id = data.get('admin_id')
+        email = data.get('email')
+
+        if request.method == 'GET':
+            print(f"GET request: Token verified, email extracted: {email}")
+            return redirect(f'{website}/admin/confirm-email/{token}')
+        
+        if request.method == 'POST':
+            print(f"POST request: Token verified, user data extracted: {data}")
+            
+            existing_admin = AdminUser.query.get(admin_id)
+            
+            if existing_admin:
+                print(f"POST request: User {admin_id} exists, updating email to {email}")
+                
+                if AdminUser.query.filter(AdminUser.email == email, AdminUser.id != admin_id).first():
+                    return jsonify({"error": "This email is already in use by another account."}), 400
+                
+                existing_admin.email = email
+                db.session.commit()
+                
+                return jsonify({
+                    "message": "Email updated successfully. Verification required for the new email.",
+                    "isNewUser": False,
+                    "user_id": existing_admin.id,
+                    "email": existing_admin.email
+                }), 200
+            
+            if "password" not in data:
+                print("POST request failed: Missing password field for new account creation.")
+                return jsonify({"error": "Password is required to create a new account."}), 400
+
+            new_admin_user = AdminUser(
+                email=email,
+                password=data['password'], 
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                phone=data['phone'],
+            )
+            db.session.add(new_admin_user)
+            db.session.commit()
+
+            print("POST request: VendorUser created and committed to the database")
+            return jsonify({
+                'message': 'Email confirmed and account created successfully.', 
+                'isNewVendor': True, 
+                'vendor_id': new_admin_user.id
+            }), 201
+
+    except SignatureExpired:
+        print("Request: The token has expired")
+        return jsonify({'error': 'The token has expired'}), 400
+
+    except Exception as e:
+        print(f"Request: An error occurred: {str(e)}")
+        return jsonify({'error': f'Failed to confirm or update email: {str(e)}'}), 500
+
 @app.route('/api/admin/logout', methods=['DELETE'])
-def admin_logout():
+def adminLogout():
     session.pop('admin_user_id', None)
     return {}, 204
 
@@ -842,6 +1010,7 @@ def check_admin_session():
 @app.route('/api/settings-users', methods=['GET', 'POST'])
 @jwt_required()
 def post_settings_user():
+
     try:
         if request.method == 'GET':
 
@@ -894,6 +1063,7 @@ def post_settings_user():
 @app.route('/api/settings-users/<int:id>', methods=['GET', 'PATCH'])
 @jwt_required()
 def settings_user(id):
+    
     if not check_role('user') and not check_role('admin'):
         return {'error': "Access forbidden: User only"}, 403
     
@@ -923,6 +1093,7 @@ def settings_user(id):
 @app.route('/api/settings-vendor-users', methods=['GET', 'POST'])
 @jwt_required()
 def post_settings_vendor_user():
+
     try:
         if request.method == 'GET':
 
@@ -976,6 +1147,7 @@ def post_settings_vendor_user():
 @app.route('/api/settings-vendor-users/<int:id>', methods=['GET', 'PATCH'])
 @jwt_required()
 def settings_vendor_user(id):
+    
     if not check_role('vendor') and not check_role('admin'):
         return {'error': "Access forbidden: Vendor User only"}, 403
     
@@ -1005,6 +1177,7 @@ def settings_vendor_user(id):
 @app.route('/api/settings-admins', methods=['GET', 'POST'])
 @jwt_required()
 def post_settings_admin_user():
+
     try:
         if request.method == 'GET':
 
@@ -1057,6 +1230,7 @@ def post_settings_admin_user():
 @app.route('/api/settings-admins/<int:id>', methods=['GET', 'PATCH'])
 @jwt_required()
 def settings_admin(id):
+    
     if not check_role('admin') and not check_role('admin'):
         return {'error': "Access forbidden: User only"}, 403
     
@@ -1098,6 +1272,7 @@ def all_users():
 @app.route('/api/users/<int:id>', methods=['GET', 'PATCH', 'POST', 'DELETE'])
 @jwt_required()
 def profile(id):
+    
     if not check_role('user') and not check_role('admin'):
         return {'error': "Access forbidden: User only"}, 403
     
@@ -1960,7 +2135,6 @@ def vendor_review_by_id(id):
         return {}, 204
 
 @app.route('/api/top-market-reviews', methods=['GET'])
-@cache.cached(timeout=600)
 def get_top_market_reviews():
     # Subquery: Calculate total vote_up count per review_id
     vote_up_counts = (
@@ -2002,7 +2176,6 @@ def get_top_market_reviews():
     return jsonify(response_data)
 
 @app.route('/api/top-vendor-reviews', methods=['GET'])
-@cache.cached(timeout=600)
 def get_top_vendor_reviews():
     # Subquery: Calculate total vote_up count per review_id
     vote_up_counts = (
@@ -2807,27 +2980,21 @@ def qr_code(id):
             return {'error': f'Failed to delete QR code: {str(e)}'}, 500
 
 @app.route('/api/contact', methods=['POST'])
-def contact():
-    try:
-        data = request.get_json()
-        print("Received data:", data)
+def contact(): 
+    data = request.get_json()
+    print("received data:", data)
+    name = data.get('name')
+    email = data.get('email')
+    subject = data.get('subject')
+    message = data.get('message')
 
-        name = data.get('name')
-        email = data.get('email')
-        subject = data.get('subject')
-        message = data.get('message')
+    print(f"Name: {name}, Email: {email}, Subject: {subject}, Message: {message}")
 
-        if not name or not email or not subject or not message:
-            return jsonify({'error': 'All fields (name, email, subject, message) are required'}), 400
-
-        print(f"Submitting contact request to Celery - Name: {name}, Email: {email}, Subject: {subject}, Message: {message}")
-
-        task = contact_task.apply_async(args=[name, email, subject, message])
-
-        return jsonify({"message": "Your message has been received. We will get back to you shortly."}), 200
-
-    except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+    result = send_contact_email(name, email, subject, message)
+    
+    if "error" in result:
+        return jsonify({"error": result["error"]}), 500
+    return jsonify({"message": result["message"]}), 200
 
 # MJML Backend
 @app.route('/api/preview-email', methods=['POST'])
@@ -2849,7 +3016,6 @@ def preview_email():
             return jsonify({'error': result.stderr.decode()}), 400
 
         compiled_html = result.stdout.decode()
-        print(compiled_html)
         return compiled_html
 
     except Exception as e:
@@ -2866,13 +3032,7 @@ def send_mjml_email():
     subject = data.get('subject', '')
     email_address = data.get('email_address', '')
 
-    result = subprocess.run(['mjml', '--stdin'], input=mjml.encode(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if result.returncode != 0:
-        return {'error': result.stderr.decode()}
-
-    compiled_html = result.stdout.decode()
-
-    task = send_mjml_email_task.apply_async(args=[mjml, subject, compiled_html, email_address])
+    task = send_mjml_email_task.apply_async(args=[mjml, subject, email_address])
     return jsonify({"message": "Email processing started", "task_id": task.id}), 202
 
 @app.route('/api/send-html-email', methods=['POST'])
@@ -2956,17 +3116,18 @@ def send_sendgrid_email_client():
 
     try:
         sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+        print(os.environ.get('SENDGRID_API_KEY'))
         response = sg.send(message)
         print(response.status_code)
         print(response.body)
         print(response.headers)
         return jsonify({"message": "Email sent successfully", "status_code": response.status_code}), 202
     except Exception as e:
-        print(str(e))
+        print(e.message)
         return jsonify({"error": str(e)}), 500
 
-@app.route("/api/sms-user", methods=['GET', 'POST'])
-def incoming_user_sms():
+@app.route("/api/sms", methods=['GET', 'POST'])
+def incoming_sms():
     # Get the message the user sent our Twilio number
     body = request.values.get('Body', None)
     sender_phone = request.values.get('From', None)
@@ -2990,82 +3151,6 @@ def incoming_user_sms():
                     settings.text_fav_market_new_basket = False
                     settings.text_fav_vendor_schedule_change = False
                     settings.text_basket_pickup_time = False
-                    db.session.commit()
-                    resp.message("You have been unsubscribed from all text notifications ;)")
-                else:
-                    resp.message(r"Error unsubscribing from text all notifications. Please turn them off on the website. ¯\_(ツ)_/¯")
-            else:
-                print("No user found with this phone number.")
-                resp.message(r"Error unsubscribing from all text notifications. Please turn them off on the website. ¯\_(ツ)_/¯")
-        except Exception as e:
-            db.session.rollback()
-            print(f"An error occurred: {str(e)}")
-    else:
-        resp.message("I didn't understand that prompt :/")
-
-    return str(resp)
-
-@app.route("/api/sms-vendor", methods=['GET', 'POST'])
-def incoming_vendor_sms():
-    # Get the message the user sent our Twilio number
-    body = request.values.get('Body', None)
-    sender_phone = request.values.get('From', None)
-
-    if sender_phone.startswith("+1"):
-        sender_phone = sender_phone[2:]
-    elif sender_phone.startswith("+"):
-        sender_phone = sender_phone[1:]
-
-    # Start our TwiML response
-    resp = MessagingResponse()
-
-    # Determine the right reply for this message
-    if body == 'stop':
-        try:
-            user = VendorUser.query.filter_by(phone=sender_phone).first()
-            if user:
-                settings = SettingsVendor.query.filter_by(user_id=user.id).first()
-                if settings:
-                    settings.text_market_schedule_change = False
-                    settings.text_basket_sold = False
-                    db.session.commit()
-                    resp.message("You have been unsubscribed from all text notifications ;)")
-                else:
-                    resp.message(r"Error unsubscribing from text all notifications. Please turn them off on the website. ¯\_(ツ)_/¯")
-            else:
-                print("No user found with this phone number.")
-                resp.message(r"Error unsubscribing from all text notifications. Please turn them off on the website. ¯\_(ツ)_/¯")
-        except Exception as e:
-            db.session.rollback()
-            print(f"An error occurred: {str(e)}")
-    else:
-        resp.message("I didn't understand that prompt :/")
-
-    return str(resp)
-
-@app.route("/api/sms-admin", methods=['GET', 'POST'])
-def incoming_admin_sms():
-    # Get the message the user sent our Twilio number
-    body = request.values.get('Body', None)
-    sender_phone = request.values.get('From', None)
-
-    if sender_phone.startswith("+1"):
-        sender_phone = sender_phone[2:]
-    elif sender_phone.startswith("+"):
-        sender_phone = sender_phone[1:]
-
-    # Start our TwiML response
-    resp = MessagingResponse()
-
-    # Determine the right reply for this message
-    if body == 'stop':
-        try:
-            user = AdminUser.query.filter_by(phone=sender_phone).first()
-            if user:
-                settings = SettingsAdmin.query.filter_by(user_id=user.id).first()
-                if settings:
-                    settings.text_market_schedule_change = False
-                    settings.text_basket_sold = False
                     db.session.commit()
                     resp.message("You have been unsubscribed from all text notifications ;)")
                 else:
@@ -3643,21 +3728,22 @@ def get_stripe_transaction():
 
 # Password reset for User
 @app.route('/api/user/password-reset-request', methods=['POST'])
-def user_password_reset_request():
-    try:
-        data = request.get_json()
-        email = data.get('email')
-
-        if not email:
-            return jsonify({'error': 'Email is required'}), 400
-
-        # Send the task to Celery
-        task = user_password_reset_request_task.apply_async(args=[email])
-
-        return jsonify({"message": "Password reset request has been processed. Check your email for further instructions."}), 200
-
-    except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+def password_reset_request():
+    data = request.get_json()
+    email = data.get('email')
+    
+    if not email:
+        return {'error': 'Email is required'}, 400
+    
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 400
+    else:
+        result = send_user_password_reset_email(email)
+    
+    if "error" in result:
+        return jsonify({"error": result["error"]}), 500
+    return jsonify({"message": result["message"]}), 200
 
 @app.route('/api/user/password-reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
@@ -3704,21 +3790,22 @@ def password_reset(token):
 
 # Password reset for VendorUser
 @app.route('/api/vendor/password-reset-request', methods=['POST'])
-def password_reset_request():
-    try:
-        data = request.get_json()
-        email = data.get('email')
+def vendor_password_reset_request():
+    data = request.get_json()
+    email = data.get('email')
 
-        if not email:
-            return jsonify({'error': 'Email is required'}), 400
+    if not email:
+        return {'error': 'Email is required'}, 400
 
-        # Send the task to Celery
-        task = vendor_password_reset_request_task.apply_async(args=[email])
-
-        return jsonify({"message": "Password reset request has been processed. Check your email for further instructions."}), 200
-
-    except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+    vendor_user = VendorUser.query.filter_by(email=email).first()
+    if not vendor_user:
+        return jsonify({'error': 'Vendor not found'}), 400
+    else:
+        result = send_vendor_password_reset_email(email)
+    
+    if "error" in result:
+        return jsonify({"error": result["error"]}), 500
+    return jsonify({"message": result["message"]}), 200
 
 @app.route('/api/vendor/password-reset/<token>', methods=['GET', 'POST'])
 def vendor_password_reset(token):
@@ -3753,20 +3840,21 @@ def vendor_password_reset(token):
 # Password reset for AdminUser
 @app.route('/api/admin/password-reset-request', methods=['POST'])
 def admin_password_reset_request():
-    try:
-        data = request.get_json()
-        email = data.get('email')
+    data = request.get_json()
+    email = data.get('email')
 
-        if not email:
-            return jsonify({'error': 'Email is required'}), 400
+    if not email:
+        return {'error': 'Email is required'}, 400
 
-        # Send the task to Celery
-        task = admin_password_reset_request_task.apply_async(args=[email])
-
-        return jsonify({"message": "Password reset request has been processed. Check your email for further instructions."}), 200
-
-    except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+    admin_user = AdminUser.query.filter_by(email=email).first()
+    if not admin_user:
+        return jsonify({'error': 'Admin not found'}), 400
+    else:
+        result = send_admin_password_reset_email(email)
+    
+    if "error" in result:
+        return jsonify({"error": result["error"]}), 500
+    return jsonify({"message": result["message"]}), 200
     
 @app.route('/api/admin/password-reset/<token>', methods=['GET', 'POST'])
 def admin_password_reset(token):
@@ -3806,13 +3894,13 @@ def get_user_notifications():
     
     try:
         current_user = get_jwt_identity()
-        # print("JWT Identity (User):", current_user)
+        print("JWT Identity (User):", current_user)
     except Exception as e:
         print("JWT Error:", str(e))
         return jsonify({"error": "JWT validation failed"}), 401
 
     user_id = request.args.get('user_id')
-    # print("Requested user_id:", user_id)
+    print("Requested user_id:", user_id)
     
     if request.method == 'GET':
         query = UserNotification.query
@@ -3820,7 +3908,7 @@ def get_user_notifications():
             query = query.filter_by(user_id=user_id)
 
         notifications = query.order_by(UserNotification.created_at.desc()).all()
-        # print("Found notifications count:", len(notifications))
+        print("Found notifications count:", len(notifications))
         
         return jsonify([notif.to_dict() for notif in notifications]), 200
     
@@ -3888,7 +3976,7 @@ def notify_me_for_more_baskets():
             elif isinstance(vendor_data, str):
                 try:
                     vendor_dict = json.loads(vendor_data)  # Convert JSON string to dict
-                except json.JSONDecordeError:
+                except json.JSONDecodeError:
                     print(f"Invalid JSON format in vendor_id for VendorUser ID {vendor_user.id}")
                     continue  # Skip this record
             else:
@@ -4647,7 +4735,6 @@ def vendor_count():
 
 @app.route('/api/baskets/count', methods=['GET'])
 @jwt_required()
-@cache.cached(timeout=600)
 def basket_count():
     try:
         count = db.session.query(Basket).count()
@@ -4671,7 +4758,6 @@ def basket_count():
 
 @app.route('/api/baskets/top-10-markets', methods=['GET'])
 @jwt_required()
-@cache.cached(timeout=600)
 def basket_top_10_markets():
     try:
         market_counts = (
@@ -4692,7 +4778,6 @@ def basket_top_10_markets():
 
 @app.route('/api/baskets/top-10-vendors', methods=['GET'])
 @jwt_required()
-@cache.cached(timeout=600)
 def basket_top_10_vendors():
     try:
         vendor_counts = (
@@ -4712,7 +4797,6 @@ def basket_top_10_vendors():
 
 @app.route('/api/baskets/top-10-users', methods=['GET'])
 @jwt_required()
-@cache.cached(timeout=600)
 def basket_top_10_users():
     try:
         top_users = db.session.query(
@@ -4736,7 +4820,6 @@ def basket_top_10_users():
     
 @app.route('/api/users/top-10-cities', methods=['GET'])
 @jwt_required()
-@cache.cached(timeout=600)
 def top_10_cities():
     try:
         city_state_counts = (
@@ -4762,7 +4845,6 @@ def top_10_cities():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/market-favorites/top-10-markets', methods=['GET'])
-@cache.cached(timeout=600)
 def get_top_favorited_markets():
     try:
         top_markets = (
@@ -4789,7 +4871,6 @@ def get_top_favorited_markets():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/vendor-favorites/top-10-vendors', methods=['GET'])
-@cache.cached(timeout=600)
 def get_top_favorited_vendors():
     try:
         top_vendors = (
@@ -4817,7 +4898,6 @@ def get_top_favorited_vendors():
 
 @app.route('/api/users/join-date-user-count', methods=['GET'])
 @jwt_required()
-@cache.cached(timeout=600)
 def get_user_join_date_counts():
     try:
         join_date_user_counts = (
@@ -4844,7 +4924,6 @@ def get_user_join_date_counts():
 
 @app.route('/api/vendor-users/join-date-user-count', methods=['GET'])
 @jwt_required()
-@cache.cached(timeout=600)
 def get_vendor_user_join_date_counts():
     try:
         join_date_user_counts = (
@@ -4871,7 +4950,6 @@ def get_vendor_user_join_date_counts():
 
 @app.route('/api/admin-users/join-date-user-count', methods=['GET'])
 @jwt_required()
-@cache.cached(timeout=600)
 def get_admin_user_join_date_counts():
     try:
         join_date_user_counts = (
@@ -4926,34 +5004,7 @@ def export_csv_products():
     task = export_csv_products_task.delay()
     return jsonify({"message": "CSV generation started!", "task_id": task.id}), 202
 
-@app.route('/api/export-csv/<route>/status/<task_id>', methods=['GET'])
-def check_export_status(task_id, route):
-    if route == 'users':
-        task_result = export_csv_users_task.AsyncResult(task_id)
-    if route == 'vendor-users':
-        task_result = export_csv_vendor_users_task.AsyncResult(task_id)
-    if route == 'markets':
-        task_result = export_csv_markets_task.AsyncResult(task_id)
-    if route == 'vendors':
-        task_result = export_csv_vendors_task.AsyncResult(task_id)
-    if route == 'baskets':
-        task_result = export_csv_baskets_task.AsyncResult(task_id)
-    if route == 'products':
-        task_result = export_csv_products_task.AsyncResult(task_id)
-    
-    if task_result.ready():
-        result = task_result.get()
-        if 'error' in result:
-            return jsonify({'status': 'failed', 'error': result['error']}), 500
-        return jsonify({
-            'status': 'completed',
-            'csv': result['csv'],
-            'filename': result['filename']
-        })
-    else:
-        return jsonify({'status': 'processing'}), 202
-
-@app.route('/api/export-csv/vendor-baskets/baskets', methods=['POST'])
+@app.route('/api/export-csv/for-vendor/baskets', methods=['POST'])
 def queue_export_csv_vendor_baskets():
     vendor_id = request.json.get('vendor_id')
     month = request.json.get('month')
@@ -4970,46 +5021,40 @@ def queue_export_csv_vendor_baskets():
         'status': 'queued'
     }), 202
 
-@app.route('/api/export-csv/vendor-baskets/status/<task_id>', methods=['GET'])
+@app.route('/api/export-csv/status/<task_id>', methods=['GET'])
 def check_csv_export_status(task_id):
-    # task_result = AsyncResult(task_id)
-    task_result = generate_vendor_baskets_csv.AsyncResult(task_id)
+    task_result = AsyncResult(task_id)
     
     if task_result.ready():
         result = task_result.get()
         if result.get('status') == 'success':
             return jsonify({
                 'status': 'completed',
-                'file_path': result.get('file_path'),
-                'download_url': f'/api/export-csv/vendor-baskets/download/{task_id}'
+                'download_url': f'/api/export-csv/download/{task_id}'
             })
-        elif result.get('error'):
+        else:
             return jsonify({
                 'status': 'failed',
                 'error': result.get('error')
             }), 500
-        else:
-            return jsonify({'status': 'failed', 'error': 'Unknown error'}), 500
     else:
-        return jsonify({'status': 'processing'})
+        return jsonify({
+            'status': 'processing'
+        })
 
-@app.route('/api/export-csv/vendor-baskets/download/<task_id>', methods=['GET'])
+@app.route('/api/export-csv/download/<task_id>', methods=['GET'])
 def download_csv_export(task_id):
-    # task_result = AsyncResult(task_id)
-    task_result = generate_vendor_baskets_csv.AsyncResult(task_id)
+    task_result = AsyncResult(task_id)
+    
     if not task_result.ready():
         return jsonify({'error': 'Task not completed yet'}), 400
     
     result = task_result.get()
     if result.get('status') != 'success':
-        return jsonify({'error': result.get('error', 'Task failed')}), 500
+        return jsonify({'error': 'Task failed'}), 500
     
     file_path = result.get('file_path')
     filename = result.get('filename')
-
-    if not os.path.exists(file_path):
-        print(f"File not found: {file_path}")
-        return jsonify({'error': 'File not found'}), 404
     
     if not os.path.exists(file_path):
         return jsonify({'error': 'File not found'}), 404

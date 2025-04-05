@@ -136,10 +136,7 @@ function Home() {
         }, 4000);
         return () => clearInterval(interval);
     }, []);
-
-    const backgroundStyle = {
-        backgroundImage: `url(${backgroundImages[bgIndex]})`
-    }
+    
 
     return (
         <div>
@@ -171,7 +168,7 @@ function Home() {
                         </span>
                     </p>
                 </div>
-                <br className="m-br"/>
+                {/* <br className="m-br"/> */}
             </div>
             {/* <div className="d-flex-space-between">
                 <div className="m-flex-center">
