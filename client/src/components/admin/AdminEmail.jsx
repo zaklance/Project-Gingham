@@ -48,6 +48,8 @@ const AdminEmail = () => {
                     margin-top: 20px;
                     margin-bottom: -10px;
                     color: #777;
+                }
+                .footer-flex {
                     display: flex;
                     justify-content: center;
                     align-items: center;
@@ -73,7 +75,7 @@ const AdminEmail = () => {
                     border: 0;
                     border-top: 4px solid #ff806b;
                 }
-                p, h1, h2, h3, h4, h5, h6, article {
+                p, h1, h2, h3, h4, h5, h6, li {
                     color: #ff806b;
                 }
                 .img-hero, .img-blog {
@@ -81,14 +83,14 @@ const AdminEmail = () => {
                     height: auto;
                 }
                 article {
-                  margin-bottom: 1em;
-                  widows: 2;
+                    margin-bottom: 1em;
+                    widows: 2;
                 }
                 .first-letter::first-letter {
-                  -webkit-initial-letter: 2;
-                  initial-letter: 2;
-                  font-family: inherit;
-                  padding-right: 4px;
+                    -webkit-initial-letter: 2;
+                    initial-letter: 2;
+                    font-family: inherit;
+                    padding-right: 4px;
                 }
                 .center {
                     text-align: center;
@@ -96,6 +98,7 @@ const AdminEmail = () => {
                 .flex-center {
                     display: flex;
                     justify-content: center;
+                    flex-wrap: wrap;
                 }
                 .flex-gap-8 {
                     gap: 8px;
@@ -144,9 +147,11 @@ const AdminEmail = () => {
                     </div>
                     <p>— The Gingham Team</p>
                 </div>
-                <div class="footer flex-center">
-                    <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_2.png" alt="logo"/>
-                    <p>&copy; 2024 GINGHAM.NYC. All Rights Reserved.</p>
+                <div class="footer">
+                    <div class="footer flex-center">
+                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                        <p>&copy; 2024 GINGHAM.NYC. All Rights Reserved.</p>
+                    </div>
                 </div>
             </div>
         </body>
