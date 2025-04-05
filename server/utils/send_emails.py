@@ -13,13 +13,15 @@ from emails import (send_email_user_fav_market_new_event, send_email_user_fav_ma
                     send_email_vendor_new_review, send_email_vendor_new_blog,
                     send_email_vendor_new_statement, send_email_admin_reported_review,
                     send_email_admin_new_blog)
-from models import (User, Market, Vendor, Event, Basket, VendorReview, Blog)
+from models import (db, User, VendorUser, AdminUser, Market, Vendor, Event, Basket, VendorReview, Blog)
 
 email = 'zak@mufo.nyc'
 
 with app.app_context():
 
-    user = db.session.get(User, 1)
+    user = db.session.get(User, 51)
+    user = db.session.get(VendorUser, 51)
+    user = db.session.get(AdminUser, 2)
     market = db.session.get(Market, 1)
     vendor = db.session.get(Vendor, 1)
     event = db.session.get(Event, 1)
