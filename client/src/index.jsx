@@ -12,6 +12,7 @@ import TermsAndConditions from './components/TermsAndConditions.jsx';
 import PrivacyPolicy from './components/PrivacyPolicy.jsx';
 import PasswordResetRequest from './components/PasswordResetRequest.jsx';
 import PasswordReset from './components/PasswordReset.jsx';
+import Unsubscribe from './components/Unsubscribe.jsx';
 import Maintenance from './components/Maintenance.jsx';
 import ErrorPage from './components/ErrorPage.jsx';
 
@@ -181,6 +182,7 @@ const router = createBrowserRouter([
             { path: "contact", element: <Contact /> },
             { path: "terms-service", element: <TermsAndConditions /> },
             { path: "privacy-policy", element: <PrivacyPolicy /> },
+            { path: "unsubscribe", element: <Unsubscribe /> },
             { path: "maintenance", element: <Maintenance /> },
             {
                 path: "user",
