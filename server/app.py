@@ -2965,6 +2965,48 @@ def send_sendgrid_email_client():
         print(str(e))
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/unsubscribe', methods=['PATCH'])
+def unsubscribe_user():
+    token = request.json.get('token')
+
+    if not token:
+        return jsonify({'error': 'Missing token'}), 400
+
+    try:
+        payload = serializer.loads(token, salt='unsubscribe')
+    except Exception as e:
+        return jsonify({'error': 'Invalid or expired token'}), 400
+
+    model_type = payload.get('type')
+    field = payload.get('field')
+    identifier = payload.get('id')
+
+    model_map = {
+        'SettingsAdmin': SettingsAdmin,
+        'SettingsUser': SettingsUser,
+        'SettingsVendor': SettingsVendor
+    }
+
+    if model_type not in model_map or not field or not identifier:
+        return jsonify({'error': 'Invalid token data'}), 400
+
+    Model = model_map[model_type]
+
+    if model_type == 'SettingsAdmin':
+        instance = Model.query.filter_by(admin_id=identifier).first()
+    elif model_type == 'SettingsUser':
+        instance = Model.query.filter_by(user_id=identifier).first()
+    elif model_type == 'SettingsVendor':
+        instance = Model.query.filter_by(vendor_user_id=identifier).first()
+
+    if not instance or not hasattr(instance, field):
+        return jsonify({'error': 'Setting not found'}), 404
+
+    setattr(instance, field, False)
+    db.session.commit()
+
+    return jsonify({'message': field}), 200
+
 @app.route("/api/sms-user", methods=['GET', 'POST'])
 def incoming_user_sms():
     # Get the message the user sent our Twilio number

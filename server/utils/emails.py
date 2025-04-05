@@ -69,6 +69,8 @@ EMAIL_STYLES = """
             margin-top: 20px;
             margin-bottom: -10px;
             color: #777;
+        }
+        .footer-flex {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -187,8 +189,13 @@ def send_contact_email(name, email, subject, message):
                         <a href="mailto:{email}" class="button">Reply to {name}</a>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -252,8 +259,10 @@ def send_user_password_reset_email(email):
                         <p><strong>Please click the link to reset your password <br/></strong> <a class="button" href={reset_link}>Password Reset</a></p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
                     </div>
                 </div>
             </body>
@@ -313,8 +322,10 @@ def send_vendor_password_reset_email(email):
                         <p><strong>Please click the link to reset your password <br/></strong> <a class="button" href={reset_link}>Password Reset</a></p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
                     </div>
                 </div>
             </body>
@@ -374,8 +385,10 @@ def send_admin_password_reset_email(email):
                         <p><strong>Please click the link to reset your password <br/></strong> <a class="button" href={reset_link}>Password Reset</a></p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
                     </div>
                 </div>
             </body>
@@ -435,8 +448,10 @@ def send_user_confirmation_email(email, user_data):
                         <p><strong>Please confirm your email by clicking this link: <br/></strong> <a class="button" href={confirmation_link}>Verify Email</a></p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
                     </div>
                 </div>
             </body>
@@ -496,8 +511,10 @@ def send_vendor_confirmation_email(email, vendor_data):
                         <p><strong>Please confirm your email by clicking this link: <br/></strong> <a class="button" href={confirmation_link}>Verify Email</a></p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
                     </div>
                 </div>
             </body>
@@ -557,8 +574,10 @@ def send_admin_confirmation_email(email, admin_data):
                         <p><strong>Please confirm your email by clicking this link: <br/></strong> <a class="button" href={confirmation_link}>Verify Email</a></p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
                     </div>
                 </div>
             </body>
@@ -588,6 +607,14 @@ def send_admin_confirmation_email(email, admin_data):
 
 def send_email_user_fav_market_new_event(email, user, market, event, link):
     try:
+        payload = {
+            'type': 'SettingsUser',
+            'field': 'email_fav_market_new_event',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -639,8 +666,13 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -664,6 +696,14 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
 
 def send_email_user_fav_market_schedule_change(email, user, market, event, link):
     try:
+        payload = {
+            'type': 'SettingsUser',
+            'field': 'email_fav_market_schedule_change',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -714,8 +754,13 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -739,6 +784,14 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
 
 def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_market, link_vendor):
     try:
+        payload = {
+            'type': 'SettingsUser',
+            'field': 'email_fav_market_new_vendor',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -798,8 +851,13 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -823,6 +881,14 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
 
 def send_email_user_fav_market_new_basket(email, user, market, vendor, link_market, link_vendor):
     try:
+        payload = {
+            'type': 'SettingsUser',
+            'field': 'email_fav_market_new_basket',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -899,8 +965,13 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -924,6 +995,14 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
 
 def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor):
     try:
+        payload = {
+            'type': 'SettingsUser',
+            'field': 'email_fav_vendor_new_event',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -974,8 +1053,13 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -999,6 +1083,14 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
 
 def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_vendor):
     try:
+        payload = {
+            'type': 'SettingsUser',
+            'field': 'email_fav_vendor_schedule_change',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1049,8 +1141,13 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -1074,6 +1171,14 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
 
 def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_market, link_vendor):
     try:
+        payload = {
+            'type': 'SettingsUser',
+            'field': 'email_fav_vendor_new_basket',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1150,8 +1255,13 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -1175,6 +1285,14 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
 
 def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link_market, link_vendor):
     try:
+        payload = {
+            'type': 'SettingsUser',
+            'field': 'email_basket_pickup_time',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1212,8 +1330,13 @@ def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -1237,6 +1360,14 @@ def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link
 
 def send_email_user_vendor_review_response(email, user, vendor, review, link_review):
     try:
+        payload = {
+            'type': 'SettingsUser',
+            'field': 'email_vendor_review_response',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1278,8 +1409,13 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -1303,6 +1439,14 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
 
 def send_email_user_new_blog(email, user, blog):
     try:
+        payload = {
+            'type': 'SettingsUser',
+            'field': 'email_new_blog',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1341,8 +1485,13 @@ def send_email_user_new_blog(email, user, blog):
                         </div>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -1366,6 +1515,14 @@ def send_email_user_new_blog(email, user, blog):
 
 def send_email_user_new_market_in_city(email, user, market, link_market):
     try:
+        payload = {
+            'type': 'SettingsUser',
+            'field': 'email_new_market_in_city',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1416,8 +1573,13 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -1447,6 +1609,14 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
 
 def send_email_vendor_market_new_event(email, user, market, event, link):
     try:
+        payload = {
+            'type': 'SettingsVendor',
+            'field': 'email_market_new_event',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1497,8 +1667,13 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -1522,6 +1697,14 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
 
 def send_email_vendor_market_schedule_change(email, user, market, event, link):
     try:
+        payload = {
+            'type': 'SettingsVendor',
+            'field': 'email_market_schedule_change',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1572,8 +1755,13 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -1597,6 +1785,14 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
 
 def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pickup_start, pickup_end, sale_date):
     try:
+        payload = {
+            'type': 'SettingsVendor',
+            'field': 'email_basket_sold',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1639,8 +1835,13 @@ def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pic
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -1664,6 +1865,14 @@ def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pic
 
 def send_email_vendor_new_review(email, user, vendor, review, link_review):
     try:
+        payload = {
+            'type': 'SettingsVendor',
+            'field': 'email_new_review',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1705,8 +1914,13 @@ def send_email_vendor_new_review(email, user, vendor, review, link_review):
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -1730,6 +1944,14 @@ def send_email_vendor_new_review(email, user, vendor, review, link_review):
 
 def send_email_vendor_new_blog(email, user, blog):
     try:
+        payload = {
+            'type': 'SettingsVendor',
+            'field': 'email_new_blog',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1768,8 +1990,13 @@ def send_email_vendor_new_blog(email, user, blog):
                         </div>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -1793,6 +2020,14 @@ def send_email_vendor_new_blog(email, user, blog):
 
 def send_email_vendor_new_statement(email, user, vendor, month, year):
     try:
+        payload = {
+            'type': 'SettingsVendor',
+            'field': 'email_',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1827,8 +2062,13 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -1895,6 +2135,14 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
 
 def send_email_admin_reported_review(email, user, market, vendor, review, link_review):
     try:
+        payload = {
+            'type': 'SettingsAdmin',
+            'field': 'email_reported_review',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1941,8 +2189,13 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -1966,6 +2219,14 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
 
 def send_email_admin_product_request(email, user, vendor, new_product, link_product):
     try:
+        payload = {
+            'type': 'SettingsAdmin',
+            'field': 'email_product_request',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -2028,8 +2289,13 @@ def send_email_admin_product_request(email, user, vendor, new_product, link_prod
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -2053,6 +2319,14 @@ def send_email_admin_product_request(email, user, vendor, new_product, link_prod
 
 def send_email_admin_new_blog(email, user, blog):
     try:
+        payload = {
+            'type': 'SettingsAdmin',
+            'field': 'email_new_blog',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -2091,8 +2365,13 @@ def send_email_admin_new_blog(email, user, blog):
                         </div>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>
@@ -2116,6 +2395,14 @@ def send_email_admin_new_blog(email, user, blog):
 
 def send_email_admin_new_vendor(email, user, vendor, link_vendor):
     try:
+        payload = {
+            'type': 'SettingsAdmin',
+            'field': 'email_new_vendor',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -2178,8 +2465,13 @@ def send_email_admin_new_vendor(email, user, vendor, link_vendor):
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
-                        <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
                     </div>
                 </div>
             </body>

@@ -907,6 +907,10 @@ ul {
   color: #ff3399;
 }
 
+.box-unsubscribe {
+  text-align: center;
+}
+
 .box-inside {
   float: none;
   background-color: white;
@@ -3786,6 +3790,18 @@ select:hover {
   .title-big-gingham {
     font-size: 5.6em;
   }
+
+  .box-unsubscribe {
+    text-align: left;
+  }
+
+  .box-unsubscribe>.text-center {
+    text-align: center;
+  }
+
+  .box-unsubscribe>.title-big {
+    font-size: 5em;
+  }
 }
 
 
@@ -4071,6 +4087,10 @@ select:hover {
   .img-maintenance {
     min-height: 400px;
   }
+
+  .box-unsubscribe {
+    text-align: left;
+  }
 }
 
 
@@ -4103,6 +4123,11 @@ select:hover {
   
   .img-market-card {
     width: 272px;
+  }
+
+
+  .box-unsubscribe>.title-big {
+    font-size: 3.6em;
   }
 }
 
