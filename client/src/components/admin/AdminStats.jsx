@@ -322,7 +322,7 @@ function AdminStats() {
 
             // Step 2: Poll for task completion
             const checkAndDownload = async () => {
-                const statusResponse = await fetch(`/api/export-csv/${route}/status/${taskId}`, {
+                const statusResponse = await fetch(`/api/export-csv/status/${taskId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
