@@ -583,6 +583,12 @@ function Profile({ marketData }) {
             }
         }, 250);
     };
+
+    const handleBlur = () => {
+        debounceTimeout.current = setTimeout(() => {
+            setShowAddressDropdown(false)
+        }, 200);
+    };
     
     const handleSearchAddress = async (query) => {
         const apiKey = import.meta.env.VITE_RADAR_KEY;
@@ -707,6 +713,7 @@ function Profile({ marketData }) {
                                         name="address_1"
                                         size="36"
                                         placeholder='Address 1'
+                                        onBlur={handleBlur}
                                         value={tempProfileData ? tempProfileData.address_1 : ''}
                                         onChange={handleAddressInputChange}
                                     />
