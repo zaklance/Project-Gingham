@@ -408,8 +408,12 @@ article {
   margin-left: 56px;
 }
 
-.margin-t--8 {
+.margin-t--4 {
   margin-top: -4px;
+}
+
+.margin-t--8 {
+  margin-top: -8px;
 }
 
 .margin-t--32 {
@@ -4124,7 +4128,6 @@ select:hover {
   .img-market-card {
     width: 272px;
   }
-
 
   .box-unsubscribe>.title-big {
     font-size: 3.6em;
