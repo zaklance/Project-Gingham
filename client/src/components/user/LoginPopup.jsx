@@ -247,7 +247,13 @@ function Login({ handlePopup }) {
             if (query.trim() !== '') {
                 handleSearchAddress(query);
             }
-        }, 600);
+        }, 400);
+    };
+
+    const handleBlur = () => {
+        debounceTimeout.current = setTimeout(() => {
+            setShowAddressDropdown(false)
+        }, 200);
     };
 
     const handleSearchAddress = async (query) => {
@@ -293,42 +299,46 @@ function Login({ handlePopup }) {
             <button className="btn btn-large x-btn" onClick={handlePopup}>X</button>
             <div className='wrapper'>
                 <div>
-                    <form className="form">
-                        <h2 className='margin-b-24'>Login</h2>
-                        <div className="form-group form-login">
-                            <label className=''>Email:</label>
-                            <input
-                                type="email"
-                                value={loginEmail}
-                                placeholder="enter your email"
-                                onChange={(event) => setLoginEmail(event.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="form-group form-login">
-                            <label>Password:</label>
-                            <div className='badge-container-strict'>
+                    {!isSignUp && (
+                        <form className="form">
+                            <h2 className='margin-b-24'>Login</h2>
+                            <div className="form-group form-login">
+                                <label className=''>Email:</label>
                                 <input
-                                    type={showPassword.pw1 ? 'text' : 'password'}
-                                    value={loginPassword}
-                                    placeholder="enter your password"
-                                    onChange={(event) => setLoginPassword(event.target.value)}
+                                    type="email"
+                                    value={loginEmail}
+                                    placeholder="enter your email"
+                                    onChange={(event) => setLoginEmail(event.target.value)}
                                     required
                                 />
-                                <i className={showPassword.pw1 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw1')}>&emsp;</i>
                             </div>
-                        </div>
-                        <div className='flex-center-align flex-center flex-gap-16 margin-t-16'>
-                            <button className='btn-login' onClick={handleLogin}>Login</button>
-                            {!isSignUp && <button className='btn-login' onClick={() => setIsSignUp(!isSignUp)}>Signup</button>}
-                            <p className="forgot-password" onClick={() => {
-                                navigate('/user/password-reset-request');
-                                window.location.reload();
-                            }}>
-                                Forgot password?
-                            </p>
-                        </div>
-                    </form>
+                            <div className="form-group form-login">
+                                <label>Password:</label>
+                                <div className='badge-container-strict'>
+                                    <input
+                                        type={showPassword.pw1 ? 'text' : 'password'}
+                                        value={loginPassword}
+                                        placeholder="enter your password"
+                                        onChange={(event) => setLoginPassword(event.target.value)}
+                                        required
+                                    />
+                                    <i className={showPassword.pw1 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw1')}>&emsp;</i>
+                                </div>
+                            </div>
+                            <div className='flex-center-align flex-center flex-gap-16 margin-t-16'>
+                                <button className='btn-login' onClick={handleLogin}>Login</button>
+                                <p className="forgot-password" onClick={() => {
+                                    navigate('/user/password-reset-request');
+                                    window.location.reload();
+                                }}>
+                                    Forgot password?
+                                </p>
+                            </div>
+                            <div className='flex-center-align flex-center flex-gap-16 margin-t-16'>
+                                <p className='margin-t--8'>Need an account: <span className='forgot-password' onClick={() => setIsSignUp(!isSignUp)}>click here!</span></p>
+                            </div>
+                        </form>
+                    )}
                 </div>
                 {isSignUp === true && (
                     <div>
@@ -425,13 +435,6 @@ function Login({ handlePopup }) {
                                     value={signupPhone}
                                     onChange={(event) => setSignupPhone(event)}
                                 />
-                                {/* <input 
-                                    type="tel"
-                                    value={signupPhone}
-                                    placeholder='enter your phone number'
-                                    onChange={(event) => setSignupPhone(formatPhoneNumber(event.target.value))}
-                                    required
-                                /> */}
                             </div>
                             <div className="form-group form-login">
                                 <label>Address 1:</label>
@@ -440,6 +443,7 @@ function Login({ handlePopup }) {
                                     value={signupAddress1}
                                     placeholder='enter your address 1'
                                     onChange={(event => { setSignupAddress1(event.target.value); handleAddress(event) })}
+                                    onBlur={handleBlur}
                                     required
                                 />
                                 {showAddressDropdown && (
