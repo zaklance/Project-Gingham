@@ -13,6 +13,7 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
                     Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
                     )
+from tasks import send_blog_notifications
 
 def time_converter(time24):
     if isinstance(time24, time):
@@ -499,82 +500,17 @@ def fav_vendor_new_baskets(mapper, connection, target):
 def schedule_blog_notifications(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        # Ensure the blog post date is today or earlier
-        post_date = target.post_date.date()
-        if post_date > datetime.utcnow().date():
-            return
+        eta_datetime = datetime.combine(target.post_date, time(hour=12))
+        now = datetime.utcnow()
 
-        # Retrieve users who have notifications enabled based on blog type
-        if target.for_user:
-            users = session.query(User).join(SettingsUser).filter(SettingsUser.site_new_blog == True).all()
+        if eta_datetime < now:
+            # If it's already due, run it immediately
+            send_blog_notifications.delay(target.id)
         else:
-            users = []
+            # Schedule the task for the post_date
+            send_blog_notifications.apply_async((target.id,), eta=eta_datetime)
 
-        if target.for_vendor:
-            vendor_users = session.query(VendorUser).join(SettingsVendor).filter(SettingsVendor.site_new_blog == True).all()
-        else:
-            vendor_users = []
-
-        if target.for_admin:
-            admins = session.query(AdminUser).join(SettingsAdmin).filter(SettingsAdmin.site_new_blog == True).all()
-        else:
-            admins = []
-
-        if not users and not admins and not vendor_users:
-            print("No users have blog notifications enabled. No notifications will be created.")
-            return
-
-        # Prepare user notifications
-        user_notifications = [
-            UserNotification(
-                subject="New Blog Post Alert!",
-                message=f"A new blog post, {target.title}, has been published. Check it out!",
-                link=f"/#blog",
-                user_id=user.id,
-                created_at=datetime.utcnow(),
-                is_read=False
-            )
-            for user in users
-        ]
-
-        # Prepare vendor notifications
-        vendor_notifications = [
-            VendorNotification(
-                subject="New Blog Post Alert!",
-                message=f"A new blog post, {target.title}, has been published. Check it out!",
-                link=f"/vendor#blog",
-                vendor_user_id=vendor_user.id,
-                created_at=datetime.utcnow(),
-                is_read=False
-            )
-            for vendor_user in vendor_users
-        ]
-        
-        # Prepare admin notifications, ensuring admin_role is included
-        admin_notifications = []
-        for admin in admins:
-            if not hasattr(admin, "admin_role"):
-                print(f"Skipping Admin ID {admin.id} due to missing admin_role.")
-                continue
-
-            admin_notifications.append(AdminNotification(
-                subject="New Blog Post Alert!",
-                message=f"A new blog post, {target.title}, has been published. Check it out!",
-                link=f"/admin/profile/{admin.id}#blog",
-                admin_role=admin.admin_role,
-                created_at=datetime.utcnow(),
-                is_read=False
-            ))
-
-        # Save notifications
-        if user_notifications:
-            session.bulk_save_objects(user_notifications)
-        if vendor_notifications:
-            session.bulk_save_objects(vendor_notifications)
-        if admin_notifications:
-            session.bulk_save_objects(admin_notifications)
-
-        session.commit()
+        print(f"Scheduled notification task for Blog ID={target.id} at {eta_datetime}")
 
     except Exception as e:
         session.rollback()
@@ -587,7 +523,7 @@ def schedule_blog_notifications(mapper, connection, target):
 def delete_scheduled_blog_notifications(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        if target.post_date > datetime.utcnow().date():
+        if target.post_date.date() > datetime.utcnow().date():
             notifications = session.query(UserNotification).filter(
                 UserNotification.link == f"/#blog",
                 UserNotification.subject == "New Blog Post Alert!"
@@ -1226,25 +1162,7 @@ def create_admin_settings(mapper, connection, target):
     finally:
         session.close()
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
 # def reset_market_status():
 #     session = db.session  # Use the SQLAlchemy session from your app
 #     try:
