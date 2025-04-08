@@ -38,8 +38,7 @@ MAX_SIZE = 1.5 * 1024 * 1024
 MAX_RES = (1800, 1800)
 
 ### Configure Celery with scheduled tasks ###
-# celery_beat_folder = '/var/data/celery-beat'
-# os.makedirs(celery_beat_folder, exist_ok=True)
+# beat_schedule_db = '/var/data/celery-beat/celerybeat-schedule.db'
 celery.conf.update(
     beat_schedule={
         'reset-market-status': {
@@ -51,7 +50,7 @@ celery.conf.update(
             'schedule': crontab(minute='*/60'),
         },
     },
-    # beat_db=os.path.join(celery_beat_folder, 'celerybeat-schedule.db')
+    # beat_db=beat_schedule_db
 )
 
 @celery.task
