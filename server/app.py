@@ -576,13 +576,7 @@ def homepage():
 @app.route('/api/login', methods=['POST'])
 def login():
     
-    try:
-        data = request.get_json()
-        # print("Received data:", json.dumps(data, indent=2))
-    except Exception as e:
-        print("Error parsing request:", str(e))
-        return jsonify({"error": "Invalid request format"}), 400
-    
+    data = request.get_json()
     user = User.query.filter(User.email == data['email']).first()
     if not user:
         return {'error': ' Incorrect email or password—or both!'}, 401
@@ -3843,8 +3837,8 @@ def admin_password_reset(token):
 @app.route('/api/user-notifications', methods=['GET', 'DELETE'])
 @jwt_required()
 def get_user_notifications():
-    print("Request Headers:", request.headers)
-    print("Authorization Header:", request.headers.get('Authorization'))
+    # print("Request Headers:", request.headers)
+    # print("Authorization Header:", request.headers.get('Authorization'))
     
     try:
         current_user = get_jwt_identity()
