@@ -1,3 +1,4 @@
+import os
 from sqlalchemy import event, func
 from sqlalchemy.orm import Session
 from sqlalchemy.event import listens_for
@@ -13,6 +14,13 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
                     Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
                     )
+from tasks import send_blog_notifications
+from redis import Redis
+from celery_config import celery, delete_scheduled_task
+from celery.result import AsyncResult
+from celery_sqlalchemy_scheduler.models import PeriodicTask, IntervalSchedule, CrontabSchedule
+from uuid import uuid4
+import subprocess
 
 def time_converter(time24):
     if isinstance(time24, time):
@@ -499,86 +507,61 @@ def fav_vendor_new_baskets(mapper, connection, target):
 def schedule_blog_notifications(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        # Ensure the blog post date is today or earlier
-        post_date = target.post_date.date()
-        if post_date > datetime.utcnow().date():
-            return
+        eta_datetime = datetime.combine(target.post_date, time(hour=12))
+        now = datetime.utcnow()
 
-        # Retrieve users who have notifications enabled based on blog type
-        if target.for_user:
-            users = session.query(User).join(SettingsUser).filter(SettingsUser.site_new_blog == True).all()
-        else:
-            users = []
+        if not target.task_id:
+            if eta_datetime < now:
+                send_blog_notifications.delay(target.id)
+            else:
+                # Schedule for the future
+                task = send_blog_notifications.apply_async(
+                    (target.id, None), 
+                    eta=eta_datetime
+                )
+                target.task_id = task.id
+                session.merge(target)
+                session.commit()
 
-        if target.for_vendor:
-            vendor_users = session.query(VendorUser).join(SettingsVendor).filter(SettingsVendor.site_new_blog == True).all()
-        else:
-            vendor_users = []
+        print(f"Scheduled notification task for Blog ID={target.id} at {eta_datetime}")
 
-        if target.for_admin:
-            admins = session.query(AdminUser).join(SettingsAdmin).filter(SettingsAdmin.site_new_blog == True).all()
-        else:
-            admins = []
-
-        if not users and not admins and not vendor_users:
-            print("No users have blog notifications enabled. No notifications will be created.")
-            return
-
-        # Prepare user notifications
-        user_notifications = [
-            UserNotification(
-                subject="New Blog Post Alert!",
-                message=f"A new blog post, {target.title}, has been published. Check it out!",
-                link=f"/#blog",
-                user_id=user.id,
-                created_at=datetime.utcnow(),
-                is_read=False
-            )
-            for user in users
-        ]
-
-        # Prepare vendor notifications
-        vendor_notifications = [
-            VendorNotification(
-                subject="New Blog Post Alert!",
-                message=f"A new blog post, {target.title}, has been published. Check it out!",
-                link=f"/vendor#blog",
-                vendor_user_id=vendor_user.id,
-                created_at=datetime.utcnow(),
-                is_read=False
-            )
-            for vendor_user in vendor_users
-        ]
-        
-        # Prepare admin notifications, ensuring admin_role is included
-        admin_notifications = []
-        for admin in admins:
-            if not hasattr(admin, "admin_role"):
-                print(f"Skipping Admin ID {admin.id} due to missing admin_role.")
-                continue
-
-            admin_notifications.append(AdminNotification(
-                subject="New Blog Post Alert!",
-                message=f"A new blog post, {target.title}, has been published. Check it out!",
-                link=f"/admin/profile/{admin.id}#blog",
-                admin_role=admin.admin_role,
-                created_at=datetime.utcnow(),
-                is_read=False
-            ))
-
-        # Save notifications
-        if user_notifications:
-            session.bulk_save_objects(user_notifications)
-        if vendor_notifications:
-            session.bulk_save_objects(vendor_notifications)
-        if admin_notifications:
-            session.bulk_save_objects(admin_notifications)
-
-        session.commit()
 
     except Exception as e:
         session.rollback()
         print(f"Error in schedule_blog_notifications: {e}")
+    finally:
+        session.close()
+
+@listens_for(Blog, 'before_update')
+def reschedule_blog_notification(mapper, connection, target):
+    session = Session(bind=connection)
+    try:
+        # Check if the post_date has changed before revoking the old task
+        if target.task_id and target.post_date != mapper.previous['post_date']:
+            celery.control.revoke(target.task_id)  # Revoke the previous task
+
+        # Reschedule the task with the updated date
+        eta_datetime = datetime.combine(target.post_date, time(hour=12))
+        now = datetime.utcnow()
+
+        # Only create a new task if one is needed (i.e., eta_datetime is different or task_id is not set)
+        if target.task_id is None or eta_datetime != datetime.utcfromtimestamp(target.task_id):
+            if eta_datetime < now:
+                send_blog_notifications.delay(target.id)
+            else:
+                task = send_blog_notifications.apply_async(
+                    (target.id, None), 
+                    eta=eta_datetime
+                )
+                target.task_id = task.id  # Update task_id with new task id
+                session.merge(target)  # Merge the blog object with the new task_id
+                session.commit()
+
+        print(f"Rescheduled Blog Notification for Blog ID={target.id}")
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error rescheduling blog notification: {e}")
     finally:
         session.close()
         
@@ -587,20 +570,69 @@ def schedule_blog_notifications(mapper, connection, target):
 def delete_scheduled_blog_notifications(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        if target.post_date > datetime.utcnow().date():
-            notifications = session.query(UserNotification).filter(
-                UserNotification.link == f"/#blog",
-                UserNotification.subject == "New Blog Post Alert!"
-            ).all()
+        if target.task_id:
+            task_id = target.task_id
+            delete_scheduled_task(target.task_id)
+            print(f"Attempting to delete scheduled task {task_id}")
+            
+            # 1. Revoke the task with terminate=True to stop it if it's running
+            celery.control.revoke(task_id, terminate=True)
 
-            if notifications:
+            inspector = celery.control.inspect()
+            scheduled = inspector.scheduled()
+            
+            # 2. Use Celery inspect to find and remove the scheduled task
+            inspector = celery.control.inspect()
+            scheduled = inspector.scheduled()
+            
+            if scheduled:
+                print(f"Current scheduled tasks: {json.dumps(scheduled, indent=2)}")
+
+                beat_schedule = celery.conf['CELERYBEAT_SCHEDULE']
+                # Check if task_id exists in the scheduled tasks and remove it
+                for task_name, task_details in beat_schedule.items():
+                    if task_details['id'] == task_id:
+                        print(f"Removing task {task_name} from Celery Beat schedule")
+                        del beat_schedule[task_name]
+                        # Persist the change by reloading the Beat schedule
+                        celery.control.broadcast('reload', destination='celery@Air-ZL.local')
+                        break
+
+                # 3. Force purge the task queue (extreme measure)
+                try:
+                    # This is a direct celery command to purge specific task
+                    result = subprocess.run(
+                        f"celery -A app.celery purge -f",
+                        shell=True,
+                        capture_output=True,
+                        text=True
+                    )
+                    print(f"Purge result: {result.stdout}\nErrors: {result.stderr}")
+                except Exception as e:
+                    print(f"Error purging queue: {e}")
+            
+            # 4. Additionally, we'll modify the Blog record to prevent the task from finding it
+            # This is a fallback in case the task still executes
+            target.is_published = False
+            target.post_date = None  # This might prevent the task from executing properly
+            
+            # 5. Delete all notifications associated with this task
+            for model in [UserNotification, VendorNotification, AdminNotification]:
+                notifications = session.query(model).filter(
+                    model.task_id == task_id
+                ).all()
+                
                 for notification in notifications:
                     session.delete(notification)
-                session.commit()
-
+            
+            session.commit()
+            print(f"Deleted all notifications related to task {task_id}")
+            
     except Exception as e:
         session.rollback()
         print(f"Error deleting scheduled blog notifications: {e}")
+        import traceback
+        traceback.print_exc()
     finally:
         session.close()
 
@@ -1226,25 +1258,7 @@ def create_admin_settings(mapper, connection, target):
     finally:
         session.close()
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
 # def reset_market_status():
 #     session = db.session  # Use the SQLAlchemy session from your app
 #     try:

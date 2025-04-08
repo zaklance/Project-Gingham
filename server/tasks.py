@@ -37,6 +37,22 @@ serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 MAX_SIZE = 1.5 * 1024 * 1024
 MAX_RES = (1800, 1800)
 
+### Configure Celery with scheduled tasks ###
+# beat_schedule_db = '/var/data/celery-beat/celerybeat-schedule.db'
+celery.conf.update(
+    beat_schedule={
+        'reset-market-status': {
+            'task': 'server.tasks.reset_market_status',
+            'schedule': crontab(hour=0, minute=0, day_of_month=1, month_of_year=1),
+        },
+        'schedule-blog-notifications': {
+            'task': 'server.tasks.send_blog_notifications',
+            'schedule': crontab(minute='*/60'),
+        },
+    },
+    # beat_db=beat_schedule_db
+)
+
 @celery.task
 def contact_task(name, email, subject, message):
     try:
@@ -535,7 +551,7 @@ def export_csv_users_task():
     from app import app
     with app.app_context():
         try:
-            users = User.query.all()
+            users = User.query.order_by(User.id.asc()).all()
             csv_data = []
             headers = ["id", "email", "first_name", "last_name", "phone", "address_1", "address_2", 
                     "city", "state", "zipcode", "coordinates", "avatar_default", "status", 
@@ -570,7 +586,7 @@ def export_csv_vendor_users_task():
     from app import app
     with app.app_context():
         try:
-            vendor_users = VendorUser.query.all()
+            vendor_users = VendorUser.query.order_by(VendorUser.id.asc()).all()
             csv_data = []
             headers = ["id", "email", "first_name", "last_name", "phone", 
                     "vendor_id", "vendor_role", "login_count", "last_login", "join_date"]
@@ -604,7 +620,7 @@ def export_csv_markets_task():
     from app import app
     with app.app_context():
         try:
-            markets = Market.query.all()
+            markets = Market.query.order_by(Market.id.asc()).all()
             csv_data = []
             headers = ["id", "name", "image_default", "location", "city",
                     "state", "zipcode", "coordinates", "schedule", 
@@ -640,7 +656,7 @@ def export_csv_vendors_task():
     from app import app
     with app.app_context():
         try:
-            vendors = Vendor.query.all()
+            vendors = Vendor.query.order_by(Vendor.id.asc()).all()
             csv_data = []
             headers = ["id", "name", "city", "state", "products", "bio", "website", "image_default"]
 
@@ -671,7 +687,7 @@ def export_csv_baskets_task():
     from app import app
     with app.app_context():
         try:
-            baskets = Basket.query.all()
+            baskets = Basket.order_by(Basket.id.asc()).query.all()
             csv_data = []
             headers = ["id", "vendor_id", "market_day_id", "sale_date", "pickup_start", "pickup_end", 
                     "user_id", "is_sold", "is_grabbed", "is_refunded", "price", "value", "fee_vendor"]
@@ -705,7 +721,7 @@ def export_csv_products_task():
     from app import app
     with app.app_context():
         try:
-            products = Product.query.all()
+            products = Product.order_by(Product.id.asc()).query.all()
             csv_data = []
             headers = ["id", "product"]
 
@@ -739,7 +755,7 @@ def generate_vendor_baskets_csv(vendor_id, month, year):
                 Basket.vendor_id == vendor_id,
                 extract('month', Basket.sale_date) == month,
                 extract('year', Basket.sale_date) == year
-            ).all()
+            ).order_by(Basket.id.asc()).all()
             
             # Create CSV in memory
             output = StringIO()
@@ -822,16 +838,6 @@ def process_image(image_bytes, filename, max_size=MAX_SIZE, resolution=MAX_RES):
     encoded_image = base64.b64encode(temp_output.getvalue()).decode('utf-8')
 
     return {"filename": filename, "image_data": encoded_image}
-            
-### Configure Celery with scheduled tasks ###
-celery.conf.update(
-    beat_schedule={
-        'reset-market-status': {
-            'task': 'server.tasks.reset_market_status',
-            'schedule': crontab(hour=0, minute=0, day_of_month=1, month_of_year=1),
-        },
-    }
-)
 
 @celery.task
 def reset_market_status():
@@ -889,88 +895,97 @@ def handle_vendor_user_creation(mapper, connection, target):
     update_vendor_user_market_locations.delay(target.id)
 
 @celery.task
-def send_blog_notifications(blog_id):
+def send_blog_notifications(blog_id, task_id):
     """Send blog notifications to users when a new blog post is created."""
-    session = Session()
-    try:
-        # Get the blog post
-        blog = session.query(Blog).get(blog_id)
-        if not blog:
-            print(f"Blog ID={blog_id} not found.")
-            return
+    from app import app
+    with app.app_context():
+        try:
+            # Get the blog post
+            blog = db.session.get(Blog, blog_id)
+            if not blog:
+                print(f"Blog ID={blog_id} not found.")
+                return
 
-        # Check if post_date matches current date
-        current_date = datetime.utcnow().date()
-        if not blog.post_date or blog.post_date.date() != current_date:
-            print(f"Blog ID={blog_id} post_date ({blog.post_date}) does not match current date ({current_date}). Skipping notifications.")
-            return
+            # If task_id is passed, we can skip re-scheduling
+            if task_id and blog.task_id and task_id != blog.task_id:
+                print(f"Skipping task as it has already been scheduled with task_id {blog.task_id}")
+                return
 
-        # Get users who have notifications enabled based on blog type
-        if blog.for_user:
-            users = session.query(User).join(SettingsUser).filter(SettingsUser.site_new_blog == True).all()
-        else:
-            users = []
+            print(task_id)
+            # Check if post_date matches current date
+            current_date = datetime.utcnow().date()
+            if not blog.post_date or blog.post_date.date() != current_date:
+                print(f"Blog ID={blog_id} post_date ({blog.post_date}) does not match current date ({current_date}). Skipping notifications.")
+                return
 
-        if blog.for_vendor:
-            vendor_users = session.query(VendorUser).join(SettingsVendor).filter(SettingsVendor.site_new_blog == True).all()
-        else:
-            vendor_users = []   
+            # Get users who have notifications enabled based on blog type
+            if blog.for_user:
+                users = db.session.query(User).join(SettingsUser).filter(SettingsUser.site_new_blog == True).all()
+            else:
+                users = []
 
-        if blog.for_admin:
-            admins = session.query(AdminUser).join(SettingsAdmin).filter(SettingsAdmin.site_new_blog == True).all()
-        else:
-            admins = []
+            if blog.for_vendor:
+                vendor_users = db.session.query(VendorUser).join(SettingsVendor).filter(SettingsVendor.site_new_blog == True).all()
+            else:
+                vendor_users = []   
+
+            if blog.for_admin:
+                admins = db.session.query(AdminUser).join(SettingsAdmin).filter(SettingsAdmin.site_new_blog == True).all()
+            else:
+                admins = []
+                
+            if not users and not admins and not vendor_users:
+                print("No users have blog notifications enabled. No notifications will be created.")
+                return
             
-        if not users and not admins and not vendor_users:
-            print("No users have blog notifications enabled. No notifications will be created.")
-            return
-        
-        # Prepare user notifications
-        user_notifications = [
-            UserNotification(
-                subject="New Blog Post Alert!",
-                message=f"A new blog post, {blog.title}, has been published. Check it out!",
-                link=f"/#blog",
-                user_id=user.id,
-                created_at=datetime.utcnow(),
-                is_read=False
-            )
-            for user in users
-        ]
-        
-        # Prepare vendor notifications
-        vendor_notifications = [
-            VendorNotification(
-                subject="New Blog Post Alert!",
-                message=f"A new blog post, {blog.title}, has been published. Check it out!",
-                link=f"/#blog",
-                vendor_user_id=vendor_user.id,
-                created_at=datetime.utcnow(),
-                is_read=False
-            )
-            for vendor_user in vendor_users
-        ]
-        
-        # Prepare admin notifications
-        admin_notifications = [
-            AdminNotification(
-                subject="New Blog Post Alert!",
-                message=f"A new blog post, {blog.title}, has been published. Check it out!",
-                link=f"/#blog",
-                admin_id=admin.id,
-                created_at=datetime.utcnow(),
-                is_read=False   
-            )
-            for admin in admins
-        ]
-        
-        # Save notifications to the database
-        session.bulk_save_objects(user_notifications + vendor_notifications + admin_notifications)  
-        session.commit()
-        print(f"Blog ID={blog_id} notifications have been sent.")
-        
-    except Exception as e:
-        session.rollback()
-        print(f"Error sending blog notifications for Blog ID={blog_id}: {e}")
-    finally:
-        session.close()
+            # Prepare user notifications
+            user_notifications = [
+                UserNotification(
+                    subject="New Blog Post Alert!",
+                    message=f"A new blog post, {blog.title}, has been published. Check it out!",
+                    link=f"/#blog",
+                    user_id=user.id,
+                    created_at=datetime.utcnow(),
+                    is_read=False,
+                    task_id=task_id
+                )
+                for user in users
+            ]
+            
+            # Prepare vendor notifications
+            vendor_notifications = [
+                VendorNotification(
+                    subject="New Blog Post Alert!",
+                    message=f"A new blog post, {blog.title}, has been published. Check it out!",
+                    link=f"vendor#blog",
+                    vendor_user_id=vendor_user.id,
+                    created_at=datetime.utcnow(),
+                    is_read=False,
+                    task_id=task_id
+                )
+                for vendor_user in vendor_users
+            ]
+            
+            # Prepare admin notifications
+            admin_notifications = [
+                AdminNotification(
+                    subject="New Blog Post Alert!",
+                    message=f"A new blog post, {blog.title}, has been published. Check it out!",
+                    link=f"",
+                    admin_role=5,
+                    created_at=datetime.utcnow(),
+                    is_read=False,
+                    task_id=task_id
+                )
+            ]
+            
+            # Save notifications to the database
+            db.session.bulk_save_objects(user_notifications + vendor_notifications + admin_notifications)  
+            db.session.commit()
+            print(f"Blog ID={blog_id} notifications have been sent.")
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error sending blog notifications for Blog ID={blog_id}: {e}")
+        finally:
+            db.session.close()
