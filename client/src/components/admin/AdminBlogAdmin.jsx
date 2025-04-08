@@ -74,7 +74,8 @@ const AdminBlogAdmin = ({ blogs, activeTabMode }) => {
 
         if (confirm(`Are you sure you want to post the blog "${newTitle}" to the site?`)) {
             try {
-                const postedAt = newDate;
+                // const postedAt = newDate;
+                const postedAt = new Date(newDate).toISOString().split('T')[0];
                 const response = await fetch('/api/blogs', {
                     method: 'POST',
                     headers: {
