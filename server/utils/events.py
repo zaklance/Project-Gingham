@@ -1,3 +1,4 @@
+import os
 from sqlalchemy import event, func
 from sqlalchemy.orm import Session
 from sqlalchemy.event import listens_for
@@ -14,6 +15,12 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
                     )
 from tasks import send_blog_notifications
+from redis import Redis
+from celery_config import celery, delete_scheduled_task
+from celery.result import AsyncResult
+from celery_sqlalchemy_scheduler.models import PeriodicTask, IntervalSchedule, CrontabSchedule
+from uuid import uuid4
+import subprocess
 
 def time_converter(time24):
     if isinstance(time24, time):
@@ -503,18 +510,58 @@ def schedule_blog_notifications(mapper, connection, target):
         eta_datetime = datetime.combine(target.post_date, time(hour=12))
         now = datetime.utcnow()
 
-        if eta_datetime < now:
-            # If it's already due, run it immediately
-            send_blog_notifications.delay(target.id)
-        else:
-            # Schedule the task for the post_date
-            send_blog_notifications.apply_async((target.id,), eta=eta_datetime)
+        if not target.task_id:
+            if eta_datetime < now:
+                send_blog_notifications.delay(target.id)
+            else:
+                # Schedule for the future
+                task = send_blog_notifications.apply_async(
+                    (target.id, None), 
+                    eta=eta_datetime
+                )
+                target.task_id = task.id
+                session.merge(target)
+                session.commit()
 
         print(f"Scheduled notification task for Blog ID={target.id} at {eta_datetime}")
+
 
     except Exception as e:
         session.rollback()
         print(f"Error in schedule_blog_notifications: {e}")
+    finally:
+        session.close()
+
+@listens_for(Blog, 'before_update')
+def reschedule_blog_notification(mapper, connection, target):
+    session = Session(bind=connection)
+    try:
+        # Check if the post_date has changed before revoking the old task
+        if target.task_id and target.post_date != mapper.previous['post_date']:
+            celery.control.revoke(target.task_id)  # Revoke the previous task
+
+        # Reschedule the task with the updated date
+        eta_datetime = datetime.combine(target.post_date, time(hour=12))
+        now = datetime.utcnow()
+
+        # Only create a new task if one is needed (i.e., eta_datetime is different or task_id is not set)
+        if target.task_id is None or eta_datetime != datetime.utcfromtimestamp(target.task_id):
+            if eta_datetime < now:
+                send_blog_notifications.delay(target.id)
+            else:
+                task = send_blog_notifications.apply_async(
+                    (target.id, None), 
+                    eta=eta_datetime
+                )
+                target.task_id = task.id  # Update task_id with new task id
+                session.merge(target)  # Merge the blog object with the new task_id
+                session.commit()
+
+        print(f"Rescheduled Blog Notification for Blog ID={target.id}")
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error rescheduling blog notification: {e}")
     finally:
         session.close()
         
@@ -523,20 +570,69 @@ def schedule_blog_notifications(mapper, connection, target):
 def delete_scheduled_blog_notifications(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        if target.post_date.date() > datetime.utcnow().date():
-            notifications = session.query(UserNotification).filter(
-                UserNotification.link == f"/#blog",
-                UserNotification.subject == "New Blog Post Alert!"
-            ).all()
+        if target.task_id:
+            task_id = target.task_id
+            delete_scheduled_task(target.task_id)
+            print(f"Attempting to delete scheduled task {task_id}")
+            
+            # 1. Revoke the task with terminate=True to stop it if it's running
+            celery.control.revoke(task_id, terminate=True)
 
-            if notifications:
+            inspector = celery.control.inspect()
+            scheduled = inspector.scheduled()
+            
+            # 2. Use Celery inspect to find and remove the scheduled task
+            inspector = celery.control.inspect()
+            scheduled = inspector.scheduled()
+            
+            if scheduled:
+                print(f"Current scheduled tasks: {json.dumps(scheduled, indent=2)}")
+
+                beat_schedule = celery.conf['CELERYBEAT_SCHEDULE']
+                # Check if task_id exists in the scheduled tasks and remove it
+                for task_name, task_details in beat_schedule.items():
+                    if task_details['id'] == task_id:
+                        print(f"Removing task {task_name} from Celery Beat schedule")
+                        del beat_schedule[task_name]
+                        # Persist the change by reloading the Beat schedule
+                        celery.control.broadcast('reload', destination='celery@Air-ZL.local')
+                        break
+
+                # 3. Force purge the task queue (extreme measure)
+                try:
+                    # This is a direct celery command to purge specific task
+                    result = subprocess.run(
+                        f"celery -A app.celery purge -f",
+                        shell=True,
+                        capture_output=True,
+                        text=True
+                    )
+                    print(f"Purge result: {result.stdout}\nErrors: {result.stderr}")
+                except Exception as e:
+                    print(f"Error purging queue: {e}")
+            
+            # 4. Additionally, we'll modify the Blog record to prevent the task from finding it
+            # This is a fallback in case the task still executes
+            target.is_published = False
+            target.post_date = None  # This might prevent the task from executing properly
+            
+            # 5. Delete all notifications associated with this task
+            for model in [UserNotification, VendorNotification, AdminNotification]:
+                notifications = session.query(model).filter(
+                    model.task_id == task_id
+                ).all()
+                
                 for notification in notifications:
                     session.delete(notification)
-                session.commit()
-
+            
+            session.commit()
+            print(f"Deleted all notifications related to task {task_id}")
+            
     except Exception as e:
         session.rollback()
         print(f"Error deleting scheduled blog notifications: {e}")
+        import traceback
+        traceback.print_exc()
     finally:
         session.close()
 

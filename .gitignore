@@ -204,7 +204,6 @@ chrome-user-data
 .vscode
 *.swp
 *.swo
-dump.rdb
 
 packages/react-devtools-core/dist
 packages/react-devtools-extensions/chrome/build
@@ -221,3 +220,5 @@ packages/react-devtools-shell/dist
 packages/react-devtools-timeline/dist
 
 sendgrid.env
+dump.rdb
+celerybeat-schedule.db
