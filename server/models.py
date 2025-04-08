@@ -698,6 +698,7 @@ class UserNotification(db.Model, SerializerMixin):
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
+    task_id = db.Column(db.String, nullable=True)
     
     def __repr__(self):
         return (f"<User Notification ID: {self.id}, created on {self.created_at}")
@@ -716,6 +717,7 @@ class VendorNotification(db.Model, SerializerMixin):
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
+    task_id = db.Column(db.String, nullable=True)
     
     # vendor = db.relationship('Vendor', back_populates='notifications')
     # vendor_user = db.relationship('VendorUser', back_populates='notifications')
@@ -740,6 +742,7 @@ class AdminNotification(db.Model, SerializerMixin):
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
+    task_id = db.Column(db.String, nullable=True)
     
     def __repr__(self):
         return (f"<Vendor Notification ID: {self.id}, created on {self.created_at}")
@@ -835,6 +838,7 @@ class Blog(db.Model, SerializerMixin):
     for_admin = db.Column(db.Boolean, default=False, nullable=False)
     admin_user_id = db.Column(db.Integer, db.ForeignKey('admin_users.id'), nullable=False)
     post_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow) # GMT (system generated)
+    task_id = db.Column(db.String, nullable=True)
 
     blog_favorites = db.relationship('BlogFavorite', back_populates='blog')
 
