@@ -55,7 +55,6 @@ from tasks import ( send_mjml_email_task, send_html_email_task,
 from celery.result import AsyncResult
 from celery_config import celery
 import base64
-import traceback
 
 
 load_dotenv()
@@ -4437,7 +4436,6 @@ def blogs():
 
     elif request.method == 'POST':
         data = request.get_json()
-        print('Incoming data:', data)
 
         try:
             post_date = datetime.strptime(data['post_date'], '%Y-%m-%d').date()
@@ -4463,8 +4461,6 @@ def blogs():
             return jsonify(new_blog.to_dict()), 201
         except Exception as e:
             db.session.rollback()
-            print("Error creating blog:", str(e))
-            traceback.print_exc()
             return {'error': f'Failed to create Blog: {str(e)}'}, 500
 
 @app.route('/api/blogs/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
