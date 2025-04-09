@@ -22,7 +22,7 @@ celery.config_from_object(__name__)
 celery.conf.beat_schedule = {
     'task-run-every-day-at-8am-est': {
         'task': 'tasks.send_blog_notifications',
-        'schedule': crontab(hour=13, minute=0),
+        'schedule': crontab(hour=12, minute=0),
     },
 }
 
