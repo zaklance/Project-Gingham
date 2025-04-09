@@ -296,7 +296,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
             if (!response.ok) {
                 throw new Error("Failed to delete notification");
             }
-            setNotifications((prev) => prev.filter((notif) => notif.id !== notifId));
+            setAdminNotifications((prev) => prev.filter((notif) => notif.id !== notifId));
         } catch (error) {
             console.error("Error deleting notification", error);
         }
@@ -589,7 +589,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             <li className='notification' onClick={handleAdminNotifPopup}>
                                 <a className='nav-tab color-4 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
                                 {adminNotifications.filter(notification => notification.is_read === false).length > 0 && (
-                                    <p className='badge'>{adminNotifications.length}</p>
+                                    <p className='badge'>{adminNotifications.filter(notification => !notification.is_read).length}</p>
                                 )}
                             </li>
                         }
