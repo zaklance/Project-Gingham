@@ -537,8 +537,13 @@ def reschedule_blog_notification(mapper, connection, target):
     session = Session(bind=connection)
     try:
         # Check if the post_date has changed before revoking the old task
-        if target.task_id and target.post_date != mapper.previous['post_date']:
-            celery.control.revoke(target.task_id)  # Revoke the previous task
+        state = celery.control.inspect(target)
+        history = state.attrs.post_date.history
+
+        # Check if post_date changed
+        if target.task_id and history.has_changes():
+            celery.control.revoke(target.task_id)
+            target.task_id = None
 
         # Reschedule the task with the updated date
         eta_datetime = datetime.combine(target.post_date, time(hour=12))

@@ -44,11 +44,7 @@ celery.conf.update(
         'reset-market-status': {
             'task': 'server.tasks.reset_market_status',
             'schedule': crontab(hour=0, minute=0, day_of_month=1, month_of_year=1),
-        },
-        'schedule-blog-notifications': {
-            'task': 'server.tasks.send_blog_notifications',
-            'schedule': crontab(minute='*/60'),
-        },
+        }
     },
     # beat_db=beat_schedule_db
 )
@@ -943,7 +939,7 @@ def send_blog_notifications(blog_id, task_id):
                 UserNotification(
                     subject="New Blog Post Alert!",
                     message=f"A new blog post, {blog.title}, has been published. Check it out!",
-                    link=f"/#blog",
+                    link=f"#blog",
                     user_id=user.id,
                     created_at=datetime.utcnow(),
                     is_read=False,
@@ -957,7 +953,7 @@ def send_blog_notifications(blog_id, task_id):
                 VendorNotification(
                     subject="New Blog Post Alert!",
                     message=f"A new blog post, {blog.title}, has been published. Check it out!",
-                    link=f"vendor#blog",
+                    link=f"/vendor#blog",
                     vendor_user_id=vendor_user.id,
                     created_at=datetime.utcnow(),
                     is_read=False,
@@ -971,7 +967,7 @@ def send_blog_notifications(blog_id, task_id):
                 AdminNotification(
                     subject="New Blog Post Alert!",
                     message=f"A new blog post, {blog.title}, has been published. Check it out!",
-                    link=f"",
+                    link=f"/admin#blog",
                     admin_role=5,
                     created_at=datetime.utcnow(),
                     is_read=False,
