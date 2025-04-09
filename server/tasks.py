@@ -890,17 +890,23 @@ def handle_vendor_user_creation(mapper, connection, target):
     """Event listener to trigger market location update when a new vendor user is created."""
     update_vendor_user_market_locations.delay(target.id)
 
-@celery.task
-def send_blog_notifications(blog_id, task_id):
+@celery.task(bind=True, acks_late=True)
+def send_blog_notifications(self, blog_id, task_id=None):
     """Send blog notifications to users when a new blog post is created."""
     from app import app
     with app.app_context():
+        try:
+            blog_id = int(blog_id)
+        except (ValueError, TypeError):
+            print(f"Invalid blog_id: {blog_id}. Must be an integer.")
+            return None
         try:
             # Get the blog post
             blog = db.session.get(Blog, blog_id)
             if not blog:
                 print(f"Blog ID={blog_id} not found.")
-                return
+                self.request.reject()
+                return None
 
             # If task_id is passed, we can skip re-scheduling
             if task_id and blog.task_id and task_id != blog.task_id:
