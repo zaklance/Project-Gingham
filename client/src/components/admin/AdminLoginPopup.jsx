@@ -56,7 +56,8 @@ function Login({ handlePopup }) {
     
                 // Navigate to the user's profile or refresh the page
                 handlePopup();
-                navigate(`/admin/profile/${globalThis.localStorage.getItem('admin_user_id', data.admin_user_id) }`);
+                navigate(`/admin`);
+                window.location.reload()
             } else {
                 const errorData = await response.json();
                 alert('Login failed:' + (errorData.error || "Unknown error"));

@@ -3259,13 +3259,17 @@ select:hover {
   object-fit: cover;
   width: 100%;
   height: 100%;
+  border-radius: 16px;
 }
 
 .admin-portal-background {
   background-image: url('../images/backgrounds/LzYeux_120719_0033_1800px.jpg');
   background-size:cover;
   width: 100%;
-  height: 600px;
+  height: 100%;
+  min-height: 600px;
+  padding-bottom: 48px;
+  border-radius: 16px;
 }
 
 .user-portal-background {
