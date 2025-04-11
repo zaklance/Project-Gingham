@@ -8,6 +8,17 @@ function Home() {
 
     const token = localStorage.getItem('admin_jwt-token');
 
+    useEffect(() => {
+        const anchor = window.location.hash.slice(1);
+        setTimeout(() => {
+            if (anchor) {
+                const anchorEl = document.getElementById(anchor);
+                if (anchorEl) {
+                    anchorEl.scrollIntoView();
+                }
+            }
+        }, 500);
+    }, []);
 
     useEffect(() => {
         fetch("/api/blogs?for_admin=true")
