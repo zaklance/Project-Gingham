@@ -596,9 +596,11 @@ def export_csv_users_task(self):
             today_date = datetime.now().strftime("%Y-%m-%d")
             filename = f"database_export_users_{today_date}.csv"
 
+            db.session.close()
             return {"csv": csv_content, "filename": filename}
 
         except Exception as e:
+            db.session.close()
             return {"error": str(e)}
 
 @celery.task(bind=True)
@@ -633,9 +635,11 @@ def export_csv_vendor_users_task(self):
             today_date = datetime.now().strftime("%Y-%m-%d")
             filename = f"database_export_vendor_users_{today_date}.csv"
 
+            db.session.close()
             return {"csv": csv_content, "filename": filename}
 
         except Exception as e:
+            db.session.close()
             return {"error": str(e)}
 
 @celery.task(bind=True)
@@ -672,9 +676,11 @@ def export_csv_markets_task(self):
             today_date = datetime.now().strftime("%Y-%m-%d")
             filename = f"database_export_markets_{today_date}.csv"
 
+            db.session.close()
             return {"csv": csv_content, "filename": filename}
 
         except Exception as e:
+            db.session.close()
             return {"error": str(e)}
 
 @celery.task(bind=True)
@@ -706,9 +712,11 @@ def export_csv_vendors_task(self):
             today_date = datetime.now().strftime("%Y-%m-%d")
             filename = f"database_export_vendors_{today_date}.csv"
 
+            db.session.close()
             return {"csv": csv_content, "filename": filename}
 
         except Exception as e:
+            db.session.close()
             return {"error": str(e)}
 
 @celery.task(bind=True)
@@ -743,9 +751,11 @@ def export_csv_baskets_task(self):
             today_date = datetime.now().strftime("%Y-%m-%d")
             filename = f"database_export_baskets_{today_date}.csv"
 
+            db.session.close()
             return {"csv": csv_content, "filename": filename}
 
         except Exception as e:
+            db.session.close()
             return {"error": str(e)}
 
 @celery.task(bind=True)
@@ -776,9 +786,11 @@ def export_csv_products_task(self):
             today_date = datetime.now().strftime("%Y-%m-%d")
             filename = f"database_export_products_{today_date}.csv"
 
+            db.session.close()
             return {"csv": csv_content, "filename": filename}
 
         except Exception as e:
+            db.session.close()
             return {"error": str(e)}
 
 @celery.task
@@ -823,12 +835,15 @@ def generate_vendor_baskets_csv(vendor_id, month, year):
             with open(file_path, 'w', newline='') as csvfile:
                 csvfile.write(output.getvalue())
             
+            db.session.close()
+
             return {
                 'status': 'success',
                 'file_path': file_path,
                 'filename': filename
             }
         except Exception as e:
+            db.session.close()
             return {
                 'status': 'error',
                 'error': str(e)
