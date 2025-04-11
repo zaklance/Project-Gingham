@@ -917,63 +917,66 @@ def send_blog_notifications(blog_id, task_id):
             # Get users who have notifications enabled based on blog type
             if blog.for_user:
                 users = db.session.query(User).join(SettingsUser).filter(SettingsUser.site_new_blog == True).all()
+                
+                # Prepare user notifications
+                user_notifications = [
+                    UserNotification(
+                        subject="New Blog Post Alert!",
+                        message=f"A new blog post, {blog.title}, has been published. Check it out!",
+                        link=f"#blog",
+                        user_id=user.id,
+                        created_at=datetime.utcnow(),
+                        is_read=False,
+                        task_id=task_id
+                    )
+                    for user in users
+                ]
             else:
                 users = []
+                user_notifications = []
 
             if blog.for_vendor:
                 vendor_users = db.session.query(VendorUser).join(SettingsVendor).filter(SettingsVendor.site_new_blog == True).all()
+
+                # Prepare vendor notifications
+                vendor_notifications = [
+                    VendorNotification(
+                        subject="New Blog Post Alert!",
+                        message=f"A new blog post, {blog.title}, has been published. Check it out!",
+                        link=f"/vendor#blog",
+                        vendor_user_id=vendor_user.id,
+                        created_at=datetime.utcnow(),
+                        is_read=False,
+                        task_id=task_id
+                    )
+                    for vendor_user in vendor_users
+                ]
             else:
-                vendor_users = []   
+                vendor_users = []
+                vendor_notifications = [] 
 
             if blog.for_admin:
                 admins = db.session.query(AdminUser).join(SettingsAdmin).filter(SettingsAdmin.site_new_blog == True).all()
+                
+                # Prepare admin notifications
+                admin_notifications = [
+                    AdminNotification(
+                        subject="New Blog Post Alert!",
+                        message=f"A new blog post, {blog.title}, has been published. Check it out!",
+                        link=f"/admin#blog",
+                        admin_role=5,
+                        created_at=datetime.utcnow(),
+                        is_read=False,
+                        task_id=task_id
+                    )
+                ]
             else:
                 admins = []
+                admin_notifications = []
                 
             if not users and not admins and not vendor_users:
                 print("No users have blog notifications enabled. No notifications will be created.")
                 return
-            
-            # Prepare user notifications
-            user_notifications = [
-                UserNotification(
-                    subject="New Blog Post Alert!",
-                    message=f"A new blog post, {blog.title}, has been published. Check it out!",
-                    link=f"#blog",
-                    user_id=user.id,
-                    created_at=datetime.utcnow(),
-                    is_read=False,
-                    task_id=task_id
-                )
-                for user in users
-            ]
-            
-            # Prepare vendor notifications
-            vendor_notifications = [
-                VendorNotification(
-                    subject="New Blog Post Alert!",
-                    message=f"A new blog post, {blog.title}, has been published. Check it out!",
-                    link=f"/vendor#blog",
-                    vendor_user_id=vendor_user.id,
-                    created_at=datetime.utcnow(),
-                    is_read=False,
-                    task_id=task_id
-                )
-                for vendor_user in vendor_users
-            ]
-            
-            # Prepare admin notifications
-            admin_notifications = [
-                AdminNotification(
-                    subject="New Blog Post Alert!",
-                    message=f"A new blog post, {blog.title}, has been published. Check it out!",
-                    link=f"/admin#blog",
-                    admin_role=5,
-                    created_at=datetime.utcnow(),
-                    is_read=False,
-                    task_id=task_id
-                )
-            ]
             
             # Save notifications to the database
             db.session.bulk_save_objects(user_notifications + vendor_notifications + admin_notifications)  

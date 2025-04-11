@@ -15,6 +15,7 @@ function VendorDashboard({ marketId }) {
     const [newVendor, setNewVendor] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [stripeAccountId, setStripeAccountId] = useState(false);
     const [isOnboarded, setIsOnboarded] = useState(false);
 
     const vendorUserId = localStorage.getItem('vendor_user_id');
