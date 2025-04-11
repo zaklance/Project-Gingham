@@ -50,7 +50,7 @@ from tasks import ( send_mjml_email_task, send_html_email_task,
                          admin_signup_task, confirm_admin_email_task,
                          change_admin_email_task, user_password_reset_request_task,
                          vendor_password_reset_request_task, admin_password_reset_request_task,
-                         contact_task, process_image,
+                         contact_task, process_image, send_sendgrid_email_client_task
                          )
 from celery.result import AsyncResult
 from celery_config import celery
@@ -2900,64 +2900,9 @@ def send_sendgrid_email_client():
     body = data.get('body', '')
     from_email = data.get('from_email', '')
     to_email = data.get('to_email', '')
-    
-    if body_type == 'plain':
-        compiled_html = body
-    
-    if body_type == 'html':
-        compiled_html = body
 
-    if body_type == 'mjml':
-        try:
-            # Run MJML CLI to compile MJML to HTML
-            result = subprocess.run(
-                ['mjml', '--stdin'],
-                input=body.encode(),
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-
-            if result.returncode != 0:
-                return jsonify({'error': result.stderr.decode()}), 400
-        
-        except Exception as e: 
-            print("Error occured:", str(e))
-            return jsonify({"error": str(e)}), 500
-
-        compiled_html = result.stdout.decode()
-    
-    if body_type == 'plain':
-        message = Mail(
-            from_email=from_email,
-            to_emails=to_email,
-            subject=subject,
-            plain_text_content=compiled_html,
-            )
-    if body_type == 'html':
-        message = Mail(
-            from_email=from_email,
-            to_emails=to_email,
-            subject=subject,
-            html_content=compiled_html,
-            )
-    if body_type == 'mjml':
-        message = Mail(
-            from_email=from_email,
-            to_emails=to_email,
-            subject=subject,
-            html_content=compiled_html,
-            )
-
-    try:
-        sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
-        response = sg.send(message)
-        print(response.status_code)
-        print(response.body)
-        print(response.headers)
-        return jsonify({"message": "Email sent successfully", "status_code": response.status_code}), 202
-    except Exception as e:
-        print(str(e))
-        return jsonify({"error": str(e)}), 500
+    task = send_sendgrid_email_client_task.delay(subject, body_type, body, from_email, to_email)
+    return jsonify({"message": "Email task queued", "task_id": task.id}), 202
 
 @app.route('/api/unsubscribe', methods=['PATCH'])
 def unsubscribe_user():
