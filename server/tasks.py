@@ -728,7 +728,7 @@ def export_csv_baskets_task(self):
     from app import app
     with app.app_context():
         try:
-            baskets = Basket.order_by(Basket.id.asc()).query.all()
+            baskets = Basket.query.order_by(Basket.id.asc()).all()
             csv_data = []
             headers = ["id", "vendor_id", "market_day_id", "sale_date", "pickup_start", "pickup_end", 
                     "user_id", "is_sold", "is_grabbed", "is_refunded", "price", "value", "fee_vendor"]
@@ -767,7 +767,7 @@ def export_csv_products_task(self):
     from app import app
     with app.app_context():
         try:
-            products = Product.order_by(Product.id.asc()).query.all()
+            products = Product.query.order_by(Product.id.asc()).all()
             csv_data = []
             headers = ["id", "product"]
 
