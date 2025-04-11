@@ -1040,6 +1040,7 @@ def send_blog_notifications(blog_id, task_id=None):
             
             # Save notifications to the database
             db.session.bulk_save_objects(user_notifications + vendor_notifications + admin_notifications)  
+            blog.notifications_sent = True
             db.session.commit()
             print(f"Blog ID={blog_id} notifications have been sent.")
 
@@ -1049,7 +1050,7 @@ def send_blog_notifications(blog_id, task_id=None):
         finally:
             db.session.close()
 
-@celery.task
+@celery.task(queue='blog_notifications')
 def check_scheduled_blog_notifications():
     """Check for blogs that need notifications today"""
     from app import app
@@ -1097,7 +1098,7 @@ def check_scheduled_blog_notifications():
                 print(f"[DEBUG] Notification task triggered: {send_result}")
                 
                 # Mark as sent
-                blog.notifications_sent = True
+                # blog.notifications_sent = True
             
             # Commit the changes
             db.session.commit()
