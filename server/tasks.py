@@ -31,6 +31,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import event
 from PIL import Image
 import base64
+from uuid import uuid4
 
 serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 
@@ -531,8 +532,43 @@ def send_sendgrid_email_task(html, subject, user_type):
         return {"error": str(e)}
 
 @celery.task
-def export_csv_users_task():
+def send_sendgrid_email_client_task(subject, body_type, body, from_email, to_email):
+    compiled_html = body
+
+    if body_type == 'mjml':
+        try:
+            result = subprocess.run(
+                ['mjml', '--stdin'],
+                input=body.encode(),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            if result.returncode != 0:
+                return {"error": result.stderr.decode(), "status": 400}
+
+            compiled_html = result.stdout.decode()
+
+        except Exception as e:
+            return {"error": str(e), "status": 500}
+
+    if body_type == 'plain':
+        message = Mail(from_email=from_email, to_emails=to_email, subject=subject, plain_text_content=compiled_html)
+    else:
+        message = Mail(from_email=from_email, to_emails=to_email, subject=subject, html_content=compiled_html)
+
+    try:
+        sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+        response = sg.send(message)
+        return {"message": "Email sent successfully", "status_code": response.status_code}
+    except Exception as e:
+        return {"error": str(e), "status": 500}
+
+@celery.task(bind=True)
+def export_csv_users_task(self):
     """Exports user data to a CSV file asynchronously."""
+    import os
+    import socket
+    print(f"Task {self.request.id} STARTED on {socket.gethostname()} (pid {os.getpid()})")
     from app import app
     with app.app_context():
         try:
@@ -565,9 +601,12 @@ def export_csv_users_task():
         except Exception as e:
             return {"error": str(e)}
 
-@celery.task
-def export_csv_vendor_users_task():
+@celery.task(bind=True)
+def export_csv_vendor_users_task(self):
     """Exports vendor user data to a CSV file asynchronously."""
+    import os
+    import socket
+    print(f"Task {self.request.id} STARTED on {socket.gethostname()} (pid {os.getpid()})")
     from app import app
     with app.app_context():
         try:
@@ -599,9 +638,12 @@ def export_csv_vendor_users_task():
         except Exception as e:
             return {"error": str(e)}
 
-@celery.task
-def export_csv_markets_task():
+@celery.task(bind=True)
+def export_csv_markets_task(self):
     """Exports market data to a CSV file asynchronously."""
+    import os
+    import socket
+    print(f"Task {self.request.id} STARTED on {socket.gethostname()} (pid {os.getpid()})")
     from app import app
     with app.app_context():
         try:
@@ -635,9 +677,12 @@ def export_csv_markets_task():
         except Exception as e:
             return {"error": str(e)}
 
-@celery.task
-def export_csv_vendors_task():
+@celery.task(bind=True)
+def export_csv_vendors_task(self):
     """Exports vendor data to a CSV file asynchronously."""
+    import os
+    import socket
+    print(f"Task {self.request.id} STARTED on {socket.gethostname()} (pid {os.getpid()})")
     from app import app
     with app.app_context():
         try:
@@ -666,9 +711,12 @@ def export_csv_vendors_task():
         except Exception as e:
             return {"error": str(e)}
 
-@celery.task
-def export_csv_baskets_task():
+@celery.task(bind=True)
+def export_csv_baskets_task(self):
     """Exports basket data to a CSV file asynchronously."""
+    import os
+    import socket
+    print(f"Task {self.request.id} STARTED on {socket.gethostname()} (pid {os.getpid()})")
     from app import app
     with app.app_context():
         try:
@@ -700,9 +748,12 @@ def export_csv_baskets_task():
         except Exception as e:
             return {"error": str(e)}
 
-@celery.task
-def export_csv_products_task():
+@celery.task(bind=True)
+def export_csv_products_task(self):
     """Exports product data to a CSV file asynchronously."""
+    import os
+    import socket
+    print(f"Task {self.request.id} STARTED on {socket.gethostname()} (pid {os.getpid()})")
     from app import app
     with app.app_context():
         try:
@@ -903,10 +954,10 @@ def send_blog_notifications(blog_id, task_id=None):
 
             print(task_id)
             # Check if post_date matches current date
-            # current_date = datetime.utcnow().date()
-            # if not blog.post_date or blog.post_date.date() != current_date:
-            #     print(f"Blog ID={blog_id} post_date ({blog.post_date}) does not match current date ({current_date}). Skipping notifications.")
-            #     return
+            current_date = datetime.utcnow().date()
+            if not blog.post_date or blog.post_date.date() != current_date:
+                print(f"Blog ID={blog_id} post_date ({blog.post_date}) does not match current date ({current_date}). Skipping notifications.")
+                return
 
             # Get users who have notifications enabled based on blog type
             if blog.for_user:
@@ -1024,7 +1075,10 @@ def check_scheduled_blog_notifications():
             for blog in blogs_to_notify:
                 print(f"[DEBUG] Blog ID={blog.id}, Title='{blog.title}', Post Date={blog.post_date}")
                 # Send notification
-                send_result = send_blog_notifications.delay(blog.id)
+                send_result = send_blog_notifications.apply_async(
+                    args=[blog.id],
+                    kwargs={"task_id": str(uuid4())}
+                )
                 print(f"[DEBUG] Notification task triggered: {send_result}")
                 
                 # Mark as sent
