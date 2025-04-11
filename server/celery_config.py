@@ -30,16 +30,14 @@ def get_beat_schedule():
         }
     }
 
-def get_beat_schedule_db_path():
-    return '/var/data/celery-beat/celerybeat-schedule.db'
-
 def configure_celery():
     celery.conf.update(
         beat_schedule=get_beat_schedule(),
-        # beat_db=get_beat_schedule_db_path(),
         worker_send_task_events=True,
         task_send_sent_event=True,
-        timezone='UTC'
+        timezone='UTC',
+        task_acks_late=True,
+        task_reject_on_worker_lost=True
     )
 
 configure_celery()

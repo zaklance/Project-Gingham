@@ -511,12 +511,20 @@ def schedule_blog_notifications(mapper, connection, target):
         
         # If it's today or in the past, send immediately
         if target.post_date <= now:
-            send_blog_notifications.delay(target.id, None)
+            task_id = str(uuid4())
+
+            send_blog_notifications.apply_async(
+                args=[target.id],
+                kwargs={"task_id": task_id}
+            )
             
             connection.execute(
                 Blog.__table__.update()
                 .where(Blog.id == target.id)
-                .values(notifications_sent=True)
+                .values(
+                    notifications_sent=True,
+                    task_id=task_id
+                )
             )
         else:
             connection.execute(
@@ -532,6 +540,20 @@ def schedule_blog_notifications(mapper, connection, target):
         print(f"Error in schedule_blog_notifications: {e}")
     finally:
         session.close()
+
+@listens_for(Blog, 'after_insert')
+def flag_blog_for_notifications(mapper, connection, target):
+    pass
+
+@listens_for(Blog, 'after_update')
+def update_blog_notification_status(mapper, connection, target):
+    insp = inspect(target)
+    if insp.attrs.post_date.history.has_changes():
+        connection.execute(
+            Blog.__table__.update()
+            .where(Blog.id == target.id)
+            .values(notifications_sent=False)
+        )
         
 # if blog is scheduled for the future and deleted before it is published
 # @listens_for(Blog, 'before_delete')
@@ -579,20 +601,6 @@ def schedule_blog_notifications(mapper, connection, target):
 #         traceback.print_exc()
 #     finally:
 #         session.close()
-
-@listens_for(Blog, 'after_insert')
-def flag_blog_for_notifications(mapper, connection, target):
-    pass
-
-@listens_for(Blog, 'after_update')
-def update_blog_notification_status(mapper, connection, target):
-    insp = inspect(target)
-    if insp.attrs.post_date.history.has_changes():
-        connection.execute(
-            Blog.__table__.update()
-            .where(Blog.id == target.id)
-            .values(notifications_sent=False)
-        )
 
 # Vendor User - New Market Event     
 @listens_for(Event, 'after_insert')
