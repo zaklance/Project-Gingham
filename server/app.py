@@ -34,7 +34,7 @@ import utils.events as events
 from utils.emails import ( send_contact_email, send_user_password_reset_email, 
                           send_vendor_password_reset_email, send_admin_password_reset_email, 
                           send_user_confirmation_email, send_vendor_confirmation_email, 
-                          send_admin_confirmation_email )
+                          send_admin_confirmation_email, send_vendor_team_invite_email )
 import subprocess
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
@@ -5031,6 +5031,104 @@ def export_pdf_vendor_baskets():
     
     except Exception as e:
         return jsonify({"error": f"Error fetching baskets: {str(e)}"}), 500
+
+@app.route('/api/vendor/team-invite', methods=['POST'])
+@jwt_required()
+def send_team_invite():
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        vendor_id = data.get('vendor_id')
+        role = data.get('role', 2)  # Default to employee role
+
+        if not email or not vendor_id:
+            return jsonify({'error': 'Email and vendor_id are required'}), 400
+
+        # Get vendor information
+        vendor = Vendor.query.get(vendor_id)
+        if not vendor:
+            return jsonify({'error': 'Vendor not found'}), 404
+
+        # Generate invitation token
+        token_data = {
+            'email': email,
+            'vendor_id': vendor_id,
+            'role': role,
+            'exp': (datetime.utcnow() + timedelta(days=7)).isoformat()  # Convert to ISO format string
+        }
+        token = serializer.dumps(token_data, salt='team-invite-salt')
+
+        # Send invitation email
+        result = send_vendor_team_invite_email(email, vendor.name, token)
+        
+        if 'error' in result:
+            return jsonify({'error': result['error']}), 500
+            
+        return jsonify({'message': 'Invitation sent successfully'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+@app.route('/api/vendor/join-team/<token>', methods=['GET', 'POST'])
+def join_team(token):
+    try:
+        # Decode the token
+        try:
+            data = serializer.loads(token, salt='team-invite-salt', max_age=604800)  # 7 days
+            # Convert the ISO format string back to datetime
+            data['exp'] = datetime.fromisoformat(data['exp'])
+        except Exception as e:
+            return jsonify({'error': 'Invalid or expired invitation link'}), 400
+
+        if request.method == 'GET':
+            # Return vendor information for the invitation page
+            vendor = Vendor.query.get(data['vendor_id'])
+            if not vendor:
+                return jsonify({'error': 'Vendor not found'}), 404
+                
+            return jsonify({
+                'vendor_name': vendor.name,
+                'email': data['email'],
+                'role': data['role']
+            }), 200
+
+        elif request.method == 'POST':
+            # Process the invitation acceptance
+            form_data = request.get_json()
+            
+            # Check if user already exists
+            existing_user = VendorUser.query.filter_by(email=data['email']).first()
+            
+            if existing_user:
+                # Update existing user
+                if not isinstance(existing_user.vendor_id, dict):
+                    existing_user.vendor_id = {}
+                if not isinstance(existing_user.vendor_role, dict):
+                    existing_user.vendor_role = {}
+                    
+                existing_user.vendor_id[str(data['vendor_id'])] = data['vendor_id']
+                existing_user.vendor_role[str(data['vendor_id'])] = data['role']
+                existing_user.active_vendor = data['vendor_id']
+                
+            else:
+                # Create new user
+                new_user = VendorUser(
+                    email=data['email'],
+                    password=form_data['password'],
+                    first_name=form_data['first_name'],
+                    last_name=form_data['last_name'],
+                    phone=form_data['phone'],
+                    vendor_id={str(data['vendor_id']): data['vendor_id']},
+                    vendor_role={str(data['vendor_id']): data['role']},
+                    active_vendor=data['vendor_id']
+                )
+                db.session.add(new_user)
+            
+            db.session.commit()
+            return jsonify({'message': 'Successfully joined the team'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
