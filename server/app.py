@@ -4116,6 +4116,14 @@ def fetch_vendor_notifications():
             deleted_count = query.delete()
             db.session.commit()
             return jsonify({'deleted count': deleted_count}), 200
+        
+        query = VendorNotification.query
+        if vendor_user_id:
+            query = query.filter_by(vendor_user_id=vendor_user_id)
+        
+            deleted_count = query.delete()
+            db.session.commit()
+            return jsonify({'deleted count': deleted_count}), 200
 
 @app.route('/api/vendor-notifications/<int:id>', methods=['PATCH', 'DELETE'])
 @jwt_required()
