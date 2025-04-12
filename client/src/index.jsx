@@ -225,7 +225,6 @@ const router = createBrowserRouter([
                     { path: "password-reset-request", element: <PasswordResetRequest user={'vendor'} /> },
                     { path: "password-reset/:token", element: <PasswordReset user={'vendor'} path={'/vendor'} /> },
                     { path: "confirm-email/:token", element: <VendorEmailVerification user={'vendor'} path={'/vendor'} /> },
-                    { path: "team/:id", element: <VendorAuthRoute><VendorTeam /></VendorAuthRoute> },
                     { path: "join-team/:token", element: <VendorJoinTeam /> }
                 ]
             },
