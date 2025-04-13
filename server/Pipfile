@@ -84,6 +84,7 @@ yarl = "==1.18.3"
 "zope.interface" = "==7.2"
 numpy = "*"
 psutil = "*"
+asyncio = "*"
 
 [dev-packages]
 
