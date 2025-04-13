@@ -1,0 +1,85 @@
+# Exported from Render on 2025-04-13T18:06:19Z
+databases:
+- name: gingham_db
+  databaseName: gingham_server_2gy9
+  user: gingham_server_2gy9_user
+  plan: basic-256mb
+  region: ohio
+  ipAllowList:
+  - source: 0.0.0.0/0
+    description: everywhere
+  - source: 82.140.186.159/32
+    description: Zak, Ad Min (admin@gingham.nyc)
+  postgresMajorVersion: "16"
+  diskSizeGB: 1
+services:
+- type: web
+  name: gingham_server
+  runtime: python
+  repo: https://github.com/zaklance/Project-Gingham
+  branch: deploy
+  plan: starter
+  envVars:
+  - fromGroup: gingham_env
+  region: ohio
+  buildCommand: pip install -r requirements.txt && npm install -g mjml
+  startCommand: gunicorn app:app --bind 0.0.0.0:10000
+  disk:
+    name: disk
+    mountPath: /var/data/uploads
+    sizeGB: 5
+  buildFilter:
+    paths:
+    - server
+  rootDir: server
+  maintenanceMode:
+    uri: https://www.gingham.nyc/maintenance
+- type: worker
+  name: gingham_worker
+  runtime: python
+  repo: https://github.com/zaklance/Project-Gingham
+  branch: deploy
+  plan: standard
+  envVars:
+  - fromGroup: gingham_env
+  region: ohio
+  buildCommand: pip install -r requirements.txt && npm install -g mjml
+  startCommand: supervisord -c supervisord.conf
+  disk:
+    name: disk
+    mountPath: /var/data
+    sizeGB: 1
+  buildFilter:
+    paths:
+    - server
+  rootDir: server
+- type: web
+  name: gingham_client
+  runtime: static
+  repo: https://github.com/zaklance/Project-Gingham
+  branch: deploy
+  envVars:
+  - fromGroup: gingham_env
+  buildCommand: npm install && npm run build
+  staticPublishPath: dist
+  domains:
+  - gingham.nyc
+  - www.gingham.nyc
+  routes:
+  - type: rewrite
+    source: /api/*
+    destination: https://gingham-server.onrender.com/api/*
+  - type: rewrite
+    source: /*
+    destination: /index.html
+  buildFilter:
+    paths:
+    - client
+  rootDir: client
+- type: keyvalue
+  name: gingham_redis
+  plan: starter
+  region: ohio
+  maxmemoryPolicy: noeviction
+  ipAllowList: []
+version: "1"
