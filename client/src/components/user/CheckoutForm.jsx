@@ -148,6 +148,36 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 if (!transferResponse.ok) {
                     throw new Error(`Failed to process transfers: ${transferResponse.statusText}`);
                 }
+
+                const { task_id } = await transferResponse.json();
+                console.log("Transfer task started:", task_id);
+
+                let transferData = null;
+                let retries = 0;
+                const maxRetries = 30;
+
+                while (retries < maxRetries) {
+                    const statusResponse = await fetch(`/api/task-status/${task_id}`);
+                    const statusData = await statusResponse.json();
+                    console.log(statusData)
+
+                    if (statusData.status=== "SUCCESS") {
+                        console.log("Transfer completed:", statusData.result);
+                        transferData = statusData.result.transfer_data;
+                        break;
+                    } else if (statusData.status === "FAILURE") {
+                        throw new Error(`Transfer failed: ${statusData.error?.message || 'Unknown error'}`);
+                    }
+
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    retries++;
+                }
+
+                if (!transferData) {
+                    throw new Error("Transfer task did not complete in time.");
+                }
+
+                console.log("Transfer Data:", transferData);
     
                 console.log("Vendor payments processed successfully!");
     
@@ -279,7 +309,9 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                     <h1>Total Price: ${totalPrice.toFixed(2)}</h1>
                 </div>
                 <div className="d-width-50">
-                    <PaymentElement id="payment-element" options={{ layout: 'accordion' }} />
+                    {!paymentSuccess && (
+                        <PaymentElement id="payment-element" options={{ layout: 'accordion' }} />
+                    )}
                     {!paymentSuccess ? (
                         <button className="btn btn-checkout" disabled={isProcessing || !stripe || !elements} id="submit">
                             <span id="button-text">
