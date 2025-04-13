@@ -45,6 +45,8 @@ import VendorStripeRefresh from './components/vendor/VendorStripeRefresh.jsx';
 import VendorHelpCenter from './components/vendor/VendorHelpCenter.jsx';
 import VendorLoginPopup from './components/vendor/VendorLoginPopup.jsx';
 import VendorEmailVerification from './components/vendor/VendorEmailVerification.jsx';
+import VendorTeam from './components/vendor/VendorTeam.jsx';
+import VendorJoinTeam from './components/vendor/VendorJoinTeam.jsx';
 
 // admin routes
 import AdminHome from './components/admin/AdminHome.jsx';
@@ -223,7 +225,9 @@ const router = createBrowserRouter([
                     { path: "password-reset-request", element: <PasswordResetRequest user={'vendor'} /> },
                     { path: "password-reset/:token", element: <PasswordReset user={'vendor'} path={'/vendor'} /> },
                     { path: "confirm-email/:token", element: <VendorEmailVerification user={'vendor'} path={'/vendor'} /> },
-                ],
+                    { path: "team/:id", element: <VendorAuthRoute><VendorTeam /></VendorAuthRoute> },
+                    { path: "join-team/:token", element: <VendorJoinTeam /> }
+                ]
             },
             { path: "admin", element: <AdminHome /> },
             {

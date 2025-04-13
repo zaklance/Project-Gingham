@@ -1224,52 +1224,44 @@ def create_admin_settings(mapper, connection, target):
     finally:
         session.close()
         
+@listens_for(Vendor, 'after_insert')
+def notify_admins_new_vendor(mapper, connection, target):
+    session = Session(bind=connection)
+    try:
+        # Retrieve all admins
+        admins = session.query(AdminUser).all()
 
-# def reset_market_status():
-#     session = db.session  # Use the SQLAlchemy session from your app
-#     try:
-#         # Set all Markets.is_current to False
-#         session.query(Market).update({Market.is_current: False})
-#         session.commit()
-#         print("All markets have been set to is_current=False for the new year.")
+        if not admins:
+            print("No admins found. No notifications will be created.")
+            return
 
-#     except Exception as e:
-#         session.rollback()
-#         print(f"Error resetting market status: {e}")
-#     finally:
-#         session.close()
+        # Prepare notifications
+        notifications = []
+        for admin in admins:
+            # Retrieve admin notification settings
+            settings = session.query(SettingsAdmin).filter_by(admin_id=admin.id).first()
+            if not settings:
+                print(f"No settings found for Admin ID={admin.id}. Skipping notification.")
+                continue
 
-# def schedule_new_year_reset():
-#     now = datetime.now(timezone.utc)
-#     next_reset = datetime(now.year + 1, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
-#     delay = (next_reset - now).total_seconds()
+            # Site Notification
+            notifications.append(AdminNotification(
+                subject="New Vendor Registration",
+                message=f"A new vendor, {target.name}, has registered on the platform.",
+                link="/admin/vendors",
+                admin_id=admin.id,
+                admin_role=admin.admin_role,
+                created_at=datetime.utcnow(),
+                is_read=False
+            ))
 
-#     print(f"Market reset scheduled for {next_reset}.")
-#     Timer(delay, reset_market_status).start()
+        # Save notifications
+        if notifications:
+            session.bulk_save_objects(notifications)
+            session.commit()
 
-# @listens_for(VendorUser, 'after_insert')
-# def update_vendor_user_market_locations(mapper, connection, target):
-#     session = Session(bind=connection)
-#     try:
-#         # Retrieve all market_day_ids associated with the vendor
-#         market_days = session.query(VendorMarket.market_day_id).filter_by(vendor_id=target.vendor_id).all()
-#         market_day_ids = [md.market_day_id for md in market_days]
-
-#         if not market_day_ids:
-#             print(f"No market locations found for Vendor ID={target.vendor_id}. Skipping update.")
-#             return
-
-#         # Update SettingsVendor for this vendor user
-#         settings = session.query(SettingsVendor).filter_by(vendor_user_id=target.id).first()
-#         if settings:
-#             existing_market_locations = set(settings.market_locations or [])
-#             updated_market_locations = list(existing_market_locations.union(set(market_day_ids)))
-
-#             settings.market_locations = updated_market_locations
-#             session.commit()
-
-#     except Exception as e:
-#         session.rollback()
-#         print(f"Error updating market locations for Vendor User ID={target.id}: {e}")
-#     finally:
-#         session.close()
+    except Exception as e:
+        session.rollback()
+        print(f"Error notifying admins about new vendor: {e}")
+    finally:
+        session.close()

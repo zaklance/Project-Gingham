@@ -7,6 +7,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const [adminNotifications, setAdminNotifications] = useState([]);
     const [vendorNotifications, setVendorNotifications] = useState([]);
     const [isNotifPopup, setIsNotifPopup] = useState(false);
+    const [vendorUserData, setVendorUserData] = useState(null);
     const [adminUserData, setAdminUserData] = useState(null);
     const [baskets, setBaskets] = useState([])
 
@@ -355,6 +356,33 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     }, [adminUserId]);
 
     useEffect(() => {
+        if (!vendorUserId) return
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch(`/api/vendor-users/${vendorUserId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${vendorToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setVendorUserData(data);
+                } else {
+                    console.error('Error fetching profile:', response.status);
+                    if (response.status === 401) {
+                        console.error('Unauthorized: Token may be missing or invalid');
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching vendor data:', error);
+            }
+        };
+        fetchUserData();
+    }, [vendorUserId]);
+
+    useEffect(() => {
         const today = new Date().toLocaleDateString('en-CA');
         // console.log('Formatted date being sent:', today);
 
@@ -501,9 +529,11 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li>
                             <NavLink className='nav-tab m-tab-left color-3 btn-nav' to={`/vendor/dashboard`} title="Dashboard">Dashboard</NavLink>
                         </li>
-                        <li>
-                            <NavLink className='nav-tab color-5 btn-nav' to={`/vendor/sales`} title="Sales">Sales</NavLink>
-                        </li>
+                        {vendorUserData?.vendor_role[vendorUserData.active_vendor] <= 1 && (
+                            <li>
+                                <NavLink className='nav-tab color-5 btn-nav' to={`/vendor/sales`} title="Sales">Sales</NavLink>
+                            </li>
+                        )}
                         <li>
                             <NavLink className='nav-tab color-4 btn-nav' to={`/vendor/scan`} title="Scan">Scan</NavLink>
                         </li>
