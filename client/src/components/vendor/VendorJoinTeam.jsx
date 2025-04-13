@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import PasswordStrengthBar from 'react-password-strength-bar';
+import PasswordChecklist from "react-password-checklist"
+import PulseLoader from 'react-spinners/PulseLoader';
+import PhoneInput, { isPossiblePhoneNumber } from 'react-phone-number-input'
 
 function VendorJoinTeam() {
     const [isLoading, setIsLoading] = useState(true);
     const [invitationData, setInvitationData] = useState(null);
+    const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false});
+    const [isValid, setIsValid] = useState(false);
+    const [termsConditions, setTermsConditions] = useState(false);
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -47,9 +54,17 @@ function VendorJoinTeam() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        if (formData.password !== formData.confirm_password) {
-            toast.error('Passwords do not match');
+
+        if (!termsConditions) {
+            alert("You must agree to Terms & Conditions to signup.");
+            return;
+        }
+        if (!isValid) {
+            alert("Password does not meet requirements.");
+            return;
+        }
+        if (!isPossiblePhoneNumber(formData.phone)) {
+            alert("Not a possible phone number");
             return;
         }
 
@@ -69,7 +84,7 @@ function VendorJoinTeam() {
 
             if (response.ok) {
                 toast.success('Successfully joined the team!');
-                navigate('/vendor/login');
+                navigate('/vendor');
             } else {
                 const error = await response.json();
                 toast.error(error.error || 'Error joining team');
@@ -78,6 +93,8 @@ function VendorJoinTeam() {
             toast.error('Error joining team');
         }
     };
+
+    console.log(formData.password)
 
     if (isLoading) {
         return <div className="box-bounding">Loading...</div>;
@@ -89,11 +106,10 @@ function VendorJoinTeam() {
 
     return (
         <div className="box-bounding">
-            <h2>Join {invitationData.vendor_name}</h2>
-            <p>Complete your account setup to join the team</p>
-            
-            <form onSubmit={handleSubmit} className="form-group">
-                <div className="form-group">
+            <h1>Join {invitationData.vendor_name}</h1>
+            <h4 className='margin-b-24'>Complete your account setup to join the team</h4>
+            <form className="form-group">
+                <div className='form-group form-login'>
                     <label>Email:</label>
                     <input 
                         type="email" 
@@ -102,8 +118,7 @@ function VendorJoinTeam() {
                         className="form-control"
                     />
                 </div>
-                
-                <div className="form-group">
+                <div className='form-group form-login'>
                     <label>First Name:</label>
                     <input
                         type="text"
@@ -114,8 +129,7 @@ function VendorJoinTeam() {
                         className="form-control"
                     />
                 </div>
-                
-                <div className="form-group">
+                <div className='form-group form-login'>
                     <label>Last Name:</label>
                     <input
                         type="text"
@@ -126,45 +140,77 @@ function VendorJoinTeam() {
                         className="form-control"
                     />
                 </div>
-                
-                <div className="form-group">
+                <div className='form-group form-login'>
                     <label>Phone:</label>
-                    <input
-                        type="tel"
+                    <PhoneInput
                         name="phone"
+                        className='input-phone margin-l-8'
+                        countryCallingCodeEditable={false}
+                        withCountryCallingCode
+                        country='US'
+                        defaultCountry='US'
+                        placeholder="enter your phone number"
                         value={formData.phone}
-                        onChange={handleChange}
-                        required
-                        className="form-control"
+                        onChange={(e) => setFormData({ ...formData, ['phone']: e
+                        })}
                     />
                 </div>
-                
-                <div className="form-group">
+                <div className='form-group form-login'>
                     <label>Password:</label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                        className="form-control"
-                    />
+                    <div className='badge-container-strict'>
+                        <input
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                            className="form-control"
+                        />
+                        <i className={showPassword.pw1 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw1')}>&emsp;</i>
+                    </div>
                 </div>
-                
-                <div className="form-group">
+                <div className='form-group form-login'>
                     <label>Confirm Password:</label>
-                    <input
-                        type="password"
-                        name="confirm_password"
-                        value={formData.confirm_password}
-                        onChange={handleChange}
-                        required
-                        className="form-control"
+                    <div className='badge-container-strict'>
+                        <input
+                            type={showPassword.pw2 ? 'text' : 'password'}
+                            name="confirm_password"
+                            value={formData.confirm_password}
+                            onChange={handleChange}
+                            required
+                        />
+                        <i className={showPassword.pw2 ? 'icon-eye-alt' : 'icon-eye'} onClick={() => togglePasswordVisibility('pw2')}>&emsp;</i>
+                    </div>
+                    <PasswordChecklist
+                        className='password-checklist'
+                        style={{ padding: '0 12px' }}
+                        rules={["minLength", "specialChar", "number", "capital", "match",]}
+                        minLength={5}
+                        value={formData.password}
+                        valueAgain={formData.confirm_password}
+                        onChange={(isValid) => { setIsValid(isValid) }}
+                        iconSize={14}
+                        validColor='#00bda4'
+                        invalidColor='#ff4b5a'
                     />
+                    <PasswordStrengthBar className='password-bar' minLength={5} password={formData.password} />
                 </div>
-                
-                <button type="submit" className="btn-edit">Join Team</button>
             </form>
+            <div className='flex-center-align flex-start margin-t-16 flex-gap-16'>
+                <button type="submit" className="btn-edit" onClick={handleSubmit}>Join Team</button>
+                <div className='flex-start flex-center-align flex-gap-16'>
+                    <input
+                        type='checkbox'
+                        name="terms"
+                        value={termsConditions}
+                        onChange={(event) => setTermsConditions(!termsConditions)}
+                        className='scale-fix-125'
+                    />
+                    <p className="forgot-password" onClick={() => window.open('/terms-service', '_blank')}>
+                        Terms & Conditions
+                    </p>
+                </div>
+            </div>
         </div>
     );
 }

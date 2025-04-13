@@ -193,9 +193,6 @@ def send_contact_email(name, email, subject, message):
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
                             <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
-                            Unsubscribe
-                        </a>
                     </div>
                 </div>
             </body>
