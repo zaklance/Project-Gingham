@@ -27,18 +27,31 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from sqlalchemy.sql.expression import extract
 from datetime import datetime, time, timedelta
+import time as time2
 from celery.schedules import crontab
 from sqlalchemy.orm import Session
 from sqlalchemy import event
 from PIL import Image
 import base64
 from uuid import uuid4
+import numpy as np
+import psutil
 
 serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 
 MAX_SIZE = 1.5 * 1024 * 1024
 MAX_RES = (1800, 1800)
 
+@celery.task
+def heavy_task(size=10000, duration=3):
+    """Simulates memory and CPU load"""
+    print(f"RAM usage before: {psutil.virtual_memory().percent}%")
+    print(f"CPU usage before: {psutil.cpu_percent()}%")
+    data = np.random.rand(size, size)
+    time2.sleep(duration)
+    print(f"RAM usage after: {psutil.virtual_memory().percent}%")
+    print(f"CPU usage after: {psutil.cpu_percent()}%")
+    return data.sum()
 
 @celery.task
 def contact_task(name, email, subject, message):
