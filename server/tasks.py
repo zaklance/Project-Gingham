@@ -36,6 +36,7 @@ import base64
 from uuid import uuid4
 import numpy as np
 import psutil
+import stripe
 
 serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 
@@ -1161,3 +1162,131 @@ def check_scheduled_blog_notifications():
             return f"Error: {str(e)}"
         finally:
             db.session.close()
+
+@celery.task(bind=True)
+def process_transfers_task(self, payment_intent_id, baskets):
+    from app import app, get_vendor_stripe_accounts
+    with app.app_context():
+        try:
+            print(f"Processing transfers for PaymentIntent: {payment_intent_id}")
+            payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+            print(f"PaymentIntent Status: {payment_intent['status']}")
+
+            if payment_intent['status'] != 'succeeded':
+                return {
+                    'error': {
+                        'message': f"Payment not completed yet. Current status: {payment_intent['status']}",
+                        'payment_intent_status': payment_intent['status']
+                    }
+                }
+
+            vendor_ids = [basket['vendor_id'] for basket in baskets]
+            vendor_accounts = get_vendor_stripe_accounts(vendor_ids)
+            print(f"Vendor accounts retrieved: {vendor_accounts}")
+
+            transfer_data = []
+
+            for basket in baskets:
+                vendor_id = basket.get('vendor_id')
+                price = basket.get('price', 0)
+                fee_vendor = basket.get('fee_vendor', 0)
+
+                if vendor_id is None or price == 0:
+                    print(f"Skipping invalid basket: {basket}")
+                    continue
+
+                stripe_account_id = vendor_accounts.get(vendor_id)
+                if not stripe_account_id:
+                    print(f"Vendor {vendor_id} has no Stripe account! Skipping...")
+                    continue
+
+                transfer_amount = int((price - fee_vendor) * 100)
+                application_fee = int(fee_vendor * 100)
+
+                try:
+                    transfer = stripe.Transfer.create(
+                        amount=transfer_amount + application_fee,
+                        currency="usd",
+                        destination=stripe_account_id,
+                        transfer_group=f"group_pi_{payment_intent_id}",
+                        application_fee_amount=application_fee
+                    )
+
+                    transfer_data.append({
+                        "basket_id": basket["id"],
+                        "vendor_id": vendor_id,
+                        "stripe_account_id": stripe_account_id,
+                        "stripe_transfer_id": transfer.id,
+                        "amount": transfer.amount,
+                        "destination": stripe_account_id,
+                        "payment_intent_id": payment_intent_id,
+                        "transfer_group": f"group_pi_{payment_intent_id}",
+                        "application_fee_amount": application_fee,
+                    })
+
+                    basket_record = Basket.query.filter_by(id=basket['id']).first()
+                    if basket_record:
+                        basket_record.stripe_transfer_id = transfer.id
+                        db.session.commit()
+                        print(f"Basket {basket['id']} updated with stripe_transfer_id {transfer.id}")
+
+                except stripe.error.StripeError as e:
+                    print(f"Transfer failed for vendor {vendor_id}: {e}")
+                    return {
+                        'error': {
+                            'message': f"Transfer failed for vendor {vendor_id}",
+                            'details': e.json_body
+                        }
+                    }
+
+            return {
+                'message': 'Transfers processed successfully',
+                'transfer_data': transfer_data
+            }
+
+        except stripe.error.StripeError as e:
+            print(f"Stripe API Error: {str(e)}")
+            return {'error': {'message': 'Stripe API Error', 'details': str(e)}}
+
+        except Exception as e:
+            print(f"Unexpected error in task: {str(e)}")
+            return {'error': {'message': 'Unexpected error occurred', 'details': str(e)}}
+
+@celery.task(bind=True)
+def reverse_basket_transfer_task(self, basket_id, stripe_account_id, amount):
+    from app import app
+    with app.app_context():
+        try:
+            reversal_amount = int(amount * 100)
+
+            basket_record = Basket.query.filter_by(id=basket_id).first()
+            if not basket_record or not basket_record.stripe_transfer_id:
+                return {"error": f"No stripe_transfer_id found for basket {basket_id}."}
+
+            stripe_transfer_id = basket_record.stripe_transfer_id
+
+            reversal = stripe.Transfer.create_reversal(
+                stripe_transfer_id,
+                amount=reversal_amount,
+                metadata={"reason": "Refunded to customer"}
+            )
+
+            basket_record.is_refunded = True
+            db.session.commit()
+
+            return {
+                "id": reversal["id"],
+                "object": reversal["object"],
+                "amount": reversal["amount"],
+                "balance_transaction": reversal["balance_transaction"],
+                "created": reversal["created"],
+                "currency": reversal["currency"],
+                "destination_payment_refund": reversal.get("destination_payment_refund"),
+                "metadata": reversal["metadata"],
+                "source_refund": reversal["source_refund"],
+                "transfer": stripe_transfer_id,
+                "is_refunded": True
+            }
+        except Exception as e:
+            self.retry(exc=e, countdown=10, max_retries=3)
+            return {"error": str(e)}
