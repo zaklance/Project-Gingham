@@ -1209,7 +1209,7 @@ def process_transfers_task(self, payment_intent_id, baskets):
                         currency="usd",
                         destination=stripe_account_id,
                         transfer_group=f"group_pi_{payment_intent_id}",
-                        application_fee_amount=application_fee
+                        # application_fee_amount=application_fee
                     )
 
                     transfer_data.append({
@@ -1221,7 +1221,7 @@ def process_transfers_task(self, payment_intent_id, baskets):
                         "destination": stripe_account_id,
                         "payment_intent_id": payment_intent_id,
                         "transfer_group": f"group_pi_{payment_intent_id}",
-                        "application_fee_amount": application_fee,
+                        # "application_fee_amount": application_fee,
                     })
 
                     basket_record = Basket.query.filter_by(id=basket['id']).first()
