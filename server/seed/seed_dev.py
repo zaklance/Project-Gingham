@@ -3512,7 +3512,22 @@ def run():
         'Vendor-Slider-3-scaled.jpg'
     ]
 
-    for i in range(150):
+    ve = Vendor(
+        name="Lance's Big Mixed Nuts",
+        city="New York",
+        state="NY",
+        products=sample(range(1, 34), randint(1, 3)),
+        products_subcategories=["Tomatoes"],
+        bio=str(fake.paragraph(nb_sentences=rev_len)),
+        website='https://www.google.com/',
+        stripe_account_id=str(choice(test_stripe_account)),
+        stripe_is_onboarded=True,
+        stripe_charges_enabled=True,
+        stripe_payouts_enabled=True
+    )
+    vendors.append(ve)
+
+    for i in range(149):
         products_subcat_a = choice([None, None, choice(['Almonds', 'Apples', 'Berries', 'Garlic', 'Tomatoes', 'Vodka'])])
         products_subcat_b = choice([None, None, choice(['Almonds', 'Apples', 'Berries', 'Garlic', 'Tomatoes', 'Vodka'])])
         subcat_dirty = sample([products_subcat_a, products_subcat_b], 2)
@@ -3705,7 +3720,7 @@ def run():
         phone="+12095553880",
         active_vendor=1,
         vendor_id={1:1},
-        vendor_role={1:0}
+        vendor_role={1:0},
     )
     # vendor_user_settings_demo = SettingsVendor(
     #     vendor_user_id=51

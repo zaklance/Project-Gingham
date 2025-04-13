@@ -20,12 +20,13 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
 from utils.emails import ( send_contact_email, send_user_password_reset_email, 
                           send_vendor_password_reset_email, send_admin_password_reset_email, 
                           send_user_confirmation_email, send_vendor_confirmation_email, 
-                          send_admin_confirmation_email )
+                          send_admin_confirmation_email, send_vendor_team_invite_email, 
+                          )
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from sqlalchemy.sql.expression import extract
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from celery.schedules import crontab
 from sqlalchemy.orm import Session
 from sqlalchemy import event
@@ -436,6 +437,33 @@ def admin_password_reset_request_task(email):
 
         except Exception as e:
             return {"error": f"An unexpected error occurred: {str(e)}"}
+
+@celery.task(bind=True)
+def send_team_invite_email_task(self, email, vendor_id, role=2):
+    try:
+        from app import app
+        with app.app_context():
+            vendor = db.session.get(Vendor, vendor_id)
+            if not vendor:
+                return {'error': 'Vendor not found'}
+
+            token_data = {
+                'email': email,
+                'vendor_id': vendor_id,
+                'role': role,
+                'exp': (datetime.utcnow() + timedelta(days=7)).isoformat()
+            }
+            token = serializer.dumps(token_data, salt='team-invite-salt')
+
+            result = send_vendor_team_invite_email(email, vendor.name, token)
+
+            if 'error' in result:
+                return {'error': result['error']}
+
+            return {'message': 'Invitation sent'}
+
+    except Exception as e:
+        return {'error': str(e)}
 
 @celery.task
 def send_mjml_email_task(mjml, subject, compiled_html, recipient_email):

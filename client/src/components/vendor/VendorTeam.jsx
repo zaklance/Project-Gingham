@@ -1,13 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import VendorNotification from './VendorNotification';
 import { toast } from 'react-toastify';
+import { useParams, useNavigate } from 'react-router-dom';
 
 function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications }) {
     const [isLoading, setIsLoading] = useState(true);
     const [teamMembers, setTeamMembers] = useState([]);
     const [newMemberEmail, setNewMemberEmail] = useState('');
     const [confirmMemberEmail, setConfirmMemberEmail] = useState('');
-    const [newMemberRole, setNewMemberRole] = useState(true); 
+    const [newMemberRole, setNewMemberRole] = useState(2); // Default to employee role
+    const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false});
+    const [isValid, setIsValid] = useState(false);
+    const [showInvitationForm, setShowInvitationForm] = useState(false);
+    const [invitationData, setInvitationData] = useState(null);
+    const [invitationFormData, setInvitationFormData] = useState({
+        first_name: '',
+        last_name: '',
+        phone: '',
+        password: '',
+        confirm_password: ''
+    });
+    const { token } = useParams();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (token) {
+            // If we have a token, we're in invitation mode
+            setShowInvitationForm(true);
+            fetchInvitationData();
+        } else {
+            fetchTeamMembers();
+        }
+    }, [token]);
+
+    const fetchInvitationData = async () => {
+        try {
+            const response = await fetch(`/api/vendor/join-team/${token}`);
+            if (response.ok) {
+                const data = await response.json();
+                setInvitationData(data);
+            } else {
+                const error = await response.json();
+                toast.error(error.error || 'Invalid invitation link');
+                navigate('/vendor/login');
+            }
+        } catch (error) {
+            toast.error('Error fetching invitation data');
+            navigate('/vendor/login');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const fetchTeamMembers = async () => {
         if (vendorUserData && vendorUserData.vendor_id) {
@@ -31,9 +74,46 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
         }
     };
 
-    useEffect(() => {
-        fetchTeamMembers();
-    }, [vendorUserData]);
+    const handleInvitationFormChange = (e) => {
+        setInvitationFormData({
+            ...invitationFormData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleInvitationSubmit = async (e) => {
+        e.preventDefault();
+        
+        if (invitationFormData.password !== invitationFormData.confirm_password) {
+            toast.error('Passwords do not match');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/vendor/join-team/${token}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    first_name: invitationFormData.first_name,
+                    last_name: invitationFormData.last_name,
+                    phone: invitationFormData.phone,
+                    password: invitationFormData.password
+                })
+            });
+
+            if (response.ok) {
+                toast.success('Successfully joined the team!');
+                navigate('/vendor/login');
+            } else {
+                const error = await response.json();
+                toast.error(error.error || 'Error joining team');
+            }
+        } catch (error) {
+            toast.error('Error joining team');
+        }
+    };
 
     const handleAddTeamMember = async () => {
         if (newMemberEmail !== confirmMemberEmail) {
@@ -91,7 +171,8 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                 }
             }
     
-            const createResponse = await fetch('/api/vendor-users', {
+            // For new users, send invitation email
+            const inviteResponse = await fetch('/api/vendor/team-invite', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -99,33 +180,27 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                 },
                 body: JSON.stringify({
                     email: newMemberEmail,
-                    role: newMemberRole,
-                    vendor_id: { [vendorUserData.vendor_id[vendorUserData.active_vendor]]: vendorUserData.vendor_id[vendorUserData.active_vendor] },
-                    active_vendor: vendorUserData.vendor_id[vendorUserData.active_vendor]
+                    vendor_id: vendorUserData.vendor_id[vendorUserData.active_vendor],
+                    role: newMemberRole
                 })
             });
     
-            if (createResponse.ok) {
-                const addedMember = await createResponse.json();
-                setTeamMembers([...teamMembers, addedMember]);
+            if (inviteResponse.ok) {
+                toast.success('Invitation sent successfully!', {
+                    autoClose: 4000,
+                });
                 setNewMemberEmail('');
                 setConfirmMemberEmail('');
                 setNewMemberRole(2);
-                toast.success('New user invited successfully!', {
-                    autoClose: 4000,
-                });
-
-                fetchTeamMembers();
             } else {
-                console.error('Error adding new team member:', await createResponse.json());
-                toast.error('Failed to add new user.', {
+                const error = await inviteResponse.json();
+                toast.error(error.error || 'Failed to send invitation.', {
                     autoClose: 4000,
                 });
             }
-            window.location.reload();
         } catch (error) {
             console.error('Error:', error);
-            toast.error('An error occurred while adding the team member.', {
+            toast.error('An error occurred while processing the request.', {
                 autoClose: 4000,
             });
         }
@@ -244,17 +319,15 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
         }
     };
 
-    
+
     return (
         <>
             <title>Gingham • Vendor Team</title>
-            {notifications && notifications.length > 0 ? (
+            {notifications && notifications.length > 0 && (
                 <div className='box-bounding margin-b-24'>
                     <h2 className='margin-b-16'>Notifications</h2>
-                        <VendorNotification notifications={notifications} setNotifications={setNotifications} vendorId={vendorId} teamMembers={teamMembers} setTeamMembers={setTeamMembers} vendorUserData={vendorUserData} />
+                    <VendorNotification notifications={notifications} setNotifications={setNotifications} vendorId={vendorId} teamMembers={teamMembers} setTeamMembers={setTeamMembers} vendorUserData={vendorUserData} />
                 </div>
-                ) : (
-                <></>
             )}
             <div className='box-bounding'>
                 <h2 className="title margin-b-16">Team Members</h2>
@@ -299,7 +372,6 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                             })
                             .map(member => (
                                 <li key={member.id} className='li-team'>
-
                                     <div className='flex-space-between'>
                                         <p><strong>{member.first_name} {member.last_name}</strong> –
                                         {(() => {
@@ -344,6 +416,7 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                 </div>
             </div>
         </>
-    )
+    );
 }
+
 export default VendorTeam;

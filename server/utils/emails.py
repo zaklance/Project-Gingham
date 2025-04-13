@@ -193,9 +193,6 @@ def send_contact_email(name, email, subject, message):
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
                             <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
-                            Unsubscribe
-                        </a>
                     </div>
                 </div>
             </body>
@@ -2492,3 +2489,67 @@ def send_email_admin_new_vendor(email, user, vendor, link_vendor):
     except Exception as e:
         print(f"Error during admin product request email sending: {str(e)}")
         return {'error': f'Failed to send admin email: {str(e)}'}
+
+def send_vendor_team_invite_email(email, vendor_name, token):
+    """
+    Sends a team invitation email to the given email address.
+    """
+    try:
+        SITE_URL = os.getenv('SITE_URL')
+        invitation_link = f"{SITE_URL}/vendor/join-team/{token}"
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
+        port = os.getenv('EMAIL_PORT')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+
+        msg = MIMEMultipart()
+        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'Invitation to join {vendor_name} on Gingham'
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Team Invitation</title>
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div class="content center">
+                        <p><strong>{vendor_name}</strong> has invited you to join their team on Gingham!</p>
+                        <p>Click the button below to accept the invitation and set up your account:</p>
+                        <a class="button" href={invitation_link}>Join Team</a>
+                    </div>
+                    <div class="footer">
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        server = smtplib.SMTP(smtp, port)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        return {'message': 'Team invitation email sent successfully.'}
+
+    except Exception as e:
+        print(f"Error during team invitation email sending: {str(e)}")
+        return {'error': f'Failed to send team invitation email: {str(e)}'}
