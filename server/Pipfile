@@ -85,6 +85,7 @@ yarl = "==1.18.3"
 numpy = "*"
 psutil = "*"
 asyncio = "*"
+flower = "*"
 
 [dev-packages]
 
