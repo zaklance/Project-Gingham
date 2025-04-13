@@ -50,7 +50,8 @@ from tasks import ( send_mjml_email_task, send_html_email_task,
                          admin_signup_task, confirm_admin_email_task,
                          change_admin_email_task, user_password_reset_request_task,
                          vendor_password_reset_request_task, admin_password_reset_request_task,
-                         contact_task, process_image, send_sendgrid_email_client_task
+                         contact_task, process_image, send_sendgrid_email_client_task,
+                         send_team_invite_email_task
                          )
 from celery.result import AsyncResult
 from celery_config import celery
@@ -5039,32 +5040,15 @@ def send_team_invite():
         data = request.get_json()
         email = data.get('email')
         vendor_id = data.get('vendor_id')
-        role = data.get('role', 2)  # Default to employee role
+        role = data.get('role', 2)
 
         if not email or not vendor_id:
             return jsonify({'error': 'Email and vendor_id are required'}), 400
 
-        # Get vendor information
-        vendor = Vendor.query.get(vendor_id)
-        if not vendor:
-            return jsonify({'error': 'Vendor not found'}), 404
+        # Kick off background task
+        task = send_team_invite_email_task.delay(email, vendor_id, role)
 
-        # Generate invitation token
-        token_data = {
-            'email': email,
-            'vendor_id': vendor_id,
-            'role': role,
-            'exp': (datetime.utcnow() + timedelta(days=7)).isoformat()  # Convert to ISO format string
-        }
-        token = serializer.dumps(token_data, salt='team-invite-salt')
-
-        # Send invitation email
-        result = send_vendor_team_invite_email(email, vendor.name, token)
-        
-        if 'error' in result:
-            return jsonify({'error': result['error']}), 500
-            
-        return jsonify({'message': 'Invitation sent successfully'}), 200
+        return jsonify({'message': 'Invitation is being sent', 'task_id': task.id}), 202
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500

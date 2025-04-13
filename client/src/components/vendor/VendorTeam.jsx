@@ -9,6 +9,8 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
     const [newMemberEmail, setNewMemberEmail] = useState('');
     const [confirmMemberEmail, setConfirmMemberEmail] = useState('');
     const [newMemberRole, setNewMemberRole] = useState(2); // Default to employee role
+    const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false});
+    const [isValid, setIsValid] = useState(false);
     const [showInvitationForm, setShowInvitationForm] = useState(false);
     const [invitationData, setInvitationData] = useState(null);
     const [invitationFormData, setInvitationFormData] = useState({
@@ -317,97 +319,15 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
         }
     };
 
-    if (showInvitationForm) {
-        if (isLoading) {
-            return <div>Loading...</div>;
-        }
-
-        if (!invitationData) {
-            return null;
-        }
-
-        return (
-            <div className="box-bounding">
-                <h2>Join {invitationData.vendor_name}</h2>
-                <p>Complete your account setup to join the team</p>
-                
-                <form onSubmit={handleInvitationSubmit} className="form-group">
-                    <div>
-                        <label>Email:</label>
-                        <input type="email" value={invitationData.email} disabled />
-                    </div>
-                    
-                    <div>
-                        <label>First Name:</label>
-                        <input
-                            type="text"
-                            name="first_name"
-                            value={invitationFormData.first_name}
-                            onChange={handleInvitationFormChange}
-                            required
-                        />
-                    </div>
-                    
-                    <div>
-                        <label>Last Name:</label>
-                        <input
-                            type="text"
-                            name="last_name"
-                            value={invitationFormData.last_name}
-                            onChange={handleInvitationFormChange}
-                            required
-                        />
-                    </div>
-                    
-                    <div>
-                        <label>Phone:</label>
-                        <input
-                            type="tel"
-                            name="phone"
-                            value={invitationFormData.phone}
-                            onChange={handleInvitationFormChange}
-                            required
-                        />
-                    </div>
-                    
-                    <div>
-                        <label>Password:</label>
-                        <input
-                            type="password"
-                            name="password"
-                            value={invitationFormData.password}
-                            onChange={handleInvitationFormChange}
-                            required
-                        />
-                    </div>
-                    
-                    <div>
-                        <label>Confirm Password:</label>
-                        <input
-                            type="password"
-                            name="confirm_password"
-                            value={invitationFormData.confirm_password}
-                            onChange={handleInvitationFormChange}
-                            required
-                        />
-                    </div>
-                    
-                    <button type="submit" className="btn-edit">Join Team</button>
-                </form>
-            </div>
-        );
-    }
 
     return (
         <>
             <title>Gingham • Vendor Team</title>
-            {notifications && notifications.length > 0 ? (
+            {notifications && notifications.length > 0 && (
                 <div className='box-bounding margin-b-24'>
                     <h2 className='margin-b-16'>Notifications</h2>
                     <VendorNotification notifications={notifications} setNotifications={setNotifications} vendorId={vendorId} teamMembers={teamMembers} setTeamMembers={setTeamMembers} vendorUserData={vendorUserData} />
                 </div>
-            ) : (
-                <></>
             )}
             <div className='box-bounding'>
                 <h2 className="title margin-b-16">Team Members</h2>
