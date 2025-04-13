@@ -45,13 +45,22 @@ MAX_RES = (1800, 1800)
 @celery.task
 def heavy_task(size=10000, duration=3):
     """Simulates memory and CPU load"""
-    print(f"RAM usage before: {psutil.virtual_memory().percent}%")
-    print(f"CPU usage before: {psutil.cpu_percent()}%")
+    print(f"Starting heavy_task with size={size}, duration={duration}s")
+    process = psutil.Process(os.getpid())
+    mem_before = process.memory_info().rss
+    
+    print(f"Memory before: {mem_before / 1024 / 1024:.2f} MB")
+    print(f"Estimated array size: {(size * size * 8) / 1024 / 1024:.2f} MB")
+
     data = np.random.rand(size, size)
     time2.sleep(duration)
-    print(f"RAM usage after: {psutil.virtual_memory().percent}%")
-    print(f"CPU usage after: {psutil.cpu_percent()}%")
-    return data.sum()
+    data.sum()
+    
+    mem_after = process.memory_info().rss
+    print(f"Memory after: {mem_after / 1024 / 1024:.2f} MB")
+    print(f"RAM usage: {psutil.virtual_memory().percent}%")
+    print(f"CPU usage: {psutil.cpu_percent()}%")
+    return
 
 @celery.task
 def contact_task(name, email, subject, message):
