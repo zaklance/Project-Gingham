@@ -72,7 +72,7 @@ STRIPE_ALLOWED_IPS = {
     "54.88.130.237", "54.187.174.169", "54.187.205.235", "54.187.216.72"
 }
 
-UPLOAD_FOLDER = "../client/public"
+UPLOAD_FOLDER = os.environ['IMAGE_UPLOAD_FOLDER']
 USER_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "user-images")
 VENDOR_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "vendor-images")
 MARKET_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "market-images")
@@ -4839,7 +4839,6 @@ def queue_export_csv_vendor_baskets():
 
 @app.route('/api/export-csv/vendor-baskets/status/<task_id>', methods=['GET'])
 def check_csv_export_status(task_id):
-    # task_result = AsyncResult(task_id)
     task_result = generate_vendor_baskets_csv.AsyncResult(task_id)
     
     if task_result.ready():
@@ -4862,7 +4861,6 @@ def check_csv_export_status(task_id):
 
 @app.route('/api/export-csv/vendor-baskets/download/<task_id>', methods=['GET'])
 def download_csv_export(task_id):
-    # task_result = AsyncResult(task_id)
     task_result = generate_vendor_baskets_csv.AsyncResult(task_id)
     if not task_result.ready():
         return jsonify({'error': 'Task not completed yet'}), 400
