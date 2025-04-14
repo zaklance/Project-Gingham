@@ -2407,10 +2407,6 @@ select:hover {
   margin-right: 6px;
 }
 
-/* input[type='number'] {
-  max-width: 40px !important;
-} */
-
 .textarea-review {
   margin-top: 16px;
   margin-bottom: 8px;
@@ -2539,20 +2535,6 @@ select:hover {
   background-color: #eee;
 }
 
-/* Utility classes */
-
-/* .mt-20 {
-  margin-top: 20px;
-}
-
-.mb-20 {
-  margin-bottom: 20px;
-}
-
-.p-20 {
-  padding: 20px;
-} */
-
 .center-container {
   display: flex;
   flex-direction: column;
@@ -2560,13 +2542,11 @@ select:hover {
   justify-content: center;
   height: 100vh;
   background-color: #f0f0f0;
-  /* Optional: Add background color */
 }
 
 .markets-container {
   width: 100%;
   max-width: 1200px;
-  /* Adjust as needed */
   margin: 0 auto;
   padding: 20px;
 }
@@ -2575,16 +2555,13 @@ select:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  /* Adjust the gap between cards */
   justify-content: center;
   padding-left: 10px;
 }
 
 .market-cards-container>* {
   flex: 0 0 calc(33.33% - 40px);
-  /* Adjust to make three cards fit per row */
   max-width: calc(33.33% - 40px);
-  /* Adjust max-width based on desired spacing */
   float: none;
   position: auto;
   top: calc(20vh);
@@ -2605,7 +2582,6 @@ select:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  /* Adjust the gap between cards */
   justify-content: center;
 }
 
@@ -2775,12 +2751,6 @@ select:hover {
   transform: rotateZ(0deg);
   transition: .2s;
 }
-
-/* .icon-settings:hover {
-  background-image: url('../images/icons/icons8-settings.gif');
-  background-position: right 50% top 40%;
-  background-size: 1.74rem auto;
-} */
 
 .icon-eye, .icon-eye-alt {
   position: absolute;
@@ -2968,8 +2938,6 @@ select:hover {
 }
 
 .alert-reviews {
-  /* left: 240px; */
-  /* top: -5px; */
   padding: 10px 20px;
   max-width: max-content;
   background-color: #00bda4;
@@ -3279,6 +3247,7 @@ select:hover {
   border-radius: 16px;
   padding-bottom: 12px;
   transition: background-image 1s;
+  will-change: background-image;
 }
 
 .footer {
