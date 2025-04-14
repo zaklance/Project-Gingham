@@ -14,6 +14,8 @@ function AdminVendorDelete({ vendors }) {
     const matchingVendor = vendors.find(vendor => vendor.name.toLowerCase() === query.toLowerCase());
     const matchingVendorId = matchingVendor ? matchingVendor.id : null;
 
+    const siteURL = import.meta.env.VITE_SITE_URL;
+    
     useEffect(() => {
             fetch("/api/products")
                 .then(response => response.json())
@@ -131,7 +133,7 @@ function AdminVendorDelete({ vendors }) {
                     <tbody>
                         <tr>
                             <td className='cell-title'>Image:</td>
-                            <td className='cell-text'>{vendorData?.image ? <img className='img-market' style={{ maxWidth: '100%', height: 'auto' }} src={`https://www.gingham.nyc${vendorData.image}`} alt="Market Image" /> : ''}</td>
+                            <td className='cell-text'>{vendorData?.image ? <img className='img-market' style={{ maxWidth: '100%', height: 'auto' }} src={`${siteURL}${vendorData.image}`} alt="Market Image" /> : ''}</td>
                         </tr>
                         <tr>
                             <td className='cell-title'>ID:</td>

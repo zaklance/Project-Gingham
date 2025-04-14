@@ -27,7 +27,7 @@ function ReviewVendor({ vendor }) {
     const { handlePopup } = useOutletContext();
     
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
-
+    const siteURL = import.meta.env.VITE_SITE_URL;
 
     useEffect(() => {
         fetch(`/api/vendor-reviews?vendor_id=${vendor.id}`)
@@ -486,7 +486,7 @@ function ReviewVendor({ vendor }) {
                                     <>
                                         <div className='flex-start flex-center-align'>
                                             {review.user.avatar !== null ? (
-                                                <img className='img-avatar margin-r-8' src={`https://www.gingham.nyc${review.user.avatar}`} alt="Avatar" />
+                                                <img className='img-avatar margin-r-8' src={`${siteURL}${review.user.avatar}`} alt="Avatar" />
                                             ) : (
                                                 <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
                                             )}
@@ -534,7 +534,7 @@ function ReviewVendor({ vendor }) {
                                 ) : (
                                     <div className='flex-start flex-center-align'>
                                             {review.user.avatar !== null ? (
-                                                <img className='img-avatar margin-r-8' src={`https://www.gingham.nyc${review.user.avatar}`} alt="Avatar" />
+                                                <img className='img-avatar margin-r-8' src={`${siteURL}${review.user.avatar}`} alt="Avatar" />
                                             ) : (
                                                 <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
                                             )}

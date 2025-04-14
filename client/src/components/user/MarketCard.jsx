@@ -6,6 +6,8 @@ import { timeConverter, formatDate } from '../../utils/helpers';
 function MarketCard({ marketData, user, haversineDistance, resultCoordinates, userCoordinates, filterAddress }) {
     const navigate = useNavigate();
 
+    const siteURL = import.meta.env.VITE_SITE_URL;
+
     const handleLearnMore = () => {
         navigate(`/user/markets/${marketData.id}`);
     };
@@ -23,7 +25,7 @@ function MarketCard({ marketData, user, haversineDistance, resultCoordinates, us
         <div className="market-card flex-space-between flex-column">
             <div>
                     {marketData.image !== null ? (
-                        <img className="img-market-card" src={`https://www.gingham.nyc${marketData.image}`} alt="Market Image" />
+                        <img className="img-market-card" src={`${siteURL}${marketData.image}`} alt="Market Image" />
                     ) : (
                         <img className="img-market-card" src={`/market-images/_default-images/${marketData.image_default}`} alt="Market Image" />
                     )}

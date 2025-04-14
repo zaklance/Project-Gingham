@@ -64,7 +64,7 @@ function VendorProfile () {
     
     const vendorUserId = parseInt(globalThis.localStorage.getItem('vendor_user_id'))
     const token = localStorage.getItem('vendor_jwt-token');
-
+    const siteURL = import.meta.env.VITE_SITE_URL;
 
     useEffect(() => {
         fetch("/api/products")
@@ -1211,7 +1211,7 @@ function VendorProfile () {
                                             <>
                                                 <img
                                                     className='img-vendor-edit'
-                                                    src={tempVendorData.image ? `https://www.gingham.nyc${DOMPurify.sanitize(tempVendorData.image, { SAFE_FOR_TEMPLATES: true })}` : `/vendor-images/_default-images/${tempVendorData.image_default}`}
+                                                    src={tempVendorData.image ? `${siteURL}${DOMPurify.sanitize(tempVendorData.image, { SAFE_FOR_TEMPLATES: true })}` : `/vendor-images/_default-images/${tempVendorData.image_default}`}
                                                     alt="Vendor"
                                                     style={{ maxWidth: '100%', height: 'auto' }}
                                                 />
@@ -1298,7 +1298,7 @@ function VendorProfile () {
                                                     </tr>
                                                     <tr>
                                                         <td className='cell-title'>Image:</td>
-                                                        <td className='cell-text'>{vendorData ? <img src={vendorData.image ? `https://www.gingham.nyc${vendorData.image}` : `/vendor-images/_default-images/${vendorData.image_default}`} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
+                                                        <td className='cell-text'>{vendorData ? <img src={vendorData.image ? `${siteURL}${vendorData.image}` : `/vendor-images/_default-images/${vendorData.image_default}`} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
