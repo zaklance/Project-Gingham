@@ -24,6 +24,7 @@ function VendorDetail() {
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const token = localStorage.getItem('user_jwt-token');
     const isUserLoggedIn = userId;
+    const siteURL = import.meta.env.VITE_SITE_URL;
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -360,7 +361,7 @@ function VendorDetail() {
             </div>
             <div className='width-100 margin-t-24'>
                 {vendor.image !== null ? (
-                    <img className='img-vendor' src={`https://www.gingham.nyc${vendor.image}`} alt="Vendor Image"/>
+                    <img className='img-vendor' src={`${siteURL}${vendor.image}`} alt="Vendor Image"/>
                 ) : (
                     <img className='img-vendor' src={`/vendor-images/_default-images/${vendor.image_default}`} alt="Vendor Image"/>
                 )}

@@ -47,6 +47,7 @@ function Profile({ marketData }) {
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'))
     const token = localStorage.getItem('user_jwt-token');
+    const siteURL = import.meta.env.VITE_SITE_URL;
 
     const decodeJwt = (token) => {
         try {
@@ -802,7 +803,7 @@ function Profile({ marketData }) {
                                         <>
                                             <img
                                                 className='img-avatar-profile'
-                                                src={tempProfileData.avatar ? `https://www.gingham.nyc${tempProfileData.avatar}` : `/user-images/_default-images/${tempProfileData.avatar_default}`}
+                                                src={tempProfileData.avatar ? `${siteURL}${tempProfileData.avatar}` : `/user-images/_default-images/${tempProfileData.avatar_default}`}
                                                 alt="Avatar"
                                                 style={{ maxWidth: '100%', height: 'auto', padding: '4px' }}
                                             />
@@ -840,7 +841,7 @@ function Profile({ marketData }) {
                         ) : (
                             <>
                                 <div className='flex-space-evenly flex-gap-16 flex-start-align m-flex-wrap'>
-                                    <img className='img-avatar-profile' src={profileData.avatar ? `https://www.gingham.nyc${profileData.avatar}` : `/user-images/_default-images/${profileData.avatar_default}`} alt="Avatar" />
+                                    <img className='img-avatar-profile' src={profileData.avatar ? `${siteURL}${profileData.avatar}` : `/user-images/_default-images/${profileData.avatar_default}`} alt="Avatar" />
                                     <div className='width-80'>
                                         <table className='table-profile'>
                                             <tbody>

@@ -35,6 +35,7 @@ function MarketDetail ({ match }) {
     const { handlePopup, amountInCart, setAmountInCart, cartItems, setCartItems } = useOutletContext();
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const token = localStorage.getItem('user_jwt-token');
+    const siteURL = import.meta.env.VITE_SITE_URL;
 
     const navigate = useNavigate();
 
@@ -549,7 +550,7 @@ function MarketDetail ({ match }) {
             <div className='flex-space-around flex-end margin-t-24 m-flex-wrap'>
                 <div className='width-100'>
                     {market.image !== null ? (
-                        <img className="img-market" src={`https://www.gingham.nyc${market.image}`} alt="Market Image" />
+                        <img className="img-market" src={`${siteURL}${market.image}`} alt="Market Image" />
                     ) : (
                         <img className="img-market" src={`/market-images/_default-images/${market.image_default}`} alt="Market Image" />
                     )}

@@ -17,6 +17,8 @@ function AdminMarketDelete({ markets }) {
     const matchingMarket = markets.find(market => market.name.toLowerCase() === query.toLowerCase());
     const matchingMarketId = matchingMarket ? matchingMarket.id : null;
 
+    const siteURL = import.meta.env.VITE_SITE_URL;
+
     useEffect(() => {
         const fetchAdminMarketData = async () => {
             if (!matchingMarketId) return
@@ -119,7 +121,7 @@ function AdminMarketDelete({ markets }) {
                     <tbody>
                         <tr>
                             <td className='cell-title'>Image:</td>
-                            <td className='cell-text'>{adminMarketData ? <img className='img-market' src={adminMarketData.image ? `https://www.gingham.nyc${adminMarketData.image}` : `/market-images/_default-images/${adminMarketData.image_default}`} alt="Market Image" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
+                            <td className='cell-text'>{adminMarketData ? <img className='img-market' src={adminMarketData.image ? `${siteURL}${adminMarketData.image}` : `/market-images/_default-images/${adminMarketData.image_default}`} alt="Market Image" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
                         </tr>
                         <tr>
                             <td className='cell-title'>ID:</td>

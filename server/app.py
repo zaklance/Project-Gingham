@@ -3178,7 +3178,7 @@ def create_stripe_account():
 def create_account_link():
     try:
         stripe_account_id = request.get_json().get('stripe_account_id')
-        website = os.environ['SITE_URL']
+        website = os.environ['VITE_SITE_URL']
 
         account_link = stripe.AccountLink.create(
           account=stripe_account_id,
@@ -3521,7 +3521,7 @@ def user_password_reset_request():
 @app.route('/api/user/password-reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
     if request.method == 'GET':
-        website = os.environ['SITE_URL']
+        website = os.environ['VITE_SITE_URL']
         
         return redirect(f'{website}/user/password-reset/{token}')
 
@@ -3582,7 +3582,7 @@ def password_reset_request():
 @app.route('/api/vendor/password-reset/<token>', methods=['GET', 'POST'])
 def vendor_password_reset(token):
     if request.method == 'GET':
-        website = os.environ['SITE_URL']
+        website = os.environ['VITE_SITE_URL']
         return redirect(f'{website}/vendor/password-reset/{token}')
 
     if request.method == 'POST':
@@ -3630,7 +3630,7 @@ def admin_password_reset_request():
 @app.route('/api/admin/password-reset/<token>', methods=['GET', 'POST'])
 def admin_password_reset(token):
     if request.method == 'GET':
-        website = os.environ['SITE_URL']
+        website = os.environ['VITE_SITE_URL']
         return redirect(f'{website}/admin/password-reset/{token}')
 
     if request.method == 'POST':
