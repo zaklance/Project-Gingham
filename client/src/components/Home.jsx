@@ -141,12 +141,15 @@ function Home() {
     return (
         <div>
             <title>Gingham • Home</title>
+            <link rel="preload" as="image" href='./site-images/LzYeux_120719_0032_1800px.jpg' />
+            <link rel="preload" as="image" href='./site-images/LzYeux_120719_0033_1800px.jpg' />
+            <link rel="preload" as="image" href='./site-images/LzYeux_120719_0036_1800px.jpg' />
             <div className="user-portal-background" style={{ backgroundImage: `url(${backgroundImages[bgIndex]})` }}>
                 <br className="d-br"/>
                 <br className="d-br" />
                 <br/>
                 <div className="box-portal-home text-blend-lighten text-center">
-                    <h1 className=" font-gingham title-big-gingham padding-b-32">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</h1>
+                    <h1 className="font-gingham title-big-gingham padding-b-32">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</h1>
                 </div>
                 <br className="m-br"/>
                 <div className="box-home box-inside">
