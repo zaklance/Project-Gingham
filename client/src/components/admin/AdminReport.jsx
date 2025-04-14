@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 function AdminReport() {
     const [marketReported, setMarketReported] = useState([]);
     const [vendorReported, setVendorReported] = useState([]);
+    
+    const siteURL = import.meta.env.VITE_SITE_URL;
 
     useEffect(() => {
             const anchor = window.location.hash.slice(1);
@@ -124,7 +126,7 @@ function AdminReport() {
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                 <div className='flex-start'>
                                     {review.user.avatar !== null ? (
-                                        <img className='img-avatar margin-r-8' src={`https://www.gingham.nyc${review.user.avatar}`} alt="Avatar" />
+                                        <img className='img-avatar margin-r-8' src={`${siteURL}${review.user.avatar}`} alt="Avatar" />
                                     ) : (
                                         <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
                                     )}
@@ -149,7 +151,7 @@ function AdminReport() {
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
                                 <div className='flex-start'>
                                     {review.user.avatar !== null ? (
-                                        <img className='img-avatar margin-r-8' src={`https://www.gingham.nyc${review.user.avatar}`} alt="Avatar" />
+                                        <img className='img-avatar margin-r-8' src={`${siteURL}${review.user.avatar}`} alt="Avatar" />
                                     ) : (
                                         <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
                                     )}
