@@ -411,8 +411,8 @@ def send_admin_password_reset_email(email):
 def send_user_confirmation_email(email, user_data):
     try:
         token = serializer.dumps(user_data, salt='user-confirmation-salt')  # Generate the token
-        SITE_URL = os.getenv('SITE_URL')
-        confirmation_link = f"{SITE_URL}/user/confirm-email/{token}"
+        VITE_SITE_URL = os.getenv('VITE_SITE_URL')
+        confirmation_link = f"{VITE_SITE_URL}/user/confirm-email/{token}"
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
         smtp = os.getenv('EMAIL_SMTP')
@@ -473,8 +473,8 @@ def send_user_confirmation_email(email, user_data):
 def send_vendor_confirmation_email(email, vendor_data):
     try:
         token = serializer.dumps(vendor_data, salt='vendor-confirmation-salt')
-        SITE_URL = os.getenv('SITE_URL')
-        confirmation_link = f"{SITE_URL}/vendor/confirm-email/{token}"
+        VITE_SITE_URL = os.getenv('VITE_SITE_URL')
+        confirmation_link = f"{VITE_SITE_URL}/vendor/confirm-email/{token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -536,8 +536,8 @@ def send_vendor_confirmation_email(email, vendor_data):
 def send_admin_confirmation_email(email, admin_data):
     try:
         token = serializer.dumps(admin_data, salt='admin-confirmation-salt')
-        SITE_URL = os.getenv('SITE_URL')
-        confirmation_link = f"{SITE_URL}/admin/confirm-email/{token}"
+        VITE_SITE_URL = os.getenv('VITE_SITE_URL')
+        confirmation_link = f"{VITE_SITE_URL}/admin/confirm-email/{token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -2495,8 +2495,8 @@ def send_vendor_team_invite_email(email, vendor_name, token):
     Sends a team invitation email to the given email address.
     """
     try:
-        SITE_URL = os.getenv('SITE_URL')
-        invitation_link = f"{SITE_URL}/vendor/join-team/{token}"
+        VITE_SITE_URL = os.getenv('VITE_SITE_URL')
+        invitation_link = f"{VITE_SITE_URL}/vendor/join-team/{token}"
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
         smtp = os.getenv('EMAIL_SMTP')

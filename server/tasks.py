@@ -110,7 +110,7 @@ def confirm_user_email_task(token, request_method):
         try:
             # Decode the token to get user data
             data = serializer.loads(token, salt='user-confirmation-salt', max_age=86400)
-            website = os.environ['SITE_URL']
+            website = os.environ['VITE_SITE_URL']
 
             user_id = data.get('user_id')  # Extract user ID
             email = data.get('email')  # Extract new email
@@ -241,7 +241,7 @@ def confirm_vendor_email_task(token, request_method):
         try:
             # Decode the token to get user data
             data = serializer.loads(token, salt='vendor-confirmation-salt', max_age=86400)
-            website = os.environ['SITE_URL']
+            website = os.environ['VITE_SITE_URL']
 
             vendor_id = data.get('vendor_id')  # Extract user ID
             email = data.get('email')  # Extract new email
@@ -367,7 +367,7 @@ def confirm_admin_email_task(token, request_method):
         try:
             # Decode the token to get user data
             data = serializer.loads(token, salt='admin-confirmation-salt', max_age=86400)
-            website = os.environ['SITE_URL']
+            website = os.environ['VITE_SITE_URL']
 
             admin_id = data.get('admin_id')
             email = data.get('email')

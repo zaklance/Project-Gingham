@@ -10,8 +10,8 @@ function VendorReviews() {
     const [replyingReviewEditId, setReplyingReviewEditId] = useState(null);
     const [replyReviewEditData, setReplyReviewEditData] = useState("");
 
-
     const vendorUserId = localStorage.getItem('vendor_user_id');
+    const siteURL = import.meta.env.VITE_SITE_URL;
 
     useEffect(() => {
         const fetchVendorUserData = async () => {
@@ -177,7 +177,7 @@ function VendorReviews() {
                                     <div>
                                         <div className='flex-start flex-center-align'>
                                             {review.user.avatar !== null ? (
-                                                <img className='img-avatar margin-r-8' src={`https://www.gingham.nyc${review.user.avatar}`} alt="Avatar" />
+                                                <img className='img-avatar margin-r-8' src={`${siteURL}${review.user.avatar}`} alt="Avatar" />
                                             ) : (
                                                 <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
                                             )}

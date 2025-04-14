@@ -37,6 +37,8 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const locationDropdownRef = useRef(null);
     const { handlePopup } = useOutletContext();
 
+    const siteURL = import.meta.env.VITE_SITE_URL;
+
     const onUpdateQuery = (event) => {
         const value = event.target.value;
         setQuery(value);
@@ -911,7 +913,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     <>
                                         <img 
                                             style={{ maxWidth: '100%', height: 'auto' }}
-                                            src={tempMarketData.image ? `https://www.gingham.nyc${tempMarketData.image}` : `/market-images/_default-images/${tempMarketData.image_default}`}
+                                            src={tempMarketData.image ? `${siteURL}${tempMarketData.image}` : `/market-images/_default-images/${tempMarketData.image_default}`}
                                             alt="Market Image" />
                                     </>
                                 ) : (
@@ -952,7 +954,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                 <tbody>
                                     <tr>
                                         <td className='cell-title'>Image:</td>
-                                        <td className='cell-text'>{adminMarketData ? <img className='img-market' src={adminMarketData.image ? `https://www.gingham.nyc${adminMarketData.image}` : `/market-images/_default-images/${adminMarketData.image_default}`} alt="Market Image" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
+                                        <td className='cell-text'>{adminMarketData ? <img className='img-market' src={adminMarketData.image ? `${siteURL}${adminMarketData.image}` : `/market-images/_default-images/${adminMarketData.image_default}`} alt="Market Image" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
                                     </tr>
                                     <tr>
                                         <td className='cell-title'>ID:</td>

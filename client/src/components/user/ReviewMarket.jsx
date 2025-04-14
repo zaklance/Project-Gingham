@@ -26,6 +26,7 @@ function ReviewMarket({ market }) {
     const { handlePopup } = useOutletContext();
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
+    const siteURL = import.meta.env.VITE_SITE_URL;
 
     useEffect(() => {
         fetch(`/api/market-reviews?market_id=${id}`)
@@ -487,7 +488,7 @@ function ReviewMarket({ market }) {
                                 {review.user_id !== userId && editingReviewId !== review.id ? (
                                     <div className='flex-start flex-center-align'>
                                         {review.user.avatar !== null ? (
-                                            <img className='img-avatar margin-r-8' src={`https://www.gingham.nyc${review.user.avatar}`} alt="Avatar"/>
+                                            <img className='img-avatar margin-r-8' src={`${siteURL}${review.user.avatar}`} alt="Avatar"/>
                                         ) : (
                                             <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar"/>
                                         )}
@@ -534,7 +535,7 @@ function ReviewMarket({ market }) {
                                 ) : (
                                     <div className='flex-start flex-center-align'>
                                             {review.user.avatar !== null ? (
-                                                <img className='img-avatar margin-r-8' src={`https://www.gingham.nyc${review.user.avatar}`} alt="Avatar" />
+                                                <img className='img-avatar margin-r-8' src={`${siteURL}${review.user.avatar}`} alt="Avatar" />
                                             ) : (
                                                     <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
                                             )}

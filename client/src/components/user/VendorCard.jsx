@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 function VendorCard({ vendorData, selectedProduct, products }) {
     const navigate = useNavigate();
 
+    const siteURL = import.meta.env.VITE_SITE_URL;
+
     const handleLearnMore = () => {
         navigate(`/user/vendors/${vendorData.id}`, { state: { selectedProduct } });
     };
@@ -14,7 +16,7 @@ function VendorCard({ vendorData, selectedProduct, products }) {
     return (
         <div className="market-card flex-space-between flex-column text-center">
             {vendorData.image !== null ? (
-                <img className='img-market-card' src={`https://www.gingham.nyc${vendorData.image}`} alt="Vendor Image" />
+                <img className='img-market-card' src={`${siteURL}${vendorData.image}`} alt="Vendor Image" />
             ) : (
                 <img className='img-market-card' src={`/vendor-images/_default-images/${vendorData.image_default}`} alt="Vendor Image" />
             )}

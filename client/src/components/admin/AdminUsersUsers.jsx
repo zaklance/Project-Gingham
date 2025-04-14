@@ -23,6 +23,8 @@ const AdminUsersUsers = () => {
 
     const navigate = useNavigate()
 
+    const siteURL = import.meta.env.VITE_SITE_URL;
+
     useEffect(() => {
         fetch("/api/users", {
             method: 'GET',
@@ -397,7 +399,7 @@ const AdminUsersUsers = () => {
                                 <label>Avatar:</label>
                                     <img
                                         className='img-avatar-profile'
-                                        src={tempUserData.avatar ? `https://www.gingham.nyc${tempUserData.avatar}` : `/user-images/_default-images/${tempUserData.avatar_default}`}
+                                        src={tempUserData.avatar ? `${siteURL}${tempUserData.avatar}` : `/user-images/_default-images/${tempUserData.avatar_default}`}
                                         alt="Avatar"
                                         style={{ maxWidth: '100%', height: 'auto', padding: '4px' }}
                                     />
@@ -460,7 +462,7 @@ const AdminUsersUsers = () => {
                                     </table>
                                     <button className='btn-edit' onClick={handleEditToggle}>Edit</button>
                                 </div>
-                                {userData ? <img className='img-avatar-profile' src={userData.avatar ? `https://www.gingham.nyc${userData.avatar}` : `/user-images/_default-images/${userData.avatar_default}`} alt="Avatar" /> : ""}
+                                {userData ? <img className='img-avatar-profile' src={userData.avatar ? `${siteURL}${userData.avatar}` : `/user-images/_default-images/${userData.avatar_default}`} alt="Avatar" /> : ""}
                             </div>
                         </>
                     )}
