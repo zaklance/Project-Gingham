@@ -415,6 +415,9 @@ def upload_blog_images():
             except Exception as e:
                 print(f'Failed to upload image: {str(e)}')
                 return {'error': f'Failed to upload image: {str(e)}'}, 500
+        
+        else:
+            return {'error': f'File type not allowed {ALLOWED_EXTENSIONS} only'}, 400
 
     return {'message': 'Files successfully uploaded', 'filenames': uploaded_files}, 201
 
