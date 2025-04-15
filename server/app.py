@@ -81,7 +81,7 @@ os.makedirs(USER_UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(VENDOR_UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(MARKET_UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(BLOG_UPLOAD_FOLDER, exist_ok=True)
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'svg', 'heic'}
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'svg', 'heic'}
 MAX_SIZE = 1.5 * 1024 * 1024
 MAX_RES = (1800, 1800)
 
@@ -324,10 +324,6 @@ def upload_file():
                 with open(file_path, "wb") as f:
                     f.write(processed_image_bytes)
 
-                # image = Image.open(file)
-                # image = resize_image(image)
-                # image.save(file_path)
-
             # Update the database record based on upload type
             if upload_type == 'user':
                 user_id = request.form.get('user_id')
@@ -373,8 +369,6 @@ def upload_file():
             return {'error': f'Failed to upload image: {str(e)}'}, 500
 
     return {'error': 'File type not allowed'}, 400
-
-import base64
 
 @app.route('/api/upload-blog-images', methods=['POST'])
 def upload_blog_images():
