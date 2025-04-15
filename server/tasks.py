@@ -47,7 +47,7 @@ def log_mem(label=""):
     rss = psutil.Process(os.getpid()).memory_info().rss / 1024**2
     print(f"{label} RAM: {rss:.2f} MB")
 
-@celery.task
+@celery.task(queue='default')
 def heavy_task(size=10000, duration=3):
     """Simulates memory and CPU load"""
     print(f"Starting heavy_task with size={size}, duration={duration}s")
@@ -67,7 +67,7 @@ def heavy_task(size=10000, duration=3):
     print(f"CPU usage: {psutil.cpu_percent()}%")
     return
 
-@celery.task
+@celery.task(queue='default')
 def contact_task(name, email, subject, message):
     try:
         print(f"Processing contact request - Name: {name}, Email: {email}, Subject: {subject}, Message: {message}")
@@ -82,7 +82,7 @@ def contact_task(name, email, subject, message):
     except Exception as e:
         return {"error": f"An unexpected error occurred: {str(e)}"}
 
-@celery.task
+@celery.task(queue='default')
 def user_signup_task(data):
     from app import app
     with app.app_context():
@@ -107,7 +107,7 @@ def user_signup_task(data):
         except Exception as e:
             return {"error": str(e)}
 
-@celery.task
+@celery.task(queue='default')
 def confirm_user_email_task(token, request_method):
     from app import app
     with app.app_context():
@@ -172,7 +172,7 @@ def confirm_user_email_task(token, request_method):
         except Exception as e:
             return {'error': f'Failed to confirm or update email: {str(e)}'}
 
-@celery.task
+@celery.task(queue='default')
 def change_user_email_task(data):
     from app import app
     with app.app_context():
@@ -191,7 +191,7 @@ def change_user_email_task(data):
         except Exception as e:
             return {"error": f"An unexpected error occurred: {str(e)}"}
 
-@celery.task
+@celery.task(queue='default')
 def user_password_reset_request_task(email):
     from app import app
     with app.app_context():
@@ -213,7 +213,7 @@ def user_password_reset_request_task(email):
         except Exception as e:
             return {"error": f"An unexpected error occurred: {str(e)}"}
 
-@celery.task
+@celery.task(queue='default')
 def vendor_signup_task(data):
     from app import app
     with app.app_context():
@@ -238,7 +238,7 @@ def vendor_signup_task(data):
         except Exception as e:
             return {"error": str(e)}
 
-@celery.task
+@celery.task(queue='default')
 def confirm_vendor_email_task(token, request_method):
     from app import app
     with app.app_context():
@@ -298,7 +298,7 @@ def confirm_vendor_email_task(token, request_method):
         except Exception as e:
             return {'error': f'Failed to confirm or update email: {str(e)}'}
 
-@celery.task
+@celery.task(queue='default')
 def change_vendor_email_task(data):
     from app import app
     with app.app_context():
@@ -317,7 +317,7 @@ def change_vendor_email_task(data):
         except Exception as e:
             return {"error": f"An unexpected error occurred: {str(e)}"}
 
-@celery.task
+@celery.task(queue='default')
 def vendor_password_reset_request_task(email):
     from app import app
     with app.app_context():
@@ -339,7 +339,7 @@ def vendor_password_reset_request_task(email):
         except Exception as e:
             return {"error": f"An unexpected error occurred: {str(e)}"}
 
-@celery.task
+@celery.task(queue='default')
 def admin_signup_task(data):
     from app import app
     with app.app_context():
@@ -364,7 +364,7 @@ def admin_signup_task(data):
         except Exception as e:
             return {"error": str(e)}
 
-@celery.task
+@celery.task(queue='default')
 def confirm_admin_email_task(token, request_method):
     from app import app
     with app.app_context():
@@ -424,7 +424,7 @@ def confirm_admin_email_task(token, request_method):
         except Exception as e:
             return {'error': f'Failed to confirm or update email: {str(e)}'}
 
-@celery.task
+@celery.task(queue='default')
 def change_admin_email_task(data):
     from app import app
     with app.app_context():
@@ -443,7 +443,7 @@ def change_admin_email_task(data):
         except Exception as e:
             return {"error": f"An unexpected error occurred: {str(e)}"}
 
-@celery.task
+@celery.task(queue='default')
 def admin_password_reset_request_task(email):
     from app import app
     with app.app_context():
@@ -465,7 +465,7 @@ def admin_password_reset_request_task(email):
         except Exception as e:
             return {"error": f"An unexpected error occurred: {str(e)}"}
 
-@celery.task(bind=True)
+@celery.task(bingd=True, queue='default')
 def send_team_invite_email_task(self, email, vendor_id, role=2):
     try:
         from app import app
@@ -492,7 +492,7 @@ def send_team_invite_email_task(self, email, vendor_id, role=2):
     except Exception as e:
         return {'error': str(e)}
 
-@celery.task
+@celery.task(queue='default')
 def send_mjml_email_task(mjml, subject, compiled_html, recipient_email):
     """Process MJML email rendering and send via SMTP."""
     try:
@@ -518,7 +518,7 @@ def send_mjml_email_task(mjml, subject, compiled_html, recipient_email):
     except Exception as e:
         return {"error": str(e)}
 
-@celery.task
+@celery.task(queue='default')
 def send_html_email_task(html, subject, recipient_email):
     """Process HTML email rendering and send via SMTP."""
     try: 
@@ -546,7 +546,7 @@ def send_html_email_task(html, subject, recipient_email):
     except Exception as e:
         return {"error": str(e)}
 
-@celery.task
+@celery.task(queue='default')
 def send_sendgrid_email_task(html, subject, user_type):
     """Send bulk emails via SendGrid."""
     sender_email = os.getenv('EMAIL_USER')
@@ -586,7 +586,7 @@ def send_sendgrid_email_task(html, subject, user_type):
     except Exception as e:
         return {"error": str(e)}
 
-@celery.task
+@celery.task(queue='default')
 def send_sendgrid_email_client_task(subject, body_type, body, from_email, to_email):
     compiled_html = body
 
@@ -618,7 +618,7 @@ def send_sendgrid_email_client_task(subject, body_type, body, from_email, to_ema
     except Exception as e:
         return {"error": str(e), "status": 500}
 
-@celery.task(bind=True)
+@celery.task(bingd=True, queue='default')
 def export_csv_users_task(self):
     """Exports user data to a CSV file asynchronously."""
     import os
@@ -658,7 +658,7 @@ def export_csv_users_task(self):
             db.session.close()
             return {"error": str(e)}
 
-@celery.task(bind=True)
+@celery.task(bingd=True, queue='default')
 def export_csv_vendor_users_task(self):
     """Exports vendor user data to a CSV file asynchronously."""
     import os
@@ -697,7 +697,7 @@ def export_csv_vendor_users_task(self):
             db.session.close()
             return {"error": str(e)}
 
-@celery.task(bind=True)
+@celery.task(bingd=True, queue='default')
 def export_csv_markets_task(self):
     """Exports market data to a CSV file asynchronously."""
     import os
@@ -738,7 +738,7 @@ def export_csv_markets_task(self):
             db.session.close()
             return {"error": str(e)}
 
-@celery.task(bind=True)
+@celery.task(bingd=True, queue='default')
 def export_csv_vendors_task(self):
     """Exports vendor data to a CSV file asynchronously."""
     import os
@@ -774,7 +774,7 @@ def export_csv_vendors_task(self):
             db.session.close()
             return {"error": str(e)}
 
-@celery.task(bind=True)
+@celery.task(bingd=True, queue='default')
 def export_csv_baskets_task(self):
     """Exports basket data to a CSV file asynchronously."""
     import os
@@ -813,7 +813,7 @@ def export_csv_baskets_task(self):
             db.session.close()
             return {"error": str(e)}
 
-@celery.task(bind=True)
+@celery.task(bingd=True, queue='default')
 def export_csv_products_task(self):
     """Exports product data to a CSV file asynchronously."""
     import os
@@ -848,7 +848,7 @@ def export_csv_products_task(self):
             db.session.close()
             return {"error": str(e)}
 
-@celery.task
+@celery.task(queue='default')
 def generate_vendor_baskets_csv(vendor_id, month, year):
     from app import app
     with app.app_context():
@@ -947,7 +947,7 @@ def process_image(image_bytes, filename, max_size=MAX_SIZE, resolution=MAX_RES):
     
     return {"filename": filename, "image_data": encoded_image}
 
-@celery.task
+@celery.task(queue='default')
 def reset_market_status():
     """Reset all markets' is_current status to False at the start of each year."""
     session = Session()
@@ -962,7 +962,7 @@ def reset_market_status():
     finally:
         session.close()
 
-@celery.task
+@celery.task(queue='default')
 def update_vendor_user_market_locations(vendor_user_id):
     """Update market locations for a vendor user when they are created."""
     session = Session()
@@ -1002,7 +1002,7 @@ def handle_vendor_user_creation(mapper, connection, target):
     """Event listener to trigger market location update when a new vendor user is created."""
     update_vendor_user_market_locations.delay(target.id)
 
-@celery.task
+@celery.task(queue='default')
 def send_blog_notifications(blog_id, task_id=None):
     """Send blog notifications to users when a new blog post is created."""
     from app import app
@@ -1169,7 +1169,7 @@ def check_scheduled_blog_notifications():
         finally:
             db.session.close()
 
-@celery.task(bind=True)
+@celery.task(bingd=True, queue='default')
 def process_transfers_task(self, payment_intent_id, baskets):
     from app import app, get_vendor_stripe_accounts
     with app.app_context():
@@ -1258,7 +1258,7 @@ def process_transfers_task(self, payment_intent_id, baskets):
             print(f"Unexpected error in task: {str(e)}")
             return {'error': {'message': 'Unexpected error occurred', 'details': str(e)}}
 
-@celery.task(bind=True)
+@celery.task(bingd=True, queue='default')
 def reverse_basket_transfer_task(self, basket_id, stripe_account_id, amount):
     from app import app
     with app.app_context():
