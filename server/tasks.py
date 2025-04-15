@@ -43,6 +43,10 @@ serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 MAX_SIZE = 1.5 * 1024 * 1024
 MAX_RES = (1800, 1800)
 
+def log_mem(label=""):
+    rss = psutil.Process(os.getpid()).memory_info().rss / 1024**2
+    print(f"{label} RAM: {rss:.2f} MB")
+
 @celery.task
 def heavy_task(size=10000, duration=3):
     """Simulates memory and CPU load"""
@@ -903,6 +907,7 @@ def generate_vendor_baskets_csv(vendor_id, month, year):
 @celery.task(queue='process_images')
 def process_image(image_bytes, filename, max_size=MAX_SIZE, resolution=MAX_RES):
     """Resizes and optimizes an image asynchronously and returns it as bytes."""
+    log_mem("Start")
     max_size = int(max_size)
     
     image = Image.open(BytesIO(image_bytes))
@@ -933,12 +938,13 @@ def process_image(image_bytes, filename, max_size=MAX_SIZE, resolution=MAX_RES):
         if not isinstance(file_size, int):
             raise ValueError(f"Unexpected file_size type after compression: {type(file_size)}")
 
-
+    log_mem("After resize")
     temp_output.seek(0)
 
     # Convert image to Base64 to send back to Flask
     encoded_image = base64.b64encode(temp_output.getvalue()).decode('utf-8')
-
+    log_mem("After save")
+    
     return {"filename": filename, "image_data": encoded_image}
 
 @celery.task
