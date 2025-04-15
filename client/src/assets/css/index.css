@@ -2852,6 +2852,20 @@ select:hover {
   transition: opacity .4s ease;
 }
 
+.icon-delete-img {
+  background-image: url('../images/icons/delete-photo-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 50%;
+  background-size: 1.4rem auto;
+  height: 28px;
+  width: 28px;
+  transition: all .4s ease;
+}
+
+.icon-delete-img:hover {
+  background-color: #ff4b5a;
+}
+
 .icon-arrow-l {
   background-image: url('../images/icons/left-arrow-svgrepo-com.svg');
   background-repeat: no-repeat;

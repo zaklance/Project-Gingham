@@ -112,8 +112,8 @@ def confirm_user_email_task(token, request_method):
             data = serializer.loads(token, salt='user-confirmation-salt', max_age=86400)
             website = os.environ['VITE_SITE_URL']
 
-            user_id = data.get('user_id')  # Extract user ID
-            email = data.get('email')  # Extract new email
+            user_id = data.get('user_id')
+            email = data.get('email')
 
             if request_method == 'GET':
                 # Return a redirect response (or perform another action as needed)
@@ -243,8 +243,8 @@ def confirm_vendor_email_task(token, request_method):
             data = serializer.loads(token, salt='vendor-confirmation-salt', max_age=86400)
             website = os.environ['VITE_SITE_URL']
 
-            vendor_id = data.get('vendor_id')  # Extract user ID
-            email = data.get('email')  # Extract new email
+            vendor_id = data.get('vendor_id')
+            email = data.get('email')
 
             if request_method == 'GET':
                 # Return a redirect response (or perform another action as needed)
@@ -900,7 +900,7 @@ def generate_vendor_baskets_csv(vendor_id, month, year):
                 'error': str(e)
             }
 
-@celery.task
+@celery.task(queue='process_images')
 def process_image(image_bytes, filename, max_size=MAX_SIZE, resolution=MAX_RES):
     """Resizes and optimizes an image asynchronously and returns it as bytes."""
     max_size = int(max_size)
