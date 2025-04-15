@@ -3216,7 +3216,7 @@ select:hover {
 
 .banner-admin-portal {
   background-color: #69d2c2;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.28);
+  /* box-shadow: 0 3px 5px rgba(0, 0, 0, 0.28); */
   padding: 8px 0;
   width: 100vw;
 }
