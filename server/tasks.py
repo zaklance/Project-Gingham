@@ -465,7 +465,7 @@ def admin_password_reset_request_task(email):
         except Exception as e:
             return {"error": f"An unexpected error occurred: {str(e)}"}
 
-@celery.task(bingd=True, queue='default')
+@celery.task(bind=True, queue='default')
 def send_team_invite_email_task(self, email, vendor_id, role=2):
     try:
         from app import app
@@ -618,7 +618,7 @@ def send_sendgrid_email_client_task(subject, body_type, body, from_email, to_ema
     except Exception as e:
         return {"error": str(e), "status": 500}
 
-@celery.task(bingd=True, queue='default')
+@celery.task(bind=True, queue='default')
 def export_csv_users_task(self):
     """Exports user data to a CSV file asynchronously."""
     import os
@@ -658,7 +658,7 @@ def export_csv_users_task(self):
             db.session.close()
             return {"error": str(e)}
 
-@celery.task(bingd=True, queue='default')
+@celery.task(bind=True, queue='default')
 def export_csv_vendor_users_task(self):
     """Exports vendor user data to a CSV file asynchronously."""
     import os
@@ -697,7 +697,7 @@ def export_csv_vendor_users_task(self):
             db.session.close()
             return {"error": str(e)}
 
-@celery.task(bingd=True, queue='default')
+@celery.task(bind=True, queue='default')
 def export_csv_markets_task(self):
     """Exports market data to a CSV file asynchronously."""
     import os
@@ -738,7 +738,7 @@ def export_csv_markets_task(self):
             db.session.close()
             return {"error": str(e)}
 
-@celery.task(bingd=True, queue='default')
+@celery.task(bind=True, queue='default')
 def export_csv_vendors_task(self):
     """Exports vendor data to a CSV file asynchronously."""
     import os
@@ -774,7 +774,7 @@ def export_csv_vendors_task(self):
             db.session.close()
             return {"error": str(e)}
 
-@celery.task(bingd=True, queue='default')
+@celery.task(bind=True, queue='default')
 def export_csv_baskets_task(self):
     """Exports basket data to a CSV file asynchronously."""
     import os
@@ -813,7 +813,7 @@ def export_csv_baskets_task(self):
             db.session.close()
             return {"error": str(e)}
 
-@celery.task(bingd=True, queue='default')
+@celery.task(bind=True, queue='default')
 def export_csv_products_task(self):
     """Exports product data to a CSV file asynchronously."""
     import os
@@ -1169,7 +1169,7 @@ def check_scheduled_blog_notifications():
         finally:
             db.session.close()
 
-@celery.task(bingd=True, queue='default')
+@celery.task(bind=True, queue='default')
 def process_transfers_task(self, payment_intent_id, baskets):
     from app import app, get_vendor_stripe_accounts
     with app.app_context():
@@ -1258,7 +1258,7 @@ def process_transfers_task(self, payment_intent_id, baskets):
             print(f"Unexpected error in task: {str(e)}")
             return {'error': {'message': 'Unexpected error occurred', 'details': str(e)}}
 
-@celery.task(bingd=True, queue='default')
+@celery.task(bind=True, queue='default')
 def reverse_basket_transfer_task(self, basket_id, stripe_account_id, amount):
     from app import app
     with app.app_context():
