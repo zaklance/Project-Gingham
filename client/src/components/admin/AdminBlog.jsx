@@ -65,9 +65,10 @@ const AdminBlog = () => {
             } else {
                 const errorData = await response.json();
                 console.log(errorData.error || "Failed to upload images.");
+                toast.error(`Image failed to upload successfully: ${errorData.error}`, { autoClose: 4000 });
             }
         } catch (error) {
-            console.log("Error uploading images. Please try again.");
+            console.log("Error uploading images. Please try again. Only jpeg, svg, and heic files are allowed.");
             console.error("Upload error:", error);
         } finally {
             setUploading(false);

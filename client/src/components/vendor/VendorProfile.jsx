@@ -467,7 +467,7 @@ function VendorProfile () {
                         console.log(`Checking task status: ${taskStatus}`);
 
                         if (taskStatus === 'FAILURE') {
-                            toast.error('Image processing failed.', { autoClose: 4000 });
+                            toast.error('Image processing failed.  Only jpeg, svg, and heic files are allowed.', { autoClose: 6000 });
                             setStatus('fail');
                             setUploading(false)
                             return;
@@ -487,14 +487,14 @@ function VendorProfile () {
                     console.log('Response:', await result.text());
                     setStatus('fail');
                     setUploading(false)
-                    toast.error('Image failed to upload successfully.', { autoClose: 4000 });
+                    toast.error('Image failed to upload successfully. Only jpeg, svg, and heic files are allowed.', { autoClose: 6000 });
                     return;
                 }
             } catch (error) {
                 console.error('Error uploading image:', error);
                 setStatus('fail');
                 setUploading(false)
-                toast.error('Image failed to upload successfully.', { autoClose: 4000 });
+                toast.error('Image failed to upload successfully. Only jpeg, svg, and heic files are allowed.', { autoClose: 6000 });
                 return;
             }
         }
