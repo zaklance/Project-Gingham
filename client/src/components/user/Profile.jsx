@@ -319,14 +319,14 @@ function Profile({ marketData }) {
                         console.log('Response:', await result.text());
                         setStatus('fail');
                         setUploading(false)
-                        toast.error('Image failed to upload successfully.', { autoClose: 4000 });
+                        toast.error('Image failed to upload successfully. Only jpeg, svg, and heic files are allowed.', { autoClose: 6000 });
                         return;
                     }
                 } catch (error) {
                     console.error('Error uploading image:', error);
                     setStatus('fail');
                     setUploading(false)
-                    toast.error('Image failed to upload successfully.', { autoClose: 4000 });
+                    toast.error('Image failed to upload successfully. Only jpeg, svg, and heic files are allowed.', { autoClose: 6000 });
                     return;
                 }
                 window.location.reload()
