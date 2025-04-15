@@ -129,13 +129,6 @@ class User(db.Model, SerializerMixin):
             raise ValueError("Invalid email address")
         return value
 
-    # @validates('phone')
-    # def validate_phone(self, key, value):
-    #     cleaned_phone = re.sub(r'\D', '', value)
-    #     if len(value) != 10:
-    #         raise ValueError("Phone number must contain exactly 10 digits")
-    #     return cleaned_phone
-
     @validates('address_1')
     def validate_address_1(self, key, value):
         if not value:
@@ -520,8 +513,6 @@ class VendorUser(db.Model, SerializerMixin):
     last_login = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
     join_date = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
 
-    # notifications = db.relationship('VendorNotification', back_populates='vendor_user')
-
     serialize_rules = ('-_password', '-vendor_vendor_users.vendor_user')
 
     @validates('email')
@@ -539,13 +530,6 @@ class VendorUser(db.Model, SerializerMixin):
         if len(value) < 1 or len(value) > 50:
             raise ValueError(f"{key.replace('_', ' ').capitalize()} must be between 1 and 50 characters")
         return value
-
-    # @validates('phone')
-    # def validate_phone(self, key, value):
-    #     cleaned_phone = re.sub(r'\D', '', value)
-    #     if len(cleaned_phone) != 10:
-    #         raise ValueError("Phone number must contain exactly 10 digits")
-    #     return cleaned_phone
 
     @hybrid_property
     def password(self):
@@ -718,11 +702,6 @@ class VendorNotification(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
     task_id = db.Column(db.String, nullable=True)
-    
-    # vendor = db.relationship('Vendor', back_populates='notifications')
-    # vendor_user = db.relationship('VendorUser', back_populates='notifications')
-
-    # serialize_rules = ('vendor_user.first_name', 'vendor_user.last_name')
 
     def get_vendor_name(self):
         return Vendor.query.filter_by(id=self.vendor_id).first().name
