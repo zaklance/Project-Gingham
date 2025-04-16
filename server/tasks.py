@@ -6,6 +6,8 @@ import subprocess
 from io import StringIO, BytesIO
 from celery_config import celery
 from celery import Celery
+from celery.schedules import crontab
+from celery.exceptions import SoftTimeLimitExceeded
 from flask import jsonify, send_file
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -28,7 +30,6 @@ from sendgrid.helpers.mail import Mail
 from sqlalchemy.sql.expression import extract
 from datetime import datetime, time, timedelta
 import time as time2
-from celery.schedules import crontab
 from sqlalchemy.orm import Session
 from sqlalchemy import event
 from PIL import Image
@@ -904,48 +905,53 @@ def generate_vendor_baskets_csv(vendor_id, month, year):
                 'error': str(e)
             }
 
-@celery.task(queue='process_images')
+@celery.task(queue='process_images', bind=True, time_limit=40, soft_time_limit=35)
 def process_image(image_bytes, filename, max_size=MAX_SIZE, resolution=MAX_RES):
     """Resizes and optimizes an image asynchronously and returns it as bytes."""
-    log_mem("Start")
-    max_size = int(max_size)
-    
-    image = Image.open(BytesIO(image_bytes))
-    image.thumbnail(resolution, Image.LANCZOS)
+    try:
+        log_mem("Start")
+        max_size = int(max_size)
+        
+        image = Image.open(BytesIO(image_bytes))
+        image.thumbnail(resolution, Image.LANCZOS)
 
-    temp_output = BytesIO()
-    
-    if image.format == 'PNG':
-        image.save(temp_output, format='PNG', optimize=True)
-    else:
-        image.save(temp_output, format='JPEG', quality=50)
-
-    file_size = temp_output.tell()
-    if not isinstance(file_size, int):
-        raise ValueError(f"Unexpected file_size type: {type(file_size)}")
-    step = 0.9
-
-    while file_size > max_size:
         temp_output = BytesIO()
+        
         if image.format == 'PNG':
             image.save(temp_output, format='PNG', optimize=True)
         else:
-            quality = max(10, int(85 * step))
-            image.save(temp_output, format='JPEG', quality=quality)
+            image.save(temp_output, format='JPEG', quality=50)
+
         file_size = temp_output.tell()
-        step -= 0.05
-    
         if not isinstance(file_size, int):
-            raise ValueError(f"Unexpected file_size type after compression: {type(file_size)}")
+            raise ValueError(f"Unexpected file_size type: {type(file_size)}")
+        step = 0.9
 
-    log_mem("After resize")
-    temp_output.seek(0)
+        while file_size > max_size:
+            temp_output = BytesIO()
+            if image.format == 'PNG':
+                image.save(temp_output, format='PNG', optimize=True)
+            else:
+                quality = max(10, int(85 * step))
+                image.save(temp_output, format='JPEG', quality=quality)
+            file_size = temp_output.tell()
+            step -= 0.05
+        
+            if not isinstance(file_size, int):
+                raise ValueError(f"Unexpected file_size type after compression: {type(file_size)}")
 
-    # Convert image to Base64 to send back to Flask
-    encoded_image = base64.b64encode(temp_output.getvalue()).decode('utf-8')
-    log_mem("After save")
+        log_mem("After resize")
+        temp_output.seek(0)
+
+        # Convert image to Base64 to send back to Flask
+        encoded_image = base64.b64encode(temp_output.getvalue()).decode('utf-8')
+        log_mem("After save")
+        
+        return {"filename": filename, "image_data": encoded_image}
     
-    return {"filename": filename, "image_data": encoded_image}
+    except SoftTimeLimitExceeded:
+        print("Image processing timed out")
+        return {"error": "Timeout exceeded during image processing"}
 
 @celery.task(queue='default')
 def reset_market_status():

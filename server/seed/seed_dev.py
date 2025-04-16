@@ -3216,7 +3216,7 @@ def run():
         # BronxWorks Mott Haven Farm Stand
         MarketDay(
             id=130,
-            market_id=11,
+            market_id=110,
             hour_start=time(9, 0, 0),
             hour_end=time(14, 0, 0),
             day_of_week=3
