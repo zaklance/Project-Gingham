@@ -157,9 +157,9 @@ const AdminUsersUsers = () => {
                 }
                 if (image) {
 
-                    const maxFileSize = 25 * 1024 * 1024
+                    const maxFileSize = 20 * 1024 * 1024
                     if (image.size > maxFileSize) {
-                        toast.success('File size exceeds 25 MB. Please upload a smaller file.', {
+                        toast.success('File size exceeds 20 MB. Please upload a smaller file.', {
                             autoClose: 4000,
                         });
                         return;
