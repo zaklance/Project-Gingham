@@ -1,4 +1,4 @@
-# Exported from Render on 2025-04-13T18:06:19Z
+# Exported from Render on 2025-04-16T18:01:06Z
 databases:
 - name: gingham_db
   databaseName: gingham_server_2gy9
@@ -13,27 +13,6 @@ databases:
   postgresMajorVersion: "16"
   diskSizeGB: 1
 services:
-- type: web
-  name: gingham_server
-  runtime: python
-  repo: https://github.com/zaklance/Project-Gingham
-  branch: deploy
-  plan: starter
-  envVars:
-  - fromGroup: gingham_env
-  region: ohio
-  buildCommand: pip install -r requirements.txt && npm install -g mjml
-  startCommand: gunicorn app:app --bind 0.0.0.0:10000
-  disk:
-    name: disk
-    mountPath: /var/data/uploads
-    sizeGB: 5
-  buildFilter:
-    paths:
-    - server
-  rootDir: server
-  maintenanceMode:
-    uri: https://www.gingham.nyc/maintenance
 - type: worker
   name: gingham_worker
   runtime: python
@@ -44,7 +23,7 @@ services:
   - fromGroup: gingham_env
   region: ohio
   buildCommand: pip install -r requirements.txt && npm install -g mjml
-  startCommand: supervisord -c supervisord.conf
+  startCommand: mkdir -p /opt/render/project/src/server/logs && supervisord -c supervisord.conf
   disk:
     name: disk
     mountPath: /var/data
@@ -76,6 +55,27 @@ services:
     paths:
     - client
   rootDir: client
+- type: web
+  name: gingham_server
+  runtime: python
+  repo: https://github.com/zaklance/Project-Gingham
+  branch: deploy
+  plan: starter
+  envVars:
+  - fromGroup: gingham_env
+  region: ohio
+  buildCommand: pip install -r requirements.txt && npm install -g mjml
+  startCommand: gunicorn app:app --bind 0.0.0.0:10000
+  disk:
+    name: disk
+    mountPath: /var/data/uploads
+    sizeGB: 5
+  buildFilter:
+    paths:
+    - server
+  rootDir: server
+  maintenanceMode:
+    uri: https://www.gingham.nyc/maintenance
 - type: keyvalue
   name: gingham_redis
   plan: starter
