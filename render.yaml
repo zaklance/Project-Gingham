@@ -40,7 +40,7 @@ services:
   - fromGroup: gingham_env
   region: ohio
   buildCommand: pip install -r requirements.txt && npm install -g mjml
-  startCommand: gunicorn app:app --bind 0.0.0.0:10000
+  startCommand: mkdir -p /opt/render/project/src/server/logs && supervisord -c supervisord-server.conf
   disk:
     name: disk
     mountPath: /var/data/uploads
