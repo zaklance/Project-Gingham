@@ -2,7 +2,6 @@ import os
 import json
 import smtplib
 import csv
-import requests
 from flask import Flask, Response, request, jsonify, session, send_from_directory, send_file, redirect, url_for
 from markupsafe import escape
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
@@ -66,8 +65,6 @@ app = Flask(__name__, static_folder='public')
 
 cache = Cache(app, config={"CACHE_TYPE": "simple"})
 
-FLOWER_URL = "http://localhost:5555"
-
 STRIPE_WEBHOOK_SECRET = "whsec_0fd1e4d74c18b3685bd164fe766c292f8ec7a73a887dd83f598697be422a2875"
 STRIPE_ALLOWED_IPS = {
     "3.18.12.63", "3.130.192.231", "13.235.14.237", "13.235.122.149",
@@ -109,29 +106,6 @@ avatars = [
         "avatar-pomegranate-1.jpg", "avatar-radish-1.jpg", "avatar-tomato-1.jpg",
         "avatar-watermelon-1.jpg"
     ]
-
-@app.route('/api/flower/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
-@app.route('/api/flower', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
-def proxy_flower(path):
-    url = f"{FLOWER_URL}/api/flower/{path}"
-    headers = {key: value for key, value in request.headers if key != 'Host'}
-
-    resp = requests.request(
-        method=request.method,
-        url=url,
-        headers=headers,
-        data=request.get_data(),
-        cookies=request.cookies,
-        allow_redirects=False
-    )
-
-    excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
-    response_headers = [
-        (name, value) for (name, value) in resp.raw.headers.items()
-        if name.lower() not in excluded_headers
-    ]
-
-    return Response(resp.content, resp.status_code, response_headers)
 
 def handle_checkout_completed(session):
     """Retrieve purchase details from checkout session."""
