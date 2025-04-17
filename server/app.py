@@ -2,7 +2,8 @@ import os
 import json
 import smtplib
 import csv
-from flask import Flask, Response, request, jsonify, session, send_from_directory, send_file, redirect, url_for
+import requests
+from flask import Flask, Response, Blueprint, request, jsonify, session, send_from_directory, send_file, redirect, url_for
 from markupsafe import escape
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
                     VendorReview, ReportedReview, MarketReviewRating, 
@@ -61,7 +62,32 @@ import base64
 
 load_dotenv()
 
+proxy = Blueprint('proxy', __name__)
+FLOWER_URL = "http://localhost:5555"
+
+@proxy.route('/api/flower/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
+@proxy.route('/api/flower', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
+def proxy_flower(path):
+    url = f"{FLOWER_URL}/api/flower/{path}"
+    headers = {key: value for key, value in request.headers if key != 'Host'}
+
+    resp = requests.request(
+        method=request.method,
+        url=url,
+        headers=headers,
+        data=request.get_data(),
+        cookies=request.cookies,
+        allow_redirects=False
+    )
+
+    excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+    response_headers = [(name, value) for (name, value) in resp.raw.headers.items()
+                        if name.lower() not in excluded_headers]
+
+    return Response(resp.content, resp.status_code, response_headers)
+
 app = Flask(__name__, static_folder='public')
+app.register_blueprint(proxy)
 
 cache = Cache(app, config={"CACHE_TYPE": "simple"})
 
