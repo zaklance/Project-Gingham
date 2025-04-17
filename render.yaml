@@ -6,6 +6,8 @@ databases:
   plan: basic-256mb
   region: ohio
   ipAllowList:
+  - source: 0.0.0.0/0
+    description: everywhere
   - source: 82.140.186.159/32
     description: Zak, Ad Min (admin@gingham.nyc)
   postgresMajorVersion: "16"
