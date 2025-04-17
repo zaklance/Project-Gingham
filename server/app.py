@@ -68,7 +68,7 @@ FLOWER_URL = "http://localhost:5556"
 @proxy.route('/api/flower/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
 @proxy.route('/api/flower', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
 def proxy_flower(path):
-    url = f"{FLOWER_URL}/api/flower/{path}"
+    url = f"{FLOWER_URL}/{path}"
     headers = {key: value for key, value in request.headers if key != 'Host'}
 
     resp = requests.request(
@@ -87,7 +87,6 @@ def proxy_flower(path):
     return Response(resp.content, resp.status_code, response_headers)
 
 app = Flask(__name__, static_folder='public')
-app.register_blueprint(proxy)
 
 cache = Cache(app, config={"CACHE_TYPE": "simple"})
 
@@ -123,6 +122,8 @@ Migrate(app, db)
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
 jwt = JWTManager(app)
+
+app.register_blueprint(proxy)
 
 avatars = [
         "avatar-apricot-1.jpg", "avatar-avocado-1.jpg", "avatar-cabbage-1.jpg", 
