@@ -65,6 +65,27 @@ load_dotenv()
 proxy = Blueprint('proxy', __name__)
 FLOWER_URL = "http://localhost:5556"
 
+@proxy.route('/api/flower/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
+@proxy.route('/api/flower', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
+def proxy_flower(path):
+    url = f"{FLOWER_URL}/api/flower/{path}"
+    headers = {key: value for key, value in request.headers if key != 'Host'}
+
+    resp = requests.request(
+        method=request.method,
+        url=url,
+        headers=headers,
+        data=request.get_data(),
+        cookies=request.cookies,
+        allow_redirects=False
+    )
+
+    excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+    response_headers = [(name, value) for (name, value) in resp.raw.headers.items()
+                        if name.lower() not in excluded_headers]
+
+    return Response(resp.content, resp.status_code, response_headers)
+
 app = Flask(__name__, static_folder='public')
 app.register_blueprint(proxy)
 
@@ -99,7 +120,7 @@ serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 
 db.init_app(app)
 Migrate(app, db)
-CORS(app, supports_credentials=True)
+CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
 jwt = JWTManager(app)
 
@@ -521,27 +542,6 @@ def delete_image():
     except Exception as e:
         db.session.rollback()
         return {'error': f'Failed to delete image: {str(e)}'}, 500
-
-@proxy.route('/api/flower/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
-@proxy.route('/api/flower', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
-def proxy_flower(path):
-    url = f"{FLOWER_URL}/api/flower/{path}"
-    headers = {key: value for key, value in request.headers if key != 'Host'}
-
-    resp = requests.request(
-        method=request.method,
-        url=url,
-        headers=headers,
-        data=request.get_data(),
-        cookies=request.cookies,
-        allow_redirects=False
-    )
-
-    excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
-    response_headers = [(name, value) for (name, value) in resp.raw.headers.items()
-                        if name.lower() not in excluded_headers]
-
-    return Response(resp.content, resp.status_code, response_headers)
 
 @app.route('/api/images/<filename>', methods=['GET'])
 def serve_image(filename):
@@ -3683,8 +3683,8 @@ def admin_password_reset(token):
 @app.route('/api/user-notifications', methods=['GET', 'DELETE'])
 @jwt_required()
 def get_user_notifications():
-    print("Request Headers:", request.headers)
-    print("Authorization Header:", request.headers.get('Authorization'))
+    # print("Request Headers:", request.headers)
+    # print("Authorization Header:", request.headers.get('Authorization'))
     
     try:
         current_user = get_jwt_identity()
