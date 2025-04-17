@@ -64,7 +64,7 @@ load_dotenv()
 
 proxy = Blueprint('proxy', __name__)
 
-FLOWER_URL = "http://localhost:5555"
+FLOWER_URL = "http://localhost:5556"
 
 app = Flask(__name__, static_folder='public')
 
