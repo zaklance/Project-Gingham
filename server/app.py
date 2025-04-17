@@ -2,6 +2,7 @@ import os
 import json
 import smtplib
 import csv
+import requests
 from flask import Flask, Response, request, jsonify, session, send_from_directory, send_file, redirect, url_for
 from markupsafe import escape
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
@@ -64,6 +65,8 @@ load_dotenv()
 app = Flask(__name__, static_folder='public')
 
 cache = Cache(app, config={"CACHE_TYPE": "simple"})
+
+FLOWER_URL = "http://localhost:5555"
 
 STRIPE_WEBHOOK_SECRET = "whsec_0fd1e4d74c18b3685bd164fe766c292f8ec7a73a887dd83f598697be422a2875"
 STRIPE_ALLOWED_IPS = {
@@ -214,6 +217,31 @@ def generate_csv(model, fields, filename_prefix):
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/api/flower/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
+@app.route('/api/flower', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
+def proxy_flower(path):
+    url = f"{FLOWER_URL}/api/flower/{path}"
+    headers = {key: value for key, value in request.headers if key != 'Host'}
+
+    # Forward the request to Flower
+    resp = requests.request(
+        method=request.method,
+        url=url,
+        headers=headers,
+        data=request.get_data(),
+        cookies=request.cookies,
+        allow_redirects=False
+    )
+
+    # Exclude certain headers
+    excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+    response_headers = [
+        (name, value) for (name, value) in resp.raw.headers.items()
+        if name.lower() not in excluded_headers
+    ]
+
+    return Response(resp.content, resp.status_code, response_headers)
 
 @app.route('/api/hello', methods=['GET'])
 def hello_world():
