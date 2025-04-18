@@ -36,7 +36,7 @@ def get_beat_schedule_db_path():
 def configure_celery():
     celery.conf.update(
         beat_schedule=get_beat_schedule(),
-        # beat_db=get_beat_schedule_db_path(),
+        beat_db=get_beat_schedule_db_path(),
         worker_send_task_events=True,
         task_send_sent_event=True,
         timezone='UTC'
