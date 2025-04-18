@@ -839,6 +839,7 @@ class Blog(db.Model, SerializerMixin):
     admin_user_id = db.Column(db.Integer, db.ForeignKey('admin_users.id'), nullable=False)
     post_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow) # GMT (system generated)
     task_id = db.Column(db.String, nullable=True)
+    notifications_sent = db.Column(db.Boolean, default=False)
 
     blog_favorites = db.relationship('BlogFavorite', back_populates='blog')
 
