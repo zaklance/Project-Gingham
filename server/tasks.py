@@ -25,7 +25,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from sqlalchemy.sql.expression import extract
-from datetime import datetime
+from datetime import datetime, time
 from celery.schedules import crontab
 from sqlalchemy.orm import Session
 from sqlalchemy import event
@@ -37,17 +37,6 @@ serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 MAX_SIZE = 1.5 * 1024 * 1024
 MAX_RES = (1800, 1800)
 
-### Configure Celery with scheduled tasks ###
-beat_schedule_db = '/var/data/celery-beat/celerybeat-schedule.db'
-celery.conf.update(
-    beat_schedule={
-        'reset-market-status': {
-            'task': 'server.tasks.reset_market_status',
-            'schedule': crontab(hour=0, minute=0, day_of_month=1, month_of_year=1),
-        }
-    },
-    beat_db=beat_schedule_db
-)
 
 @celery.task
 def contact_task(name, email, subject, message):
@@ -890,8 +879,8 @@ def handle_vendor_user_creation(mapper, connection, target):
     """Event listener to trigger market location update when a new vendor user is created."""
     update_vendor_user_market_locations.delay(target.id)
 
-@celery.task(bind=True, acks_late=True)
-def send_blog_notifications(self, blog_id, task_id=None):
+@celery.task
+def send_blog_notifications(blog_id, task_id=None):
     """Send blog notifications to users when a new blog post is created."""
     from app import app
     with app.app_context():
@@ -905,7 +894,6 @@ def send_blog_notifications(self, blog_id, task_id=None):
             blog = db.session.get(Blog, blog_id)
             if not blog:
                 print(f"Blog ID={blog_id} not found.")
-                self.request.reject()
                 return None
 
             # If task_id is passed, we can skip re-scheduling
@@ -915,10 +903,10 @@ def send_blog_notifications(self, blog_id, task_id=None):
 
             print(task_id)
             # Check if post_date matches current date
-            current_date = datetime.utcnow().date()
-            if not blog.post_date or blog.post_date.date() != current_date:
-                print(f"Blog ID={blog_id} post_date ({blog.post_date}) does not match current date ({current_date}). Skipping notifications.")
-                return
+            # current_date = datetime.utcnow().date()
+            # if not blog.post_date or blog.post_date.date() != current_date:
+            #     print(f"Blog ID={blog_id} post_date ({blog.post_date}) does not match current date ({current_date}). Skipping notifications.")
+            #     return
 
             # Get users who have notifications enabled based on blog type
             if blog.for_user:
@@ -992,5 +980,64 @@ def send_blog_notifications(self, blog_id, task_id=None):
         except Exception as e:
             db.session.rollback()
             print(f"Error sending blog notifications for Blog ID={blog_id}: {e}")
+        finally:
+            db.session.close()
+
+@celery.task
+def check_scheduled_blog_notifications():
+    """Check for blogs that need notifications today"""
+    from app import app
+    with app.app_context():
+        try:
+            # Get all blogs scheduled for today that haven't had notifications sent
+            today = datetime.combine(datetime.utcnow().date(), time.min)
+            print(f"[DEBUG] Checking for blogs scheduled for {today} that need notifications")
+            
+            # Check if the notifications_sent field exists
+            from sqlalchemy import inspect
+            columns = [c.name for c in inspect(Blog).columns]
+            if 'notifications_sent' not in columns:
+                print("[ERROR] notifications_sent column doesn't exist in Blog table!")
+                return "ERROR: notifications_sent column missing"
+            
+            # Count all blogs
+            total_blogs = db.session.query(Blog).count()
+            print(f"[DEBUG] Total blogs in database: {total_blogs}")
+            
+            # Count blogs with today's date
+            blogs_today = db.session.query(Blog).filter(Blog.post_date == today).count()
+            print(f"[DEBUG] Blogs with post_date={today}: {blogs_today}")
+            
+            # Count blogs with notifications not sent
+            blogs_not_sent = db.session.query(Blog).filter(Blog.notifications_sent == False).count()
+            print(f"[DEBUG] Blogs with notifications_sent=False: {blogs_not_sent}")
+            
+            # Find blogs that should receive notifications today
+            blogs_to_notify = db.session.query(Blog).filter(
+                Blog.post_date == today,
+                Blog.notifications_sent == False
+            ).all()
+            
+            print(f"[DEBUG] Found {len(blogs_to_notify)} blogs that need notifications")
+            
+            # Show details of each blog that needs notification
+            for blog in blogs_to_notify:
+                print(f"[DEBUG] Blog ID={blog.id}, Title='{blog.title}', Post Date={blog.post_date}")
+                # Send notification
+                send_result = send_blog_notifications.delay(blog.id)
+                print(f"[DEBUG] Notification task triggered: {send_result}")
+                
+                # Mark as sent
+                blog.notifications_sent = True
+            
+            # Commit the changes
+            db.session.commit()
+            return f"Processed {len(blogs_to_notify)} blog notifications"
+        except Exception as e:
+            db.session.rollback()
+            print(f"[ERROR] Exception in check_scheduled_blog_notifications: {e}")
+            import traceback
+            traceback.print_exc()
+            return f"Error: {str(e)}"
         finally:
             db.session.close()

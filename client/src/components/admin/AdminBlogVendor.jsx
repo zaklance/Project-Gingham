@@ -177,7 +177,13 @@ const AdminBlogVendor = ({ blogs, activeTabMode }) => {
                 fetch(`/api/blogs/${id}`, {
                     method: "DELETE",
                 }).then(() => {
-                    setBlogsFor((prev) => prev.filter((item) => item.id !== id))
+                    setBlogsFor((prev) => {
+                        const newBlogs = prev.filter((item) => item.id !== id);
+                        if (currentIndex >= newBlogs.length) {
+                            setCurrentIndex(Math.max(newBlogs.length - 1, 0));
+                        }
+                        return newBlogs;
+                    });
                 })
             } catch (error) {
                 console.error("Error deleting blog", error)
@@ -315,15 +321,6 @@ const AdminBlogVendor = ({ blogs, activeTabMode }) => {
                                                     <option value='Market Spotlight'>Spotlight Market</option>
                                                     <option value='Vendor Spotlight'>Spotlight Vendor</option>
                                                 </select>
-                                            </div>
-                                            <div className='form-group'>
-                                                <label>Post Date:</label>
-                                                <input
-                                                    type="date"
-                                                    name="post_date"
-                                                    value={tempBlogData.post_date ? tempBlogData.post_date.split(" ")[0] : ""}
-                                                    onChange={handleEditInputChange}
-                                                />
                                             </div>
                                             <div className='form-group'>
                                                 <label>Body HTML:</label>
