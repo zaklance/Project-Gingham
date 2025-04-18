@@ -16,7 +16,7 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     )
 from tasks import send_blog_notifications
 from redis import Redis
-from celery_config import celery, delete_scheduled_task
+from celery_config import celery
 from celery.result import AsyncResult
 from celery_sqlalchemy_scheduler.models import PeriodicTask, IntervalSchedule, CrontabSchedule
 from uuid import uuid4
@@ -507,153 +507,92 @@ def fav_vendor_new_baskets(mapper, connection, target):
 def schedule_blog_notifications(mapper, connection, target):
     session = Session(bind=connection)
     try:
-        eta_datetime = datetime.combine(target.post_date, time(hour=12))
-        now = datetime.utcnow()
+        now = datetime.utcnow().date()
+        
+        # If it's today or in the past, send immediately
+        if target.post_date <= now:
+            send_blog_notifications.delay(target.id, None)
+            
+            connection.execute(
+                Blog.__table__.update()
+                .where(Blog.id == target.id)
+                .values(notifications_sent=True)
+            )
+        else:
+            connection.execute(
+                Blog.__table__.update()
+                .where(Blog.id == target.id)
+                .values(notifications_sent=False)
+            )
 
-        # Check if task_id is already set to avoid rescheduling it
-        if not target.task_id:
-            if eta_datetime < now:
-                send_blog_notifications.delay(target.id, None)
-            else:
-                # Schedule for the future
-                task = send_blog_notifications.apply_async(
-                    (target.id, None), 
-                    eta=eta_datetime
-                )
-                
-                # Update task_id directly in the database to avoid triggering after_update
-                connection.execute(
-                    Blog.__table__.update()
-                    .where(Blog.id == target.id)
-                    .values(task_id=task.id)
-                )
-
-        print(f"Scheduled notification task for Blog ID={target.id} at {eta_datetime}")
+        print(f"Blog ID={target.id} set for notifications on {target.post_date}")
 
     except Exception as e:
         session.rollback()
         print(f"Error in schedule_blog_notifications: {e}")
     finally:
         session.close()
+        
+# if blog is scheduled for the future and deleted before it is published
+# @listens_for(Blog, 'before_delete')
+# def delete_scheduled_blog_notifications(mapper, connection, target):
+#     session = Session(bind=connection)
+#     try:
+#         if target.task_id:
+#             task_id = target.task_id
+#             print(f"Attempting to delete scheduled task {task_id}")
+            
+#             # Revoke the task with terminate=True and signal=True for immediate effect
+#             celery.control.revoke(task_id, terminate=True, signal='SIGKILL')
+            
+#             # For completeness, also try the AsyncResult approach
+#             try:
+#                 result = celery.AsyncResult(task_id)
+#                 result.revoke(terminate=True)
+#                 print(f"Revoked task using AsyncResult: {task_id}")
+#             except Exception as e:
+#                 print(f"AsyncResult revocation failed: {e}")
+            
+#             # Delete all related notifications
+#             for model in [UserNotification, VendorNotification, AdminNotification]:
+#                 if model.__table__.exists(bind=session.bind):
+#                     notifications = session.query(model).filter(
+#                         model.task_id == task_id
+#                     ).all()
+#                     for notification in notifications:
+#                         session.delete(notification)
+            
+#             # Clean up any entries in Celery's results backend
+#             try:
+#                 if hasattr(celery.backend, 'delete'):
+#                     celery.backend.delete(task_id)
+#                     print(f"Deleted task result from backend: {task_id}")
+#             except Exception as e:
+#                 print(f"Failed to delete from result backend: {e}")
+                
+#             session.commit()
+            
+#     except Exception as e:
+#         session.rollback()
+#         print(f"Error deleting scheduled blog notifications: {e}")
+#         import traceback
+#         traceback.print_exc()
+#     finally:
+#         session.close()
+
+@listens_for(Blog, 'after_insert')
+def flag_blog_for_notifications(mapper, connection, target):
+    pass
 
 @listens_for(Blog, 'after_update')
-def reschedule_blog_notification(mapper, connection, target):
-    session = Session(bind=connection)
-    try:
-        insp = inspect(target)
-        
-        # Only proceed if post_date has actually changed
-        if not insp.attrs.post_date.history.has_changes():
-            print(f"No change in post_date for Blog {target.id}. No rescheduling needed.")
-            return
-            
-        # Check if this is a newly created blog
-        if hasattr(insp.attrs, 'id') and insp.attrs.id.history.added:
-            print(f"Skipping reschedule for newly created Blog {target.id}")
-            return
-
-        old_task_id = target.task_id
-        
-        # If there's an old task, revoke it
-        if old_task_id:
-            print(f"Revoking task for Blog {target.id} with old task_id: {old_task_id}")
-            
-            # Try both revoke methods for maximum effectiveness
-            celery.control.revoke(old_task_id, terminate=True)
-            
-            # Also try AsyncResult approach for one-time tasks
-            result = celery.AsyncResult(old_task_id)
-            if result.state not in ('SUCCESS', 'FAILURE', 'REVOKED'):
-                result.revoke(terminate=True)
-                
-            # For periodic tasks in beat, check the schedule
-            if hasattr(celery.conf, 'CELERYBEAT_SCHEDULE'):
-                beat_schedule = celery.conf.CELERYBEAT_SCHEDULE
-                for task_name, task_config in beat_schedule.items():
-                    task_args = task_config.get('args', [])
-                    if len(task_args) > 0 and str(target.id) in str(task_args):
-                        print(f"Removing beat task {task_name} from schedule")
-                        del beat_schedule[task_name]
-                        celery.control.broadcast('reload')
-                        break
-
-        # Calculate the new eta_datetime based on post_date
-        eta_datetime = datetime.combine(target.post_date, time(hour=12))
-        now = datetime.utcnow()
-
-        # Skip task creation if eta is in the past
-        if eta_datetime <= now:
-            print(f"Skipping task creation for Blog {target.id}: eta_datetime {eta_datetime} is in the past.")
-            connection.execute(
-                Blog.__table__.update()
-                .where(Blog.id == target.id)
-                .values(task_id=None)
-            )
-            return
-
-        # Create a new task for the updated post_date
-        task = send_blog_notifications.apply_async((target.id, None), eta=eta_datetime)
-        
-        # Update task_id directly in the database
+def update_blog_notification_status(mapper, connection, target):
+    insp = inspect(target)
+    if insp.attrs.post_date.history.has_changes():
         connection.execute(
             Blog.__table__.update()
             .where(Blog.id == target.id)
-            .values(task_id=task.id)
+            .values(notifications_sent=False)
         )
-
-        print(f"Rescheduled task for Blog {target.id} with new task_id: {task.id} at {eta_datetime}")
-    except Exception as e:
-        print(f"Error rescheduling task for Blog {target.id}: {e}")
-        session.rollback()
-    finally:
-        session.close()
-        
-# if blog is scheduled for the future and deleted before it is published
-@listens_for(Blog, 'before_delete')
-def delete_scheduled_blog_notifications(mapper, connection, target):
-    session = Session(bind=connection)
-    try:
-        if target.task_id:
-            task_id = target.task_id
-            print(f"Attempting to delete scheduled task {task_id}")
-            
-            # Revoke the task with terminate=True and signal=True for immediate effect
-            celery.control.revoke(task_id, terminate=True, signal='SIGKILL')
-            
-            # For completeness, also try the AsyncResult approach
-            try:
-                result = celery.AsyncResult(task_id)
-                result.revoke(terminate=True)
-                print(f"Revoked task using AsyncResult: {task_id}")
-            except Exception as e:
-                print(f"AsyncResult revocation failed: {e}")
-            
-            # Delete all related notifications
-            for model in [UserNotification, VendorNotification, AdminNotification]:
-                if model.__table__.exists(bind=session.bind):
-                    notifications = session.query(model).filter(
-                        model.task_id == task_id
-                    ).all()
-                    for notification in notifications:
-                        session.delete(notification)
-            
-            # Clean up any entries in Celery's results backend
-            try:
-                if hasattr(celery.backend, 'delete'):
-                    celery.backend.delete(task_id)
-                    print(f"Deleted task result from backend: {task_id}")
-            except Exception as e:
-                print(f"Failed to delete from result backend: {e}")
-                
-            session.commit()
-            
-    except Exception as e:
-        session.rollback()
-        print(f"Error deleting scheduled blog notifications: {e}")
-        import traceback
-        traceback.print_exc()
-    finally:
-        session.close()
 
 # Vendor User - New Market Event     
 @listens_for(Event, 'after_insert')
