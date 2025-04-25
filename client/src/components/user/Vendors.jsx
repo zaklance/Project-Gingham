@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useLocation, useOutletContext } from 'react-router-dom';
+import Fuse from 'fuse.js';
 import VendorCard from './VendorCard';
-import '../../assets/css/index.css';
 import VendorSignUpCard from './VendorSignUpCard';
 
 function Vendors() {
@@ -24,6 +24,13 @@ function Vendors() {
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
 
+    const fuse = useMemo(() => {
+        return new Fuse(vendors, {
+            keys: ['name'],
+            threshold: 0.2,
+        });
+    }, [vendors]);
+
     const onUpdateQuery = (event) => {
         const value = event.target.value;
         setQuery(value);
@@ -31,16 +38,13 @@ function Vendors() {
     };
 
     const filteredProductsSubcat = useMemo(() => {
-
         const allSubcategories = vendors.flatMap(vendor => {
             const subcategories = vendor.products_subcategories;
-
             return Array.isArray(subcategories) ? subcategories : [];
         });
         const uniqueSortedSubcategories = [...new Set(allSubcategories)].sort((a, b) =>
             a.localeCompare(b)
         );
-
         return uniqueSortedSubcategories;
     }, [vendors]);
 
@@ -52,21 +56,27 @@ function Vendors() {
         setSelectedProductSubCat(event.target.value);
     };
     
-    const filteredVendorsDropdown = vendors.filter(vendor =>
-        vendor.name.toLowerCase().includes(query.toLowerCase()) &&
+    const fuseDropdownResults = query.trim().length > 0
+        ? fuse.search(query).map(result => result.item)
+        : [];
+
+    const filteredVendorsDropdown = fuseDropdownResults.filter(vendor =>
         vendor.name !== query &&
         (!selectedProduct || vendor.products.includes(Number(selectedProduct))) &&
-        (!isClicked || vendorFavs.some(vendorFavs => vendorFavs.vendor_id === vendor.id))
+        (!isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id))
     );
 
-    const filteredVendorsResults = vendors.filter(vendor =>
-        vendor.name.toLowerCase().includes(query.toLowerCase()) &&
+    const fuseResults = query.trim().length > 0
+        ? fuse.search(query).map(result => result.item)
+        : vendors;
+
+    const filteredVendorsResults = fuseResults.filter(vendor =>
         (!selectedProduct || vendor.products.includes(Number(selectedProduct))) &&
         (!selectedProductSubcat ||
             (Array.isArray(vendor.products_subcategories) &&
              vendor.products_subcategories.includes(selectedProductSubcat))
         ) &&
-        (!isClicked || vendorFavs.some(vendorFav => vendorFav.vendor_id === vendor.id))
+        (!isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id))
     );
 
     useEffect(() => {
