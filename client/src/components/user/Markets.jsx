@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useOutletContext } from 'react-router-dom';
+import { ColorScheme, FeatureVisibility, Map } from 'mapkit-react';
+import Fuse from 'fuse.js';
 import { formatDate } from '../../utils/helpers';
 import { weekDay } from '../../utils/common';
-import { ColorScheme, FeatureVisibility, Map } from 'mapkit-react';
 import MarketCard from './MarketCard';
 import MapAnnotation from './MapAnnotation';
 
@@ -41,6 +42,13 @@ function Markets() {
     
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const token = localStorage.getItem('user_jwt-token');
+
+    const fuse = useMemo(() => {
+        return new Fuse(markets, {
+            keys: ['name'],
+            threshold: 0.2,
+        });
+    }, [markets]);
     
     const onUpdateQuery = (event) => {
         const value = event.target.value;
@@ -48,13 +56,20 @@ function Markets() {
         setShowDropdown(value.trim().length > 0);
     };
 
-    const filteredMarketsDropdown = markets.filter(market =>
-        market?.name?.toLowerCase().includes(query.toLowerCase()) &&
+    const fuseDropdownResults = query.trim().length > 0
+        ? fuse.search(query).map(result => result.item)
+        : [];
+
+    const filteredMarketsDropdown = fuseDropdownResults.filter(market =>
         market.name !== query &&
         (!isClicked || marketFavs.some(marketFavs => marketFavs.market_id === market.id))
     );
 
-    const filteredMarketsResults = markets.filter(market => {
+    const fuseResults = query.trim().length > 0
+        ? fuse.search(query).map(result => result.item)
+        : markets;
+
+    const filteredMarketsResults = fuseResults.filter(market => {
         if (!market?.name) return false;
 
         const today = new Date();
@@ -68,7 +83,6 @@ function Markets() {
         );
 
         return (
-            market.name.toLowerCase().includes(query.toLowerCase()) &&
             (!isClicked || marketFavs.some(fav => fav.market_id === market.id)) &&
             (!isInSeason || inSeason) &&
             (!selectedDay || matchesSelectedDay)
