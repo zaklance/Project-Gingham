@@ -147,6 +147,26 @@ export function receiptDateConverter(dateString) {
     return isNaN(date.getTime()) ? "Invalid Date" : date.toLocaleDateString('en-CA');
 }
 
+export function formatMinutes(minutes) {
+    if (minutes < 90) {
+        return `${minutes} min`;
+    }
+
+    const days = Math.floor(minutes / 1440);
+    const hours = Math.floor((minutes % 1440) / 60);
+    const remainingMinutes = minutes % 60;
+
+    if (days >= 2) {
+        return `${days} days${hours ? ` ${hours} hrs` : ''}${remainingMinutes ? ` ${remainingMinutes} min` : ''}`;
+    }
+
+    if (days === 1) {
+        return `1 day${hours ? ` ${hours} hrs` : ''}${remainingMinutes ? ` ${remainingMinutes} min` : ''}`;
+    }
+
+    return `${hours} hrs${remainingMinutes ? ` ${remainingMinutes} min` : ''}`;
+};
+
 // Input Conversions and Formatting
 export const formatPhoneNumber = (phone, countryCode = '+1') => {
     const cleaned = ('' + phone).replace(/\D/g, '');

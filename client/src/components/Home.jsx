@@ -153,7 +153,7 @@ function Home() {
                 </div>
                 <br className="m-br"/>
                 <div className="box-home box-inside">
-                    <h2 className="text-transparent">Make A Positive Impact By Minimizing Food Waste </h2><br/>
+                    <h2 className="box-transparent">Make A Positive Impact By Minimizing Food Waste </h2><br/>
                     <p> Do you love fresh, local produce at a great price? Meet Gingham, the platform connecting 
                         you with vendors in farmers markets. <span className="text-500">With Gingham, you can 
                         pre-order mystery baskets filled with surplus or seasonal goods and pick them up directly 

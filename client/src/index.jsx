@@ -28,6 +28,8 @@ import PickUp from './components/user/PickUp.jsx';
 import Profile from './components/user/Profile.jsx';
 import Vendors from './components/user/Vendors.jsx';
 import VendorDetail from './components/user/VendorDetail.jsx';
+import Recipes from './components/user/Recipes.jsx';
+import RecipeDetail from './components/user/RecipeDetail.jsx';
 import UserFAQs from './components/user/UserFAQs.jsx';
 import UserEmailVerification from './components/user/UserEmailVerification.jsx';
 import Logout from './components/user/Logout.jsx';
@@ -196,6 +198,8 @@ const router = createBrowserRouter([
                     { path: "markets/:id", element: <MarketDetail /> },
                     { path: "vendors", element: <Vendors /> },
                     { path: "vendors/:id", element: <VendorDetail /> },
+                    { path: "recipes", element: <Recipes /> },
+                    { path: "recipes/:id", element: <RecipeDetail /> },
                     { path: "cart", element: <Cart /> },
                     { path: "pick-up", element: <UserAuthRoute><PickUp /></UserAuthRoute> },
                     { path: "help", element: <UserFAQs /> },
