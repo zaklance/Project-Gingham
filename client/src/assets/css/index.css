@@ -2972,7 +2972,20 @@ select:hover {
 
 .favorites-list li {
   padding: 8px 0px;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid #eee;
+}
+
+.favorites-list li:first-child {
+  border-top: none;
+}
+
+.favorites-list li:last-child {
+  padding-bottom: 0;
+}
+
+.favorites-list-blog {
+  padding: 0 !important;
+  overflow: hidden;
 }
 
 .alert-container {
@@ -3480,11 +3493,12 @@ select:hover {
   border-top: none;
 }
 
-.details-images>details summary {
+.details-images>details summary, .details-images>ul {
   background-color: #fff;
   border-left: solid 6px #eee;
   border-right: solid 6px #eee;
   border-bottom: solid 6px #eee;
+  padding-left: 8px;
 }
 
 .details-images>details[open] summary {
