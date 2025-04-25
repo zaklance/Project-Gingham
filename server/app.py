@@ -4303,6 +4303,7 @@ def create_admin_notification():
             message=data['message'],
             link=data['link'],
             admin_role=data['admin_role'],
+            admin_id=data['admin_id'],
             vendor_user_id=data['vendor_user_id'],
             vendor_id=data['vendor_id'],
             created_at=datetime.utcnow(),
@@ -4339,11 +4340,11 @@ def get_admin_notifications():
     admin_id = request.args.get('admin_id')
 
     if request.method == 'GET':
-        notifications = AdminNotification.query.all()
+        notifications = AdminNotification.query
         if admin_id:
-            query = query.filter_by(admin_id=admin_id)
+            query = notifications.filter_by(admin_id=admin_id)
 
-        return jsonify([notif.to_dict() for notif in notifications]), 200
+        return jsonify([notif.to_dict() for notif in query]), 200
     
     if request.method == 'DELETE':
         query = AdminNotification.query

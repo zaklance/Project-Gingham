@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy.event import listens_for
 from datetime import datetime, date , timezone, timedelta
 import json
-import inspect
 from threading import Timer
 from datetime import datetime, timedelta, timezone, time
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
@@ -520,7 +519,7 @@ def schedule_blog_notifications(mapper, connection, target):
         # If it's today or in the past, send immediately
         if target.post_date <= now:
             task_id = str(uuid4())
-
+            print(f"Type of send_blog_notifications: {type(send_blog_notifications)}")
             send_blog_notifications.apply_async(
                 args=[target.id],
                 kwargs={"task_id": task_id}

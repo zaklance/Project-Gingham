@@ -240,7 +240,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     
     useEffect(() => {
         if (isAdminLoggedIn) {
-            fetch("/api/admin-notifications", {
+            fetch(`/api/admin-notifications?admin_id=${adminUserId}`, {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${adminToken}`,
@@ -250,6 +250,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 .then(response => response.json())
                 .then(data => {
                     setAdminNotifications(data);
+                    console.log(data)
                 })
                 .catch(error => console.error('Error fetching notifications', error));
         }
@@ -603,19 +604,22 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             </>
                         )}
                         <li>
-                            <NavLink className='nav-tab color-2 btn-nav' to={`/admin/help`} title="Help">Help</NavLink>
+                            <NavLink className='nav-tab color-2 btn-nav' to={`/admin/recipes`} title="Recipes">Recipes</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-5 btn-nav' to={`/admin/blog`} title="Blog">Blog</NavLink>
+                            <NavLink className='nav-tab color-5 btn-nav' to={`/admin/help`} title="Help">Help</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-3 btn-nav icon-report' to={`/admin/report`} title="Reported Reviews">&emsp;</NavLink>
+                            <NavLink className='nav-tab color-3 btn-nav' to={`/admin/blog`} title="Blog">Blog</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav icon-email-bulk' to={`/admin/email-bulk`} title="Email, Bulk">&emsp;</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav icon-report' to={`/admin/report`} title="Reported Reviews">&emsp;</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-2 btn-nav icon-email' to={`/admin/email`} title="Email">&emsp;</NavLink>
+                            <NavLink className='nav-tab color-2 btn-nav icon-email-bulk' to={`/admin/email-bulk`} title="Email, Bulk">&emsp;</NavLink>
+                        </li>
+                        <li>
+                            <NavLink className='nav-tab color-5 btn-nav icon-email' to={`/admin/email`} title="Email">&emsp;</NavLink>
                         </li>
                         {adminUserData && adminUserData.admin_role <= 2 && (
                             <li>
