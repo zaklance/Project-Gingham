@@ -158,7 +158,7 @@ function ReviewMarket({ market }) {
         
                     if (response.ok) {
                         toast.warning('Review reported.', {
-                            autoClose: 2000,
+                            autoClose: 3000,
                         });
                     }
                 } catch (error) {

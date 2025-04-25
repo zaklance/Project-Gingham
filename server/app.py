@@ -11,7 +11,8 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     Product, UserNotification, VendorNotification, 
                     AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
                     Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
-                    UserIssue, bcrypt )
+                    UserIssue, Recipe, Ingredient, RecipeIngredient,
+                    InstructionGroup, Instruction, RecipeFavorite, bcrypt )
 from dotenv import load_dotenv
 from sqlalchemy import cast, desc, extract, func, Integer
 from sqlalchemy.exc import IntegrityError
@@ -2236,6 +2237,39 @@ def del_blog_fav(id):
         db.session.delete(blog_fav)
         db.session.commit()
         return {}, 204
+
+@app.route('/api/recipe-favorites', methods=['GET', 'POST'])
+@jwt_required()
+def all_recipe_favorites():
+    if request.method == 'GET':
+        user_id = request.args.get('user_id')
+        query = RecipeFavorite.query
+        if user_id:
+            query = query.filter_by(user_id=user_id).all()
+        return jsonify([q.to_dict() for q in query]), 200
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_recipe_favorite = RecipeFavorite(
+            user_id=data['user_id'],
+            recipe_id=data['recipe_id']
+        )
+        db.session.add(new_recipe_favorite)
+        db.session.commit()
+        return new_recipe_favorite.to_dict(), 201
+    
+@app.route('/api/recipe-favorites/<int:id>', methods=['GET', 'DELETE'])
+@jwt_required()
+def del_recipe_fav(id):
+    recipe_fav = RecipeFavorite.query.filter(RecipeFavorite.id == id).first()
+    if not recipe_fav:
+        return {'error': 'recipe favorite not found'}, 404
+    if request.method == 'GET':
+        return recipe_fav.to_dict(), 200
+    if request.method == 'DELETE':
+        db.session.delete(recipe_fav)
+        db.session.commit()
+        return {}, 204
     
 @app.route('/api/vendor-markets', methods=['GET', 'POST'])
 def get_vendor_markets():
@@ -2687,7 +2721,7 @@ def all_products():
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return {'error': f'Failed to create market: {str(e)}'}, 500
+            return {'error': f'Failed to create product: {str(e)}'}, 500
 
         return new_product.to_dict(), 201
     
@@ -2730,6 +2764,201 @@ def product(id):
         except Exception as e: 
             db.session.rollback()
             return {'error': str(e)}, 500
+
+@app.route('/api/recipes', methods=['GET', 'POST'])
+def all_recipes():
+    if request.method == 'GET':
+        recipes = Recipe.query.all()
+        return jsonify([recipe.to_dict() for recipe in recipes]), 200
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_recipe = Recipe(
+            title=data.get('title'),
+            description=data.get('description'),
+            image=data.get('image'),
+            categories=data.get('categories'),
+            diet_categories=data.get('diet_categories'),
+            prep_time=data.get('prep_time'),
+            cook_time=data.get('cook_time'),
+            total_time=data.get('total_time'),
+            serve_count=data.get('serve_count')
+        )
+        try:
+            db.session.add(new_recipe)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Failed to create recipe: {str(e)}'}, 500
+
+        return new_recipe.to_dict(), 201
+
+@app.route('/api/recipes/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def recipe(id):
+    if request.method == 'GET':
+        recipe = Recipe.query.filter_by(id=id).first()
+        if not recipe:
+            return {'error': 'recipe not found'}, 404
+        recipe_data = recipe.to_dict()
+        return jsonify(recipe_data), 200
+
+    elif request.method == 'PATCH':
+        recipe = Product.query.filter_by(id=id).first()
+        if not recipe:
+            return {'error': 'product not found'}, 404
+        try:
+            data = request.get_json()
+            for key, value in data.items():
+                setattr(recipe, key, value)
+
+            db.session.commit()
+            return jsonify(recipe.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+        
+    elif request.method == 'DELETE':
+        recipe = Recipe.query.filter_by(id=id).first()
+        if not recipe: 
+            return {'error': 'recipe not found'}, 404
+        
+        try: 
+            db.session.delete(recipe)
+            db.session.commit()
+            return {}, 204
+        
+        except Exception as e: 
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
+@app.route('/api/ingredients', methods=['GET', 'POST'])
+def all_ingredients():
+    if request.method == 'GET':
+        recipe_id = request.args.get('recipe_id', type=int)
+
+        if recipe_id:
+            recipe_ingredients = RecipeIngredient.query.filter_by(recipe_id=recipe_id).all()
+            if not recipe_ingredients:
+                return jsonify({'error': 'Recipe Ingredients not found'}), 404
+
+            ingredient_ids = [ri.ingredient_id for ri in recipe_ingredients]
+            ingredients = Ingredient.query.filter(Ingredient.id.in_(ingredient_ids)).all()
+            return jsonify([ingredient.to_dict() for ingredient in ingredients]), 200
+
+        ingredients = Ingredient.query.all()
+        return jsonify([ingredient.to_dict() for ingredient in ingredients]), 200
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_ingredient = Ingredient(
+            name=data.get('name'),
+            name_plural=data.get('name_plural'),
+        )
+        try:
+            db.session.add(new_ingredient)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Failed to create ingredient: {str(e)}'}, 500
+
+        return new_ingredient.to_dict(), 201
+
+@app.route('/api/recipe-ingredients', methods=['GET', 'POST'])
+def all_recipe_ingredients():
+    if request.method == 'GET':
+        recipe_id = request.args.get('recipe_id', type=int)
+        query = RecipeIngredient.query
+
+        if recipe_id:
+            query = query.filter(RecipeIngredient.recipe_id == recipe_id)
+            recipe_ingredients_result = query.all()
+            if recipe_ingredients_result:
+                return jsonify([ri.to_dict() for ri in recipe_ingredients_result]), 200
+            return jsonify({'error': 'Recipe Ingredients not found'}), 404
+        
+        return jsonify([q.to_dict() for q in query]), 200
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_recipe_ingredient = RecipeIngredient(
+            recipe_id=data.get('recipe_id'),
+            ingredient_id=data.get('ingredient_id'),
+            amount=data.get('amount'),
+            plural=data.get('plural'),
+            description=data.get('description'),
+        )
+        try:
+            db.session.add(new_recipe_ingredient)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Failed to create : {str(e)}'}, 500
+
+        return new_recipe_ingredient.to_dict(), 201
+
+@app.route('/api/instructions', methods=['GET', 'POST'])
+def all_instructions():
+    if request.method == 'GET':
+        recipe_id = request.args.get('recipe_id', type=int)
+        query = Instruction.query
+        
+        if recipe_id:
+            query = query.filter(Instruction.recipe_id == recipe_id)
+            instructions_result = query.all()
+            if instructions_result:
+                return jsonify([inst.to_dict() for inst in instructions_result]), 200
+            return jsonify({'error': 'Instructions not found'}), 404
+        
+        return jsonify([q.to_dict() for q in query]), 200
+
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_instruction = Instruction(
+            recipe_id=data.get('recipe_id'),
+            instruction_group_id=data.get('instruction_group_id'),
+            step_number=data.get('step_number'),
+            description=data.get('description'),
+        )
+        try:
+            db.session.add(new_instruction)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Failed to create : {str(e)}'}, 500
+
+        return new_instruction.to_dict(), 201
+    
+@app.route('/api/instruction-groups', methods=['GET', 'POST'])
+def all_instruction_groups():
+    if request.method == 'GET':
+        recipe_id = request.args.get('recipe_id', type=int)
+        query = InstructionGroup.query
+
+        if recipe_id:
+            query = query.filter(InstructionGroup.recipe_id == recipe_id)
+            instruction_groups_result = query.all()
+            if instruction_groups_result:
+                return jsonify([ig.to_dict() for ig in instruction_groups_result]), 200
+            return jsonify({'error': 'Instructions not found'}), 404
+
+        return jsonify([q.to_dict() for q in query]), 200
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_instruction_group = InstructionGroup(
+            recipe_id=data.get('recipe_id'),
+            title=data.get('title'),
+            group_number=data.get('group_number'),
+        )
+        try:
+            db.session.add(new_instruction_group)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Failed to create : {str(e)}'}, 500
+
+        return new_instruction_group.to_dict(), 201
 
 @app.route('/api/qr-codes', methods=['GET', 'POST'])
 @jwt_required()
@@ -3657,8 +3886,8 @@ def admin_password_reset(token):
 @app.route('/api/user-notifications', methods=['GET', 'DELETE'])
 @jwt_required()
 def get_user_notifications():
-    print("Request Headers:", request.headers)
-    print("Authorization Header:", request.headers.get('Authorization'))
+    # print("Request Headers:", request.headers)
+    # print("Authorization Header:", request.headers.get('Authorization'))
     
     try:
         current_user = get_jwt_identity()

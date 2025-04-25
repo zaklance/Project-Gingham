@@ -159,7 +159,7 @@ function ReviewVendor({ vendor }) {
                     });
         
                     if (response.ok) {
-                        toast.error('Review reported.', {
+                        toast.warning('Review reported.', {
                             autoClose: 3000,
                         });
                     }
