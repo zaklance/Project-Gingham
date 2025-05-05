@@ -47,7 +47,6 @@ import VendorStripeRefresh from './components/vendor/VendorStripeRefresh.jsx';
 import VendorHelpCenter from './components/vendor/VendorHelpCenter.jsx';
 import VendorLoginPopup from './components/vendor/VendorLoginPopup.jsx';
 import VendorEmailVerification from './components/vendor/VendorEmailVerification.jsx';
-import VendorTeam from './components/vendor/VendorTeam.jsx';
 import VendorJoinTeam from './components/vendor/VendorJoinTeam.jsx';
 
 // admin routes
@@ -56,6 +55,7 @@ import AdminLogout from './components/admin/AdminLogout.jsx';
 import AdminProfile from './components/admin/AdminProfile.jsx';
 import AdminMarkets from './components/admin/AdminMarkets.jsx';
 import AdminVendors from './components/admin/AdminVendors.jsx';
+import AdminRecipes from './components/admin/AdminRecipes.jsx';
 import AdminUsers from './components/admin/AdminUsers.jsx';
 import AdminHelp from './components/admin/AdminHelp.jsx';
 import AdminEmailBulk from './components/admin/AdminEmailBulk.jsx';
@@ -239,6 +239,7 @@ const router = createBrowserRouter([
                     { path: "profile/:id",element:<AdminRoute><AdminProfile /></AdminRoute>},
                     { path: "markets", element: <AdminAuthRoute><AdminMarkets /></AdminAuthRoute>},
                     { path: "vendors", element: <AdminAuthRoute><AdminVendors /></AdminAuthRoute>},
+                    { path: "recipes", element: <AdminAuthRoute><AdminRecipes /></AdminAuthRoute>},
                     { path: "users", element: <AdminAuthRoute><AdminUsers /></AdminAuthRoute>},
                     { path: "help", element: <AdminAuthRoute><AdminHelp /></AdminAuthRoute>},
                     { path: "blog", element: <AdminAuthRoute><AdminBlog /></AdminAuthRoute>},

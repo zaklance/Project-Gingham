@@ -73,7 +73,7 @@ function About() {
                     <p>
                         — Zak, Sandro & Vinh
                         <br/>
-                        &emsp;Co-founders of <span className='font-gingham text-size-1'>Gin<span className="kern-1-5">g</span><span className="kern-05">h</span>am</span>
+                        &emsp;Co-founders of <span className='font-cera text-size-1'>Gingham</span>
                     </p>
                 </article>
             </div>

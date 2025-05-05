@@ -23,7 +23,7 @@ const AdminEmailBulk = () => {
             <mj-section>
                 <mj-column background-color="#fbf7eb">
 
-                    <mj-image width="120px" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png"></mj-image>
+                    <mj-image width="120px" src="https://www.gingham.nyc/site-images/gingham-logo_04-3A.png"></mj-image>
                     
                     <mj-divider></mj-divider>
                     

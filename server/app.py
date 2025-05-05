@@ -2,6 +2,7 @@ import os
 import json
 import smtplib
 import csv
+import traceback
 from flask import Flask, Response, request, jsonify, session, send_from_directory, send_file, redirect, url_for
 from markupsafe import escape
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
@@ -75,12 +76,14 @@ STRIPE_ALLOWED_IPS = {
 
 UPLOAD_FOLDER = os.environ['IMAGE_UPLOAD_FOLDER']
 USER_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "user-images")
-VENDOR_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "vendor-images")
 MARKET_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "market-images")
+VENDOR_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "vendor-images")
+RECIPE_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "recipe-images")
 BLOG_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, 'blog-images')
 os.makedirs(USER_UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(VENDOR_UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(MARKET_UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(VENDOR_UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(RECIPE_UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(BLOG_UPLOAD_FOLDER, exist_ok=True)
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'svg', 'heic'}
 MAX_SIZE = 1.5 * 1024 * 1024
@@ -247,6 +250,7 @@ def upload_file():
         user_id = request.form.get('user_id')
         vendor_id = request.form.get('vendor_id')
         market_id = request.form.get('market_id')
+        recipe_id = request.form.get('recipe_id')
         upload_type = request.form.get('type')
         
         # Get the current working directory
@@ -262,6 +266,9 @@ def upload_file():
         elif upload_type == 'user':
             base_folder = USER_UPLOAD_FOLDER
             upload_folder = os.path.join(base_folder, str(user_id))
+        elif upload_type == 'recipe':
+            base_folder = RECIPE_UPLOAD_FOLDER
+            upload_folder = os.path.join(base_folder, str(recipe_id))
         else:
             return {'error': 'Invalid type specified. Must be "vendor", "market", or "user"'}, 400
 
@@ -360,6 +367,18 @@ def upload_file():
                     return {'error': 'Market not found'}, 404
 
                 market.image = f'/api/uploads/market-images/{market_id}/{os.path.basename(file_path)}'
+                db.session.commit()
+            
+            elif upload_type == 'recipe':
+                recipe_id = request.form.get('recipe_id')
+                if not recipe_id:
+                    return {'error': 'Recipe ID is required'}, 400
+
+                recipe = Recipe.query.get(recipe_id)
+                if not recipe:
+                    return {'error': 'Recipe not found'}, 404
+
+                recipe.image = f'/api/uploads/recipe-images/{recipe_id}/{os.path.basename(file_path)}'
                 db.session.commit()
 
             return {'message': 'File successfully uploaded', 'filename': escape(os.path.basename(file_path)), 'task_id': task_id}, 201
@@ -2773,25 +2792,60 @@ def all_recipes():
     
     elif request.method == 'POST':
         data = request.get_json()
-        new_recipe = Recipe(
-            title=data.get('title'),
-            description=data.get('description'),
-            image=data.get('image'),
-            categories=data.get('categories'),
-            diet_categories=data.get('diet_categories'),
-            prep_time=data.get('prep_time'),
-            cook_time=data.get('cook_time'),
-            total_time=data.get('total_time'),
-            serve_count=data.get('serve_count')
-        )
         try:
+            new_recipe = Recipe(
+                title=data.get('title'),
+                description=data.get('description'),
+                author=data.get('author'),
+                image=data.get('image'),
+                categories=data.get('categories'),
+                diet_categories=data.get('diet_categories'),
+                prep_time_minutes=data.get('prep_time_minutes'),
+                cook_time_minutes=data.get('cook_time_minutes'),
+                total_time_minutes=data.get('total_time_minutes'),
+                serve_count=data.get('serve_count')
+            )
             db.session.add(new_recipe)
+            db.session.flush()
+
+            recipe_ingredients = data.get('recipe_ingredients', [])
+            for ri in recipe_ingredients:
+                new_ri = RecipeIngredient(
+                    recipe_id=new_recipe.id,
+                    ingredient_id=ri.get('ingredient_id'),
+                    amount=ri.get('amount'),
+                    plural=ri.get('plural'),
+                    description=ri.get('description'),
+                )
+                db.session.add(new_ri)
+
+            instruction_groups = data.get('instruction_groups', [])
+            for group in instruction_groups:
+                new_group = InstructionGroup(
+                    recipe_id=new_recipe.id,
+                    title=group.get('title'),
+                    group_number=group.get('group_number'),
+                )
+                db.session.add(new_group)
+                db.session.flush()
+
+                for inst in group.get('instructions', []):
+                    new_inst = Instruction(
+                        recipe_id=new_recipe.id,
+                        instruction_group_id=new_group.id,
+                        step_number=inst.get('step_number'),
+                        description=inst.get('description'),
+                    )
+                    db.session.add(new_inst)
+
             db.session.commit()
+            return new_recipe.to_dict(), 201
+
         except Exception as e:
             db.session.rollback()
-            return {'error': f'Failed to create recipe: {str(e)}'}, 500
-
-        return new_recipe.to_dict(), 201
+            print("Error creating recipe:", str(e))
+            traceback.print_exc()
+            return {'error': f'Failed to create recipe and related data: {str(e)}'}, 500
 
 @app.route('/api/recipes/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def recipe(id):
@@ -2803,9 +2857,9 @@ def recipe(id):
         return jsonify(recipe_data), 200
 
     elif request.method == 'PATCH':
-        recipe = Product.query.filter_by(id=id).first()
+        recipe = Recipe.query.filter_by(id=id).first()
         if not recipe:
-            return {'error': 'product not found'}, 404
+            return {'error': 'recipe not found'}, 404
         try:
             data = request.get_json()
             for key, value in data.items():
