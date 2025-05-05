@@ -149,7 +149,7 @@ function Home() {
                 <br className="d-br" />
                 <br/>
                 <div className="box-portal-home text-blend-lighten text-center">
-                    <h1 className="font-gingham title-big-gingham padding-b-32">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</h1>
+                    <h1 className="font-cera title-big-gingham">Gingham</h1>
                 </div>
                 <br className="m-br"/>
                 <div className="box-home box-inside">

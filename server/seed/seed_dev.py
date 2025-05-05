@@ -4256,7 +4256,7 @@ def run():
                     </article>
                     <article>
                         <p>
-                            <span class='font-gingham text-size-1'>—The Gin<span class="kern-1-5">g</span><span class="kern-05">h</span>am Team</span>
+                            <span class='font-cera text-size-1'>—The Gingham Team</span>
                         </p>
                     </article>
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
@@ -4304,7 +4304,7 @@ def run():
                     </article>
                     <article>
                         <p>
-                            <span class='font-gingham text-size-1'>—The Gin<span class="kern-1-5">g</span><span class="kern-05">h</span>am Team</span>
+                            <span class='font-cera text-size-1'>—The Gingham Team</span>
                         </p>
                     </article>
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
@@ -4344,7 +4344,7 @@ def run():
                     </article>
                     <article>
                         <p>
-                            <span class='font-gingham text-size-1'>—The Gin<span class="kern-1-5">g</span><span class="kern-05">h</span>am Team</span>
+                            <span class='font-cera text-size-1'>—The Gingham Team</span>
                         </p>
                     </article>
                 </div>

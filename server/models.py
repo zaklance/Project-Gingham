@@ -1012,6 +1012,14 @@ class Recipe(db.Model, SerializerMixin):
         '-instruction_groups.recipe',
         '-instruction_groups.instructions.recipe'
         )
+    
+    # @validates('prep_time_minutes', 'cook_time_minutes')
+    # def update_total_time(self, key, value):
+    #     setattr(self, key, value)
+    #     prep = self.prep_time_minutes or 0
+    #     cook = self.cook_time_minutes or 0
+    #     self.total_time_minutes = prep + cook
+    #     return value
 
     def __repr__(self) -> str:
         return f"<Recipe ID: {self.id}, Title: {self.title}>"
@@ -1071,7 +1079,8 @@ class RecipeIngredient(db.Model, SerializerMixin):
         )
 
     def __repr__(self) -> str:
-        return f"<Recipe Ingredient ID: {self.id}, Ingredient: {self.ingredient_id}: {self.ingredient.name}, Amount: {self.amount}>"
+        ingredient_name = self.ingredient.name if self.ingredient else "None"
+        return f"<Recipe Ingredient ID: {self.id}, Ingredient: {self.ingredient_id}: {ingredient_name}, Amount: {self.amount}>"
 
 class Instruction(db.Model, SerializerMixin):
     __tablename__ = 'instructions'
@@ -1104,7 +1113,8 @@ class Instruction(db.Model, SerializerMixin):
         )
 
     def __repr__(self) -> str:
-        return f"<Instruction ID: {self.id}, Recipe: {self.recipe.title}, Step: {self.step_number}, Description: {self.description}>"
+        recipe_title = self.recipe.title if self.recipe else "None"
+        return f"<Instruction ID: {self.id}, Recipe: {recipe_title}, Step: {self.step_number}, Description: {self.description}>"
 
 class InstructionGroup(db.Model, SerializerMixin):
     __tablename__ = 'instruction_groups'

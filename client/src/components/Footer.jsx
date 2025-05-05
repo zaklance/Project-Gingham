@@ -31,7 +31,7 @@ function Footer() {
         setClickedPath(path);
         setTimeout(() => {
             setClickedPath(null);
-        }, 2500);
+        }, 2000);
     };
 
     return (
@@ -42,7 +42,7 @@ function Footer() {
                     <ul className='ul-footer column-footer'>
                         {navItems.map(({ path, label, condition }) =>
                             condition !== false ? (
-                                <li key={path} className="footer-li link-underline">
+                                <li key={path} className="footer-li font-cera text-500 link-underline">
                                     <NavLink 
                                         to={path} 
                                         className={({ isActive }) => isActive ? "active-link" : ""}
@@ -59,10 +59,10 @@ function Footer() {
                                 </li>
                             ) : null
                         )}
-                            <li className="footer-li-copy">&copy; Gingham, 2025</li>
+                            <li className="footer-li-copy font-cera text-500">&copy; Gingham, 2025</li>
                         </ul>
                         <div>
-                            <img className="small-logo m-hidden" src="/site-images/gingham-logo-A_3.svg" alt="Gingham Logo" />
+                            <img className="small-logo" src="/site-images/gingham-logo_04-3A.svg" alt="Gingham Logo" />
                         </div>
                 </div>
             </div>

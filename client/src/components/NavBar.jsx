@@ -250,7 +250,6 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 .then(response => response.json())
                 .then(data => {
                     setAdminNotifications(data);
-                    console.log(data)
                 })
                 .catch(error => console.error('Error fetching notifications', error));
         }
@@ -442,7 +441,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     return (
         <nav className="nav-bar">
             <ul>
-                <NavLink className="btn-home" to="/" ><img className='logo' src="/site-images/gingham-logo-A_3.svg" alt="Gingham Logo" /></NavLink>
+                <NavLink className="btn-home" to="/" ><img className='logo' src="/site-images/gingham-logo_04-3B.svg" alt="Gingham Logo" /></NavLink>
                 {/* User Tabs */}
                 {!isNotUser && (
                     <>

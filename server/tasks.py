@@ -907,7 +907,7 @@ def generate_vendor_baskets_csv(vendor_id, month, year):
             }
 
 @celery.task(queue='process_images', bind=True, time_limit=40, soft_time_limit=35)
-def process_image(image_bytes, filename, max_size=MAX_SIZE, resolution=MAX_RES):
+def process_image(self, image_bytes, filename, max_size=MAX_SIZE, resolution=MAX_RES):
     """Resizes and optimizes an image asynchronously and returns it as bytes."""
     try:
         log_mem("Start")
