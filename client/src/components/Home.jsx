@@ -149,11 +149,11 @@ function Home() {
                 <br className="d-br" />
                 <br/>
                 <div className="box-portal-home text-blend-lighten text-center">
-                    <h1 className="font-gingham title-big-gingham padding-b-32">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</h1>
+                    <h1 className="font-cera title-big-gingham">Gingham</h1>
                 </div>
                 <br className="m-br"/>
                 <div className="box-home box-inside">
-                    <h2 className="text-transparent">Make A Positive Impact By Minimizing Food Waste </h2><br/>
+                    <h2 className="box-transparent">Make A Positive Impact By Minimizing Food Waste </h2><br/>
                     <p> Do you love fresh, local produce at a great price? Meet Gingham, the platform connecting 
                         you with vendors in farmers markets. <span className="text-500">With Gingham, you can 
                         pre-order mystery baskets filled with surplus or seasonal goods and pick them up directly 

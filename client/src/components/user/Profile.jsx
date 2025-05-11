@@ -815,7 +815,7 @@ function Profile({ marketData }) {
                                         <div className='margin-l-8'>
                                             <button className='btn btn-small btn-blue' onClick={handleDeleteImage}>Delete Image</button>
                                         </div>
-                                        <label htmlFor='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
+                                        <label htmlFor='file-upload' className='btn btn-small btn-file btn-blue nowrap'>Choose File{image && <span id="file-name" className='text-white-background margin-l-8'>{image.name}</span>}</label>
                                         <input
                                             id="file-upload"
                                             type="file"
@@ -981,7 +981,7 @@ function Profile({ marketData }) {
                     </>
                 ) : (
                     <>
-                            <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap margin-b-16'>
+                        <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap margin-b-16'>
                             <h2>Settings</h2>
                             <div className='tabs'>                
                                 <Link to="#" onClick={() => setActiveTab('website')} className={activeTab === 'website' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>

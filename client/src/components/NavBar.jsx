@@ -240,7 +240,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     
     useEffect(() => {
         if (isAdminLoggedIn) {
-            fetch("/api/admin-notifications", {
+            fetch(`/api/admin-notifications?admin_id=${adminUserId}`, {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${adminToken}`,
@@ -441,7 +441,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     return (
         <nav className="nav-bar">
             <ul>
-                <NavLink className="btn-home" to="/" ><img className='logo' src="/site-images/gingham-logo-A_3.svg" alt="Gingham Logo" /></NavLink>
+                <NavLink className="btn-home" to="/" ><img className='logo' src="/site-images/gingham-logo_04-3B.svg" alt="Gingham Logo" /></NavLink>
                 {/* User Tabs */}
                 {!isNotUser && (
                     <>
@@ -451,16 +451,19 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li>
                             <NavLink className='nav-tab color-3 btn-nav' to="/user/vendors" state={{ resetFilters: true }} title="Vendors">Vendors</NavLink>
                         </li>
+                        {/* <li>
+                            <NavLink className='nav-tab color-4 btn-nav' to="/user/recipes" state={{ resetFilters: true }} title="Recipes">Recipes</NavLink>
+                        </li> */}
                     </>
                 )}
                 {/* User Login / Logout */}
                 {isUserLoggedIn && !isVendorPage && !isAdminPage &&  (
                     <>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav' to={`/user/profile/${userId}`} title="Profile">Profile</NavLink>
+                            <NavLink className='nav-tab color-2 btn-nav' to={`/user/profile/${userId}`} title="Profile">Profile</NavLink>
                         </li>
                         <li className='badge-container'>
-                            <NavLink className='nav-tab color-2 btn-nav nowrap' to={`/user/pick-up`} title="Pick-Up">Pick-Up</NavLink>
+                            <NavLink className='nav-tab color-5 btn-nav nowrap' to={`/user/pick-up`} title="Pick-Up">Pick-Up</NavLink>
                             {baskets.length > 0 && (
                                 <p className='badge-pickup'>
                                     {baskets.length}
@@ -472,7 +475,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 {!isNotUser && (
                     <>
                         <li className='notification'>
-                            <NavLink className='nav-tab color-5 btn-nav nav-tab-wide nowrap icon-cart' to="/user/cart" title="Cart">&emsp;</NavLink>
+                            <NavLink className='nav-tab color-1 btn-nav nav-tab-wide nowrap icon-cart' to="/user/cart" title="Cart">&emsp;</NavLink>
                             {amountInCart > 0 && (
                                 <p className='badge-cart'>
                                     {amountInCart}
@@ -485,7 +488,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                     <>
                         {notifications.length > 0 &&
                             <li className='notification' onClick={handleNotifPopup}>
-                                <a className='nav-tab color-1 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
+                                <a className='nav-tab color-4 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
                                 {notifications.filter(notification => notification.is_read === false).length > 0 && (
                                     <p className='badge'>
                                         {notifications.filter(notification => notification.is_read === false).length}
@@ -600,19 +603,22 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             </>
                         )}
                         <li>
-                            <NavLink className='nav-tab color-2 btn-nav' to={`/admin/help`} title="Help">Help</NavLink>
+                            <NavLink className='nav-tab color-2 btn-nav' to={`/admin/recipes`} title="Recipes">Recipes</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-5 btn-nav' to={`/admin/blog`} title="Blog">Blog</NavLink>
+                            <NavLink className='nav-tab color-5 btn-nav' to={`/admin/help`} title="Help">Help</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-3 btn-nav icon-report' to={`/admin/report`} title="Reported Reviews">&emsp;</NavLink>
+                            <NavLink className='nav-tab color-3 btn-nav' to={`/admin/blog`} title="Blog">Blog</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-4 btn-nav icon-email-bulk' to={`/admin/email-bulk`} title="Email, Bulk">&emsp;</NavLink>
+                            <NavLink className='nav-tab color-4 btn-nav icon-report' to={`/admin/report`} title="Reported Reviews">&emsp;</NavLink>
                         </li>
                         <li>
-                            <NavLink className='nav-tab color-2 btn-nav icon-email' to={`/admin/email`} title="Email">&emsp;</NavLink>
+                            <NavLink className='nav-tab color-2 btn-nav icon-email-bulk' to={`/admin/email-bulk`} title="Email, Bulk">&emsp;</NavLink>
+                        </li>
+                        <li>
+                            <NavLink className='nav-tab color-5 btn-nav icon-email' to={`/admin/email`} title="Email">&emsp;</NavLink>
                         </li>
                         {adminUserData && adminUserData.admin_role <= 2 && (
                             <li>

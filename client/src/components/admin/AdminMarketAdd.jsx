@@ -218,6 +218,13 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
         }
     };
 
+    const handleImageDelete = async () => {
+        setImage(null);
+        toast.success('Image deleted successfully.', {
+            autoClose: 4000,
+        });
+    }
+
     return (
         <>
             <title>Gingham • Admin Markets • Add</title>
@@ -466,7 +473,8 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                         <div className='form-group'>
                             <label>Market Image:</label>
                             <div className='flex-start flex-center-align'>
-                                <label htmlFor='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
+                                <button className='btn btn-small btn-file btn-blue' onClick={handleImageDelete}>Delete Image</button>
+                                <label htmlFor='file-upload' className='btn btn-small btn-file btn-blue nowrap'>Choose File{image && <span id="file-name" className='text-white-background margin-l-8'>{image.name}</span>}</label>
                                 <input
                                     id="file-upload"
                                     type="file"

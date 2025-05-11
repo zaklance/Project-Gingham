@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import AdminVendorEdit from './AdminVendorEdit';
 import AdminVendorAdd from './AdminVendorAdd';
 import AdminVendorDelete from './AdminVendorDelete';

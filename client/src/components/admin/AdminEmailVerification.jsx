@@ -94,8 +94,8 @@ const AdminEmailVerification = () => {
             <title>Gingham • Admin Email Verification</title>
             {!isConfirmed ? (
                 <div className="box-bounding text-center">
-                    <h1 className="title-med text-center">
-                        <span className="font-gingham-large title-small">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</span>
+                    <h1 className="font-cera-large title-med text-center margin-b-16">
+                        Gingham
                     </h1>
                     <p className="text-500 margin-b-8">Please confirm your email!</p>
                     {errorMessage && <p className="text-error-small text-red width-fit margin-auto">{errorMessage}</p>}
@@ -110,7 +110,7 @@ const AdminEmailVerification = () => {
             ) : isNewUser ? (
                 <div className="box-bounding text-center">
                     <h1 className="title-med text-center">
-                        Welcome to <span className="font-gingham title-small">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</span>!
+                        Welcome to <span className="font-cera title-small">Gingham</span>!
                     </h1>
                     <p className="text-500 margin-b-8">Thank you for registering! Your email has been successfully confirmed. Welcome to the platform!</p>
                     <button className="btn btn-confirm" onClick={() => navigate("/admin/logout")}>

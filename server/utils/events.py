@@ -76,6 +76,7 @@ def track_vendor_favorite(mapper, connection, target):
 @listens_for(Event, 'after_insert')
 def vendor_market_event_or_schedule_change(mapper, connection, target):
     session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
     try:
         # Retrieve the market day associated with the event
         market_day = session.query(MarketDay).filter_by(market_id=target.market_id).first()
@@ -185,6 +186,7 @@ def track_fav_vendor_event(mapper, connection, target):
         return
 
     session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
     try:
         # Retrieve users who favorited the vendor
         favorited_users = session.query(User).join(VendorFavorite).filter(
@@ -266,6 +268,7 @@ def track_fav_vendor_event(mapper, connection, target):
 @listens_for(VendorMarket, 'after_insert')
 def notify_new_vendor_in_favorite_market(mapper, connection, target):
     session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
     try:
         # Retrieve the market associated with the market day
         market_day = session.query(MarketDay).filter_by(id=target.market_day_id).first()
@@ -342,6 +345,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
 def notify_admin_vendor_review_reported(mapper, connection, target):
     if target.is_reported:
         session = Session(bind=connection)
+        # print(inspect.currentframe().f_code.co_name)
         try:
             # Retrieve the vendor
             vendor = session.query(Vendor).filter_by(id=target.vendor_id).first()
@@ -390,6 +394,7 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
 def notify_admin_market_review_reported(mapper, connection, target):
     if target.is_reported:
         session = Session(bind=connection)
+        # print(inspect.currentframe().f_code.co_name)
         try:
             # Retrieve the market
             market = session.query(Market).filter_by(id=target.market_id).first()
@@ -426,7 +431,7 @@ def notify_admin_market_review_reported(mapper, connection, target):
             if notifications:
                 session.bulk_save_objects(notifications)
                 session.commit()
-                print(f"✅ Sent notifications to {len(notifications)} admins about reported market review.")
+                print(f"Sent notifications to {len(notifications)} admins about reported market review.")
 
         except Exception as e:
             session.rollback()
@@ -438,6 +443,7 @@ def notify_admin_market_review_reported(mapper, connection, target):
 @listens_for(Basket, 'after_insert')
 def fav_vendor_new_baskets(mapper, connection, target):
     session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
     try:
         vendor = session.query(Vendor).get(target.vendor_id)
         if not vendor:
@@ -506,13 +512,14 @@ def fav_vendor_new_baskets(mapper, connection, target):
 @listens_for(Blog, 'after_insert')
 def schedule_blog_notifications(mapper, connection, target):
     session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
     try:
         now = datetime.utcnow().date()
         
         # If it's today or in the past, send immediately
         if target.post_date <= now:
             task_id = str(uuid4())
-
+            print(f"Type of send_blog_notifications: {type(send_blog_notifications)}")
             send_blog_notifications.apply_async(
                 args=[target.id],
                 kwargs={"task_id": task_id}
@@ -559,6 +566,7 @@ def update_blog_notification_status(mapper, connection, target):
 # @listens_for(Blog, 'before_delete')
 # def delete_scheduled_blog_notifications(mapper, connection, target):
 #     session = Session(bind=connection)
+#     # print(inspect.currentframe().f_code.co_name)
 #     try:
 #         if target.task_id:
 #             task_id = target.task_id
@@ -606,6 +614,7 @@ def update_blog_notification_status(mapper, connection, target):
 @listens_for(Event, 'after_insert')
 def vendor_market_new_event(mapper, connection, target):
     session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
     try:
         # Retrieve the market day associated with the event
         market_day = session.query(MarketDay).filter_by(market_id=target.market_id).first()
@@ -664,6 +673,7 @@ def vendor_market_new_event(mapper, connection, target):
 @listens_for(Basket, 'after_update')
 def vendor_basket_sold(mapper, connection, target):
     session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
     try:
         # Only notify if the basket was just marked as sold
         if not target.is_sold:
@@ -755,7 +765,7 @@ def vendor_basket_sold(mapper, connection, target):
                         if notifications:
                             notif_session.bulk_save_objects(notifications)
                             notif_session.commit()
-                            print(f"✅ Summary notification sent to {len(notifications)} vendor users.")
+                            print(f"Summary notification sent to {len(notifications)} vendor users.")
 
                     except Exception as e:
                         print(f"Error sending summary notification: {e}")
@@ -792,6 +802,7 @@ def vendor_basket_sold(mapper, connection, target):
 @listens_for(VendorMarket, 'after_insert')
 def notify_vendor_users_new_market_location(mapper, connection, target):
     session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
     try:
         # Retrieve all vendor users associated with this vendor
         vendor_users = session.query(VendorUser).filter_by(vendor_id=target.vendor_id).all()
@@ -834,6 +845,7 @@ def notify_vendor_users_new_market_location(mapper, connection, target):
 # @listens_for(QRCode, "after_insert")
 # def handle_qr_code_deletion(mapper, connection, target):
 #     session = Session(bind=connection)
+#     # print(inspect.currentframe().f_code.co_name)
 #     try:
 #         # Get the current UTC time
 #         current_time = datetime.now(timezone.utc)
@@ -888,6 +900,7 @@ def notify_vendor_users_new_market_location(mapper, connection, target):
 @listens_for(Basket, 'after_insert')
 def notify_fav_market_new_baskets(mapper, connection, target):
     session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
     try:
         # Retrieve the market associated with the basket
         market = session.query(Market).join(MarketDay).filter(
@@ -950,61 +963,55 @@ def notify_fav_market_new_baskets(mapper, connection, target):
 
 @listens_for(Basket, 'after_insert')
 def schedule_and_notify_basket_pickup(mapper, connection, target):
+    # print(inspect.currentframe().f_code.co_name)
     try:
-        # Ensure basket has a pickup time
-        if not target.pickup_start:
-            print(f"Skipping notification. No pickup_time found for Basket ID {target.id}.")
+        # Pull raw values you need right away
+        basket_id = target.id
+        pickup_start = target.pickup_start
+        pickup_end = target.pickup_end
+
+        if not pickup_start:
+            print(f"Skipping notification. No pickup_time found for Basket ID {basket_id}.")
             return
 
-        # Get current UTC time
         now_utc = datetime.now(timezone.utc)
-
-        # Ensure pickup_start and pickup_end are timezone-aware (assuming they are stored as naive times)
-        pickup_datetime_utc = datetime.combine(now_utc.date(), target.pickup_start).replace(tzinfo=timezone.utc)
-        pickup_end_utc = datetime.combine(now_utc.date(), target.pickup_end).replace(tzinfo=timezone.utc)
-
-        # Calculate delay (time remaining until pickup)
+        pickup_datetime_utc = datetime.combine(now_utc.date(), pickup_start).replace(tzinfo=timezone.utc)
+        pickup_end_utc = datetime.combine(now_utc.date(), pickup_end).replace(tzinfo=timezone.utc)
         delay = (pickup_datetime_utc - now_utc).total_seconds()
 
         if delay <= 0:
-            # print(f"Skipping notification: Pickup time for Basket ID {target.id} has already passed.")
             return
-
-        # print(f"Notification for Basket ID {target.id} scheduled in {delay} seconds.")
 
         def send_notification():
             with Session(bind=connection) as notif_session:
                 try:
-                    basket = notif_session.query(Basket).filter_by(id=target.id).first()
+                    basket = notif_session.query(Basket).filter_by(id=basket_id).first()
                     if not basket or basket.is_picked_up:
-                        print(f"Skipping notification. Basket ID {target.id} does not exist or is already picked up.")
+                        print(f"Skipping notification. Basket ID {basket_id} does not exist or is already picked up.")
                         return
 
                     user = notif_session.query(User).filter_by(id=basket.user_id).first()
                     if not user:
-                        print(f"User for Basket ID {target.id} not found. Skipping notification.")
+                        print(f"User for Basket ID {basket_id} not found. Skipping notification.")
                         return
 
-                    # Check user notification settings
                     settings = notif_session.query(SettingsUser).filter_by(user_id=user.id).first()
                     if not settings or not settings.site_basket_pickup_time:
                         print(f"User ID={user.id} has pickup notifications disabled.")
                         return
 
-                    # Convert times for notification message
                     pickup_time_str = time_converter(pickup_datetime_utc.time())
                     pickup_end_str = time_converter(pickup_end_utc.time())
                     current_month = datetime.now(timezone.utc).strftime("%B")
                     current_day = datetime.now(timezone.utc).strftime("%d")
 
-                    # Send pickup reminder notification
                     notification = UserNotification(
                         subject="Time to Pick Up Your Basket!",
                         message=(
                             f"Your purchased basket is ready for pickup! "
                             f"Pick it up between {pickup_time_str} and {pickup_end_str} on {current_month} {current_day}."
                         ),
-                        link=f"/user/pick-up",
+                        link="/user/pick-up",
                         user_id=user.id,
                         created_at=pickup_datetime_utc,
                         is_read=False
@@ -1012,12 +1019,11 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
 
                     notif_session.add(notification)
                     notif_session.commit()
-                    print(f"✅ Pickup reminder sent for Basket ID={target.id}")
+                    print(f"Pickup reminder sent for Basket ID={basket_id}")
 
                 except Exception as e:
                     print(f"Error sending basket pickup notification: {e}")
 
-        # Schedule notification
         Timer(delay, send_notification).start()
 
     except Exception as e:
@@ -1026,6 +1032,7 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
 @listens_for(User, 'after_insert')
 def create_user_settings(mapper, connection, target):
     session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
     try:
         # Check if settings already exist (just in case)
         existing_settings = session.query(SettingsUser).filter_by(user_id=target.id).first()
@@ -1042,10 +1049,11 @@ def create_user_settings(mapper, connection, target):
         print(f"Error creating settings for User ID {target.id}: {e}")
     finally:
         session.close()
-        
+
 @listens_for(VendorReview, 'after_update')
 def notify_user_vendor_review_response(mapper, connection, target):
     session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
     try:
         # Ensure the response field has been updated
         if not target.response or target.response.strip() == "":
@@ -1101,6 +1109,7 @@ def notify_user_vendor_review_response(mapper, connection, target):
 @listens_for(Market, 'after_insert')
 def notify_users_new_market_in_state(mapper, connection, target):
     session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
     try:
         # Retrieve users who reside in the same city as the new market (case-insensitive)
         users_in_state = session.query(User).filter(func.lower(User.state) == func.lower(target.state)).all()
@@ -1143,6 +1152,7 @@ def notify_users_new_market_in_state(mapper, connection, target):
 @listens_for(VendorUser, 'after_insert')
 def create_vendor_user_settings(mapper, connection, target):
     session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
     try:
         existing_settings = session.query(SettingsVendor).filter_by(vendor_user_id=target.id).first()
         if existing_settings:
@@ -1162,6 +1172,7 @@ def create_vendor_user_settings(mapper, connection, target):
 @listens_for(VendorReview, 'after_insert')
 def notify_vendor_users_new_review(mapper, connection, target):
     session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
     try:
         # Retrieve vendor users associated with this vendor
         vendor_users = session.query(VendorUser).filter_by(vendor_id=target.vendor_id).all()
@@ -1207,6 +1218,7 @@ def notify_vendor_users_new_review(mapper, connection, target):
 @listens_for(AdminUser, 'after_insert')
 def create_admin_settings(mapper, connection, target):
     session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
     try:
         # Check if settings already exist
         existing_settings = session.query(SettingsAdmin).filter_by(admin_id=target.id).first()
@@ -1227,6 +1239,7 @@ def create_admin_settings(mapper, connection, target):
 @listens_for(Vendor, 'after_insert')
 def notify_admins_new_vendor(mapper, connection, target):
     session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
     try:
         # Retrieve all admins
         admins = session.query(AdminUser).all()
