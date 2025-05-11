@@ -15,7 +15,7 @@ from emails import (send_email_user_fav_market_new_event, send_email_user_fav_ma
                     send_email_admin_new_blog)
 from models import (db, User, VendorUser, AdminUser, Market, Vendor, Event, Basket, VendorReview, Blog)
 
-email = 'zak@mufo.nyc'
+email = 'zak@gingham.nyc'
 
 with app.app_context():
 
