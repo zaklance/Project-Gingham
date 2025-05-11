@@ -991,6 +991,7 @@ class Recipe(db.Model, SerializerMixin):
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.String, nullable=False)
     author = db.Column(db.String, nullable=True)
+    is_gingham_team = db.Column(db.Boolean, nullable=False, default=False)
     image = db.Column(db.String, nullable=True)
     categories = db.Column(db.JSON, nullable=True)
     diet_categories = db.Column(db.JSON, nullable=True)
@@ -998,6 +999,7 @@ class Recipe(db.Model, SerializerMixin):
     cook_time_minutes = db.Column(db.Integer, nullable=False)
     total_time_minutes = db.Column(db.Integer, nullable=False)
     serve_count = db.Column(db.Integer, nullable=False)
+    skill_level = db.Column(db.Integer, nullable=False)
     post_date = db.Column(db.Date, default=date.today)
 
     # Relationships
@@ -1005,12 +1007,15 @@ class Recipe(db.Model, SerializerMixin):
     instructions = db.relationship("Instruction", back_populates="recipe", cascade="all, delete-orphan")
     instruction_groups = db.relationship("InstructionGroup", back_populates="recipe", cascade="all, delete-orphan")
     recipe_favorites = db.relationship("RecipeFavorite", back_populates="recipe", cascade="all, delete-orphan")
+    smallwares = db.relationship("Smallware", back_populates="recipe", cascade="all, delete-orphan")
+
 
     serialize_rules = (
         '-ingredients.recipe',
         '-instructions',
         '-instruction_groups.recipe',
-        '-instruction_groups.instructions.recipe'
+        '-instruction_groups.instructions.recipe',
+        '-smallwares.recipe'
         )
     
     # @validates('prep_time_minutes', 'cook_time_minutes')
@@ -1056,7 +1061,8 @@ class RecipeIngredient(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'), nullable=True)
     ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredients.id'), nullable=True)
-    amount = db.Column(db.String, nullable=False)
+    ingredient_number = db.Column(db.Integer, nullable=False)
+    amount = db.Column(db.String, nullable=True)
     plural = db.Column(db.Boolean, default=False)
     description = db.Column(db.String, nullable=True)
 
@@ -1081,6 +1087,34 @@ class RecipeIngredient(db.Model, SerializerMixin):
     def __repr__(self) -> str:
         ingredient_name = self.ingredient.name if self.ingredient else "None"
         return f"<Recipe Ingredient ID: {self.id}, Ingredient: {self.ingredient_id}: {ingredient_name}, Amount: {self.amount}>"
+
+class Smallware(db.Model, SerializerMixin):
+    __tablename__ = 'smallwares'
+
+    id = db.Column(db.Integer, primary_key=True)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'), nullable=True)
+    smallware = db.Column(db.String, nullable=False)
+    smallware_alt = db.Column(db.String, nullable=True)
+
+    # Relationships
+    recipe = db.relationship("Recipe", back_populates="smallwares")
+
+    serialize_rules = (
+        '-recipe.ingredients',
+        '-recipe.categories',
+        '-recipe.cook_time_minutes',
+        '-recipe.description',
+        '-recipe.diet_categories',
+        '-recipe.image',
+        '-recipe.instruction_groups',
+        '-recipe.prep_time_minutes',
+        '-recipe.serve_count',
+        '-recipe.total_time_minutes',
+        '-recipe.smallwares'
+        )
+
+    def __repr__(self) -> str:
+        return f"<Smallware ID: {self.id}, Smallware: {self.smallware} {self.smallware_alt}, Description: {self.description}>"
 
 class Instruction(db.Model, SerializerMixin):
     __tablename__ = 'instructions'

@@ -9,6 +9,7 @@ function RecipeDetail() {
     const [recipe, setRecipe] = useState([]);
     const [ingredients, setIngredients] = useState([]);
     const [recipeIngredients, setRecipeIngredients] = useState([]);
+    const [smallwares, setSmallwares] = useState([]);
     const [instructionGroups, setInstructionGroups] = useState([]);
     const [instructions, setInstructions] = useState([]);
     const [recipeFavs, setRecipeFavs] = useState([]);
@@ -60,6 +61,20 @@ function RecipeDetail() {
                 setIngredients(data);
             })
                 .catch(error => console.error('Error fetching ingredients', error));
+    }, []);
+
+    useEffect(() => {
+        fetch(`/api/smallwares?recipe_id=${id}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                setSmallwares(data);
+            })
+                .catch(error => console.error('Error fetching smallwares', error));
     }, []);
 
     useEffect(() => {
@@ -190,7 +205,7 @@ function RecipeDetail() {
                                     onClick={handleClick}>&emsp;
                                 </button>
                             </div>
-                            {recipe.author && <p>by {recipe.author}</p>}
+                            {recipe.author && <p>by {recipe.author} {recipe.is_gingham_team && ("of the Gingham Team")}</p>}
                         </div>
                         <div className='margin-t-8'>
                             {recipe.categories && recipe.categories.length > 0 && (
@@ -222,6 +237,7 @@ function RecipeDetail() {
                                 <span><span className='text-500'>Cook:</span><br/>{formatMinutes(recipe.cook_time_minutes)}</span>
                                 <span><span className='text-500'>Total:</span><br/>{formatMinutes(recipe.total_time_minutes)}</span>
                                 <span><span className='text-500'>Serves:</span><br/>{recipe.serve_count}</span>
+                                <span><span className='text-500'>Skill:</span><br/>{recipe.skill_level}</span>
                             </div>
                             <p className='margin-t-8'>{recipe.description}</p>
                         </div>
@@ -230,11 +246,25 @@ function RecipeDetail() {
                         {recipe.image && (
                             <img src={recipe.image} alt={recipe.title} className="img-recipe" />
                         )}
-                        <img className="img-recipe" src={`/recipe-images/LzYeux_120719_0033_1800px.png`} alt="Market Image" />
+                        <img className="img-recipe" src={`/recipe-images/LzYeux_120719_0033_1800px.jpg`} alt="Market Image" />
                     </div>
                 </div>
             </div>
             <div className="box-recipe">
+                <h3 className="text-underline">Smallwares</h3>
+                <article className='column-2'>
+                    <ul className="ul-bullet ol-last">
+                        {smallwares.map(s => {
+                            return (
+                                <li key={s.id}>
+                                    <span>{s.smallware}{s.smallware_alt && <span className="text-500"> or </span>}{s.smallware_alt && s.smallware_alt}</span>{s.description && `, ${s.description}`}
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </article>
+            </div>
+            <div className="box-recipe margin-t-16">
                 <h3 className="text-underline">Ingredients</h3>
                 <article className='column-3'>
                     <ul className="ul-bullet ol-last">

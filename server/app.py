@@ -13,7 +13,8 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
                     Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
                     UserIssue, Recipe, Ingredient, RecipeIngredient,
-                    InstructionGroup, Instruction, RecipeFavorite, bcrypt )
+                    InstructionGroup, Instruction, RecipeFavorite,
+                    Smallware, bcrypt )
 from dotenv import load_dotenv
 from sqlalchemy import cast, desc, extract, func, Integer
 from sqlalchemy.exc import IntegrityError
@@ -482,6 +483,7 @@ def delete_image():
     user_id = data.get('user_id')
     vendor_id = data.get('vendor_id')
     market_id = data.get('market_id')
+    recipe_id = data.get('recipe_id')
     date_folder = data.get('date_folder')
 
     if file_type == 'vendor' and vendor_id:
@@ -492,6 +494,8 @@ def delete_image():
         upload_folder = os.path.join(USER_UPLOAD_FOLDER, str(user_id))
     elif file_type == 'blog' and date_folder:
         upload_folder = os.path.join(BLOG_UPLOAD_FOLDER, date_folder)
+    elif file_type == 'recipe' and recipe_id:
+        upload_folder = os.path.join(RECIPE_UPLOAD_FOLDER, str(recipe_id))
     else:
         return {'error': 'Invalid type or missing ID. Ensure "type" and respective ID are provided.'}, 400
 
@@ -510,19 +514,24 @@ def delete_image():
 
             # Update the database to clear the reference
             if file_type == 'vendor':
-                vendor = Vendor.query.filter_by(image=filename).first()
+                vendor = Vendor.query.filter_by(id=vendor_id).first()
                 if vendor:
                     vendor.image = None
                     db.session.commit()
             elif file_type == 'market':
-                market = Market.query.filter_by(image=filename).first()
+                market = Market.query.filter_by(id=market_id).first()
                 if market:
                     market.image = None
                     db.session.commit()
             elif file_type == 'user':
-                user = User.query.filter_by(avatar=filename).first()
+                user = User.query.filter_by(id=user_id).first()
                 if user:
                     user.avatar = None
+                    db.session.commit()
+            elif file_type == 'recipe':
+                recipe = Recipe.query.filter_by(id=recipe_id).first()
+                if recipe:
+                    recipe.image = None
                     db.session.commit()
             
             if os.path.isdir(upload_folder) and not os.listdir(upload_folder):
@@ -2797,13 +2806,15 @@ def all_recipes():
                 title=data.get('title'),
                 description=data.get('description'),
                 author=data.get('author'),
+                is_gingham_team=data.get('is_gingham_team'),
                 image=data.get('image'),
                 categories=data.get('categories'),
                 diet_categories=data.get('diet_categories'),
                 prep_time_minutes=data.get('prep_time_minutes'),
                 cook_time_minutes=data.get('cook_time_minutes'),
                 total_time_minutes=data.get('total_time_minutes'),
-                serve_count=data.get('serve_count')
+                serve_count=data.get('serve_count'),
+                skill_level=data.get('skill_level')
             )
             db.session.add(new_recipe)
             db.session.flush()
@@ -2813,6 +2824,7 @@ def all_recipes():
                 new_ri = RecipeIngredient(
                     recipe_id=new_recipe.id,
                     ingredient_id=ri.get('ingredient_id'),
+                    ingredient_number=ri.get('ingredient_number'),
                     amount=ri.get('amount'),
                     plural=ri.get('plural'),
                     description=ri.get('description'),
@@ -2837,6 +2849,15 @@ def all_recipes():
                         description=inst.get('description'),
                     )
                     db.session.add(new_inst)
+            
+            smallwares = data.get('smallwares', [])
+            for s in smallwares:
+                new_s = Smallware(
+                    recipe_id=new_recipe.id,
+                    smallware=s.get('smallware'),
+                    smallware_alt=s.get('smallware_alt')
+                )
+                db.session.add(new_s)
 
             db.session.commit()
             return new_recipe.to_dict(), 201
@@ -2862,8 +2883,11 @@ def recipe(id):
             return {'error': 'recipe not found'}, 404
         try:
             data = request.get_json()
+            excluded_keys = {'updated'}
+
             for key, value in data.items():
-                setattr(recipe, key, value)
+                if key not in excluded_keys:
+                    setattr(recipe, key, value)
 
             db.session.commit()
             return jsonify(recipe.to_dict()), 200
@@ -2886,7 +2910,7 @@ def recipe(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route('/api/ingredients', methods=['GET', 'POST'])
+@app.route('/api/ingredients', methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def all_ingredients():
     if request.method == 'GET':
         recipe_id = request.args.get('recipe_id', type=int)
@@ -2917,8 +2941,38 @@ def all_ingredients():
             return {'error': f'Failed to create ingredient: {str(e)}'}, 500
 
         return new_ingredient.to_dict(), 201
+    
+    elif request.method == 'PATCH':
+        ingredient = Ingredient.query.filter_by(id=id).first()
+        if not recipe:
+            return {'error': 'ingredient not found'}, 404
+        try:
+            data = request.get_json()
+            for key, value in data.items():
+                setattr(ingredient, key, value)
 
-@app.route('/api/recipe-ingredients', methods=['GET', 'POST'])
+            db.session.commit()
+            return jsonify(ingredient.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+    
+    elif request.method == 'DELETE':
+        ingredient = Ingredient.query.filter_by(id=id).first()
+        if not ingredient: 
+            return {'error': 'ingredient not found'}, 404
+        
+        try: 
+            db.session.delete(ingredient)
+            db.session.commit()
+            return {}, 204
+        
+        except Exception as e: 
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
+@app.route('/api/recipe-ingredients', methods=['GET', 'POST', 'PATCH'])
 def all_recipe_ingredients():
     if request.method == 'GET':
         recipe_id = request.args.get('recipe_id', type=int)
@@ -2938,6 +2992,7 @@ def all_recipe_ingredients():
         new_recipe_ingredient = RecipeIngredient(
             recipe_id=data.get('recipe_id'),
             ingredient_id=data.get('ingredient_id'),
+            ingredient_number=data.get('ingredient_number'),
             amount=data.get('amount'),
             plural=data.get('plural'),
             description=data.get('description'),
@@ -2950,6 +3005,159 @@ def all_recipe_ingredients():
             return {'error': f'Failed to create : {str(e)}'}, 500
 
         return new_recipe_ingredient.to_dict(), 201
+    
+    elif request.method == 'PATCH':
+        recipe_ingredient = RecipeIngredient.query.filter_by(id=id).first()
+        if not recipe_ingredient:
+            return {'error': 'recipe ingredient not found'}, 404
+        try:
+            data = request.get_json()
+            excluded_keys = {'deleted', 'updated', 'new'}
+
+            for key, value in data.items():
+                if key not in excluded_keys:
+                    setattr(recipe_ingredient, key, value)
+
+            db.session.commit()
+            return jsonify(recipe_ingredient.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+        
+@app.route('/api/recipe-ingredients/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def specific_recipe_ingredients(id):
+    if request.method == 'GET':
+        recipe_ingredient = RecipeIngredient.query.filter_by(id=id).first()
+        if not recipe_ingredient:
+            return {'error': 'recipe ingredient not found'}, 404
+        recipe_data = recipe_ingredient.to_dict()
+        return jsonify(recipe_data), 200
+    
+    elif request.method == 'PATCH':
+        recipe_ingredient = RecipeIngredient.query.filter_by(id=id).first()
+        if not recipe_ingredient:
+            return {'error': 'recipe ingredient not found'}, 404
+        try:
+            data = request.get_json()
+            excluded_keys = {'deleted', 'updated', 'new', 'ingredient'}
+
+            for key, value in data.items():
+                if key not in excluded_keys:
+                    setattr(recipe_ingredient, key, value)
+
+            db.session.commit()
+            return jsonify(recipe_ingredient.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+    
+    elif request.method == 'DELETE':
+        recipe_ingredient = RecipeIngredient.query.filter_by(id=id).first()
+        if not recipe_ingredient: 
+            return {'error': 'recipe_ingredient not found'}, 404
+
+        try: 
+            db.session.delete(recipe_ingredient)
+            db.session.commit()
+            return {}, 204
+
+        except Exception as e: 
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
+@app.route('/api/smallwares', methods=['GET', 'POST'])
+def all_smallwares():
+    if request.method == 'GET':
+        recipe_id = request.args.get('recipe_id', type=int)
+        query = Smallware.query
+
+        if recipe_id:
+            query = query.filter(Smallware.recipe_id == recipe_id)
+            smallwares_result = query.all()
+            if smallwares_result:
+                return jsonify([s.to_dict() for s in smallwares_result]), 200
+            return jsonify({'error': 'Smallwares not found'}), 404
+        
+        return jsonify([q.to_dict() for q in query]), 200
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        new_smallware = Smallware(
+            recipe_id=data.get('recipe_id'),
+            smallware=data.get('smallware'),
+            smallware_alt=data.get('smallware_alt')
+        )
+        try:
+            db.session.add(new_smallware)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'Failed to create : {str(e)}'}, 500
+
+        return new_smallware.to_dict(), 201
+    
+    elif request.method == 'PATCH':
+        smallware = Smallware.query.filter_by(id=id).first()
+        if not smallware:
+            return {'error': 'smallware not found'}, 404
+        try:
+            data = request.get_json()
+            excluded_keys = {'deleted', 'updated', 'new'}
+
+            for key, value in data.items():
+                if key not in excluded_keys:
+                    setattr(smallware, key, value)
+
+            db.session.commit()
+            return jsonify(smallware.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
+@app.route('/api/smallwares/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def specific_smallwares(id):
+    if request.method == 'GET':
+        smallware = Smallware.query.filter_by(id=id).first()
+        if not smallware:
+            return {'error': 'smallware not found'}, 404
+        recipe_data = smallware.to_dict()
+        return jsonify(recipe_data), 200
+    
+    elif request.method == 'PATCH':
+        smallware = Smallware.query.filter_by(id=id).first()
+        if not smallware:
+            return {'error': 'smallware not found'}, 404
+        try:
+            data = request.get_json()
+            excluded_keys = {'deleted', 'updated', 'new'}
+
+            for key, value in data.items():
+                if key not in excluded_keys:
+                    setattr(smallware, key, value)
+
+            db.session.commit()
+            return jsonify(smallware.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+    
+    elif request.method == 'DELETE':
+        smallware = Smallware.query.filter_by(id=id).first()
+        if not smallware: 
+            return {'error': 'smallware not found'}, 404
+        
+        try: 
+            db.session.delete(smallware)
+            db.session.commit()
+            return {}, 204
+        
+        except Exception as e: 
+            db.session.rollback()
+            return {'error': str(e)}, 500
 
 @app.route('/api/instructions', methods=['GET', 'POST'])
 def all_instructions():
@@ -2982,6 +3190,49 @@ def all_instructions():
             return {'error': f'Failed to create : {str(e)}'}, 500
 
         return new_instruction.to_dict(), 201
+
+@app.route('/api/instructions/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def specific_instructions(id):
+    if request.method == 'GET':
+        instruction = Instruction.query.filter_by(id=id).first()
+        if not instruction:
+            return {'error': 'instruction not found'}, 404
+        recipe_data = instruction.to_dict()
+        return jsonify(recipe_data), 200
+    
+    elif request.method == 'PATCH':
+        instruction = Instruction.query.filter_by(id=id).first()
+        if not instruction:
+            return {'error': 'instruction not found'}, 404
+        try:
+            data = request.get_json()
+            excluded_keys = {'deleted', 'updated', 'new'}
+
+            for key, value in data.items():
+                if key not in excluded_keys and not isinstance(value, dict):
+                    setattr(instruction, key, value)
+
+            db.session.commit()
+            return jsonify(instruction.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            traceback.print_exc()
+            return {'error': str(e)}, 500
+    
+    elif request.method == 'DELETE':
+        instruction = Instruction.query.filter_by(id=id).first()
+        if not instruction: 
+            return {'error': 'instruction not found'}, 404
+        
+        try: 
+            db.session.delete(instruction)
+            db.session.commit()
+            return {}, 204
+        
+        except Exception as e: 
+            db.session.rollback()
+            return {'error': str(e)}, 500
     
 @app.route('/api/instruction-groups', methods=['GET', 'POST'])
 def all_instruction_groups():
@@ -3013,6 +3264,48 @@ def all_instruction_groups():
             return {'error': f'Failed to create : {str(e)}'}, 500
 
         return new_instruction_group.to_dict(), 201
+
+@app.route('/api/instruction-groups/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def specific_instruction_groups():
+    if request.method == 'GET':
+        instruction_group = InstructionGroup.query.filter_by(id=id).first()
+        if not instruction_group:
+            return {'error': 'instruction group not found'}, 404
+        recipe_data = instruction_group.to_dict()
+        return jsonify(recipe_data), 200
+    
+    elif request.method == 'PATCH':
+        instruction_group = InstructionGroup.query.filter_by(id=id).first()
+        if not instruction_group:
+            return {'error': 'instruction group not found'}, 404
+        try:
+            data = request.get_json()
+            excluded_keys = {'deleted', 'updated', 'new'}
+
+            for key, value in data.items():
+                if key not in excluded_keys:
+                    setattr(instruction_group, key, value)
+
+            db.session.commit()
+            return jsonify(instruction_group.to_dict()), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+    
+    elif request.method == 'DELETE':
+        instruction_group = InstructionGroup.query.filter_by(id=id).first()
+        if not instruction_group: 
+            return {'error': 'instruction group not found'}, 404
+        
+        try: 
+            db.session.delete(instruction_group)
+            db.session.commit()
+            return {}, 204
+        
+        except Exception as e: 
+            db.session.rollback()
+            return {'error': str(e)}, 500
 
 @app.route('/api/qr-codes', methods=['GET', 'POST'])
 @jwt_required()

@@ -7,36 +7,45 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Fuse from 'fuse.js';
 
-function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions, instructionGroups }) {
+function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
     const [showDropdown, setShowDropdown] = useState(false);
-    const [ingredientSearch, setIngredientSearch] = useState('');
-    const [categorySearch, setCategorySearch] = useState('');
-    const [dietSearch, setDietSearch] = useState('');
+    const [searchSmallwares, setSearchSmallwares] = useState('');
+    const [searchIngredients, setSearchIngredients] = useState('');
+    const [searchCategory, setSearchCategory] = useState('');
+    const [searchDiet, setSearchDiet] = useState('');
     const [selectedIngredients, setSelectedIngredients] = useState([]);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedDiets, setSelectedDiets] = useState([]);
     const [newRecipe, setNewRecipe] = useState([]);
+    const [newIsGinghamTeam, setNewIsGinghamTeam] = useState(false);
+    const [newSmallware, setNewSmallware] = useState([]);
+    const [newSmallwareAlt, setNewSmallwareAlt] = useState([]);
     const [newIngName, setNewIngName] = useState([]);
     const [newIngNamePlural, setNewIngNamePlural] = useState([]);
+    const [newSmallwares, setNewSmallwares] = useState([]);
     const [newRecipeIngredients, setNewRecipeIngredients] = useState([]);
     const [newInstructionGroups, setNewInstructionGroups] = useState([{ id: Date.now(), group_number: 1, title: '' }]);
     const [newInstructions, setNewInstructions] = useState([]);
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
 
+    const smallwareDropdownRef = useRef(null);
     const ingredientDropdownRef = useRef(null);
     const categoryDropdownRef = useRef(null);
     const dietDropdownRef = useRef(null);
 
     const handleClickOutsideDropdown = (event) => {
+        if (smallwareDropdownRef.current && !smallwareDropdownRef.current.contains(event.target)) {
+            setSearchSmallwares('');
+        }
         if (ingredientDropdownRef.current && !ingredientDropdownRef.current.contains(event.target)) {
-            setIngredientSearch('');
+            setSearchIngredients('');
         }
         if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target)) {
-            setCategorySearch('');
+            setSearchCategory('');
         }
         if (dietDropdownRef.current && !dietDropdownRef.current.contains(event.target)) {
-            setDietSearch('');
+            setSearchDiet('');
         }
     };
 
@@ -54,6 +63,21 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
             [name]: value
         }));
     };
+
+    const handleSwitchChange = () => {
+        setNewIsGinghamTeam(!newIsGinghamTeam);
+    };
+
+    const smallwareFuse = useMemo(() => {
+        if (smallwares) {
+            return new Fuse(smallwares, {
+                keys: ['smallware', 'smallware_alt'],
+                threshold: 0.3,
+                ignoreLocation: true,
+            });
+        }
+        return null;
+    }, [smallwares]);
 
     const ingredientFuse = useMemo(() => {
         if (ingredients) {
@@ -89,7 +113,7 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
     }, [recipes]);
 
     const handleAddCategory = () => {
-        const newCategory = categorySearch.trim().toLowerCase();
+        const newCategory = searchCategory.trim().toLowerCase();
         if (
             newCategory &&
             !selectedCategories.includes(newCategory) &&
@@ -98,12 +122,12 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
             )
         ) {
             setSelectedCategories([...selectedCategories, newCategory]);
-            setCategorySearch('');
+            setSearchCategory('');
         }
     };
 
     const handleAddDiet = () => {
-        const newDiet = dietSearch.trim().toLowerCase();
+        const newDiet = searchDiet.trim().toLowerCase();
         if (
             newDiet &&
             !selectedDiets.includes(newDiet) &&
@@ -112,8 +136,23 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
             )
         ) {
             setSelectedDiets([...selectedDiets, newDiet]);
-            setDietSearch('');
+            setSearchDiet('');
         }
+    };
+
+    const handleAddSmallware = async () => {
+        const smallware = newSmallware.trim();
+        const smallwareAlt = newSmallwareAlt.trim();
+        
+        setNewSmallwares(prev => [
+            ...prev,
+            {
+                smallware: smallware,
+                smallware_alt: smallwareAlt
+            },
+        ]);
+        setNewSmallware('');
+        setNewSmallwareAlt('');
     };
 
     const handleAddIngredient = async () => {
@@ -141,7 +180,6 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                 });
                 if (!res.ok) throw new Error("Failed to add ingredient.");
                 ingredient = await res.json();
-                // Update local ingredient list
                 ingredients.push(ingredient);
             } catch (err) {
                 toast.error(err.message || "Error adding ingredient.");
@@ -149,14 +187,16 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
             }
         }
 
+        const nextNumber = newRecipeIngredients.length + 1;
         setNewRecipeIngredients(prev => [
             ...prev,
             {
                 ingredient_id: ingredient.id,
+                ingredient_number: nextNumber,
                 ingredient,
                 plural: false,
                 amount: '',
-                description: '',
+                description: ''
             },
         ]);
 
@@ -169,19 +209,36 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
             ing => ing.name.toLowerCase() === singular.toLowerCase() || ing.name_plural.toLowerCase() === plural.toLowerCase()
         );
 
+        const nextNumber = newRecipeIngredients.length + 1;
         setNewRecipeIngredients(prev => [
             ...prev,
             {
                 ingredient_id: existing.id,
+                ingredient_number: nextNumber,
                 ingredient: existing,
                 plural: false,
                 amount: '',
-                description: '',
+                description: ''
             },
         ]);
 
         setNewIngName('');
         setNewIngNamePlural('');
+    };
+
+    const moveIngredient = (index, direction) => {
+        const newItems = [...newRecipeIngredients];
+        const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+        if (targetIndex < 0 || targetIndex >= newItems.length) return;
+
+        [newItems[index], newItems[targetIndex]] = [newItems[targetIndex], newItems[index]];
+
+        const tempNum = newItems[index].ingredient_number;
+        newItems[index].ingredient_number = newItems[targetIndex].ingredient_number;
+        newItems[targetIndex].ingredient_number = tempNum;
+
+        setNewRecipeIngredients(newItems);
     };
 
     const handleAddInstructionGroup = () => {
@@ -224,18 +281,54 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
         setNewInstructions(updated);
     };
 
+    const moveInstruction = (groupId, index, direction) => {
+        const groupInstructions = newInstructions
+            .filter(instr => instr.instruction_group_id === groupId)
+            .sort((a, b) => a.step_number - b.step_number);
+
+        const targetIndex = direction === 'up' ? index - 1 : index + 1;
+        if (targetIndex < 0 || targetIndex >= groupInstructions.length) return;
+
+        const reordered = [...groupInstructions];
+        [reordered[index], reordered[targetIndex]] = [reordered[targetIndex], reordered[index]];
+
+        reordered.forEach((instr, i) => {
+            instr.step_number = i + 1;
+        });
+
+        const updatedAll = [
+            ...newInstructions.filter(instr => instr.instruction_group_id !== groupId),
+            ...reordered
+        ];
+
+        setNewInstructions(updatedAll);
+    };
+
+    const moveInstructionGroup = (index, direction) => {
+        const newGroups = [...newInstructionGroups];
+        const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+        if (targetIndex < 0 || targetIndex >= newGroups.length) return;
+
+        [newGroups[index], newGroups[targetIndex]] = [newGroups[targetIndex], newGroups[index]];
+
+        newGroups.forEach((group, i) => {
+            group.group_number = i + 1;
+        });
+
+        setNewInstructionGroups(newGroups);
+    };
+
     const handleFileChange = (event) => {
         if (event.target.files) {
             const file = event.target.files[0];
             const maxFileSize = 5 * 1024 * 1024; // 5 MB limit
-
             if (file.size > maxFileSize) {
                 toast.warning('File size exceeds 5 MB. Please upload a smaller file', {
                     autoClose: 4000,
                 });
                 return;
             }
-
             setStatus('initial');
             setImage(file);
         }
@@ -264,6 +357,13 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
         }
     };
 
+    const handleImageDelete = async () => {
+        setImage(null);
+        toast.success('Image deleted successfully.', {
+            autoClose: 4000,
+        });
+    }
+
     const handleCreateRecipe = async () => {
         const requiredFields = ['title', 'description', 'author', 'prep_time_minutes', 'cook_time_minutes', 'serve_count'];
         for (const field of requiredFields) {
@@ -287,6 +387,7 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
 
             const fullRecipePayload = {
                 ...newRecipe,
+                is_gingham_team: newIsGinghamTeam,
                 prep_time_minutes: parseInt(newRecipe.prep_time_minutes),
                 cook_time_minutes: parseInt(newRecipe.cook_time_minutes),
                 total_time_minutes: parseInt(newRecipe.cook_time_minutes) + parseInt(newRecipe.prep_time_minutes),
@@ -294,7 +395,8 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                 categories: selectedCategories,
                 diet_categories: selectedDiets,
                 recipe_ingredients: newRecipeIngredients,
-                instruction_groups: nonEmptyInstructionGroups,
+                smallwares: newSmallwares,
+                instruction_groups: nonEmptyInstructionGroups
             };
 
             const recipeRes = await fetch("/api/recipes", {
@@ -312,11 +414,13 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                 cook_time_minutes: '',
                 serve_count: '',
             });
-            setSelectedCategories([])
-            setSelectedDiets([])
+            setSelectedCategories([]);
+            setSelectedDiets([]);
             setNewRecipeIngredients([]);
+            setNewSmallwares([]);
             setNewInstructionGroups([{ id: Date.now(), group_number: 1, title: '' }]);
-            setNewInstructions([])
+            setNewInstructions([]);
+            setNewIsGinghamTeam(false);
             const createdRecipe = await recipeRes.json();
             if (image) {
                 await handleImageUpload(createdRecipe.id);
@@ -333,14 +437,14 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
     return (
         <>
             <title>Gingham • Admin Recipes • Add</title>
+            <h2 className='margin-t-16'>Add Recipes</h2>
             <div className='margin-t-16'>
-                <h2>Add Recipes</h2>
-                <p className='margin-t-8 margin-l-4'>Only brand names are capitalized</p>
+                <p className='margin-t-8 margin-l-4'>Only brand names are capitalized for ingredients.</p>
                 <table className='table-search-recipe margin-t-16'>
                     <tbody>
                         <tr>
                             <td className='cell-title btn-grey m-hidden'>Title:</td>
-                            <td className='cell-text cell-recipe' colSpan={5}>
+                            <td className='cell-text cell-recipe' colSpan={3}>
                                 <input
                                     className="search-bar cell-32"
                                     name="title"
@@ -350,21 +454,36 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                                     onChange={handleRecipeInputChange}
                                 />
                             </td>
+                            <td className='cell-title btn-grey m-hidden'>Skill Level:</td>
+                            <td>
+                                <select
+                                    name="skill_level"
+                                    className='select-recipe'
+                                    value={newRecipe.skill_level}
+                                    onChange={handleRecipeInputChange}
+                                >
+                                    <option value="">Select</option>
+                                    <option value={1}>1</option>
+                                    <option value={2}>2</option>
+                                    <option value={3}>3</option>
+                                    <option value={4}>4</option>
+                                    <option value={5}>5</option>
+                                </select>
+                            </td>
                         </tr>
                         <tr>
                             <td className='cell-title btn-grey m-hidden'>Image:</td>
                             <td className='cell-text cell-recipe' colSpan={5}>
-                                <div className='form-group'>
-                                    <div className='flex-start flex-center-align'>
-                                        <label htmlFor='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
-                                        <input
-                                            id="file-upload"
-                                            type="file"
-                                            name="file"
-                                            accept="image/*"
-                                            onChange={handleFileChange}
-                                        />
-                                    </div>
+                                <div className='flex-start flex-center-align'>
+                                    <button className='btn btn-small btn-file btn-blue' onClick={handleImageDelete}>Delete Image</button>
+                                    <label htmlFor='file-upload' className='btn btn-small btn-file btn-blue nowrap'>Choose File{image && <span id="file-name" className='text-white-background margin-l-8'>{image.name}</span>}</label>
+                                    <input
+                                        id="file-upload"
+                                        type="file"
+                                        name="file"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                    />
                                 </div>
                             </td>
                         </tr>
@@ -375,7 +494,7 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                                     className="search-bar cell-80 textarea-recipe"
                                     name="description"
                                     type="text"
-                                    placeholder="Recipe description (3-6 senctences)..."
+                                    placeholder="Recipe description (3-6 sentences)..."
                                     value={newRecipe.description}
                                     onChange={handleRecipeInputChange}
                                 />
@@ -383,7 +502,7 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                         </tr>
                         <tr>
                             <td className='cell-title btn-grey m-hidden'>Author:</td>
-                            <td className='cell-text cell-recipe' colSpan={5}>
+                            <td className='cell-text cell-recipe' colSpan={2}>
                                 <input
                                     className="search-bar cell-32"
                                     name="author"
@@ -393,7 +512,29 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                                     onChange={handleRecipeInputChange}
                                 />
                             </td>
+                            <td className='cell-title btn-grey m-hidden'>Is Gingham:</td>
+                            <td className='cell-text cell-recipe' colSpan={2}>
+                                <label>
+                                    <FormGroup>
+                                        <FormControlLabel
+                                            className='nowrap'
+                                            control={
+                                                <Switch
+                                                    checked={newRecipe.is_gingham_team}
+                                                    onChange={() => handleSwitchChange()}
+                                                    color={'secondary'}
+                                                />
+                                            }
+                                            label="Is on Gingham Team?"
+                                        />
+                                    </FormGroup>
+                                </label>
+                            </td>
                         </tr>
+                    </tbody>
+                </table>
+                <table className='table-search-recipe'>
+                    <tbody>
                         <tr>
                             <td className='cell-title btn-grey m-hidden'>Prep Time:</td>
                             <td className='cell-recipe-time cell-recipe'>
@@ -440,12 +581,12 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                                     className="search-bar cell-32"
                                     type="text"
                                     placeholder="Search categories..."
-                                    value={categorySearch}
-                                    onChange={(e) => setCategorySearch(e.target.value.toLowerCase())}
+                                    value={searchCategory}
+                                    onChange={(e) => setSearchCategory(e.target.value.toLowerCase())}
                                 />
-                                {categorySearch && (
+                                {searchCategory && (
                                     <ul className="dropdown-content" ref={categoryDropdownRef}>
-                                        {categoryFuse.search(categorySearch).slice(0, 10).map(({ item }) => (
+                                        {categoryFuse.search(searchCategory).slice(0, 10).map(({ item }) => (
                                             <li
                                                 className="search-results"
                                                 key={`category-${item.name}`}
@@ -453,7 +594,7 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                                                     if (!selectedCategories.includes(item.name)) {
                                                         setSelectedCategories(prev => [...prev, item.name]);
                                                     }
-                                                    setCategorySearch('');
+                                                    setSearchCategory('');
                                                 }}
                                             >
                                                 {item.name}
@@ -493,12 +634,12 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                                     className="search-bar cell-32"
                                     type="text"
                                     placeholder="Search diets..."
-                                    value={dietSearch}
-                                    onChange={(e) => setDietSearch(e.target.value.toLowerCase())}
+                                    value={searchDiet}
+                                    onChange={(e) => setSearchDiet(e.target.value.toLowerCase())}
                                 />
-                                {dietSearch && (
+                                {searchDiet && (
                                     <ul className="dropdown-content" ref={dietDropdownRef}>
-                                        {dietFuse.search(dietSearch).slice(0, 10).map(({ item }) => (
+                                        {dietFuse.search(searchDiet).slice(0, 10).map(({ item }) => (
                                             <li
                                                 className="search-results"
                                                 key={`diet-${item.name}`}
@@ -506,7 +647,7 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                                                     if (!selectedDiets.includes(item.name)) {
                                                         setSelectedDiets(prev => [...prev, item.name]);
                                                     }
-                                                    setDietSearch('');
+                                                    setSearchDiet('');
                                                 }}
                                             >
                                                 {item.name}
@@ -537,70 +678,199 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                         </tr>
                     </tbody>
                 </table>
-                <table className='table-search-recipe'>
-                    <tbody>
-                        <tr>
-                            <td className='cell-title btn-grey m-hidden'>Ingredients:</td>
-                            <td className='cell-text cell-recipe'>
-                                <input
-                                    className="search-bar cell-32"
-                                    type="text"
-                                    placeholder="Search ingredients..."
-                                    value={ingredientSearch}
-                                    onChange={(e) => setIngredientSearch(e.target.value.toLowerCase())}
-                                />
-                                {ingredientSearch && (
-                                    <ul className="dropdown-content" ref={ingredientDropdownRef}>
-                                        {ingredientFuse.search(ingredientSearch).slice(0, 10).map(({ item }) => (
-                                            <li
-                                                className="search-results"
-                                                key={`ingredient-${item.id}`}
-                                                onClick={() => {
-                                                    if (!selectedIngredients.some(i => i.id === item.id)) {
-                                                        setSelectedIngredients(prev => [...prev, item]);
+                <div className="box-bounding margin-t-16">
+                    <h3 className='margin-b-8'>Smallwares</h3>
+                    <table className='table-search-recipe margin-b-12'>
+                        <tbody>
+                            <tr>
+                                <td className='cell-title btn-grey m-hidden'>Search:</td>
+                                <td className='cell-text cell-recipe'>
+                                    <input
+                                        className="search-bar cell-32"
+                                        type="text"
+                                        placeholder="Search..."
+                                        value={searchSmallwares}
+                                        onChange={(e) => setSearchSmallwares(e.target.value.toLowerCase())}
+                                    />
+                                    {searchSmallwares && (
+                                        <ul className="dropdown-content" ref={smallwareDropdownRef}>
+                                            {smallwareFuse
+                                                .search(searchSmallwares)
+                                                .flatMap(({ item }) => {
+                                                    const results = [];
+                                                    if (item.smallware?.toLowerCase().includes(searchSmallwares)) {
+                                                        results.push({
+                                                            id: item.id,
+                                                            name: item.smallware,
+                                                            label: 'Smallware',
+                                                        });
                                                     }
-                                                    setIngredientSearch('');
-                                                    handleAddExistingIngredient(item.name, item.name_plural);
-                                                }}
-                                            >
-                                                {item.name_plural}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </td>
-                            <td className='cell-title btn-grey m-hidden'>New:</td>
-                            <td className='cell-text cell-recipe'>
-                                <input
-                                    className="cell-32"
-                                    type="text"
-                                    placeholder="Singular spelling"
-                                    value={newIngName}
-                                    onChange={(e) => setNewIngName(e.target.value)}
-                                />
-                            </td>
-                            <td className='cell-text cell-recipe'>
-                                <input
-                                    className="cell-32"
-                                    type="text"
-                                    placeholder="Plural spelling"
-                                    value={newIngNamePlural}
-                                    onChange={(e) => setNewIngNamePlural(e.target.value)}
-                                />
-                            </td>
-                            <td>
-                                <button className='btn btn-filter' onClick={handleAddIngredient}>+</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                                    if (item.smallware_alt?.toLowerCase().includes(searchSmallwares)) {
+                                                        results.push({
+                                                            id: item.id,
+                                                            name: item.smallware_alt,
+                                                            label: 'Alt Smallware',
+                                                        });
+                                                    }
+                                                    return results;
+                                                })
+                                                .slice(0, 10)
+                                                .map(({ id, name, label }) => (
+                                                    <li className="search-results" key={`smallware-${id}-${name}`}>
+                                                        <span className='text-500 margin-r-8'>{name}</span>
+                                                        <button
+                                                            className="btn btn-dropdown btn-white margin-r-4"
+                                                            onClick={() => {setNewSmallware(name); setSearchSmallwares('');}}
+                                                        >
+                                                            Main
+                                                        </button>
+                                                        <button
+                                                            className="btn btn-dropdown btn-white"
+                                                            onClick={() => { setNewSmallwareAlt(name); setSearchSmallwares(''); }}
+                                                        >
+                                                            Alt
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                        </ul>
+                                    )}
+                                </td>
+                                <td className='cell-title btn-grey m-hidden'>Main:</td>
+                                <td className='cell-text cell-recipe'>
+                                    <input
+                                        className="cell-32"
+                                        type="text"
+                                        placeholder="Smallware"
+                                        value={newSmallware}
+                                        onChange={(e) => setNewSmallware(e.target.value)}
+                                    />
+                                </td>
+                                <td className='cell-title btn-grey m-hidden'>Alt:</td>
+                                <td className='cell-text cell-recipe'>
+                                    <input
+                                        className="cell-32"
+                                        type="text"
+                                        placeholder="Alt if there is one"
+                                        value={newSmallwareAlt}
+                                        onChange={(e) => setNewSmallwareAlt(e.target.value)}
+                                    />
+                                </td>
+                                <td>
+                                    <button className='btn btn-filter' onClick={handleAddSmallware}>+</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    {newSmallwares.map((item, index) => (
+                        <div key={index} className='flex-start flex-center-align margin-b-4'>
+                            <button
+                                className='btn btn-delete text-700 btn-red margin-r-12'
+                                onClick={() => {
+                                    const updated = newSmallwares.filter((_, i) => i !== index);
+                                    setNewSmallwares(updated);
+                                }}
+                                title="Remove smallware"
+                            >
+                                ×
+                            </button>
+                            <span className='text-700'>
+                                {item.smallware}<span className="text-300">{item.smallware_alt && ' or '}</span>{item.smallware_alt}
+                            </span>
+                        </div>
+                    ))}
+                </div>
                 <div className="box-bounding margin-t-16">
                     <h3 className='margin-b-8'>Ingredients</h3>
+                    <p className='margin-t-8 margin-l-8'>Only brand names and proper nouns are capitalized for ingredients.</p>
                     <p className='margin-t-8 margin-l-8'>For measurements use decimals over fractions.</p>
                     <p className='margin-t-8 margin-l-8'>For numbers use the number, not the word.</p>
-                    <p className='margin-t-8 margin-l-8'>Tablespoon: tbsp; teaspoon: tsp.</p>
+                    <p className='margin-t-8 margin-l-8 margin-b-12'>Tablespoon: tbsp; teaspoon: tsp.</p>
+                    <table className='table-search-recipe margin-b-12'>
+                        <tbody>
+                            <tr>
+                                <td className='cell-title btn-grey m-hidden'>Ingredients:</td>
+                                <td className='cell-text cell-recipe'>
+                                    <input
+                                        className="search-bar cell-32"
+                                        type="text"
+                                        placeholder="Search ingredients..."
+                                        value={searchIngredients}
+                                        onChange={(e) => setSearchIngredients(e.target.value.toLowerCase())}
+                                    />
+                                    {searchIngredients && (
+                                        <ul className="dropdown-content" ref={ingredientDropdownRef}>
+                                            {ingredientFuse.search(searchIngredients).slice(0, 10).map(({ item }) => (
+                                                <li
+                                                    className="search-results"
+                                                    key={`ingredient-${item.id}`}
+                                                    onClick={() => {
+                                                        if (!selectedIngredients.some(i => i.id === item.id)) {
+                                                            setSelectedIngredients(prev => [...prev, item]);
+                                                        }
+                                                        setSearchIngredients('');
+                                                        handleAddExistingIngredient(item.name, item.name_plural);
+                                                    }}
+                                                >
+                                                    {item.name_plural}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </td>
+                                <td className='cell-title btn-grey m-hidden'>New:</td>
+                                <td className='cell-text cell-recipe'>
+                                    <input
+                                        className="cell-32"
+                                        type="text"
+                                        placeholder="Singular spelling"
+                                        value={newIngName}
+                                        onChange={(e) => setNewIngName(e.target.value)}
+                                    />
+                                </td>
+                                <td className='cell-text cell-recipe'>
+                                    <input
+                                        className="cell-32"
+                                        type="text"
+                                        placeholder="Plural spelling"
+                                        value={newIngNamePlural}
+                                        onChange={(e) => setNewIngNamePlural(e.target.value)}
+                                    />
+                                </td>
+                                <td>
+                                    <button className='btn btn-filter' onClick={handleAddIngredient}>+</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                     {newRecipeIngredients.map((item, index) => (
                         <div key={index} className='flex-start flex-center-align'>
+                            <button
+                                className='btn btn-delete icon-arrow-u margin-r-4'
+                                onClick={() => moveIngredient(index, 'up')}
+                                disabled={index === 0}
+                                title="Move up"
+                            >
+                                &emsp;
+                            </button>
+                            <button
+                                className='btn btn-delete icon-arrow-d margin-r-4'
+                                onClick={() => moveIngredient(index, 'down')}
+                                disabled={index === newRecipeIngredients.length - 1}
+                                title="Move down"
+                            >
+                                &emsp;
+                            </button>
+                            <button
+                                className='btn btn-delete text-700 btn-red margin-r-12'
+                                onClick={() => {
+                                    const updated = newRecipeIngredients.filter((_, i) => i !== index);
+                                    const reindexed = updated.map((item, i) => ({ ...item, ingredient_number: i + 1 }));
+                                    setNewRecipeIngredients(reindexed);
+                                }}
+                                title="Remove ingredient"
+                            >
+                                ×
+                            </button>
                             <label>
                                 <FormGroup>
                                     <FormControlLabel control={
@@ -631,7 +901,7 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                             </span>
                             <input
                                 type="text"
-                                className='input-ingredients input-desc margin-r-4'
+                                className='input-ingredients input-desc'
                                 placeholder="Description (optional)"
                                 value={item.description}
                                 onChange={(e) => {
@@ -640,15 +910,6 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                                     setNewRecipeIngredients(newItems);
                                 }}
                             />
-                            <button
-                                className='btn btn-delete text-700 btn-red'
-                                onClick={() => {
-                                    setNewRecipeIngredients(prev => prev.filter((_, i) => i !== index));
-                                }}
-                                title="Remove ingredient"
-                            >
-                                ×
-                            </button>
                         </div>
                     ))}
                 </div>
@@ -658,6 +919,22 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                         <div key={group.id} className="box-bounding">
                             <div className="flex-start flex-center-align margin-b-8">
                                 <strong className="margin-r-8">Group {group.group_number}</strong>
+                                <button
+                                    className='btn btn-recipe-arrow icon-arrow-u margin-r-4'
+                                    onClick={() => moveInstructionGroup(groupIndex, 'up')}
+                                    disabled={groupIndex === 0}
+                                    title="Move up"
+                                >
+                                    &emsp;
+                                </button>
+                                <button
+                                    className='btn btn-recipe-arrow icon-arrow-d margin-r-4'
+                                    onClick={() => moveInstructionGroup(groupIndex, 'down')}
+                                    disabled={groupIndex === newInstructionGroups.length - 1}
+                                    title="Move down"
+                                >
+                                    &emsp;
+                                </button>
                                 <input
                                     type="text"
                                     className="input-ingredients margin-r-12"
@@ -678,12 +955,6 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                                         × Delete Group
                                     </button>
                                 )}
-                                <button
-                                    className="btn btn-small"
-                                    onClick={() => handleAddInstruction(group.id)}
-                                >
-                                    + Add Instruction
-                                </button>
                             </div>
                             {newInstructions
                                 .filter(instr => instr.instruction_group_id === group.id)
@@ -704,21 +975,47 @@ function AdminRecipeAdd({ recipes, ingredients, recipeIngredients, instructions,
                                             }}
                                         />
                                         {array.length > 1 && (
-                                            <button
-                                                className="btn btn-delete btn-red margin-l-8"
-                                                onClick={() => handleDeleteInstruction(group.id, instr.step_number)}
-                                                title="Delete instruction"
-                                            >
-                                                ×
-                                            </button>
+                                            <>
+                                                <button
+                                                    className='btn btn-recipe-arrow icon-arrow-u margin-r-4 margin-l-8'
+                                                    onClick={() => moveInstruction(group.id, instrIndex, 'up')}
+                                                    disabled={instrIndex === 0}
+                                                    title="Move up"
+                                                >
+                                                    &emsp;
+                                                </button>
+                                                <button
+                                                    className='btn btn-recipe-arrow icon-arrow-d margin-r-4'
+                                                    onClick={() => moveInstruction(group.id, instrIndex, 'down')}
+                                                    disabled={instrIndex === array.length - 1}
+                                                    title="Move down"
+                                                >
+                                                    &emsp;
+                                                </button>
+                                                <button
+                                                    className="btn btn-delete btn-red"
+                                                    onClick={() => handleDeleteInstruction(group.id, instr.step_number)}
+                                                    title="Delete instruction"
+                                                >
+                                                    ×
+                                                </button>
+                                            </>
                                         )}
                                     </div>
                                 ))}
-                            {groupIndex === newInstructionGroups.length - 1 && (
-                                <button className='btn btn-small margin-t-12' onClick={handleAddInstructionGroup}>
-                                    + Add Group
+                            <div className='flex-start margin-t-12'>
+                                <button
+                                    className="btn btn-small margin-r-8"
+                                    onClick={() => handleAddInstruction(group.id)}
+                                >
+                                    + Add Instruction
                                 </button>
-                            )}
+                                {groupIndex === newInstructionGroups.length - 1 && (
+                                    <button className='btn btn-small' onClick={handleAddInstructionGroup}>
+                                        + Add Group
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     ))}
                 </div>

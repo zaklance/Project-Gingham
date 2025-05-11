@@ -1087,6 +1087,11 @@ ul {
   max-height: 1024px;
 }
 
+.box-scroll-recipe {
+  overflow: scroll;
+  max-height: 432px;
+}
+
 .box-scroll-x {
   /* overflow: scroll; */
   overflow-x: scroll;
@@ -1139,7 +1144,6 @@ ul {
   background-color: #fbf7eb;
   width: 100%;
   max-width: 400px;
-  margin-bottom: 4px;
   padding: 16px;
   border-radius: 16px;
   overflow: hidden;
@@ -1297,6 +1301,17 @@ ul {
 
 .btn-delete {
   padding: 6px 8px;
+  border-radius: 8px;
+  border: none;
+  background-color: #eee;
+  float: right;
+}
+
+.btn-recipe-arrow {
+  height: 20px;
+  width: 20px;
+  font-size: 1em;
+  padding-bottom: 2px;
   border-radius: 8px;
   border: none;
   background-color: #eee;
@@ -1601,6 +1616,10 @@ ul {
   width: 18px;
   border-radius: 50%;
   font-weight: 600;
+}
+
+.btn-dropdown {
+  padding: 2px 4px;
 }
 
 .btn-red:hover {
@@ -2537,9 +2556,14 @@ select:hover {
 
 .select-filter {
   border-radius: 12px;
-  /* height: 24px; */
-  /* width: 124px; */
   font-size: .8em;
+}
+
+.select-recipe {
+  border-radius: 12px;
+  height: 48px;
+  width: 100%;
+  font-size: 1em;
 }
 
 .select-dropdown {
@@ -2557,6 +2581,10 @@ select:hover {
 
 .form-filters-markets input[type='radio'], .form-filters-reviews input[type='radio'] {
   margin-right: 6px;
+}
+
+textarea {
+  resize: none;
 }
 
 .textarea-review {
@@ -2584,6 +2612,11 @@ select:hover {
   height: 120px;
   border: none;
   resize: none;
+  field-sizing: content;
+}
+
+.textarea-recipe-edit {
+  field-sizing: content;
 }
 
 .textarea-issue {
@@ -2648,7 +2681,7 @@ select:hover {
 
 .search-results {
   background-color: #eee;
-  padding: 4px;
+  padding: 2px 4px;
   width: 360px;
   opacity: .9;
 }
@@ -2782,7 +2815,7 @@ select:hover {
 
 .img-recipe {
   width: 100%;
-  /* height: 400px; */
+  height: 100%;
   object-fit: cover;
   max-width: 1120px;
   border-radius: 16px;
@@ -3078,6 +3111,22 @@ select:hover {
   background-position: right 50% top 47%;
   background-size: 1rem auto;
   background-color: white;
+  border-radius: 50%;
+}
+
+.icon-arrow-u {
+  background-image: url('../images/icons/up-arrow-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 47%;
+  background-size: 1rem auto;
+  border-radius: 50%;
+}
+
+.icon-arrow-d {
+  background-image: url('../images/icons/down-arrow-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 47%;
+  background-size: 1rem auto;
   border-radius: 50%;
 }
 
