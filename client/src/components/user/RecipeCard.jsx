@@ -13,6 +13,7 @@ function RecipeCard({ recipe, recipeFavs, handleClick, isClicked, setSelectedCat
         navigate(`/user/recipes/${recipe.id}`);
     };
 
+    console.log(recipe.diet_categories)
 
     return (
         <div className="recipe-card" key={recipe.id}>
@@ -21,7 +22,7 @@ function RecipeCard({ recipe, recipeFavs, handleClick, isClicked, setSelectedCat
                     {recipe.image ? (
                         <img className="img-recipe-card" src={`${siteURL}${recipe.image}`} alt="Recipe Image" />
                     ) : (
-                        <img className="img-recipe-card" src={`/recipe-images/LzYeux_120719_0033_1800px.png`} alt="Recipe Image" />
+                        <img className="img-recipe-card" src={`/recipe-images/LzYeux_120719_0033_1800px.jpg`} alt="Recipe Image" />
                     )}
                     <button
                         className={`badge-fav-recipe-card btn-fav-blog margin-l-8 ${isClicked[recipe.id] || recipeFavs.some(fav => fav.recipe_id === recipe.id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
@@ -32,7 +33,7 @@ function RecipeCard({ recipe, recipeFavs, handleClick, isClicked, setSelectedCat
                 <div className='text-center'>
                     <h4>{recipe.title}</h4>
                 </div>
-                {recipe.categories && recipe.categories.length > 0 && (
+                {(recipe.categories && recipe.diet_categories) && (recipe.categories.length > 0 || recipe.diet_categories.length > 0) && (
                     <Stack className='box-scroll-x padding-4' direction="row" spacing={1}>
                         {recipe.categories.map((cat, i) => (
                             <Chip

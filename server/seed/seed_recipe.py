@@ -12,7 +12,7 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
                     Receipt, SettingsUser, SettingsVendor, SettingsAdmin,
                     UserIssue, Recipe, Ingredient, RecipeIngredient,
-                    Instruction, InstructionGroup
+                    Instruction, InstructionGroup, Smallware
                     )
 import json
 from datetime import datetime, timedelta, timezone, time, date
@@ -26,6 +26,7 @@ def run():
     RecipeIngredient.query.delete()
     Instruction.query.delete()
     InstructionGroup.query.delete()
+    Smallware.query.delete()
 
     db.session.commit()
 
@@ -34,27 +35,31 @@ def run():
             id=1,
             title="ZL's Patented Falafel Burger",
             description="American twist on the classic falafel; a veggie burger with a falafel core. I've had many dinner parties in undergrad and grad school, and this dish was always a hit!",
-            author="Zak of the Gingham Team",
+            author="Zak Wosewick",
+            is_gingham_team=True,
             image="",
             categories=["veggie burgers"],
             diet_categories=["vegetarian", "vegan"],
             prep_time_minutes=50,
             cook_time_minutes=15,
             total_time_minutes=65,
-            serve_count=6
+            serve_count=6,
+            skill_level=2
         ),
         Recipe(
             id=2,
             title="Caprese Martini",
             description="A refreshing savory cocktail for the perfect summer day.",
-            author="Zak of the Gingham Team",
+            author="Zak Wosewick",
+            is_gingham_team=True,
             image="",
             categories=["cocktails", "infused vodka"],
             diet_categories=[],
             prep_time_minutes=2160,
             cook_time_minutes=5,
             total_time_minutes=2165,
-            serve_count=6
+            serve_count=6,
+            skill_level=1
         ),
     ]
 
@@ -135,7 +140,7 @@ def run():
         Ingredient(
             id=15,
             name="avocado",
-            name_plural="avodacos"
+            name_plural="avocados"
         ),
         Ingredient(
             id=16,
@@ -149,8 +154,8 @@ def run():
         ),
         Ingredient(
             id=18,
-            name="basil",
-            name_plural="basil"
+            name="fresh basil",
+            name_plural="fresh basil"
         ),
         Ingredient(
             id=19,
@@ -191,6 +196,7 @@ def run():
         RecipeIngredient(
             recipe_id=1,
             ingredient_id=1,
+            ingredient_number=1,
             amount="2.25 cups",
             plural=True,
             description="cooked chickpeas aka one can of salted chickpeas (canned works best with chia version)"
@@ -198,6 +204,7 @@ def run():
         RecipeIngredient(
             recipe_id=1,
             ingredient_id=2,
+            ingredient_number=2,
             amount="Option A: 4 eggs",
             plural=True,
             description=""
@@ -205,6 +212,7 @@ def run():
         RecipeIngredient(
             recipe_id=1,
             ingredient_id=3,
+            ingredient_number=3,
             amount="Option B: 10 tbsp",
             plural=True,
             description="mix the ground chia seeds with 150mL of water"
@@ -212,6 +220,7 @@ def run():
         RecipeIngredient(
             recipe_id=1,
             ingredient_id=4,
+            ingredient_number=4,
             amount="1 medium",
             plural=False,
             description="diced (I prefer yellow, but whatevs)"
@@ -219,6 +228,7 @@ def run():
         RecipeIngredient(
             recipe_id=1,
             ingredient_id=5,
+            ingredient_number=5,
             amount="0.5 tsp",
             plural=True,
             description="(I prefer sea salt, #yolo)"
@@ -226,6 +236,7 @@ def run():
         RecipeIngredient(
             recipe_id=1,
             ingredient_id=6,
+            ingredient_number=6,
             amount="2 tbsp",
             plural=True,
             description=""
@@ -233,6 +244,7 @@ def run():
         RecipeIngredient(
             recipe_id=1,
             ingredient_id=7,
+            ingredient_number=7,
             amount="2 tsp",
             plural=True,
             description=""
@@ -240,6 +252,7 @@ def run():
         RecipeIngredient(
             recipe_id=1,
             ingredient_id=8,
+            ingredient_number=8,
             amount="2 tsp",
             plural=True,
             description="ground"
@@ -247,6 +260,7 @@ def run():
         RecipeIngredient(
             recipe_id=1,
             ingredient_id=9,
+            ingredient_number=9,
             amount="0.5 - 2 tsp",
             plural=True,
             description="to taste (I have been using 1tsp recently)"
@@ -254,6 +268,7 @@ def run():
         RecipeIngredient(
             recipe_id=1,
             ingredient_id=10,
+            ingredient_number=10,
             amount="2 tsp",
             plural=True,
             description="(smoked paprika is fire)"
@@ -261,6 +276,7 @@ def run():
         RecipeIngredient(
             recipe_id=1,
             ingredient_id=11,
+            ingredient_number=11,
             amount="0.5 tsp",
             plural=True,
             description=""
@@ -268,6 +284,7 @@ def run():
         RecipeIngredient(
             recipe_id=1,
             ingredient_id=12,
+            ingredient_number=12,
             amount="1",
             plural=False,
             description="zest & juice"
@@ -275,6 +292,7 @@ def run():
         RecipeIngredient(
             recipe_id=1,
             ingredient_id=13,
+            ingredient_number=13,
             amount="1 cup",
             plural=True,
             description=""
@@ -282,6 +300,7 @@ def run():
         RecipeIngredient(
             recipe_id=1,
             ingredient_id=14,
+            ingredient_number=14,
             amount="1 cup",
             plural=True,
             description=""
@@ -289,6 +308,7 @@ def run():
         RecipeIngredient(
             recipe_id=1,
             ingredient_id=15,
+            ingredient_number=15,
             amount="1 large",
             plural=True,
             description="2 medium if you really love avocados"
@@ -296,6 +316,7 @@ def run():
         RecipeIngredient(
             recipe_id=1,
             ingredient_id=16,
+            ingredient_number=16,
             amount="6",
             plural=True,
             description=""
@@ -303,6 +324,7 @@ def run():
         RecipeIngredient(
             recipe_id=2,
             ingredient_id=17,
+            ingredient_number=1,
             amount="600mL",
             plural=True,
             description=""
@@ -310,6 +332,7 @@ def run():
         RecipeIngredient(
             recipe_id=2,
             ingredient_id=18,
+            ingredient_number=2,
             amount="3 large laves",
             plural=True,
             description=""
@@ -317,6 +340,7 @@ def run():
         RecipeIngredient(
             recipe_id=2,
             ingredient_id=19,
+            ingredient_number=3,
             amount="1 large",
             plural=False,
             description=""
@@ -324,6 +348,7 @@ def run():
         RecipeIngredient(
             recipe_id=2,
             ingredient_id=20,
+            ingredient_number=4,
             amount="150mL",
             plural=True,
             description="extra virgin"
@@ -331,6 +356,7 @@ def run():
         RecipeIngredient(
             recipe_id=2,
             ingredient_id=23,
+            ingredient_number=5,
             amount="2 oz",
             plural=True,
             description=""
@@ -338,6 +364,7 @@ def run():
         RecipeIngredient(
             recipe_id=2,
             ingredient_id=21,
+            ingredient_number=6,
             amount="1.5 oz",
             plural=True,
             description=""
@@ -345,6 +372,7 @@ def run():
         RecipeIngredient(
             recipe_id=2,
             ingredient_id=22,
+            ingredient_number=7,
             amount="2 dashes",
             plural=True,
             description=""
@@ -352,6 +380,7 @@ def run():
         RecipeIngredient(
             recipe_id=2,
             ingredient_id=24,
+            ingredient_number=8,
             amount="2",
             plural=True,
             description="(to garnish)"
@@ -359,6 +388,43 @@ def run():
     ]
 
     db.session.add_all(recipe_ingredients)
+    db.session.commit()
+
+    smallwares = [
+        Smallware(
+            recipe_id=1,
+            smallware="food processor",
+            smallware_alt="dough blender"
+        ),
+        Smallware(
+            recipe_id=1,
+            smallware="spice grinder",
+            smallware_alt="pre-ground chia seeds"
+        ),
+        Smallware(
+            recipe_id=1,
+            smallware="mixing bowl"
+        ),
+        Smallware(
+            recipe_id=1,
+            smallware="medium pan",
+        ),
+        Smallware(
+            recipe_id=2,
+            smallware="bottle",
+        ),
+        Smallware(
+            recipe_id=2,
+            smallware="strainer",
+            smallware_alt="cheesecloth",
+        ),
+        Smallware(
+            recipe_id=2,
+            smallware="freezer-safe container",
+        ),
+    ]
+
+    db.session.add_all(smallwares)
     db.session.commit()
 
     instructions = [

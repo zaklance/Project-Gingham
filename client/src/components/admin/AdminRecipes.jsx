@@ -6,6 +6,7 @@ import AdminRecipeDelete from './AdminRecipeDelete';
 
 const AdminRecipes = () => {
     const [recipes, setRecipes] = useState([]);
+    const [smallwares, setSmallwares] = useState([]);
     const [ingredients, setIngredients] = useState([]);
     const [recipeIngredients, setRecipeIngredients] = useState([]);
     const [instructionGroups, setInstructionGroups] = useState([]);
@@ -30,6 +31,13 @@ const AdminRecipes = () => {
             .then(response => response.json())
             .then(data => setIngredients(data))
             .catch(error => console.error('Error fetching ingredients', error));
+    }, []);
+
+    useEffect(() => {
+        fetch('/api/smallwares')
+            .then(response => response.json())
+            .then(data => setSmallwares(data))
+            .catch(error => console.error('Error fetching smallwares', error));
     }, []);
 
     useEffect(() => {
@@ -70,9 +78,9 @@ const AdminRecipes = () => {
                     </Link>
                 </div>
             </div>
-            {activeTab === 'add' && <AdminRecipeAdd recipes={recipes} ingredients={ingredients} recipeIngredients={recipeIngredients} instructions={instructions} instructionGroups={instructionGroups} />}
-            {activeTab === 'edit' && <AdminRecipeEdit recipes={recipes} ingredients={ingredients} recipeIngredients={recipeIngredients} instructions={instructions} instructionGroups={instructionGroups} />}
-            {activeTab === 'delete' && <AdminRecipeDelete recipes={recipes} ingredients={ingredients} recipeIngredients={recipeIngredients} instructions={instructions} instructionGroups={instructionGroups} />}
+            {activeTab === 'add' && <AdminRecipeAdd smallwares={smallwares} recipes={recipes} ingredients={ingredients} />}
+            {activeTab === 'edit' && <AdminRecipeEdit smallwares={smallwares} recipes={recipes} ingredients={ingredients} />}
+            {activeTab === 'delete' && <AdminRecipeDelete recipes={recipes} ingredients={ingredients} recipeIngredients={recipeIngredients} />}
         </>
     );
 };

@@ -1,16 +1,12 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
-import { formatMinutes } from '../../utils/helpers';
 
-function AdminRecipeCard({ recipe, setSelectedCategories, setSelectedDiets }) {
-    const navigate = useNavigate();
-
+function AdminRecipeCard({ recipe, setSearchCategories, setSearchDiets, setSelectedRecipe }) {
     const siteURL = import.meta.env.VITE_SITE_URL;
 
     const handleOpenRecipe = (recipe) => {
-        navigate(`/user/recipes/${recipe.id}`);
+        setSelectedRecipe(recipe);
     };
 
 
@@ -20,7 +16,7 @@ function AdminRecipeCard({ recipe, setSelectedCategories, setSelectedDiets }) {
                 {recipe.image ? (
                     <img className="img-recipe-card" src={`${siteURL}${recipe.image}`} alt="Recipe Image" />
                 ) : (
-                    <img className="img-recipe-card" src={`/recipe-images/LzYeux_120719_0033_1800px.png`} alt="Recipe Image" />
+                    <img className="img-recipe-card" src={`/recipe-images/LzYeux_120719_0033_1800px.jpg`} alt="Recipe Image" />
                 )}
                 <div className='text-center'>
                     <h4>{recipe.title}</h4>
@@ -35,7 +31,7 @@ function AdminRecipeCard({ recipe, setSelectedCategories, setSelectedDiets }) {
                                 }}
                                 label={cat}
                                 size="small"
-                                onClick={() => setSelectedCategories(prev => [...prev, cat])}
+                                onClick={() => setSearchCategories(prev => [...prev, cat])}
                             />
                         ))}
                         {recipe.diet_categories.map((diet, i) => (
@@ -46,7 +42,7 @@ function AdminRecipeCard({ recipe, setSelectedCategories, setSelectedDiets }) {
                                 }}
                                 label={diet}
                                 size="small"
-                                onClick={() => setSelectedDiets(prev => [...prev, diet])}
+                                onClick={() => setSearchDiets(prev => [...prev, diet])}
                             />
                         ))}
                     </Stack>
@@ -54,7 +50,7 @@ function AdminRecipeCard({ recipe, setSelectedCategories, setSelectedDiets }) {
                 <p className="description-preview">
                     {recipe.description}
                 </p>
-                <button className="btn-market-card" onClick={() => handleOpenRecipe(recipe)}>Learn More!</button>
+                <button className="btn-market-card" onClick={() => handleOpenRecipe(recipe)}>Select Recipe</button>
             </div>
         </div>
     );

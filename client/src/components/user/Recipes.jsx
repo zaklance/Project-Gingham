@@ -8,17 +8,19 @@ import RecipeCard from './RecipeCard';
 
 const Recipes = () => {
     const [recipes, setRecipes] = useState([]);
-    const [showFilters, setShowFilters] = useState(false);
     const [recipeFavs, setRecipeFavs] = useState([]);
     const [isClicked, setIsClicked] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [ingredients, setIngredients] = useState([]);
-    const [selectedIngredients, setSelectedIngredients] = useState([]);
     const [recipeIngredients, setRecipeIngredients] = useState([]);
+    const [smallwares, setSmallwares] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [selectedIngredients, setSelectedIngredients] = useState([]);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedDiets, setSelectedDiets] = useState([]);
+    const [selectedSmallwares, setSelectedSmallwares] = useState([]);
     const [selectedRecipeName, setSelectedRecipeName] = useState(null);
+    const [selectedAuthor, setSelectedAuthor] = useState(null);
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
     const { handlePopup } = useOutletContext();
@@ -52,6 +54,20 @@ const Recipes = () => {
                 setRecipeIngredients(data);
             })
                 .catch(error => console.error('Error fetching recipe ingredients', error));
+    }, []);
+    
+    useEffect(() => {
+        fetch('/api/smallwares', {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                setSmallwares(data);
+            })
+                .catch(error => console.error('Error fetching smallwares', error));
     }, []);
 
     useEffect(() => {
@@ -151,73 +167,26 @@ const Recipes = () => {
             setSelectedIngredients([...selectedIngredients, ingredient]);
         }
     };
-
-    const searchableData = useMemo(() => {
-        const ingredientData = ingredients.map(item => ({
-            type: 'ingredient',
-            id: item.id,
-            name: item.name,
-            name_plural: item.name_plural
-        }));
-
-        const recipeData = recipes.map(item => ({
-            type: 'recipe',
-            id: item.id,
-            name: item.title,
-            categories: item.categories || [],
-            diet_categories: item.diet_categories || []
-        }));
-
-        return [...ingredientData, ...recipeData];
-    }, [ingredients, recipes]);
-
-    const fuse = useMemo(() => {
-        return new Fuse(searchableData, {
-            keys: [
-                { name: 'name', weight: 0.6 },
-                { name: 'name_plural', weight: 0.4 },
-                { name: 'categories', weight: 0.3 },
-                { name: 'diet_categories', weight: 0.3 },
-            ],
-            threshold: 0.3,
-            ignoreLocation: true,
-        });
-    }, [searchableData]);
-
-    const searchResults = searchTerm
-        ? fuse.search(searchTerm).map(result => result.item)
-        : [];
     
     const combinedSearchItems = useMemo(() => {
         const ingredientItems = ingredients.map(i => ({ type: 'ingredient', ...i }));
         const nameItems = recipes.map(r => ({ type: 'recipe', id: r.id, name: r.title }));
+        const uniqueAuthors = [...new Set(recipes.map(r => r.author).filter(Boolean))];
+        const authorItems = uniqueAuthors.map(name => ({ type: 'author', name }));
         const categoryItems = [...new Set(recipes.flatMap(r => r.categories || []))].map(cat => ({ type: 'category', name: cat }));
         const dietItems = [...new Set(recipes.flatMap(r => r.diet_categories || []))].map(diet => ({ type: 'diet', name: diet }));
-        return [...ingredientItems, ...nameItems, ...categoryItems, ...dietItems];
-    }, [ingredients, recipes]);
+        const smallwareItems = [...new Set(
+            smallwares.flatMap(sw => [sw.smallware, sw.smallware_alt].filter(Boolean))
+        )].map(name => ({ type: 'smallware', name }));
+        return [...ingredientItems, ...nameItems, ...authorItems, ...categoryItems, ...dietItems, ...smallwareItems];
+    }, [ingredients, recipes, smallwares]);
 
     const combinedFuse = useMemo(() => {
         return new Fuse(combinedSearchItems, {
-            keys: ['name', 'name_plural'],
+            keys: ['name'],
             threshold: 0.3,
         });
     }, [combinedSearchItems]);
-
-    const filteredRecipeIds = useMemo(() => {
-        if (selectedIngredients.length === 0) return [];
-        const selectedIds = selectedIngredients.map(i => i.id);
-        const recipeToIngredients = recipeIngredients.reduce((acc, ri) => {
-            if (!acc[ri.recipe_id]) {
-                acc[ri.recipe_id] = new Set();
-            }
-            acc[ri.recipe_id].add(ri.ingredient_id);
-            return acc;
-        }, {});
-
-        return Object.entries(recipeToIngredients)
-            .filter(([_, ingSet]) => selectedIds.every(id => ingSet.has(id)))
-            .map(([recipeId]) => parseInt(recipeId));
-    }, [selectedIngredients, recipeIngredients]);
 
     const displayedRecipes = useMemo(() => {
         let filtered = [...recipes];
@@ -235,32 +204,49 @@ const Recipes = () => {
             filtered = filtered.filter(r => matchedIds.includes(r.id));
         }
 
+        if (selectedSmallwares.length > 0) {
+            const recipeIdToSmallwareNames = smallwares.reduce((acc, sw) => {
+                const names = [sw.smallware];
+                if (sw.smallware_alt) names.push(sw.smallware_alt);
+                if (!acc[sw.recipe_id]) acc[sw.recipe_id] = new Set();
+                names.forEach(name => acc[sw.recipe_id].add(name));
+                return acc;
+            }, {});
+
+            const matchedIds = Object.entries(recipeIdToSmallwareNames)
+                .filter(([_, nameSet]) =>
+                    selectedSmallwares.every(sw => nameSet.has(sw))
+                )
+                .map(([id]) => parseInt(id));
+            filtered = filtered.filter(r => matchedIds.includes(r.id));
+        }
+
         if (selectedCategories.length > 0) {
             filtered = filtered.filter(r => selectedCategories.every(cat => (r.categories || []).includes(cat)));
         }
-
         if (selectedDiets.length > 0) {
             filtered = filtered.filter(r => selectedDiets.every(diet => (r.diet_categories || []).includes(diet)));
         }
-
         if (selectedRecipeName) {
             filtered = filtered.filter(r => r.title.toLowerCase().includes(selectedRecipeName.toLowerCase()));
         }
+        if (selectedAuthor) {
+            filtered = filtered.filter(r => r.author.toLowerCase().includes(selectedAuthor.toLowerCase()));
+        }
 
         return filtered;
-    }, [recipes, selectedIngredients, selectedCategories, selectedDiets, selectedRecipeName, recipeIngredients]);
+    }, [recipes, selectedIngredients, selectedCategories, selectedDiets, selectedRecipeName, selectedSmallwares, selectedAuthor, recipeIngredients]);
 
     const showChips = () => {
-        if (selectedIngredients.length > 0) return true
-        if (selectedCategories.length > 0) return true
-        if (selectedDiets.length > 0) return true
-        if (selectedRecipeName !== null) return true
-        return false
-    }
-
-    const handleDropDownFilters = () => {
-        setShowFilters(!showFilters)
-    }
+        return (
+            selectedIngredients.length > 0 ||
+            selectedCategories.length > 0 ||
+            selectedDiets.length > 0 ||
+            selectedSmallwares.length > 0 ||
+            selectedAuthor !== null ||
+            selectedRecipeName !== null
+        );
+    };
 
     const handleClickOutsideDropdown = (event) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -314,6 +300,14 @@ const Recipes = () => {
                                             } else if (item.type === 'recipe') {
                                                 setSelectedRecipeName(item.name);
                                                 setSearchTerm('')
+                                            } else if (item.type === 'author') {
+                                                setSelectedAuthor(item.name);
+                                                setSearchTerm('')
+                                            } else if (item.type === 'smallware') {
+                                                if (!selectedSmallwares.includes(item.name)) {
+                                                    setSelectedSmallwares(prev => [...prev, item.name]);
+                                                }
+                                                setSearchTerm('');
                                             }
                                             setShowDropdown(false);
                                         }}
@@ -333,6 +327,14 @@ const Recipes = () => {
                                             style={{ backgroundColor: "#eee", fontSize: ".9em" }}
                                             size="small"
                                             onDelete={() => setSelectedRecipeName(null)}
+                                        />
+                                    )}
+                                    {selectedAuthor && (
+                                        <Chip
+                                            label={selectedAuthor}
+                                            style={{ backgroundColor: "#eee", fontSize: ".9em" }}
+                                            size="small"
+                                            onDelete={() => setSelectedAuthor(null)}
                                         />
                                     )}
                                     {selectedIngredients.map((ing, i) => (
@@ -365,6 +367,17 @@ const Recipes = () => {
                                             setSelectedDiets(prev => prev.filter(item => item !== diet))
                                         } />
                                     ))}
+                                    {selectedSmallwares.map((sw, i) => (
+                                        <Chip
+                                            key={`sw-${i}`}
+                                            label={sw}
+                                            style={{ backgroundColor: "#eee", fontSize: ".9em" }}
+                                            size="small"
+                                            onDelete={() =>
+                                                setSelectedSmallwares(prev => prev.filter(item => item !== sw))
+                                            }
+                                        />
+                                    ))}
                                 </Stack>
                             </td>
                         )}
@@ -372,17 +385,20 @@ const Recipes = () => {
                 </tbody>
             </table>
             <div className="market-cards-container">
-                {displayedRecipes.map(recipe => (
-                    <RecipeCard
-                        key={recipe.id}
-                        recipe={recipe}
-                        recipeFavs={recipeFavs}
-                        handleClick={handleClick}
-                        isClicked={isClicked}
-                        setSelectedCategories={setSelectedCategories}
-                        setSelectedDiets={setSelectedDiets}
-                    />
-                ))}
+                {displayedRecipes
+                    .sort((a, b) => b.id - a.id)
+                    .map(recipe => (
+                        <RecipeCard
+                            key={recipe.id}
+                            recipe={recipe}
+                            recipeFavs={recipeFavs}
+                            handleClick={handleClick}
+                            isClicked={isClicked}
+                            setSelectedCategories={setSelectedCategories}
+                            setSelectedDiets={setSelectedDiets}
+                        />
+                    )
+                )}
             </div>
         </>
     );
