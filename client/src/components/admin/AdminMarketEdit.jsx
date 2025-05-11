@@ -258,6 +258,8 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                     ...prevData,
                     image: null,
                 }));
+
+                setImage(null);
     
                 toast.success('Image deleted successfully.', {
                     autoClose: 4000,
@@ -923,7 +925,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                     <div className='margin-l-8'>
                                         <button className='btn btn-small btn-blue' onClick={handleImageDelete}>Delete Image</button>
                                     </div>
-                                    <label htmlFor='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
+                                    <label htmlFor='file-upload' className='btn btn-small btn-file btn-blue nowrap'>Choose File{image && <span id="file-name" className='text-white-background margin-l-8'>{image.name}</span>}</label>
                                     <input
                                         id="file-upload"
                                         type="file"

@@ -25,7 +25,7 @@ const ReceiptDocument = ({ receipt, transaction }) => {
         <Document>
             <Page size="LETTER" style={styles.page} wrap={true}>
                 <View fixed>
-                    <Image style={styles.image} src="/site-images/gingham-logo-A_2.png"></Image>
+                    <Image style={styles.image} src="/site-images/gingham-logo_04-2A.png"></Image>
                     <View style={styles.divider} />
                 </View>
 

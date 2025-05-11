@@ -132,7 +132,7 @@ const AdminEmail = () => {
         <body>
             <div class="email-container">
                 <div class="header">
-                    <img class="img-logo" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                    <img class="img-logo" src="https://www.gingham.nyc/site-images/gingham-logo_04-3A.png" alt="logo"/>
                 </div>
                 <hr class="divider"/>
                 <div>
@@ -149,7 +149,7 @@ const AdminEmail = () => {
                 </div>
                 <div class="footer">
                     <div class="footer flex-center">
-                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png" alt="logo"/>
+                        <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-3B.png" alt="logo"/>
                         <p>&copy; 2024 GINGHAM.NYC. All Rights Reserved.</p>
                     </div>
                 </div>
@@ -172,7 +172,7 @@ const AdminEmail = () => {
             <mj-section>
                 <mj-column background-color="#fbf7eb">
 
-                    <mj-image width="120px" src="https://www.gingham.nyc/site-images/gingham-logo-A_3.png"></mj-image>
+                    <mj-image width="120px" src="https://www.gingham.nyc/site-images/gingham-logo_04-3A.png"></mj-image>
                     
                     <mj-divider></mj-divider>
                     <mj-text>

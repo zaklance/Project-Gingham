@@ -38,6 +38,7 @@ from uuid import uuid4
 import numpy as np
 import psutil
 import stripe
+import traceback
 
 serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 
@@ -906,7 +907,7 @@ def generate_vendor_baskets_csv(vendor_id, month, year):
             }
 
 @celery.task(queue='process_images', bind=True, time_limit=40, soft_time_limit=35)
-def process_image(image_bytes, filename, max_size=MAX_SIZE, resolution=MAX_RES):
+def process_image(self, image_bytes, filename, max_size=MAX_SIZE, resolution=MAX_RES):
     """Resizes and optimizes an image asynchronously and returns it as bytes."""
     try:
         log_mem("Start")
@@ -1082,16 +1083,19 @@ def send_blog_notifications(blog_id, task_id=None):
                 admins = db.session.query(AdminUser).join(SettingsAdmin).filter(SettingsAdmin.site_new_blog == True).all()
                 
                 # Prepare admin notifications
+                
                 admin_notifications = [
                     AdminNotification(
                         subject="New Blog Post Alert!",
                         message=f"A new blog post, {blog.title}, has been published. Check it out!",
                         link=f"/admin#blog",
                         admin_role=5,
+                        admin_id=admin.id,
                         created_at=datetime.utcnow(),
                         is_read=False,
                         task_id=task_id
                     )
+                    for admin in admins
                 ]
             else:
                 admins = []
@@ -1101,15 +1105,22 @@ def send_blog_notifications(blog_id, task_id=None):
                 print("No users have blog notifications enabled. No notifications will be created.")
                 return
             
-            # Save notifications to the database
-            db.session.bulk_save_objects(user_notifications + vendor_notifications + admin_notifications)  
-            blog.notifications_sent = True
-            db.session.commit()
+            if user_notifications:
+                db.session.bulk_save_objects(user_notifications)
+            if vendor_notifications:
+                db.session.bulk_save_objects(vendor_notifications)
+            if admin_notifications:
+                db.session.bulk_save_objects(admin_notifications)
+            if blog:
+                blog.notifications_sent = True
+                db.session.add(blog)
+                db.session.commit()
             print(f"Blog ID={blog_id} notifications have been sent.")
 
         except Exception as e:
             db.session.rollback()
             print(f"Error sending blog notifications for Blog ID={blog_id}: {e}")
+            traceback.print_exc()
         finally:
             db.session.close()
 
@@ -1124,8 +1135,8 @@ def check_scheduled_blog_notifications():
             print(f"[DEBUG] Checking for blogs scheduled for {today} that need notifications")
             
             # Check if the notifications_sent field exists
-            from sqlalchemy import inspect
-            columns = [c.name for c in inspect(Blog).columns]
+            from sqlalchemy import inspect as sa_inspect
+            columns = [c.name for c in sa_inspect(Blog).columns]
             if 'notifications_sent' not in columns:
                 print("[ERROR] notifications_sent column doesn't exist in Blog table!")
                 return "ERROR: notifications_sent column missing"

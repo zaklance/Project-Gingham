@@ -24,11 +24,11 @@ function MarketCard({ marketData, user, haversineDistance, resultCoordinates, us
     return (
         <div className="market-card flex-space-between flex-column">
             <div>
-                    {marketData.image !== null ? (
-                        <img className="img-market-card" src={`${siteURL}${marketData.image}`} alt="Market Image" />
-                    ) : (
-                        <img className="img-market-card" src={`/market-images/_default-images/${marketData.image_default}`} alt="Market Image" />
-                    )}
+                {marketData.image !== null ? (
+                    <img className="img-market-card" src={`${siteURL}${marketData.image}`} alt="Market Image" />
+                ) : (
+                    <img className="img-market-card" src={`/market-images/_default-images/${marketData.image_default}`} alt="Market Image" />
+                )}
                 <div className='text-center'>
                     <h4>{marketData.name}</h4>
                     <p className='text-500 margin-b-16'>{marketData.city}, {marketData.state}</p>
@@ -63,7 +63,7 @@ function MarketCard({ marketData, user, haversineDistance, resultCoordinates, us
                                 : 'your home address'}
                     </p>
                 ) : <></>}
-                <p><strong>Vendors:</strong> {countVendors(marketData)} on <span className='font-gingham text-size-1'>Gin<span className="kern-1-5">g</span><span className="kern-05">h</span>am</span></p>
+                <p><strong>Vendors:</strong> {countVendors(marketData)} on <span className='font-cera text-size-1'>Gingham</span></p>
             </div>
             <div>
                 <button className="btn-market-card" onClick={handleLearnMore}>Learn More!</button>

@@ -50,13 +50,13 @@ function Home() {
         <div>
             <div className="vendor-portal-background m-margin-0">
                 <title>Gingham • Vendor Portal</title>
-                {/* <img className='big-logo' src="/site-images/gingham-logo-A_2.svg" alt="Gingham Logo"></img> */}
+                {/* <img className='big-logo' src="/site-images/gingham-logo_04-2A-alt.svg" alt="Gingham Logo"></img> */}
                 <div className="sidebar">
                     <br className="m-hidden"/>
                     <br className="m-hidden"/>
                     <br/>
                     <div className='box-portal-home text-center text-blend-lighten'>
-                        <h1 className="font-gingham title-big text-center">Gin<span className="kern-8">g</span><span className="kern-2">h</span>am</h1>
+                        <h1 className="font-cera title-big text-center">Gingham</h1>
                         <br/>
                         <p>WELCOME CURRENT AND FUTURE VENDORS!</p>
                     </div>
