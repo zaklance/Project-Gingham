@@ -2910,7 +2910,7 @@ def recipe(id):
             db.session.rollback()
             return {'error': str(e)}, 500
 
-@app.route('/api/ingredients', methods=['GET', 'POST', 'PATCH', 'DELETE'])
+@app.route('/api/ingredients', methods=['GET', 'POST'])
 def all_ingredients():
     if request.method == 'GET':
         recipe_id = request.args.get('recipe_id', type=int)
@@ -2941,6 +2941,15 @@ def all_ingredients():
             return {'error': f'Failed to create ingredient: {str(e)}'}, 500
 
         return new_ingredient.to_dict(), 201
+        
+@app.route('/api/ingredients/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def specific_ingredients(id):
+    if request.method == 'GET':
+        ingredient = Ingredient.query.filter_by(id=id).first()
+        if not ingredient:
+            return {'error': 'ingredient not found'}, 404
+        ingredient_data = ingredient.to_dict()
+        return jsonify(ingredient_data), 200
     
     elif request.method == 'PATCH':
         ingredient = Ingredient.query.filter_by(id=id).first()
@@ -3209,8 +3218,12 @@ def specific_instructions(id):
             excluded_keys = {'deleted', 'updated', 'new'}
 
             for key, value in data.items():
-                if key not in excluded_keys and not isinstance(value, dict):
-                    setattr(instruction, key, value)
+                if key in excluded_keys:
+                    continue
+                if isinstance(value, dict):
+                    print(f"Skipping field {key} because it's a nested object.")
+                    continue
+                setattr(instruction, key, value)
 
             db.session.commit()
             return jsonify(instruction.to_dict()), 200
