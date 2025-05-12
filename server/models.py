@@ -36,32 +36,46 @@ def random_avatar():
     return random.choice(avatars)
 
 markets = [
-    "market-default-1_1600px.png",
-    "market-default-2_1600px.png",
-    "market-default-3_1600px.png",
-    "market-default-4_1600px.png"
-    "market-default-5_1600px.png"
-    "market-default-6_1600px.png"
-    "market-default-7_1600px.png"
-    "market-default-8_1600px.png"
+    "market-default-1_1600px.jpg",
+    "market-default-2_1600px.jpg",
+    "market-default-3_1600px.jpg",
+    "market-default-4_1600px.jpg",
+    "market-default-5_1600px.jpg",
+    "market-default-6_1600px.jpg",
+    "market-default-7_1600px.jpg",
+    "market-default-8_1600px.jpg"
 ]
 
 def random_market():
     return random.choice(markets)
 
 vendors = [
-    "vendor-default-1_1600px.png",
-    "vendor-default-2_1600px.png",
-    "vendor-default-3_1600px.png"
-    "vendor-default-4_1600px.png"
-    "vendor-default-5_1600px.png"
-    "vendor-default-6_1600px.png"
-    "vendor-default-7_1600px.png"
-    "vendor-default-8_1600px.png"
+    "vendor-default-1_1600px.jpg",
+    "vendor-default-2_1600px.jpg",
+    "vendor-default-3_1600px.jpg",
+    "vendor-default-4_1600px.jpg",
+    "vendor-default-5_1600px.jpg",
+    "vendor-default-6_1600px.jpg",
+    "vendor-default-7_1600px.jpg",
+    "vendor-default-8_1600px.jpg"
 ]
 
 def random_vendor():
     return random.choice(vendors)
+
+recipes = [
+    "recipe-default-1_1600px.jpg",
+    "recipe-default-2_1600px.jpg",
+    "recipe-default-3_1600px.jpg",
+    "recipe-default-4_1600px.jpg",
+    "recipe-default-5_1600px.jpg",
+    "recipe-default-6_1600px.jpg",
+    "recipe-default-7_1600px.jpg",
+    "recipe-default-8_1600px.jpg"
+]
+
+def random_recipe():
+    return random.choice(recipes)
 
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
@@ -993,6 +1007,7 @@ class Recipe(db.Model, SerializerMixin):
     author = db.Column(db.String, nullable=True)
     is_gingham_team = db.Column(db.Boolean, nullable=False, default=False)
     image = db.Column(db.String, nullable=True)
+    image_default = db.Column(db.String, nullable=False, default=random_recipe)
     categories = db.Column(db.JSON, nullable=True)
     diet_categories = db.Column(db.JSON, nullable=True)
     prep_time_minutes = db.Column(db.Integer, nullable=False)
