@@ -4392,7 +4392,7 @@ def run():
         Recipe(
             id=2,
             title="Caprese Martini",
-            description="A refreshing savory cocktail for the perfect summer day.",
+            description="The Caprese Martini is a bold and savory twist on a classic, inspired by the fresh flavors of the beloved Italian Caprese salad. This inventive cocktail infuses vodka with basil, tomato, and olive oil, then adds white vermouth and a touch of balsamic vinegar for balanced acidity. The result is an herbaceous, silky drink with notes of ripe tomato, grassy olive oil, and a hint of tangy sweetness. Garnished with cherry tomatoes, it’s both visually striking and refreshingly complex, a refreshing savory cocktail for the perfect summer day.",
             author="Zak Wosewick",
             is_gingham_team=True,
             image="",
