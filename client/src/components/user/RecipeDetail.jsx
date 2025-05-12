@@ -243,10 +243,11 @@ function RecipeDetail() {
                         </div>
                     </div>
                     <div className='width-100'>
-                        {recipe.image && (
+                        {recipe.image ? (
                             <img src={recipe.image} alt={recipe.title} className="img-recipe" />
+                        ) : (
+                            <img className="img-recipe" src={`/recipe-images/_default-images/${recipe.image_default}`} alt="Recipe Image" />
                         )}
-                        <img className="img-recipe" src={`/recipe-images/LzYeux_120719_0033_1800px.jpg`} alt="Market Image" />
                     </div>
                 </div>
             </div>

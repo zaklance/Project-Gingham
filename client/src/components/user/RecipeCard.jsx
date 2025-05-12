@@ -19,10 +19,10 @@ function RecipeCard({ recipe, recipeFavs, handleClick, isClicked, setSelectedCat
         <div className="recipe-card" key={recipe.id}>
             <div>
                 <div className='badge-container'>
-                    {recipe.image ? (
+                    {recipe?.image ? (
                         <img className="img-recipe-card" src={`${siteURL}${recipe.image}`} alt="Recipe Image" />
                     ) : (
-                        <img className="img-recipe-card" src={`/recipe-images/LzYeux_120719_0033_1800px.jpg`} alt="Recipe Image" />
+                        <img className="img-recipe-card" src={`/recipe-images/_default-images/${recipe.image_default}`} alt="Recipe Image" />
                     )}
                     <button
                         className={`badge-fav-recipe-card btn-fav-blog margin-l-8 ${isClicked[recipe.id] || recipeFavs.some(fav => fav.recipe_id === recipe.id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
