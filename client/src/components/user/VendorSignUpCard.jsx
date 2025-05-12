@@ -11,7 +11,7 @@ function VendorSignUpCard() {
 
     return (
         <div className="market-card flex-space-between flex-column">
-            <img className='img-market-card' src={`/vendor-images/_default-images/vendor-default-1_1600px.png`} alt="Vendor Image" />
+            <img className='img-market-card' src={`/vendor-images/_default-images/vendor-default-1_1600px.jpg`} alt="Vendor Image" />
             <h2 className='center margin-t-8 margin-b-8'>Looking to Join?</h2>
             <div className='center'>
                 <p className='text-500'>Sell your goods on Gingham!</p>
