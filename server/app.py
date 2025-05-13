@@ -3218,12 +3218,8 @@ def specific_instructions(id):
             excluded_keys = {'deleted', 'updated', 'new'}
 
             for key, value in data.items():
-                if key in excluded_keys:
-                    continue
-                if isinstance(value, dict):
-                    print(f"Skipping field {key} because it's a nested object.")
-                    continue
-                setattr(instruction, key, value)
+                if key not in excluded_keys and not isinstance(value, dict):
+                    setattr(instruction, key, value)
 
             db.session.commit()
             return jsonify(instruction.to_dict()), 200
