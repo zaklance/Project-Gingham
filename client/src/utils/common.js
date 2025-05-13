@@ -79,3 +79,14 @@ export const vendors_default = {
     "Vendor 7": "vendor-default-7_1600px.png",
     "Vendor 8": "vendor-default-8_1600px.png"
 }
+
+export const recipes_default = {
+    "Recipe 1": "recipe-default-1_1600px.jpg",
+    "Recipe 2": "recipe-default-2_1600px.jpg",
+    "Recipe 3": "recipe-default-3_1600px.jpg",
+    "Recipe 4": "recipe-default-4_1600px.jpg",
+    "Recipe 5": "recipe-default-5_1600px.jpg",
+    "Recipe 6": "recipe-default-6_1600px.jpg",
+    "Recipe 7": "recipe-default-7_1600px.jpg",
+    "Recipe 8": "recipe-default-8_1600px.jpg"
+}

@@ -7,6 +7,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Fuse from 'fuse.js';
 import { formatMinutes } from '../../utils/helpers';
+import { recipes_default } from '../../utils/common';
 
 function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
     const [showDropdown, setShowDropdown] = useState(false);
@@ -92,6 +93,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                 author: r.author,
                 is_gingham_team: r.is_gingham_team,
                 image: r.image,
+                image_default: r.image_default,
                 categories: r.categories,
                 diet_categories: r.diet_categories,
                 prep_time_minutes: r.prep_time_minutes,
@@ -808,6 +810,10 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
         }
     };
 
+    console.log(selectedRecipe)
+    console.log(tempRecipeData?.image)
+    console.log(tempRecipeData?.image_default)
+
 
     return (
         <>
@@ -849,16 +855,16 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                 </tr>
                                 <tr>
                                     <td className='cell-title btn-grey m-hidden'>Image:</td>
-                                    <td className='cell-text cell-recipe' colSpan={4}>
-                                        {tempRecipeData.image && (
+                                    <td className='cell-text cell-recipe' colSpan={3} rowSpan={2}>
+                                        {tempRecipeData?.image !== null && (
                                             <img 
                                             style={{ maxWidth: '100%', height: 'auto' }}
-                                            src={tempRecipeData.image ? `${siteURL}${tempRecipeData.image}` : `/recipe-images/_default-images/${tempRecipeData.image_default}`}
+                                            src={tempRecipeData?.image ? `${siteURL}${tempRecipeData.image}` : `/recipe-images/_default-images/${tempRecipeData.image_default}`}
                                             alt="Market Image"
                                             />
                                         )}
                                     </td>
-                                    <td className='cell-text cell-recipe' colSpan={1}>
+                                    <td className='cell-text cell-recipe' colSpan={2}>
                                         <div className='flex-start flex-center-align'>
                                             <button className='btn btn-small btn-file btn-blue' onClick={handleImageDelete}>Delete Image</button>
                                             <label htmlFor='file-upload' className='btn btn-small btn-file btn-blue nowrap'>Choose File{image && <span id="file-name" className='text-white-background margin-l-8'>{image.name}</span>}</label>
@@ -873,16 +879,32 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className='cell-title btn-grey m-hidden'>Description:</td>
-                                    <td className='cell-text cell-recipe' colSpan={5}>
-                                        <textarea
-                                            className="search-bar cell-80 textarea-recipe"
-                                            name="description"
-                                            type="text"
-                                            placeholder="Recipe description (3-6 sentences)..."
-                                            value={tempRecipeData.description}
+                                    <td className='cell-title btn-grey m-hidden'>Default Image:</td>
+                                    <td className='cell-text cell-recipe' colSpan={4}>
+                                        <select
+                                            name="image_default"
+                                            className='select-recipe'
+                                            value={tempRecipeData ? tempRecipeData.image_default : ''}
                                             onChange={handleInputChange}
-                                        />
+                                        >
+                                            <option value="">Select</option>
+                                            {Object.entries(recipes_default).map(([key, value], index) => (
+                                                <option key={index} value={value}>
+                                                    {key}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <button 
+                                            type="button"
+                                            className='btn btn-small margin-t-8'
+                                            onClick={() => {
+                                                const keys = Object.keys(recipes_default);
+                                                const randomKey = keys[Math.floor(Math.random() * keys.length)];
+                                                handleInputChange({ target: { name: "image_default", value: recipes_default[randomKey] } });
+                                            }}
+                                        >
+                                            Randomize
+                                        </button>
                                     </td>
                                 </tr>
                                 <tr>
@@ -915,6 +937,19 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                                 />
                                             </FormGroup>
                                         </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td className='cell-title btn-grey m-hidden'>Description:</td>
+                                    <td className='cell-text cell-recipe' colSpan={5}>
+                                        <textarea
+                                            className="search-bar cell-80 textarea-recipe"
+                                            name="description"
+                                            type="text"
+                                            placeholder="Recipe description (3-6 sentences)..."
+                                            value={tempRecipeData.description}
+                                            onChange={handleInputChange}
+                                        />
                                     </td>
                                 </tr>
                             </tbody>
