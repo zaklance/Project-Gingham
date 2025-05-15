@@ -118,12 +118,12 @@ function VendorDetail() {
             const updatedCartItems = [...cartItems, {
                 vendor_name: vendor.name,
                 vendor_id: vendor.id,
-                market_id: marketDay.markets.id,
+                market_id: marketDay.market.id,
                 fee_vendor: basketInCart.fee_vendor,
                 fee_user: basketInCart.fee_user,
-                market_name: marketDay.markets.name,
-                location: marketDay.markets.location,
-                coordinates: marketDay.markets.coordinates,
+                market_name: marketDay.market.name,
+                location: marketDay.market.location,
+                coordinates: marketDay.market.coordinates,
                 id: basketInCart.id,
                 price: basketInCart.price,
                 pickup_start: basketInCart.pickup_start,
@@ -476,7 +476,7 @@ function VendorDetail() {
                                                 {allBaskets.length > 0 ? (
                                                     `Available Baskets: ${allBaskets.length}`
                                                 ) : (
-                                                    <a className="link-edit" onClick={() => handleNotifyMe(market.market_day.markets)}>Notify Me</a>
+                                                    <a className="link-edit" onClick={() => handleNotifyMe(market.market_day.market)}>Notify Me</a>
                                                 )}
                                                 <br />
                                                 {formatPickupText(firstBasket, timeConverter, marketDateConvert)}

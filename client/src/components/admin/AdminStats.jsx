@@ -28,7 +28,7 @@ function AdminStats() {
     const [selectedUserRangeGraph, setSelectedUserRangeGraph] = useState(7);
     const [userData, setUserData] = useState(null);
     const [isExporting, setIsExporting] = useState(false);
-    const [exportMessaage, setExportMessage] = useState("");
+    const [exportMessage, setExportMessage] = useState("");
 
     const chartRef = useRef();
     const chartUserRef = useRef();
@@ -433,104 +433,106 @@ function AdminStats() {
         setSelectedUserRangeGraph(event.target.value);
     };
 
-    useEffect(() => {
-        const ctx = document.getElementById(`chart-baskets`);
+    console.log(baskets)
 
-        if (chartRef.current) {
-            chartRef.current.destroy();
-        }
+    // useEffect(() => {
+    //     const ctx = document.getElementById(`chart-baskets`);
 
-        // Process baskets and filter based on the selected date range
-        function processBaskets(baskets) {
-            const isFuture = selectedRangeGraph < 0;
+    //     if (chartRef.current) {
+    //         chartRef.current.destroy();
+    //     }
 
-            // Get allowed dates based on the range
-            const allowedDates = getDatesForRange(selectedRangeGraph).map((date) =>
-                new Date(date).toDateString()
-            );
+    //     // Process baskets and filter based on the selected date range
+    //     function processBaskets(baskets) {
+    //         const isFuture = selectedRangeGraph < 0;
 
-            // Filter baskets based on allowed dates
-            const filteredBaskets = baskets.filter((basket) => {
-                const basketDate = new Date(basket.sale_date).toDateString();
-                return allowedDates.includes(basketDate);
-            });
+    //         // Get allowed dates based on the range
+    //         const allowedDates = getDatesForRange(selectedRangeGraph).map((date) =>
+    //             new Date(date).toDateString()
+    //         );
 
-            const soldData = {};
-            const unsoldData = {};
+    //         // Filter baskets based on allowed dates
+    //         const filteredBaskets = baskets.filter((basket) => {
+    //             const basketDate = new Date(basket.sale_date).toDateString();
+    //             return allowedDates.includes(basketDate);
+    //         });
 
-            // Group baskets by sale_date and categorize into sold/unsold
-            filteredBaskets.forEach((basket) => {
-                const basketDate = new Date(basket.sale_date).toDateString(); // Normalize date
-                if (basket.is_sold) {
-                    soldData[basketDate] = (soldData[basketDate] || 0) + 1;
-                } else {
-                    unsoldData[basketDate] = (unsoldData[basketDate] || 0) + 1;
-                }
-            });
+    //         const soldData = {};
+    //         const unsoldData = {};
 
-            return { soldData, unsoldData };
-        }
+    //         // Group baskets by sale_date and categorize into sold/unsold
+    //         filteredBaskets.forEach((basket) => {
+    //             const basketDate = new Date(basket.sale_date).toDateString(); // Normalize date
+    //             if (basket.is_sold) {
+    //                 soldData[basketDate] = (soldData[basketDate] || 0) + 1;
+    //             } else {
+    //                 unsoldData[basketDate] = (unsoldData[basketDate] || 0) + 1;
+    //             }
+    //         });
+
+    //         return { soldData, unsoldData };
+    //     }
         
-        const { soldData, unsoldData } = processBaskets(baskets);
+    //     const { soldData, unsoldData } = processBaskets(baskets);
         
-        const data = {
-            labels: getDatesForRange(selectedRangeGraph),
-            datasets: [
-                {
-                    label: 'Sold Baskets',
-                    data: getDatesForRange(selectedRangeGraph).map(date => soldData[date] || 0),
-                    borderColor: "#007BFF",
-                    backgroundColor: "#6c7ae0",
-                    fill: true,
-                    borderWidth: 2,
-                    borderRadius: 2,
-                    borderSkipped: false,
-                    tension: 0.1,
-                },
-                {
-                    label: 'Unsold Baskets',
-                    data: getDatesForRange(selectedRangeGraph).map(date => unsoldData[date] || 0),
-                    borderColor: "#ff6699",
-                    backgroundColor: "#ff806b",
-                    fill: true,
-                    borderWidth: 2,
-                    borderRadius: 2,
-                    borderSkipped: false,
-                    tension: 0.1,
-                }
-            ]
-        };
+    //     const data = {
+    //         labels: getDatesForRange(selectedRangeGraph),
+    //         datasets: [
+    //             {
+    //                 label: 'Sold Baskets',
+    //                 data: getDatesForRange(selectedRangeGraph).map(date => soldData[date] || 0),
+    //                 borderColor: "#007BFF",
+    //                 backgroundColor: "#6c7ae0",
+    //                 fill: true,
+    //                 borderWidth: 2,
+    //                 borderRadius: 2,
+    //                 borderSkipped: false,
+    //                 tension: 0.1,
+    //             },
+    //             {
+    //                 label: 'Unsold Baskets',
+    //                 data: getDatesForRange(selectedRangeGraph).map(date => unsoldData[date] || 0),
+    //                 borderColor: "#ff6699",
+    //                 backgroundColor: "#ff806b",
+    //                 fill: true,
+    //                 borderWidth: 2,
+    //                 borderRadius: 2,
+    //                 borderSkipped: false,
+    //                 tension: 0.1,
+    //             }
+    //         ]
+    //     };
 
-        chartRef.current = new Chart(ctx, {
-            type: 'line',
-            data: data,
-            options: {
-                scales: {
-                    x: {
-                        stacked: true,
-                    },
-                    y: {
-                        stacked: true,
-                        min: 0,
-                        ticks: {
-                            // stepSize: 1
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true
-                    }
-                }
-            }
-        });
+    //     chartRef.current = new Chart(ctx, {
+    //         type: 'line',
+    //         data: data,
+    //         options: {
+    //             scales: {
+    //                 x: {
+    //                     stacked: true,
+    //                 },
+    //                 y: {
+    //                     stacked: true,
+    //                     min: 0,
+    //                     ticks: {
+    //                         // stepSize: 1
+    //                     }
+    //                 }
+    //             },
+    //             plugins: {
+    //                 legend: {
+    //                     display: true
+    //                 }
+    //             }
+    //         }
+    //     });
 
-        return () => {
-            if (chartRef.current) {
-                chartRef.current.destroy();
-            }
-        };
-    }, [baskets, selectedRangeGraph]);
+    //     return () => {
+    //         if (chartRef.current) {
+    //             chartRef.current.destroy();
+    //         }
+    //     };
+    // }, [baskets, selectedRangeGraph]);
 
     function processJoinDates(dates) {
         if (!Array.isArray(dates)) {

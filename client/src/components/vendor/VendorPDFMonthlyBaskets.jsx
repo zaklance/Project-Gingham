@@ -52,7 +52,7 @@ const ReceiptDocument = ({ filteredBaskets, year, month }) => {
                         <View key={index} wrap={false}>
                             <View style={styles.row}>
                                 <Text>Basket ID: {item.id}</Text>
-                                <Text>{item.market_day.markets.name}</Text>
+                                <Text>{item.market_day.market.name}</Text>
                                 <Text>{formatBasketDate(item.sale_date)}</Text>
                             </View>
                             <View style={styles.rowItem}>

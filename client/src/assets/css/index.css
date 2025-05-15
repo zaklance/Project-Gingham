@@ -476,6 +476,10 @@ article {
   margin-left: 16px;
 }
 
+.margin-l-20 {
+  margin-left: 20px;
+}
+
 .margin-l-24 {
   margin-left: 24px;
 }
@@ -2320,6 +2324,10 @@ link {
 
 .input-instruction {
   width: calc(100% - 54px);
+}
+
+.input-caption {
+  width: calc(100% - 32px);
 }
 
 #address-address {

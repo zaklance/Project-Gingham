@@ -16,6 +16,7 @@ const AdminBlog = () => {
     const [uploadedFolders, setUploadedFolders] = useState({});
     const [copied, setCopied] = useState({});
     const [openFolder, setOpenFolder] = useState({});
+    const [pendingBlogImages, setPendingBlogImages] = useState([]);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -32,6 +33,31 @@ const AdminBlog = () => {
             })
             .catch(error => console.error('Error fetching blogs', error));
     }, []);
+
+    const handleSelectBlogImage = (file) => {
+        const maxFileSize = 10 * 1024 * 1024; // 10 MB limit
+        if (file.size > maxFileSize) {
+            toast.warning('File size exceeds 10 MB. Please upload a smaller file', {
+                autoClose: 4000,
+            });
+            return;
+        }
+
+        const previewUrl = URL.createObjectURL(file);
+
+        setPendingBlogImages(prev => [
+            ...prev,
+            {
+                file,
+                previewUrl
+            }
+        ]);
+    };
+
+    const handleDeleteBlogImage = (imageIndex) => {
+        setPendingBlogImages(prev => prev.filter((_, idx) => idx !== imageIndex));
+        setImages(prev => prev.filter((_, idx) => idx !== imageIndex));
+    };
 
     const handleFileChange = (event) => {
         const files = Array.from(event.target.files);
@@ -52,7 +78,7 @@ const AdminBlog = () => {
         setUploading(true);
 
         try {
-            const response = await fetch("/api/upload-blog-images", {
+            const response = await fetch("/api/upload/blog-images", {
                 method: "POST",
                 body: formData,
             });
@@ -62,6 +88,7 @@ const AdminBlog = () => {
                 console.log("Images uploaded successfully:", data);
                 fetchImages();
                 setImages([]);
+                setPendingBlogImages([]);
             } else {
                 const errorData = await response.json();
                 console.log(errorData.error || "Failed to upload images.");
@@ -197,15 +224,26 @@ const AdminBlog = () => {
                     <div>
                         <div>
                             <div className='flex-start flex-center-align margin-t-8'>
-                                <label htmlFor='file-upload' className='btn btn-small btn-file nowrap margin-b-8'>Choose Files</label>
-                                <input
-                                    id="file-upload"
-                                    type="file"
-                                    name="files"
-                                    accept="image/*"
-                                    multiple
-                                    onChange={handleFileChange}
-                                />
+                                <label className='btn btn-small nowrap margin-b-8'>
+                                    Choose Files
+                                    <input
+                                        id="file-upload"
+                                        type="file"
+                                        name="files"
+                                        accept="image/*"
+                                        multiple
+                                        onChange={(e) => {
+                                            if (e.target.files.length > 0) {
+                                                const files = Array.from(e.target.files);
+                                                setImages(files);
+                                                files.forEach(file => {
+                                                    handleSelectBlogImage(file);
+                                                });
+                                                e.target.value = null;
+                                            }
+                                        }}
+                                    />
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -223,6 +261,26 @@ const AdminBlog = () => {
                         )}
                     </div>
                 </div>
+                {pendingBlogImages && (
+                    <div className='flex-start flex-gap-8'>
+                        {pendingBlogImages.map((imgObj, imgIndex) => (
+                            <div key={`preview-${imgIndex}`} className="flex-start flex-column margin-t-4">
+                                <img
+                                    src={imgObj.previewUrl}
+                                    alt="Blog preview"
+                                    className="img-market-card"
+                                />
+                                <button
+                                    className="btn btn-delete btn-red"
+                                    onClick={() => handleDeleteBlogImage(imgIndex)}
+                                    title="Delete image"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
                 {uploadedFolders && Object.keys(uploadedFolders).length > 0 && (
                     <div className='margin-t-12 margin-b-32'>
                         <details className='details-images box-scroll'>

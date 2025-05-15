@@ -13,7 +13,6 @@ function RecipeCard({ recipe, recipeFavs, handleClick, isClicked, setSelectedCat
         navigate(`/user/recipes/${recipe.id}`);
     };
 
-    console.log(recipe.diet_categories)
 
     return (
         <div className="recipe-card" key={recipe.id}>

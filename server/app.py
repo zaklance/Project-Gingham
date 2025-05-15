@@ -80,14 +80,16 @@ USER_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "user-images")
 MARKET_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "market-images")
 VENDOR_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "vendor-images")
 RECIPE_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "recipe-images")
+INSTRUCTION_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "instruction-images")
 BLOG_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, 'blog-images')
 os.makedirs(USER_UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(MARKET_UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(VENDOR_UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(RECIPE_UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(INSTRUCTION_UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(BLOG_UPLOAD_FOLDER, exist_ok=True)
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'svg', 'heic'}
-MAX_SIZE = 1.5 * 1024 * 1024
+MAX_SIZE = 1.10 * 1024 * 1024
 MAX_RES = (1800, 1800)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URI']
@@ -391,7 +393,85 @@ def upload_file():
 
     return {'error': 'File type not allowed'}, 400
 
-@app.route('/api/upload-blog-images', methods=['POST'])
+@app.route('/api/upload/instruction-images', methods=['POST'])
+def upload_instruction_image():
+    if 'image' not in request.files:
+        return {'error': 'No file part in the request'}, 400
+
+    file = request.files['image']
+
+    if file.filename == '':
+        return {'error': 'No image selected'}, 400
+
+    if file and allowed_file(file.filename):
+        # Use the original filename
+        original_filename = secure_filename(file.filename)
+
+        # Get the instruction ID
+        instruction_id = request.form.get('instruction_id')
+        image_index = request.form.get('image_index', '1')
+        caption = request.form.get('caption', '')
+        
+        if not instruction_id:
+            return {'error': 'Instruction ID is required'}, 400
+
+        # Create instruction upload folder
+        INSTRUCTION_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, "instruction-images")
+        upload_folder = os.path.join(INSTRUCTION_UPLOAD_FOLDER, str(instruction_id))
+        
+        # Ensure the upload folder exists
+        os.makedirs(upload_folder, exist_ok=True)
+
+        # Generate a filename that includes the index
+        base, ext = os.path.splitext(original_filename)
+        indexed_filename = f"{base}_{image_index}{ext}"
+        file_path = os.path.join(upload_folder, indexed_filename)
+
+        try:
+            if original_filename.rsplit('.', 1)[1].lower() == 'svg':
+                # Save the SVG file directly without resizing or compressing
+                file.save(file_path)
+            else:
+                # Process and resize image for non-SVG files using Celery task
+                image_bytes = file.read()
+                task = process_image.delay(image_bytes, indexed_filename, MAX_SIZE, MAX_RES)
+                task_id = task.id
+
+                # Poll Celery to get processed image
+                import time
+                task_result = None
+                while not task_result:
+                    task_state = task.state
+                    if task_state == 'SUCCESS':
+                        task_result = task.get()
+                    elif task_state == 'FAILURE':
+                        return {'error': 'Image processing failed'}, 500
+                    time.sleep(2)  # Wait before checking again
+
+                # Decode processed image and save it
+                processed_image_bytes = base64.b64decode(task_result['image_data'])
+                file_path = os.path.join(upload_folder, task_result['filename'])
+                with open(file_path, "wb") as f:
+                    f.write(processed_image_bytes)
+
+            # The file path to be stored in the database
+            relative_path = f'/api/uploads/instruction-images/{instruction_id}/{os.path.basename(file_path)}'
+            
+            return {
+                'message': 'File successfully uploaded', 
+                'filename': relative_path,
+                'caption': caption,
+                'index': image_index
+            }, 201
+
+        except Exception as e:
+            print(f"Error during instruction image upload: {str(e)}")
+            traceback.print_exc()
+            return {'error': f'Failed to upload image: {str(e)}'}, 500
+
+    return {'error': 'File type not allowed'}, 400
+
+@app.route('/api/upload/blog-images', methods=['POST'])
 def upload_blog_images():
     if 'files' not in request.files:
         return {'error': 'No files part in the request'}, 400
@@ -461,8 +541,8 @@ def get_blog_images():
         
         if images:
             images_by_folder[folder] = images
-            print(images_by_folder)
-            print(images)
+            # print(images_by_folder)
+            # print(images)
 
     return {'folders': images_by_folder}
 
@@ -2308,7 +2388,7 @@ def get_vendor_markets():
 
         query = VendorMarket.query.options(
             db.joinedload(VendorMarket.vendor),
-            db.joinedload(VendorMarket.market_day).joinedload(MarketDay.markets)
+            db.joinedload(VendorMarket.market_day).joinedload(MarketDay.market)
         )
 
         if vendor_id:
@@ -2317,7 +2397,7 @@ def get_vendor_markets():
             query = query.filter(VendorMarket.market_day.has(MarketDay.market_id == market_id))
         if is_visible is not None:
             is_visible_bool = is_visible.lower() == 'true'
-            query = query.filter(VendorMarket.market_day.has(MarketDay.markets.has(Market.is_visible == is_visible_bool)))
+            query = query.filter(VendorMarket.market_day.has(MarketDay.market.has(Market.is_visible == is_visible_bool)))
             
         vendor_markets = query.all()
         return jsonify([vendor_market.to_dict() for vendor_market in vendor_markets]), 200
@@ -2475,6 +2555,7 @@ def handle_baskets():
             return jsonify([basket.to_dict() for basket in saved_baskets]), 200
 
         except Exception as e:
+            app.logger.error(f"Error fetching baskets: {e}")
             return jsonify({'message': 'No saved baskets found'}), 200
 
     elif request.method == 'POST':
@@ -2675,8 +2756,8 @@ def get_user_sales_history():
                 "vendor_name": basket.vendor.name,
                 "vendor_id": basket.vendor.id,
                 "sale_date": basket.sale_date.strftime('%Y-%m-%d'),
-                "market_name": basket.market_day.markets.name,
-                "market_id": basket.market_day.markets.id,
+                "market_name": basket.market_day.market.name,
+                "market_id": basket.market_day.market.id,
                 "price": basket.price,
                 "value": basket.value,
                 "baskets_count": 1
@@ -2710,8 +2791,8 @@ def get_vendor_sales_history():
                     "vendor_name": basket.vendor.name,
                     "vendor_id": basket.vendor.id,
                     "sale_date": sale_date.strftime('%Y-%m-%d'),
-                    "market_name": basket.market_day.markets.name if basket.market_day else None,
-                    "market_id": basket.market_day.markets.id if basket.market_day else None,
+                    "market_name": basket.market_day.market.name if basket.market_day else None,
+                    "market_id": basket.market_day.market.id if basket.market_day else None,
                     "value": basket.value,
                     "price": basket.price,
                     "pickup_start": basket.pickup_start.strftime('%H:%M'),
@@ -2806,15 +2887,19 @@ def all_recipes():
                 title=data.get('title'),
                 description=data.get('description'),
                 author=data.get('author'),
+                attribution=data.get('attribution'),
+                attribution_link=data.get('attribution_link'),
                 is_gingham_team=data.get('is_gingham_team'),
                 image=data.get('image'),
+                image_default=data.get('image_default'),
                 categories=data.get('categories'),
                 diet_categories=data.get('diet_categories'),
                 prep_time_minutes=data.get('prep_time_minutes'),
                 cook_time_minutes=data.get('cook_time_minutes'),
                 total_time_minutes=data.get('total_time_minutes'),
                 serve_count=data.get('serve_count'),
-                skill_level=data.get('skill_level')
+                skill_level=data.get('skill_level'),
+                seasons=data.get('seasons'),
             )
             db.session.add(new_recipe)
             db.session.flush()
@@ -2847,6 +2932,8 @@ def all_recipes():
                         instruction_group_id=new_group.id,
                         step_number=inst.get('step_number'),
                         description=inst.get('description'),
+                        images={},
+                        captions={},
                     )
                     db.session.add(new_inst)
             
@@ -2860,7 +2947,15 @@ def all_recipes():
                 db.session.add(new_s)
 
             db.session.commit()
-            return new_recipe.to_dict(), 201
+
+            response_data = new_recipe.to_dict()
+
+            if 'instruction_groups' in response_data:
+                for i, group in enumerate(instruction_groups):
+                    if i < len(response_data['instruction_groups']):
+                        response_data['instruction_groups'][i]['original_group_id'] = group.get('id')
+
+            return response_data, 201
 
         except Exception as e:
             db.session.rollback()
@@ -3190,6 +3285,8 @@ def all_instructions():
             instruction_group_id=data.get('instruction_group_id'),
             step_number=data.get('step_number'),
             description=data.get('description'),
+            images=data.get('images'),
+            captions=data.get('captions'),
         )
         try:
             db.session.add(new_instruction)
@@ -3217,6 +3314,46 @@ def specific_instructions(id):
             data = request.get_json()
             excluded_keys = {'deleted', 'updated', 'new'}
 
+            # Handle images and captions specially
+            if 'images' in data:
+                # For images, merge existing dict with new one
+                current_images = instruction.images or {}
+                new_images = data['images'] or {}
+
+                # If we're replacing all images, just use the new dict
+                if data.get('replace_all_images', False):
+                    instruction.images = new_images
+                else:
+                    # Otherwise merge the dictionaries
+                    merged_images = {**current_images, **new_images}
+                    instruction.images = merged_images
+
+                # Remove images key so we don't process it again below
+                data.pop('images')
+
+                # Also remove the replace flag if it exists
+                data.pop('replace_all_images', None)
+
+            if 'captions' in data:
+                # For captions, merge existing dict with new one
+                current_captions = instruction.captions or {}
+                new_captions = data['captions'] or {}
+
+                # If we're replacing all captions, just use the new dict
+                if data.get('replace_all_captions', False):
+                    instruction.captions = new_captions
+                else:
+                    # Otherwise merge the dictionaries
+                    merged_captions = {**current_captions, **new_captions}
+                    instruction.captions = merged_captions
+
+                # Remove captions key so we don't process it again below
+                data.pop('captions')
+
+                # Also remove the replace flag if it exists
+                data.pop('replace_all_captions', None)
+
+            # Process regular fields
             for key, value in data.items():
                 if key not in excluded_keys and not isinstance(value, dict):
                     setattr(instruction, key, value)
@@ -3228,17 +3365,24 @@ def specific_instructions(id):
             db.session.rollback()
             traceback.print_exc()
             return {'error': str(e)}, 500
-    
+
     elif request.method == 'DELETE':
         instruction = Instruction.query.filter_by(id=id).first()
         if not instruction: 
             return {'error': 'instruction not found'}, 404
-        
+
         try: 
+            # Delete associated image files if they exist
+            if instruction.images:
+                for image_filename in instruction.images.values():
+                    image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+                    if os.path.exists(image_path):
+                        os.remove(image_path)
+
             db.session.delete(instruction)
             db.session.commit()
             return {}, 204
-        
+
         except Exception as e: 
             db.session.rollback()
             return {'error': str(e)}, 500

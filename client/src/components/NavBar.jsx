@@ -383,6 +383,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     }, [vendorUserId]);
 
     useEffect(() => {
+        if (!userId) return;
         const today = new Date().toLocaleDateString('en-CA');
         // console.log('Formatted date being sent:', today);
 
@@ -451,9 +452,9 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li>
                             <NavLink className='nav-tab color-3 btn-nav' to="/user/vendors" state={{ resetFilters: true }} title="Vendors">Vendors</NavLink>
                         </li>
-                        {/* <li>
+                        <li>
                             <NavLink className='nav-tab color-4 btn-nav' to="/user/recipes" state={{ resetFilters: true }} title="Recipes">Recipes</NavLink>
-                        </li> */}
+                        </li>
                     </>
                 )}
                 {/* User Login / Logout */}

@@ -225,7 +225,7 @@ class Market(db.Model, SerializerMixin):
     # Relationships
     reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic', cascade="all, delete-orphan")
     market_favorites = db.relationship('MarketFavorite', back_populates='market', lazy='dynamic', cascade="all, delete-orphan")
-    market_days = db.relationship('MarketDay', back_populates='markets', cascade="all, delete-orphan")
+    market_days = db.relationship('MarketDay', back_populates='market', cascade="all, delete-orphan")
 
     serialize_rules = (
         '-reviews.market', 
@@ -261,13 +261,13 @@ class MarketDay(db.Model, SerializerMixin):
     day_of_week = db.Column(db.Integer, nullable=True)
 
     # Relationships
-    markets = db.relationship('Market', back_populates='market_days')
+    market = db.relationship('Market', back_populates='market_days')
     vendor_markets = db.relationship( 'VendorMarket', back_populates="market_day")
 
     serialize_rules = (
-        '-markets.market_days', 
-        '-markets.reviews', 
-        '-markets.market_favorites', 
+        '-market.market_days', 
+        '-market.reviews', 
+        '-market.market_favorites', 
         '-vendor_markets.market_day', 
         '-vendor_markets.vendor.reviews'
     )
@@ -280,7 +280,7 @@ class MarketDay(db.Model, SerializerMixin):
         return value
 
     def __repr__(self) -> str:
-        return f"<Market {self.name}>"
+        return f"<MarketDay {self.market_id}>"
     
 class Vendor(db.Model, SerializerMixin):
     __tablename__ = 'vendors'
@@ -342,9 +342,9 @@ class VendorMarket(db.Model, SerializerMixin):
     serialize_rules = (
         '-vendor.vendor_markets', 
         '-market_day.vendor_markets', 
-        '-market_day.markets.market_favorites', 
+        '-market_day.market.market_favorites', 
         '-vendor.vendor_favorites', 
-        'market_day.markets.is_visible', 
+        'market_day.market.is_visible', 
         '-vendor.reviews'
     )
 
@@ -649,7 +649,11 @@ class Basket(db.Model, SerializerMixin):
         '-vendor.reviews', 
         '-vendor.vendor_markets',
         '-vendor.vendor_favorites',
-        '-user_issues.basket'
+        '-user_issues.basket',
+        '-vendor',
+        '-market_day',
+        '-qr_codes',
+        '-user_issues'
     )
 
     # @validates('sale_date')
@@ -683,7 +687,7 @@ class Basket(db.Model, SerializerMixin):
         return value
 
     def __repr__(self):
-        return (f"<Basket ID: {self.id}, Vendor: {self.vendor.name}, "
+        return (f"<Basket ID: {self.id}, Vendor ID: {self.vendor_id}, "
                 f"Market ID: {self.market_day_id}, Sold: {self.is_sold}, Value: {self.value}>")
 
 class UserNotification(db.Model, SerializerMixin):
@@ -1006,6 +1010,8 @@ class Recipe(db.Model, SerializerMixin):
     description = db.Column(db.String, nullable=False)
     author = db.Column(db.String, nullable=True)
     is_gingham_team = db.Column(db.Boolean, nullable=False, default=False)
+    attribution = db.Column(db.String, nullable=True)
+    attribution_link = db.Column(db.String, nullable=True)
     image = db.Column(db.String, nullable=True)
     image_default = db.Column(db.String, nullable=False, default=random_recipe)
     categories = db.Column(db.JSON, nullable=True)
@@ -1016,6 +1022,7 @@ class Recipe(db.Model, SerializerMixin):
     serve_count = db.Column(db.Integer, nullable=False)
     skill_level = db.Column(db.Integer, nullable=False)
     post_date = db.Column(db.Date, default=date.today)
+    seasons = db.Column(db.JSON, nullable=True)
 
     # Relationships
     ingredients = db.relationship("RecipeIngredient", back_populates="recipe", cascade="all, delete-orphan")
@@ -1139,6 +1146,8 @@ class Instruction(db.Model, SerializerMixin):
     instruction_group_id = db.Column(db.Integer, db.ForeignKey('instruction_groups.id'), nullable=True)
     step_number = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String, nullable=False)
+    images = db.Column(MutableDict.as_mutable(JSON), nullable=True, default={})
+    captions = db.Column(MutableDict.as_mutable(JSON), nullable=True, default={})
 
     # Relationship
     recipe = relationship("Recipe", back_populates="instructions")
@@ -1160,6 +1169,15 @@ class Instruction(db.Model, SerializerMixin):
         '-recipe.serve_count',
         '-recipe.total_time_minutes'
         )
+    
+    def to_dict(self):
+        data = super().to_dict()
+        # Ensure images and captions are dicts
+        if data.get('images') is None:
+            data['images'] = {}
+        if data.get('captions') is None:
+            data['captions'] = {}
+        return data
 
     def __repr__(self) -> str:
         recipe_title = self.recipe.title if self.recipe else "None"

@@ -13,10 +13,10 @@ function AdminRecipeCard({ recipe, setSearchCategories, setSearchDiets, setSelec
     return (
         <div className="recipe-card" key={recipe.id}>
             <div>
-                {recipe.image ? (
+                {recipe?.image ? (
                     <img className="img-recipe-card" src={`${siteURL}${recipe.image}`} alt="Recipe Image" />
                 ) : (
-                    <img className="img-recipe-card" src={`/recipe-images/LzYeux_120719_0033_1800px.jpg`} alt="Recipe Image" />
+                        <img className="img-recipe-card" src={`/recipe-images/_default-images/${recipe.image_default}`} alt="Recipe Image" />
                 )}
                 <div className='text-center'>
                     <h4>{recipe.title}</h4>

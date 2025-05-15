@@ -42,7 +42,7 @@ import traceback
 
 serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 
-MAX_SIZE = 1.5 * 1024 * 1024
+MAX_SIZE = 1.10 * 1024 * 1024
 MAX_RES = (1800, 1800)
 
 def log_mem(label=""):
@@ -957,51 +957,61 @@ def process_image(self, image_bytes, filename, max_size=MAX_SIZE, resolution=MAX
 @celery.task(queue='default')
 def reset_market_status():
     """Reset all markets' is_current status to False at the start of each year."""
-    session = Session()
     try:
         # Set all Markets.is_current to False
-        session.query(Market).update({Market.is_current: False})
-        session.commit()
+        db.session.query(Market).update({Market.is_current: False})
+        db.session.commit()
         print("All markets have been set to is_current=False for the new year.")
     except Exception as e:
-        session.rollback()
+        db.session.rollback()
         print(f"Error resetting market status: {e}")
     finally:
-        session.close()
+        db.session.close()
 
 @celery.task(queue='default')
 def update_vendor_user_market_locations(vendor_user_id):
     """Update market locations for a vendor user when they are created."""
-    session = Session()
-    try:
-        # Get the vendor user
-        vendor_user = session.query(VendorUser).get(vendor_user_id)
-        if not vendor_user:
-            print(f"Vendor User ID={vendor_user_id} not found.")
-            return
+    from app import app
+    with app.app_context():
+        try:
+            # Get the vendor user
+            vendor_user = db.session.query(VendorUser).get(vendor_user_id)
+            if not vendor_user:
+                print(f"Vendor User ID={vendor_user_id} not found.")
+                return
 
-        # Retrieve all market_day_ids associated with the vendor
-        market_days = session.query(VendorMarket.market_day_id).filter_by(vendor_id=vendor_user.vendor_id).all()
-        market_day_ids = [md.market_day_id for md in market_days]
+            # Retrieve all market_day_ids associated with the vendor
+            vendor_ids = list(vendor_user.vendor_id.values()) if vendor_user.vendor_id else []
 
-        if not market_day_ids:
-            print(f"No market locations found for Vendor ID={vendor_user.vendor_id}. Skipping update.")
-            return
+            if not vendor_ids:
+                print(f"No vendor IDs found for Vendor User ID={vendor_user_id}. Skipping update.")
+                return
 
-        # Update SettingsVendor for this vendor user
-        settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user_id).first()
-        if settings:
-            existing_market_locations = set(settings.market_locations or [])
-            updated_market_locations = list(existing_market_locations.union(set(market_day_ids)))
-            settings.market_locations = updated_market_locations
-            session.commit()
-            print(f"Updated market locations for Vendor User ID={vendor_user_id}")
+            market_days = (
+                db.session.query(VendorMarket.market_day_id)
+                .filter(VendorMarket.vendor_id.in_(vendor_ids))
+                .all()
+            )
+            market_day_ids = [md.market_day_id for md in market_days]
 
-    except Exception as e:
-        session.rollback()
-        print(f"Error updating market locations for Vendor User ID={vendor_user_id}: {e}")
-    finally:
-        session.close()
+            if not market_day_ids:
+                print(f"No market locations found for Vendor ID={vendor_user.vendor_id}. Skipping update.")
+                return
+
+            # Update SettingsVendor for this vendor user
+            settings = db.session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user_id).first()
+            if settings:
+                existing_market_locations = set(settings.market_locations or [])
+                updated_market_locations = list(existing_market_locations.union(set(market_day_ids)))
+                settings.market_locations = updated_market_locations
+                db.session.commit()
+                print(f"Updated market locations for Vendor User ID={vendor_user_id}")
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error updating market locations for Vendor User ID={vendor_user_id}: {e}")
+        finally:
+            db.session.close()
 
 # Register event listeners
 @event.listens_for(VendorUser, 'after_insert')

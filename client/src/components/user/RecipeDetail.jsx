@@ -28,11 +28,16 @@ function RecipeDetail() {
                 'Content-Type': 'application/json',
             },
         })
-            .then(response => response.json())
-            .then(data => {
-                setRecipe(data);
-            })
-                .catch(error => console.error('Error fetching recipes', error));
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setRecipe(data);
+        })
+        .catch(error => console.error('Error fetching recipes', error));
     }, []);
     
     useEffect(() => {
@@ -42,11 +47,16 @@ function RecipeDetail() {
                 'Content-Type': 'application/json',
             },
         })
-            .then(response => response.json())
-            .then(data => {
-                setRecipeIngredients(data);
-            })
-                .catch(error => console.error('Error fetching recipe ingredients', error));
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setRecipeIngredients(data);
+        })
+        .catch(error => console.error('Error fetching recipe ingredients', error));
     }, []);
 
     useEffect(() => {
@@ -56,11 +66,16 @@ function RecipeDetail() {
                 'Content-Type': 'application/json',
             },
         })
-            .then(response => response.json())
-            .then(data => {
-                setIngredients(data);
-            })
-                .catch(error => console.error('Error fetching ingredients', error));
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setIngredients(data);
+        })
+        .catch(error => console.error('Error fetching ingredients', error));
     }, []);
 
     useEffect(() => {
@@ -70,11 +85,16 @@ function RecipeDetail() {
                 'Content-Type': 'application/json',
             },
         })
-            .then(response => response.json())
-            .then(data => {
-                setSmallwares(data);
-            })
-                .catch(error => console.error('Error fetching smallwares', error));
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setSmallwares(data);
+        })
+        .catch(error => console.error('Error fetching smallwares', error));
     }, []);
 
     useEffect(() => {
@@ -84,11 +104,16 @@ function RecipeDetail() {
                 'Content-Type': 'application/json',
             },
         })
-            .then(response => response.json())
-            .then(data => {
-                setInstructions(data);
-            })
-                .catch(error => console.error('Error fetching instructions', error));
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setInstructions(data);
+        })
+        .catch(error => console.error('Error fetching instructions', error));
     }, []);
 
     useEffect(() => {
@@ -98,11 +123,16 @@ function RecipeDetail() {
                 'Content-Type': 'application/json',
             },
         })
-            .then(response => response.json())
-            .then(data => {
-                setInstructionGroups(data);
-            })
-                .catch(error => console.error('Error fetching instruction groups', error));
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setInstructionGroups(data);
+        })
+        .catch(error => console.error('Error fetching instruction groups', error));
     }, []);
 
     useEffect(() => {
@@ -116,7 +146,12 @@ function RecipeDetail() {
                 'Content-Type': 'application/json'
             },
         })
-        .then(res => res.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             setRecipeFavs(data);
         })
@@ -251,20 +286,6 @@ function RecipeDetail() {
                     </div>
                 </div>
             </div>
-            <div className="box-recipe">
-                <h3 className="text-underline">Smallwares</h3>
-                <article className='column-2'>
-                    <ul className="ul-bullet ol-last">
-                        {smallwares.map(s => {
-                            return (
-                                <li key={s.id}>
-                                    <span>{s.smallware}{s.smallware_alt && <span className="text-500"> or </span>}{s.smallware_alt && s.smallware_alt}</span>{s.description && `, ${s.description}`}
-                                </li>
-                            );
-                        })}
-                    </ul>
-                </article>
-            </div>
             <div className="box-recipe margin-t-16">
                 <h3 className="text-underline">Ingredients</h3>
                 <article className='column-3'>
@@ -282,6 +303,22 @@ function RecipeDetail() {
                     </ul>
                 </article>
             </div>
+            {smallwares && (
+                <div className="box-recipe margin-t-16">
+                    <h3 className="text-underline">Smallwares</h3>
+                    <article className='column-2'>
+                        <ul className="ul-bullet ol-last">
+                            {smallwares?.map(s => {
+                                return (
+                                    <li key={s.id}>
+                                        <span>{s.smallware}{s.smallware_alt && <span className="text-500"> or </span>}{s.smallware_alt && s.smallware_alt}</span>{s.description && `, ${s.description}`}
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </article>
+                </div>
+            )}
             <div className="box-recipe margin-t-16">
                 <h3 className="text-underline">Instructions</h3>
                 <article className='column-3'>
@@ -290,6 +327,7 @@ function RecipeDetail() {
                         const firstTwo = items.slice(0, 2);
                         const rest = items.slice(2);
                         const isSingleOl = rest.length === 0;
+                        console.log(firstTwo)
 
                         return (
                             <div key={group.id}>
@@ -297,7 +335,32 @@ function RecipeDetail() {
                                     {group.title && <h4>{group.title}</h4>}
                                     <ol className={`ul-numbers ${isSingleOl ? 'ol-last' : ''}`}>
                                         {firstTwo.map(instruction => (
-                                            <li key={instruction.id} className='ol-bold'>{instruction.description}</li>
+                                            <>
+                                                <li key={instruction.id} className='ol-bold'>{instruction.description}</li>
+                                                {instruction.images && (
+                                                    <>
+                                                        {Object.keys(instruction.images || {})
+                                                            .sort((a, b) => Number(a) - Number(b)) // optional sort
+                                                            .map(key => {
+                                                                const image = instruction.images[key];
+                                                                const caption = instruction.captions?.[key] || '';
+                                                                return (
+                                                                    <div key={key} className="margin-b-8">
+                                                                        <img
+                                                                            src={image}
+                                                                            alt={`Instruction image ${key}`}
+                                                                            className="img-market-card margin-l-20"
+                                                                        />
+                                                                        {caption && (
+                                                                            <p className="text-caption margin-t-4">{caption}</p>
+                                                                        )}
+                                                                    </div>
+                                                                );
+                                                            })
+                                                        }
+                                                    </>
+                                                )}
+                                            </>
                                         ))}
                                     </ol>
                                 </div>

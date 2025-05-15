@@ -134,7 +134,7 @@ function PickUp() {
                                             {!isSelected ? (
                                                 <>
                                                     <h4 className='text-center'>{basket.vendor.name}</h4>
-                                                    <h4 className='text-center'> at {basket.market_day.markets.name}</h4>
+                                                    <h4 className='text-center'> at {basket.market_day.market.name}</h4>
                                                     <table className='width-100'>
                                                         <tbody className='table-basket'>
                                                             <tr>
