@@ -155,7 +155,12 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                 'Content-Type': 'application/json',
             },
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 setSelectedRecipeIngredients(data);
             })
@@ -170,7 +175,12 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                 'Content-Type': 'application/json',
             },
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 setSelectedSmallwares(data);
             })
@@ -185,7 +195,12 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                 'Content-Type': 'application/json',
             },
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 setSelectedIngredients(data);
             })
@@ -200,7 +215,12 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                 'Content-Type': 'application/json',
             },
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 setSelectedInstructions(data);
             })
@@ -215,7 +235,12 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                 'Content-Type': 'application/json',
             },
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 setSelectedInstructionGroups(data);
             })
@@ -425,20 +450,22 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                             <img className="img-recipe" src={`/recipe-images/LzYeux_120719_0033_1800px.jpg`} alt="Market Image" />
                         </div>
                     </div>
-                    <div className="box-recipe">
-                        <h3 className='text-underline'>Smallwares</h3>
-                            <article className='column-2'>
-                            <ul className='ul-bullet'>
-                                {selectedSmallwares.map((item, index) => (
-                                    <li key={index}>
-                                        <span className='text-700'>
-                                            {item.smallware}<span className="text-300">{item.smallware_alt && ' or '}</span>{item.smallware_alt}
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </article>
-                    </div>
+                    {selectedSmallwares && (
+                        <div className="box-recipe">
+                            <h3 className='text-underline'>Smallwares</h3>
+                                <article className='column-2'>
+                                <ul className='ul-bullet'>
+                                    {selectedSmallwares.map((item, index) => (
+                                        <li key={index}>
+                                            <span className='text-700'>
+                                                {item.smallware}<span className="text-300">{item.smallware_alt && ' or '}</span>{item.smallware_alt}
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </article>
+                        </div>
+                    )}
                     <div className="box-recipe margin-t-16">
                         <h3 className="text-underline">Ingredients</h3>
                         <article className='column-3'>

@@ -61,6 +61,7 @@ def run():
 
     db.session.commit()
 
+    os.environ["SKIP_TIMERS_DURING_SEEDING"] = "true"
 
     # add fake users
     users = []
@@ -4387,7 +4388,8 @@ def run():
             cook_time_minutes=15,
             total_time_minutes=65,
             serve_count=6,
-            skill_level=2
+            skill_level=2,
+            seasons=['spring', 'summer', 'fall', 'winter']
         ),
         Recipe(
             id=2,
@@ -4402,7 +4404,8 @@ def run():
             cook_time_minutes=5,
             total_time_minutes=2165,
             serve_count=6,
-            skill_level=1
+            skill_level=1,
+            seasons=['summer']
         ),
     ]
 

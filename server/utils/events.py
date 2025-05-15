@@ -1,5 +1,6 @@
 import os
-from sqlalchemy import event, func, inspect
+import inspect
+from sqlalchemy import event, func
 from sqlalchemy.orm import Session
 from sqlalchemy.event import listens_for
 from datetime import datetime, date , timezone, timedelta
@@ -12,8 +13,10 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     VendorMarket, VendorUser, AdminUser, Basket, Event, 
                     Product, UserNotification, VendorNotification, 
                     AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
-                    Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
-                    )
+                    Receipt, SettingsUser, SettingsVendor, SettingsAdmin,
+                    UserIssue, Recipe, Ingredient, RecipeIngredient,
+                    InstructionGroup, Instruction, RecipeFavorite,
+                    Smallware, )
 from tasks import send_blog_notifications
 from redis import Redis
 from celery_config import celery
@@ -824,7 +827,7 @@ def notify_vendor_users_new_market_location(mapper, connection, target):
 
                     notifications.append(VendorNotification(
                         subject="New Market Location Added",
-                        message=f"A new market location has been added to your notifications list: {target.market_day.markets.name}. Go to profile settings to edit market location notifications.",
+                        message=f"A new market location has been added to your notifications list: {target.market_day.market.name}. Go to profile settings to edit market location notifications.",
                         link="/vendor/profile",
                         vendor_id=target.vendor_id,
                         vendor_user_id=vendor_user.id,
@@ -964,6 +967,9 @@ def notify_fav_market_new_baskets(mapper, connection, target):
 @listens_for(Basket, 'after_insert')
 def schedule_and_notify_basket_pickup(mapper, connection, target):
     # print(inspect.currentframe().f_code.co_name)
+    if os.environ.get("FLASK_ENV") == "development" and os.environ.get("SKIP_TIMERS_DURING_SEEDING") == "true":
+        print("Skipping basket pickup notification during seeding.", flush=True)
+        return
     try:
         # Pull raw values you need right away
         basket_id = target.id
@@ -1278,3 +1284,44 @@ def notify_admins_new_vendor(mapper, connection, target):
         print(f"Error notifying admins about new vendor: {e}")
     finally:
         session.close()
+
+@listens_for(Instruction, 'before_delete')
+def delete_instruction_images(mapper, connection, target):
+    if isinstance(target.images, dict):
+        for image_path in target.images.values():
+            UPLOAD_FOLDER = os.environ['IMAGE_UPLOAD_FOLDER']
+            try:
+                if image_path.startswith("/api/uploads/instruction-images/"):
+                    rel_path = image_path.replace("/api/uploads", "")
+                    abs_path = os.path.join(UPLOAD_FOLDER, rel_path.lstrip("/"))
+                    dir_path = os.path.dirname(abs_path)
+                    if os.path.exists(abs_path):
+                        os.remove(abs_path)
+                        print('Deleted image:', abs_path)
+                        if os.path.isdir(dir_path) and not os.listdir(dir_path):
+                            os.rmdir(dir_path)
+                            print('Deleted empty image folder:', dir_path)
+            except Exception as e:
+                print(f"Error deleting image file {image_path}: {e}")
+
+@listens_for(Recipe, 'before_delete')
+def delete_recipe_image(mapper, connection, target):
+    image_path = target.image
+    if isinstance(image_path, str) and image_path.startswith("/api/uploads/recipe-images/"):
+        UPLOAD_FOLDER = os.environ['IMAGE_UPLOAD_FOLDER']
+        try:
+            rel_path = image_path.replace("/api/uploads", "")  # -> /uploads/recipe-images/...
+            abs_path = os.path.join(UPLOAD_FOLDER, rel_path.lstrip("/"))  # full file path
+            dir_path = os.path.dirname(abs_path)  # the recipe-images/<id>/ folder
+
+            if os.path.exists(abs_path):
+                os.remove(abs_path)
+                print("Deleted recipe image:", abs_path)
+
+                # Remove the containing folder if it's empty
+                if os.path.isdir(dir_path) and not os.listdir(dir_path):
+                    os.rmdir(dir_path)
+                    print("Deleted empty recipe image folder:", dir_path)
+
+        except Exception as e:
+            print(f"Error deleting recipe image {image_path}: {e}")

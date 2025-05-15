@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { toast } from 'react-toastify';
+import PulseLoader from 'react-spinners/PulseLoader';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
 import FormGroup from '@mui/material/FormGroup';
@@ -16,23 +17,30 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
     const [selectedIngredients, setSelectedIngredients] = useState([]);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedDiets, setSelectedDiets] = useState([]);
+    const [unselectedSeasons, setUnselectedSeasons] = useState(['spring', 'summer', 'fall', 'winter']);
+    const [selectedSeasons, setSelectedSeasons] = useState([]);
     const [newRecipe, setNewRecipe] = useState([]);
     const [newIsGinghamTeam, setNewIsGinghamTeam] = useState(false);
-    const [newSmallware, setNewSmallware] = useState([]);
-    const [newSmallwareAlt, setNewSmallwareAlt] = useState([]);
+    const [newSmallware, setNewSmallware] = useState(null);
+    const [newSmallwareAlt, setNewSmallwareAlt] = useState(null);
     const [newIngName, setNewIngName] = useState([]);
     const [newIngNamePlural, setNewIngNamePlural] = useState([]);
     const [newSmallwares, setNewSmallwares] = useState([]);
     const [newRecipeIngredients, setNewRecipeIngredients] = useState([]);
     const [newInstructionGroups, setNewInstructionGroups] = useState([{ id: Date.now(), group_number: 1, title: '' }]);
     const [newInstructions, setNewInstructions] = useState([]);
-    const [image, setImage] = useState(null)
-    const [status, setStatus] = useState('initial')
+    const [image, setImage] = useState(null);
+    const [pendingInstructionImages, setPendingInstructionImages] = useState({});
+    const [status, setStatus] = useState('initial');
+    const [isPosting, setIsPosting] = useState(false);
+
 
     const smallwareDropdownRef = useRef(null);
     const ingredientDropdownRef = useRef(null);
     const categoryDropdownRef = useRef(null);
     const dietDropdownRef = useRef(null);
+
+    const seasonOrder = ['spring', 'summer', 'fall', 'winter'];
 
     const handleClickOutsideDropdown = (event) => {
         if (smallwareDropdownRef.current && !smallwareDropdownRef.current.contains(event.target)) {
@@ -140,9 +148,40 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
         }
     };
 
+    const handleAddSeason = (season) => {
+        const lower = season.toLowerCase();
+
+        setUnselectedSeasons(prev =>
+            prev.filter(s => s.toLowerCase() !== lower)
+        );
+
+        setSelectedSeasons(prev => {
+            const newSeasons = [...prev, lower];
+            return newSeasons.sort((a, b) =>
+                seasonOrder.indexOf(a.toLowerCase()) - seasonOrder.indexOf(b.toLowerCase())
+            );
+        });
+    };
+
+    const handleDeleteSeason = (season) => {
+        const lower = season.toLowerCase();
+
+        setSelectedSeasons(prev =>
+            prev.filter(s => s.toLowerCase() !== lower)
+        );
+
+        setUnselectedSeasons(prev => {
+            const newSeasons = [...prev, lower];
+            return newSeasons.sort((a, b) =>
+                seasonOrder.indexOf(a.toLowerCase()) - seasonOrder.indexOf(b.toLowerCase())
+            );
+        });
+    };
+
     const handleAddSmallware = async () => {
+        if (!newSmallware) return;
         const smallware = newSmallware.trim();
-        const smallwareAlt = newSmallwareAlt.trim();
+        const smallwareAlt = newSmallwareAlt ? newSmallwareAlt.trim() : null;
         
         setNewSmallwares(prev => [
             ...prev,
@@ -261,24 +300,43 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
     const handleAddInstruction = (groupId) => {
         const groupInstructions = newInstructions.filter(i => i.instruction_group_id === groupId);
         const stepNumber = groupInstructions.length + 1;
+        const tempKey = `instr-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         const newInstruction = {
             instruction_group_id: groupId,
             step_number: stepNumber,
-            description: ''
+            description: '',
+            tempKey,
+            images: {},
+            captions: {}
         };
         setNewInstructions(prev => [...prev, newInstruction]);
     };
 
     const handleDeleteInstruction = (groupId, stepToRemove) => {
-        const updated = newInstructions
-            .filter(i => !(i.instruction_group_id === groupId && i.step_number === stepToRemove))
-            .map(i => {
-                if (i.instruction_group_id === groupId && i.step_number > stepToRemove) {
-                    return { ...i, step_number: i.step_number - 1 };
-                }
-                return i;
-            });
-        setNewInstructions(updated);
+      const groupInstructions = newInstructions
+        .filter(i => i.instruction_group_id === groupId)
+        .sort((a, b) => a.step_number - b.step_number);
+
+      const instructionToRemove = groupInstructions.find(instr => instr.step_number === stepToRemove);
+
+      if (instructionToRemove && instructionToRemove.tempKey) {
+        setPendingInstructionImages(prev => {
+          const updatedPending = { ...prev };
+          delete updatedPending[instructionToRemove.tempKey];
+          return updatedPending;
+        });
+      }
+
+      const updated = newInstructions
+        .filter(i => !(i.instruction_group_id === groupId && i.step_number === stepToRemove))
+        .map(i => {
+          if (i.instruction_group_id === groupId && i.step_number > stepToRemove) {
+            return { ...i, step_number: i.step_number - 1 };
+          }
+          return i;
+        });
+
+      setNewInstructions(updated);
     };
 
     const moveInstruction = (groupId, index, direction) => {
@@ -319,12 +377,129 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
         setNewInstructionGroups(newGroups);
     };
 
+    const handleInstructionImageUpload = async (instructionId, imageFile, caption, index) => {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        formData.append('type', 'instruction');
+        formData.append('instruction_id', instructionId);
+        formData.append('caption', caption || '');
+        formData.append('image_index', index);
+
+        try {
+            const response = await fetch('/api/upload/instruction-images', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                return data.filename;
+            } else {
+                throw new Error('Failed to upload instruction image');
+            }
+        } catch (error) {
+            console.error('Error uploading instruction image:', error);
+            toast.error('Failed to upload instruction image');
+            return null;
+        }
+    };
+
+    const handleSelectInstructionImage = (instructionKey, file) => {
+        const maxFileSize = 10 * 1024 * 1024; // 10 MB limit
+        if (file.size > maxFileSize) {
+            toast.warning('File size exceeds 10 MB. Please upload a smaller file', {
+                autoClose: 4000,
+            });
+            return;
+        }
+
+        const previewUrl = URL.createObjectURL(file);
+        
+        setPendingInstructionImages(prev => {
+            const existingImages = prev[instructionKey] || [];
+            return {
+                ...prev,
+                [instructionKey]: [
+                    ...existingImages,
+                    {
+                        file,
+                        previewUrl,
+                        caption: '',
+                        index: existingImages.length + 1
+                    }
+                ]
+            };
+        });
+    };
+
+    const handleDeleteInstructionImage = (instructionKey, imageIndex) => {
+        setPendingInstructionImages(prev => {
+            const updatedImages = prev[instructionKey].filter((_, idx) => idx !== imageIndex);
+            
+            const reindexedImages = updatedImages.map((img, idx) => ({
+                ...img,
+                index: idx + 1
+            }));
+            
+            return {
+                ...prev,
+                [instructionKey]: reindexedImages
+            };
+        });
+    };
+
+    const saveInstructionImages = async (createdRecipe, instructionsWithImageData) => {
+        for (const group of createdRecipe.instruction_groups || []) {
+            for (const instruction of group.instructions || []) {
+                const originalInstruction = instructionsWithImageData.find(
+                    instr => instr.instruction_group_id.toString() === group.original_group_id.toString() && 
+                    instr.step_number === instruction.step_number
+                );
+
+                if (originalInstruction?.pendingImages?.length > 0) {
+                    const imagesDict = {};
+                    const captionsDict = {};
+
+                    for (const [idx, imgData] of originalInstruction.pendingImages.entries()) {
+                        const imageKey = (idx + 1).toString();
+                        const filename = await handleInstructionImageUpload(
+                            instruction.id, 
+                            imgData.file, 
+                            imgData.caption,
+                            imageKey
+                        );
+
+                        if (filename) {
+                            imagesDict[imageKey] = filename;
+                            if (imgData.caption) {
+                                captionsDict[imageKey] = imgData.caption;
+                            }
+                        }
+                    }
+
+                    if (Object.keys(imagesDict).length > 0) {
+                        await fetch(`/api/instructions/${instruction.id}`, {
+                            method: "PATCH",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                images: imagesDict,
+                                captions: captionsDict,
+                                replace_all_images: true,
+                                replace_all_captions: true
+                            }),
+                        });
+                    }
+                }
+            }
+        }
+    };
+
     const handleFileChange = (event) => {
         if (event.target.files) {
             const file = event.target.files[0];
-            const maxFileSize = 5 * 1024 * 1024; // 5 MB limit
+            const maxFileSize = 10 * 1024 * 1024; // 10 MB limit
             if (file.size > maxFileSize) {
-                toast.warning('File size exceeds 5 MB. Please upload a smaller file', {
+                toast.warning('File size exceeds 10 MB. Please upload a smaller file', {
                     autoClose: 4000,
                 });
                 return;
@@ -365,6 +540,7 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
     }
 
     const handleCreateRecipe = async () => {
+        setIsPosting(true);
         const requiredFields = ['title', 'description', 'author', 'prep_time_minutes', 'cook_time_minutes', 'serve_count'];
         for (const field of requiredFields) {
             if (!newRecipe[field] || newRecipe[field].toString().trim() === '') {
@@ -374,13 +550,28 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
         }
 
         try {
+            const instructionsWithImageData = newInstructions.map(instruction => {
+                const images = pendingInstructionImages[instruction.tempKey] || [];
+                return {
+                    ...instruction,
+                    pendingImages: images.map(img => ({
+                        file: img.file,
+                        caption: img.caption,
+                        index: img.index
+                    }))
+                };
+            });
+
             const nonEmptyInstructionGroups = newInstructionGroups
                 .map(group => {
-                    const groupInstructions = newInstructions.filter(instr => instr.instruction_group_id === group.id);
+                    const groupInstructions = instructionsWithImageData
+                        .filter(instr => instr.instruction_group_id === group.id)
+                        .map(({ pendingImages, tempKey, ...rest }) => rest);
+                    
                     if (groupInstructions.length === 0) return null;
                     return {
                         ...group,
-                        instructions: groupInstructions,
+                        instructions: groupInstructions
                     };
                 })
                 .filter(Boolean);
@@ -394,6 +585,7 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
                 serve_count: parseInt(newRecipe.serve_count),
                 categories: selectedCategories,
                 diet_categories: selectedDiets,
+                seasons: selectedSeasons,
                 recipe_ingredients: newRecipeIngredients,
                 smallwares: newSmallwares,
                 instruction_groups: nonEmptyInstructionGroups
@@ -406,30 +598,43 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
             });
 
             if (!recipeRes.ok) throw new Error("Failed to create recipe");
+
+            const createdRecipe = await recipeRes.json();
+
+            if (image) {
+                await handleImageUpload(createdRecipe.id);
+            }
+
+            await saveInstructionImages(createdRecipe, instructionsWithImageData);
+
             setNewRecipe({
                 title: '',
+                skill_level: '',
                 description: '',
                 author: '',
+                attribution: '',
+                attribution_link: '',
                 prep_time_minutes: '',
                 cook_time_minutes: '',
                 serve_count: '',
             });
             setSelectedCategories([]);
             setSelectedDiets([]);
+            setSelectedSeasons([]);
+            setUnselectedSeasons(seasonOrder);
             setNewRecipeIngredients([]);
             setNewSmallwares([]);
             setNewInstructionGroups([{ id: Date.now(), group_number: 1, title: '' }]);
             setNewInstructions([]);
-            setNewIsGinghamTeam(false);
-            const createdRecipe = await recipeRes.json();
-            if (image) {
-                await handleImageUpload(createdRecipe.id);
-            }
+            setPendingInstructionImages({});
+            setNewIsGinghamTeam(false);            
 
             toast.success("Recipe created successfully!");
+            setIsPosting(false);
         } catch (err) {
             console.error(err);
             toast.error(err.message || "Something went wrong while creating the recipe.");
+            setIsPosting(false);
         }
     };
 
@@ -507,7 +712,7 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
                                     className="search-bar cell-32"
                                     name="author"
                                     type="text"
-                                    placeholder="Author, if a Gingham creator add 'of the Gingham Team'..."
+                                    placeholder="Author..."
                                     value={newRecipe.author}
                                     onChange={handleRecipeInputChange}
                                 />
@@ -529,6 +734,30 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
                                         />
                                     </FormGroup>
                                 </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td className='cell-title btn-grey m-hidden'>Author Attribution:</td>
+                            <td className='cell-text cell-recipe' colSpan={2}>
+                                <input
+                                    className="search-bar cell-32"
+                                    name="author"
+                                    type="text"
+                                    placeholder="Attribution if not from Gingham Team..."
+                                    value={newRecipe.attribution}
+                                    onChange={handleRecipeInputChange}
+                                />
+                            </td>
+                            <td className='cell-title btn-grey m-hidden'>Attribution Link:</td>
+                            <td className='cell-text cell-recipe' colSpan={2}>
+                                <input
+                                    className="search-bar cell-32"
+                                    name="author"
+                                    type="text"
+                                    placeholder="Link if provided by author..."
+                                    value={newRecipe.attribution_link}
+                                    onChange={handleRecipeInputChange}
+                                />
                             </td>
                         </tr>
                     </tbody>
@@ -678,107 +907,42 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
                         </tr>
                     </tbody>
                 </table>
-                <div className="box-bounding margin-t-16">
-                    <h3 className='margin-b-8'>Smallwares</h3>
-                    <table className='table-search-recipe margin-b-12'>
-                        <tbody>
-                            <tr>
-                                <td className='cell-title btn-grey m-hidden'>Search:</td>
-                                <td className='cell-text cell-recipe'>
-                                    <input
-                                        className="search-bar cell-32"
-                                        type="text"
-                                        placeholder="Search..."
-                                        value={searchSmallwares}
-                                        onChange={(e) => setSearchSmallwares(e.target.value.toLowerCase())}
-                                    />
-                                    {searchSmallwares && (
-                                        <ul className="dropdown-content" ref={smallwareDropdownRef}>
-                                            {smallwareFuse
-                                                .search(searchSmallwares)
-                                                .flatMap(({ item }) => {
-                                                    const results = [];
-                                                    if (item.smallware?.toLowerCase().includes(searchSmallwares)) {
-                                                        results.push({
-                                                            id: item.id,
-                                                            name: item.smallware,
-                                                            label: 'Smallware',
-                                                        });
-                                                    }
-                                                    if (item.smallware_alt?.toLowerCase().includes(searchSmallwares)) {
-                                                        results.push({
-                                                            id: item.id,
-                                                            name: item.smallware_alt,
-                                                            label: 'Alt Smallware',
-                                                        });
-                                                    }
-                                                    return results;
-                                                })
-                                                .slice(0, 10)
-                                                .map(({ id, name, label }) => (
-                                                    <li className="search-results" key={`smallware-${id}-${name}`}>
-                                                        <span className='text-500 margin-r-8'>{name}</span>
-                                                        <button
-                                                            className="btn btn-dropdown btn-white margin-r-4"
-                                                            onClick={() => {setNewSmallware(name); setSearchSmallwares('');}}
-                                                        >
-                                                            Main
-                                                        </button>
-                                                        <button
-                                                            className="btn btn-dropdown btn-white"
-                                                            onClick={() => { setNewSmallwareAlt(name); setSearchSmallwares(''); }}
-                                                        >
-                                                            Alt
-                                                        </button>
-                                                    </li>
-                                                ))}
-                                        </ul>
-                                    )}
+                <table className='table-search-recipe'>
+                    <tbody>
+                        <tr>
+                            <td className='cell-title btn-grey m-hidden'>Seasons:</td>
+                            <td className='cell-text cell-recipe'>
+                                <Stack direction="row" spacing={1}>
+                                    {unselectedSeasons.map((season, i) => (
+                                        <Chip 
+                                            key={`unseason-${i}`}
+                                            label={season}
+                                            style={{ backgroundColor: "#eee", fontSize: ".9em" }}
+                                            size="small"
+                                            onClick={() => handleAddSeason(season)}
+                                        />
+                                    ))}
+                                </Stack>
+                            </td>
+                            <td className='cell-title btn-grey m-hidden'>Selected:</td>
+                            {selectedSeasons.length > 0 && (
+                                <td className='cell-text cell-chips'>
+                                    <Stack direction="row" spacing={1}>
+                                        {selectedSeasons.map((season, i) => (
+                                            <Chip 
+                                                key={`season-${i}`}
+                                                label={season}
+                                                style={{ backgroundColor: "#eee", fontSize: ".9em" }}
+                                                size="small"
+                                                onDelete={() => handleDeleteSeason(season)}
+                                            />
+                                        ))}
+                                    </Stack>
                                 </td>
-                                <td className='cell-title btn-grey m-hidden'>Main:</td>
-                                <td className='cell-text cell-recipe'>
-                                    <input
-                                        className="cell-32"
-                                        type="text"
-                                        placeholder="Smallware"
-                                        value={newSmallware}
-                                        onChange={(e) => setNewSmallware(e.target.value)}
-                                    />
-                                </td>
-                                <td className='cell-title btn-grey m-hidden'>Alt:</td>
-                                <td className='cell-text cell-recipe'>
-                                    <input
-                                        className="cell-32"
-                                        type="text"
-                                        placeholder="Alt if there is one"
-                                        value={newSmallwareAlt}
-                                        onChange={(e) => setNewSmallwareAlt(e.target.value)}
-                                    />
-                                </td>
-                                <td>
-                                    <button className='btn btn-filter' onClick={handleAddSmallware}>+</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    {newSmallwares.map((item, index) => (
-                        <div key={index} className='flex-start flex-center-align margin-b-4'>
-                            <button
-                                className='btn btn-delete text-700 btn-red margin-r-12'
-                                onClick={() => {
-                                    const updated = newSmallwares.filter((_, i) => i !== index);
-                                    setNewSmallwares(updated);
-                                }}
-                                title="Remove smallware"
-                            >
-                                ×
-                            </button>
-                            <span className='text-700'>
-                                {item.smallware}<span className="text-300">{item.smallware_alt && ' or '}</span>{item.smallware_alt}
-                            </span>
-                        </div>
-                    ))}
-                </div>
+                            )}
+                        </tr>
+                    </tbody>
+                </table>
                 <div className="box-bounding margin-t-16">
                     <h3 className='margin-b-8'>Ingredients</h3>
                     <p className='margin-t-8 margin-l-8'>Only brand names and proper nouns are capitalized for ingredients.</p>
@@ -913,6 +1077,107 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
                         </div>
                     ))}
                 </div>
+                <div className="box-bounding margin-t-16">
+                    <h3 className='margin-b-8'>Smallwares</h3>
+                    <table className='table-search-recipe margin-b-12'>
+                        <tbody>
+                            <tr>
+                                <td className='cell-title btn-grey m-hidden'>Search:</td>
+                                <td className='cell-text cell-recipe'>
+                                    <input
+                                        className="search-bar cell-32"
+                                        type="text"
+                                        placeholder="Search..."
+                                        value={searchSmallwares}
+                                        onChange={(e) => setSearchSmallwares(e.target.value.toLowerCase())}
+                                    />
+                                    {searchSmallwares && (
+                                        <ul className="dropdown-content" ref={smallwareDropdownRef}>
+                                            {smallwareFuse
+                                                .search(searchSmallwares)
+                                                .flatMap(({ item }) => {
+                                                    const results = [];
+                                                    if (item.smallware?.toLowerCase().includes(searchSmallwares)) {
+                                                        results.push({
+                                                            id: item.id,
+                                                            name: item.smallware,
+                                                            label: 'Smallware',
+                                                        });
+                                                    }
+                                                    if (item.smallware_alt?.toLowerCase().includes(searchSmallwares)) {
+                                                        results.push({
+                                                            id: item.id,
+                                                            name: item.smallware_alt,
+                                                            label: 'Alt Smallware',
+                                                        });
+                                                    }
+                                                    return results;
+                                                })
+                                                .slice(0, 10)
+                                                .map(({ id, name, label }) => (
+                                                    <li className="search-results" key={`smallware-${id}-${name}`}>
+                                                        <span className='text-500 margin-r-8'>{name}</span>
+                                                        <button
+                                                            className="btn btn-dropdown btn-white margin-r-4"
+                                                            onClick={() => {setNewSmallware(name); setSearchSmallwares('');}}
+                                                        >
+                                                            Main
+                                                        </button>
+                                                        <button
+                                                            className="btn btn-dropdown btn-white"
+                                                            onClick={() => { setNewSmallwareAlt(name); setSearchSmallwares(''); }}
+                                                        >
+                                                            Alt
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                        </ul>
+                                    )}
+                                </td>
+                                <td className='cell-title btn-grey m-hidden'>Main:</td>
+                                <td className='cell-text cell-recipe'>
+                                    <input
+                                        className="cell-32"
+                                        type="text"
+                                        placeholder="Smallware"
+                                        value={newSmallware}
+                                        onChange={(e) => setNewSmallware(e.target.value)}
+                                    />
+                                </td>
+                                <td className='cell-title btn-grey m-hidden'>Alt:</td>
+                                <td className='cell-text cell-recipe'>
+                                    <input
+                                        className="cell-32"
+                                        type="text"
+                                        placeholder="Alt if there is one"
+                                        value={newSmallwareAlt}
+                                        onChange={(e) => setNewSmallwareAlt(e.target.value)}
+                                    />
+                                </td>
+                                <td>
+                                    <button className='btn btn-filter' onClick={handleAddSmallware}>+</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    {newSmallwares.map((item, index) => (
+                        <div key={index} className='flex-start flex-center-align margin-b-4'>
+                            <button
+                                className='btn btn-delete text-700 btn-red margin-r-12'
+                                onClick={() => {
+                                    const updated = newSmallwares.filter((_, i) => i !== index);
+                                    setNewSmallwares(updated);
+                                }}
+                                title="Remove smallware"
+                            >
+                                ×
+                            </button>
+                            <span className='text-700'>
+                                {item.smallware}<span className="text-300">{item.smallware_alt && ' or '}</span>{item.smallware_alt}
+                            </span>
+                        </div>
+                    ))}
+                </div>
                 <div className='box-bounding'>
                     <h3 className='margin-b-8'>Instructions</h3>
                     {newInstructionGroups.map((group, groupIndex) => (
@@ -960,49 +1225,103 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
                                 .filter(instr => instr.instruction_group_id === group.id)
                                 .sort((a, b) => a.step_number - b.step_number)
                                 .map((instr, instrIndex, array) => (
-                                    <div key={`${group.id}-${instr.step_number}`} className="flex-start margin-b-4">
-                                        <span className="margin-r-8">{instr.step_number}.</span>
-                                        <input
-                                            type="text"
-                                            className="input-ingredients input-instruction flex-grow"
-                                            placeholder="Instruction"
-                                            value={instr.description}
-                                            onChange={(e) => {
-                                                const updated = [...newInstructions];
-                                                const idx = updated.findIndex(i => i.instruction_group_id === group.id && i.step_number === instr.step_number);
-                                                updated[idx].description = e.target.value;
-                                                setNewInstructions(updated);
-                                            }}
-                                        />
-                                        {array.length > 1 && (
-                                            <>
-                                                <button
-                                                    className='btn btn-recipe-arrow icon-arrow-u margin-r-4 margin-l-8'
-                                                    onClick={() => moveInstruction(group.id, instrIndex, 'up')}
-                                                    disabled={instrIndex === 0}
-                                                    title="Move up"
-                                                >
-                                                    &emsp;
-                                                </button>
-                                                <button
-                                                    className='btn btn-recipe-arrow icon-arrow-d margin-r-4'
-                                                    onClick={() => moveInstruction(group.id, instrIndex, 'down')}
-                                                    disabled={instrIndex === array.length - 1}
-                                                    title="Move down"
-                                                >
-                                                    &emsp;
-                                                </button>
-                                                <button
-                                                    className="btn btn-delete btn-red"
-                                                    onClick={() => handleDeleteInstruction(group.id, instr.step_number)}
-                                                    title="Delete instruction"
-                                                >
-                                                    ×
-                                                </button>
-                                            </>
-                                        )}
+                                    <div key={`${group.id}-${instr.step_number}`}>
+                                        <div className="flex-start margin-b-4">
+                                            <span className="margin-r-8">{instr.step_number}.</span>
+                                            <input
+                                                type="text"
+                                                className="input-ingredients input-instruction flex-grow"
+                                                placeholder="Instruction"
+                                                value={instr.description}
+                                                onChange={(e) => {
+                                                    const updated = [...newInstructions];
+                                                    const idx = updated.findIndex(i => i.instruction_group_id === group.id && i.step_number === instr.step_number);
+                                                    updated[idx].description = e.target.value;
+                                                    setNewInstructions(updated);
+                                                }}
+                                            />
+                                            {array.length > 1 && (
+                                                <>
+                                                    <button
+                                                        className='btn btn-recipe-arrow icon-arrow-u margin-r-4 margin-l-8'
+                                                        onClick={() => moveInstruction(group.id, instrIndex, 'up')}
+                                                        disabled={instrIndex === 0}
+                                                        title="Move up"
+                                                    >
+                                                        &emsp;
+                                                    </button>
+                                                    <button
+                                                        className='btn btn-recipe-arrow icon-arrow-d margin-r-4'
+                                                        onClick={() => moveInstruction(group.id, instrIndex, 'down')}
+                                                        disabled={instrIndex === array.length - 1}
+                                                        title="Move down"
+                                                    >
+                                                        &emsp;
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-delete btn-red"
+                                                        onClick={() => handleDeleteInstruction(group.id, instr.step_number)}
+                                                        title="Delete instruction"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
+                                        <div className='flex-start flex-gap-8'>
+                                            {pendingInstructionImages[instr.tempKey]?.map((imgObj, imgIndex) => (
+                                                <div key={`preview-${imgIndex}`} className="flex-start flex-column margin-t-4">
+                                                    <img
+                                                        src={imgObj.previewUrl}
+                                                        alt="Instruction preview"
+                                                        className="img-market-card"
+                                                    />
+                                                    <div className="margin-t-4">
+                                                        <input
+                                                            type="text"
+                                                            className='input-caption'
+                                                            placeholder="Caption (optional)"
+                                                            value={imgObj.caption}
+                                                            onChange={(e) => {
+                                                                const updated = { ...pendingInstructionImages };
+                                                                updated[instr.tempKey][imgIndex].caption = e.target.value;
+                                                                setPendingInstructionImages(updated);
+                                                            }}
+                                                        />
+                                                        <button
+                                                            className="btn btn-delete btn-red"
+                                                            onClick={() => handleDeleteInstructionImage(instr.tempKey, imgIndex)}
+                                                            title="Delete image"
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="margin-t-4 margin-b-12">
+                                            <label className="btn btn-small">
+                                                + Add Image
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    style={{ display: 'none' }}
+                                                    multiple
+                                                    onChange={(e) => {
+                                                        if (e.target.files.length > 0) {
+                                                            const files = Array.from(e.target.files);
+                                                            files.forEach(file => {
+                                                                handleSelectInstructionImage(instr.tempKey, file);
+                                                            });
+                                                            e.target.value = null;
+                                                        }
+                                                    }}
+                                                />
+                                            </label>
+                                        </div>
                                     </div>
-                                ))}
+                                ))
+                            }
                             <div className='flex-start margin-t-12'>
                                 <button
                                     className="btn btn-small margin-r-8"
@@ -1019,9 +1338,19 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
                         </div>
                     ))}
                 </div>
-                <button className='btn btn-reset margin-t-12' onClick={handleCreateRecipe}>
-                    Create Recipe
-                </button>
+                {isPosting ? (
+                    <PulseLoader
+                        className='margin-t-16'
+                        color={'#ff806b'}
+                        size={10}
+                        aria-label="Loading Spinner"
+                        data-testid="loader"
+                    />
+                ) : (
+                    <button className='btn btn-reset margin-t-12' onClick={handleCreateRecipe}>
+                        Create Recipe
+                    </button>
+                )}
             </div>
         </>
     );

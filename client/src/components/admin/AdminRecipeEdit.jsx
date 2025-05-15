@@ -218,9 +218,9 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
     const handleFileChange = (event) => {
         if (event.target.files) {
             const file = event.target.files[0];
-            const maxFileSize = 5 * 1024 * 1024;
+            const maxFileSize = 10 * 1024 * 1024;
             if (file.size > maxFileSize) {
-                toast.warning('File size exceeds 5 MB. Please upload a smaller file', {
+                toast.warning('File size exceeds 10 MB. Please upload a smaller file', {
                     autoClose: 4000,
                 });
                 return;

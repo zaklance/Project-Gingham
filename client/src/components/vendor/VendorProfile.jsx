@@ -1020,7 +1020,7 @@ function VendorProfile () {
                                                     })
                                                     .map((marketDay, index) => (
                                                         <option key={index} value={marketDay.id}>
-                                                            {marketDay.markets.name} on {weekDay[marketDay.day_of_week]}s
+                                                            {marketDay.market.name} on {weekDay[marketDay.day_of_week]}s
                                                         </option>
                                                 ))}
                                             </select>
