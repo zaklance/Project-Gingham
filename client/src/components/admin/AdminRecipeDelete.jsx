@@ -408,10 +408,25 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                             <div className='badge-container'>
                                 <h2 className='margin-t-4 margin-r-8 margin-b-4'>{selectedRecipe.title}</h2>
                                 {selectedRecipe.author && <p>by {selectedRecipe.author} {selectedRecipe.is_gingham_team && ("of the Gingham Team")}</p>}
+                                {selectedRecipe.attribution && selectedRecipe.attribution_link ? (
+                                    <a className='link-underline-inverse' href={selectedRecipe.attribution_link}>{selectedRecipe.attribution}</a>
+                                ) : selectedRecipe.attribution && (
+                                        <p>{selectedRecipe.attribution}</p>
+                                )}
                             </div>
                             <div className='margin-t-8'>
                                 {selectedRecipe.categories && selectedRecipe.categories.length > 0 && (
                                     <Stack className='box-scroll' direction="row" spacing={1}>
+                                        {selectedRecipe.seasons.map((sea, i) => (
+                                            <Chip
+                                                key={i}
+                                                style={{
+                                                    backgroundColor: "#eee", fontSize: ".9em"
+                                                }}
+                                                label={sea}
+                                                size="small"
+                                            />
+                                        ))}
                                         {selectedRecipe.categories.map((cat, i) => (
                                             <Chip
                                                 key={i}
@@ -444,10 +459,11 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                             </div>
                         </div>
                         <div className='width-100'>
-                            {selectedRecipe.image && (
+                            {selectedRecipe.image ? (
                                 <img src={selectedRecipe.image} alt={selectedRecipe.title} className="img-recipe" />
+                            ) : (
+                                    <img className="img-recipe" src={`/recipe-images/_default-images/${selectedRecipe.image_default}`} alt="Recipe Image" />
                             )}
-                            <img className="img-recipe" src={`/recipe-images/LzYeux_120719_0033_1800px.jpg`} alt="Market Image" />
                         </div>
                     </div>
                     {selectedSmallwares && (
@@ -498,14 +514,65 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                                             {group.title && <h4>{group.title}</h4>}
                                             <ol className={`ul-numbers ${isSingleOl ? 'ol-last' : ''}`}>
                                                 {firstTwo.map(instruction => (
-                                                    <li key={instruction.id} className='ol-bold'>{instruction.description}</li>
+                                                    <>
+                                                        <li key={instruction.id} className='ol-bold'>{instruction.description}</li>
+                                                        {instruction.images && (
+                                                            <>
+                                                                {Object.keys(instruction.images || {})
+                                                                    .sort((a, b) => Number(a) - Number(b))
+                                                                    .map(key => {
+                                                                        const image = instruction.images[key];
+                                                                        const caption = instruction.captions?.[key] || '';
+                                                                        return (
+                                                                            <div key={key} className="margin-b-8">
+                                                                                <img
+                                                                                    src={image}
+                                                                                    alt={`Instruction image ${key}`}
+                                                                                    className="img-market-card margin-l-20"
+                                                                                />
+                                                                                {caption && (
+                                                                                    <p className="text-caption margin-l-20">{caption}</p>
+                                                                                )}
+                                                                            </div>
+                                                                        );
+                                                                    })
+                                                                }
+                                                            </>
+                                                        )}
+                                                    </>
+                                                    
                                                 ))}
                                             </ol>
                                         </div>
                                         {rest.length > 0 && (
                                             <ol className='ul-numbers ol-last' start={firstTwo.length + 1}>
                                                 {rest.map(instruction => (
-                                                    <li key={instruction.id + '-rest'} className='ol-bold'>{instruction.description}</li>
+                                                    <>
+                                                        <li key={instruction.id + '-rest'} className='ol-bold'>{instruction.description}</li>
+                                                        {instruction.images && (
+                                                            <>
+                                                                {Object.keys(instruction.images || {})
+                                                                    .sort((a, b) => Number(a) - Number(b))
+                                                                    .map(key => {
+                                                                        const image = instruction.images[key];
+                                                                        const caption = instruction.captions?.[key] || '';
+                                                                        return (
+                                                                            <div key={key} className="margin-b-8">
+                                                                                <img
+                                                                                    src={image}
+                                                                                    alt={`Instruction image ${key}`}
+                                                                                    className="img-market-card margin-l-20"
+                                                                                />
+                                                                                {caption && (
+                                                                                    <p className="text-caption margin-l-20">{caption}</p>
+                                                                                )}
+                                                                            </div>
+                                                                        );
+                                                                    })
+                                                                }
+                                                            </>
+                                                        )}
+                                                    </>
                                                 ))}
                                             </ol>
                                         )}

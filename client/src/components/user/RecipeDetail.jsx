@@ -241,10 +241,25 @@ function RecipeDetail() {
                                 </button>
                             </div>
                             {recipe.author && <p>by {recipe.author} {recipe.is_gingham_team && ("of the Gingham Team")}</p>}
+                            {recipe.attribution && recipe.attribution_link ? (
+                                <a className='link-underline-inverse' href={recipe.attribution_link}>{recipe.attribution}</a>
+                            ) : recipe.attribution && (
+                                <p>{recipe.attribution}</p>
+                            )}
                         </div>
                         <div className='margin-t-8'>
                             {recipe.categories && recipe.categories.length > 0 && (
                                 <Stack className='box-scroll' direction="row" spacing={1}>
+                                    {recipe.seasons.map((sea, i) => (
+                                        <Chip
+                                            key={i}
+                                            style={{
+                                                backgroundColor: "#eee", fontSize: ".9em"
+                                            }}
+                                            label={sea}
+                                            size="small"
+                                        />
+                                    ))}
                                     {recipe.categories.map((cat, i) => (
                                         <Chip
                                             key={i}
@@ -327,7 +342,6 @@ function RecipeDetail() {
                         const firstTwo = items.slice(0, 2);
                         const rest = items.slice(2);
                         const isSingleOl = rest.length === 0;
-                        console.log(firstTwo)
 
                         return (
                             <div key={group.id}>
@@ -340,7 +354,7 @@ function RecipeDetail() {
                                                 {instruction.images && (
                                                     <>
                                                         {Object.keys(instruction.images || {})
-                                                            .sort((a, b) => Number(a) - Number(b)) // optional sort
+                                                            .sort((a, b) => Number(a) - Number(b))
                                                             .map(key => {
                                                                 const image = instruction.images[key];
                                                                 const caption = instruction.captions?.[key] || '';
@@ -352,7 +366,7 @@ function RecipeDetail() {
                                                                             className="img-market-card margin-l-20"
                                                                         />
                                                                         {caption && (
-                                                                            <p className="text-caption margin-t-4">{caption}</p>
+                                                                            <p className="text-caption margin-l-20">{caption}</p>
                                                                         )}
                                                                     </div>
                                                                 );
@@ -367,7 +381,32 @@ function RecipeDetail() {
                                 {rest.length > 0 && (
                                     <ol className='ul-numbers ol-last' start={firstTwo.length + 1}>
                                         {rest.map(instruction => (
-                                            <li key={instruction.id + '-rest'} className='ol-bold'>{instruction.description}</li>
+                                            <>
+                                                <li key={instruction.id + '-rest'} className='ol-bold'>{instruction.description}</li>
+                                                {instruction.images && (
+                                                    <>
+                                                        {Object.keys(instruction.images || {})
+                                                            .sort((a, b) => Number(a) - Number(b))
+                                                            .map(key => {
+                                                                const image = instruction.images[key];
+                                                                const caption = instruction.captions?.[key] || '';
+                                                                return (
+                                                                    <div key={key} className="margin-b-8">
+                                                                        <img
+                                                                            src={image}
+                                                                            alt={`Instruction image ${key}`}
+                                                                            className="img-market-card margin-l-20"
+                                                                        />
+                                                                        {caption && (
+                                                                            <p className="text-caption margin-l-20">{caption}</p>
+                                                                        )}
+                                                                    </div>
+                                                                );
+                                                            })
+                                                        }
+                                                    </>
+                                                )}
+                                            </>
                                         ))}
                                     </ol>
                                 )}

@@ -20,9 +20,20 @@ function AdminRecipeCard({ recipe, setSearchCategories, setSearchDiets, setSelec
                 )}
                 <div className='text-center'>
                     <h4>{recipe.title}</h4>
+                    <h6 className='margin-t--4'>by {recipe.author}</h6>
                 </div>
                 {recipe.categories && recipe.categories.length > 0 && (
                     <Stack className='box-scroll-x padding-4' direction="row" spacing={1}>
+                        {recipe.seasons.map((sea, i) => (
+                            <Chip
+                                key={i}
+                                style={{
+                                    backgroundColor: "#eee", fontSize: ".9em"
+                                }}
+                                label={sea}
+                                size="small"
+                            />
+                        ))}
                         {recipe.categories.map((cat, i) => (
                             <Chip
                                 key={i}

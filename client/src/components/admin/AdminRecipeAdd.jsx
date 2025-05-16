@@ -545,6 +545,7 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
         for (const field of requiredFields) {
             if (!newRecipe[field] || newRecipe[field].toString().trim() === '') {
                 toast.error(`Missing required field: ${field.replace('_', ' ')}`);
+                setIsPosting(false);
                 return;
             }
         }
@@ -597,7 +598,10 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
                 body: JSON.stringify(fullRecipePayload),
             });
 
-            if (!recipeRes.ok) throw new Error("Failed to create recipe");
+            if (!recipeRes.ok) {
+                setIsPosting(false);    
+                throw new Error("Failed to create recipe");
+            }
 
             const createdRecipe = await recipeRes.json();
 
@@ -741,7 +745,7 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
                             <td className='cell-text cell-recipe' colSpan={2}>
                                 <input
                                     className="search-bar cell-32"
-                                    name="author"
+                                    name="attribution"
                                     type="text"
                                     placeholder="Attribution if not from Gingham Team..."
                                     value={newRecipe.attribution}
@@ -752,7 +756,7 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
                             <td className='cell-text cell-recipe' colSpan={2}>
                                 <input
                                     className="search-bar cell-32"
-                                    name="author"
+                                    name="attribution_link"
                                     type="text"
                                     placeholder="Link if provided by author..."
                                     value={newRecipe.attribution_link}

@@ -328,6 +328,10 @@ p, li, div, form, input, select, button, textarea, td {
   color: #007BFF !important;
 }
 
+.text-caption {
+  font-size: .8rem;
+}
+
 .text-timezone {
   color: #808080;
   font-size: .75em;
@@ -1093,7 +1097,7 @@ ul {
 
 .box-scroll-recipe {
   overflow: scroll;
-  max-height: 432px;
+  max-height: 448px;
 }
 
 .box-scroll-x {
