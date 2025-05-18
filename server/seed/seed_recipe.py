@@ -207,7 +207,7 @@ def run():
             recipe_id=1,
             ingredient_id=2,
             ingredient_number=2,
-            amount="Option A: 4 eggs",
+            amount="Option A: 4",
             plural=True,
             description=""
         ),

@@ -3314,55 +3314,63 @@ def specific_instructions(id):
             data = request.get_json()
             excluded_keys = {'deleted', 'updated', 'new'}
 
-            # Handle images and captions specially
             if 'images' in data:
-                # For images, merge existing dict with new one
                 current_images = instruction.images or {}
                 new_images = data['images'] or {}
 
-                # If we're replacing all images, just use the new dict
                 if data.get('replace_all_images', False):
+                    images_to_delete = []
+                    
+                    for img_key, old_image_path in current_images.items():
+                        if old_image_path not in new_images.values():
+                            images_to_delete.append(old_image_path)
+                    
+                    for image_path in images_to_delete:
+                        try:
+                            delete_image_file(image_path)
+                        except Exception as e:
+                            print(f"Warning: Failed to delete image file {image_path}: {str(e)}")
+                            
                     instruction.images = new_images
                 else:
-                    # Otherwise merge the dictionaries
                     merged_images = {**current_images, **new_images}
                     instruction.images = merged_images
 
-                # Remove images key so we don't process it again below
                 data.pop('images')
-
-                # Also remove the replace flag if it exists
                 data.pop('replace_all_images', None)
 
             if 'captions' in data:
-                # For captions, merge existing dict with new one
                 current_captions = instruction.captions or {}
                 new_captions = data['captions'] or {}
 
-                # If we're replacing all captions, just use the new dict
                 if data.get('replace_all_captions', False):
                     instruction.captions = new_captions
                 else:
-                    # Otherwise merge the dictionaries
                     merged_captions = {**current_captions, **new_captions}
                     instruction.captions = merged_captions
 
-                # Remove captions key so we don't process it again below
                 data.pop('captions')
-
-                # Also remove the replace flag if it exists
                 data.pop('replace_all_captions', None)
 
-            # Process regular fields
             for key, value in data.items():
-                if key not in excluded_keys and not isinstance(value, dict):
-                    setattr(instruction, key, value)
+                if key not in excluded_keys and hasattr(instruction, key):
+                    if isinstance(value, dict):
+                        print(f"Skipping dictionary value for attribute {key}")
+                        continue
+                    
+                    if key.endswith('_id') and isinstance(value, int):
+                        setattr(instruction, key, value)
+                    elif not isinstance(value, (dict, list)):
+                        setattr(instruction, key, value)
+                    elif key in ['metadata', 'tags'] and isinstance(value, (dict, list)):
+                        setattr(instruction, key, value)
 
             db.session.commit()
             return jsonify(instruction.to_dict()), 200
 
         except Exception as e:
             db.session.rollback()
+            print(f"Error updating instruction: {str(e)}")
             traceback.print_exc()
             return {'error': str(e)}, 500
 
@@ -3372,12 +3380,12 @@ def specific_instructions(id):
             return {'error': 'instruction not found'}, 404
 
         try: 
-            # Delete associated image files if they exist
             if instruction.images:
                 for image_filename in instruction.images.values():
-                    image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
-                    if os.path.exists(image_path):
-                        os.remove(image_path)
+                    try:
+                        delete_image_file(image_filename)
+                    except Exception as e:
+                        print(f"Warning: Failed to delete image file {image_filename}: {str(e)}")
 
             db.session.delete(instruction)
             db.session.commit()
@@ -3385,7 +3393,73 @@ def specific_instructions(id):
 
         except Exception as e: 
             db.session.rollback()
+            traceback.print_exc()
             return {'error': str(e)}, 500
+
+def delete_image_file(image_path):
+    UPLOAD_FOLDER = os.environ.get('IMAGE_UPLOAD_FOLDER', 'uploads')
+    try:
+        if image_path.startswith("/api/uploads/instruction-images/"):
+            rel_path = image_path.replace("/api/uploads", "")
+            abs_path = os.path.join(UPLOAD_FOLDER, rel_path.lstrip("/"))
+            dir_path = os.path.dirname(abs_path)
+            
+            if os.path.exists(abs_path):
+                os.remove(abs_path)
+                print('Deleted image:', abs_path)
+                
+                # If directory is empty, remove it
+                if os.path.isdir(dir_path) and not os.listdir(dir_path):
+                    os.rmdir(dir_path)
+                    print('Deleted empty image folder:', dir_path)
+                    
+                    # Check if parent directory is also empty (the instruction-images/{instruction_id} folder)
+                    parent_dir = os.path.dirname(dir_path)
+                    if os.path.isdir(parent_dir) and not os.listdir(parent_dir):
+                        os.rmdir(parent_dir)
+                        print('Deleted empty instruction folder:', parent_dir)
+    except Exception as e:
+        print(f"Error deleting image file {image_path}: {e}")
+
+@app.route('/api/instructions/<int:instruction_id>/images', methods=['DELETE'])
+def delete_instruction_image(instruction_id):
+    try:
+        data = request.json
+        instruction = Instruction.query.get_or_404(instruction_id)
+        
+        image_keys = data.get('image_keys', [])
+        if not image_keys:
+            return jsonify({'error': 'No image keys provided'}), 400
+            
+        if not instruction.images:
+            return jsonify({'error': 'Instruction has no images'}), 404
+            
+        updated_images = instruction.images.copy()
+        updated_captions = instruction.captions.copy() if instruction.captions else {}
+        
+        deleted_images = []
+        
+        for key in image_keys:
+            if key in updated_images:
+                deleted_images.append(updated_images[key])
+                del updated_images[key]
+                if key in updated_captions:
+                    del updated_captions[key]
+                    
+        for image_path in deleted_images:
+            delete_image_file(image_path)
+            
+        instruction.images = updated_images
+        instruction.captions = updated_captions
+        
+        db.session.commit()
+        return jsonify({'message': 'Images deleted successfully'})
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error deleting instruction images: {str(e)}")
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
     
 @app.route('/api/instruction-groups', methods=['GET', 'POST'])
 def all_instruction_groups():

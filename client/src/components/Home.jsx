@@ -175,8 +175,8 @@ function Home() {
             {currentBlog ? (
                 <div className="box-blog margin-t-24 badge-container no-float" id="blog">
                     <div className="badge-arrows">
-                        <i className="icon-arrow-l margin-r-8" onClick={() => handleNavigate('prev')}>&emsp;&thinsp;</i>
-                        <i className="icon-arrow-r" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>
+                        <i className="icon-arrow-l-fff margin-r-8" onClick={() => handleNavigate('prev')}>&emsp;&thinsp;</i>
+                        <i className="icon-arrow-r-fff" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>
                         <button
                             className={`btn-fav-blog margin-l-8 ${isClicked[currentBlog.id] || blogFavs.some(fav => fav.blog_id === currentBlog.id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
                             title={isClicked[currentBlog.id] || blogFavs.some(fav => fav.blog_id === currentBlog.id) ? 'remove blog from favorites' : 'save blog as favorite'}
