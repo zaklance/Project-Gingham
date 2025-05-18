@@ -326,7 +326,7 @@ function RecipeDetail() {
                             {smallwares?.map(s => {
                                 return (
                                     <li key={s.id}>
-                                        <span>{s.smallware}{s.smallware_alt && <span className="text-500"> or </span>}{s.smallware_alt && s.smallware_alt}</span>{s.description && `, ${s.description}`}
+                                        <span className="text-500">{s.smallware}{s.smallware_alt && <span className="text-300"> or </span>}{s.smallware_alt && s.smallware_alt}</span>{s.description && `, ${s.description}`}
                                     </li>
                                 );
                             })}
@@ -349,8 +349,8 @@ function RecipeDetail() {
                                     {group.title && <h4>{group.title}</h4>}
                                     <ol className={`ul-numbers ${isSingleOl ? 'ol-last' : ''}`}>
                                         {firstTwo.map(instruction => (
-                                            <>
-                                                <li key={instruction.id} className='ol-bold'>{instruction.description}</li>
+                                            <li key={`instr-li-${instruction.id}`} className='ol-bold li-recipe-image'>
+                                                <p className='margin-b-4'>{instruction.description}</p>
                                                 {instruction.images && (
                                                     <>
                                                         {Object.keys(instruction.images || {})
@@ -359,14 +359,14 @@ function RecipeDetail() {
                                                                 const image = instruction.images[key];
                                                                 const caption = instruction.captions?.[key] || '';
                                                                 return (
-                                                                    <div key={key} className="margin-b-8">
+                                                                    <div key={`sig-li-${key}`} className="no-break margin-b-4">
                                                                         <img
                                                                             src={image}
                                                                             alt={`Instruction image ${key}`}
-                                                                            className="img-market-card margin-l-20"
+                                                                            className="img-market-card"
                                                                         />
                                                                         {caption && (
-                                                                            <p className="text-caption margin-l-20">{caption}</p>
+                                                                            <p className="text-caption margin-l-2">{caption}</p>
                                                                         )}
                                                                     </div>
                                                                 );
@@ -374,15 +374,15 @@ function RecipeDetail() {
                                                         }
                                                     </>
                                                 )}
-                                            </>
+                                            </li>
                                         ))}
                                     </ol>
                                 </div>
                                 {rest.length > 0 && (
                                     <ol className='ul-numbers ol-last' start={firstTwo.length + 1}>
                                         {rest.map(instruction => (
-                                            <>
-                                                <li key={instruction.id + '-rest'} className='ol-bold'>{instruction.description}</li>
+                                            <li key={`instr-li-${instruction.id}`} className='ol-bold li-recipe-image'>
+                                                <p className='margin-b-4'>{instruction.description}</p>
                                                 {instruction.images && (
                                                     <>
                                                         {Object.keys(instruction.images || {})
@@ -391,14 +391,14 @@ function RecipeDetail() {
                                                                 const image = instruction.images[key];
                                                                 const caption = instruction.captions?.[key] || '';
                                                                 return (
-                                                                    <div key={key} className="margin-b-8">
+                                                                    <div key={`sig-li-${key}`} className="no-break margin-b-4">
                                                                         <img
                                                                             src={image}
                                                                             alt={`Instruction image ${key}`}
-                                                                            className="img-market-card margin-l-20"
+                                                                            className="img-market-card"
                                                                         />
                                                                         {caption && (
-                                                                            <p className="text-caption margin-l-20">{caption}</p>
+                                                                            <p className="text-caption margin-l-2">{caption}</p>
                                                                         )}
                                                                     </div>
                                                                 );
@@ -406,7 +406,7 @@ function RecipeDetail() {
                                                         }
                                                     </>
                                                 )}
-                                            </>
+                                            </li>
                                         ))}
                                     </ol>
                                 )}

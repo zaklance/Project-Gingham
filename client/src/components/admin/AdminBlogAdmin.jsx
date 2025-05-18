@@ -276,8 +276,8 @@ const AdminBlogAdmin = ({ blogs, activeTabMode }) => {
                     </div>
                     <div className="box-blog margin-t-16 badge-container">
                         <div className="badge-arrows">
-                            <i className="icon-arrow-l margin-r-8">&emsp;&thinsp;</i>
-                            <i className="icon-arrow-r">&emsp;&thinsp;</i>
+                            <i className="icon-arrow-l-fff margin-r-8">&emsp;&thinsp;</i>
+                            <i className="icon-arrow-r-fff">&emsp;&thinsp;</i>
                             <button
                                 className='btn-fav-blog btn-fav-blog-on margin-l-8'
                                 title='save blog as favorite'
@@ -338,8 +338,8 @@ const AdminBlogAdmin = ({ blogs, activeTabMode }) => {
                                         </div>
                                         <div className="box-blog margin-t-16 badge-container">
                                             <div className="badge-arrows">
-                                                <i className="icon-arrow-l margin-r-8">&emsp;&thinsp;</i>
-                                                <i className="icon-arrow-r">&emsp;&thinsp;</i>
+                                                <i className="icon-arrow-l-fff margin-r-8">&emsp;&thinsp;</i>
+                                                <i className="icon-arrow-r-fff">&emsp;&thinsp;</i>
                                                 <button
                                                     className='btn-fav-blog btn-fav-blog-on margin-l-8'
                                                     title='save blog as favorite'
@@ -355,8 +355,8 @@ const AdminBlogAdmin = ({ blogs, activeTabMode }) => {
                                     <>
                                         <div className="box-blog margin-t-16 badge-container">
                                             <div className="badge-arrows">
-                                                <i className="icon-arrow-l margin-r-8" onClick={() => handleNavigate('prev')}>&emsp;&thinsp;</i>
-                                                <i className="icon-arrow-r" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>
+                                                <i className="icon-arrow-l-fff margin-r-8" onClick={() => handleNavigate('prev')}>&emsp;&thinsp;</i>
+                                                <i className="icon-arrow-r-fff" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>
                                             </div>
                                             <h1>{currentBlog.type === 'General' ? null : `${currentBlog.type}: `}{currentBlog.title}</h1>
                                             <h6 className="margin-b-8">{blogTimeConverter(currentBlog.post_date)}</h6>

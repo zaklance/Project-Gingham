@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState} from 'react';
 import { toast } from 'react-toastify';
+import PulseLoader from 'react-spinners/PulseLoader';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
 import FormGroup from '@mui/material/FormGroup';
@@ -25,10 +26,17 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
     const [selectedInstructionGroups, setSelectedInstructionGroups] = useState([]);
     const [selectedInstructions, setSelectedInstructions] = useState([]);
     const [tempRecipeData, setTempRecipeData] = useState(null);
+    const [unselectedSeasons, setUnselectedSeasons] = useState(['spring', 'summer', 'fall', 'winter']);
     const [editMode, setEditMode] = useState(false);
-    const [image, setImage] = useState(null);
     const [categorySearch, setCategorySearch] = useState('');
     const [dietSearch, setDietSearch] = useState('');
+    const [image, setImage] = useState(null);
+    const [instructionImages, setInstructionImages] = useState({});
+    const [pendingInstructionImages, setPendingInstructionImages] = useState({});
+    const [deletedInstructionImages, setDeletedInstructionImages] = useState({});
+    const [reorderedInstructions, setReorderedInstructions] = useState({});
+    const [isSaving, setIsSaving] = useState(false);
+
 
     
     const dropdownRef = useRef(null);
@@ -36,7 +44,9 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
     const ingredientDropdownRef = useRef(null);
     const categoryDropdownRef = useRef(null);
     const dietDropdownRef = useRef(null);
+
     const siteURL = import.meta.env.VITE_SITE_URL;
+    const seasonOrder = ['spring', 'summer', 'fall', 'winter'];
 
     const handleClickOutsideDropdown = (event) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -94,13 +104,14 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                 is_gingham_team: r.is_gingham_team,
                 image: r.image,
                 image_default: r.image_default,
+                seasons: r.seasons,
                 categories: r.categories,
                 diet_categories: r.diet_categories,
                 prep_time_minutes: r.prep_time_minutes,
                 cook_time_minutes: r.cook_time_minutes,
                 total_time_minutes: r.total_time_minutes,
                 serve_count: r.serve_count,
-                skill_level: r.skill_level
+                skill_level: r.skill_level,
             }));
             return [...nameItems];
         }
@@ -196,11 +207,71 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
         fetchInstructionGroups();
     }, [selectedRecipe]);
 
+    const api = {
+        async patch(url, data) {
+            const response = await fetch(url, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+            return response.json();
+        },
+
+        async delete(url) {
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        },
+
+        async post(url, data) {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+            return response.json();
+        },
+
+        async upload(url, formData) {
+            const response = await fetch(url, {
+                method: 'POST',
+                body: formData,
+            });
+            return response.json();
+        }
+    };
+
     const handleEditToggle = () => {
         if (!editMode) {
             setTempRecipeData({...selectedRecipe});
+            const filteredSeasons = unselectedSeasons.filter(
+                season => !selectedRecipe.seasons.includes(season)
+            );
+            setUnselectedSeasons(filteredSeasons);
+
+            const initialImages = {};
+            selectedInstructions.forEach(instruction => {
+                if (instruction.images) {
+                    initialImages[instruction.id || instruction.tempKey] = Object.entries(instruction.images).map(([key, url]) => ({
+                        id: key,
+                        url,
+                        caption: instruction.captions?.[key] || '',
+                        index: parseInt(key),
+                        existing: true
+                    })).sort((a, b) => a.index - b.index);
+                }
+            });
+            setInstructionImages(initialImages);
         } else {
             setTempRecipeData(null);
+            setUnselectedSeasons(['spring', 'summer', 'fall', 'winter']);
         }
         setEditMode(!editMode);
     };
@@ -384,6 +455,44 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
             }));
             setDietSearch('');
         }
+    };
+
+    const handleAddSeason = (season) => {
+        const lower = season.toLowerCase();
+        setUnselectedSeasons(prev =>
+            prev.filter(s => s.toLowerCase() !== lower)
+        );
+        setTempRecipeData(prev => {
+            const updatedSeasons = [...prev.seasons, lower];
+            return {
+                ...prev,
+                seasons: updatedSeasons.sort(
+                    (a, b) =>
+                        seasonOrder.indexOf(a.toLowerCase()) - seasonOrder.indexOf(b.toLowerCase())
+                ),
+            };
+        });
+    };
+
+    const handleDeleteSeason = (season) => {
+        const lower = season.toLowerCase();
+        setTempRecipeData(prev => {
+            const filteredSeasons = prev.seasons.filter(s => s.toLowerCase() !== lower);
+            return {
+                ...prev,
+                seasons: filteredSeasons.sort(
+                    (a, b) =>
+                        seasonOrder.indexOf(a.toLowerCase()) - seasonOrder.indexOf(b.toLowerCase())
+                ),
+            };
+        });
+        setUnselectedSeasons(prev => {
+            const newSeasons = [...prev, lower];
+            return newSeasons.sort(
+                (a, b) =>
+                    seasonOrder.indexOf(a.toLowerCase()) - seasonOrder.indexOf(b.toLowerCase())
+            );
+        });
     };
 
     const handleAddSmallware = async () => {
@@ -698,42 +807,361 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
         setSelectedInstructionGroups(updatedAll);
     };
 
-    const api = {
-        async patch(url, data) {
-            const response = await fetch(url, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-            return response.json();
-        },
+    const getNextImageIndex = (instructionKey) => {
+        const existingImages = instructionImages[instructionKey] || [];
+        const pendingImages = pendingInstructionImages[instructionKey] || [];
 
-        async delete(url) {
-            const response = await fetch(url, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-        },
+        const highestExistingIndex = existingImages.length > 0 
+            ? Math.max(...existingImages.map(img => img.index)) 
+            : 0;
 
-        async post(url, data) {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
+        const highestPendingIndex = pendingImages.length > 0 
+            ? Math.max(...pendingImages.map(img => img.index)) 
+            : 0;
+
+        return Math.max(highestExistingIndex, highestPendingIndex) + 1;
+    };
+
+    const handleSelectInstructionImage = (instructionKey, file) => {
+        const maxFileSize = 10 * 1024 * 1024; // 10 MB limit
+        if (file.size > maxFileSize) {
+            toast.warning('File size exceeds 10 MB. Please upload a smaller file', {
+                autoClose: 4000,
             });
-            return response.json();
-        },
+            return;
+        }
+
+        const previewUrl = URL.createObjectURL(file);
+        const nextIndex = getNextImageIndex(instructionKey);
+
+        setReorderedInstructions(prev => ({
+            ...prev,
+            [instructionKey]: true
+        }));
+
+        setSelectedInstructions(prevInstructions => {
+            return prevInstructions.map(instr => {
+                if ((instr.id || instr.tempKey) === instructionKey) {
+                    return { ...instr, updated: true };
+                }
+                return instr;
+            });
+        });
+
+        setPendingInstructionImages(prev => {
+            const existingImages = prev[instructionKey] || [];
+            return {
+                ...prev,
+                [instructionKey]: [
+                    ...existingImages,
+                    {
+                        file,
+                        previewUrl,
+                        caption: '',
+                        index: nextIndex,
+                        new: true
+                    }
+                ]
+            };
+        });
+    };
+
+    const handleDeleteInstructionImage = async (instructionId, imageKey) => {
+        try {
+            await api.delete(`/api/instructions/${instructionId}/images`, {
+                image_keys: [imageKey]
+            });
+
+            toast.success("Image deleted successfully");
+            return true;
+        } catch (error) {
+            console.error('Failed to delete image:', error);
+            toast.error(`Failed to delete image: ${error.message}`);
+            return false;
+        }
+    };
+
+    const handleDeleteExistingImage = (instructionKey, imageIndex) => {
+        setInstructionImages(prev => {
+            const updatedImages = [...prev[instructionKey]];
+            const imageToDelete = updatedImages[imageIndex];
+
+            updatedImages[imageIndex] = {
+                ...imageToDelete,
+                deleted: true
+            };
+
+            setDeletedInstructionImages(prevDeleted => ({
+                ...prevDeleted,
+                [instructionKey]: [...(prevDeleted[instructionKey] || []), imageToDelete.id]
+            }));
+
+            setReorderedInstructions(prev => ({
+                ...prev,
+                [instructionKey]: true
+            }));
+
+            setSelectedInstructions(prevInstructions => {
+                return prevInstructions.map(instr => {
+                    if ((instr.id || instr.tempKey) === instructionKey) {
+                        return { ...instr, updated: true };
+                    }
+                    return instr;
+                });
+            });
+
+            // console.log("Image marked as deleted:", updatedImages[imageIndex]);
+
+            if (instructionKey && typeof instructionKey === 'string' && !instructionKey.includes('temp') && imageToDelete.id) {
+                handleDeleteInstructionImage(instructionKey, imageToDelete.id)
+                    .then(success => {
+                        if (success) {
+                            console.log(`Server-side deletion of image ${imageToDelete.id} successful`);
+                        }
+                    });
+            } else {
+                // console.log("Skipping server-side deletion for:", { instructionKey, imageId: imageToDelete.id });
+            }
+
+            return {
+                ...prev,
+                [instructionKey]: updatedImages
+            };
+        });
+    };
+
+
+    const handleDeletePendingImage = (instructionKey, imageIndex) => {
+        setPendingInstructionImages(prev => {
+            const updatedImages = [...prev[instructionKey]];
+
+            URL.revokeObjectURL(updatedImages[imageIndex].previewUrl);
+
+            updatedImages.splice(imageIndex, 1);
+
+            return {
+                ...prev,
+                [instructionKey]: updatedImages
+            };
+        });
+    };
+
+    const handleMoveImageUp = (instructionKey, imageType, imageIndex) => {
+        if (imageIndex === 0) return;
+
+        setReorderedInstructions(prev => ({
+            ...prev,
+            [instructionKey]: true
+        }));
+
+        setSelectedInstructions(prevInstructions => {
+            return prevInstructions.map(instr => {
+                if ((instr.id || instr.tempKey) === instructionKey) {
+                    return { ...instr, updated: true };
+                }
+                return instr;
+            });
+        });
+
+        if (imageType === 'existing') {
+            setInstructionImages(prev => {
+                const images = [...prev[instructionKey]];
+                [images[imageIndex - 1], images[imageIndex]] = [images[imageIndex], images[imageIndex - 1]];
+
+                return {
+                    ...prev,
+                    [instructionKey]: images.map((img, idx) => ({...img, index: idx + 1}))
+                };
+            });
+        } else {
+            setPendingInstructionImages(prev => {
+                const images = [...prev[instructionKey]];
+                [images[imageIndex - 1], images[imageIndex]] = [images[imageIndex], images[imageIndex - 1]];
+
+                return {
+                    ...prev,
+                    [instructionKey]: images.map((img, idx) => ({...img, index: idx + 1}))
+                };
+            });
+        }
+    };
+
+    const handleMoveImageDown = (instructionKey, imageType, imageIndex) => {
+        const targetArray = imageType === 'existing' 
+            ? instructionImages[instructionKey] 
+            : pendingInstructionImages[instructionKey];
+
+        if (imageIndex === targetArray.length - 1) return;
+
+        setReorderedInstructions(prev => ({
+            ...prev,
+            [instructionKey]: true
+        }));
+
+        setSelectedInstructions(prevInstructions => {
+            return prevInstructions.map(instr => {
+                if ((instr.id || instr.tempKey) === instructionKey) {
+                    return { ...instr, updated: true };
+                }
+                return instr;
+            });
+        });
+
+        if (imageType === 'existing') {
+            setInstructionImages(prev => {
+                const images = [...prev[instructionKey]];
+                [images[imageIndex], images[imageIndex + 1]] = [images[imageIndex + 1], images[imageIndex]];
+
+                return {
+                    ...prev,
+                    [instructionKey]: images.map((img, idx) => ({...img, index: idx + 1}))
+                };
+            });
+        } else {
+            setPendingInstructionImages(prev => {
+                const images = [...prev[instructionKey]];
+                [images[imageIndex], images[imageIndex + 1]] = [images[imageIndex + 1], images[imageIndex]];
+
+                return {
+                    ...prev,
+                    [instructionKey]: images.map((img, idx) => ({...img, index: idx + 1}))
+                };
+            });
+        }
+    };
+
+    const handleCaptionChange = (instructionKey, imageType, imageIndex, caption) => {
+        setSelectedInstructions(prevInstructions => {
+            return prevInstructions.map(instr => {
+                if ((instr.id || instr.tempKey) === instructionKey) {
+                    return { ...instr, updated: true };
+                }
+                return instr;
+            });
+        });
+
+        if (imageType === 'existing') {
+            setInstructionImages(prev => {
+                const updated = [...prev[instructionKey]];
+                updated[imageIndex] = {...updated[imageIndex], caption, updated: true};
+
+                return {
+                    ...prev,
+                    [instructionKey]: updated
+                };
+            });
+        } else {
+            setPendingInstructionImages(prev => {
+                const updated = [...prev[instructionKey]];
+                updated[imageIndex] = {...updated[imageIndex], caption};
+
+                return {
+                    ...prev,
+                    [instructionKey]: updated
+                };
+            });
+        }
+    };
+
+    const handleInstructionImageUpload = async (instructionId, file, caption, imageKey) => {
+        try {
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('instruction_id', instructionId);
+            formData.append('image_index', imageKey);
+
+            if (caption) {
+                formData.append('caption', caption);
+            }
+
+            const result = await api.upload('/api/upload/instruction-images', formData);
+            return result.filename;
+        } catch (error) {
+            console.error('Failed to upload image:', error);
+            toast.error(`Failed to upload image: ${error.message}`);
+            return null;
+        }
+    };
+
+    const saveInstructionImages = async (instructions) => {
+        for (const instruction of instructions) {
+            const instructionKey = instruction.id || instruction.tempKey;
+
+            // console.log("Processing instruction:", instructionKey);
+            // console.log("Images state:", instructionImages[instructionKey]);
+
+            const existingImages = (instructionImages[instructionKey] || [])
+                .filter(img => !img.deleted);
+            const pendingImages = pendingInstructionImages[instructionKey] || [];
+
+            // console.log("Existing images after filter:", existingImages);
+            // console.log("Pending images:", pendingImages);
+            // console.log("Deleted image IDs:", deletedInstructionImages[instructionKey] || []);
+
+            if (existingImages.length === 0 && pendingImages.length === 0) {
+                if (deletedInstructionImages[instructionKey] && deletedInstructionImages[instructionKey].length > 0) {
+                    console.log("All images deleted, sending empty image data");
+                    await api.patch(`/api/instructions/${instruction.id}`, {
+                        images: {},
+                        captions: {},
+                        replace_all_images: true,
+                        replace_all_captions: true
+                    });
+                }
+                continue;
+            }
+
+            const imagesDict = {};
+            const captionsDict = {};
+            let imageIndex = 1;
+
+            for (const imgObj of existingImages) {
+                const imageKey = `${imageIndex}`;
+                imagesDict[imageKey] = imgObj.url;
+                if (imgObj.caption) {
+                    captionsDict[imageKey] = imgObj.caption;
+                }
+                imageIndex++;
+            }
+
+            for (const imgData of pendingImages) {
+                const imageKey = `${imageIndex}`;
+                const filename = await handleInstructionImageUpload(
+                    instruction.id,
+                    imgData.file,
+                    imgData.caption,
+                    imageKey
+                );
+
+                if (filename) {
+                    imagesDict[imageKey] = filename;
+                    if (imgData.caption) {
+                        captionsDict[imageKey] = imgData.caption;
+                    }
+                    imageIndex++;
+                }
+            }
+
+            // console.log("Final images dictionary:", imagesDict);
+            // console.log("Final captions dictionary:", captionsDict);
+
+            if (Object.keys(imagesDict).length > 0 || 
+                (deletedInstructionImages[instructionKey] && deletedInstructionImages[instructionKey].length > 0)) {
+                await api.patch(`/api/instructions/${instruction.id}`, {
+                    images: imagesDict,
+                    captions: captionsDict,
+                    replace_all_images: true,
+                    replace_all_captions: true
+                });
+            }
+        }
     };
 
     const handleSaveEdits = async () => {
+        setIsSaving(true);
         try {
             const requests = [];
+            let instructionsWithChanges = [];
 
             // Patch recipe if changed
             if (tempRecipeData.updated) {
@@ -768,7 +1196,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
 
             // Instructions
             for (const instruction of [...selectedInstructions].sort((a, b) => a.step_number - b.step_number)) {
-                const updatedInstruction = { ...instruction };
+                let updatedInstruction = { ...instruction };
 
                 if (groupIdMap[updatedInstruction.instruction_group_id]) {
                     updatedInstruction.instruction_group_id = groupIdMap[updatedInstruction.instruction_group_id];
@@ -776,10 +1204,22 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
 
                 if (updatedInstruction.deleted) {
                     await api.delete(`/api/instructions/${updatedInstruction.id}`);
-                } else if (updatedInstruction.new) {
-                    await api.post(`/api/instructions`, updatedInstruction);
-                } else if (updatedInstruction.updated) {
-                    await api.patch(`/api/instructions/${updatedInstruction.id}`, updatedInstruction);
+                } else {
+                    const { images, captions, ...instructionData } = updatedInstruction;
+
+                    if (updatedInstruction.new) {
+                        const result = await api.post(`/api/instructions`, instructionData);
+                        updatedInstruction.id = result.data.id;
+                        instructionsWithChanges.push(updatedInstruction);
+                    } else if (updatedInstruction.updated) {
+                        await api.patch(`/api/instructions/${updatedInstruction.id}`, instructionData);
+
+                        if (reorderedInstructions[updatedInstruction.id] || 
+                            (pendingInstructionImages[updatedInstruction.id] && pendingInstructionImages[updatedInstruction.id].length > 0) ||
+                            (deletedInstructionImages[updatedInstruction.id] && deletedInstructionImages[updatedInstruction.id].length > 0)) {
+                            instructionsWithChanges.push(updatedInstruction);
+                        }
+                    }
                 }
             }
 
@@ -793,8 +1233,17 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                     requests.push(api.patch(`/api/smallwares/${item.id}`, item));
                 }
             });
+            
+            if (image) {
+                handleImageUpload(selectedRecipe.id);
+            }
 
             await Promise.all(requests);
+
+            if (instructionsWithChanges.length > 0) {
+                await saveInstructionImages(instructionsWithChanges);
+            }
+            
             await Promise.all([
                 fetchSmallwares(),
                 fetchIngredients(),
@@ -802,17 +1251,137 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                 fetchInstructions(),
                 fetchInstructionGroups()
             ]);
+
+            setInstructionImages({});
+            setPendingInstructionImages({});
+            setDeletedInstructionImages({});
+            setReorderedInstructions({});
+
             toast.success("Recipe saved!");
+            setIsSaving(false);
             setEditMode(false)
         } catch (error) {
             console.error("Error saving recipe:", error);
             toast.error("Failed to save recipe.");
+            setIsSaving(false);
         }
     };
 
-    console.log(selectedRecipe)
-    console.log(tempRecipeData?.image)
-    console.log(tempRecipeData?.image_default)
+    const renderImageGallery = (instruction) => {
+        const instructionKey = instruction.id || instruction.tempKey;
+        const existingImages = (instructionImages[instructionKey] || [])
+            .filter(img => !img.deleted);
+        const pendingImages = pendingInstructionImages[instructionKey] || [];
+
+        return (
+            <div className="margin-t--4 margin-l-96">
+                <div className='flex-start flex-gap-8 flex-wrap margin-b-12'>
+                    {existingImages.map((imgObj, imgIndex) => (
+                        <div key={`existing-${imgObj.id}-${imgIndex}`} className="image-item flex-start flex-column margin-t-4">
+                            <img
+                                src={imgObj.url}
+                                alt={`Instruction image ${imgIndex + 1}`}
+                                className="img-market-card"
+                            />
+                            <div className="flex-start margin-t-4">
+                                <input
+                                    type="text"
+                                    className='input-caption margin-r-8'
+                                    placeholder="Caption (optional)"
+                                    value={imgObj.caption}
+                                    onChange={(e) => handleCaptionChange(instructionKey, 'existing', imgIndex, e.target.value)}
+                                />
+                                <button
+                                    className='btn btn-recipe-arrow no-float icon-arrow-l margin-r-4'
+                                    onClick={() => handleMoveImageUp(instructionKey, 'existing', imgIndex)}
+                                    disabled={imgIndex === 0}
+                                    title="Move up"
+                                >
+                                    &emsp;
+                                </button>
+                                <button
+                                    className='btn btn-recipe-arrow no-float icon-arrow-r margin-r-4'
+                                    onClick={() => handleMoveImageDown(instructionKey, 'existing', imgIndex)}
+                                    disabled={imgIndex === existingImages.length - 1}
+                                    title="Move down"
+                                >
+                                    &emsp;
+                                </button>
+                                <button
+                                    className="btn btn-recipe-arrow no-float btn-red"
+                                    onClick={() => handleDeleteExistingImage(instructionKey, imgIndex)}
+                                    title="Delete image"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                    {pendingImages.map((imgObj, imgIndex) => (
+                        <div key={`pending-${imgIndex}-${imgObj.id}`} className="image-item flex-start flex-column margin-t-4">
+                            <img
+                                src={imgObj.previewUrl}
+                                alt={`New instruction image ${imgIndex + 1}`}
+                                className="img-market-card"
+                            />
+                            <div className="flex-start margin-t-4">
+                                <input
+                                    type="text"
+                                    className='input-caption margin-r-8'
+                                    placeholder="Caption (optional)"
+                                    value={imgObj.caption}
+                                    onChange={(e) => handleCaptionChange(instructionKey, 'pending', imgIndex, e.target.value)}
+                                />
+                                <button
+                                    className='btn btn-recipe-arrow no-float icon-arrow-l margin-r-4'
+                                    onClick={() => handleMoveImageUp(instructionKey, 'pending', imgIndex)}
+                                    disabled={imgIndex === 0 && existingImages.length === 0}
+                                    title="Move up"
+                                >
+                                    &emsp;
+                                </button>
+                                <button
+                                    className='btn btn-recipe-arrow no-float icon-arrow-r margin-r-4'
+                                    onClick={() => handleMoveImageDown(instructionKey, 'pending', imgIndex)}
+                                    disabled={imgIndex === pendingImages.length - 1}
+                                    title="Move down"
+                                >
+                                    &emsp;
+                                </button>
+                                <button
+                                    className="btn btn-recipe-arrow no-float btn-red"
+                                    onClick={() => handleDeletePendingImage(instructionKey, imgIndex)}
+                                    title="Delete image"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="margin-t--4 margin-b-16">
+                    <label className="btn btn-small">
+                        + Add Image
+                        <input
+                            type="file"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            multiple
+                            onChange={(e) => {
+                                if (e.target.files.length > 0) {
+                                    const files = Array.from(e.target.files);
+                                    files.forEach(file => {
+                                        handleSelectInstructionImage(instructionKey, file);
+                                    });
+                                    e.target.value = null;
+                                }
+                            }}
+                        />
+                    </label>
+                </div>
+            </div>
+        );
+    };
 
 
     return (
@@ -851,60 +1420,6 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                             <option value={4}>4</option>
                                             <option value={5}>5</option>
                                         </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className='cell-title btn-grey m-hidden'>Image:</td>
-                                    <td className='cell-text cell-recipe' colSpan={3} rowSpan={2}>
-                                        {tempRecipeData?.image !== null && (
-                                            <img 
-                                            style={{ maxWidth: '100%', height: 'auto' }}
-                                            src={tempRecipeData?.image ? `${siteURL}${tempRecipeData.image}` : `/recipe-images/_default-images/${tempRecipeData.image_default}`}
-                                            alt="Market Image"
-                                            />
-                                        )}
-                                    </td>
-                                    <td className='cell-text cell-recipe' colSpan={2}>
-                                        <div className='flex-start flex-center-align'>
-                                            <button className='btn btn-small btn-file btn-blue' onClick={handleImageDelete}>Delete Image</button>
-                                            <label htmlFor='file-upload' className='btn btn-small btn-file btn-blue nowrap'>Choose File{image && <span id="file-name" className='text-white-background margin-l-8'>{image.name}</span>}</label>
-                                            <input
-                                                id="file-upload"
-                                                type="file"
-                                                name="file"
-                                                accept="image/*"
-                                                onChange={handleFileChange}
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className='cell-title btn-grey m-hidden'>Default Image:</td>
-                                    <td className='cell-text cell-recipe' colSpan={4}>
-                                        <select
-                                            name="image_default"
-                                            className='select-recipe'
-                                            value={tempRecipeData ? tempRecipeData.image_default : ''}
-                                            onChange={handleInputChange}
-                                        >
-                                            <option value="">Select</option>
-                                            {Object.entries(recipes_default).map(([key, value], index) => (
-                                                <option key={index} value={value}>
-                                                    {key}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <button 
-                                            type="button"
-                                            className='btn btn-small margin-t-8'
-                                            onClick={() => {
-                                                const keys = Object.keys(recipes_default);
-                                                const randomKey = keys[Math.floor(Math.random() * keys.length)];
-                                                handleInputChange({ target: { name: "image_default", value: recipes_default[randomKey] } });
-                                            }}
-                                        >
-                                            Randomize
-                                        </button>
                                     </td>
                                 </tr>
                                 <tr>
@@ -1111,6 +1626,252 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                 </tr>
                             </tbody>
                         </table>
+                        <table className='table-search-recipe'>
+                            <tbody>
+                                <tr>
+                                    <td className='cell-title btn-grey m-hidden'>Seasons:</td>
+                                    <td className='cell-text cell-recipe'>
+                                        <Stack direction="row" spacing={1}>
+                                            {unselectedSeasons.map((season, i) => (
+                                                <Chip 
+                                                    key={`unseason-${i}`}
+                                                    label={season}
+                                                    style={{ backgroundColor: "#eee", fontSize: ".9em" }}
+                                                    size="small"
+                                                    onClick={() => handleAddSeason(season)}
+                                                />
+                                            ))}
+                                        </Stack>
+                                    </td>
+                                    <td className='cell-title btn-grey m-hidden'>Selected:</td>
+                                    {tempRecipeData.seasons.length > 0 && (
+                                        <td className='cell-text cell-chips'>
+                                            <Stack direction="row" spacing={1}>
+                                                {tempRecipeData.seasons.map((season, i) => (
+                                                    <Chip 
+                                                        key={`season-${i}`}
+                                                        label={season}
+                                                        style={{ backgroundColor: "#eee", fontSize: ".9em" }}
+                                                        size="small"
+                                                        onDelete={() => handleDeleteSeason(season)}
+                                                    />
+                                                ))}
+                                            </Stack>
+                                        </td>
+                                    )}
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td className='cell-title btn-grey m-hidden'>Image:</td>
+                                    <td className='cell-text cell-recipe width-50-i'>
+                                        {tempRecipeData?.image !== null && (
+                                            <img 
+                                                style={{ maxWidth: '100%', height: 'auto' }}
+                                                src={tempRecipeData?.image ? `${siteURL}${tempRecipeData.image}` : `/recipe-images/_default-images/${tempRecipeData.image_default}`}
+                                                alt="Market Image"
+                                            />
+                                        )}
+                                    </td>
+                                    <td className='cell-text cell-recipe width-50-i'>
+                                        <img 
+                                            style={{ maxWidth: '100%', height: 'auto' }}
+                                            src={`/recipe-images/_default-images/${tempRecipeData.image_default}`}
+                                            alt="Market Image"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td className='cell-title btn-grey m-hidden'></td>
+                                    <td className='cell-text cell-recipe width-50-i'>
+                                        <div className='flex-start flex-center-align'>
+                                            <button className='btn btn-small btn-file btn-blue' onClick={handleImageDelete}>Delete Image</button>
+                                            <label htmlFor='file-upload' className='btn btn-small btn-file btn-blue nowrap'>Choose File{image && <span id="file-name" className='text-white-background margin-l-8'>{image.name}</span>}</label>
+                                            <input
+                                                id="file-upload"
+                                                type="file"
+                                                name="file"
+                                                accept="image/*"
+                                                onChange={handleFileChange}
+                                            />
+                                        </div>
+                                    </td>
+                                    <td className='cell-text cell-recipe flex-start'>
+                                        <select
+                                            name="image_default"
+                                            className='select-recipe'
+                                            value={tempRecipeData ? tempRecipeData.image_default : ''}
+                                            onChange={handleInputChange}
+                                        >
+                                            <option value="">Select</option>
+                                            {Object.entries(recipes_default).map(([key, value], index) => (
+                                                <option key={`select-${index}`} value={value}>
+                                                    {key}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <button 
+                                            type="button"
+                                            className='btn btn-small margin-t-8 margin-l-8'
+                                            onClick={() => {
+                                                const keys = Object.keys(recipes_default);
+                                                const randomKey = keys[Math.floor(Math.random() * keys.length)];
+                                                handleInputChange({ target: { name: "image_default", value: recipes_default[randomKey] } });
+                                            }}
+                                        >
+                                            Randomize
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div className="box-bounding margin-t-24">
+                            <h3 className='margin-b-8'>Ingredients</h3>
+                            <p className='margin-t-8 margin-l-8'>Only brand names and proper nouns are capitalized for ingredients.</p>
+                            <p className='margin-t-8 margin-l-8'>For measurements use decimals over fractions.</p>
+                            <p className='margin-t-8 margin-l-8'>For numbers use the number, not the word.</p>
+                            <p className='margin-t-8 margin-l-8 margin-b-12'>Tablespoon: tbsp; teaspoon: tsp.</p>
+                            <table className='table-search-recipe margin-b-12'>
+                                <tbody>
+                                    <tr>
+                                        <td className='cell-title btn-grey m-hidden'>Ingredients:</td>
+                                        <td className='cell-text cell-recipe'>
+                                            <input
+                                                className="search-bar cell-32"
+                                                type="text"
+                                                placeholder="Search ingredients..."
+                                                value={searchIngredients}
+                                                onChange={(e) => setSearchIngredients(e.target.value.toLowerCase())}
+                                            />
+                                            {searchIngredients && (
+                                                <ul className="dropdown-content" ref={ingredientDropdownRef}>
+                                                    {ingredientFuse.search(searchIngredients).slice(0, 10).map(({ item }) => (
+                                                        <li
+                                                            className="search-results"
+                                                            key={`ingredient-${item.id}`}
+                                                            onClick={() => {
+                                                                if (!selectedIngredients.some(i => i.id === item.id)) {
+                                                                    setSelectedIngredients(prev => [...prev, item]);
+                                                                }
+                                                                setSearchIngredients('');
+                                                                handleAddExistingIngredient(item.name, item.name_plural);
+                                                            }}
+                                                        >
+                                                            {item.name_plural}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                        </td>
+                                        <td className='cell-title btn-grey m-hidden'>New:</td>
+                                        <td className='cell-text cell-recipe'>
+                                            <input
+                                                className="cell-32"
+                                                type="text"
+                                                placeholder="Singular spelling"
+                                                value={newIngName}
+                                                onChange={(e) => setNewIngName(e.target.value)}
+                                            />
+                                        </td>
+                                        <td className='cell-text cell-recipe'>
+                                            <input
+                                                className="cell-32"
+                                                type="text"
+                                                placeholder="Plural spelling"
+                                                value={newIngNamePlural}
+                                                onChange={(e) => setNewIngNamePlural(e.target.value)}
+                                            />
+                                        </td>
+                                        <td>
+                                            <button className='btn btn-filter' onClick={handleAddIngredient}>+</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            {selectedRecipeIngredients
+                                .filter(item => !item.deleted)
+                                .map((item, index) => (
+                                    <div key={`ri-${index}`} className='flex-start flex-center-align'>
+                                        <button
+                                            className='btn btn-delete icon-arrow-u margin-r-4'
+                                            onClick={() => moveIngredient(index, 'up')}
+                                            disabled={item.step_number === 1}
+                                            title="Move up"
+                                        >
+                                            &emsp;
+                                        </button>
+                                        <button
+                                            className='btn btn-delete icon-arrow-d margin-r-4'
+                                            onClick={() => moveIngredient(index, 'down')}
+                                            disabled={item.step_number === selectedRecipeIngredients.filter(i => !i.deleted).length - 1}
+                                            title="Move down"
+                                        >
+                                            &emsp;
+                                        </button>
+                                        <button
+                                            className='btn btn-delete text-700 btn-red margin-r-12'
+                                            onClick={() => handleDeleteRecipeIngredient(item.id)}
+                                            title="Remove ingredient"
+                                        >
+                                            ×
+                                        </button>
+                                        <label>
+                                            <FormGroup>
+                                                <FormControlLabel control={
+                                                    <Switch
+                                                        checked={item.plural}
+                                                        onChange={(e) => {
+                                                            const newItems = selectedRecipeIngredients.map(ingredient => 
+                                                                ingredient.id === item.id 
+                                                                    ? { ...ingredient, plural: e.target.checked } 
+                                                                    : ingredient
+                                                            );
+                                                            setSelectedRecipeIngredients(newItems);
+                                                        }}
+                                                        color={'secondary'}
+                                                    />
+                                                }
+                                                label="Use Plural"
+                                                />
+                                            </FormGroup>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className='input-ingredients input-amount margin-r-8'
+                                            placeholder="Amount"
+                                            value={item.amount}
+                                            onChange={(e) => {
+                                                const newItems = selectedRecipeIngredients.map(ingredient =>
+                                                    ingredient.id === item.id 
+                                                        ? { ...ingredient, amount: e.target.value }
+                                                        : ingredient
+                                                );
+                                                setSelectedRecipeIngredients(newItems);
+                                            }}
+                                        />
+                                        <span className="text-700 margin-r-8">
+                                            {item.plural ? item.ingredient.name_plural : item.ingredient.name},
+                                        </span>
+                                        <input
+                                            type="text"
+                                            className='input-ingredients input-desc'
+                                            placeholder="Description (optional)"
+                                            value={item.description}
+                                            onChange={(e) => {
+                                                const newItems = selectedRecipeIngredients.map(ingredient =>
+                                                    ingredient.id === item.id 
+                                                        ? { ...ingredient, description: e.target.value }
+                                                        : ingredient
+                                                );
+                                                setSelectedRecipeIngredients(newItems);
+                                            }}
+                                        />
+                                    </div>
+                                ))
+                            }
+                        </div>
                         <div className="box-bounding margin-t-16">
                             <h3 className='margin-b-8'>Smallwares</h3>
                             <table className='table-search-recipe margin-b-12'>
@@ -1197,7 +1958,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                             {selectedSmallwares
                                 .filter(item => !item.deleted)
                                 .map((item, index) => (
-                                    <div key={index} className='flex-start flex-center-align margin-b-4'>
+                                    <div key={`ss-${index}`} className='flex-start flex-center-align margin-b-4'>
                                         <button
                                             className='btn btn-delete text-700 btn-red margin-r-12'
                                             onClick={() => handleDeleteSmallware(index)}
@@ -1212,157 +1973,12 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                 ))
                             }
                         </div>
-                        <div className="box-bounding margin-t-24">
-                            <h3 className='margin-b-8'>Ingredients</h3>
-                            <p className='margin-t-8 margin-l-8'>Only brand names and proper nouns are capitalized for ingredients.</p>
-                            <p className='margin-t-8 margin-l-8'>For measurements use decimals over fractions.</p>
-                            <p className='margin-t-8 margin-l-8'>For numbers use the number, not the word.</p>
-                            <p className='margin-t-8 margin-l-8 margin-b-12'>Tablespoon: tbsp; teaspoon: tsp.</p>
-                            <table className='table-search-recipe margin-b-12'>
-                                <tbody>
-                                    <tr>
-                                        <td className='cell-title btn-grey m-hidden'>Ingredients:</td>
-                                        <td className='cell-text cell-recipe'>
-                                            <input
-                                                className="search-bar cell-32"
-                                                type="text"
-                                                placeholder="Search ingredients..."
-                                                value={searchIngredients}
-                                                onChange={(e) => setSearchIngredients(e.target.value.toLowerCase())}
-                                            />
-                                            {searchIngredients && (
-                                                <ul className="dropdown-content" ref={ingredientDropdownRef}>
-                                                    {ingredientFuse.search(searchIngredients).slice(0, 10).map(({ item }) => (
-                                                        <li
-                                                            className="search-results"
-                                                            key={`ingredient-${item.id}`}
-                                                            onClick={() => {
-                                                                if (!selectedIngredients.some(i => i.id === item.id)) {
-                                                                    setSelectedIngredients(prev => [...prev, item]);
-                                                                }
-                                                                setSearchIngredients('');
-                                                                handleAddExistingIngredient(item.name, item.name_plural);
-                                                            }}
-                                                        >
-                                                            {item.name_plural}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            )}
-                                        </td>
-                                        <td className='cell-title btn-grey m-hidden'>New:</td>
-                                        <td className='cell-text cell-recipe'>
-                                            <input
-                                                className="cell-32"
-                                                type="text"
-                                                placeholder="Singular spelling"
-                                                value={newIngName}
-                                                onChange={(e) => setNewIngName(e.target.value)}
-                                            />
-                                        </td>
-                                        <td className='cell-text cell-recipe'>
-                                            <input
-                                                className="cell-32"
-                                                type="text"
-                                                placeholder="Plural spelling"
-                                                value={newIngNamePlural}
-                                                onChange={(e) => setNewIngNamePlural(e.target.value)}
-                                            />
-                                        </td>
-                                        <td>
-                                            <button className='btn btn-filter' onClick={handleAddIngredient}>+</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            {selectedRecipeIngredients
-                                .filter(item => !item.deleted)
-                                .map((item, index) => (
-                                    <div key={index} className='flex-start flex-center-align'>
-                                        <button
-                                            className='btn btn-delete icon-arrow-u margin-r-4'
-                                            onClick={() => moveIngredient(index, 'up')}
-                                            disabled={item.step_number === 1}
-                                            title="Move up"
-                                        >
-                                            &emsp;
-                                        </button>
-                                        <button
-                                            className='btn btn-delete icon-arrow-d margin-r-4'
-                                            onClick={() => moveIngredient(index, 'down')}
-                                            disabled={item.step_number === selectedRecipeIngredients.filter(i => !i.deleted).length - 1}
-                                            title="Move down"
-                                        >
-                                            &emsp;
-                                        </button>
-                                        <button
-                                            className='btn btn-delete text-700 btn-red margin-r-12'
-                                            onClick={() => handleDeleteRecipeIngredient(item.id)}
-                                            title="Remove ingredient"
-                                        >
-                                            ×
-                                        </button>
-                                        <label>
-                                            <FormGroup>
-                                                <FormControlLabel control={
-                                                    <Switch
-                                                        checked={item.plural}
-                                                        onChange={(e) => {
-                                                            const newItems = selectedRecipeIngredients.map(ingredient => 
-                                                                ingredient.id === item.id 
-                                                                    ? { ...ingredient, plural: e.target.checked } 
-                                                                    : ingredient
-                                                            );
-                                                            setSelectedRecipeIngredients(newItems);
-                                                        }}
-                                                        color={'secondary'}
-                                                    />
-                                                }
-                                                label="Use Plural"
-                                                />
-                                            </FormGroup>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className='input-ingredients input-amount margin-r-8'
-                                            placeholder="Amount"
-                                            value={item.amount}
-                                            onChange={(e) => {
-                                                const newItems = selectedRecipeIngredients.map(ingredient =>
-                                                    ingredient.id === item.id 
-                                                        ? { ...ingredient, amount: e.target.value }
-                                                        : ingredient
-                                                );
-                                                setSelectedRecipeIngredients(newItems);
-                                            }}
-                                        />
-                                        <span className="text-700 margin-r-8">
-                                            {item.plural ? item.ingredient.name_plural : item.ingredient.name},
-                                        </span>
-                                        <input
-                                            type="text"
-                                            className='input-ingredients input-desc'
-                                            placeholder="Description (optional)"
-                                            value={item.description}
-                                            onChange={(e) => {
-                                                const newItems = selectedRecipeIngredients.map(ingredient =>
-                                                    ingredient.id === item.id 
-                                                        ? { ...ingredient, description: e.target.value }
-                                                        : ingredient
-                                                );
-                                                setSelectedRecipeIngredients(newItems);
-                                            }}
-                                        />
-                                    </div>
-                                ))
-                            }
-                        </div>
                         <div className='box-bounding'>
                             <h3>Instructions</h3>
                             {sortedInstructionGroups
                                 .filter(group => !group.deleted)
                                 .map((group, groupIndex) => (
-                                    <div key={group.id} className="box-bounding">
+                                    <div key={'sig-div-instru-' + group.id + groupIndex} className="box-bounding">
                                         <div className="flex-start flex-center-align margin-b-8">
                                             <strong className="margin-r-8">Group {group.group_number}</strong>
                                             <input
@@ -1408,45 +2024,48 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                             .filter(instr => instr.instruction_group_id === group.id && !instr.deleted)
                                             .sort((a, b) => a.step_number - b.step_number)
                                             .map((instr, instrIndex, array) => (
-                                                <div key={`${group.id}-${instr.step_number}`} className="flex-start margin-b-4">
-                                                    <button
-                                                        className='btn btn-recipe-arrow icon-arrow-u margin-r-4'
-                                                        onClick={() => moveInstruction(group.id, instrIndex, 'up')}
-                                                        disabled={instrIndex === 0}
-                                                        title="Move up"
-                                                    >
-                                                        &emsp;
-                                                    </button>
-                                                    <button
-                                                        className='btn btn-recipe-arrow icon-arrow-d margin-r-4'
-                                                        onClick={() => moveInstruction(group.id, instrIndex, 'down')}
-                                                        disabled={instrIndex === array.length - 1}
-                                                        title="Move down"
-                                                    >
-                                                        &emsp;
-                                                    </button>
-                                                    {array.length > 1 && (
+                                                <div key={`${group.id}-${instr.step_number}`}>
+                                                    <div className="flex-start margin-b-4">
                                                         <button
-                                                            className="btn btn-recipe-arrow btn-red margin-r-12"
-                                                            onClick={() => handleDeleteInstruction(group.id, instr.step_number)}
-                                                            title="Delete instruction"
+                                                            className='btn btn-recipe-arrow icon-arrow-u margin-r-4'
+                                                            onClick={() => moveInstruction(group.id, instrIndex, 'up')}
+                                                            disabled={instrIndex === 0}
+                                                            title="Move up"
                                                         >
-                                                            ×
+                                                            &emsp;
                                                         </button>
-                                                    )}
-                                                    <span className="margin-r-8">{instr.step_number}.</span>
-                                                    <textarea
-                                                        type="text"
-                                                        className="textarea-recipe-edit input-ingredients input-instruction flex-grow"
-                                                        placeholder="Instruction"
-                                                        value={instr.description}
-                                                        onChange={(e) => {
-                                                            const updated = [...selectedInstructions];
-                                                            const idx = updated.findIndex(i => i.instruction_group_id === group.id && i.step_number === instr.step_number);
-                                                            updated[idx].description = e.target.value;
-                                                            setSelectedInstructions(updated);
-                                                        }}
-                                                    />
+                                                        <button
+                                                            className='btn btn-recipe-arrow icon-arrow-d margin-r-4'
+                                                            onClick={() => moveInstruction(group.id, instrIndex, 'down')}
+                                                            disabled={instrIndex === array.length - 1}
+                                                            title="Move down"
+                                                        >
+                                                            &emsp;
+                                                        </button>
+                                                        {array.length > 1 && (
+                                                            <button
+                                                                className="btn btn-recipe-arrow btn-red margin-r-12"
+                                                                onClick={() => handleDeleteInstruction(group.id, instr.step_number)}
+                                                                title="Delete instruction"
+                                                            >
+                                                                ×
+                                                            </button>
+                                                        )}
+                                                        <span className="margin-r-8">{instr.step_number}.</span>
+                                                        <textarea
+                                                            type="text"
+                                                            className="textarea-recipe-edit input-ingredients input-instruction flex-grow"
+                                                            placeholder="Instruction"
+                                                            value={instr.description}
+                                                            onChange={(e) => {
+                                                                const updated = [...selectedInstructions];
+                                                                const idx = updated.findIndex(i => i.instruction_group_id === group.id && i.step_number === instr.step_number);
+                                                                updated[idx].description = e.target.value;
+                                                                setSelectedInstructions(updated);
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    {renderImageGallery(instr)}
                                                 </div>
                                             ))
                                         }
@@ -1468,9 +2087,19 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                             }
                         </div>
                         <div className='flex-start'>
-                            <button className='btn btn-reset btn-red margin-t-12 margin-r-8' onClick={handleSaveEdits}>
-                                Save Changes
-                            </button>
+                            {isSaving ? (
+                                <PulseLoader
+                                    className='margin-t-16 margin-l-8 margin-r-48'
+                                    color={'#ff806b'}
+                                    size={10}
+                                    aria-label="Loading Spinner"
+                                    data-testid="loader"
+                                />
+                            ) : (
+                                <button className='btn btn-reset btn-red margin-t-12 margin-r-8' onClick={handleSaveEdits}>
+                                    Save Changes
+                                </button>
+                            )}
                             <button className='btn btn-reset btn-red margin-t-12' onClick={handleEditToggle}>
                                 Cancel Changes
                             </button>
@@ -1521,14 +2150,24 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                 <tbody>
                                     <tr>
                                         <td className='cell-title btn-grey m-hidden'>Title:</td>
-                                        <td className='cell-text cell-recipe' colSpan={3}>
+                                        <td className='cell-text cell-recipe' colSpan={5}>
                                             {selectedRecipe.title}
                                         </td>
                                         <td className='cell-text cell-recipe' colSpan={2}>
+                                            Skill Level: {selectedRecipe.skill_level}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className='cell-title btn-grey m-hidden'>Author:</td>
+                                        <td className='cell-text cell-recipe' colSpan={3}>
                                             {selectedRecipe.author} {selectedRecipe.is_gingham_team && ("of the Gingham Team")}
                                         </td>
-                                        <td className='cell-text cell-recipe' colSpan={2}>
-                                            Skill Level: {selectedRecipe.skill_level}
+                                        <td className='cell-text cell-recipe' colSpan={4}>
+                                            {selectedRecipe.attribution && selectedRecipe.attribution_link ? (
+                                                <a className='link-underline-inverse' href={selectedRecipe.attribution_link}>{selectedRecipe.attribution}</a>
+                                            ) : selectedRecipe.attribution && (
+                                                    <p>{selectedRecipe.attribution}</p>
+                                            )}
                                         </td>
                                     </tr>
                                     <tr>
@@ -1539,12 +2178,12 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                     </tr>
                                     <tr>
                                         <td className='cell-title btn-grey m-hidden'>Categories:</td>
-                                        <td className='cell-text cell-recipe' colSpan={2}>
+                                        <td className='cell-text cell-recipe' colSpan={7}>
                                             {selectedRecipe.categories && selectedRecipe.categories.length > 0 && (
                                                 <Stack className='box-scroll' direction="row" spacing={1}>
                                                     {selectedRecipe.categories.map((cat, i) => (
                                                         <Chip
-                                                            key={i}
+                                                            key={`src-${i}`}
                                                             style={{
                                                                 backgroundColor: "#eee", fontSize: ".9em"
                                                             }}
@@ -1555,13 +2194,15 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                                 </Stack>
                                             )}
                                         </td>
+                                    </tr>
+                                    <tr>
                                         <td className='cell-title btn-grey m-hidden'>Diet Categories:</td>
-                                        <td className='cell-text cell-recipe' colSpan={4}>
-                                            {selectedRecipe.categories && selectedRecipe.categories.length > 0 && (
+                                        <td className='cell-text cell-recipe' colSpan={7}>
+                                            {selectedRecipe.diet_categories && selectedRecipe.diet_categories.length > 0 && (
                                                 <Stack className='box-scroll' direction="row" spacing={1}>
                                                     {selectedRecipe.diet_categories.map((diet, i) => (
                                                         <Chip
-                                                            key={i}
+                                                            key={`srdc-${i}`}
                                                             style={{
                                                                 backgroundColor: "#eee", fontSize: ".9em"
                                                             }}
@@ -1574,39 +2215,67 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                         </td>
                                     </tr>
                                     <tr>
+                                        <td className='cell-title btn-grey m-hidden'>Seasons:</td>
+                                        <td className='cell-text cell-recipe' colSpan={7}>
+                                            {selectedRecipe.seasons && selectedRecipe.seasons.length > 0 && (
+                                                <Stack className='box-scroll' direction="row" spacing={1}>
+                                                    {selectedRecipe.seasons.map((sea, i) => (
+                                                        <Chip
+                                                            key={`srs-${i}`}
+                                                            style={{
+                                                                backgroundColor: "#eee", fontSize: ".9em"
+                                                            }}
+                                                            label={sea}
+                                                            size="small"
+                                                        />
+                                                    ))}
+                                                </Stack>
+                                            )}
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <td className='cell-title btn-grey m-hidden'>Prep Time:</td>
-                                        <td className='cell-text cell-recipe' colSpan={1}>
+                                        <td className='cell-text cell-recipe width-1-7' colSpan={1}>
                                             {formatMinutes(selectedRecipe.prep_time_minutes)}
                                         </td>
-                                        <td className='cell-title btn-grey m-hidden'>Cook Time:</td>
-                                        <td className='cell-text cell-recipe' colSpan={1}>
+                                        <td className='cell-title btn-grey m-hidden width-1-7'>Cook Time:</td>
+                                        <td className='cell-text cell-recipe nowrap width-1-7' colSpan={1}>
                                             {formatMinutes(selectedRecipe.cook_time_minutes)}
                                         </td>
-                                        <td className='cell-title btn-grey m-hidden'>Total Time:</td>
-                                        <td className='cell-text cell-recipe' colSpan={1}>
+                                        <td className='cell-title btn-grey m-hidden width-1-7'>Total Time:</td>
+                                        <td className='cell-text cell-recipe nowrap width-1-7' colSpan={1}>
                                             {formatMinutes(selectedRecipe.total_time_minutes)}
                                         </td>
-                                        <td className='cell-title btn-grey m-hidden'>Serves:</td>
-                                        <td className='cell-text cell-recipe' colSpan={1}>
+                                        <td className='cell-title btn-grey m-hidden width-1-7'>Serves:</td>
+                                        <td className='cell-text cell-recipe width-1-7' colSpan={1}>
                                             {selectedRecipe.serve_count}
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
-                            <div className="box-recipe margin-t-16">
-                                <h3 className='text-underline'>Smallwares</h3>
-                                    <article className='column-2'>
-                                    <ul className='ul-bullet'>
-                                        {selectedSmallwares.map((item, index) => (
-                                            <li key={index}>
-                                                <span className='text-700'>
-                                                    {item.smallware}<span className="text-300">{item.smallware_alt && ' or '}</span>{item.smallware_alt}
-                                                </span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </article>
-                            </div>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td className='cell-title btn-grey m-hidden'>Image:</td>
+                                        <td className='cell-text cell-recipe width-50-i'>
+                                            {selectedRecipe?.image !== null || !selectedRecipe?.image && (
+                                                <img 
+                                                    style={{ maxWidth: '100%', height: 'auto' }}
+                                                    src={selectedRecipe?.image ? `${siteURL}${selectedRecipe.image}` : `/recipe-images/_default-images/${selectedRecipe.image_default}`}
+                                                    alt="Market Image"
+                                                />
+                                            )}
+                                        </td>
+                                        <td className='cell-text cell-recipe width-50-i'>
+                                            <img 
+                                                style={{ maxWidth: '100%', height: 'auto' }}
+                                                src={`/recipe-images/_default-images/${selectedRecipe.image_default}`}
+                                                alt="Market Image"
+                                            />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                             <div className="box-recipe margin-t-16">
                                 <h3 className="text-underline">Ingredients</h3>
                                 <article className='column-3'>
@@ -1616,11 +2285,25 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                             if (!ingredient) return null;
                                             const name = ri.plural ? ingredient.name_plural : ingredient.name;
                                             return (
-                                                <li key={ri.id}>
+                                                <li key={`sri-li-${ri.id}`}>
                                                     <span className="text-500">{ri.amount}</span> {name}{ri.description ? `, ${ri.description}` : ''}
                                                 </li>
                                             );
                                         })}
+                                    </ul>
+                                </article>
+                            </div>
+                            <div className="box-recipe margin-t-16">
+                                <h3 className='text-underline'>Smallwares</h3>
+                                    <article className='column-2'>
+                                    <ul className='ul-bullet'>
+                                        {selectedSmallwares.map((item, index) => (
+                                            <li key={`ss-li-${index}`}>
+                                                <span className='text-700'>
+                                                    {item.smallware}<span className="text-300">{item.smallware_alt && ' or '}</span>{item.smallware_alt}
+                                                </span>
+                                            </li>
+                                        ))}
                                     </ul>
                                 </article>
                             </div>
@@ -1634,19 +2317,69 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                         const isSingleOl = rest.length === 0;
 
                                         return (
-                                            <div key={group.id}>
+                                            <div key={`sig-div-${group.id}`}>
                                                 <div className='text-block-header'>
                                                     {group.title && <h4>{group.title}</h4>}
                                                     <ol className={`ul-numbers ${isSingleOl ? 'ol-last' : ''}`}>
                                                         {firstTwo.map(instruction => (
-                                                            <li key={instruction.id} className='ol-bold'>{instruction.description}</li>
+                                                            <li key={`instr-li-${instruction.id}`} className='ol-bold li-recipe-image'>
+                                                                <p className='margin-b-4'>{instruction.description}</p>
+                                                                {instruction.images && (
+                                                                    <>
+                                                                        {Object.keys(instruction.images || {})
+                                                                            .sort((a, b) => Number(a) - Number(b))
+                                                                            .map(key => {
+                                                                                const image = instruction.images[key];
+                                                                                const caption = instruction.captions?.[key] || '';
+                                                                                return (
+                                                                                    <div key={`sig-li-${key}`} className="no-break margin-b-4">
+                                                                                        <img
+                                                                                            src={image}
+                                                                                            alt={`Instruction image ${key}`}
+                                                                                            className="img-market-card"
+                                                                                        />
+                                                                                        {caption && (
+                                                                                            <p className="text-caption margin-l-2">{caption}</p>
+                                                                                        )}
+                                                                                    </div>
+                                                                                );
+                                                                            })
+                                                                        }
+                                                                    </>
+                                                                )}
+                                                            </li>
                                                         ))}
                                                     </ol>
                                                 </div>
                                                 {rest.length > 0 && (
                                                     <ol className='ul-numbers ol-last' start={firstTwo.length + 1}>
                                                         {rest.map(instruction => (
-                                                            <li key={instruction.id + '-rest'} className='ol-bold'>{instruction.description}</li>
+                                                            <li key={instruction.id + '-rest'} className='ol-bold li-recipe-image'>
+                                                                <p className='margin-b-4'>{instruction.description}</p>
+                                                                {instruction.images && (
+                                                                    <>
+                                                                        {Object.keys(instruction.images || {})
+                                                                            .sort((a, b) => Number(a) - Number(b))
+                                                                            .map(key => {
+                                                                                const image = instruction.images[key];
+                                                                                const caption = instruction.captions?.[key] || '';
+                                                                                return (
+                                                                                    <div key={'instr-div-img-' + key} className="no-break margin-b-8">
+                                                                                        <img
+                                                                                            src={image}
+                                                                                            alt={`Instruction image ${key}`}
+                                                                                            className="img-market-card"
+                                                                                        />
+                                                                                        {caption && (
+                                                                                            <p className="text-caption margin-l-2">{caption}</p>
+                                                                                        )}
+                                                                                    </div>
+                                                                                );
+                                                                            })
+                                                                        }
+                                                                    </>
+                                                                )}
+                                                            </li>
                                                         ))}
                                                     </ol>
                                                 )}

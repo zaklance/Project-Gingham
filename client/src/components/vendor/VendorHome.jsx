@@ -67,8 +67,8 @@ function Home() {
                 {currentBlog ? (
                     <div id='blog' className="box-blog margin-t-48 margin-l-48 margin-r-48 badge-container no-float" style={{borderRadius: "20px"}}>
                         <div className="badge-arrows">
-                            <i className="icon-arrow-l margin-r-8" onClick={() => handleNavigate('prev')}>&emsp;&thinsp;</i>
-                            <i className="icon-arrow-r" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>
+                            <i className="icon-arrow-l-fff margin-r-8" onClick={() => handleNavigate('prev')}>&emsp;&thinsp;</i>
+                            <i className="icon-arrow-r-fff" onClick={() => handleNavigate('next')}>&emsp;&thinsp;</i>
                         </div>
                         <h1>{currentBlog.type === 'General' ? null : `${currentBlog.type}: `}{currentBlog.title}</h1>
                         <h6 className="margin-b-8">{blogTimeConverter(currentBlog.post_date)}</h6>

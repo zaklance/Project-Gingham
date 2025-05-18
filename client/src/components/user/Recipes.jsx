@@ -16,6 +16,7 @@ const Recipes = () => {
     const [smallwares, setSmallwares] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedIngredients, setSelectedIngredients] = useState([]);
+    const [selectedSeasons, setSelectedSeasons] = useState([]);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedDiets, setSelectedDiets] = useState([]);
     const [selectedSmallwares, setSelectedSmallwares] = useState([]);
@@ -173,12 +174,13 @@ const Recipes = () => {
         const nameItems = recipes.map(r => ({ type: 'recipe', id: r.id, name: r.title }));
         const uniqueAuthors = [...new Set(recipes.map(r => r.author).filter(Boolean))];
         const authorItems = uniqueAuthors.map(name => ({ type: 'author', name }));
+        const seasonItems = [...new Set(recipes.flatMap(r => r.seasons || []))].map(sea => ({ type: 'season', name: sea }));
         const categoryItems = [...new Set(recipes.flatMap(r => r.categories || []))].map(cat => ({ type: 'category', name: cat }));
         const dietItems = [...new Set(recipes.flatMap(r => r.diet_categories || []))].map(diet => ({ type: 'diet', name: diet }));
         const smallwareItems = [...new Set(
             smallwares.flatMap(sw => [sw.smallware, sw.smallware_alt].filter(Boolean))
         )].map(name => ({ type: 'smallware', name }));
-        return [...ingredientItems, ...nameItems, ...authorItems, ...categoryItems, ...dietItems, ...smallwareItems];
+        return [...ingredientItems, ...nameItems, ...authorItems, ...seasonItems, ...categoryItems, ...dietItems, ...smallwareItems];
     }, [ingredients, recipes, smallwares]);
 
     const combinedFuse = useMemo(() => {
@@ -221,6 +223,9 @@ const Recipes = () => {
             filtered = filtered.filter(r => matchedIds.includes(r.id));
         }
 
+        if (selectedSeasons.length > 0) {
+            filtered = filtered.filter(r => selectedSeasons.every(sea => (r.seasons || []).includes(sea)));
+        }
         if (selectedCategories.length > 0) {
             filtered = filtered.filter(r => selectedCategories.every(cat => (r.categories || []).includes(cat)));
         }
@@ -235,11 +240,12 @@ const Recipes = () => {
         }
 
         return filtered;
-    }, [recipes, selectedIngredients, selectedCategories, selectedDiets, selectedRecipeName, selectedSmallwares, selectedAuthor, recipeIngredients]);
+    }, [recipes, selectedIngredients, selectedSeasons, selectedCategories, selectedDiets, selectedRecipeName, selectedSmallwares, selectedAuthor, recipeIngredients]);
 
     const showChips = () => {
         return (
             selectedIngredients.length > 0 ||
+            selectedSeasons.length > 0 ||
             selectedCategories.length > 0 ||
             selectedDiets.length > 0 ||
             selectedSmallwares.length > 0 ||
@@ -274,7 +280,7 @@ const Recipes = () => {
                             <input
                                 className="search-bar"
                                 type="text"
-                                placeholder="Search ingredients, categories, and recipes..."
+                                placeholder="Search ingredients, recipes, seasons, categories, diets, smallwares, and authors..."
                                 value={searchTerm}
                                 onChange={handleSearchChange}
                             />
@@ -286,6 +292,11 @@ const Recipes = () => {
                                         onClick={() => {
                                             if (item.type === 'ingredient') {
                                                 handleIngredientSelect(item);
+                                                setSearchTerm('');
+                                            } else if (item.type === 'season') {
+                                                if (!selectedSeasons.includes(item.name)) {
+                                                    setSelectedSeasons(prev => [...prev, item.name]);
+                                                }
                                                 setSearchTerm('');
                                             } else if (item.type === 'category') {
                                                 if (!selectedCategories.includes(item.name)) {
@@ -345,6 +356,16 @@ const Recipes = () => {
                                             size="small"
                                             onDelete={() =>
                                             setSelectedIngredients(prev => prev.filter(item => item.id !== ing.id))
+                                        } />
+                                    ))}
+                                    {selectedSeasons.map((sea, i) => (
+                                        <Chip
+                                            key={`sea-${i}`}
+                                            label={sea}
+                                            style={{ backgroundColor: "#eee", fontSize: ".9em" }}
+                                            size="small"
+                                            onDelete={() =>
+                                            setSelectedSeasons(prev => prev.filter(item => item !== sea))
                                         } />
                                     ))}
                                     {selectedCategories.map((cat, i) => (

@@ -365,10 +365,18 @@ p, li, div, form, input, select, button, textarea, td {
   word-break: break-all;
 }
 
-.text-block-header {
+/* .text-block-header {
   break-inside: avoid;
   page-break-inside: avoid;
   -webkit-column-break-inside: avoid;
+} */
+
+.no-break{
+  break-inside: avoid;
+  page-break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  display: block;
+  width: 100%;
 }
 
 .first-letter::first-letter {
@@ -464,6 +472,10 @@ article {
   margin-right: 48px;
 }
 
+.margin-l-2 {
+  margin-left: 2px;
+}
+
 .margin-l-4 {
   margin-left: 4px;
 }
@@ -502,6 +514,10 @@ article {
 
 .margin-l-56 {
   margin-left: 56px;
+}
+
+.margin-l-96 {
+  margin-left: 96px;
 }
 
 .margin-t--4 {
@@ -634,6 +650,14 @@ article {
 
 .width-50 {
   width: 50%;
+}
+
+.width-50-i {
+  width: 50% !important;
+}
+
+.width-1-7 {
+  width: calc(100% / 7) !important;
 }
 
 .scale-98:hover {
@@ -788,6 +812,10 @@ ul {
   background-color: #eee;
   padding: 8px;
   border-radius: 8px;
+}
+
+.li-recipe-image:last-of-type {
+  margin-bottom: 8px;
 }
 
 .ul-team .li-team, .li-team strong, .li-team i {
@@ -2331,7 +2359,7 @@ link {
 }
 
 .input-caption {
-  width: calc(100% - 32px);
+  width: calc(100% - 72px);
 }
 
 #address-address {
@@ -3108,12 +3136,29 @@ textarea {
   background-color: #ff4b5a;
 }
 
+.icon-arrow-l-fff {
+  background-image: url('../images/icons/left-arrow-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 47%;
+  background-size: 1rem auto;
+  background-color: #fff;
+  border-radius: 50%;
+}
+
+.icon-arrow-r-fff {
+  background-image: url('../images/icons/right-arrow-svgrepo-com.svg');
+  background-repeat: no-repeat;
+  background-position: right 50% top 47%;
+  background-size: 1rem auto;
+  background-color: #fff;
+  border-radius: 50%;
+}
+
 .icon-arrow-l {
   background-image: url('../images/icons/left-arrow-svgrepo-com.svg');
   background-repeat: no-repeat;
   background-position: right 50% top 47%;
   background-size: 1rem auto;
-  background-color: white;
   border-radius: 50%;
 }
 
@@ -3122,7 +3167,6 @@ textarea {
   background-repeat: no-repeat;
   background-position: right 50% top 47%;
   background-size: 1rem auto;
-  background-color: white;
   border-radius: 50%;
 }
 
@@ -3142,7 +3186,7 @@ textarea {
   border-radius: 50%;
 }
 
-.icon-arrow-l:hover, .icon-arrow-r:hover {
+.icon-arrow-l-fff:hover, .icon-arrow-r-fff:hover {
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
 }
 
