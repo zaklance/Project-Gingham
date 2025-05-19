@@ -4044,6 +4044,31 @@ def run():
     db.session.add_all(smallwares)
     db.session.commit()
 
+    instruction_groups = [
+        InstructionGroup(
+            recipe_id=1,
+            group_number=1
+        ),
+        InstructionGroup(
+            recipe_id=1,
+            title="Plate & Garnish",
+            group_number=2
+        ),
+        InstructionGroup(
+            recipe_id=2,
+            title="Infused Vodka",
+            group_number=1
+        ),
+        InstructionGroup(
+            recipe_id=2,
+            title="Caprese Martini",
+            group_number=2
+        )
+    ]
+
+    db.session.add_all(instruction_groups)
+    db.session.commit()
+
     instructions = [
         Instruction(
             recipe_id=1,
@@ -4174,31 +4199,6 @@ def run():
     ]
 
     db.session.add_all(instructions)
-    db.session.commit()
-
-    instruction_groups = [
-        InstructionGroup(
-            recipe_id=1,
-            group_number=1
-        ),
-        InstructionGroup(
-            recipe_id=1,
-            title="Plate & Garnish",
-            group_number=2
-        ),
-        InstructionGroup(
-            recipe_id=2,
-            title="Infused Vodka",
-            group_number=1
-        ),
-        InstructionGroup(
-            recipe_id=2,
-            title="Caprese Martini",
-            group_number=2
-        )
-    ]
-
-    db.session.add_all(instruction_groups)
     db.session.commit()
     
 if __name__ == '__main__':
