@@ -4157,7 +4157,7 @@ def run():
             recipe_id=2,
             instruction_group_id=3,
             step_number=4,
-            description="The olive oil will seperate and freeze on top of the vodka. Remove the layer of oil, and pour into a bottle; keep refridgerated."
+            description="The olive oil will separate and freeze on top of the vodka. Remove the layer of oil, and pour into a bottle; keep refridgerated."
         ),
         Instruction(
             recipe_id=2,
