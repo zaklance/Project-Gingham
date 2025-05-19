@@ -248,6 +248,13 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
         }
     };
 
+    const scrollToTheTop = () => {
+        const element = document.getElementById("edit-recipes");
+        if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    };
+
     const handleEditToggle = () => {
         if (!editMode) {
             setTempRecipeData({...selectedRecipe});
@@ -273,6 +280,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
             setTempRecipeData(null);
             setUnselectedSeasons(['spring', 'summer', 'fall', 'winter']);
         }
+        scrollToTheTop();
         setEditMode(!editMode);
     };
 
@@ -1387,7 +1395,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
     return (
         <>
             <title>Gingham • Admin Recipes • Edit</title>
-            <h2 className='margin-t-16'>Edit Recipes</h2>
+            <h2 id="edit-recipes" className='margin-t-16'>Edit Recipes</h2>
             {editMode ? (
                 <div>
                     <div className='margin-t-16'>
@@ -2258,10 +2266,10 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                     <tr>
                                         <td className='cell-title btn-grey m-hidden'>Image:</td>
                                         <td className='cell-text cell-recipe width-50-i'>
-                                            {selectedRecipe?.image !== null || !selectedRecipe?.image && (
+                                            {selectedRecipe.image !== null && (
                                                 <img 
                                                     style={{ maxWidth: '100%', height: 'auto' }}
-                                                    src={selectedRecipe?.image ? `${siteURL}${selectedRecipe.image}` : `/recipe-images/_default-images/${selectedRecipe.image_default}`}
+                                                    src={siteURL + selectedRecipe.image}
                                                     alt="Market Image"
                                                 />
                                             )}

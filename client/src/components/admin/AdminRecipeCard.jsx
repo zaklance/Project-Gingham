@@ -2,11 +2,12 @@ import React from 'react';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
 
-function AdminRecipeCard({ recipe, setSearchCategories, setSearchDiets, setSelectedRecipe }) {
+function AdminRecipeCard({ recipe, setSearchCategories, setSearchDiets, setSelectedRecipe, scrollToSelectedRecipe }) {
     const siteURL = import.meta.env.VITE_SITE_URL;
 
     const handleOpenRecipe = (recipe) => {
         setSelectedRecipe(recipe);
+        scrollToSelectedRecipe();
     };
 
 

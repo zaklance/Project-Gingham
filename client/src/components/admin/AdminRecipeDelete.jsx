@@ -289,6 +289,13 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
         }
     };
 
+    const scrollToSelectedRecipe = () => {
+        const element = document.getElementById("selected-recipe");
+        if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    };
+
 
     return (
         <>
@@ -397,13 +404,14 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                             setSearchCategories={setSearchCategories}
                             setSearchDiets={setSearchDiets}
                             setSelectedRecipe={setSelectedRecipe}
+                            scrollToSelectedRecipe={scrollToSelectedRecipe}
                         />
                     )
                 )}
             </div>
             {selectedRecipe && (
                 <>
-                    <div className='flex-space-around m-flex-wrap flex-gap-16 margin-t-16 margin-b-16'>
+                    <div id="selected-recipe" className='flex-space-around m-flex-wrap flex-gap-16 margin-t-16 margin-b-16'>
                         <div className='box-recipe-info flex-space-between flex-column'>
                             <div className='badge-container'>
                                 <h2 className='margin-t-4 margin-r-8 margin-b-4'>{selectedRecipe.title}</h2>
@@ -514,8 +522,8 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                                             {group.title && <h4>{group.title}</h4>}
                                             <ol className={`ul-numbers ${isSingleOl ? 'ol-last' : ''}`}>
                                                 {firstTwo.map(instruction => (
-                                                    <>
-                                                        <li key={instruction.id} className='ol-bold'>{instruction.description}</li>
+                                                    <li key={instruction.id + '-rest'} className='ol-bold li-recipe-image'>
+                                                        <p className='margin-b-4'>{instruction.description}</p>
                                                         {instruction.images && (
                                                             <>
                                                                 {Object.keys(instruction.images || {})
@@ -524,14 +532,14 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                                                                         const image = instruction.images[key];
                                                                         const caption = instruction.captions?.[key] || '';
                                                                         return (
-                                                                            <div key={key} className="margin-b-8">
+                                                                            <div key={'instr-div-img-' + key} className="no-break margin-b-8">
                                                                                 <img
                                                                                     src={image}
                                                                                     alt={`Instruction image ${key}`}
-                                                                                    className="img-market-card margin-l-20"
+                                                                                    className="img-market-card"
                                                                                 />
                                                                                 {caption && (
-                                                                                    <p className="text-caption margin-l-20">{caption}</p>
+                                                                                    <p className="text-caption margin-l-2">{caption}</p>
                                                                                 )}
                                                                             </div>
                                                                         );
@@ -539,16 +547,15 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                                                                 }
                                                             </>
                                                         )}
-                                                    </>
-                                                    
+                                                    </li>
                                                 ))}
                                             </ol>
                                         </div>
                                         {rest.length > 0 && (
                                             <ol className='ul-numbers ol-last' start={firstTwo.length + 1}>
                                                 {rest.map(instruction => (
-                                                    <>
-                                                        <li key={instruction.id + '-rest'} className='ol-bold'>{instruction.description}</li>
+                                                    <li key={instruction.id + '-rest'} className='ol-bold li-recipe-image'>
+                                                        <p className='margin-b-4'>{instruction.description}</p>
                                                         {instruction.images && (
                                                             <>
                                                                 {Object.keys(instruction.images || {})
@@ -557,14 +564,14 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                                                                         const image = instruction.images[key];
                                                                         const caption = instruction.captions?.[key] || '';
                                                                         return (
-                                                                            <div key={key} className="margin-b-8">
+                                                                            <div key={'instr-div-img-' + key} className="no-break margin-b-8">
                                                                                 <img
                                                                                     src={image}
                                                                                     alt={`Instruction image ${key}`}
-                                                                                    className="img-market-card margin-l-20"
+                                                                                    className="img-market-card"
                                                                                 />
                                                                                 {caption && (
-                                                                                    <p className="text-caption margin-l-20">{caption}</p>
+                                                                                    <p className="text-caption margin-l-2">{caption}</p>
                                                                                 )}
                                                                             </div>
                                                                         );
@@ -572,7 +579,7 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                                                                 }
                                                             </>
                                                         )}
-                                                    </>
+                                                    </li>
                                                 ))}
                                             </ol>
                                         )}
