@@ -648,7 +648,6 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
             <title>Gingham • Admin Recipes • Add</title>
             <h2 className='margin-t-16'>Add Recipes</h2>
             <div className='margin-t-16'>
-                <p className='margin-t-8 margin-l-4'>Only brand names are capitalized for ingredients.</p>
                 <table className='table-search-recipe margin-t-16'>
                     <tbody>
                         <tr>
