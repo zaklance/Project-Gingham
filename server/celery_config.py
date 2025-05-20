@@ -26,7 +26,11 @@ def get_beat_schedule():
         },
         'check-blog-notifications': {
             'task': 'tasks.check_scheduled_blog_notifications',
-            'schedule': crontab(minute='0', hour='12'),
+            'schedule': crontab(minute=0, hour=12),
+        },
+        'weekly_admin_summary': {
+            'task': 'tasks.send_weekly_admin_summary',
+            'schedule': crontab(minute=0, hour=13, day_of_week=1),
         }
     }
 

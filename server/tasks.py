@@ -22,13 +22,14 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
 from utils.emails import ( send_contact_email, send_user_password_reset_email, 
                           send_vendor_password_reset_email, send_admin_password_reset_email, 
                           send_user_confirmation_email, send_vendor_confirmation_email, 
-                          send_admin_confirmation_email, send_vendor_team_invite_email, 
+                          send_admin_confirmation_email, send_vendor_team_invite_email,
+                          send_email_weekly_admin_update 
                           )
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from sqlalchemy.sql.expression import extract
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, UTC
 import time as time2
 from sqlalchemy.orm import Session
 from sqlalchemy import event
@@ -480,7 +481,7 @@ def send_team_invite_email_task(self, email, vendor_id, role=2):
                 'email': email,
                 'vendor_id': vendor_id,
                 'role': role,
-                'exp': (datetime.utcnow() + timedelta(days=7)).isoformat()
+                'exp': (datetime.now(UTC) + timedelta(days=7)).isoformat()
             }
             token = serializer.dumps(token_data, salt='team-invite-salt')
 
@@ -1043,7 +1044,7 @@ def send_blog_notifications(blog_id, task_id=None):
 
             print(task_id)
             # Check if post_date matches current date
-            current_date = datetime.utcnow().date()
+            current_date = datetime.now(UTC).date()
             if not blog.post_date or blog.post_date.date() != current_date:
                 print(f"Blog ID={blog_id} post_date ({blog.post_date}) does not match current date ({current_date}). Skipping notifications.")
                 return
@@ -1059,7 +1060,7 @@ def send_blog_notifications(blog_id, task_id=None):
                         message=f"A new blog post, {blog.title}, has been published. Check it out!",
                         link=f"#blog",
                         user_id=user.id,
-                        created_at=datetime.utcnow(),
+                        created_at=datetime.now(UTC),
                         is_read=False,
                         task_id=task_id
                     )
@@ -1079,7 +1080,7 @@ def send_blog_notifications(blog_id, task_id=None):
                         message=f"A new blog post, {blog.title}, has been published. Check it out!",
                         link=f"/vendor#blog",
                         vendor_user_id=vendor_user.id,
-                        created_at=datetime.utcnow(),
+                        created_at=datetime.now(UTC),
                         is_read=False,
                         task_id=task_id
                     )
@@ -1101,7 +1102,7 @@ def send_blog_notifications(blog_id, task_id=None):
                         link=f"/admin#blog",
                         admin_role=5,
                         admin_id=admin.id,
-                        created_at=datetime.utcnow(),
+                        created_at=datetime.now(UTC),
                         is_read=False,
                         task_id=task_id
                     )
@@ -1141,7 +1142,7 @@ def check_scheduled_blog_notifications():
     with app.app_context():
         try:
             # Get all blogs scheduled for today that haven't had notifications sent
-            today = datetime.combine(datetime.utcnow().date(), time.min)
+            today = datetime.combine(datetime.now(UTC).date(), time.min)
             print(f"[DEBUG] Checking for blogs scheduled for {today} that need notifications")
             
             # Check if the notifications_sent field exists
@@ -1323,3 +1324,80 @@ def reverse_basket_transfer_task(self, basket_id, stripe_account_id, amount):
         except Exception as e:
             self.retry(exc=e, countdown=10, max_retries=3)
             return {"error": str(e)}
+
+@celery.task(bind=True, queue='default')
+def send_weekly_admin_summary():
+    from app import app
+    with app.app_context():
+        today = datetime.now(UTC).date()
+
+        # Previous week: Monday through Sunday
+        last_monday = today - timedelta(days=today.weekday() + 7)
+        last_sunday = last_monday + timedelta(days=6)
+
+        week_start = datetime.combine(last_monday, datetime.min.time())
+        week_end = datetime.combine(last_sunday, datetime.max.time())
+
+        # Past 7 days (rolling)
+        last_7_days = (datetime.now(UTC) - timedelta(days=7)).date()
+
+        # Weekly new users
+        new_users = User.query.filter(User.join_date >= week_start, User.join_date <= week_end).count()
+        new_vendor_users = VendorUser.query.filter(VendorUser.join_date >= week_start, VendorUser.join_date <= week_end).count()
+        new_vendors = Vendor.query.filter(Vendor.join_date >= week_start, Vendor.join_date <= week_end).count()
+
+        # Totals
+        total_users = User.query.count()
+        total_vendor_users = VendorUser.query.count()
+        total_vendors = Vendor.query.count()
+
+        # Basket sales
+        total_baskets_last_7_days = Basket.query.filter(Basket.sale_date >= last_7_days).count()
+        sold_baskets_last_7_days = Basket.query.filter(
+            Basket.sale_date >= last_7_days,
+            Basket.is_sold == True
+        ).count()
+
+        # Admin recipients (role <= 3)
+        # admin_emails = [admin.email for admin in AdminUser.query.filter(AdminUser.admin_role <= 3).all()]
+        admins = [admin for admin in AdminUser.query.filter(AdminUser.admin_role <= 3).all()]
+
+        # Compose email
+        body_tag = f"""
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/site-images/gingham-logo_04-2A.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {admins.first_name},</p>
+                        <p>Here are the weekly Gingham stats for the week, from {last_monday} to {last_sunday}!</p>
+                        <div class="content flex-center">
+                            <div class="box-callout">
+                                <h3 class="margin-4-0">Weekly Stats:</h3>
+                                <h5 class="margin-4-0">New Users: {new_users}</h5>
+                                <h5 class="margin-4-0">Total Users: {total_users}</h5>
+                                <h5 class="margin-4-0">New Vendor Users: {new_vendor_users}</h5>
+                                <h5 class="margin-4-0">Total Vendor Users: {total_vendor_users}</h5>
+                                <h5 class="margin-4-0">New Vendors: {new_vendors}</h5>
+                                <h5 class="margin-4-0">Total Vendors: {total_vendors}</h5>
+                                <br/>
+                                <h5 class="margin-4-0">Baskets Created: {total_baskets_last_7_days}</h5>
+                                <h5 class="margin-4-0">Baskets Sold: {sold_baskets_last_7_days}</h5>
+                            </div>
+                        </div>
+                        <p>— The Gingham Task Robot</p>
+                    </div>
+                    <div class="footer">
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
+                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                    </div>
+                </div>
+            </body>
+            """
+
+        for admin in admins:
+            send_email_weekly_admin_update(email=admin.email, body_tag=body_tag)

@@ -299,6 +299,7 @@ class Vendor(db.Model, SerializerMixin):
     stripe_is_onboarded = db.Column(db.Boolean, nullable=False, default=False)
     stripe_charges_enabled = db.Column(db.Boolean, nullable=False, default=False)
     stripe_payouts_enabled = db.Column(db.Boolean, nullable=False, default=False)
+    join_date = db.Column(db.DateTime, default=datetime.utcnow) # GMT (system generated)
 
     # Relationships
     reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic', cascade="all, delete-orphan")
