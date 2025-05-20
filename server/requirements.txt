@@ -65,7 +65,7 @@ redis==5.2.1
 requests==2.32.3
 requests-file==2.1.0
 sendgrid==6.11.0
-setuptools==70.3.0
+setuptools==78.1.1
 six==1.17.0
 SQLAlchemy==2.0.29
 sqlalchemy-serializer==1.4.22
