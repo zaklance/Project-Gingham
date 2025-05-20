@@ -2553,3 +2553,44 @@ def send_vendor_team_invite_email(email, vendor_name, token):
     except Exception as e:
         print(f"Error during team invitation email sending: {str(e)}")
         return {'error': f'Failed to send team invitation email: {str(e)}'}
+
+def send_email_weekly_admin_update(email, body_tag):
+    try:
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
+        port = os.getenv('EMAIL_PORT')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+
+        msg = MIMEMultipart()
+        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = "Weekly Platform Summary"
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                {EMAIL_STYLES}
+            </head>
+                {body_tag}
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        server = smtplib.SMTP(smtp, port)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Weekly email update sent successfully.'}
+
+    except Exception as e:
+        print(f"Error during weekly update email sending: {str(e)}")
+        return {'error': f'Failed to send weekly update email: {str(e)}'}

@@ -27,7 +27,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
-from datetime import datetime, date, time, timedelta
+from datetime import datetime, date, time, timedelta, UTC
 from PIL import Image
 from io import BytesIO, StringIO
 from random import choice
@@ -695,7 +695,7 @@ def login():
     if not user.authenticate(data['password']):
         return {'error': ' Incorrect email or password—or both!'}, 401
     
-    user.last_login = datetime.utcnow()
+    user.last_login = datetime.now(UTC)
     user.login_count = (user.login_count or 0) + 1
 
     db.session.commit()
@@ -767,7 +767,7 @@ def vendo_login():
     if not vendor_user.authenticate(data['password']):
         return {'error': ' Incorrect email or password—or both!'}, 401
     
-    vendor_user.last_login = datetime.utcnow()
+    vendor_user.last_login = datetime.now(UTC)
     vendor_user.login_count = (vendor_user.login_count or 0) + 1
 
     db.session.commit()
@@ -839,7 +839,7 @@ def admin_login():
     if not admin_user.authenticate(data['password']):
         return {'error': ' Incorrect email or password—or both!'}, 401
     
-    admin_user.last_login = datetime.utcnow()
+    admin_user.last_login = datetime.now(UTC)
     admin_user.login_count = (admin_user.login_count or 0) + 1
 
     db.session.commit()
@@ -4701,7 +4701,7 @@ def fetch_vendor_notifications():
                     market_id=data.get('market_id'),
                     vendor_id=data['vendor_id'],
                     vendor_user_id=vendor_user.id,
-                    created_at=datetime.utcnow(),
+                    created_at=datetime.now(UTC),
                     is_read=False
                 )
                 db.session.add(new_notification)
@@ -4880,7 +4880,7 @@ def create_admin_notification():
             admin_id=data['admin_id'],
             vendor_user_id=data['vendor_user_id'],
             vendor_id=data['vendor_id'],
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
             is_read=False
         )
         db.session.add(new_notification)
@@ -5174,7 +5174,7 @@ def get_user_receipts():
             if not user:
                 return jsonify({"error": "User not found"}), 404
 
-            created_at = datetime.utcnow().date()
+            created_at = datetime.now(UTC).date()
 
             new_receipt = Receipt(
                 user_id=data['user_id'],
