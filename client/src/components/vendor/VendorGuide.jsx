@@ -128,7 +128,7 @@ return (
                         <li>Select the day(s) for participation and click <span className="text-500">Add Day</span>.</li>
                         <li>To remove a Market, find it under <span className="text-500">Delete Markets</span> and click <span className="text-500">Delete</span>.</li>
                     </ol>
-                    <p className="margin-b-16">For new Farmers Markets, email hello@gingham.nyc with your request.</p>
+                    <p className="margin-b-16">For new Farmers' markets, email hello@gingham.nyc with your request.</p>
                 </section>
 
                 <section id="Understanding the Vendor Dashboard" className="section-help">

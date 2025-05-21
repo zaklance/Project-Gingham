@@ -102,7 +102,7 @@ function TermsAndConditions() {
                             At Gingham, all sales are final, and we do not accept returns, refunds, or exchanges for any purchases.
                         </p>
                         <p className="margin-b-16">
-                            <strong>Exceptions:</strong> Refunds or adjustments may be made only if the Vendor or Farmers Market changes 
+                            <strong>Exceptions:</strong> Refunds or adjustments may be made only if the Vendor or Farmers' market changes 
                             operating hours or cancels due to unforeseen circumstances such as inclement weather.
                         </p>
                         <p className="margin-b-16">

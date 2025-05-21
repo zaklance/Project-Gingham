@@ -213,7 +213,7 @@ def run():
         ),
         Market(
             id=11,
-            name="Chelsea’s Down to Earth Farmers Market",
+            name="Chelsea’s Down to Earth Farmers' market",
             website="https://downtoearthmarkets.com",
             location='W. 23rd St. btw. 8th & 9th Aves.',
             city="New York",
@@ -290,7 +290,7 @@ def run():
         ),
         Market(
             id=16,
-            name='Fulton Stall Market (Indoor Farmers Market)',
+            name='Fulton Stall Market (Indoor Farmers' market)',
             bio="Indoor Market Hours:  Monday - Saturday 11:30 AM to 5:00 PM, year round. CSA Pick-Up Hours:  Thursday 4:00 PM to 6:00 PM Friday 11:30 AM to 5:00 PM. Outdoor Market:  Saturday 11:30 AM to 5:00 PM, Fulton St. at South St., May through Thanksgiving.",
             website="https://fultonstallmarket.org",
             location='91 South St.',
@@ -321,7 +321,7 @@ def run():
         ),
         Market(
             id=18,
-            name='Grass Roots Farmers Market',
+            name='Grass Roots Farmers' market',
             website="https://www.harlemonestop.com/organization/448/grassroots-farmers-market",
             location='W. 145th St. btw. Edgecombe & Bradhurst Aves. (Jackie Robinson Park)',
             city="New York",
@@ -367,7 +367,7 @@ def run():
         ),
         Market(
             id=21,
-            name='Harvest Home East Harlem Farmers Market',
+            name='Harvest Home East Harlem Farmers' market',
             website="https://www.harvesthomefm.org/manhattan-markets",
             location='E. 104th St. & 3rd Ave.',
             city="New York",
@@ -383,7 +383,7 @@ def run():
         ),
         Market(
             id=22,
-            name='Harvest Home Harlem Hospital Farmers Market',
+            name='Harvest Home Harlem Hospital Farmers' market',
             website="https://www.harvesthomefm.org/manhattan-markets",
             location='W. 137th St. & Lenox Ave.',
             city="New York",
@@ -415,7 +415,7 @@ def run():
         ),
         Market(
             id=24,
-            name='Harvest Home Metropolitan Hospital Farmers Market',
+            name='Harvest Home Metropolitan Hospital Farmers' market',
             website="https://www.harvesthomefm.org/manhattan-markets",
             location='97th St. & 2nd Ave.',
             city="New York",
@@ -462,7 +462,7 @@ def run():
         ),
         Market(
             id=27,
-            name="Morningside Park’s Down to Earth Farmers Market",
+            name="Morningside Park’s Down to Earth Farmers' market",
             website="https://downtoearthmarkets.com",
             location='W. 110th St. & Manhattan Ave.',
             city="New York",
@@ -1027,7 +1027,7 @@ def run():
         ),
         Market(
             id=64,
-            name='Uptown Good Food Farmers Market',
+            name='Uptown Good Food Farmers' market',
             website="https://www.uptowngoodfood.com",
             location='St Nichlas Ave & W 137th St',
             city="New York",
@@ -1325,7 +1325,7 @@ def run():
         ),
         Market(
             id=83,
-            name='East New York Farmers Market',
+            name='East New York Farmers' market',
             website="https://ucceny.org/farmers-market/",
             location="Schenck Ave. btw. New Lots & Livonia Ave.",
             city="Brooklyn",
@@ -1389,7 +1389,7 @@ def run():
         ),
         Market(
             id=87,
-            name="Harvest Home Coney Island Hospital Farmers Market",
+            name="Harvest Home Coney Island Hospital Farmers' market",
             website="https://www.harvesthomefm.org/brooklyn-markets",
             location="Ocean Pkwy. btw. Ave. Z & Shore Pkwy.",
             city="Brooklyn",
@@ -1405,7 +1405,7 @@ def run():
         ),
         Market(
             id=88,
-            name="Harvest Home Kings County Hospital Farmers Market",
+            name="Harvest Home Kings County Hospital Farmers' market",
             website="https://www.harvesthomefm.org/brooklyn-markets",
             location="Clarkson Ave. btw. E. 37th & 38th St.",
             city="Brooklyn",
@@ -1421,7 +1421,7 @@ def run():
         ),
         Market(
             id=89,
-            name="Harvest Home Utica Avenue Farmers Market",
+            name="Harvest Home Utica Avenue Farmers' market",
             website="https://www.harvesthomefm.org/brooklyn-markets",
             location="Eastern Pkwy. btw. Utica & Rochester Ave.",
             city="Brooklyn",
@@ -1453,7 +1453,7 @@ def run():
         ),
         Market(
             id=91,
-            name="Isabahlia Farmers Market at ISO Student Farm",
+            name="Isabahlia Farmers' market at ISO Student Farm",
             website="https://www.isabahlialoefinc.org/farmer-market",
             location="514 Rockaway Ave.",
             city="Brooklyn",
@@ -1469,7 +1469,7 @@ def run():
         ),
         Market(
             id=92,
-            name="Isabahlia Farmers Market at Powell Street Garden",
+            name="Isabahlia Farmers' market at Powell Street Garden",
             website="https://www.isabahlialoefinc.org/farmer-market",
             location="410 Livonia Ave. (in front of Powell St. Garden)",
             city="Brooklyn",
@@ -1485,7 +1485,7 @@ def run():
         ),
         Market(
             id=93,
-            name="McGolrick Park’s Down to Earth Farmers Market",
+            name="McGolrick Park’s Down to Earth Farmers' market",
             website="https://downtoearthmarkets.com/markets?region=Brooklyn&market=McGolrick+Park+Farmers+Market",
             location="Russell St. & Nassau Ave. (center of park)",
             city="Brooklyn",
@@ -1499,7 +1499,7 @@ def run():
         ),
         Market(
             id=94,
-            name="Park Slope’s Down to Earth Farmers Market",
+            name="Park Slope’s Down to Earth Farmers' market",
             website="https://downtoearthmarkets.com",
             location="4th St. off 5th Ave. at Washington Park",
             city="Brooklyn",
@@ -1545,7 +1545,7 @@ def run():
         ),
         Market(
             id=97,
-            name="RiseBoro Farmers Markets at Hope Ballfield",
+            name="RiseBoro Farmers' markets at Hope Ballfield",
             website="https://riseboro.org/program/nutrition/",
             location="Knickerbocker Ave. btw. Menahan & Grove St.",
             city="Brooklyn",
@@ -1561,7 +1561,7 @@ def run():
         ),
         Market(
             id=98,
-            name="RiseBoro Farmers Markets at Irving Square Park",
+            name="RiseBoro Farmers' markets at Irving Square Park",
             website="https://riseboro.org/program/nutrition/",
             location="Knickerbocker Ave. btw. Weirfield & Halsey St",
             city="Brooklyn",
@@ -1577,7 +1577,7 @@ def run():
         ),
         Market(
             id=99,
-            name="RiseBoro Farmers Markets at Maria Hernandez Park",
+            name="RiseBoro Farmers' markets at Maria Hernandez Park",
             website="https://riseboro.org/program/nutrition/",
             location="Knickerbocker Ave. btw. Sudyam & Starr St",
             city="Brooklyn",
@@ -1705,7 +1705,7 @@ def run():
         ),
         Market(
             id=107,
-            name="Bissel Gardens Farmers Market",
+            name="Bissel Gardens Farmers' market",
             website="https://bisselgardens.wordpress.com/farmers-market/",
             location="Baychester Ave. & E. 241st St.",
             city="Bronx",
@@ -1721,7 +1721,7 @@ def run():
         ),
         Market(
             id=108,
-            name="Bronx Park East Farmers Market",
+            name="Bronx Park East Farmers' market",
             website="https://bronxparkeastcsa.com",
             location="2045 Bronx Park E. (near Bradley Playground)",
             city="Bronx",
@@ -1817,7 +1817,7 @@ def run():
         ),
         Market(
             id=114,
-            name="Harvest Home Jacobi Hospital Farmers Market",
+            name="Harvest Home Jacobi Hospital Farmers' market",
             website="https://www.harvesthomefm.org/bronx-markets",
             location="1400 Pelham Pkwy.",
             city="Bronx",
@@ -1833,7 +1833,7 @@ def run():
         ),
         Market(
             id=115,
-            name="Harvest Home Mt. Eden Malls Farmers Market",
+            name="Harvest Home Mt. Eden Malls Farmers' market",
             website="https://www.harvesthomefm.org/bronx-markets",
             location="Mt. Eden & Morris Aves. (Claremont Park)",
             city="Bronx",
@@ -1849,7 +1849,7 @@ def run():
         ),
         Market(
             id=116,
-            name="Harvest Home North Central Bronx Farmers Market",
+            name="Harvest Home North Central Bronx Farmers' market",
             website="https://www.harvesthomefm.org/bronx-markets",
             location="Mosholu Pkwy. & Jerome Ave.",
             city="Bronx",
@@ -1881,7 +1881,7 @@ def run():
         ),
         Market(
             id=118,
-            name="JBOLC Garden Community Farmers Market",
+            name="JBOLC Garden Community Farmers' market",
             website="https://www.jamesbaldwinoutdoorlearningcenter.org/market.php",
             location="Sedgwick & Goulden Aves. in front of DeWitt Clinton High School",
             city="Bronx",
@@ -1897,7 +1897,7 @@ def run():
         ),
         Market(
             id=119,
-            name="La Familia Verde Farmers Market",
+            name="La Familia Verde Farmers' market",
             website="http://www.lafamiliaverde.org",
             location="E. Tremont Ave. btw. Arthur & LaFontaine Ave.",
             city="Bronx",
@@ -1913,7 +1913,7 @@ def run():
         ),
         Market(
             id=120,
-            name="La Familia Verde/Highbridge Farmers Market",
+            name="La Familia Verde/Highbridge Farmers' market",
             website="",
             location="1430 Plimpton Ave.",
             city="Bronx",
@@ -2025,7 +2025,7 @@ def run():
         ),
         Market(
             id=127,
-            name="Riverdale Y Sunday Farmers Market",
+            name="Riverdale Y Sunday Farmers' market",
             website="https://riverdaley.org/sunday-market/",
             location="4545 Independence Ave.",
             city="Bronx",
@@ -2057,7 +2057,7 @@ def run():
         ),
         Market(
             id=129,
-            name="White Plains Road Farmers Market",
+            name="White Plains Road Farmers' market",
             website="https://wprmarket.com",
             location="White Plains Rd. & E. 211th St. (Williamsbridge Square)",
             city="Bronx",
@@ -2073,7 +2073,7 @@ def run():
         ),
         Market(
             id=130,
-            name="Cunningham Park’s Down to Earth Farmers Market",
+            name="Cunningham Park’s Down to Earth Farmers' market",
             website="https://downtoearthmarkets.com",
             location="Union Turnpike & 196th Pl. parking lot near the tennis courts",
             city="Queens",
@@ -2276,7 +2276,7 @@ def run():
             hour_end=time(18, 0, 0),
             day_of_week=3,
         ),
-        # Chelsea’s Down to Earth Farmers Market
+        # Chelsea’s Down to Earth Farmers' market
         MarketDay(
             id=12,
             market_id=11,
@@ -2324,7 +2324,7 @@ def run():
             hour_end=time(16, 0, 0),
             day_of_week=2,
         ),
-        # Fulton Stall Market (Indoor Farmers Market)
+        # Fulton Stall Market (Indoor Farmers' market)
         MarketDay(
             id=18,
             market_id=16,
@@ -2332,7 +2332,7 @@ def run():
             hour_end=time(17, 0, 0),
             day_of_week=1,
         ),
-        # Fulton Stall Market (Indoor Farmers Market)
+        # Fulton Stall Market (Indoor Farmers' market)
         MarketDay(
             id=19,
             market_id=16,
@@ -2340,7 +2340,7 @@ def run():
             hour_end=time(17, 0, 0),
             day_of_week=2,
         ),
-        # Fulton Stall Market (Indoor Farmers Market)
+        # Fulton Stall Market (Indoor Farmers' market)
         MarketDay(
             id=20,
             market_id=16,
@@ -2348,7 +2348,7 @@ def run():
             hour_end=time(17, 0, 0),
             day_of_week=3,
         ),
-        # Fulton Stall Market (Indoor Farmers Market)
+        # Fulton Stall Market (Indoor Farmers' market)
         MarketDay(
             id=21,
             market_id=16,
@@ -2356,7 +2356,7 @@ def run():
             hour_end=time(17, 0, 0),
             day_of_week=4,
         ),
-        # Fulton Stall Market (Indoor Farmers Market)
+        # Fulton Stall Market (Indoor Farmers' market)
         MarketDay(
             id=22,
             market_id=16,
@@ -2364,7 +2364,7 @@ def run():
             hour_end=time(17, 0, 0),
             day_of_week=5,
         ),
-        # Fulton Stall Market (Indoor Farmers Market)
+        # Fulton Stall Market (Indoor Farmers' market)
         MarketDay(
             id=23,
             market_id=16,
@@ -2380,7 +2380,7 @@ def run():
             hour_end=time(14, 0, 0),
             day_of_week=4,
         ),
-        # Grass Roots Farmers Market
+        # Grass Roots Farmers' market
         MarketDay(
             id=25,
             market_id=18,
@@ -2388,7 +2388,7 @@ def run():
             hour_end=time(16, 0, 0),
             day_of_week=2,
         ),
-        # Grass Roots Farmers Market
+        # Grass Roots Farmers' market
         MarketDay(
             id=26,
             market_id=18,
@@ -2412,7 +2412,7 @@ def run():
             hour_end=time(14, 0, 0),
             day_of_week=6,
         ),
-        # Harvest Home East Harlem Farmers Market
+        # Harvest Home East Harlem Farmers' market
         MarketDay(
             id=29,
             market_id=21,
@@ -2420,7 +2420,7 @@ def run():
             hour_end=time(15, 0, 0),
             day_of_week=4,
         ),
-        # Harvest Home Harlem Hospital Farmers Market
+        # Harvest Home Harlem Hospital Farmers' market
         MarketDay(
             id=30,
             market_id=22,
@@ -2436,7 +2436,7 @@ def run():
             hour_end=time(15, 0, 0),
             day_of_week=6,
         ),
-        # Harvest Home Metropolitan Hospital Farmers Market
+        # Harvest Home Metropolitan Hospital Farmers' market
         MarketDay(
             id=32,
             market_id=24,
@@ -2460,7 +2460,7 @@ def run():
             hour_end=time(15, 0, 0),
             day_of_week=4,
         ),
-        # Morningside Park’s Down to Earth Farmers Market
+        # Morningside Park’s Down to Earth Farmers' market
         MarketDay(
             id=35,
             market_id=27,
@@ -2836,7 +2836,7 @@ def run():
             hour_end=time(14, 30, 0),
             day_of_week=5
         ),
-        # Uptown Good Food Farmers Market
+        # Uptown Good Food Farmers' market
         MarketDay(
             id=82,
             market_id=64,
@@ -2996,7 +2996,7 @@ def run():
             hour_end=time(15, 0, 0),
             day_of_week=0
         ),
-        # East New York Farmers Market
+        # East New York Farmers' market
         MarketDay(
             id=102,
             market_id=83,
@@ -3028,7 +3028,7 @@ def run():
             hour_end=time(15, 0, 0),
             day_of_week=4
         ),
-        # Harvest Home Coney Island Hospital Farmers Market
+        # Harvest Home Coney Island Hospital Farmers' market
         MarketDay(
             id=106,
             market_id=87,
@@ -3036,7 +3036,7 @@ def run():
             hour_end=time(15, 0, 0),
             day_of_week=6
         ),
-        # Harvest Home Kings County Hospital Farmers Market
+        # Harvest Home Kings County Hospital Farmers' market
         MarketDay(
             id=107,
             market_id=88,
@@ -3044,7 +3044,7 @@ def run():
             hour_end=time(15, 0, 0),
             day_of_week=3
         ),
-        # Harvest Home Utica Avenue Farmers Market
+        # Harvest Home Utica Avenue Farmers' market
         MarketDay(
             id=108,
             market_id=89,
@@ -3060,7 +3060,7 @@ def run():
             hour_end=time(15, 0, 0),
             day_of_week=6
         ),
-        # Isabahlia Farmers Market at ISO Student Farm
+        # Isabahlia Farmers' market at ISO Student Farm
         MarketDay(
             id=110,
             market_id=91,
@@ -3068,7 +3068,7 @@ def run():
             hour_end=time(14, 0, 0),
             day_of_week=5
         ),
-        # Isabahlia Farmers Market at ISO Student Farm
+        # Isabahlia Farmers' market at ISO Student Farm
         MarketDay(
             id=111,
             market_id=91,
@@ -3076,7 +3076,7 @@ def run():
             hour_end=time(14, 0, 0),
             day_of_week=6
         ),
-        # Isabahlia Farmers Market at Powell Street Garden
+        # Isabahlia Farmers' market at Powell Street Garden
         MarketDay(
             id=112,
             market_id=92,
@@ -3084,7 +3084,7 @@ def run():
             hour_end=time(14, 0, 0),
             day_of_week=6
         ),
-        # McGolrick Park’s Down to Earth Farmers Market
+        # McGolrick Park’s Down to Earth Farmers' market
         MarketDay(
             id=113,
             market_id=93,
@@ -3092,7 +3092,7 @@ def run():
             hour_end=time(14, 0, 0),
             day_of_week=0
         ),
-        # Park Slope’s Down to Earth Farmers Market
+        # Park Slope’s Down to Earth Farmers' market
         MarketDay(
             id=114,
             market_id=94,
@@ -3116,7 +3116,7 @@ def run():
             hour_end=time(14, 0, 0),
             day_of_week=6
         ),
-        # RiseBoro Farmers Markets at Hope Ballfield
+        # RiseBoro Farmers' markets at Hope Ballfield
         MarketDay(
             id=117,
             market_id=97,
@@ -3124,7 +3124,7 @@ def run():
             hour_end=time(15, 0, 0),
             day_of_week=3
         ),
-        # RiseBoro Farmers Markets at Irving Square Park
+        # RiseBoro Farmers' markets at Irving Square Park
         MarketDay(
             id=118,
             market_id=98,
@@ -3132,7 +3132,7 @@ def run():
             hour_end=time(13, 0, 0),
             day_of_week=0
         ),
-        # RiseBoro Farmers Markets at Maria Hernandez Park
+        # RiseBoro Farmers' markets at Maria Hernandez Park
         MarketDay(
             id=119,
             market_id=99,
@@ -3196,7 +3196,7 @@ def run():
             hour_end=time(18, 0, 0),
             day_of_week=3
         ),
-        # Bissel Gardens Farmers Market
+        # Bissel Gardens Farmers' market
         MarketDay(
             id=127,
             market_id=107,
@@ -3204,7 +3204,7 @@ def run():
             hour_end=time(16, 0, 0),
             day_of_week=6
         ),
-        # Bronx Park East Farmers Market
+        # Bronx Park East Farmers' market
         MarketDay(
             id=128,
             market_id=108,
@@ -3260,7 +3260,7 @@ def run():
             hour_end=time(15, 0, 0),
             day_of_week=3
         ),
-        # Harvest Home Jacobi Hospital Farmers Market
+        # Harvest Home Jacobi Hospital Farmers' market
         MarketDay(
             id=135,
             market_id=114,
@@ -3268,7 +3268,7 @@ def run():
             hour_end=time(15, 0, 0),
             day_of_week=5
         ),
-        # Harvest Home Mt. Eden Malls Farmers Market
+        # Harvest Home Mt. Eden Malls Farmers' market
         MarketDay(
             id=136,
             market_id=115,
@@ -3276,7 +3276,7 @@ def run():
             hour_end=time(15, 0, 0),
             day_of_week=2
         ),
-        # Harvest Home Mt. Eden Malls Farmers Market
+        # Harvest Home Mt. Eden Malls Farmers' market
         MarketDay(
             id=137,
             market_id=115,
@@ -3284,7 +3284,7 @@ def run():
             hour_end=time(15, 0, 0),
             day_of_week=4
         ),
-        # Harvest Home North Central Bronx Farmers Market
+        # Harvest Home North Central Bronx Farmers' market
         MarketDay(
             id=138,
             market_id=116,
@@ -3300,7 +3300,7 @@ def run():
             hour_end=time(15, 0, 0),
             day_of_week=4
         ),
-        # JBOLC Garden Community Farmers Market
+        # JBOLC Garden Community Farmers' market
         MarketDay(
             id=140,
             market_id=118,
@@ -3308,7 +3308,7 @@ def run():
             hour_end=time(15, 0, 0),
             day_of_week=6
         ),
-        # La Familia Verde Farmers Market
+        # La Familia Verde Farmers' market
         MarketDay(
             id=141,
             market_id=119,
@@ -3316,7 +3316,7 @@ def run():
             hour_end=time(15, 0, 0),
             day_of_week=2
         ),
-        # La Familia Verde/Highbridge Farmers Market
+        # La Familia Verde/Highbridge Farmers' market
         MarketDay(
             id=142,
             market_id=120,
@@ -3372,7 +3372,7 @@ def run():
             hour_end=time(18, 0, 0),
             day_of_week=4
         ),
-        # Riverdale Y Sunday Farmers Market
+        # Riverdale Y Sunday Farmers' market
         MarketDay(
             id=149,
             market_id=127,
@@ -3388,7 +3388,7 @@ def run():
             hour_end=time(19, 0, 0),
             day_of_week=3
         ),
-        # White Plains Road Farmers Market
+        # White Plains Road Farmers' market
         MarketDay(
             id=151,
             market_id=129,
@@ -3396,7 +3396,7 @@ def run():
             hour_end=time(16, 0, 0),
             day_of_week=6
         ),
-        # Cunningham Park’s Down to Earth Farmers Market
+        # Cunningham Park’s Down to Earth Farmers' market
         MarketDay(
             id=152,
             market_id=130,
@@ -3564,7 +3564,7 @@ def run():
     user_faqs = [
         FAQ(
             question="How does Gingham work for customers?",
-            answer="Browse available baskets from local farmers market vendors, purchase discounted items, and pick them up at a designated time.",
+            answer="Browse available baskets from local farmers' market vendors, purchase discounted items, and pick them up at a designated time.",
             for_user=True
         ),
         FAQ(
@@ -3583,7 +3583,7 @@ def run():
             for_user=True
         ),
         FAQ(
-            question="Is Gingham available at all farmers markets?",
+            question="Is Gingham available at all farmers' markets?",
             answer="Gingham is currently launching in select markets, but we’re expanding quickly! Sign up to stay tuned for updates in your area.",
             for_user=True
         ),
@@ -3596,12 +3596,12 @@ def run():
     vendor_faqs = [
         FAQ(
             question="How do I sign up as a vendor on Gingham?",
-            answer="Signing up is quick and easy! Create your vendor profile, choose the farmers markets you participate in, and start listing your surplus baskets.",
+            answer="Signing up is quick and easy! Create your vendor profile, choose the farmers' markets you participate in, and start listing your surplus baskets.",
             for_vendor=True
         ),
         FAQ(
             question="What types of products can I sell on Gingham?",
-            answer="You can sell surplus or produce, baked goods, packaged foods, or other items you would typically sell at farmers markets.",
+            answer="You can sell surplus or produce, baked goods, packaged foods, or other items you would typically sell at farmers' markets.",
             for_vendor=True
         ),
         FAQ(

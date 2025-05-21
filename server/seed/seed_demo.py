@@ -799,7 +799,7 @@ def run():
     user_faqs = [
         FAQ(
             question="How does Gingham work for customers?",
-            answer="Browse available baskets from local farmers market vendors, purchase discounted items, and pick them up at a designated time.",
+            answer="Browse available baskets from local farmers' market vendors, purchase discounted items, and pick them up at a designated time.",
             for_user=True
         ),
         FAQ(
@@ -818,7 +818,7 @@ def run():
             for_user=True
         ),
         FAQ(
-            question="Is Gingham available at all farmers markets?",
+            question="Is Gingham available at all farmers' markets?",
             answer="Gingham is currently launching in select markets, but we’re expanding quickly! Sign up to stay tuned for updates in your area.",
             for_user=True
         ),
@@ -831,12 +831,12 @@ def run():
     vendor_faqs = [
         FAQ(
             question="How do I sign up as a vendor on Gingham?",
-            answer="Signing up is quick and easy! Create your vendor profile, choose the farmers markets you participate in, and start listing your surplus baskets.",
+            answer="Signing up is quick and easy! Create your vendor profile, choose the farmers' markets you participate in, and start listing your surplus baskets.",
             for_vendor=True
         ),
         FAQ(
             question="What types of products can I sell on Gingham?",
-            answer="You can sell surplus or produce, baked goods, packaged foods, or other items you would typically sell at farmers markets.",
+            answer="You can sell surplus or produce, baked goods, packaged foods, or other items you would typically sell at farmers' markets.",
             for_vendor=True
         ),
         FAQ(
@@ -930,10 +930,10 @@ def run():
                     <article class="first-letter">
                         Do you love supporting local farmers, enjoying fresh produce, and finding great 
                         deals? Meet Gingham, the innovative platform that connects you with discounted 
-                        baskets from farmers market vendors while helping reduce food waste.
+                        baskets from farmers' market vendors while helping reduce food waste.
                     </article>
                     <article>
-                        Here’s how it works: Farmers market vendors often have surplus items at the end 
+                        Here’s how it works: Farmers' market vendors often have surplus items at the end 
                         of the day. With Gingham, they bundle these items into discounted baskets for you 
                         to browse, reserve, and pick up at your convenience. Think of it as your personal 
                         gateway to fresh, local, and sustainable food.
@@ -947,7 +947,7 @@ def run():
                     </article>
                     <article>
                         Signing up is quick and simple. Join the Gingham community today to start saving, 
-                        reducing waste, and supporting your local farmers markets. Together, we can create 
+                        reducing waste, and supporting your local farmers' markets. Together, we can create 
                         a more sustainable future—one basket at a time!
                     </article>
                     <article>
