@@ -133,6 +133,9 @@ EMAIL_STYLES = """
         .margin-12-0 {
             margin: 12px;
         }
+        .margin-r-16 {
+            margin-right: 16px;
+        }
         .link-underline {
             color: #ff806b;
             text-decoration: none;
