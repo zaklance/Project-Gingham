@@ -120,8 +120,8 @@ function VendorLocations({ vendors, vendorId, vendorUserData, allMarketDays, all
                 <ul className='ul-team'>
                     {filteredMarketDays
                         .sort((a, b) => {
-                            const nameA = a.markets.name.toLowerCase();
-                            const nameB = b.markets.name.toLowerCase();
+                            const nameA = a.market.name.toLowerCase();
+                            const nameB = b.market.name.toLowerCase();
 
                             const numA = nameA.match(/^\D*(\d+)/)?.[1];
                             const numB = nameB.match(/^\D*(\d+)/)?.[1];
@@ -134,7 +134,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData, allMarketDays, all
                         })
                         .map((market, index) => (
                             <li key={index} value={market.id} className='li-team'>
-                                <strong>{market.markets.name}</strong> on <i>{weekDay[market.day_of_week]}s</i> from {timeConverter(market.hour_start)} to {timeConverter(market.hour_end)}
+                                <strong>{market.market.name}</strong> on <i>{weekDay[market.day_of_week]}s</i> from {timeConverter(market.hour_start)} to {timeConverter(market.hour_end)}
                             </li>
                     ))}
                 </ul>
@@ -200,8 +200,8 @@ function VendorLocations({ vendors, vendorId, vendorUserData, allMarketDays, all
                                         <option value="">Select Market</option>
                                         {filteredMarketDays
                                             .sort((a, b) => {
-                                                const nameA = a.markets.name.toLowerCase();
-                                                const nameB = b.markets.name.toLowerCase();
+                                                const nameA = a.market.name.toLowerCase();
+                                                const nameB = b.market.name.toLowerCase();
 
                                                 const numA = nameA.match(/^\D*(\d+)/)?.[1];
                                                 const numB = nameB.match(/^\D*(\d+)/)?.[1];
@@ -214,7 +214,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData, allMarketDays, all
                                             })
                                             .map((market, index) => (
                                                 <option key={index} value={market.id}>
-                                                    {market.markets.name} on {weekDay[market.day_of_week]}s
+                                                    {market.market.name} on {weekDay[market.day_of_week]}s
                                                 </option>
                                         ))}
                                     </select>

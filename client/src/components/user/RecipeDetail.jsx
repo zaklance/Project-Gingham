@@ -302,7 +302,7 @@ function RecipeDetail() {
                 </div>
             </div>
             <div className="box-recipe margin-t-16">
-                <h3 className="text-underline">Ingredients</h3>
+                <h3 className="text-underline margin-b-4">Ingredients</h3>
                 <article className='column-3'>
                     <ul className="ul-bullet ol-last">
                         {recipeIngredients.map(ri => {
@@ -320,7 +320,7 @@ function RecipeDetail() {
             </div>
             {smallwares && (
                 <div className="box-recipe margin-t-16">
-                    <h3 className="text-underline">Smallwares</h3>
+                    <h3 className="text-underline margin-b-4">Smallwares</h3>
                     <article className='column-2'>
                         <ul className="ul-bullet ol-last">
                             {smallwares?.map(s => {
@@ -335,7 +335,7 @@ function RecipeDetail() {
                 </div>
             )}
             <div className="box-recipe margin-t-16">
-                <h3 className="text-underline">Instructions</h3>
+                <h3 className="text-underline margin-b-4">Instructions</h3>
                 <article className='column-3'>
                     {sortedInstructionGroups.map(group => {
                         const items = instructionsByGroup[String(group.id)] || [];

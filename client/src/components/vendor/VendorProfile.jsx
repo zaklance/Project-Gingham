@@ -1006,8 +1006,8 @@ function VendorProfile () {
                                                 <option value="">Select Market</option>
                                                 {filteredMarketDays
                                                     .sort((a, b) => {
-                                                        const nameA = a.markets.name.toLowerCase();
-                                                        const nameB = b.markets.name.toLowerCase();
+                                                        const nameA = a.market.name.toLowerCase();
+                                                        const nameB = b.market.name.toLowerCase();
 
                                                         const numA = nameA.match(/^\D*(\d+)/)?.[1];
                                                         const numB = nameB.match(/^\D*(\d+)/)?.[1];

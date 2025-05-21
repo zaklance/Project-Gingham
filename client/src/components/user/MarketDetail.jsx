@@ -585,7 +585,7 @@ function MarketDetail ({ match }) {
                 </div>
             </div>
             <div className='flex-start market-details margin-t-8'>
-                <h4>Location: &emsp;<a className='link-yellow' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
+                <h4>Location: &emsp;<a className='link-underline text-500' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}, {market.city}, {market.state}
                 </a></h4>
                 <button
@@ -593,10 +593,10 @@ function MarketDetail ({ match }) {
                     onClick={handleClick}>&emsp;
                 </button>
             </div>
-            <div className='flex-start m-flex-wrap'>
+            <div className='flex-start flex-center-align m-flex-wrap margin-t--6'>
                 <label><h4>Schedule: &emsp;</h4></label>
                 {marketDays.length === 1 ? (
-                    <h4>{weekDay[marketDays[0].day_of_week]}, &ensp;</h4>
+                    <h4 className='text-500'>{weekDay[marketDays[0].day_of_week]}, &ensp;</h4>
                 ) : (
                     <select id="marketDaysSelect"
                     className='select-rounded margin-r-4'
@@ -611,17 +611,17 @@ function MarketDetail ({ match }) {
                     </select>
                 )}
                 {selectedDay && (
-                    <h4>{timeConverter(selectedDay.hour_start)} - {timeConverter(selectedDay.hour_end)}</h4>
+                    <h4 className='text-500'>{timeConverter(selectedDay.hour_start)} - {timeConverter(selectedDay.hour_end)}</h4>
                 )}
             </div>
             <div className='flex-start'>
                 {market.year_round === false && market.season_start && market.season_end ? (
-                        <h4>Season: &emsp;{formatDate(market.season_start)} – {formatDate(market.season_end)}{!market.is_current && `, ${new Date().getFullYear() - 1}`}</h4>
+                    <h4>Season: &emsp;<span className='text-500'>{formatDate(market.season_start)} – {formatDate(market.season_end)}{!market.is_current && `, ${new Date().getFullYear() - 1}`}</span></h4>
                     ) : (
                         market.year_round === true ? (
-                            <h4>Season: &emsp;Open Year Round {!market.is_current && `(${new Date().getFullYear() - 1})`}</h4>
+                            <h4>Season: &emsp;<span className='text-500'>Open Year Round {!market.is_current && `(${new Date().getFullYear() - 1})`}</span></h4>
                         ) : (
-                            <h4>Season: &emsp;No Dates Available</h4>
+                            <h4>Season: &emsp;<span className='text-500'>No Dates Available</span></h4>
                         )
                     )}
             </div>
@@ -656,7 +656,7 @@ function MarketDetail ({ match }) {
             )}
             <div id="vendors" className='flex-space-between margin-t-24'>
                 <h2>Vendors:</h2>
-                <div className='flex-start flex-column'>
+                <div className='flex-start'>
                     <select 
                         className='select-rounded'
                         value={selectedProduct} 

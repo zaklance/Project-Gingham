@@ -31,7 +31,7 @@ function RecipeCard({ recipe, recipeFavs, handleClick, isClicked, setSelectedCat
                 </div>
                 <div className='text-center'>
                     <h4>{recipe.title}</h4>
-                    <h6 className='margin-t--4'>by {recipe.author}</h6>
+                    <h6 className='margin-t-4'>by {recipe.author}</h6>
                 </div>
                 {(recipe.categories && recipe.diet_categories) && (recipe.categories.length > 0 || recipe.diet_categories.length > 0) && (
                     <Stack className='box-scroll-x padding-4' direction="row" spacing={1}>
