@@ -21,8 +21,8 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
     const [selectedSeasons, setSelectedSeasons] = useState([]);
     const [newRecipe, setNewRecipe] = useState([]);
     const [newIsGinghamTeam, setNewIsGinghamTeam] = useState(false);
-    const [newSmallware, setNewSmallware] = useState(null);
-    const [newSmallwareAlt, setNewSmallwareAlt] = useState(null);
+    const [newSmallware, setNewSmallware] = useState('');
+    const [newSmallwareAlt, setNewSmallwareAlt] = useState('');
     const [newIngName, setNewIngName] = useState([]);
     const [newIngNamePlural, setNewIngNamePlural] = useState([]);
     const [newSmallwares, setNewSmallwares] = useState([]);

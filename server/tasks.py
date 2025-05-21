@@ -1374,10 +1374,8 @@ def send_weekly_admin_summary():
         sold_baskets_fees_last_7_days = f"${sold_baskets_stats[1]:,.2f}"
 
         # Admin recipients (role <= 3)
-        # admin_emails = [admin.email for admin in AdminUser.query.filter(AdminUser.admin_role <= 3).all()]
         admins = [admin for admin in AdminUser.query.filter(AdminUser.admin_role <= 3).all()]
 
-        # Compose email
         body_tag = f"""
             <body>
                 <div class="email-container">
@@ -1388,8 +1386,8 @@ def send_weekly_admin_summary():
                     <div>
                         <p>Hi {admins.first_name},</p>
                         <p>Here are the weekly Gingham stats for the week, from {last_monday} to {last_sunday}!</p>
-                        <div class="content flex-center flex-gap-16">
-                            <div class="box-callout">
+                        <div class="content flex-center">
+                            <div class="box-callout margin-r-16">
                                 <h3 class="margin-4-0">User Stats:</h3>
                                 <p class="margin-4-0">New Users: {new_users}</p>
                                 <p class="margin-4-0">Total Users: {total_users}</p>
