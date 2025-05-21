@@ -339,16 +339,13 @@ function RecipeDetail() {
                 <article className='column-3'>
                     {sortedInstructionGroups.map(group => {
                         const items = instructionsByGroup[String(group.id)] || [];
-                        const firstTwo = items.slice(0, 2);
-                        const rest = items.slice(2);
-                        const isSingleOl = rest.length === 0;
 
                         return (
-                            <div key={group.id}>
+                            <div key={`sig-div-${group.id}`}>
                                 <div className='text-block-header'>
                                     {group.title && <h4>{group.title}</h4>}
-                                    <ol className={`ul-numbers ${isSingleOl ? 'ol-last' : ''}`}>
-                                        {firstTwo.map(instruction => (
+                                    <ol className='ul-numbers ol-last'>
+                                        {items.map((instruction, index) => (
                                             <li key={`instr-li-${instruction.id}`} className='ol-bold li-recipe-image'>
                                                 <p className='margin-b-4'>{instruction.description}</p>
                                                 {instruction.images && (
@@ -359,7 +356,7 @@ function RecipeDetail() {
                                                                 const image = instruction.images[key];
                                                                 const caption = instruction.captions?.[key] || '';
                                                                 return (
-                                                                    <div key={`sig-li-${key}`} className="no-break margin-b-4">
+                                                                    <div key={`sig-li-${instruction.id}-${key}`} className="no-break margin-b-4">
                                                                         <img
                                                                             src={image}
                                                                             alt={`Instruction image ${key}`}
@@ -378,38 +375,6 @@ function RecipeDetail() {
                                         ))}
                                     </ol>
                                 </div>
-                                {rest.length > 0 && (
-                                    <ol className='ul-numbers ol-last' start={firstTwo.length + 1}>
-                                        {rest.map(instruction => (
-                                            <li key={`instr-li-${instruction.id}`} className='ol-bold li-recipe-image'>
-                                                <p className='margin-b-4'>{instruction.description}</p>
-                                                {instruction.images && (
-                                                    <>
-                                                        {Object.keys(instruction.images || {})
-                                                            .sort((a, b) => Number(a) - Number(b))
-                                                            .map(key => {
-                                                                const image = instruction.images[key];
-                                                                const caption = instruction.captions?.[key] || '';
-                                                                return (
-                                                                    <div key={`sig-li-${key}`} className="no-break margin-b-4">
-                                                                        <img
-                                                                            src={image}
-                                                                            alt={`Instruction image ${key}`}
-                                                                            className="img-market-card"
-                                                                        />
-                                                                        {caption && (
-                                                                            <p className="text-caption margin-l-2">{caption}</p>
-                                                                        )}
-                                                                    </div>
-                                                                );
-                                                            })
-                                                        }
-                                                    </>
-                                                )}
-                                            </li>
-                                        ))}
-                                    </ol>
-                                )}
                             </div>
                         );
                     })}

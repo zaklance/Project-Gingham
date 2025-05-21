@@ -5564,6 +5564,33 @@ def get_admin_user_join_date_counts():
         print(f"Error: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/vendors/join-date-vendor-count', methods=['GET'])
+@jwt_required()
+@cache.cached(timeout=600)
+def get_vendor_join_date_counts():
+    try:
+        join_date_vendor_counts = (
+            db.session.query(
+                func.date(Vendor.join_date).label("join_date"),
+                func.count(Vendor.id).label("user_count")
+            )
+            .filter(Vendor.join_date.isnot(None))
+            .group_by(func.date(Vendor.join_date))
+            .order_by(func.date(Vendor.join_date).asc())
+            .all()
+        )
+
+        result = [
+            {"join_date": str(join_date), "user_count": user_count}
+            for join_date, user_count in join_date_vendor_counts
+        ]
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/api/export-csv/users', methods=['GET'])
 def export_csv_users():
     task = export_csv_users_task.delay()

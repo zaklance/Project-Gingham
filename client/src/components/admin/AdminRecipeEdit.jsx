@@ -36,8 +36,6 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
     const [deletedInstructionImages, setDeletedInstructionImages] = useState({});
     const [reorderedInstructions, setReorderedInstructions] = useState({});
     const [isSaving, setIsSaving] = useState(false);
-
-
     
     const dropdownRef = useRef(null);
     const smallwareDropdownRef = useRef(null);
@@ -258,6 +256,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
     const handleEditToggle = () => {
         if (!editMode) {
             setTempRecipeData({...selectedRecipe});
+
             const filteredSeasons = unselectedSeasons.filter(
                 season => !selectedRecipe.seasons.includes(season)
             );
@@ -1296,7 +1295,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                     type="text"
                                     className='input-caption margin-r-8'
                                     placeholder="Caption (optional)"
-                                    value={imgObj.caption}
+                                    value={imgObj.caption || ''}
                                     onChange={(e) => handleCaptionChange(instructionKey, 'existing', imgIndex, e.target.value)}
                                 />
                                 <button
@@ -1337,7 +1336,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                     type="text"
                                     className='input-caption margin-r-8'
                                     placeholder="Caption (optional)"
-                                    value={imgObj.caption}
+                                    value={imgObj.caption || ''}
                                     onChange={(e) => handleCaptionChange(instructionKey, 'pending', imgIndex, e.target.value)}
                                 />
                                 <button
@@ -1409,7 +1408,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                             name="title"
                                             type="text"
                                             placeholder="Recipe title..."
-                                            value={tempRecipeData.title}
+                                            value={tempRecipeData.title || ''}
                                             onChange={handleInputChange}
                                         />
                                     </td>
@@ -1418,7 +1417,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                         <select
                                             name="skill_level"
                                             className='select-recipe'
-                                            value={tempRecipeData.skill_level}
+                                            value={tempRecipeData.skill_level || ''}
                                             onChange={handleInputChange}
                                         >
                                             <option value="">Select</option>
@@ -1438,7 +1437,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                             name="author"
                                             type="text"
                                             placeholder="Author, if a Gingham creator add 'of the Gingham Team'..."
-                                            value={tempRecipeData.author}
+                                            value={tempRecipeData.author || ''}
                                             onChange={handleInputChange}
                                         />
                                     </td>
@@ -1470,7 +1469,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                             name="description"
                                             type="text"
                                             placeholder="Recipe description (3-6 sentences)..."
-                                            value={tempRecipeData.description}
+                                            value={tempRecipeData.description || ''}
                                             onChange={handleInputChange}
                                         />
                                     </td>
@@ -1487,7 +1486,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                             name="prep_time_minutes"
                                             type="number"
                                             placeholder="Time in Minutes"
-                                            value={tempRecipeData.prep_time_minutes}
+                                            value={tempRecipeData.prep_time_minutes || ''}
                                             onChange={handleInputChange}
                                         />
                                     </td>
@@ -1498,7 +1497,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                             name="cook_time_minutes"
                                             type="number"
                                             placeholder="Time in Minutes"
-                                            value={tempRecipeData.cook_time_minutes}
+                                            value={tempRecipeData.cook_time_minutes || ''}
                                             onChange={handleInputChange}
                                         />
                                     </td>
@@ -1509,7 +1508,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                             name="serve_count"
                                             type="number"
                                             placeholder="How many people it serves..."
-                                            value={tempRecipeData.serve_count}
+                                            value={tempRecipeData.serve_count || ''}
                                             onChange={handleInputChange}
                                         />
                                     </td>
@@ -1525,7 +1524,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                             className="search-bar cell-32"
                                             type="text"
                                             placeholder="Search categories..."
-                                            value={categorySearch}
+                                            value={categorySearch || ''}
                                             onChange={(e) => setCategorySearch(e.target.value.toLowerCase())}
                                         />
                                         {categorySearch && (
@@ -1584,7 +1583,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                             className="search-bar cell-32"
                                             type="text"
                                             placeholder="Search diets..."
-                                            value={dietSearch}
+                                            value={dietSearch || ''}
                                             onChange={(e) => setDietSearch(e.target.value.toLowerCase())}
                                         />
                                         {dietSearch && (
@@ -1750,7 +1749,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                                 className="search-bar cell-32"
                                                 type="text"
                                                 placeholder="Search ingredients..."
-                                                value={searchIngredients}
+                                                value={searchIngredients || ''}
                                                 onChange={(e) => setSearchIngredients(e.target.value.toLowerCase())}
                                             />
                                             {searchIngredients && (
@@ -1779,7 +1778,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                                 className="cell-32"
                                                 type="text"
                                                 placeholder="Singular spelling"
-                                                value={newIngName}
+                                                value={newIngName || ''}
                                                 onChange={(e) => setNewIngName(e.target.value)}
                                             />
                                         </td>
@@ -1788,7 +1787,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                                 className="cell-32"
                                                 type="text"
                                                 placeholder="Plural spelling"
-                                                value={newIngNamePlural}
+                                                value={newIngNamePlural || ''}
                                                 onChange={(e) => setNewIngNamePlural(e.target.value)}
                                             />
                                         </td>
@@ -1849,7 +1848,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                             type="text"
                                             className='input-ingredients input-amount margin-r-8'
                                             placeholder="Amount"
-                                            value={item.amount}
+                                            value={item.amount || ''}
                                             onChange={(e) => {
                                                 const newItems = selectedRecipeIngredients.map(ingredient =>
                                                     ingredient.id === item.id 
@@ -1866,7 +1865,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                             type="text"
                                             className='input-ingredients input-desc'
                                             placeholder="Description (optional)"
-                                            value={item.description}
+                                            value={item.description || ''}
                                             onChange={(e) => {
                                                 const newItems = selectedRecipeIngredients.map(ingredient =>
                                                     ingredient.id === item.id 
@@ -1891,7 +1890,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                                 className="search-bar cell-32"
                                                 type="text"
                                                 placeholder="Search..."
-                                                value={searchSmallwares}
+                                                value={searchSmallwares || ''}
                                                 onChange={(e) => setSearchSmallwares(e.target.value.toLowerCase())}
                                             />
                                             {searchSmallwares && (
@@ -1943,7 +1942,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                                 className="cell-32"
                                                 type="text"
                                                 placeholder="Smallware"
-                                                value={newSmallware}
+                                                value={newSmallware || ''}
                                                 onChange={(e) => setNewSmallware(e.target.value)}
                                             />
                                         </td>
@@ -1953,7 +1952,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                                 className="cell-32"
                                                 type="text"
                                                 placeholder="Alt if there is one"
-                                                value={newSmallwareAlt}
+                                                value={newSmallwareAlt || ''}
                                                 onChange={(e) => setNewSmallwareAlt(e.target.value)}
                                             />
                                         </td>
@@ -1993,7 +1992,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                                 type="text"
                                                 className="input-ingredients margin-r-12"
                                                 placeholder="Group title (optional)"
-                                                value={group.title}
+                                                value={group.title || ''}
                                                 onChange={(e) => {
                                                     const updatedGroups = [...selectedInstructionGroups];
                                                     updatedGroups[groupIndex].title = e.target.value;
@@ -2126,7 +2125,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                             className="search-bar"
                                             type="text"
                                             placeholder="Search ingredients, categories, and recipes..."
-                                            value={searchTerm}
+                                            value={searchTerm || ''}
                                             onChange={handleSearchChange}
                                         />
                                         <ul className="dropdown-content" ref={dropdownRef}>
@@ -2320,16 +2319,13 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                 <article className='column-3'>
                                     {sortedInstructionGroups.map(group => {
                                         const items = instructionsByGroup[String(group.id)] || [];
-                                        const firstTwo = items.slice(0, 2);
-                                        const rest = items.slice(2);
-                                        const isSingleOl = rest.length === 0;
 
                                         return (
                                             <div key={`sig-div-${group.id}`}>
                                                 <div className='text-block-header'>
                                                     {group.title && <h4>{group.title}</h4>}
-                                                    <ol className={`ul-numbers ${isSingleOl ? 'ol-last' : ''}`}>
-                                                        {firstTwo.map(instruction => (
+                                                    <ol className='ul-numbers ol-last'>
+                                                        {items.map((instruction, index) => (
                                                             <li key={`instr-li-${instruction.id}`} className='ol-bold li-recipe-image'>
                                                                 <p className='margin-b-4'>{instruction.description}</p>
                                                                 {instruction.images && (
@@ -2340,7 +2336,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                                                                 const image = instruction.images[key];
                                                                                 const caption = instruction.captions?.[key] || '';
                                                                                 return (
-                                                                                    <div key={`sig-li-${key}`} className="no-break margin-b-4">
+                                                                                    <div key={`sig-li-${instruction.id}-${key}`} className="no-break margin-b-4">
                                                                                         <img
                                                                                             src={image}
                                                                                             alt={`Instruction image ${key}`}
@@ -2359,38 +2355,6 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                                         ))}
                                                     </ol>
                                                 </div>
-                                                {rest.length > 0 && (
-                                                    <ol className='ul-numbers ol-last' start={firstTwo.length + 1}>
-                                                        {rest.map(instruction => (
-                                                            <li key={instruction.id + '-rest'} className='ol-bold li-recipe-image'>
-                                                                <p className='margin-b-4'>{instruction.description}</p>
-                                                                {instruction.images && (
-                                                                    <>
-                                                                        {Object.keys(instruction.images || {})
-                                                                            .sort((a, b) => Number(a) - Number(b))
-                                                                            .map(key => {
-                                                                                const image = instruction.images[key];
-                                                                                const caption = instruction.captions?.[key] || '';
-                                                                                return (
-                                                                                    <div key={'instr-div-img-' + key} className="no-break margin-b-8">
-                                                                                        <img
-                                                                                            src={image}
-                                                                                            alt={`Instruction image ${key}`}
-                                                                                            className="img-market-card"
-                                                                                        />
-                                                                                        {caption && (
-                                                                                            <p className="text-caption margin-l-2">{caption}</p>
-                                                                                        )}
-                                                                                    </div>
-                                                                                );
-                                                                            })
-                                                                        }
-                                                                    </>
-                                                                )}
-                                                            </li>
-                                                        ))}
-                                                    </ol>
-                                                )}
                                             </div>
                                         );
                                     })}
