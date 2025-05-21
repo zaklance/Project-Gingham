@@ -12,7 +12,7 @@ from emails import (send_email_user_fav_market_new_event, send_email_user_fav_ma
                     send_email_vendor_market_schedule_change, send_email_vendor_basket_sold,
                     send_email_vendor_new_review, send_email_vendor_new_blog,
                     send_email_vendor_new_statement, send_email_admin_reported_review,
-                    send_email_admin_new_blog)
+                    send_email_admin_new_blog, send_email_weekly_admin_update)
 from models import (db, User, VendorUser, AdminUser, Market, Vendor, Event, Basket, VendorReview, Blog)
 
 email = 'zak@gingham.nyc'

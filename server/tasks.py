@@ -32,7 +32,7 @@ from sqlalchemy.sql.expression import extract
 from datetime import datetime, time, timedelta, UTC
 import time as time2
 from sqlalchemy.orm import Session
-from sqlalchemy import event
+from sqlalchemy import event, func
 from PIL import Image
 import base64
 from uuid import uuid4
@@ -1358,6 +1358,21 @@ def send_weekly_admin_summary():
             Basket.is_sold == True
         ).count()
 
+        sold_baskets_stats = (
+            db.session.query(
+                func.coalesce(func.sum(Basket.price), 0),
+                func.coalesce(func.sum(Basket.fee_vendor), 0)
+            )
+            .filter(
+                Basket.sale_date >= last_7_days,
+                Basket.is_sold == True
+            )
+            .first()
+        )
+
+        sold_baskets_price_last_7_days = f"${sold_baskets_stats[0]:,.2f}"
+        sold_baskets_fees_last_7_days = f"${sold_baskets_stats[1]:,.2f}"
+
         # Admin recipients (role <= 3)
         # admin_emails = [admin.email for admin in AdminUser.query.filter(AdminUser.admin_role <= 3).all()]
         admins = [admin for admin in AdminUser.query.filter(AdminUser.admin_role <= 3).all()]
@@ -1373,18 +1388,22 @@ def send_weekly_admin_summary():
                     <div>
                         <p>Hi {admins.first_name},</p>
                         <p>Here are the weekly Gingham stats for the week, from {last_monday} to {last_sunday}!</p>
-                        <div class="content flex-center">
+                        <div class="content flex-center flex-gap-16">
                             <div class="box-callout">
-                                <h3 class="margin-4-0">Weekly Stats:</h3>
-                                <h5 class="margin-4-0">New Users: {new_users}</h5>
-                                <h5 class="margin-4-0">Total Users: {total_users}</h5>
-                                <h5 class="margin-4-0">New Vendor Users: {new_vendor_users}</h5>
-                                <h5 class="margin-4-0">Total Vendor Users: {total_vendor_users}</h5>
-                                <h5 class="margin-4-0">New Vendors: {new_vendors}</h5>
-                                <h5 class="margin-4-0">Total Vendors: {total_vendors}</h5>
-                                <br/>
-                                <h5 class="margin-4-0">Baskets Created: {total_baskets_last_7_days}</h5>
-                                <h5 class="margin-4-0">Baskets Sold: {sold_baskets_last_7_days}</h5>
+                                <h3 class="margin-4-0">User Stats:</h3>
+                                <p class="margin-4-0">New Users: {new_users}</p>
+                                <p class="margin-4-0">Total Users: {total_users}</p>
+                                <p class="margin-4-0">New Vendor Users: {new_vendor_users}</p>
+                                <p class="margin-4-0">Total Vendor Users: {total_vendor_users}</p>
+                                <p class="margin-4-0">New Vendors: {new_vendors}</p>
+                                <p class="margin-4-0">Total Vendors: {total_vendors}</p>
+                            </div>
+                            <div class="box-callout">
+                                <h3 class="margin-4-0">Basket Stats:</h3>
+                                <p class="margin-4-0">Baskets Created: {total_baskets_last_7_days}</p>
+                                <p class="margin-4-0">Baskets Sold: {sold_baskets_last_7_days}</p>
+                                <p class="margin-4-0">Sold Price: {sold_baskets_price_last_7_days}</p>
+                                <p class="margin-4-0">Gingham Fees: {sold_baskets_fees_last_7_days}</p>
                             </div>
                         </div>
                         <p>— The Gingham Task Robot</p>
