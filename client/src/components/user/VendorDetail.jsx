@@ -400,7 +400,7 @@ function VendorDetail() {
                 </>
             )}
             <div>
-                <h2 className="margin-t-24" id="markets">Farmers Market Locations:</h2>
+                <h2 className="margin-t-24" id="markets">Farmers' market Locations:</h2>
                 <div className='box-scroll'>
                 {Array.isArray(markets) && markets.length > 0 ? (
                     markets

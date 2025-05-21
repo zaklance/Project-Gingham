@@ -47,7 +47,7 @@ function About() {
                     </p>
                     <br/>
                     <p>
-                        Zak, the aspiring environmentalist, dreamed of a way to support farmers markets and reduce 
+                        Zak, the aspiring environmentalist, dreamed of a way to support farmers' markets and reduce 
                         food waste. Vinh, passionate about supporting local businesses, wanted to give small 
                         vendors a louder voice. Sandro, the business-minded marketer, saw an opportunity to 
                         reimagine how people shop locally. Together, the team sought to build a tech-driven 
@@ -59,7 +59,7 @@ function About() {
                     </p>
                     <br/>
                     <p>
-                        Today, Gingham is an early-stage digital marketplace that helps farmers market vendors 
+                        Today, Gingham is an early-stage digital marketplace that helps farmers'market vendors 
                         tap into an additional revenue stream through a preorder-for-pickup model. It’s simple, 
                         sustainable, and built to strengthen the bond between local farmers and makers with 
                         conscious consumers.

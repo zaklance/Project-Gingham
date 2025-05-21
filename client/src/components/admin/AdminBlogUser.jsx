@@ -21,12 +21,12 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
                 <p>
                     Do you love supporting local farmers, enjoying fresh produce, and finding great 
                     deals? Meet Gingham, the innovative platform that connects you with discounted 
-                    baskets from farmers market vendors while helping reduce food waste.
+                    baskets from farmers' market vendors while helping reduce food waste.
                 </p>
             </article>
             <article>
                 <p>
-                    Here’s how it works: Farmers market vendors often have surplus items at the end 
+                    Here’s how it works: Farmers' market vendors often have surplus items at the end 
                     of the day. With Gingham, they bundle these items into discounted baskets for you 
                     to browse, reserve, and pick up at your convenience. Think of it as your personal 
                     gateway to fresh, local, and sustainable food.
@@ -44,7 +44,7 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
             <article>
                 <p>
                     Signing up is quick and simple. Join the Gingham community today to start saving, 
-                    reducing waste, and supporting your local farmers markets. Together, we can create 
+                    reducing waste, and supporting your local farmers' markets. Together, we can create 
                     a more sustainable future—one basket at a time!
             </article>
             <article>

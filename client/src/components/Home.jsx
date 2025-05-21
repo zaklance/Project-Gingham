@@ -155,7 +155,7 @@ function Home() {
                 <div className="box-home box-inside">
                     <h2 className="box-transparent">Make A Positive Impact By Minimizing Food Waste </h2><br/>
                     <p> Do you love fresh, local produce at a great price? Meet Gingham, the platform connecting 
-                        you with vendors in farmers markets. <span className="text-500">With Gingham, you can 
+                        you with vendors in farmers' markets. <span className="text-500">With Gingham, you can 
                         pre-order mystery baskets filled with surplus or seasonal goods and pick them up directly 
                         at the market.</span>
                     </p>
@@ -192,7 +192,7 @@ function Home() {
                 <h3>HOW DOES GINGHAM WORK?</h3> <br/>
                 <p>
                     Vendors build mystery baskets of bundled surplus products that you are able to pre-order and pick-up at a designated time.  
-                    <strong> Gingham makes it easy to shop sustainably while supporting your local farmers market community!</strong>
+                    <strong> Gingham makes it easy to shop sustainably while supporting your local farmers' market community!</strong>
                 </p>
                 <img src="/site-images/GINGHAM_HOWITWORKS.png" style={{ width: '100%' }} />
             </div>

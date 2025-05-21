@@ -1323,7 +1323,7 @@ def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>It's almost time to pickup your basket! <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong> set the pickup time from {time_converter(basket.pickup_start)} to {time_converter(basket.pickup_end)} at <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>. If it is a large farmers market, be sure to allot time to find the vendor.</p>
+                        <p>It's almost time to pickup your basket! <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong> set the pickup time from {time_converter(basket.pickup_start)} to {time_converter(basket.pickup_end)} at <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>. If it is a large farmers' market, be sure to allot time to find the vendor.</p>
                         <p>— The Gingham Team</p>
                     </div>
                     <div class="footer">
@@ -1557,7 +1557,7 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>There is a new farmers market in your city, {market.city}, <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>. Check it out!</p>
+                        <p>There is a new farmers' market in your city, {market.city}, <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>. Check it out!</p>
                         <div class="content flex-center">
                             <div class="box-callout">
                                 <h3 class="margin-4-0">{market.name}</h3>
