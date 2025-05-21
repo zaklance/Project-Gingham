@@ -369,7 +369,7 @@ function VendorDetail() {
             <div className='market-details'>
                 <div className='flex-start margin-t-8'>
                     <h2 className='margin-r-8'>{productList?.length > 1 ? 'Products: ' : 'Product: '}</h2>
-                    <h3 className='margin-t-8'>{productList?.length > 0
+                    <h3 className='margin-t-8 text-500'>{productList?.length > 0
                         ? productList.map(p => p.product).join(', ')
                         : "No products available"}
                     </h3>
@@ -377,13 +377,13 @@ function VendorDetail() {
                 {vendor.products_subcategories && (
                     <h3 className='margin-t-4 margin-l-4'>
                         {vendor.products_subcategories?.length > 1 ? 'Subcategories:' : 'Subcategory:'}
-                        &emsp; {vendor.products_subcategories?.length > 0 &&
+                        &emsp; <span className='text-500'>{vendor.products_subcategories?.length > 0 &&
                             vendor.products_subcategories.map(p => p).join(', ')
-                        }
+                        }</span>
                     </h3>
                 )}
                 <div className='flex-start flex-center-align margin-l-4'>
-                    <h3 className=''>Based out of: &emsp;{vendor.city}, {vendor.state}</h3>
+                    <h3 className=''>Based out of: &emsp;<span className='text-500'>{vendor.city}, {vendor.state}</span></h3>
                     <button 
                         className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
                         onClick={handleClick}>&emsp;
@@ -391,7 +391,7 @@ function VendorDetail() {
                 </div>
             </div>
             {vendor.website && (
-                <h3 className='margin-l-4'>Click <a className='link-underline-inverse' href={vendor.website} target='_blank' rel="noopener noreferrer">here</a> for {vendor.name} website!</h3>
+                <h3 className='margin-l-4 margin-t-4 text-500'>Click <a className='link-underline-inverse text-700' href={vendor.website} target='_blank' rel="noopener noreferrer">here</a> for {vendor.name} website!</h3>
             )}
             {vendor.bio && (
                 <>
@@ -418,8 +418,8 @@ function VendorDetail() {
                                 return adjustedDayA - adjustedDayB;
                             }
                         
-                            const marketNameA = (marketDetails[a.market_day_id]?.markets?.name || "").toLowerCase();
-                            const marketNameB = (marketDetails[b.market_day_id]?.markets?.name || "").toLowerCase();
+                            const marketNameA = (marketDetails[a.market_day_id]?.market?.name || "").toLowerCase();
+                            const marketNameB = (marketDetails[b.market_day_id]?.market?.name || "").toLowerCase();
                             return marketNameA.localeCompare(marketNameB);
                         })                               
                         .map((market, index) => {
@@ -430,11 +430,13 @@ function VendorDetail() {
                             const allBaskets = marketBaskets.filter(
                                 (item) => item.market_day_id === marketDetail.id && item.is_sold === false
                             );
+                            console.log(markets)
+
                             return (
                                 <div key={index} className="market-item flex-gap-8" >
                                     <span className='width-40'>
                                         <Link to={`/user/markets/${market.market_day.market_id}?day=${market.market_day.id}`} className="market-name">
-                                            {marketDetail?.markets?.name || 'Loading...'}
+                                            {marketDetail?.market?.name || 'Loading...'}
                                         </Link>
                                         <br/>
                                         {weekDay[marketDetail?.day_of_week] || 'Loading...'}, 
