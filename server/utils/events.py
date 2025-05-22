@@ -368,19 +368,17 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
             # Prepare admin notifications with role filtering
             notifications = []
             for admin in admins:
-                if admin.admin_role < 3:
-                    continue
-
-                notifications.append(AdminNotification(
-                    subject="Reported Vendor Review",
-                    message=f"A review for vendor '{vendor.name}' has been reported.",
-                    link="/admin/report#vendors",
-                    admin_id=admin.id,
-                    admin_role=admin.admin_role,
-                    vendor_id=vendor.id,
-                    created_at=datetime.now(UTC),
-                    is_read=False
-                ))
+                if admin.admin_role <= 5:
+                    notifications.append(AdminNotification(
+                        subject="Reported Vendor Review",
+                        message=f"A review for vendor '{vendor.name}' has been reported.",
+                        link="/admin/report#vendors",
+                        admin_id=admin.id,
+                        admin_role=admin.admin_role,
+                        vendor_id=vendor.id,
+                        created_at=datetime.now(UTC),
+                        is_read=False
+                    ))
 
             if notifications:
                 session.bulk_save_objects(notifications)
@@ -417,19 +415,17 @@ def notify_admin_market_review_reported(mapper, connection, target):
             # Prepare admin notifications with role filtering
             notifications = []
             for admin in admins:
-                if admin.admin_role < 3:
-                    continue
-
-                notifications.append(AdminNotification(
-                    subject="Reported Market Review",
-                    message=f"A review for market, '{market.name}', has been reported.",
-                    link="/admin/report#markets",
-                    admin_id=admin.id,
-                    admin_role=admin.admin_role,
-                    market_id=market.id,
-                    created_at=datetime.now(UTC),
-                    is_read=False
-                ))
+                if admin.admin_role <= 5:
+                    notifications.append(AdminNotification(
+                        subject="Reported Market Review",
+                        message=f"A review for market, '{market.name}', has been reported.",
+                        link="/admin/report#markets",
+                        admin_id=admin.id,
+                        admin_role=admin.admin_role,
+                        market_id=market.id,
+                        created_at=datetime.now(UTC),
+                        is_read=False
+                    ))
 
             if notifications:
                 session.bulk_save_objects(notifications)
@@ -808,7 +804,9 @@ def notify_vendor_users_new_market_location(mapper, connection, target):
     # print(inspect.currentframe().f_code.co_name)
     try:
         # Retrieve all vendor users associated with this vendor
-        vendor_users = session.query(VendorUser).filter_by(vendor_id=target.vendor_id).all()
+        vendor_users = session.query(VendorUser).filter(
+            VendorUser.vendor_id.contains({target.vendor_id: target.vendor_id})
+        ).all()
 
         if not vendor_users:
             # print(f"No vendor users found for Vendor ID={target.vendor_id}. Skipping update.")
@@ -1062,7 +1060,7 @@ def notify_user_vendor_review_response(mapper, connection, target):
     # print(inspect.currentframe().f_code.co_name)
     try:
         # Ensure the response field has been updated
-        if not target.response or target.response.strip() == "":
+        if not target.vendor_response or target.vendor_response.strip() == "":
             print(f"No response detected for Review ID {target.id}. Skipping notification.")
             return
 
@@ -1181,10 +1179,12 @@ def notify_vendor_users_new_review(mapper, connection, target):
     # print(inspect.currentframe().f_code.co_name)
     try:
         # Retrieve vendor users associated with this vendor
-        vendor_users = session.query(VendorUser).filter_by(vendor_id=target.vendor_id).all()
+        vendor_users = session.query(VendorUser).filter(
+            VendorUser.vendor_id.contains({target.vendor_id: target.vendor_id})
+        ).all()
 
         if not vendor_users:
-            # print(f"No vendor users found for Vendor ID {target.vendor_id}. No notifications will be created.")
+            print(f"No vendor users found for Vendor ID {target.vendor_id}. No notifications will be created.")
             return
 
         # Prepare notifications (site, email, text)
@@ -1310,15 +1310,14 @@ def delete_recipe_image(mapper, connection, target):
     if isinstance(image_path, str) and image_path.startswith("/api/uploads/recipe-images/"):
         UPLOAD_FOLDER = os.environ['IMAGE_UPLOAD_FOLDER']
         try:
-            rel_path = image_path.replace("/api/uploads", "")  # -> /uploads/recipe-images/...
-            abs_path = os.path.join(UPLOAD_FOLDER, rel_path.lstrip("/"))  # full file path
-            dir_path = os.path.dirname(abs_path)  # the recipe-images/<id>/ folder
+            rel_path = image_path.replace("/api/uploads", "")
+            abs_path = os.path.join(UPLOAD_FOLDER, rel_path.lstrip("/"))
+            dir_path = os.path.dirname(abs_path)
 
             if os.path.exists(abs_path):
                 os.remove(abs_path)
                 print("Deleted recipe image:", abs_path)
 
-                # Remove the containing folder if it's empty
                 if os.path.isdir(dir_path) and not os.listdir(dir_path):
                     os.rmdir(dir_path)
                     print("Deleted empty recipe image folder:", dir_path)
