@@ -1674,10 +1674,10 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                 <tr>
                                     <td className='cell-title btn-grey m-hidden'>Image:</td>
                                     <td className='cell-text cell-recipe width-50-i'>
-                                        {tempRecipeData?.image !== null && (
+                                        {tempRecipeData?.image && tempRecipeData?.image !== null && (
                                             <img 
                                                 style={{ maxWidth: '100%', height: 'auto' }}
-                                                src={tempRecipeData?.image ? `${siteURL}${tempRecipeData.image}` : `/recipe-images/_default-images/${tempRecipeData.image_default}`}
+                                                src={siteURL + tempRecipeData.image}
                                                 alt="Market Image"
                                             />
                                         )}
@@ -2265,7 +2265,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                     <tr>
                                         <td className='cell-title btn-grey m-hidden'>Image:</td>
                                         <td className='cell-text cell-recipe width-50-i'>
-                                            {selectedRecipe.image !== null && (
+                                                {selectedRecipe.image && selectedRecipe.image !== null && (
                                                 <img 
                                                     style={{ maxWidth: '100%', height: 'auto' }}
                                                     src={siteURL + selectedRecipe.image}
