@@ -916,7 +916,7 @@ def run():
                     <article>
                         —The Gingham Team
                     </article>
-                    <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
+                    <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET_800px.png" alt="logo" />
                 </div>
             """,
             admin_user_id=1,
@@ -953,7 +953,7 @@ def run():
                     <article>
                         —The Gingham Team
                     </article>
-                    <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
+                    <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET_800px.png" alt="logo" />
                 </div>
             """,
             admin_user_id=1,

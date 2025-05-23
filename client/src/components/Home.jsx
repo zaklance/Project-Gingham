@@ -194,7 +194,7 @@ function Home() {
                     Vendors build mystery baskets of bundled surplus products that you are able to pre-order and pick-up at a designated time.  
                     <strong> Gingham makes it easy to shop sustainably while supporting your local farmers' market community!</strong>
                 </p>
-                <img src="/site-images/GINGHAM_HOWITWORKS.png" style={{ width: '100%' }} />
+                <img src="/site-images/GINGHAM_HOWITWORKS_CERA_1800px.png" style={{ width: '100%' }} />
             </div>
         </div>
     )

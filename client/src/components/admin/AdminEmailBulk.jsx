@@ -46,7 +46,7 @@ const AdminEmailBulk = () => {
                     <mj-text>
                         —The Gingham Team
                     </mj-text>
-                    <mj-image width="400px" src="https://www.gingham.nyc/site-images/GINGHAM_VENDOR_FARMERSMARKET.png"></mj-image>
+                    <mj-image width="400px" src="https://www.gingham.nyc/site-images/GINGHAM_VENDOR_FARMERSMARKET_800px.png"></mj-image>
                     <mj-section padding="0px">
                         <mj-section mj-class="footer">
                             <mj-navbar>
