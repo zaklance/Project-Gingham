@@ -44,6 +44,9 @@ def time_converter(time_input):
 
     return time12
 
+def get_current_year():
+    return datetime.now().year
+
 EMAIL_STYLES = """
     <style>
         .email-container {
@@ -194,7 +197,7 @@ def send_contact_email(name, email, subject, message):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                     </div>
                 </div>
@@ -261,7 +264,7 @@ def send_user_password_reset_email(email):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                     </div>
                 </div>
@@ -324,7 +327,7 @@ def send_vendor_password_reset_email(email):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                     </div>
                 </div>
@@ -387,7 +390,7 @@ def send_admin_password_reset_email(email):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                     </div>
                 </div>
@@ -450,7 +453,7 @@ def send_user_confirmation_email(email, user_data):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                     </div>
                 </div>
@@ -513,7 +516,7 @@ def send_vendor_confirmation_email(email, vendor_data):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                     </div>
                 </div>
@@ -576,7 +579,7 @@ def send_admin_confirmation_email(email, admin_data):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                     </div>
                 </div>
@@ -668,7 +671,7 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -756,7 +759,7 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -853,7 +856,7 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -946,8 +949,8 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
                     <div>
                         <p>Hi {user.first_name},</p>
                         <p>One of your favorite markets, <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>, has a new basket available at <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong>. Check it out before it's gone!</p>
-                        <div class="content flex-center flex-gap-16">
-                            <div class="box-callout">
+                        <div class="content flex-center">
+                            <div class="box-callout margin-r-16">
                                 <h3 class="margin-4-0">{vendor.name}</h3>
                                 <h5 class="margin-4-0">{vendor.city}, {vendor.state}</h5>
                                 <h5 class="margin-4-0">Products: {products_display}</h5>
@@ -967,7 +970,7 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -1055,7 +1058,7 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -1143,7 +1146,7 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -1236,8 +1239,8 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
                     <div>
                         <p>Hi {user.first_name},</p>
                         <p>One of your favorite vendors, <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong>, has a new basket available at <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>. Check it out before it's gone!</p>
-                        <div class="content flex-center flex-gap-16">
-                            <div class="box-callout">
+                        <div class="content flex-center">
+                            <div class="box-callout margin-r-16">
                                 <h3 class="margin-4-0">{vendor.name}</h3>
                                 <h5 class="margin-4-0">{vendor.city}, {vendor.state}</h5>
                                 <h5 class="margin-4-0">Products: {products_display}</h5>
@@ -1257,7 +1260,7 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -1332,7 +1335,7 @@ def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -1411,7 +1414,7 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -1487,7 +1490,7 @@ def send_email_user_new_blog(email, user, blog):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -1575,7 +1578,7 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -1669,7 +1672,7 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -1757,7 +1760,7 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -1837,7 +1840,7 @@ def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pic
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -1916,7 +1919,7 @@ def send_email_vendor_new_review(email, user, vendor, review, link_review):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -1992,7 +1995,7 @@ def send_email_vendor_new_blog(email, user, blog):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -2064,7 +2067,7 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -2191,7 +2194,7 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -2291,7 +2294,7 @@ def send_email_admin_product_request(email, user, vendor, new_product, link_prod
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -2367,7 +2370,7 @@ def send_email_admin_new_blog(email, user, blog):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -2467,7 +2470,7 @@ def send_email_admin_new_vendor(email, user, vendor, link_vendor):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                         <a class="link-underline" href={unsubscribe_url}>
                             Unsubscribe
@@ -2536,7 +2539,7 @@ def send_vendor_team_invite_email(email, vendor_name, token):
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                     </div>
                 </div>

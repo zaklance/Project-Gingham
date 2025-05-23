@@ -308,7 +308,7 @@ function VendorLogin({ handlePopup }) {
                                                 onChange={(event) => setTermsConditions(!termsConditions)}
                                                 className='scale-fix-125'
                                             />
-                                            <p className="forgot-password" onClick={() => window.open('/terms-service', '_blank')}>
+                                            <p className="forgot-password" onClick={() => window.open('/terms-conditions', '_blank')}>
                                                 Terms & Conditions
                                             </p>
                                         </div>

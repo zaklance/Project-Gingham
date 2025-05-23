@@ -52,7 +52,7 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
                     <span class='font-cera text-size-1'>—The Gingham Team</span>
                 </p>
             </article>
-            <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
+            <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET_800px.png" alt="logo" />
         </div>
     `
     const [newBlog, setNewBlog] = useState(defaultBlog);
@@ -93,7 +93,7 @@ const AdminBlogUser = ({ blogs, activeTabMode }) => {
             <article>
                 <span class='font-cera text-size-1'>—The Gingham Team</span>
             </article>
-            <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
+            <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET_800px.png" alt="logo" />
         </div>
     `
 

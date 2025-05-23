@@ -4261,7 +4261,7 @@ def run():
                             <span class='font-cera text-size-1'>—The Gingham Team</span>
                         </p>
                     </article>
-                    <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
+                    <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET_800px.png" alt="logo" />
                 </div>
             """,
             post_date=datetime.strptime("2025-01-10 00:00:00", "%Y-%m-%d %H:%M:%S"),
@@ -4309,7 +4309,7 @@ def run():
                             <span class='font-cera text-size-1'>—The Gingham Team</span>
                         </p>
                     </article>
-                    <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET.png" alt="logo" />
+                    <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET_800px.png" alt="logo" />
                 </div>
             """,
             post_date=datetime.strptime("2025-01-06 00:00:00", "%Y-%m-%d %H:%M:%S"),
