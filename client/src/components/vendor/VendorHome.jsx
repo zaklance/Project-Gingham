@@ -62,7 +62,7 @@ function Home() {
                     </div>
                     <br className="m-hidden"/>
                     <br/>
-                    <h2 className="box-portal-home text-blend-lighten">Sell Surplus Product instead of putting it to waste!</h2>
+                    <h2 className="box-portal-home text-blend-lighten">Sell Surplus Product Instead of Putting it to Waste!</h2>
                 </div>
                 {currentBlog ? (
                     <div id='blog' className="box-blog margin-t-48 margin-l-48 margin-r-48 badge-container no-float" style={{borderRadius: "20px"}}>
@@ -76,7 +76,7 @@ function Home() {
                     </div>
                 ) : <></>}
                 <div className="box-inside">
-                    <h3 className="margin-b-16">Why Partner with GINGHAM?</h3>
+                    <h3 className="margin-b-16">Why Partner with <span className="text-900">GINGHAM</span>?</h3>
                     <p>
                         As a <span className="font-cera text-900">gingham</span> vendor, you can easily sell surplus or "imperfect" products to local consumers, 
                         boost your revenue, and contribute to reducing food waste. Our platform connects you with 
@@ -84,7 +84,7 @@ function Home() {
                     </p>
                 </div>
                 <div className="box-inside">
-                    <h3 className="margin-b-16">How GINGHAM Works:</h3>
+                    <h3 className="margin-b-16">How <span className="text-900">GINGHAM</span> Works:</h3>
                     <p>
                         <strong>
                             Build mystery baskets of bundled surplus products you'd like to sell quickly. With <span className="font-cera text-900">gingham</span>, 
@@ -98,7 +98,7 @@ function Home() {
                     <p><strong>Consumers Buy and Pick Up:</strong> Shoppers browse and purchase bundles and pickup at a designated time before market close.</p>
                 </div>
                 <div className="box-inside">
-                    <h3 className="margin-b-16">Why Choose GINGHAM?</h3>
+                    <h3 className="margin-b-16">Why Choose <span className="text-900">GINGHAM</span>?</h3>
                     {/* Build Graphics and diagrams a la "Gingham How it Works"*/}
                     <p><strong>Increase and Boost Sales:</strong> Sell surplus products you may otherwise throw away.</p>
                     <p><strong>Help the Environment:</strong> Play a crucial role in reducing food waste.</p>
