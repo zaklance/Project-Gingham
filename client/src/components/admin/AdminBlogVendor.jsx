@@ -44,7 +44,7 @@ const AdminBlogVendor = ({ blogs, activeTabMode }) => {
             </article>
             <article>
                 <p>
-                    <span class='font-cera text-size-1'>—The Gingham Team</span>
+                    <span class='font-cera text-size-1'>—the gingham team</span>
                 </p>
             </article>
             <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET_800px.png" alt="logo" />

@@ -149,13 +149,13 @@ function Home() {
                 <br className="d-br" />
                 <br/>
                 <div className="box-portal-home text-blend-lighten text-center">
-                    <h1 className="font-cera title-big-gingham">Gingham</h1>
+                    <h1 className="font-cera title-big-gingham">gingham</h1>
                 </div>
                 <br className="m-br"/>
                 <div className="box-home box-inside">
                     <h2 className="box-transparent">Make A Positive Impact By Minimizing Food Waste </h2><br/>
-                    <p> Do you love fresh, local produce at a great price? Meet Gingham, the platform connecting 
-                        you with vendors in farmers' markets. <span className="text-500">With Gingham, you can 
+                    <p> Do you love fresh, local produce at a great price? Meet <span className="font-cera text-900">gingham</span>, the platform connecting 
+                        you with vendors in farmers' markets. <span className="text-500">With <span className="font-cera text-900">gingham</span>, you can 
                         pre-order mystery baskets filled with surplus or seasonal goods and pick them up directly 
                         at the market.</span>
                     </p>
@@ -172,7 +172,7 @@ function Home() {
                     </p>
                 </div>
             </div>
-            {currentBlog ? (
+            {currentBlog && (
                 <div className="box-blog margin-t-24 badge-container no-float" id="blog">
                     <div className="badge-arrows">
                         <i className="icon-arrow-l-fff margin-r-8" onClick={() => handleNavigate('prev')}>&emsp;&thinsp;</i>
@@ -187,7 +187,7 @@ function Home() {
                     <h6 className="margin-b-8">{blogTimeConverter(currentBlog.post_date)}</h6>
                     <div dangerouslySetInnerHTML={{ __html: currentBlog.body }} style={{ width: '100%', height: '100%' }}></div>
                 </div>
-            ) : <></>}
+            )}
             <div className="box-big-blue margin-t-24">
                 <h3>HOW DOES GINGHAM WORK?</h3> <br/>
                 <p>
