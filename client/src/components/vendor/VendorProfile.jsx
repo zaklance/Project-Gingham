@@ -998,7 +998,7 @@ function VendorProfile () {
                                     </FormGroup>
                                 )}
                                 <div>
-                                    <h3 className='margin-b-12'>Locations for Notifications</h3>
+                                    <h3 className='margin-b-12 margin-t-16'>Locations for Notifications</h3>
                                     <div className='form-group'>
                                         <label>Market Locations:</label>
                                         {filteredMarketDays.length > 0 ? (
@@ -1044,7 +1044,7 @@ function VendorProfile () {
                                                                 whiteSpace: 'normal',
                                                             },
                                                         }}
-                                                        label={`${marketDay?.markets.name}, ${weekDay[marketDay?.day_of_week]}` || 'Unknown Product'}
+                                                        label={`${marketDay?.market.name}, ${weekDay[marketDay?.day_of_week]}` || 'Unknown Product'}
                                                         size="small"
                                                         onDelete={() => handleDeleteMarketDay(marketDayId)}
                                                     />

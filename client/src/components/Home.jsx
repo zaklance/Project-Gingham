@@ -146,14 +146,17 @@ function Home() {
             <link rel="preload" as="image" href='./site-images/LzYeux_120719_0036_1800px.jpg' />
             <div className="user-portal-background" style={{ backgroundImage: `url(${backgroundImages[bgIndex]})` }}>
                 <br className="d-br"/>
-                <br className="d-br" />
+                <br className="d-br"/>
                 <br/>
                 <div className="box-portal-home text-blend-lighten text-center">
                     <h1 className="font-cera title-big-gingham">gingham</h1>
+                    <br/>
+                    <h3>Make A Positive Impact By Minimizing Food Waste</h3>
                 </div>
                 <br className="m-br"/>
                 <div className="box-home box-inside">
-                    <h2 className="box-transparent">Make A Positive Impact By Minimizing Food Waste </h2><br/>
+                    {/* <h2 className="box-transparent">Make A Positive Impact By Minimizing Food Waste</h2>
+                    <br/> */}
                     <p> Do you love fresh, local produce at a great price? Meet <span className="font-cera text-900">gingham</span>, the platform connecting 
                         you with vendors in farmers' markets. <span className="text-500">With <span className="font-cera text-900">gingham</span>, you can 
                         pre-order mystery baskets filled with surplus or seasonal goods and pick them up directly 
@@ -189,10 +192,10 @@ function Home() {
                 </div>
             )}
             <div className="box-big-blue margin-t-24">
-                <h3>HOW DOES GINGHAM WORK?</h3> <br/>
+                <h3>HOW DOES <span className="font-cera text-900">GINGHAM</span> WORK?</h3> <br/>
                 <p>
                     Vendors build mystery baskets of bundled surplus products that you are able to pre-order and pick-up at a designated time.  
-                    <strong> Gingham makes it easy to shop sustainably while supporting your local farmers' market community!</strong>
+                    <strong> <span className="font-cera text-900">GINGHAM</span> makes it easy to shop sustainably while supporting your local farmers' market community!</strong>
                 </p>
                 <img src="/site-images/GINGHAM_HOWITWORKS_CERA_1800px.png" style={{ width: '100%' }} />
             </div>

@@ -134,6 +134,9 @@ function VendorDashboard({ marketId }) {
             setActiveTab('payout');
         } else {
             setActiveTab('baskets');
+            const urlParams = new URLSearchParams(window.location.search);
+            const tab = urlParams.get('tab');
+            if (tab) setActiveTab(tab);
         }
     }, [vendorId, isOnboarded]);
     
