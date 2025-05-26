@@ -542,7 +542,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li>
                             <NavLink className='nav-tab m-tab-left color-3 btn-nav' to={`/vendor/dashboard`} title="Dashboard">Dashboard</NavLink>
                         </li>
-                        {vendorUserData?.vendor_role[vendorUserData.active_vendor] <= 1 && (
+                        {vendorUserData?.vendor_role && vendorUserData?.vendor_role[vendorUserData.active_vendor] <= 1 && (
                             <li>
                                 <NavLink className='nav-tab color-5 btn-nav' to={`/vendor/sales`} title="Sales">Sales</NavLink>
                             </li>

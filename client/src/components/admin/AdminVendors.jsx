@@ -13,16 +13,17 @@ function AdminVendors () {
 
     const adminUserId = globalThis.localStorage.getItem('admin_user_id');
 
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab) setActiveTab(tab);
+    }, []);
 
     useEffect(() => {
         fetch("/api/vendors")
             .then(response => response.json())
             .then(vendors => setVendors(vendors))
             .catch(error => console.error('Error fetching vendors', error));
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const tab = urlParams.get('tab');
-        if (tab) setActiveTab(tab);
     }, []);
 
     useEffect(() => {

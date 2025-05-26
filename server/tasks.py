@@ -230,7 +230,7 @@ def vendor_signup_task(data):
             if not email or not password:
                 return {'error': 'Email and password are required'}
 
-            existing_user = User.query.filter_by(email=email).first()
+            existing_user = VendorUser.query.filter_by(email=email).first()
             if existing_user:
                 return {'error': 'This email is already registered. Please log in or use a different email.'}
 

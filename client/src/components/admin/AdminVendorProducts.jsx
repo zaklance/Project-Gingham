@@ -12,6 +12,7 @@ function AdminVendorProducts({ vendors }) {
     const [notifications, setNotifications] = useState(null);
     
     const navigate = useNavigate();
+    const adminUserId = globalThis.localStorage.getItem('admin_user_id');
 
     useEffect(() => {
         fetch("/api/products")
@@ -162,7 +163,7 @@ function AdminVendorProducts({ vendors }) {
 
     useEffect(() => {
         const token = localStorage.getItem('admin_jwt-token');
-        fetch("/api/admin-notifications", {
+        fetch(`/api/admin-notifications?admin_id=${adminUserId}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -171,6 +172,7 @@ function AdminVendorProducts({ vendors }) {
         })
             .then(response => response.json())
             .then(data => {
+                console.log(data)
                 setNotifications(data.filter(notification => notification.subject === 'product-request'));
             })
             .catch(error => console.error('Error fetching products', error));
