@@ -43,7 +43,7 @@ function VendorGuide() {
 
 return (
     <div className='box-bounding'>
-        <title>Gingham • Vendor Help Guide</title>
+        <title>gingham • Vendor Help Guide</title>
         <h1 className="title-med margin-b-24">Vendor Portal How-To Guide</h1>
         <div className="vendor-guide">
             <aside className="toc">
@@ -61,8 +61,8 @@ return (
                 <section id="Introduction" className="section-help">
                     <h3 className="margin-b-16">Introduction</h3>
                     <p className="margin-b-16">
-                        Welcome to the Gingham Vendor Portal How-To Guide! This page is designed to provide you with a comprehensive overview
-                        of how to navigate and utilize the Gingham Vendor Portal effectively. Whether you’re setting up your profile, managing
+                        Welcome to the GINGHAM Vendor Portal How-To Guide! This page is designed to provide you with a comprehensive overview
+                        of how to navigate and utilize the GINGHAM Vendor Portal effectively. Whether you’re setting up your profile, managing
                         team members, creating events, or optimizing sales, this guide will walk you through every step.
                     </p>
                     <p className="margin-b-16">

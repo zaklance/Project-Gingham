@@ -299,7 +299,7 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
 
     return (
         <>
-            <title>Gingham • Admin Recipes • Delete</title>
+            <title>gingham • Admin Recipes • Delete</title>
             <h2 className='margin-t-16'>Delete Recipes</h2>
             <div className='margin-t-16'>
                 <table className='table-search-recipe margin-t-16'>
@@ -415,7 +415,7 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                         <div className='box-recipe-info flex-space-between flex-column'>
                             <div className='badge-container'>
                                 <h2 className='margin-t-4 margin-r-8 margin-b-4'>{selectedRecipe.title}</h2>
-                                {selectedRecipe.author && <p>by {selectedRecipe.author} {selectedRecipe.is_gingham_team && ("of the Gingham Team")}</p>}
+                                {selectedRecipe.author && <p>by {selectedRecipe.author} {selectedRecipe.is_gingham_team && ("of the gingham team")}</p>}
                                 {selectedRecipe.attribution && selectedRecipe.attribution_link ? (
                                     <a className='link-underline-inverse' href={selectedRecipe.attribution_link}>{selectedRecipe.attribution}</a>
                                 ) : selectedRecipe.attribution && (

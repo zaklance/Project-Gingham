@@ -125,7 +125,7 @@ function VendorSalesStatements({ baskets, vendorId }) {
 
 	return (
 		<>
-			<title>Gingham • Vendor Statements</title>
+			<title>gingham • Vendor Statements</title>
 			{baskets && !loading && (
 				<div id="statements" className='box-bounding box-scroll'>
 					<h2 className='margin-b-16'>Monthly Statements</h2>

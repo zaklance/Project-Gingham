@@ -145,7 +145,7 @@ const AdminEmail = () => {
                             <p>{event.message}</p>
                         </div>
                     </div>
-                    <p>— The Gingham Team</p>
+                    <p>—The gingham team</p>
                 </div>
                 <div class="footer">
                     <div class="footer flex-center">
@@ -197,7 +197,7 @@ const AdminEmail = () => {
                     <mj-text>
                     </mj-text>
                     <mj-text>
-                        —The Gingham Team
+                        —The gingham team
                     </mj-text>
                     <mj-text>
                     </mj-text>
@@ -353,7 +353,7 @@ const AdminEmail = () => {
 
     return (
         <>
-            <title>Gingham • Admin Email</title>
+            <title>gingham • Admin Email</title>
             <div>
                 <h1 className='margin-b-16'>Your Email</h1>
                 <div className='box-bounding'>

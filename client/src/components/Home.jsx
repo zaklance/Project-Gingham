@@ -140,7 +140,7 @@ function Home() {
 
     return (
         <div>
-            <title>Gingham • Home</title>
+            <title>gingham • Home</title>
             <link rel="preload" as="image" href='./site-images/LzYeux_120719_0032_1800px.jpg' />
             <link rel="preload" as="image" href='./site-images/LzYeux_120719_0033_1800px.jpg' />
             <link rel="preload" as="image" href='./site-images/LzYeux_120719_0036_1800px.jpg' />

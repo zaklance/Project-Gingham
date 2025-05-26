@@ -129,7 +129,7 @@ function VendorBaskets({ vendorUserData }) {
     
     return (
         <div>
-            <title>Gingham • Vendor Baskets</title>
+            <title>gingham • Vendor Baskets</title>
             <div className="box-bounding">
                 <h2>Today's Baskets:</h2>
                     {/* <button className='btn-add nowrap'>Add A Basket for Today</button> */}

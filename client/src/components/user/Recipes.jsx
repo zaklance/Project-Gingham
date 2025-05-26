@@ -270,7 +270,7 @@ const Recipes = () => {
 
     return (
         <>
-            <title>Gingham • Recipes</title>
+            <title>gingham • Recipes</title>
             <h1>Recipes!</h1>
             <table className='table-search-recipe margin-t-16'>
                 <tbody>

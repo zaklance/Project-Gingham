@@ -44,7 +44,7 @@ const AdminEmailBulk = () => {
                         lacus fermentum finibus.
                     </mj-text>
                     <mj-text>
-                        —The Gingham Team
+                        —The gingham team
                     </mj-text>
                     <mj-image width="400px" src="https://www.gingham.nyc/site-images/GINGHAM_VENDOR_FARMERSMARKET_800px.png"></mj-image>
                     <mj-section padding="0px">
@@ -198,7 +198,7 @@ const AdminEmailBulk = () => {
 
     return (
         <>
-            <title>Gingham • Admin Email Bulk</title>
+            <title>gingham • Admin Email Bulk</title>
             <div>
                 <h1 className='margin-b-16'>Bulk Email</h1>
                 <div className='box-bounding'>

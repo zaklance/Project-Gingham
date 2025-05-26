@@ -91,11 +91,11 @@ const EmailVerification = () => {
 
 	return (
 		<div className="email-verification-container">
-			<title>Gingham • Email Verification</title>
+			<title>gingham • Email Verification</title>
 			{!isConfirmed ? (
 				<div className="box-bounding text-center">
 					<h1 className="font-cera-large title-med text-center">
-						Gingham
+						gingham
 					</h1>
 					<p className="text-500 margin-b-8">Please confirm your email!</p>
 					{errorMessage && <p className="text-error-small text-red width-fit margin-auto">{errorMessage}</p>}
@@ -110,7 +110,7 @@ const EmailVerification = () => {
 			) : isNewUser ? (
 				<div className="box-bounding text-center">
 					<h1 className="title-med text-center">
-						Welcome to <span className="font-cera title-small">Gingham</span>!
+						Welcome to <span className="font-cera title-small">gingham</span>!
 					</h1>
 					<p className="text-500 margin-b-8">Thank you for registering! Your email has been successfully confirmed. Welcome to the platform!</p>
 					<button className="btn btn-confirm" onClick={() => navigate("/user/logout")}>

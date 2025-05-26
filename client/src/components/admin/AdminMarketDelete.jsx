@@ -96,7 +96,7 @@ function AdminMarketDelete({ markets }) {
 
     return(
         <>
-            <title>Gingham • Admin Markets • Delete</title>
+            <title>gingham • Admin Markets • Delete</title>
             <div className='box-bounding'>
                 <h2>Delete Markets</h2>
                 <table className='margin-t-16'>

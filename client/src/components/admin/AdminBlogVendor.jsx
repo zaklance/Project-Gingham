@@ -15,21 +15,21 @@ const AdminBlogVendor = ({ blogs, activeTabMode }) => {
             <article class="first-letter">
                 <p>
                     Do you love supporting local farmers, enjoying fresh produce, and finding great 
-                    deals? Meet Gingham, the innovative platform that connects you with discounted 
+                    deals? Meet gingham, the innovative platform that connects you with discounted 
                     baskets from farmers' market vendors while helping reduce food waste.
                 </p>
             </article>
             <article>
                 <p>
                     Here’s how it works: Farmers' market vendors often have surplus items at the end 
-                    of the day. With Gingham, they bundle these items into discounted baskets for you 
+                    of the day. With gingham, they bundle these items into discounted baskets for you 
                     to browse, reserve, and pick up at your convenience. Think of it as your personal 
                     gateway to fresh, local, and sustainable food.
                 </p>
             </article>
             <article>
                 <p>
-                    Gingham isn’t just about savings—it’s about creating a positive impact. By 
+                    GINGHAM isn’t just about savings—it’s about creating a positive impact. By 
                     purchasing a basket, you’re rescuing perfectly good food from going to waste, 
                     supporting local businesses, and embracing a more sustainable way of living. Plus, 
                     with fresh ingredients at your fingertips, you can enjoy cooking, meal prep, or 
@@ -38,13 +38,14 @@ const AdminBlogVendor = ({ blogs, activeTabMode }) => {
             </article>
             <article>
                 <p>
-                    Signing up is quick and simple. Join the Gingham community today to start saving, 
+                    Signing up is quick and simple. Join the gingham community today to start saving, 
                     reducing waste, and supporting your local farmers' markets. Together, we can create 
                     a more sustainable future—one basket at a time!
+                </p>
             </article>
             <article>
                 <p>
-                    <span class='font-cera text-size-1'>—the gingham team</span>
+                    <span class='font-cera text-size-1-2'>—the gingham team</span>
                 </p>
             </article>
             <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET_800px.png" alt="logo" />
@@ -228,7 +229,7 @@ const AdminBlogVendor = ({ blogs, activeTabMode }) => {
 
     return (
         <>
-            <title>Gingham • Admin Blogs • Vendors</title>
+            <title>gingham • Admin Blogs • Vendors</title>
             {activeTabMode === 'add' && (
                 <>
                     <h2 className='margin-b-16'>Add Vendor Blog</h2>

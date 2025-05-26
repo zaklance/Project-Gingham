@@ -168,16 +168,16 @@ def send_contact_email(name, email, subject, message):
         port = os.getenv('EMAIL_PORT')
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = recipient_email
-        msg['Subject'] = f"Gingham Contact Form Submission: {subject}"
+        msg['Subject'] = f"GINGHAM Contact Form Submission: {subject}"
 
         body = f"""
             <!DOCTYPE html>
             <html>
             <head>
                 <meta charset="UTF-8">
-                <title>Gingham Contact Form Submission</title>
+                <title>gingham Contact Form Submission</title>
                 {EMAIL_STYLES}
             </head>
             <body>
@@ -240,16 +240,16 @@ def send_user_password_reset_email(email):
         port = os.getenv('EMAIL_PORT')
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = recipient_email
-        msg['Subject'] = 'Gingham Password Reset'
+        msg['Subject'] = 'GINGHAM Password Reset'
 
         body = f"""
             <!DOCTYPE html>
             <html>
             <head>
                 <meta charset="UTF-8">
-                <title>Gingham Password Reset</title>
+                <title>gingham Password Reset</title>
                 {EMAIL_STYLES}
             </head>
             <body>
@@ -303,16 +303,16 @@ def send_vendor_password_reset_email(email):
         port = os.getenv('EMAIL_PORT')
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = recipient_email
-        msg['Subject'] = 'Gingham Password Reset'
+        msg['Subject'] = 'GINGHAM Password Reset'
 
         body = f"""
             <!DOCTYPE html>
             <html>
             <head>
                 <meta charset="UTF-8">
-                <title>Gingham Password Reset</title>
+                <title>gingham Password Reset</title>
                 {EMAIL_STYLES}
             </head>
             <body>
@@ -366,16 +366,16 @@ def send_admin_password_reset_email(email):
         port = os.getenv('EMAIL_PORT')
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = recipient_email
-        msg['Subject'] = 'Gingham Password Reset'
+        msg['Subject'] = 'GINGHAM Password Reset'
 
         body = f"""
             <!DOCTYPE html>
             <html>
             <head>
                 <meta charset="UTF-8">
-                <title>Gingham Password Reset</title>
+                <title>gingham Password Reset</title>
                 {EMAIL_STYLES}
             </head>
             <body>
@@ -429,16 +429,16 @@ def send_user_confirmation_email(email, user_data):
             raise ValueError("Email credentials are missing in the environment variables.")
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
-        msg['Subject'] = 'Gingham Email Confirmation'
+        msg['Subject'] = 'GINGHAM Email Confirmation'
 
         body = f"""
             <!DOCTYPE html>
             <html>
             <head>
                 <meta charset="UTF-8">
-                <title>Gingham Email Confirmation</title>
+                <title>gingham Email Confirmation</title>
                 {EMAIL_STYLES}
             </head>
             <body>
@@ -492,16 +492,16 @@ def send_vendor_confirmation_email(email, vendor_data):
             raise ValueError("Email credentials are missing in the environment variables.")
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
-        msg['Subject'] = 'Gingham Vendor Email Confirmation'
+        msg['Subject'] = 'GINGHAM Vendor Email Confirmation'
 
         body = f"""
             <!DOCTYPE html>
             <html>
             <head>
                 <meta charset="UTF-8">
-                <title>Gingham Vendor Email Confirmation</title>
+                <title>gingham Vendor Email Confirmation</title>
                 {EMAIL_STYLES}
             </head>
             <body>
@@ -555,16 +555,16 @@ def send_admin_confirmation_email(email, admin_data):
             raise ValueError("Email credentials are missing in the environment variables.")
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
-        msg['Subject'] = 'Gingham Admin Email Confirmation'
+        msg['Subject'] = 'GINGHAM Admin Email Confirmation'
 
         body = body = f"""
             <!DOCTYPE html>
             <html>
             <head>
                 <meta charset="UTF-8">
-                <title>Gingham Admin Email Confirmation</title>
+                <title>gingham Admin Email Confirmation</title>
                 {EMAIL_STYLES}
             </head>
             <body>
@@ -638,7 +638,7 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
             date_display = start_date_formatted
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = f'New Event at {market.name}'
 
@@ -666,7 +666,7 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
                                 <p class="margin-12-0">{event.message}</p>
                             </div>
                         </div>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -727,7 +727,7 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
             date_display = start_date_formatted
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = f'Schedule Change at {market.name}'
 
@@ -754,7 +754,7 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
                                 <p class="margin-12-0">{event.message}</p>
                             </div>
                         </div>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -822,7 +822,7 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
             subcategories_html = ""
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = f'New Vendor at {market.name}'
 
@@ -851,7 +851,7 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
                                 <p class="margin-12-0">{vendor.bio}</p>
                             </div>
                         </div>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -929,7 +929,7 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
             vendor_bio_html = ""
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = f'New Basket Available at {market.name}'
 
@@ -965,7 +965,7 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
                                 {market_bio_html}
                             </div>
                         </div>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -1026,7 +1026,7 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
             date_display = start_date_formatted
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = f'New Event by {vendor.name}'
 
@@ -1053,7 +1053,7 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
                                 <p class="margin-12-0">{event.message}</p>
                             </div>
                         </div>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -1114,7 +1114,7 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
             date_display = start_date_formatted
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = f'Schedule Change for {vendor.name}'
 
@@ -1141,7 +1141,7 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
                                 <p class="margin-12-0">{event.message}</p>
                             </div>
                         </div>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -1219,7 +1219,7 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
             market_bio_html = ""
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = f'New Basket Available from {vendor.name}'
 
@@ -1255,7 +1255,7 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
                                 {market_bio_html}
                             </div>
                         </div>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -1310,7 +1310,7 @@ def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link
         full_link_vendor = f'https://www.gingham.nyc/{link_vendor}'
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = f'Almost Time to Pickup Your Basket'
 
@@ -1330,7 +1330,7 @@ def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link
                     <div>
                         <p>Hi {user.first_name},</p>
                         <p>It's almost time to pickup your basket! <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong> set the pickup time from {time_converter(basket.pickup_start)} to {time_converter(basket.pickup_end)} at <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>. If it is a large farmers' market, be sure to allot time to find the vendor.</p>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -1384,7 +1384,7 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
         full_link_review = f'https://www.gingham.nyc/{link_review}'
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = f'Response to on of your Reviews'
 
@@ -1409,7 +1409,7 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
                                 <p>{review.review_text}</p>
                             </div>
                         </div>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -1461,9 +1461,9 @@ def send_email_user_new_blog(email, user, blog):
             raise ValueError("Email credentials are missing in the environment variables.")
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
-        msg['Subject'] = f'New Gingham Blog Post!'
+        msg['Subject'] = f'New GINGHAM Blog Post!'
 
         body = f"""
             <!DOCTYPE html>
@@ -1544,7 +1544,7 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
             market_bio_html = ""
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = f'New Market in {market.city}'
 
@@ -1573,7 +1573,7 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
                                 {market_bio_html}
                             </div>
                         </div>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -1640,7 +1640,7 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
             date_display = start_date_formatted
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = f'New Event at {market.name}'
 
@@ -1667,7 +1667,7 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
                                 <p class="margin-12-0">{event.message}</p>
                             </div>
                         </div>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -1728,7 +1728,7 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
             date_display = start_date_formatted
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = f'Schedule Change at {market.name}'
 
@@ -1755,7 +1755,7 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
                                 <p class="margin-12-0">{event.message}</p>
                             </div>
                         </div>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -1812,7 +1812,7 @@ def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pic
             basket_text = "basket"
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = f'Basket sold'
 
@@ -1835,7 +1835,7 @@ def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pic
                         <div class="flex-center">
                             <p><strong><a class="button" href='https://www.gingham.nyc/vendor/scan'>Scan basket QR codes here!</a></strong></p>
                         </div>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -1889,9 +1889,9 @@ def send_email_vendor_new_review(email, user, vendor, review, link_review):
         full_link_review = f'https://www.gingham.nyc/{link_review}'
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
-        msg['Subject'] = f'New Review on Gingham!'
+        msg['Subject'] = f'New Review on GINGHAM!'
 
         body = f"""
             <!DOCTYPE html>
@@ -1914,7 +1914,7 @@ def send_email_vendor_new_review(email, user, vendor, review, link_review):
                                 <p>{review.review_text}</p>
                             </div>
                         </div>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -1966,9 +1966,9 @@ def send_email_vendor_new_blog(email, user, blog):
             raise ValueError("Email credentials are missing in the environment variables.")
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
-        msg['Subject'] = f'New Gingham Vendor Blog Post!'
+        msg['Subject'] = f'New GINGHAM Vendor Blog Post!'
 
         body = f"""
             <!DOCTYPE html>
@@ -2042,9 +2042,9 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
             raise ValueError("Email credentials are missing in the environment variables.")
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
-        msg['Subject'] = f'Gingham Monthly Statement'
+        msg['Subject'] = f'GINGHAM Monthly Statement'
 
         body = f"""
             <!DOCTYPE html>
@@ -2062,7 +2062,7 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
                     <div>
                         <p>Hi {user.first_name},</p>
                         <p>A new monthly statement for {vendor.name} is out. Attached is a CSV with last months sales data. For a PDF summary, graphs, and previous months statements check the <strong><a class="link-underline" href='https://www.gingham.nyc/vendor/sales'>sales</a></strong> page.</p>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -2164,9 +2164,9 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
             review_about = f"{vendor.name}"
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
-        msg['Subject'] = f'New Reported Review on Gingham :('
+        msg['Subject'] = f'New Reported Review on GINGHAM :('
 
         body = f"""
             <!DOCTYPE html>
@@ -2189,7 +2189,7 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
                                 <p>{review.review_text}</p>
                             </div>
                         </div>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -2260,9 +2260,9 @@ def send_email_admin_product_request(email, user, vendor, new_product, link_prod
             vendor_bio_html = ""
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
-        msg['Subject'] = f'New Product Request on Gingham'
+        msg['Subject'] = f'New Product Request on GINGHAM'
 
         body = f"""
             <!DOCTYPE html>
@@ -2289,7 +2289,7 @@ def send_email_admin_product_request(email, user, vendor, new_product, link_prod
                                 {vendor_bio_html}
                             </div>
                         </div>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -2341,9 +2341,9 @@ def send_email_admin_new_blog(email, user, blog):
             raise ValueError("Email credentials are missing in the environment variables.")
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
-        msg['Subject'] = f'New Gingham Admin Blog Post!'
+        msg['Subject'] = f'New GINGHAM Admin Blog Post!'
 
         body = f"""
             <!DOCTYPE html>
@@ -2436,9 +2436,9 @@ def send_email_admin_new_vendor(email, user, vendor, link_vendor):
             vendor_bio_html = ""
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
-        msg['Subject'] = f'New Product Request on Gingham'
+        msg['Subject'] = f'New Product Request on GINGHAM'
 
         body = f"""
             <!DOCTYPE html>
@@ -2465,7 +2465,7 @@ def send_email_admin_new_vendor(email, user, vendor, link_vendor):
                                 {vendor_bio_html}
                             </div>
                         </div>
-                        <p>— The Gingham Team</p>
+                        <p>—The gingham team</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
@@ -2513,9 +2513,9 @@ def send_vendor_team_invite_email(email, vendor_name, token):
             raise ValueError("Email credentials are missing in the environment variables.")
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
-        msg['Subject'] = f'Invitation to join {vendor_name} on Gingham'
+        msg['Subject'] = f'Invitation to join {vendor_name} on GINGHAM'
 
         body = f"""
             <!DOCTYPE html>
@@ -2532,7 +2532,7 @@ def send_vendor_team_invite_email(email, vendor_name, token):
                     </div>
                     <hr class="divider"/>
                     <div class="content center">
-                        <p><strong>{vendor_name}</strong> has invited you to join their team on Gingham!</p>
+                        <p><strong>{vendor_name}</strong> has invited you to join their team on gingham!</p>
                         <p>Click the button below to accept the invitation and set up your account:</p>
                         <a class="button" href={invitation_link}>Join Team</a>
                     </div>
@@ -2572,7 +2572,7 @@ def send_email_weekly_admin_update(email, body_tag):
             raise ValueError("Email credentials are missing in the environment variables.")
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
         msg['Subject'] = "Weekly Platform Summary"
 

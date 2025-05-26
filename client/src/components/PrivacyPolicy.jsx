@@ -36,7 +36,7 @@ function PrivacyPolicy() {
 
     return (
         <div className="box-bounding">
-            <title>Gingham • Privacy Policy</title>
+            <title>gingham • Privacy Policy</title>
             <h1 className="title-med margin-b-24">Privacy Policy</h1>
             <div className="vendor-guide">
             <aside className="toc m-hidden">
@@ -56,9 +56,9 @@ function PrivacyPolicy() {
                             <span className="text-500">Effective Date: March 1, 2025</span>
                         </p>
                         <p className="margin-b-16">
-                            Gingham (“we,” “our,” or “us”) values your privacy and is committed to protecting your personal information. 
+                            GINGHAM (“we,” “our,” or “us”) values your privacy and is committed to protecting your personal information. 
                             This Privacy Policy explains how we collect, use, share, and protect your data when you use our platform, 
-                            including our website and mobile application (collectively, the “Platform”). By accessing or using Gingham, 
+                            including our website and mobile application (collectively, the “Platform”). By accessing or using gingham, 
                             you agree to this Privacy Policy.
                         </p>
                 </section>
@@ -123,7 +123,7 @@ function PrivacyPolicy() {
                 <section id="Text Messaging Policy" className="section-help">
                     <h3 className="margin-b-16">Text Messaging Policy</h3>
                         <p className="margin-b-16">
-                            By providing your phone number and opting into SMS notifications, you consent to receive text messages from Gingham regarding order updates, promotions, and account-related notifications. 
+                            By providing your phone number and opting into SMS notifications, you consent to receive text messages from gingham regarding order updates, promotions, and account-related notifications. 
                         </p>
                         <p className="margin-b-16">
                             <strong>Opt-Out:</strong> You can opt out of receiving text messages at any time by replying "STOP" to any SMS message. Standard messaging rates may apply.

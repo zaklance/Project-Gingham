@@ -63,7 +63,7 @@ function MarketCard({ marketData, user, haversineDistance, resultCoordinates, us
                                 : 'your home address'}
                     </p>
                 ) : <></>}
-                <p><strong>Vendors:</strong> {countVendors(marketData)} on <span className='font-cera text-size-1'>gingham</span></p>
+                <p><strong>Vendors:</strong> {countVendors(marketData)} on <span className='font-cera text-size-1-2'>gingham</span></p>
             </div>
             <div>
                 <button className="btn-market-card" onClick={handleLearnMore}>Learn More!</button>

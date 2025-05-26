@@ -20,7 +20,7 @@ function AdminFAQs() {
 
     return (
         <div>
-            <title>Gingham • Admin FAQs</title>
+            <title>gingham • Admin FAQs</title>
             <h1 className='title-med margin-b-24'>Admin FAQs</h1>
             <details
                 key="a"

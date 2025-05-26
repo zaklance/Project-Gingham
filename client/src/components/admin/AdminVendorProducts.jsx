@@ -179,7 +179,7 @@ function AdminVendorProducts({ vendors }) {
 
     return (
         <>
-            <title>Gingham • Admin Vendors • Products</title>
+            <title>gingham • Admin Vendors • Products</title>
             {notifications?.length > 0 ? (
                 <div className='box-bounding'>
                     <h2 className='margin-b-24'>Notifications</h2>

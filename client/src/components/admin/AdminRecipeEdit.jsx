@@ -1393,7 +1393,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
 
     return (
         <>
-            <title>Gingham • Admin Recipes • Edit</title>
+            <title>gingham • Admin Recipes • Edit</title>
             <h2 id="edit-recipes" className='margin-t-16'>Edit Recipes</h2>
             {editMode ? (
                 <div>
@@ -1436,12 +1436,12 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                             className="search-bar cell-32"
                                             name="author"
                                             type="text"
-                                            placeholder="Author, if a Gingham creator add 'of the Gingham Team'..."
+                                            placeholder="Author, if a gingham creator add 'of the gingham team'..."
                                             value={tempRecipeData.author || ''}
                                             onChange={handleInputChange}
                                         />
                                     </td>
-                                    <td className='cell-title btn-grey m-hidden'>Is Gingham:</td>
+                                    <td className='cell-title btn-grey m-hidden'>Is gingham:</td>
                                     <td className='cell-text cell-recipe' colSpan={2}>
                                         <label>
                                             <FormGroup>
@@ -1455,7 +1455,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                                             color={'secondary'}
                                                         />
                                                     }
-                                                    label="Is on Gingham Team?"
+                                                    label="Is on gingham team?"
                                                 />
                                             </FormGroup>
                                         </label>
@@ -2167,7 +2167,7 @@ function AdminRecipeEdit({ recipes, smallwares, ingredients }) {
                                     <tr>
                                         <td className='cell-title btn-grey m-hidden'>Author:</td>
                                         <td className='cell-text cell-recipe' colSpan={3}>
-                                            {selectedRecipe.author} {selectedRecipe.is_gingham_team && ("of the Gingham Team")}
+                                            {selectedRecipe.author} {selectedRecipe.is_gingham_team && ("of the gingham team")}
                                         </td>
                                         <td className='cell-text cell-recipe' colSpan={4}>
                                             {selectedRecipe.attribution && selectedRecipe.attribution_link ? (

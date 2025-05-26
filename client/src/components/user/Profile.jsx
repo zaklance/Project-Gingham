@@ -661,7 +661,7 @@ function Profile({ marketData }) {
 
     return (
         <div>
-            <title>Gingham • User Profile</title>
+            <title>gingham • User Profile</title>
             <h1>Welcome to Your Profile, {profileData.first_name}!</h1>
             <div className='box-bounding badge-container'>
                 <i className='icon-settings' title="notification settings" onClick={handleSettingsToggle}>&emsp;</i>

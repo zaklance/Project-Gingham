@@ -42,7 +42,7 @@ function TermsAndConditions() {
 
     return (
         <div className='box-bounding'>
-            <title>Gingham • Terms & Conditions</title>
+            <title>gingham • Terms & Conditions</title>
             <h1 className="title-med margin-b-24">Terms & Conditions</h1>
             <div className='vendor-guide'>
             <aside className="toc m-hidden">
@@ -65,7 +65,7 @@ function TermsAndConditions() {
                             <span className="text-500">Effective Date: March 1, 2025</span>
                         </p>
                         <p className="margin-b-16">
-                            <strong>Welcome to Gingham!</strong> By accessing or using our platform, you agree to abide by these Terms of Service. These 
+                            <strong>Welcome to gingham!</strong> By accessing or using our platform, you agree to abide by these Terms of Service. These 
                             terms outline the rules and regulations governing your use of our services, including purchasing, selling, and interacting with other users.
                         </p>
                 </section>
@@ -73,7 +73,7 @@ function TermsAndConditions() {
                 <section id="eligibility-and-account-registration" className="section-help">
                     <h3 className="margin-b-16">Eligibility and Account Registration</h3>
                         <p className="margin-b-16">
-                            To use Gingham, you must be <strong>at least 18 years old</strong> or have the consent of a legal guardian. By creating an account, 
+                            To use gingham, you must be <strong>at least 18 years old</strong> or have the consent of a legal guardian. By creating an account, 
                             you agree to provide accurate, current, and complete information. You are responsible for maintaining the confidentiality of your 
                             account credentials and agree to notify us immediately of any unauthorized use of your account.
                         </p>
@@ -82,7 +82,7 @@ function TermsAndConditions() {
                 <section id="use-of-platform" className="section-help">
                     <h3 className="margin-b-16">Use of Platform</h3>
                         <p className="margin-b-16">
-                            Gingham provides a platform that connects consumers with local vendors and farmers. Users agree not to engage in fraudulent, 
+                            GINGHAM provides a platform that connects consumers with local vendors and farmers. Users agree not to engage in fraudulent, 
                             abusive, or otherwise harmful activities. We reserve the right to suspend or terminate accounts that violate these terms.                        
                         </p>
                 </section>
@@ -90,8 +90,8 @@ function TermsAndConditions() {
                 <section id="purchases-and-payment-terms" className="section-help">
                     <h3 className="margin-b-16">Purchases and Payment Terms</h3>
                         <p className="margin-b-16">
-                            All purchases made through Gingham are processed securely through Stripe. By placing an order, you agree to pay the total amount, 
-                            including any applicable taxes and fees. Gingham is not responsible for third-party payment processing issues but will assist in 
+                            All purchases made through gingham are processed securely through Stripe. By placing an order, you agree to pay the total amount, 
+                            including any applicable taxes and fees. GINGHAM is not responsible for third-party payment processing issues but will assist in 
                             resolving disputes when necessary.
                         </p>
                 </section>
@@ -99,7 +99,7 @@ function TermsAndConditions() {
                 <section id="return-and-exchange-policy" className="section-help">
                     <h3 className="margin-b-16">Return and Exchange Policy</h3>
                         <p className="margin-b-16">
-                            At Gingham, all sales are final, and we do not accept returns, refunds, or exchanges for any purchases.
+                            At gingham, all sales are final, and we do not accept returns, refunds, or exchanges for any purchases.
                         </p>
                         <p className="margin-b-16">
                             <strong>Exceptions:</strong> Refunds or adjustments may be made only if the Vendor or Farmers' market changes 
@@ -130,7 +130,7 @@ function TermsAndConditions() {
                     <h3 className="margin-b-16">Consumer Terms</h3>
                         <p className="margin-b-16">
                             Consumers are expected to provide accurate information when making purchases and to respect the terms set by vendors. Any disputes regarding product 
-                            quality or order fulfillment should be addressed with the vendor first. Gingham may facilitate resolution but is not responsible for disputes 
+                            quality or order fulfillment should be addressed with the vendor first. GINGHAM may facilitate resolution but is not responsible for disputes 
                             between consumers and vendors.
                         </p>
                 </section>
@@ -138,7 +138,7 @@ function TermsAndConditions() {
                 <section id="text-messaging-policy" className="section-help">
                     <h3 className="margin-b-16">Text Messaging Policy</h3>
                         <p className="margin-b-16">
-                            By using our services, you agree to receive text messages from Gingham related to your orders, account status, and promotions. Message frequency may vary.
+                            By using our services, you agree to receive text messages from gingham related to your orders, account status, and promotions. Message frequency may vary.
                         </p>
                         <p className="margin-b-16">
                             <strong>Opt-Out:</strong> You may opt out of SMS notifications at any time by replying "STOP" to any message. Standard carrier messaging rates apply.
@@ -148,7 +148,7 @@ function TermsAndConditions() {
                 <section id="limitation-of-liability" className="section-help">
                     <h3 className="margin-b-16">Limitation of Liability</h3>
                         <p className="margin-b-16">
-                            To the fullest extent permitted by law, Gingham and its affiliates shall not be liable for any indirect, incidental, or consequential damages arising from 
+                            To the fullest extent permitted by law, gingham and its affiliates shall not be liable for any indirect, incidental, or consequential damages arising from 
                             the use of the platform. Our liability, if any, shall be limited to the amount paid by you for the services provided.
                         </p>
                 </section>
@@ -156,7 +156,7 @@ function TermsAndConditions() {
                 <section id="intellectual-property" className="section-help">
                     <h3 className="margin-b-16">Intellectual Property</h3>
                         <p className="margin-b-16">
-                            All content, trademarks, and intellectual property displayed on the Gingham platform belong to Gingham or respective licensors. Users may not use, reproduce, 
+                            All content, trademarks, and intellectual property displayed on the gingham platform belong to gingham or respective licensors. Users may not use, reproduce, 
                             or distribute any content without express permission. 
                         </p>
                 </section>
@@ -182,7 +182,7 @@ function TermsAndConditions() {
                     <h3 className="margin-b-16">Dispute Resolution</h3>
                         <p className="margin-b-16">
                             Any disputes arising from the use of our services shall be governed by and construed in accordance with the laws of the state of New York, regardless of where 
-                            you are located. Any disputes will first be attempted to be resolved informally by contacting Gingham support. If a resolution cannot be reached, disputes 
+                            you are located. Any disputes will first be attempted to be resolved informally by contacting gingham support. If a resolution cannot be reached, disputes 
                             shall be resolved through binding arbitration, conducted in New York, NY, in accordance with the rules of the American Arbitration Association.
                         </p>
                 </section>

@@ -46,6 +46,9 @@ serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 MAX_SIZE = 1.10 * 1024 * 1024
 MAX_RES = (1800, 1800)
 
+def get_current_year():
+    return datetime.now().year
+
 def log_mem(label=""):
     rss = psutil.Process(os.getpid()).memory_info().rss / 1024**2
     print(f"{label} RAM: {rss:.2f} MB")
@@ -505,7 +508,7 @@ def send_mjml_email_task(mjml, subject, compiled_html, recipient_email):
         port = os.getenv('EMAIL_PORT')
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = recipient_email
         msg['Subject'] = subject
         msg.attach(MIMEText(compiled_html, 'html'))
@@ -531,7 +534,7 @@ def send_html_email_task(html, subject, recipient_email):
         port = os.getenv('EMAIL_PORT')
 
         msg = MIMEMultipart()
-        msg['From'] = f'Gingham NYC <{sender_email}>'
+        msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = recipient_email
         msg['Subject'] = subject
 
@@ -576,7 +579,7 @@ def send_sendgrid_email_task(html, subject, user_type):
 
         # Send email
         message = Mail(
-            from_email=f'Gingham NYC <{sender_email}>',
+            from_email=f'gingham NYC <{sender_email}>',
             to_emails=email_list,
             subject=subject,
             html_content=compiled_html,
@@ -1385,7 +1388,7 @@ def send_weekly_admin_summary():
                     <hr class="divider"/>
                     <div>
                         <p>Hi {admins.first_name},</p>
-                        <p>Here are the weekly Gingham stats for the week, from {last_monday} to {last_sunday}!</p>
+                        <p>Here are the weekly gingham stats for the week, from {last_monday} to {last_sunday}!</p>
                         <div class="content flex-center">
                             <div class="box-callout margin-r-16">
                                 <h3 class="margin-4-0">User Stats:</h3>
@@ -1401,15 +1404,15 @@ def send_weekly_admin_summary():
                                 <p class="margin-4-0">Baskets Created: {total_baskets_last_7_days}</p>
                                 <p class="margin-4-0">Baskets Sold: {sold_baskets_last_7_days}</p>
                                 <p class="margin-4-0">Sold Price: {sold_baskets_price_last_7_days}</p>
-                                <p class="margin-4-0">Gingham Fees: {sold_baskets_fees_last_7_days}</p>
+                                <p class="margin-4-0">GINGHAM Fees: {sold_baskets_fees_last_7_days}</p>
                             </div>
                         </div>
-                        <p>— The Gingham Task Robot</p>
+                        <p>— The gingham task robot</p>
                     </div>
                     <div class="footer">
                         <div class-"footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; 2025 GINGHAM.NYC. All Rights Reserved.</p>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
                     </div>
                 </div>

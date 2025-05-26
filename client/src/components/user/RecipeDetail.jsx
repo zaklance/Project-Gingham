@@ -240,7 +240,7 @@ function RecipeDetail() {
                                     onClick={handleClick}>&emsp;
                                 </button>
                             </div>
-                            {recipe.author && <p>by {recipe.author} {recipe.is_gingham_team && ("of the Gingham Team")}</p>}
+                            {recipe.author && <p>by {recipe.author} {recipe.is_gingham_team && ("of the gingham team")}</p>}
                             {recipe.attribution && recipe.attribution_link ? (
                                 <a className='link-underline-inverse' href={recipe.attribution_link}>{recipe.attribution}</a>
                             ) : recipe.attribution && (
