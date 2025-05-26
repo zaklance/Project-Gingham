@@ -5,10 +5,7 @@ const AdminEmailVerification = () => {
     const { token: confirmationToken } = useParams();
     const [isLoading, setIsLoading] = useState(false);
     const [isConfirmed, setIsConfirmed] = useState(false);
-    const [isNewUser, setIsNewUser] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
-    const [userId, setUserId] = useState(null);
-    const [newEmail, setNewEmail] = useState(null);
 
     const navigate = useNavigate();
 
@@ -42,14 +39,6 @@ const AdminEmailVerification = () => {
     
             if (response.ok) {
                 setIsConfirmed(true);
-                setIsNewUser(result.isNewUser);
-    
-                if (!result.isNewUser && result.user_id) {
-                    console.log(`Existing user detected: ID ${result.user_id}, Email: ${result.email}`);
-    
-                    // Run PATCH request only if user ID exists
-                    await updateUserEmail(result.user_id, result.email);
-                }
             } else {
                 setErrorMessage(result.error || "Failed to confirm email.");
             }
@@ -60,34 +49,6 @@ const AdminEmailVerification = () => {
         }
     };
 
-    const updateUserEmail = async (userId, newEmail) => {
-        if (!userId || !newEmail) {
-            console.error("Missing user ID or new email. Skipping email update.");
-            return;
-        }
-    
-        try {
-            const token = localStorage.getItem("admin_jwt-token"); // Ensure authentication
-            const response = await fetch(`/api/admin-users/${userId}`, {
-                method: "PATCH",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email: newEmail }),
-            });
-    
-            if (response.ok) {
-                console.log("Email updated successfully.");
-            } else {
-                console.error("Failed to update email.");
-                console.log("Response status:", response.status);
-                console.log("Response text:", await response.text());
-            }
-        } catch (error) {
-            console.error("Error updating email:", error);
-        }
-    };
 
     return (
         <div className="email-verification-container">
@@ -105,16 +66,6 @@ const AdminEmailVerification = () => {
                         disabled={isLoading || !confirmationToken}
                     >
                         {isLoading ? "Confirming..." : "Confirm Email"}
-                    </button>
-                </div>
-            ) : isNewUser ? (
-                <div className="box-bounding text-center">
-                    <h1 className="title-med text-center">
-                        Welcome to <span className="font-cera title-small">gingham</span>!
-                    </h1>
-                    <p className="text-500 margin-b-8">Thank you for registering! Your email has been successfully confirmed. Welcome to the platform!</p>
-                    <button className="btn btn-confirm" onClick={() => navigate("/admin/logout")}>
-                        Go Back
                     </button>
                 </div>
             ) : (

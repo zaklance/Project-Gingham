@@ -12,8 +12,6 @@ function Footer() {
     const adminUserId = globalThis.localStorage.getItem('admin_user_id');
     const isAdminLoggedIn = !!adminUserId;
 
-    console.log(location)
-
     const navItems = [
         { path: "/", label: "User Portal" },
         { path: "/vendor", label: "Vendor Portal" },

@@ -54,6 +54,7 @@ function VendorProfile () {
     const [showPassword, setShowPassword] = useState({ pw1: false, pw2:false, pw3: false });
     const [isValid, setIsValid] = useState(false);
     const [isSendingEmail, setIsSendingEmail] = useState(false);
+    const [showNewProducts, setShowNewProducts] = useState(false);
 
     const [allVendorMarkets, setAllVendorMarkets] = useState([]);
     const [allMarketDays, setAllMarketDays] = useState([]);
@@ -714,6 +715,7 @@ function VendorProfile () {
                 ? prev.products
                 : [...(prev.products || []), Number(newProductId)],
         }));
+        if (Number(newProductId) === 1) {setShowNewProducts(true)}
     };
 
     const handleAddProductSubcat = (newProduct) => {
@@ -1119,7 +1121,7 @@ function VendorProfile () {
                                             })}
                                         </Stack>
                                     </div>
-                                    {Number(newProduct) === 1 && (
+                                    {showNewProducts && (
                                         <div className="form-group">
                                             <label>Other Product:</label>
                                             <input

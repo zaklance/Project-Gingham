@@ -24,7 +24,15 @@ function VendorDashboard({ marketId }) {
         vendorUserData &&
         vendorUserData.active_vendor !== null &&
         typeof isOnboarded === 'boolean' &&
+        vendorUserData.vendor_role &&
+        Object.keys(vendorUserData.vendor_role).length > 0 &&
         vendorUserData.vendor_role[vendorUserData.active_vendor] <= 1;
+    
+    const createReady = 
+        vendorUserData &&
+        vendorUserData.vendor_role &&
+        Object.keys(vendorUserData?.vendor_role).length > 0 &&
+        Object.keys(vendorUserData?.vendor_id).length > 0;
 
     useEffect(() => {            
         const urlParams = new URLSearchParams(window.location.search);
@@ -171,14 +179,17 @@ function VendorDashboard({ marketId }) {
                         )}
                     </div>
                 )}
-
             </div>
-            {activeTab === 'baskets' && <VendorBaskets marketId={marketId} vendorId={vendorId} vendorUserData={vendorUserData} newVendor={newVendor} setNewVendor={setNewVendor} />}
-            {activeTab === 'payout' && <VendorSalesPayout vendorId={vendorId} />}
-            {activeTab === 'events' && <VendorEvents vendorId={vendorId} vendorUserData={vendorUserData} />}
-            {activeTab === 'team' && <VendorTeam vendorId={vendorId} vendorUserData={vendorUserData} notifications={notifications} setNotifications={setNotifications} />}
-            {activeTab === 'reviews' && <VendorReviews vendorId={vendorId} vendorUserData={vendorUserData} notifications={notifications} setNotifications={setNotifications} />}
-            {!vendorUserData || !vendorUserData.vendor_id && (
+            {tabsReady && (
+                <>
+                    {activeTab === 'baskets' && <VendorBaskets marketId={marketId} vendorId={vendorId} vendorUserData={vendorUserData} newVendor={newVendor} setNewVendor={setNewVendor} />}
+                    {activeTab === 'payout' && <VendorSalesPayout vendorId={vendorId} />}
+                    {activeTab === 'events' && <VendorEvents vendorId={vendorId} vendorUserData={vendorUserData} />}
+                    {activeTab === 'team' && <VendorTeam vendorId={vendorId} vendorUserData={vendorUserData} notifications={notifications} setNotifications={setNotifications} />}
+                    {activeTab === 'reviews' && <VendorReviews vendorId={vendorId} vendorUserData={vendorUserData} notifications={notifications} setNotifications={setNotifications} />}
+                </>
+            )}
+            {!createReady && (
                 <div className="box-bounding">
                     <VendorCreate />
                 </div>

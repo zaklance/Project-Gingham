@@ -785,8 +785,20 @@ def vendor_signup():
     try:
         data = request.get_json()
 
-        result = vendor_signup_task.apply_async(args=[data])
+        email = data.get('email')
+        password = data.get('password')
 
+        if not email or not password:
+            return {'error': 'Email and password are required'}
+
+        existing_user = VendorUser.query.filter_by(email=email).first()
+
+        if existing_user:
+            return {'error': 'This email is already registered. Please log in or use a different email.'}
+
+        # Send user confirmation email
+        result = vendor_signup_task.apply_async(args=[data])
+        
         return jsonify({"message": "Signup in progress, check your email for confirmation."}), 200
 
     except Exception as e:
@@ -1951,6 +1963,14 @@ def vendor_by_id(id):
             return {'error': str(e)}, 500
     elif request.method == 'DELETE':
         try:
+            vendor_users = VendorUser.query.all()
+            for vu in vendor_users:
+                if vu.vendor_id and str(id) in vu.vendor_id:
+                    del vu.vendor_id[str(id)]
+                if vu.vendor_role and str(id) in vu.vendor_role:
+                    del vu.vendor_role[str(id)]
+            db.session.flush()
+
             db.session.delete(vendor)
             db.session.commit()
             return {}, 204
@@ -4872,40 +4892,49 @@ def create_admin_notification():
         return jsonify({'message': 'Invalid request data.'}), 400
 
     try:
-        new_notification = AdminNotification(
-            subject=data['subject'],
-            message=data['message'],
-            link=data['link'],
-            admin_role=data['admin_role'],
-            admin_id=data['admin_id'],
-            vendor_user_id=data['vendor_user_id'],
-            vendor_id=data['vendor_id'],
-            created_at=datetime.now(UTC),
-            is_read=False
-        )
-        db.session.add(new_notification)
+        # Find all admins with role <= provided admin_role
+        matching_admins = AdminUser.query.filter(AdminUser.admin_role <= data['admin_role']).all()
+
+        if not matching_admins:
+            return jsonify({'message': 'No matching admin users found.'}), 404
+
+        created_notifications = []
+
+        for admin in matching_admins:
+            notification = AdminNotification(
+                subject=data.get('subject'),
+                message=data['message'],
+                link=data.get('link'),
+                admin_role=data['admin_role'],
+                admin_id=admin.id,
+                vendor_user_id=data.get('vendor_user_id'),
+                vendor_id=data.get('vendor_id'),
+                created_at=datetime.now(UTC),
+                is_read=False
+            )
+            db.session.add(notification)
+            created_notifications.append(notification)
+
         db.session.commit()
 
-        response_data = {
-            'id': new_notification.id,
-            'subject': new_notification.subject,
-            'message': new_notification.message,
-            'link': new_notification.link,
-            'is_read': new_notification.is_read
-        }
-
-        if new_notification.vendor_id is not None:
-            response_data['vendor_id'] = new_notification.vendor_id
-        if new_notification.vendor_user_id is not None:
-            response_data['vendor_user_id'] = new_notification.vendor_user_id
-
-        return jsonify(response_data), 201
-
+        return jsonify([
+            {
+                'id': n.id,
+                'subject': n.subject,
+                'message': n.message,
+                'link': n.link,
+                'is_read': n.is_read,
+                'admin_id': n.admin_id,
+                'vendor_id': n.vendor_id,
+                'vendor_user_id': n.vendor_user_id
+            }
+            for n in created_notifications
+        ]), 201
 
     except Exception as e:
         db.session.rollback()
-        print(f"Error creating notification: {str(e)}")
-        return jsonify({'message': f'Error creating notification: {str(e)}'}), 500
+        print(f"Error creating notifications: {str(e)}")
+        return jsonify({'message': f'Error creating notifications: {str(e)}'}), 500
 
 
 @app.route('/api/admin-notifications', methods=['GET', 'DELETE'])
@@ -4915,20 +4944,17 @@ def get_admin_notifications():
 
     if request.method == 'GET':
         notifications = AdminNotification.query
-        if admin_id:
-            query = notifications.filter_by(admin_id=admin_id)
+        query = notifications.filter_by(admin_id=admin_id)
 
         return jsonify([notif.to_dict() for notif in query]), 200
     
     if request.method == 'DELETE':
-        query = AdminNotification.query
-        if admin_id:
-            query = query.filter(AdminNotification.subject != "product-request")
-        
-            deleted_count = query.delete()
-            db.session.commit()
-            return jsonify({'deleted count': deleted_count}), 200
-        
+        notifications = AdminNotification.query
+        query = notifications.filter(AdminNotification.subject != "product-request")
+    
+        deleted_count = query.delete()
+        db.session.commit()
+        return jsonify({'deleted count': deleted_count}), 200
 
 @app.route('/api/admin-notifications/<int:id>', methods=['PATCH', 'DELETE'])
 @jwt_required()

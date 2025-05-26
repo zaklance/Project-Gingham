@@ -111,6 +111,8 @@ function VendorCreate () {
         setProductRequest(event.target.value);
     };
 
+    console.log(vendorData?.products)
+
     const handleAddProductSubcat = (newProduct) => {
         const toTitleCase = (str) => {
             return str
@@ -218,7 +220,7 @@ function VendorCreate () {
             } else {
                 console.log('Error updating user with vendor_id');
             }
-            if (Array.isArray(newProducts) && newProducts.includes(1) && productRequest.trim() !== '') {
+            if (Array.isArray(vendorData?.products) && vendorData?.products.includes(1) && productRequest.trim() !== '') {
                 try {
                     const response = await fetch('/api/create-admin-notification', {
                         method: 'POST',
@@ -283,7 +285,7 @@ function VendorCreate () {
 
     return (
         <div>
-            <title>gingham • Vendor Create Vendor</title>
+            <title>Gingham • Vendor Create Vendor</title>
             <div className='tab-content margin-b-24'>
                 <h2>Create a Vendor Profile</h2>
             </div>
