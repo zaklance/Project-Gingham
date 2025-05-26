@@ -170,7 +170,7 @@ const AdminUsersVendorUsers = () => {
 
     return (
         <div>
-            <title>Gingham • Admin Users • Vendor Users</title>
+            <title>gingham • Admin Users • Vendor Users</title>
             <div className='box-bounding'>
                 <h2>Edit Vendor Users</h2>
                 <table className='margin-t-16'>

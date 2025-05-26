@@ -172,7 +172,7 @@ const AdminUsers = () => {
 
     return (
         <>
-            <title>Gingham • Admin Users • Admin Users</title>
+            <title>gingham • Admin Users • Admin Users</title>
             <div>
                 <div className='box-bounding'>
                     <h2>Edit Admin Users</h2>

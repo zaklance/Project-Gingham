@@ -21,7 +21,7 @@ function VendorLogout () {
 
     return(
         <div>
-            <title>Gingham • Vendor Logout</title>
+            <title>gingham • Vendor Logout</title>
             Logging out...
         </div>
     )

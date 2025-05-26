@@ -322,7 +322,7 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
 
     return (
         <>
-            <title>Gingham • Vendor Team</title>
+            <title>gingham • Vendor Team</title>
             {notifications && notifications.length > 0 && (
                 <div className='box-bounding margin-b-24'>
                     <h2 className='margin-b-16'>Notifications</h2>

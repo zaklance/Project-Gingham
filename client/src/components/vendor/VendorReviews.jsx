@@ -165,7 +165,7 @@ function VendorReviews() {
 
     return (
         <>
-            <title>Gingham • Vendor Reviews</title>
+            <title>gingham • Vendor Reviews</title>
             <div className='box-bounding'>
                 <h2>Reviews</h2>
                 <div className='box-scroll'>

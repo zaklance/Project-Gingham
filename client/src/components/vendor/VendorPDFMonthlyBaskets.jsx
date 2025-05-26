@@ -17,6 +17,10 @@ const styles = StyleSheet.create({
     footer: { position: "absolute", bottom: 24 },
 });
 
+function getCurrentYear() {
+    return new Date().getFullYear();
+}
+
 const ReceiptDocument = ({ filteredBaskets, year, month }) => {
 
     return (
@@ -76,7 +80,7 @@ const ReceiptDocument = ({ filteredBaskets, year, month }) => {
                     </Text>                </Text>
                 <View style={styles.footer} fixed>
                     <View style={styles.rowFooter}>
-                        <Text style={styles.bold}>Gingham 2025 &copy;</Text>
+                        <Text style={styles.bold}>GINGHAM {getCurrentYear()} &copy;</Text>
                         <Text style={styles.bold} render={({ pageNumber }) => (`${pageNumber}`)}></Text>
                         <Text style={styles.bold}>www.gingham.nyc</Text>
                     </View>

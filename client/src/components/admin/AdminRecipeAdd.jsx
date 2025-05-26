@@ -645,7 +645,7 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
     
     return (
         <>
-            <title>Gingham • Admin Recipes • Add</title>
+            <title>gingham • Admin Recipes • Add</title>
             <h2 className='margin-t-16'>Add Recipes</h2>
             <div className='margin-t-16'>
                 <table className='table-search-recipe margin-t-16'>
@@ -720,7 +720,7 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
                                     onChange={handleRecipeInputChange}
                                 />
                             </td>
-                            <td className='cell-title btn-grey m-hidden'>Is Gingham:</td>
+                            <td className='cell-title btn-grey m-hidden'>Is gingham:</td>
                             <td className='cell-text cell-recipe' colSpan={2}>
                                 <label>
                                     <FormGroup>
@@ -733,7 +733,7 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
                                                     color={'secondary'}
                                                 />
                                             }
-                                            label="Is on Gingham Team?"
+                                            label="Is on gingham team?"
                                         />
                                     </FormGroup>
                                 </label>
@@ -746,7 +746,7 @@ function AdminRecipeAdd({ recipes, smallwares, ingredients }) {
                                     className="search-bar cell-32"
                                     name="attribution"
                                     type="text"
-                                    placeholder="Attribution if not from Gingham Team..."
+                                    placeholder="Attribution if not from gingham team..."
                                     value={newRecipe.attribution}
                                     onChange={handleRecipeInputChange}
                                 />

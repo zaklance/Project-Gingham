@@ -269,7 +269,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
 
     return (
         <>
-            <title>Gingham • Checkout</title>
+            <title>gingham • Checkout</title>
             <div className="flex-space-between flex-bottom-align">
                 <h1 className="title-med">Payments</h1>
                 <button className="btn btn-cart"><Link to="/user/cart">Back</Link></button>

@@ -4137,7 +4137,7 @@ def run():
 
     user_faqs = [
         FAQ(
-            question="How does Gingham work for customers?",
+            question="How does gingham work for customers?",
             answer="Browse available baskets from local farmers' market vendors, purchase discounted items, and pick them up at a designated time.",
             for_user=True
         ),
@@ -4153,34 +4153,34 @@ def run():
         ),
         FAQ(
             question="Can I choose what’s in my basket?",
-            answer="Gingham baskets are pre-bundled by vendors to simplify the process, but they often include a variety of products.",
+            answer="GINGHAM baskets are pre-bundled by vendors to simplify the process, but they often include a variety of products.",
             for_user=True
         ),
         FAQ(
-            question="Is Gingham available at all farmers' markets?",
-            answer="Gingham is currently launching in select markets, but we’re expanding quickly! Sign up to stay tuned for updates in your area.",
+            question="Is gingham available at all farmers' markets?",
+            answer="GINGHAM is currently launching in select markets, but we’re expanding quickly! Sign up to stay tuned for updates in your area.",
             for_user=True
         ),
         FAQ(
             question="How do I pay for my basket?",
-            answer="Payments are made securely through Gingham at the time of purchase, so pick-up is fast and easy.",
+            answer="Payments are made securely through gingham at the time of purchase, so pick-up is fast and easy.",
             for_user=True
         )
     ]
     vendor_faqs = [
         FAQ(
-            question="How do I sign up as a vendor on Gingham?",
+            question="How do I sign up as a vendor on gingham?",
             answer="Signing up is quick and easy! Create your vendor profile, choose the farmers' markets you participate in, and start listing your surplus baskets.",
             for_vendor=True
         ),
         FAQ(
-            question="What types of products can I sell on Gingham?",
+            question="What types of products can I sell on gingham?",
             answer="You can sell surplus or produce, baked goods, packaged foods, or other items you would typically sell at farmers' markets.",
             for_vendor=True
         ),
         FAQ(
             question="How do I create and manage baskets?",
-            answer="Through the Gingham Vendor Dashboard, you can create baskets, set discounted pricing, and schedule pickup times for customers.",
+            answer="Through the gingham Vendor Dashboard, you can create baskets, set discounted pricing, and schedule pickup times for customers.",
             for_vendor=True
         ),
         FAQ(
@@ -4189,13 +4189,13 @@ def run():
             for_vendor=True
         ),
         FAQ(
-            question="How does Gingham help me reduce food waste?",
-            answer="Gingham helps you sell surplus items that might otherwise go unsold, connecting you directly with customers looking for discounted local goods.",
+            question="How does gingham help me reduce food waste?",
+            answer="GINGHAM helps you sell surplus items that might otherwise go unsold, connecting you directly with customers looking for discounted local goods.",
             for_vendor=True
         ),
         FAQ(
-            question="Is there a fee for selling baskets on Gingham?",
-            answer="Gingham charges a small service fee on each sale and offers a transparent pricing structure with no hidden costs.",
+            question="Is there a fee for selling baskets on gingham?",
+            answer="GINGHAM charges a small service fee on each sale and offers a transparent pricing structure with no hidden costs.",
             for_vendor=True
         ),
         FAQ(
@@ -4210,7 +4210,7 @@ def run():
         ),
         FAQ(
             question="What happens if the customer doesn't pick up their basket?",
-            answer="In case of no-shows, vendors keep the product, and the customer will be charged per Gingham’s policy.",
+            answer="In case of no-shows, vendors keep the product, and the customer will be charged per gingham’s policy.",
             for_vendor=True
         )
     ]
@@ -4258,7 +4258,7 @@ def run():
                     </article>
                     <article>
                         <p>
-                            <span class='font-cera text-size-1'>—The Gingham Team</span>
+                            <span class='font-cera text-size-1-2'>—The gingham team</span>
                         </p>
                     </article>
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET_800px.png" alt="logo" />
@@ -4270,27 +4270,27 @@ def run():
         ),
         Blog(
             type="General",
-            title="Discover Gingham: Fresh, Local, and Impactful",
+            title="Discover gingham: Fresh, Local, and Impactful",
             body="""
                 <div class="column-3">
                     <article class="first-letter">
                         <p>
                             Do you love supporting local farmers, enjoying fresh produce, and finding great 
-                            deals? Meet Gingham, the innovative platform that connects you with discounted 
+                            deals? Meet gingham, the innovative platform that connects you with discounted 
                             baskets from farmers' market vendors while helping reduce food waste.
                         </p>
                     </article>
                     <article>
                         <p>
                             Here’s how it works: Farmers' Market vendors often have surplus items at the end 
-                            of the day. With Gingham, they bundle these items into discounted baskets for you 
+                            of the day. With gingham, they bundle these items into discounted baskets for you 
                             to browse, reserve, and pick up at your convenience. Think of it as your personal 
                             gateway to fresh, local, and sustainable food.
                         </p>
                     </article>
                     <article>
                         <p>
-                            Gingham isn’t just about savings—it’s about creating a positive impact. By 
+                            GINGHAM isn’t just about savings—it’s about creating a positive impact. By 
                             purchasing a basket, you’re rescuing perfectly good food from going to waste, 
                             supporting local businesses, and embracing a more sustainable way of living. Plus, 
                             with fresh ingredients at your fingertips, you can enjoy cooking, meal prep, or 
@@ -4299,14 +4299,14 @@ def run():
                     </article>
                     <article>
                         <p>
-                            Signing up is quick and simple. Join the Gingham community today to start saving, 
+                            Signing up is quick and simple. Join the gingham community today to start saving, 
                             reducing waste, and supporting your local farmers' markets. Together, we can create 
                             a more sustainable future—one basket at a time!
                         </p>
                     </article>
                     <article>
                         <p>
-                            <span class='font-cera text-size-1'>—The Gingham Team</span>
+                            <span class='font-cera text-size-1-2'>—The gingham team</span>
                         </p>
                     </article>
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET_800px.png" alt="logo" />
@@ -4346,7 +4346,7 @@ def run():
                     </article>
                     <article>
                         <p>
-                            <span class='font-cera text-size-1'>—The Gingham Team</span>
+                            <span class='font-cera text-size-1-2'>—The gingham team</span>
                         </p>
                     </article>
                 </div>

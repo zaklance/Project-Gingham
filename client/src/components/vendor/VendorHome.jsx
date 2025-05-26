@@ -49,8 +49,8 @@ function Home() {
     return (
         <div>
             <div className="vendor-portal-background m-margin-0">
-                <title>Gingham • Vendor Portal</title>
-                {/* <img className='big-logo' src="/site-images/gingham-logo_04-2A-alt.svg" alt="Gingham Logo"></img> */}
+                <title>gingham • Vendor Portal</title>
+                {/* <img className='big-logo' src="/site-images/gingham-logo_04-2A-alt.svg" alt="gingham logo"></img> */}
                 <div className="sidebar">
                     <br className="m-hidden"/>
                     <br className="m-hidden"/>
@@ -99,7 +99,7 @@ function Home() {
                 </div>
                 <div className="box-inside">
                     <h3 className="margin-b-16">Why Choose <span className="text-900">GINGHAM</span>?</h3>
-                    {/* Build Graphics and diagrams a la "Gingham How it Works"*/}
+                    {/* Build Graphics and diagrams a la "GINGHAM How it Works"*/}
                     <p><strong>Increase and Boost Sales:</strong> Sell surplus products you may otherwise throw away.</p>
                     <p><strong>Help the Environment:</strong> Play a crucial role in reducing food waste.</p>
                     <p><strong>Reach New Customers:</strong> Connect with a growing community focused on sustainability and local food sources.</p>
@@ -109,7 +109,7 @@ function Home() {
 
                     <h3 className="margin-b-16 margin-t-24">Support Local Communities</h3>
                     <p>
-                        By selling with Gingham, you're not only reducing food waste but also supporting local 
+                        By selling with <span className="font-cera text-900">gingham</span>, you're not only reducing food waste but also supporting local 
                         communities and economies. <strong>Join us in making a positive impact!</strong>
                     </p>
                     <h3 className="box-portal-home margin-t-24 blue">Interested in becoming a vendor? <a className="link-underline-inverse" onClick={handlePopup}> Sign up here!</a></h3>

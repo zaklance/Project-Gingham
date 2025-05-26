@@ -519,7 +519,7 @@ function MarketDetail ({ match }) {
 
     return (
         <div>
-            <title>Gingham • {market.name}</title>
+            <title>gingham • {market.name}</title>
             <div className='flex-space-between'>
                 <h2>{market.name}</h2>
                 <button onClick={handleBackButtonClick} className='btn btn-small m-hidden'>Back</button>

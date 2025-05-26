@@ -106,7 +106,7 @@ function VendorJoinTeam() {
 
     return (
         <div className="box-bounding">
-            <title>Gingham • Vendor Join Team</title>
+            <title>gingham • Vendor Join Team</title>
             <h1>Join {invitationData.vendor_name}</h1>
             <h4 className='margin-b-24'>Complete your account setup to join the team</h4>
             <form className="form-group">

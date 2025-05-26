@@ -71,10 +71,10 @@ function Footer() {
                                 </li>
                             ) : null
                         )}
-                            <li className="footer-li-copy font-cera text-700">&copy; Gingham NYC, {getCurrentYear()}</li>
+                            <li className="footer-li-copy font-cera text-700">&copy; GINGHAM NYC, {getCurrentYear()}</li>
                         </ul>
                         <div>
-                            <img className="small-logo" src="/site-images/gingham-logo_04-3A.svg" alt="Gingham Logo" />
+                            <img className="small-logo" src="/site-images/gingham-logo_04-3A.svg" alt="gingham logo" />
                         </div>
                 </div>
             </div>

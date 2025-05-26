@@ -137,7 +137,7 @@ function AdminVendorEvents({ vendors }) {
 
     return (
         <>
-            <title>Gingham • Admin Vendors • Events</title>
+            <title>gingham • Admin Vendors • Events</title>
             <div className='box-bounding'>
                 <h2>Search Vendors</h2>
                 <table className='margin-t-16'>

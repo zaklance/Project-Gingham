@@ -154,7 +154,7 @@ function AdminVendorEdit({ vendors }) {
 
     return (
         <>
-            <title>Gingham • Admin Vendors • Add</title>
+            <title>gingham • Admin Vendors • Add</title>
             <div className='box-bounding'>
                 <h2>Add Vendors</h2>
                 <div className='margin-t-16'>

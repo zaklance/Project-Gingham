@@ -790,7 +790,7 @@ function VendorProfile () {
 
     return(
         <>
-            <title>Gingham • Vendor Profile</title>
+            <title>gingham • Vendor Profile</title>
             <div className="tab-content">
                 <div>
                     <div className='box-bounding badge-container'>

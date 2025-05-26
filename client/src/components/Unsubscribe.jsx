@@ -38,7 +38,7 @@ function Unsubscribe() {
      <>
         <div className="box-bounding box-unsubscribe">
             <h1 className="title-med text-center">
-                Welcome back to <span className="font-cera title-small">Gingham</span>!
+                Welcome back to <span className="font-cera title-small">gingham</span>!
             </h1>
             {status != "success" && (
                 <div className="text-center">

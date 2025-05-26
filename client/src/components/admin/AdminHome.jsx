@@ -47,7 +47,7 @@ function Home() {
 
     return (
         <div className="admin-portal-background">
-            <title>Gingham • Admin Portal</title>
+            <title>gingham • Admin Portal</title>
             <br/>
             <br/>
             <br/>

@@ -129,7 +129,7 @@ function VendorSalesPayout({ vendorId }) {
 
     return (
         <>
-            <title>Gingham • Vendor Payout</title>
+            <title>gingham • Vendor Payout</title>
             <VendorActiveVendor className={'box-bounding'} />
             <div className='box-bounding'>
                 <div className='flex-space-between flex-bottom-align'>
@@ -157,7 +157,7 @@ function VendorSalesPayout({ vendorId }) {
                 {!vendorData.stripe_account_id ? (
                     <div className="stripe-connect-prompt">
                         <div className="stripe-message">
-                            <p className='text-500'>Gingham requires all vendors to create or connect their Stripe account to process payments securely. You cannot sell baskets until this process is completed.</p>
+                            <p className='text-500'>GINGHAM requires all vendors to create or connect their Stripe account to process payments securely. You cannot sell baskets until this process is completed.</p>
                             <p className='text-500 margin-t-12'>By connecting your Stripe account, you'll be able to:</p>
                             <ul className='ul-bullet margin-t-8'>
                                 <li>Accept payments from customers</li>
