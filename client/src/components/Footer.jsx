@@ -51,7 +51,7 @@ function Footer() {
                 <div className='flex-space-around flex-center-align box-blue'>
                     <ul className='ul-footer column-footer'>
                         {navItems.map(({ path, label, condition }) =>
-                            condition !== false ? (
+                            condition !== false && (
                                 <li key={path} className="footer-li font-cera text-700 link-underline">
                                     <NavLink 
                                         to={path} 
@@ -67,13 +67,13 @@ function Footer() {
                                         </div>
                                     )}
                                 </li>
-                            ) : null
+                            )
                         )}
-                            <li className="footer-li-copy font-cera-gingham text-line-1-2 text-700">&copy; GINGHAM NYC, {getCurrentYear()}</li>
-                        </ul>
-                        <div>
-                            <img className="small-logo" src="/site-images/gingham-logo_04-3A.svg" alt="gingham logo" />
-                        </div>
+                        <li className="footer-li-copy text-line-1 text-700">&copy; <span className='font-cera-gingham'>GINGHAM NYC</span>, {getCurrentYear()}</li>
+                    </ul>
+                    <div>
+                        <img className="small-logo" src="/site-images/gingham-logo_04-3A.svg" alt="gingham logo" />
+                    </div>
                 </div>
             </div>
         </>
