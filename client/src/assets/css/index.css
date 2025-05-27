@@ -418,8 +418,8 @@ p, li, div, form, input, select, button, textarea, td {
   background-color: white;
 }
 
-.text-line-1-2 {
-  line-height: 1.2em;
+.text-line-1 {
+  line-height: 1em;
 }
 
 .text-line-1-4 {
