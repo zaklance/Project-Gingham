@@ -17,7 +17,7 @@ function VendorCreate () {
     const [vendorImageURL, setVendorImageURL] = useState(null);
     const [products, setProducts] = useState([])
     const [newProducts, setNewProducts] = useState(null);
-    const [shwoNewProducts, setShowNewProducts] = useState(null);
+    const [showNewProducts, setShowNewProducts] = useState(false);
     const [productRequest, setProductRequest] = useState('')
     const [newProductSubcat, setNewProductSubcat] = useState(null);
 
@@ -110,8 +110,6 @@ function VendorCreate () {
     const handleProductInputChange = (event) => {
         setProductRequest(event.target.value);
     };
-
-    console.log(vendorData?.products)
 
     const handleAddProductSubcat = (newProduct) => {
         const toTitleCase = (str) => {
@@ -340,7 +338,7 @@ function VendorCreate () {
                     })}
                 </Stack>
             </div>
-            {shwoNewProducts && (
+            {showNewProducts && (
                 <div className="form-group">
                     <label>Other Product:</label>
                     <input

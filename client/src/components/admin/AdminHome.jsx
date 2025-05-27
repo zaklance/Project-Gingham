@@ -51,7 +51,7 @@ function Home() {
             <br/>
             <br/>
             <br/>
-            <h1 className="title-big text-blend-lighten m-title-big box-portal-home">Welcome</h1>
+            <h1 className="title-big text-italic text-blend-lighten m-title-big box-portal-home">Welcome</h1>
             {currentBlog && token ? (
                 <div className="box-blog margin-t-48 margin-l-48 margin-r-48 badge-container no-float" id="blog">
                     <div className="badge-arrows">

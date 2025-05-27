@@ -81,6 +81,48 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "CeraRoundBasic";
+  src: url(../fonts/CeraRound-ThinItalic.ttf);
+  font-weight: 100;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "CeraRoundBasic";
+  src: url(../fonts/CeraRound-LightItalic.ttf);
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "CeraRoundBasic";
+  src: url(../fonts/CeraRound-RegularItalic.ttf);
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "CeraRoundBasic";
+  src: url(../fonts/CeraRound-MediumItalic.ttf);
+  font-weight: 500;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "CeraRoundBasic";
+  src: url(../fonts/CeraRound-BoldItalic.ttf);
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "CeraRoundBasic";
+  src: url(../fonts/CeraRound-BlackItalic.ttf);
+  font-weight: 900;
+  font-style: italic;
+}
+
 a {
   color: var(--off-black);
   text-decoration: none;
@@ -231,10 +273,13 @@ p, li, div, form, input, select, button, textarea, td {
 .title-big-gingham {
   font-size: 9em;
   font-weight: 900 !important;
+  font-style: italic;
+  line-height: normal !important;
 }
 
 .title-big {
   font-size: 6em;
+  line-height: normal !important;
 }
 
 .title-med {
@@ -269,10 +314,18 @@ p, li, div, form, input, select, button, textarea, td {
   font-weight: 700;
 }
 
+.font-cera-gingham {
+  font-family: "CeraRoundBasic", sans-serif;
+  font-weight: 700;
+  line-height: .4em;
+  font-style: italic;
+}
+
 .font-cera-large {
 	font-size: 10rem;
   font-family: "CeraRoundBasic", sans-serif;
-  font-weight: 700;
+  font-weight: 900;
+  font-style: italic;
 }
 
 .text-light {
@@ -363,6 +416,10 @@ p, li, div, form, input, select, button, textarea, td {
 
 .text-white-background {
   background-color: white;
+}
+
+.text-line-1-2 {
+  line-height: 1.2em;
 }
 
 .text-line-1-4 {

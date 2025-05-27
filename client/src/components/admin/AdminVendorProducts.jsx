@@ -172,7 +172,6 @@ function AdminVendorProducts({ vendors }) {
         })
             .then(response => response.json())
             .then(data => {
-                console.log(data)
                 setNotifications(data.filter(notification => notification.subject === 'product-request'));
             })
             .catch(error => console.error('Error fetching products', error));

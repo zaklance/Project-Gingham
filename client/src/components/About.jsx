@@ -43,7 +43,7 @@ function About() {
                     </p>
                     <br/>
                     <p>
-                        <span className='font-cera'>GINGHAM</span> came next—our final group project at bootcamp. This time, we wanted to build something real.
+                        <span className='font-cera-gingham text-italic'>GINGHAM</span> came next—our final group project at bootcamp. This time, we wanted to build something real.
                     </p>
                     <br/>
                     <p>
@@ -55,25 +55,25 @@ function About() {
                     </p>
                     <br/>
                     <p>
-                        And alas, <span className='font-cera'>gingham</span> was born.
+                        And alas, <span className='font-cera-gingham'>gingham</span> was born.
                     </p>
                     <br/>
                     <p>
-                        Today, <span className='font-cera'>gingham</span> is an early-stage digital marketplace that helps farmers'market vendors 
+                        Today, <span className='font-cera-gingham'>gingham</span> is an early-stage digital marketplace that helps farmers'market vendors 
                         tap into an additional revenue stream through a preorder-for-pickup model. It’s simple, 
                         sustainable, and built to strengthen the bond between local farmers and makers with 
                         conscious consumers.
                     </p>
                     <br/>
                     <p>
-                        We’ve been tirelessly working on <span className='font-cera'>gingham</span> ever since bootcamp, and we’re so excited to 
+                        We’ve been tirelessly working on <span className='font-cera-gingham'>gingham</span> ever since bootcamp, and we’re so excited to 
                         finally share it with you. It’s been a journey—and we’re only just getting started.
                     </p>
                     <br/>
                     <p>
                         — Zak, Sandro & Vinh
                         <br/>
-                        &emsp;Co-founders of <span className='font-cera text-size-1-2'>gingham</span>
+                        &emsp;Co-founders of <span className='font-cera-gingham text-size-1-2'>gingham</span>
                     </p>
                 </article>
             </div>

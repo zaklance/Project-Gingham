@@ -110,7 +110,7 @@ const UserEmailVerification = () => {
 			) : isNewUser ? (
 				<div className="box-bounding text-center">
 					<h1 className="title-med text-center">
-						Welcome to <span className="font-cera title-small">gingham</span>!
+						Welcome to <span className="font-cera-gingham">gingham</span>!
 					</h1>
 					<p className="text-500 margin-b-8">Thank you for registering! Your email has been successfully confirmed. Welcome to the platform!</p>
 					<button className="btn btn-confirm" onClick={() => navigate("/user/logout")}>
