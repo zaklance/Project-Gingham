@@ -473,7 +473,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         </li>
                     </>
                 )}
-                {!isNotUser && (
+                {!isNotUser && amountInCart > 0 && (
                     <>
                         <li className='notification'>
                             <NavLink className='nav-tab color-1 btn-nav nav-tab-wide nowrap icon-cart' to="/user/cart" title="Cart">&emsp;</NavLink>
