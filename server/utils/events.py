@@ -3,7 +3,7 @@ import inspect
 from sqlalchemy import event, func
 from sqlalchemy.orm import Session
 from sqlalchemy.event import listens_for
-from datetime import datetime, date , timezone, timedelta, UTC
+from datetime import datetime, date, timezone, timedelta
 import json
 from threading import Timer
 from datetime import datetime, timedelta, timezone, time
@@ -68,7 +68,7 @@ def track_vendor_favorite(mapper, connection, target):
                 message=message,
                 user_id=user.id,
                 vendor_id=vendor.id,
-                created_at=datetime.now(UTC),
+                created_at=datetime.now(timezone.utc),
                 is_read=False
             )
         )
@@ -145,7 +145,7 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
                     VendorNotification.vendor_user_id == vendor_user_id,
                     VendorNotification.vendor_id == vendor.id,
                     VendorNotification.market_id == market_day.market.id,
-                    VendorNotification.created_at >= datetime.now(UTC).date(),
+                    VendorNotification.created_at >= datetime.now(timezone.utc).date(),
                     VendorNotification.subject.in_([
                         "New Event in Your Market!",
                         "Market Schedule Change"
@@ -165,7 +165,7 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
                     vendor_id=vendor.id,
                     vendor_user_id=vendor_user_id,
                     market_id=market_day.market.id,
-                    created_at=datetime.now(UTC),
+                    created_at=datetime.now(timezone.utc),
                     is_read=False
                 )
 
@@ -231,7 +231,7 @@ def track_fav_vendor_event(mapper, connection, target):
             existing_notification = session.query(UserNotification).filter(
                 UserNotification.user_id == user.id,
                 UserNotification.vendor_id == vendor.id,
-                UserNotification.created_at >= datetime.now(UTC).date(),
+                UserNotification.created_at >= datetime.now(timezone.utc).date(),
                 UserNotification.subject.in_([
                     "New Event from Your Favorite Vendor!",
                     "Vendor Schedule Change"
@@ -250,7 +250,7 @@ def track_fav_vendor_event(mapper, connection, target):
                 link=f"/user/vendors/{vendor.id}",
                 user_id=user.id,
                 vendor_id=vendor.id,
-                created_at=datetime.now(UTC),
+                created_at=datetime.now(timezone.utc),
                 is_read=False
             )
 
@@ -314,7 +314,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
                 UserNotification.user_id == user.id,
                 UserNotification.market_id == market.id,
                 UserNotification.vendor_id == vendor.id,
-                UserNotification.created_at >= datetime.now(UTC).date(),
+                UserNotification.created_at >= datetime.now(timezone.utc).date(),
                 UserNotification.subject == "New Vendor in Your Favorite Market!"
             ).first()
 
@@ -328,7 +328,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
                 user_id=user.id,
                 market_id=market.id,
                 vendor_id=vendor.id,
-                created_at=datetime.now(UTC),
+                created_at=datetime.now(timezone.utc),
                 is_read=False
             ))
 
@@ -376,7 +376,7 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
                         admin_id=admin.id,
                         admin_role=admin.admin_role,
                         vendor_id=vendor.id,
-                        created_at=datetime.now(UTC),
+                        created_at=datetime.now(timezone.utc),
                         is_read=False
                     ))
 
@@ -423,7 +423,7 @@ def notify_admin_market_review_reported(mapper, connection, target):
                         admin_id=admin.id,
                         admin_role=admin.admin_role,
                         market_id=market.id,
-                        created_at=datetime.now(UTC),
+                        created_at=datetime.now(timezone.utc),
                         is_read=False
                     ))
 
@@ -461,7 +461,7 @@ def fav_vendor_new_baskets(mapper, connection, target):
         # Check for existing baskets for this vendor
         recent_baskets = session.query(Basket).filter(
             Basket.vendor_id == vendor.id,
-            Basket.sale_date >= datetime.now(UTC).date()
+            Basket.sale_date >= datetime.now(timezone.utc).date()
         ).all()
 
         basket_count = len(recent_baskets)
@@ -479,7 +479,7 @@ def fav_vendor_new_baskets(mapper, connection, target):
             existing_notification = session.query(UserNotification).filter(
                 UserNotification.user_id == user.id,
                 UserNotification.vendor_id == vendor.id,
-                UserNotification.created_at >= datetime.now(UTC).date(),
+                UserNotification.created_at >= datetime.now(timezone.utc).date(),
                 UserNotification.subject == "New Baskets from Your Favorite Vendor!"
             ).first()
 
@@ -492,7 +492,7 @@ def fav_vendor_new_baskets(mapper, connection, target):
                 link=f"/user/vendors/{vendor.id}#markets",
                 user_id=user.id,
                 vendor_id=vendor.id,
-                created_at=datetime.now(UTC),
+                created_at=datetime.now(timezone.utc),
                 is_read=False
             )
             notifications.append(notification)
@@ -513,7 +513,7 @@ def schedule_blog_notifications(mapper, connection, target):
     session = Session(bind=connection)
     # print(inspect.currentframe().f_code.co_name)
     try:
-        now = datetime.now(UTC).date()
+        now = datetime.now(timezone.utc).date()
         
         # If it's today or in the past, send immediately
         if target.post_date <= now:
@@ -654,7 +654,7 @@ def vendor_market_new_event(mapper, connection, target):
                     vendor_id=vendor.id,
                     vendor_user_id=vendor_user.id,
                     market_id=market_day.market.id,
-                    created_at=datetime.now(UTC),
+                    created_at=datetime.now(timezone.utc),
                     is_read=False
                 ))
 
@@ -757,7 +757,7 @@ def vendor_basket_sold(mapper, connection, target):
                                 link=f"/vendor/dashboard",
                                 vendor_id=vendor.id,
                                 vendor_user_id=vendor_user.id,
-                                created_at=datetime.now(UTC),
+                                created_at=datetime.now(timezone.utc),
                                 is_read=False
                             ))
 
@@ -783,7 +783,7 @@ def vendor_basket_sold(mapper, connection, target):
                 link=f"/vendor/dashboard",
                 vendor_id=vendor.id,
                 vendor_user_id=vendor_user.id,
-                created_at=datetime.now(UTC),
+                created_at=datetime.now(timezone.utc),
                 is_read=False
             ))
 
@@ -829,7 +829,7 @@ def notify_vendor_users_new_market_location(mapper, connection, target):
                         link="/vendor/profile",
                         vendor_id=target.vendor_id,
                         vendor_user_id=vendor_user.id,
-                        created_at=datetime.now(UTC),
+                        created_at=datetime.now(timezone.utc),
                         is_read=False
                     ))
                     
@@ -925,7 +925,7 @@ def notify_fav_market_new_baskets(mapper, connection, target):
         existing_notification = session.query(UserNotification).filter(
             UserNotification.market_id == market.id,
             UserNotification.subject == "New Baskets for Sale!",
-            UserNotification.created_at >= datetime.now(UTC).date()
+            UserNotification.created_at >= datetime.now(timezone.utc).date()
         ).first()
 
         if existing_notification:
@@ -946,7 +946,7 @@ def notify_fav_market_new_baskets(mapper, connection, target):
                 link=f"/user/markets/{market.id}?day={target.market_day_id}#vendors",
                 user_id=user.id,
                 market_id=market.id,
-                created_at=datetime.now(UTC),
+                created_at=datetime.now(timezone.utc),
                 is_read=False
             ))
 
@@ -1095,7 +1095,7 @@ def notify_user_vendor_review_response(mapper, connection, target):
                 message=message,
                 link=f"/user/vendor/{vendor.id}#reviews",
                 user_id=user.id,
-                created_at=datetime.now(UTC),
+                created_at=datetime.now(timezone.utc),
                 is_read=False
             ))
             
@@ -1138,7 +1138,7 @@ def notify_users_new_market_in_state(mapper, connection, target):
                     message=f"A new market, {target.name}, has opened in {user.city}! Click to explore.",
                     link=f"/user/markets/{target.id}",
                     user_id=user.id,
-                    created_at=datetime.now(UTC),
+                    created_at=datetime.now(timezone.utc),
                     is_read=False
                 ))
 
@@ -1206,7 +1206,7 @@ def notify_vendor_users_new_review(mapper, connection, target):
                     link=f"/vendor/dashboard?tab=reviews",
                     vendor_user_id=vendor_user.id,
                     vendor_id=target.vendor_id,
-                    created_at=datetime.now(UTC),
+                    created_at=datetime.now(timezone.utc),
                     is_read=False
                 ))
 
@@ -1270,7 +1270,7 @@ def notify_admins_new_vendor(mapper, connection, target):
                 link="/admin/vendors",
                 admin_id=admin.id,
                 admin_role=admin.admin_role,
-                created_at=datetime.now(UTC),
+                created_at=datetime.now(timezone.utc),
                 is_read=False
             ))
 
@@ -1324,3 +1324,32 @@ def delete_recipe_image(mapper, connection, target):
 
         except Exception as e:
             print(f"Error deleting recipe image {image_path}: {e}")
+
+@listens_for(Event, 'before_delete')
+def delete_event_notifications(mapper, connection, target):
+    try:
+        # Delete user notifications for this event
+        connection.execute(
+            UserNotification.__table__.delete().where(
+                UserNotification.vendor_id == target.vendor_id,
+                UserNotification.message.like(f"%{target.title}%"),
+                UserNotification.subject.in_([
+                    "New Event from Your Favorite Vendor!",
+                    "Vendor Schedule Change"
+                ])
+            )
+        )
+
+        # Delete vendor notifications for this event
+        connection.execute(
+            VendorNotification.__table__.delete().where(
+                VendorNotification.vendor_id == target.vendor_id,
+                VendorNotification.message.like(f"%{target.title}%"),
+                VendorNotification.subject.in_([
+                    "New Event in Your Market!",
+                    "Market Schedule Change"
+                ])
+            )
+        )
+    except Exception as e:
+        print(f"Error deleting event notifications: {e}")

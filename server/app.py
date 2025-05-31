@@ -27,7 +27,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
-from datetime import datetime, date, time, timedelta, UTC
+from datetime import datetime, date, time, timedelta, timezone
 from PIL import Image
 from io import BytesIO, StringIO
 from random import choice
@@ -687,15 +687,15 @@ def login():
     data = request.get_json()
     user = User.query.filter(User.email == data['email']).first()
     if not user:
-        return {'error': ' Incorrect email or password—or both!'}, 401
+        return jsonify({'error': ' Incorrect email or password—or both!'}), 401
     
     if user.status == "banned":
-        return {'error': ' Account is banned. Please contact support.'}, 403
+        return jsonify({'error': ' Account is banned. Please contact support.'}), 403
     
     if not user.authenticate(data['password']):
-        return {'error': ' Incorrect email or password—or both!'}, 401
+        return jsonify({'error': ' Incorrect email or password—or both!'}), 401
     
-    user.last_login = datetime.now(UTC)
+    user.last_login = datetime.now(timezone.utc)
     user.login_count = (user.login_count or 0) + 1
 
     db.session.commit()
@@ -706,7 +706,10 @@ def login():
         additional_claims={"role": "user"}
     )
     
-    return jsonify(access_token=access_token, user_id=user.id), 200
+    return jsonify({
+        'access_token': access_token,
+        'user_id': user.id
+    }), 200
 
 @app.route('/api/logout', methods=['DELETE'])
 def logout():
@@ -758,16 +761,15 @@ def change_email():
 # VENDOR PORTAL
 @app.route('/api/vendor/login', methods=['POST'])
 def vendo_login():
-
     data = request.get_json()
     vendor_user = VendorUser.query.filter(VendorUser.email == data['email']).first()
     if not vendor_user:
-        return {'error': ' Incorrect email or password—or both!'}, 401
+        return jsonify({'error': ' Incorrect email or password—or both!'}), 401
     
     if not vendor_user.authenticate(data['password']):
-        return {'error': ' Incorrect email or password—or both!'}, 401
+        return jsonify({'error': ' Incorrect email or password—or both!'}), 401
     
-    vendor_user.last_login = datetime.now(UTC)
+    vendor_user.last_login = datetime.now(timezone.utc)
     vendor_user.login_count = (vendor_user.login_count or 0) + 1
 
     db.session.commit()
@@ -778,7 +780,10 @@ def vendo_login():
         additional_claims={"role": "vendor"}
     )
 
-    return jsonify(access_token=access_token, vendor_user_id=vendor_user.id), 200
+    return jsonify({
+        'access_token': access_token,
+        'vendor_user_id': vendor_user.id
+    }), 200
 
 @app.route('/api/vendor-signup', methods=['POST'])
 def vendor_signup():
@@ -842,16 +847,15 @@ def vendor_logout():
 # ADMIN PORTAL
 @app.route('/api/admin/login', methods=['POST'])
 def admin_login():
-
     data = request.get_json()
     admin_user = AdminUser.query.filter(AdminUser.email == data['email']).first()
     if not admin_user:
-        return {'error': ' Incorrect email or password—or both!'}, 401
+        return jsonify({'error': ' Incorrect email or password—or both!'}), 401
     
     if not admin_user.authenticate(data['password']):
-        return {'error': ' Incorrect email or password—or both!'}, 401
+        return jsonify({'error': ' Incorrect email or password—or both!'}), 401
     
-    admin_user.last_login = datetime.now(UTC)
+    admin_user.last_login = datetime.now(timezone.utc)
     admin_user.login_count = (admin_user.login_count or 0) + 1
 
     db.session.commit()
@@ -862,7 +866,10 @@ def admin_login():
         additional_claims={"role": "admin"}
     )
 
-    return jsonify(access_token=access_token, admin_user_id=admin_user.id), 200
+    return jsonify({
+        'access_token': access_token,
+        'admin_user_id': admin_user.id
+    }), 200
 
 @app.route('/api/admin-signup', methods=['POST'])
 def admin_signup():
@@ -4721,7 +4728,7 @@ def fetch_vendor_notifications():
                     market_id=data.get('market_id'),
                     vendor_id=data['vendor_id'],
                     vendor_user_id=vendor_user.id,
-                    created_at=datetime.now(UTC),
+                    created_at=datetime.now(timezone.utc),
                     is_read=False
                 )
                 db.session.add(new_notification)
@@ -4909,7 +4916,7 @@ def create_admin_notification():
                 admin_id=admin.id,
                 vendor_user_id=data.get('vendor_user_id'),
                 vendor_id=data.get('vendor_id'),
-                created_at=datetime.now(UTC),
+                created_at=datetime.now(timezone.utc),
                 is_read=False
             )
             db.session.add(notification)
@@ -5200,7 +5207,7 @@ def get_user_receipts():
             if not user:
                 return jsonify({"error": "User not found"}), 404
 
-            created_at = datetime.now(UTC).date()
+            created_at = datetime.now(timezone.utc).date()
 
             new_receipt = Receipt(
                 user_id=data['user_id'],

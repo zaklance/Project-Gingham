@@ -10,12 +10,27 @@ export default defineConfig(({ mode }) => {
         server: {
             proxy: {
                 '/api': {
-                    target: env.VITE_PROXY_URL
+                    target: 'http://127.0.0.1:5555',
+                    changeOrigin: true
                 }
             }
-        }, 
+        },
         define: {
-            'process.env': env
+            'process.env.VITE_PROXY_URL': JSON.stringify(env.VITE_PROXY_URL),
+            'global': 'globalThis',
+            'crypto.getRandomValues': 'crypto.getRandomValues'
+        },
+        resolve: {
+            alias: {
+                crypto: 'crypto-browserify'
+            }
+        },
+        optimizeDeps: {
+            esbuildOptions: {
+                define: {
+                    global: 'globalThis'
+                }
+            }
         }
     };
 });

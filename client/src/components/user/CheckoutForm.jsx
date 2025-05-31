@@ -108,25 +108,9 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
         if (error?.type === "card_error" || error?.type === "validation_error") {
             setIsProcessing(false);
         } else if (paymentIntent?.status === "succeeded") {
-            console.log("Payment successful! Marking items as sold...");
-    
+            console.log("Payment successful! Processing vendor payments...");
             try {
-                await Promise.all(cartItems.map(async (cartItem) => {
-                    const response = await fetch(`/api/baskets/${cartItem.id}`, {
-                        method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ is_sold: true, user_id: userId }),
-                    });
-    
-                    if (!response.ok) {
-                        throw new Error(`Failed to update cartItem with id: ${cartItem.id}`);
-                    }
-                }));
-    
-                console.log("Items marked as sold!");
-    
                 // Call `/api/process-transfers` to distribute funds to vendors
-                console.log("Processing vendor payments...");
                 const transferResponse = await fetch('/api/process-transfers', {
                     method: 'POST',
                     headers: {
@@ -144,11 +128,9 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                         }))
                     }),
                 });
-    
                 if (!transferResponse.ok) {
                     throw new Error(`Failed to process transfers: ${transferResponse.statusText}`);
                 }
-
                 const { task_id } = await transferResponse.json();
                 console.log("Transfer task started:", task_id);
 
@@ -159,9 +141,9 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 while (retries < maxRetries) {
                     const statusResponse = await fetch(`/api/task-status/${task_id}`);
                     const statusData = await statusResponse.json();
-                    console.log(statusData)
+                    console.log(statusData);
 
-                    if (statusData.status=== "SUCCESS") {
+                    if (statusData.status === "SUCCESS") {
                         console.log("Transfer completed:", statusData.result);
                         transferData = statusData.result.transfer_data;
                         break;
@@ -178,9 +160,21 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 }
 
                 console.log("Transfer Data:", transferData);
-    
                 console.log("Vendor payments processed successfully!");
-    
+
+                // Only mark baskets as sold after transfer is successful
+                await Promise.all(cartItems.map(async (cartItem) => {
+                    const response = await fetch(`/api/baskets/${cartItem.id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ is_sold: true, user_id: userId }),
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Failed to update cartItem with id: ${cartItem.id}`);
+                    }
+                }));
+                console.log("Items marked as sold!");
+
                 // Generate QR codes
                 if (cartItems.length > 0) {
                     console.log("Generating QR codes...");
@@ -256,10 +250,10 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 toast.success('Payment successful!', { autoClose: 5000 });
                 setPaymentSuccess(true);
             } catch (error) {
-                console.error("Error processing post-payment actions:", error);
-                toast.error(`An error occurred: ${error.message}`, { autoClose: 6000 });
-            } finally {
+                console.error("Error processing payment:", error);
+                toast.error(error.message);
                 setIsProcessing(false);
+                return;
             }
         } else {
             console.error(error);
