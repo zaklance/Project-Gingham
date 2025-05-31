@@ -29,7 +29,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from sqlalchemy.sql.expression import extract
-from datetime import datetime, time, timedelta, UTC
+from datetime import datetime, time, timedelta, timezone
 import time as time2
 from sqlalchemy.orm import Session
 from sqlalchemy import event, func
@@ -484,7 +484,7 @@ def send_team_invite_email_task(self, email, vendor_id, role=2):
                 'email': email,
                 'vendor_id': vendor_id,
                 'role': role,
-                'exp': (datetime.now(UTC) + timedelta(days=7)).isoformat()
+                'exp': (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
             }
             token = serializer.dumps(token_data, salt='team-invite-salt')
 
@@ -1047,7 +1047,7 @@ def send_blog_notifications(blog_id, task_id=None):
 
             print(task_id)
             # Check if post_date matches current date
-            current_date = datetime.now(UTC).date()
+            current_date = datetime.now(timezone.utc).date()
             if not blog.post_date or blog.post_date.date() != current_date:
                 print(f"Blog ID={blog_id} post_date ({blog.post_date}) does not match current date ({current_date}). Skipping notifications.")
                 return
@@ -1063,7 +1063,7 @@ def send_blog_notifications(blog_id, task_id=None):
                         message=f"A new blog post, {blog.title}, has been published. Check it out!",
                         link=f"#blog",
                         user_id=user.id,
-                        created_at=datetime.now(UTC),
+                        created_at=datetime.now(timezone.utc),
                         is_read=False,
                         task_id=task_id
                     )
@@ -1083,7 +1083,7 @@ def send_blog_notifications(blog_id, task_id=None):
                         message=f"A new blog post, {blog.title}, has been published. Check it out!",
                         link=f"/vendor#blog",
                         vendor_user_id=vendor_user.id,
-                        created_at=datetime.now(UTC),
+                        created_at=datetime.now(timezone.utc),
                         is_read=False,
                         task_id=task_id
                     )
@@ -1105,7 +1105,7 @@ def send_blog_notifications(blog_id, task_id=None):
                         link=f"/admin#blog",
                         admin_role=5,
                         admin_id=admin.id,
-                        created_at=datetime.now(UTC),
+                        created_at=datetime.now(timezone.utc),
                         is_read=False,
                         task_id=task_id
                     )
@@ -1145,7 +1145,7 @@ def check_scheduled_blog_notifications():
     with app.app_context():
         try:
             # Get all blogs scheduled for today that haven't had notifications sent
-            today = datetime.combine(datetime.now(UTC).date(), time.min)
+            today = datetime.combine(datetime.now(timezone.utc).date(), time.min)
             print(f"[DEBUG] Checking for blogs scheduled for {today} that need notifications")
             
             # Check if the notifications_sent field exists
@@ -1245,7 +1245,7 @@ def process_transfers_task(self, payment_intent_id, baskets):
                         amount=transfer_amount + application_fee,
                         currency="usd",
                         destination=stripe_account_id,
-                        transfer_group=f"group_pi_{payment_intent_id}",
+                        transfer_group=f"group_pi_{payment_intent_id}"
                         # application_fee_amount=application_fee
                     )
 
@@ -1332,7 +1332,7 @@ def reverse_basket_transfer_task(self, basket_id, stripe_account_id, amount):
 def send_weekly_admin_summary():
     from app import app
     with app.app_context():
-        today = datetime.now(UTC).date()
+        today = datetime.now(timezone.utc).date()
 
         # Previous week: Monday through Sunday
         last_monday = today - timedelta(days=today.weekday() + 7)
@@ -1342,7 +1342,7 @@ def send_weekly_admin_summary():
         week_end = datetime.combine(last_sunday, datetime.max.time())
 
         # Past 7 days (rolling)
-        last_7_days = (datetime.now(UTC) - timedelta(days=7)).date()
+        last_7_days = (datetime.now(timezone.utc) - timedelta(days=7)).date()
 
         # Weekly new users
         new_users = User.query.filter(User.join_date >= week_start, User.join_date <= week_end).count()

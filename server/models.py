@@ -6,7 +6,7 @@ from sqlalchemy.ext.mutable import MutableDict, MutableList
 from sqlalchemy.dialects.postgresql import JSON
 from flask_bcrypt import Bcrypt
 from sqlalchemy_serializer import SerializerMixin
-from datetime import date, time, datetime, timezone, UTC
+from datetime import date, time, datetime, timezone
 import re
 import random
 
@@ -97,8 +97,8 @@ class User(db.Model, SerializerMixin):
     avatar_default = db.Column(db.String, nullable=False, default=random_avatar)
     status = db.Column(db.String(10), nullable=False, default="active")
     login_count = db.Column(db.Integer, default=0)
-    last_login = db.Column(db.DateTime, default=lambda: datetime.now(UTC)) # GMT (system generated)
-    join_date = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(UTC)) # GMT (system generated)
+    last_login = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # GMT (system generated)
+    join_date = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)) # GMT (system generated)
 
     # Relationships
     market_reviews = db.relationship('MarketReview', back_populates='user', cascade="all, delete-orphan")
@@ -299,7 +299,7 @@ class Vendor(db.Model, SerializerMixin):
     stripe_is_onboarded = db.Column(db.Boolean, nullable=False, default=False)
     stripe_charges_enabled = db.Column(db.Boolean, nullable=False, default=False)
     stripe_payouts_enabled = db.Column(db.Boolean, nullable=False, default=False)
-    join_date = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(UTC)) # GMT (system generated)
+    join_date = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)) # GMT (system generated)
 
     # Relationships
     reviews = db.relationship('VendorReview', back_populates='vendor', lazy='dynamic', cascade="all, delete-orphan")
@@ -359,7 +359,7 @@ class MarketReview(db.Model, SerializerMixin):
     review_text = db.Column(db.String, nullable=False)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    post_date = db.Column(db.Date, nullable=False, default=lambda: datetime.now(UTC)) # GMT (system generated, YYYY-MM-DD only)
+    post_date = db.Column(db.Date, nullable=False, default=lambda: datetime.now(timezone.utc)) # GMT (system generated, YYYY-MM-DD only)
     is_reported = db.Column(db.Boolean, default=False)
     is_approved = db.Column(db.Boolean, default=False)
 
@@ -396,7 +396,7 @@ class VendorReview(db.Model, SerializerMixin):
     review_text = db.Column(db.String, nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    post_date = db.Column(db.Date, nullable=False, default=lambda: datetime.now(UTC)) # GMT (system generated, YYYY-MM-DD only)
+    post_date = db.Column(db.Date, nullable=False, default=lambda: datetime.now(timezone.utc)) # GMT (system generated, YYYY-MM-DD only)
     vendor_response = db.Column(db.String, nullable=True)
     response_date = db.Column(db.Date, nullable=True) # GMT (system generated, YYYY-MM-DD only)
     is_reported = db.Column(db.Boolean, default=False)
@@ -527,8 +527,8 @@ class VendorUser(db.Model, SerializerMixin):
     vendor_id = db.Column(MutableDict.as_mutable(JSON), nullable=True)
     vendor_role = db.Column(MutableDict.as_mutable(JSON), nullable=True)
     login_count = db.Column(db.Integer, default=0)
-    last_login = db.Column(db.DateTime, default=lambda: datetime.now(UTC)) # GMT (system generated)
-    join_date = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(UTC)) # GMT (system generated)
+    last_login = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # GMT (system generated)
+    join_date = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)) # GMT (system generated)
 
     serialize_rules = ('-_password', '-vendor_vendor_users.vendor_user')
 
@@ -575,8 +575,8 @@ class AdminUser(db.Model, SerializerMixin):
     phone = db.Column(db.String, nullable=True)
     admin_role = db.Column(db.Integer, default=5)
     login_count = db.Column(db.Integer, default=0)
-    last_login = db.Column(db.DateTime, default=lambda: datetime.now(UTC)) # GMT (system generated)
-    join_date = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(UTC)) # GMT (system generated)
+    last_login = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # GMT (system generated)
+    join_date = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)) # GMT (system generated)
 
     serialize_rules = ('-_password',)
 
@@ -701,7 +701,7 @@ class UserNotification(db.Model, SerializerMixin):
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
     market_day_id = db.Column(db.Integer, db.ForeignKey('market_days.id'), nullable=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC)) # GMT (system generated)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # GMT (system generated)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
     task_id = db.Column(db.String, nullable=True)
     
@@ -720,7 +720,7 @@ class VendorNotification(db.Model, SerializerMixin):
     market_day_id = db.Column(db.Integer, db.ForeignKey('market_days.id'), nullable=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=True)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC)) # GMT (system generated)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # GMT (system generated)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
     task_id = db.Column(db.String, nullable=True)
 
@@ -739,7 +739,7 @@ class AdminNotification(db.Model, SerializerMixin):
     vendor_user_id = db.Column(db.Integer, db.ForeignKey('vendor_users.id'), nullable=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=True)
     market_id = db.Column(db.Integer, db.ForeignKey('markets.id'), nullable=True)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC)) # GMT (system generated)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # GMT (system generated)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
     admin_role = db.Column(db.Integer, nullable=False)
     admin_id = db.Column(db.Integer, db.ForeignKey('admin_users.id'), nullable=True)
@@ -838,7 +838,7 @@ class Blog(db.Model, SerializerMixin):
     for_vendor = db.Column(db.Boolean, default=False, nullable=False)
     for_admin = db.Column(db.Boolean, default=False, nullable=False)
     admin_user_id = db.Column(db.Integer, db.ForeignKey('admin_users.id'), nullable=False)
-    post_date = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(UTC)) # GMT (system generated)
+    post_date = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)) # GMT (system generated)
     task_id = db.Column(db.String, nullable=True)
     notifications_sent = db.Column(db.Boolean, default=False)
 
@@ -876,7 +876,7 @@ class Receipt(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     baskets = db.Column(db.JSON, nullable=False)
     payment_intent_id = db.Column(db.String, nullable=False)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC)) # GMT (system generated)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # GMT (system generated)
 
     # Relationships
     user = db.relationship('User', back_populates='receipts')
@@ -983,7 +983,7 @@ class UserIssue(db.Model, SerializerMixin):
     issue_subtype = db.Column(db.String, nullable=False)
     body = db.Column(db.String, nullable=False)
     status = db.Column(db.String, default="Pending")
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC)) # GMT (system generated)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # GMT (system generated)
 
     user = db.relationship('User', back_populates='user_issues')
     basket = db.relationship('Basket', back_populates='user_issues')
