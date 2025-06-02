@@ -838,7 +838,7 @@ ul {
   border: none;
   font-size: 18px;
   cursor: pointer;
-  padding: 24px 24px 28px 24px;
+  padding: 24px 24px 29px 24px;
   margin: 0px 0 -20px 0;
   font-family: "CeraRoundBasic", sans-serif;
   font-weight: 900;
@@ -939,6 +939,7 @@ ul {
 
 .tab-right {
   border-radius: 0 20px 0 0;
+  padding: 24px 24px 28px 24px;
 }
 
 .center {
@@ -4093,7 +4094,11 @@ textarea {
   }
 
   .nav-tab-wide {
-    padding: 21px 28px 30px 28px;
+    padding: 24px 28px 30px 28px;
+  }
+
+  .tab-right {
+    padding: 24px 20px 29px 20px;
   }
 
   .popup-notif-on {
