@@ -3552,7 +3552,7 @@ def run():
             products=products,
             products_subcategories=products_subcategories,
             bio=bio,
-            image=image,
+            # image=image,
             website='https://www.google.com/',
             stripe_account_id=stripe_account_id
         )

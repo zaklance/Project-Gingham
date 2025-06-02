@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
         server: {
             proxy: {
                 '/api': {
-                    target: 'http://127.0.0.1:5555',
+                    target: env.VITE_PROXY_URL,
                     changeOrigin: true
                 }
             }
