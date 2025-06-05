@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack';
 import DeleteIcon from '@mui/icons-material/Cancel';
 import PulseLoader from 'react-spinners/PulseLoader';
 
-function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
+function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayReverse }) {
     const [marketDays, setMarketDays] = useState([])
     const [selectedDay, setSelectedDay] = useState(null);
     const [query, setQuery] = useState("");
@@ -38,6 +38,8 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
     const { handlePopup } = useOutletContext();
 
     const siteURL = import.meta.env.VITE_SITE_URL;
+
+    console.log(markets)
 
     const onUpdateQuery = (event) => {
         const value = event.target.value;
@@ -378,6 +380,11 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                         await handleImageUpload(matchingMarketId);
                     }
                     setTempMarketData(updatedData);
+                    setMarkets(prevMarkets =>
+                        prevMarkets.map(market =>
+                            market.id === updatedData.id ? updatedData : market
+                        )
+                    );
                     setEditMode(false);
                     toast.success('Market details updated successfully.', {
                         autoClose: 5000,
@@ -450,6 +457,12 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
             document.removeEventListener("mousedown", handleClickOutsideLocationDropdown);
         };
     }, [showLocationDropdown]);
+
+    const handleSelectMarket = (marketId) => {
+        setMatchingMarketId(marketId)
+        document.getElementById('edit-market')?.scrollIntoView({ behavior: 'smooth' })
+
+    }
 
     
     return(
@@ -643,7 +656,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                             </table>
                                         </div>
                                         <div className='text-center margin-t-8'>
-                                            <button className='btn btn-file' onClick={(e) => setMatchingMarketId(market.id)}>Select</button>
+                                            <button className='btn btn-file' onClick={(e) => handleSelectMarket(market.id)}>Select</button>
                                         </div>
                                     </div>
                                 ))}
@@ -952,7 +965,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                         </>
                     ) : (
                         <>
-                            <table>
+                            <table id="edit-market">
                                 <tbody>
                                     <tr>
                                         <td className='cell-title'>Image:</td>
@@ -1033,7 +1046,7 @@ function AdminMarketEdit({ markets, timeConverter, weekDay, weekDayReverse }) {
                                         <td className='cell-title' title="true or false">Year Round:</td>
                                         <td className='cell-text'>{adminMarketData ? `${adminMarketData.year_round}` : ''}</td>
                                     </tr>
-                                    {tempMarketData?.year_round === 'false' && (
+                                    {adminMarketData?.year_round === 'false' && (
                                         <>
                                             <tr>
                                                 <td className='cell-title' title="yyyy-mm-dd">Season Start:</td>

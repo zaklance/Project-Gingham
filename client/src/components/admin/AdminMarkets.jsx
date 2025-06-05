@@ -75,9 +75,9 @@ function AdminMarkets () {
                     </Link>
                 </div>
             </div>
-            {activeTab === 'edit' && <AdminMarketEdit markets={markets} timeConverter={timeConverter} weekDay={weekDay} weekDayReverse={weekDayReverse} /> }
-            {activeTab === 'add' && <AdminMarketAdd markets={markets} weekDayReverse={weekDayReverse} />}
-            {activeTab === 'delete' && <AdminMarketDelete markets={markets} weekDayReverse={weekDayReverse} />}
+            {activeTab === 'edit' && <AdminMarketEdit markets={markets} setMarkets={setMarkets} timeConverter={timeConverter} weekDay={weekDay} weekDayReverse={weekDayReverse} /> }
+            {activeTab === 'add' && <AdminMarketAdd markets={markets} setMarkets={setMarkets} weekDayReverse={weekDayReverse} />}
+            {activeTab === 'delete' && <AdminMarketDelete markets={markets} setMarkets={setMarkets} weekDayReverse={weekDayReverse} />}
             {activeTab === 'event' && <AdminMarketEvents markets={markets} />}
         </div>
     )
