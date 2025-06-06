@@ -39,8 +39,6 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
 
     const siteURL = import.meta.env.VITE_SITE_URL;
 
-    console.log(markets)
-
     const onUpdateQuery = (event) => {
         const value = event.target.value;
         setQuery(value);
@@ -784,6 +782,9 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
                                     value={newMapDay || ""}
                                     onChange={(e) => setNewMapDay(e.target.value)}
                                 >
+                                    <option>
+                                        Select
+                                    </option>
                                     {weekDay.map((day, index) => (
                                         <option key={index} value={index}>
                                             {day}
@@ -793,7 +794,7 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
                                 <input
                                     type="text"
                                     name="map_link"
-                                    placeholder='If you focus on specific things; ex: "Apples"'
+                                    placeholder='Map Link https://www.example.com/'
                                     value={newMapLink ? newMapLink : ''}
                                     onChange={(e) => setNewMapLink(e.target.value)}
                                 />

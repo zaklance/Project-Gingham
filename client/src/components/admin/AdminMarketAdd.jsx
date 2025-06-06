@@ -20,7 +20,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
         coordinates: { lat: '', lng: '' },
         schedule: '',
         maps_organizer: '',
-        maps: '',
+        maps: {},
         year_round: '',
         is_flagship: '',
         is_current: '',
@@ -356,6 +356,9 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                                 value={newMapDay || ""}
                                 onChange={(e) => setNewMapDay(e.target.value)}
                             >
+                                <option>
+                                    Select
+                                </option>
                                 {weekDay.map((day, index) => (
                                   <option key={index} value={index}>
                                     {day}
@@ -365,7 +368,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                             <input
                                 type="text"
                                 name="map_link"
-                                placeholder='If you focus on specific things; ex: "Apples"'
+                                placeholder='Map Link https://www.example.com/'
                                 value={newMapLink ? newMapLink : ''}
                                 onChange={(e) => setNewMapLink(e.target.value)}
                             />
