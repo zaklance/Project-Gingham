@@ -379,6 +379,7 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
                     if (image) {
                         await handleImageUpload(matchingMarketId);
                     }
+                    setAdminMarketData(updatedData);
                     setTempMarketData(updatedData);
                     setMarkets(prevMarkets =>
                         prevMarkets.map(market =>
