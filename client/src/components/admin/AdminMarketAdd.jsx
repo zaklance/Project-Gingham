@@ -180,6 +180,11 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
     
             if (response.ok) {
                 const updatedData = await response.json();
+                setNewMarketDay({
+                    day_of_week: '',
+                    hour_start: '',
+                    hour_end: '',
+                })
                 toast.success('Market Day successfully created!', {
                     autoClose: 4000,
                 });
