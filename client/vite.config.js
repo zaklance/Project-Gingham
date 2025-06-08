@@ -1,11 +1,13 @@
 // vite.config.js
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig(({ mode }) => {
-    const env = loadEnv(mode, process.cwd(), '');
+    const env = loadEnv(mode, path.resolve(__dirname, '..'), '');
 
     return {
+        envDir: path.resolve(__dirname, '..'),
         plugins: [react()],
         server: {
             proxy: {
@@ -16,8 +18,7 @@ export default defineConfig(({ mode }) => {
             }
         },
         define: {
-            'process.env.VITE_PROXY_URL': JSON.stringify(env.VITE_PROXY_URL),
-            'global': 'globalThis',
+            global: 'globalThis',
             'crypto.getRandomValues': 'crypto.getRandomValues'
         },
         resolve: {
