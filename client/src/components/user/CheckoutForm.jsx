@@ -6,12 +6,15 @@ import { toast } from 'react-toastify';
 import { timeConverter, formatBasketDate } from "../../utils/helpers";
 import objectHash from 'object-hash';
 import PDFReceipt from "./PDFReceipt";
+import { useNavigate } from 'react-router-dom';
 
 
 function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAmountInCart }) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [paymentSuccess, setPaymentSuccess] = useState(false);
     const [receiptId, setReceiptId] = useState(null);
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     const stripe = useStripe();
     const elements = useElements();
@@ -94,27 +97,34 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
-        if (!stripe || !elements) return;
-    
+        if (!stripe || !elements) {
+            return;
+        }
+
         setIsProcessing(true);
-        
-        const { error, paymentIntent } = await stripe.confirmPayment({
-            elements,
-            confirmParams: { return_url: window.location.href },
-            redirect: "if_required",
-        });
-    
-        if (error?.type === "card_error" || error?.type === "validation_error") {
-            setIsProcessing(false);
-        } else if (paymentIntent?.status === "succeeded") {
-            console.log("Payment successful! Processing vendor payments...");
-            try {
-                // Call `/api/process-transfers` to distribute funds to vendors
-                const transferResponse = await fetch('/api/process-transfers', {
+        setError(null);
+
+        try {
+            const { error: stripeError, paymentIntent } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: `${window.location.origin}/payment-success`,
+                },
+                redirect: 'if_required',
+            });
+
+            if (stripeError) {
+                console.error('Payment failed:', stripeError);
+                setError(stripeError.message);
+                setIsProcessing(false);
+                return;
+            }
+
+            if (paymentIntent.status === 'succeeded') {
+                // Process transfers
+                const response = await fetch('/api/process-transfers', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
@@ -124,139 +134,52 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                             price: item.price,
                             vendor_id: item.vendor_id,
                             fee_vendor: item.fee_vendor,
-                            basket_id: cartItems.id
-                        }))
+                            basket_id: item.id
+                        })),
                     }),
                 });
-                if (!transferResponse.ok) {
-                    throw new Error(`Failed to process transfers: ${transferResponse.statusText}`);
-                }
-                const { task_id } = await transferResponse.json();
-                console.log("Transfer task started:", task_id);
 
-                let transferData = null;
-                let retries = 0;
-                const maxRetries = 30;
+                const result = await response.json();
 
-                while (retries < maxRetries) {
-                    const statusResponse = await fetch(`/api/task-status/${task_id}`);
-                    const statusData = await statusResponse.json();
-                    console.log(statusData);
-
-                    if (statusData.status === "SUCCESS") {
-                        console.log("Transfer completed:", statusData.result);
-                        transferData = statusData.result.transfer_data;
-                        break;
-                    } else if (statusData.status === "FAILURE") {
-                        throw new Error(`Transfer failed: ${statusData.error?.message || 'Unknown error'}`);
-                    }
-
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    retries++;
+                if (!response.ok) {
+                    console.error('Transfer processing failed:', result);
+                    setError(result.error?.message || 'Failed to process transfers');
+                    setIsProcessing(false);
+                    return;
                 }
 
-                if (!transferData) {
-                    throw new Error("Transfer task did not complete in time.");
+                if (result.error) {
+                    console.error('Transfer error:', result.error);
+                    setError(result.error.message);
+                    setIsProcessing(false);
+                    return;
                 }
 
-                console.log("Transfer Data:", transferData);
-                console.log("Vendor payments processed successfully!");
-
-                // Only mark baskets as sold after transfer is successful
-                await Promise.all(cartItems.map(async (cartItem) => {
-                    const response = await fetch(`/api/baskets/${cartItem.id}`, {
-                        method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ is_sold: true, user_id: userId }),
-                    });
-                    if (!response.ok) {
-                        throw new Error(`Failed to update cartItem with id: ${cartItem.id}`);
-                    }
-                }));
-                console.log("Items marked as sold!");
-
-                // Generate QR codes
-                if (cartItems.length > 0) {
-                    console.log("Generating QR codes...");
-                    const qrPromises = cartItems.map(async (cartItem) => {
-                        const hash = objectHash(`${cartItem.vendor_name} ${cartItem.location} ${cartItem.id} ${userId}`);
-                        const response = await fetch('/api/qr-codes', {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                qr_code: hash,
-                                user_id: userId,
-                                basket_id: cartItem.id,
-                                vendor_id: cartItem.vendor_id,
-                            }),
-                        });
-    
-                        if (!response.ok) {
-                            throw new Error(`Failed to create QR code for basket ID ${cartItem.id}: ${response.statusText}`);
-                        }
-                        return response.json();
-                    });
-    
-                    await Promise.all(qrPromises);
-                    console.log("All QR codes created successfully!");
-                }
-    
-                // Create receipt
-                console.log("Creating receipt...");
-                const receiptResponse = await fetch('/api/receipts', {
+                // Clear cart on success
+                await fetch('/api/cart/clear', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        user_id: userId,
-                        payment_intent_id: paymentIntent.id,
-                        baskets: cartItems.map(item => ({
-                            id: item.id,
-                            name: item.name,
-                            price: item.price,
-                            quantity: item.quantity,
-                            market_id: item.market_id,
-                            market_name: item.market_name,
-                            location: item.location,
-                            vendor_id: item.vendor_id,
-                            vendor_name: item.vendor_name,
-                            pickup_start: item.pickup_start,
-                            pickup_end: item.pickup_end,
-                            sale_date: item.sale_date,
-                            fee_user: item.fee_user
-                        }))
+                        basket_ids: cartItems.map(item => item.id),
+                        user_id: userId
                     }),
                 });
-    
-                if (!receiptResponse.ok) {
-                    throw new Error(`Failed to create receipt: ${receiptResponse.statusText}`);
-                }
-    
-                const receiptData = await receiptResponse.json();
-                console.log("Receipt created successfully!", receiptData);
-                
-                setReceiptId(receiptData.id);
-    
-                // Clear cart
-                localStorage.setItem("cartItems", JSON.stringify([]));
-                localStorage.setItem("amountInCart", JSON.stringify(0));
+
+                // Clear local cart state
                 setCartItems([]);
                 setAmountInCart(0);
-                toast.success('Payment successful!', { autoClose: 5000 });
-                setPaymentSuccess(true);
-            } catch (error) {
-                console.error("Error processing payment:", error);
-                toast.error(error.message);
+
+                // Redirect to success page
+                navigate('/payment-success');
+            } else {
+                setError('Payment was not successful. Please try again.');
                 setIsProcessing(false);
-                return;
             }
-        } else {
-            console.error(error);
+        } catch (err) {
+            console.error('Checkout error:', err);
+            setError('An unexpected error occurred. Please try again.');
             setIsProcessing(false);
         }
     };

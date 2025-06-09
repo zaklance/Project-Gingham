@@ -33,6 +33,7 @@ import Recipes from './components/user/Recipes.jsx';
 import RecipeDetail from './components/user/RecipeDetail.jsx';
 import UserFAQs from './components/user/UserFAQs.jsx';
 import Logout from './components/user/Logout.jsx';
+import PaymentSuccess from './components/user/PaymentSuccess';
 
 // vendor routes
 import VendorHome from './components/vendor/VendorHome.jsx';
@@ -258,6 +259,7 @@ const router = createBrowserRouter([
                     { path: "privacy-policy", element: <PrivacyPolicy /> },
                 ],
             },
+            { path: "payment-success", element: <PaymentSuccess /> },
         ],
     },
 ]);

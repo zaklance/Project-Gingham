@@ -5850,6 +5850,35 @@ def join_team(token):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/stripe/publishable-key', methods=['GET'])
+def get_publishable_key():
+    return jsonify({
+        'publishableKey': os.environ.get('STRIPE_PUBLISHABLE_KEY')
+    })
+
+@app.route('/api/cart/clear', methods=['POST'])
+def clear_cart():
+    try:
+        data = request.get_json()
+        basket_ids = data.get('basket_ids', [])
+        user_id = data.get('user_id')
+        
+        if not basket_ids:
+            return jsonify({"error": "No basket IDs provided"}), 400
+
+        # Update baskets to mark them as sold and set the user_id
+        baskets = Basket.query.filter(Basket.id.in_(basket_ids)).all()
+        for basket in baskets:
+            basket.is_sold = True
+            basket.user_id = user_id  # Associate the basket with the user
+        
+        db.session.commit()
+        return jsonify({"message": "Cart cleared successfully"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
     app.run(port=5555, debug=debug_mode)
