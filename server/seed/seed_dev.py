@@ -145,7 +145,7 @@ def run():
         Market(
             id=1,
             name='175th Street Greenmarket',
-            image='10292023_Broadway_farmers_market_Columbia_NYC.jpg',
+            # image='10292023_Broadway_farmers_market_Columbia_NYC.jpg',
             website="https://www.grownyc.org/greenmarket/manhattan/175th-street",
             location='W. 175th St. bet. Wadsworth Ave. & Broadway',
             city="New York",
@@ -161,7 +161,7 @@ def run():
         Market(
             id=2,
             name='57th Street Greenmarket',
-            image='6329735393_3a905a118a_o.0.jpg',
+            # image='6329735393_3a905a118a_o.0.jpg',
             website="https://www.grownyc.org/greenmarket/manhattan/57th-street-sa",
             location='W. 57th St. & 10th Ave.',
             city="New York",
@@ -178,7 +178,7 @@ def run():
             id=3,
             name='79th Street Greenmarket',
             bio="Clothing Collection Hours: 9:00 AM - 12:00 PM",
-            image='image.jpeg',
+            # image='image.jpeg',
             website="https://www.grownyc.org/greenmarket/manhattan/79th-street",
             location='79th St. & Columbus Ave.',
             city="New York",
@@ -193,7 +193,7 @@ def run():
         Market(
             id=4,
             name='82nd Street Greenmarket',
-            image='bronxborhall_shaylahunter_re_xy4a4543.jpg',
+            # image='bronxborhall_shaylahunter_re_xy4a4543.jpg',
             website="https://www.grownyc.org/greenmarket/manhattan/82nd-street",
             location=' 82nd St. bet. 1st & York Aves.',
             city="New York",
@@ -207,7 +207,7 @@ def run():
         Market(
             id=5,
             name='94th Street Greenmarket',
-            image='c.-Martin-Seck-GAP-1-768x531.jpg',
+            # image='c.-Martin-Seck-GAP-1-768x531.jpg',
             location='E. 94th St. & 1st Ave.',
             city="New York",
             state="NY",
@@ -223,7 +223,7 @@ def run():
         Market(
             id=6,
             name='97th Street Greenmarket',
-            image='farmers-market.jpg',
+            # image='farmers-market.jpg',
             website="https://www.grownyc.org/greenmarket/manhattan/west-97",
             location='W. 97th St. bet. Columbus & Amsterdam Aves.',
             city="New York",
@@ -237,7 +237,7 @@ def run():
         Market(
             id=7,
             name='Abingdon Square Greenmarket',
-            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
+            # image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             website="https://www.grownyc.org/greenmarket/manhattan/abingdon-square",
             location='Hudson St. & W. 12th St.',
             city="New York",
@@ -251,7 +251,7 @@ def run():
         Market(
             id=8,
             name='Astor Place Greenmarket',
-            image='greenmarket-grownyc-768x512.jpeg',
+            # image='greenmarket-grownyc-768x512.jpeg',
             website="https://www.grownyc.org/greenmarket/manhattan/astorplace",
             location='E. 8th St. & Lafayette St.',
             city="New York",
@@ -267,7 +267,7 @@ def run():
         Market(
             id=9,
             name='Bowling Green Greenmarket',
-            image='image.jpeg',
+            # image='image.jpeg',
             website="https://www.grownyc.org/greenmarket/manhattan/bowling-green-tu",
             location='Broadway & Battery Pl.',
             city="New York",
@@ -283,7 +283,7 @@ def run():
         Market(
             id=10,
             name='Bro Sis Green Youth Market',
-            image='Union_Square_Farmers_Market.jpg',
+            # image='Union_Square_Farmers_Market.jpg',
             website="https://brotherhood-sistersol.org/events/brosis-green-youth-market-2024/",
             location='Amsterdam Ave. bet. W. 143rd & 144th St. (Johnny Hartman Plaza)',
             city="New York",
@@ -299,7 +299,7 @@ def run():
         Market(
             id=11,
             name="Chelsea’s Down to Earth Farmers' Market",
-            image='unnamed.jpg',
+            # image='unnamed.jpg',
             website="https://downtoearthmarkets.com/markets?region=Manhattan&market=Chelsea+Farmers+Market",
             location='W. 23rd St. bet. 8th & 9th Aves.',
             city="New York",
@@ -315,7 +315,7 @@ def run():
         Market(
             id=12,
             name="Children’s Aid Go!Healthy Food Box + Farmstand - Milbank Center",
-            image='6329735393_3a905a118a_o.0.jpg',
+            # image='6329735393_3a905a118a_o.0.jpg',
             website="",
             location='14-32 W. 118th St.',
             city="New York",
@@ -332,7 +332,7 @@ def run():
             id=13,
             name='Columbia Greenmarket',
             bio="Clothing Collection Hours: 9:00 AM - 12:00 PM *Sundays only",
-            image='Union_Square_Farmers_Market.jpg',
+            # image='Union_Square_Farmers_Market.jpg',
             website="https://www.grownyc.org/greenmarket/manhattan/columbia-su",
             location='Broadway & 114th St.',
             city="New York",
@@ -360,7 +360,7 @@ def run():
         Market(
             id=15,
             name='Fort Washington Greenmarket',
-            image='farmers-market.jpg',
+            # image='farmers-market.jpg',
             website="https://www.grownyc.org/greenmarket/manhattan/fort-washington",
             location='W. 168th St. & Ft. Washington Ave.',
             city="New York",
@@ -377,7 +377,7 @@ def run():
             id=16,
             name="Fulton Stall Market (Indoor Farmers' Market)",
             bio="Indoor Market Hours:  Monday - Saturday 11:30 AM to 5:00 PM, year round. CSA Pick-Up Hours:  Thursday 4:00 PM to 6:00 PM Friday 11:30 AM to 5:00 PM. Outdoor Market:  Saturday 11:30 AM to 5:00 PM, Fulton St. at South St., May through Thanksgiving.",
-            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
+            # image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             website="https://fultonstallmarket.org",
             location='91 South St.',
             city="New York",
@@ -392,7 +392,7 @@ def run():
         Market(
             id=17,
             name='Gouverneur Health Farmstand',
-            image='greenmarket-grownyc-768x512.jpeg',
+            # image='greenmarket-grownyc-768x512.jpeg',
             website="https://www.grownyc.org/farmstand/gouverneur",
             location='Madison St. bet. Clinton & Jefferson St.',
             city="New York",
@@ -408,7 +408,7 @@ def run():
         Market(
             id=18,
             name="Grass Roots Farmers' Market",
-            image='image.jpeg',
+            # image='image.jpeg',
             website="https://www.harlemonestop.com/organization/448/grassroots-farmers-market",
             location='W. 145th St. bet. Edgecombe & Bradhurst Aves. (Jackie Robinson Park)',
             city="New York",
@@ -422,7 +422,7 @@ def run():
         Market(
             id=19,
             name='Greenmarket at the Oculus',
-            image='Union_Square_Farmers_Market.jpg',
+            # image='Union_Square_Farmers_Market.jpg',
             website="https://www.grownyc.org/greenmarket-oculus-plaza",
             location='Church & Fulton St. (Oculus Plaza)',
             city="New York",
@@ -438,7 +438,7 @@ def run():
         Market(
             id=20,
             name='Harlem Meer Farmstand',
-            image='unnamed.jpg',
+            # image='unnamed.jpg',
             website="https://www.centralparknyc.org/locations/110th-street-malcolm-x-boulevard",
             location='Central Park N. & Malcom X Blvd.',
             city="New York",
@@ -470,7 +470,7 @@ def run():
         Market(
             id=22,
             name="Harvest Home Harlem Hospital Farmers' Market",
-            image='6329735393_3a905a118a_o.0.jpg',
+            # image='6329735393_3a905a118a_o.0.jpg',
             website="https://www.harvesthomefm.org/manhattan-markets",
             location='W. 137th St. & Lenox Ave.',
             city="New York",
@@ -486,7 +486,7 @@ def run():
         Market(
             id=23,
             name="Harvest Home Lenox Avenue Farm Stand",
-            image='unnamed.jpg',
+            # image='unnamed.jpg',
             website="https://www.harvesthomefm.org/manhattan-markets",
             location='Lenox Ave. bet. W. 117th & 118th St.',
             city="New York",
@@ -502,7 +502,7 @@ def run():
         Market(
             id=24,
             name="Harvest Home Metropolitan Hospital Farmers' Market",
-            image='bronxborhall_shaylahunter_re_xy4a4543.jpg',
+            # image='bronxborhall_shaylahunter_re_xy4a4543.jpg',
             website="https://www.harvesthomefm.org/manhattan-markets",
             location='97th St. & 2nd Ave.',
             city="New York",
@@ -519,7 +519,7 @@ def run():
             id=25,
             name='Inwood Park Greenmarket',
             bio="Clothing Collection Hours: 9:30 AM - 12:30 PM ",
-            image='c.-Martin-Seck-GAP-1-768x531.jpg',
+            # image='c.-Martin-Seck-GAP-1-768x531.jpg',
             website="https://www.grownyc.org/greenmarket/manhattan/inwood",
             location='Isham St. bet. Seaman Ave. & Cooper St.',
             city="New York",
@@ -533,7 +533,7 @@ def run():
         Market(
             id=26,
             name='Lower East Side Farmstand',
-            image='farmers-market.jpg',
+            # image='farmers-market.jpg',
             website="https://www.grownyc.org/farmstand/les",
             location='Grand St. bet. Pitt & Willett St. (outside of Abrons Arts Center)',
             city="New York",
@@ -549,7 +549,7 @@ def run():
         Market(
             id=27,
             name="Morningside Park’s Down to Earth Farmers' Market",
-            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
+            # image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             website="https://www.morningsidepark.org/farmers-market",
             location='W. 110th St. & Manhattan Ave.',
             city="New York",
@@ -563,7 +563,7 @@ def run():
         Market(
             id=28,
             name='Mount Sinai Greenmarket',
-            image='greenmarket-grownyc-768x512.jpeg',
+            # image='greenmarket-grownyc-768x512.jpeg',
             website="https://www.grownyc.org/greenmarket/manhattan/mount-sinai",
             location='Madison Ave. & 99th St.',
             city="New York",
@@ -593,7 +593,7 @@ def run():
         Market(
             id=30,
             name='NYP Youth Market - Broadway',
-            image='Union_Square_Farmers_Market.jpg',
+            # image='Union_Square_Farmers_Market.jpg',
             website="",
             location='4781-4783 Broadway',
             city="New York",
@@ -607,7 +607,7 @@ def run():
         Market(
             id=31,
             name='Project EATS Farm Stand at Essex Crossing',
-            image='unnamed.jpg',
+            # image='unnamed.jpg',
             website="https://www.projecteats.org/farm-1",
             location='115 Delancey St.',
             city="New York",
@@ -621,7 +621,7 @@ def run():
         Market(
             id=32,
             name='P.S. 11 Farm Market',
-            image='10292023_Broadway_farmers_market_Columbia_NYC.jpg',
+            # image='10292023_Broadway_farmers_market_Columbia_NYC.jpg',
             website="https://www.justfood.org/ps-11-farm-market",
             location='320 W. 21st St.',
             city="New York",
@@ -637,7 +637,7 @@ def run():
         Market(
             id=33,
             name='P.S. 57 Farmstand',
-            image='6329735393_3a905a118a_o.0.jpg',
+            # image='6329735393_3a905a118a_o.0.jpg',
             website="https://www.grownyc.org/farmstand/ps57",
             location='115th St. & 3rd Ave. (SW corner)',
             city="New York",
@@ -670,7 +670,7 @@ def run():
             id=35,
             name='Tompkins Square Greenmarket',
             bio="Compost Program Hours: 9:00 AM - 5:00 PM In partnership with LES Ecology Center. Clothing Collection Hours: 9:00 AM - 1:00 PM ",
-            image='bronxborhall_shaylahunter_re_xy4a4543.jpg',
+            # image='bronxborhall_shaylahunter_re_xy4a4543.jpg',
             website="https://www.grownyc.org/greenmarket/manhattan/tompkins-square",
             location='E. 7th St. & Avenue A',
             city="New York",
@@ -685,7 +685,7 @@ def run():
             id=36,
             name='Tribeca Greenmarket',
             bio="Clothing Collection Hours: 8:30 AM - 1:30 PM",
-            image='c.-Martin-Seck-GAP-1-768x531.jpg',
+            # image='c.-Martin-Seck-GAP-1-768x531.jpg',
             website="https://www.grownyc.org/greenmarket/manhattan/tribeca-sa",
             location='Greenwich & Chambers St.',
             city="New York",
@@ -713,7 +713,7 @@ def run():
         Market(
             id=38,
             name='Two Bridges Youth Market',
-            image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
+            # image='flatten;crop;webp=auto;jpeg_quality=60.jpg',
             website="https://www.manhattanbp.nyc.gov/events/two-bridges-youth-farmers-market-2/",
             location='50 Madison St.',
             city="New York",
@@ -729,7 +729,7 @@ def run():
         Market(
             id=39,
             name='Union Square Greenmarket',
-            image='Union_Square_Farmers_Market.jpg',
+            # image='Union_Square_Farmers_Market.jpg',
             bio="Compost Program Hours: 8:00 a.m. - 5:00 p.m. In partnership with LES Ecology Center.",
             website="https://www.grownyc.org/greenmarket/manhattan-union-square-sa",
             location='E. 17th St. & Union Square W.',
@@ -747,7 +747,7 @@ def run():
         Market(
             id=40,
             name='Uptown Good Food Farm Stand',
-            image='greenmarket-grownyc-768x512.jpeg',
+            # image='greenmarket-grownyc-768x512.jpeg',
             website="https://www.uptowngoodfood.com",
             location='330 St. Nicholas Ave. (St. Nicholas Miracle Garden)',
             city="New York",
@@ -763,7 +763,7 @@ def run():
         Market(
             id=41,
             name="City Hall Greenmarket",
-            image='farmers-market.jpg',
+            # image='farmers-market.jpg',
             website="https://www.grownyc.org/city-hall-greenmarket-tuesday",
             location='Chambers St. & Warren St.',
             city="New York",
@@ -779,7 +779,7 @@ def run():
         Market(
             id=42,
             name='Uptown Grand Central Farm Stand',
-            image='unnamed.jpg',
+            # image='unnamed.jpg',
             website="https://www.grownyc.org/uptowngrandcentralfarmstand",
             location='125th Street & Park Ave.',
             city="New York",
@@ -793,7 +793,7 @@ def run():
         Market(
             id=43,
             name='Lenox Hill Farm Stand',
-            image='image.jpeg',
+            # image='image.jpeg',
             website="https://www.grownyc.org/lenoxhillfarmstand",
             location='70th St. & 1st Ave.',
             city="New York",
@@ -822,7 +822,7 @@ def run():
         Market(
             id=45,
             name='Rockefeller Greenmarket',
-            image='10292023_Broadway_farmers_market_Columbia_NYC.jpg',
+            # image='10292023_Broadway_farmers_market_Columbia_NYC.jpg',
             website="https://www.grownyc.org/greenmarket/manhattan/rockefeller-w",
             location='Rockefeller Plaza at 50th St.',
             city="New York",

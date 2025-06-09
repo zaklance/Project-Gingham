@@ -593,21 +593,23 @@ function MarketDetail ({ match }) {
                     onClick={handleClick}>&emsp;
                 </button>
             </div>
-            <div className='flex-start flex-center-align m-flex-wrap margin-t--6'>
+            <div className='flex-start flex-center-align m-flex-wrap'>
                 <label><h4>Schedule: &emsp;</h4></label>
                 {marketDays.length === 1 ? (
                     <h4 className='text-500'>{weekDay[marketDays[0].day_of_week]}, &ensp;</h4>
                 ) : (
-                    <select id="marketDaysSelect"
-                    className='select-rounded margin-r-4'
-                    name="marketDays"
-                    value={selectedDay?.id || ''} 
-                    onChange={handleDayChange}>
-                    {marketDays.map((day, index) => (
-                        <option key={index} value={day.id}>
-                            {weekDay[day.day_of_week]}
-                        </option>
-                    ))}
+                    <select
+                        id="marketDaysSelect"
+                        className='select-rounded margin-r-4'
+                        name="marketDays"
+                        value={selectedDay?.id || ''} 
+                        onChange={handleDayChange}
+                    >
+                        {marketDays.map((day, index) => (
+                            <option key={index} value={day.id}>
+                                {weekDay[day.day_of_week]}
+                            </option>
+                        ))}
                     </select>
                 )}
                 {selectedDay && (
@@ -656,7 +658,7 @@ function MarketDetail ({ match }) {
             )}
             <div id="vendors" className='flex-space-between margin-t-24'>
                 <h2>Vendors:</h2>
-                <div className='flex-start'>
+                <div className='flex-start m-flex-wrap'>
                     <select 
                         className='select-rounded'
                         value={selectedProduct} 

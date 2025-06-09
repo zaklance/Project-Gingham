@@ -466,7 +466,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                         <li className='badge-container'>
                             <NavLink className='nav-tab color-5 btn-nav nowrap' to={`/user/pick-up`} title="Pick-Up">Pick-Up</NavLink>
                             {baskets.length > 0 && (
-                                <p className='badge-pickup'>
+                                <p className='badge'>
                                     {baskets.length}
                                 </p>
                             )}
@@ -491,7 +491,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             <li className='notification' onClick={handleNotifPopup}>
                                 <a className='nav-tab color-4 btn-nav nav-tab-wide icon-notif' to="/notifications" title="Notifications">&emsp;</a>
                                 {notifications.filter(notification => notification.is_read === false).length > 0 && (
-                                    <p className='badge'>
+                                    <p className='badge-pickup'>
                                         {notifications.filter(notification => notification.is_read === false).length}
                                     </p>
                                 )}
