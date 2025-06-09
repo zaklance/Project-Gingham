@@ -1200,7 +1200,7 @@ def check_scheduled_blog_notifications():
         finally:
             db.session.close()
 
-@celery.task(bind=True, queue='default')
+@celery.task(bind=True, queue='default', time_limit=300, soft_time_limit=240, max_retries=3)
 def process_transfers_task(self, payment_intent_id, baskets):
     from app import app, get_vendor_stripe_accounts
     with app.app_context():
@@ -1238,15 +1238,15 @@ def process_transfers_task(self, payment_intent_id, baskets):
                     continue
 
                 transfer_amount = int((price - fee_vendor) * 100)
-                application_fee = int(fee_vendor * 100)
 
                 try:
+                    # Create transfer without application fee
                     transfer = stripe.Transfer.create(
-                        amount=transfer_amount + application_fee,
+                        amount=transfer_amount,
                         currency="usd",
                         destination=stripe_account_id,
-                        transfer_group=f"group_pi_{payment_intent_id}"
-                        # application_fee_amount=application_fee
+                        transfer_group=f"group_pi_{payment_intent_id}",
+                        metadata={"basket_id": basket['id']}  # Added metadata for webhook handling
                     )
 
                     transfer_data.append({
@@ -1257,8 +1257,7 @@ def process_transfers_task(self, payment_intent_id, baskets):
                         "amount": transfer.amount,
                         "destination": stripe_account_id,
                         "payment_intent_id": payment_intent_id,
-                        "transfer_group": f"group_pi_{payment_intent_id}",
-                        # "application_fee_amount": application_fee,
+                        "transfer_group": f"group_pi_{payment_intent_id}"
                     })
 
                     basket_record = Basket.query.filter_by(id=basket['id']).first()
@@ -1269,6 +1268,16 @@ def process_transfers_task(self, payment_intent_id, baskets):
 
                 except stripe.error.StripeError as e:
                     print(f"Transfer failed for vendor {vendor_id}: {e}")
+                    # Don't retry on insufficient funds error
+                    if "insufficient_funds" in str(e).lower():
+                        return {
+                            'error': {
+                                'message': "Insufficient funds in Stripe account. Please add funds to process transfers.",
+                                'details': e.json_body
+                            }
+                        }
+                    # Retry the task on other Stripe errors
+                    self.retry(exc=e, countdown=10, max_retries=3)
                     return {
                         'error': {
                             'message': f"Transfer failed for vendor {vendor_id}",
@@ -1283,10 +1292,22 @@ def process_transfers_task(self, payment_intent_id, baskets):
 
         except stripe.error.StripeError as e:
             print(f"Stripe API Error: {str(e)}")
+            # Don't retry on insufficient funds error
+            if "insufficient_funds" in str(e).lower():
+                return {
+                    'error': {
+                        'message': "Insufficient funds in Stripe account. Please add funds to process transfers.",
+                        'details': str(e)
+                    }
+                }
+            # Retry the task on other Stripe errors
+            self.retry(exc=e, countdown=10, max_retries=3)
             return {'error': {'message': 'Stripe API Error', 'details': str(e)}}
 
         except Exception as e:
             print(f"Unexpected error in task: {str(e)}")
+            # Retry the task on unexpected errors
+            self.retry(exc=e, countdown=10, max_retries=3)
             return {'error': {'message': 'Unexpected error occurred', 'details': str(e)}}
 
 @celery.task(bind=True, queue='default')
