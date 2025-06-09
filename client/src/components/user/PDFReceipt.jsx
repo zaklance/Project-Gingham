@@ -88,7 +88,7 @@ const ReceiptDocument = ({ receipt, transaction }) => {
 
                 <View style={styles.footer} fixed>
                     <View style={styles.rowFooter}>
-                        <Text style={styles.bold}>GINGHAM {getCurrentYear()} &copy;</Text>
+                        <Text style={styles.bold}>GINGHAM NYC {getCurrentYear()} &copy;</Text>
                         <Text style={styles.bold} render={({ pageNumber }) => `${pageNumber}`}></Text>
                         <Text style={styles.bold}>www.gingham.nyc</Text>
                     </View>

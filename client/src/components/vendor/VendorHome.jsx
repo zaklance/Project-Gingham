@@ -62,7 +62,7 @@ function Home() {
                     </div>
                     <br className="m-hidden"/>
                     <br/>
-                    <h2 className="box-portal-home text-blend-lighten">Sell Surplus Product Instead of Putting it to Waste!</h2>
+                    <h2 className="box-portal-home text-blend-lighten text-center">Sell Surplus Product Instead of Putting it to Waste!</h2>
                 </div>
                 {currentBlog ? (
                     <div id='blog' className="box-blog margin-t-48 margin-l-48 margin-r-48 badge-container no-float" style={{borderRadius: "20px"}}>
