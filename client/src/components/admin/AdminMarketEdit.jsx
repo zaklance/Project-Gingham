@@ -424,6 +424,33 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
         }
     };
 
+    const handleDeleteDay = async (marketDay) => {
+        if (confirm(`Are you sure you want to delete the selected day?`)) {
+            const token = localStorage.getItem('admin_jwt-token');
+
+            try {
+                await fetch(`/api/market-days/${marketDay.id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                setMarketDays(prev => prev.filter(day => day.id !== marketDay.id));
+                setSelectedDay(marketDays[0]);
+                alert(`The market's selected day was successfully deleted.`);
+            } catch (error) {
+                console.error('Error deleting market or associated days:', error);
+                toast.error('An error occurred while deleting the market and its associated days.', {
+                    autoClose: 6000,
+                });
+            }
+        } else {
+            setQuery('');
+        }
+    };
+
     const handleFileChange = (event) => {
         if (event.target.files) {
             setImage(event.target.files[0]);
@@ -1084,7 +1111,12 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
                     )}
                     <div className='flex-start margin-t-16'>
                         <label><h4>Market Day: &emsp;</h4></label>
-                        <select id="marketDaysSelect" name="marketDays" onChange={handleDayChange}>
+                        <select
+                            id="marketDaysSelect"
+                            name="marketDays"
+                            value={selectedDay.id || ''}
+                            onChange={handleDayChange}
+                        >
                             {marketDays.map((day, index) => (
                                 <option key={index} value={day.id}>
                                     {weekDay[day.day_of_week]}
@@ -1144,6 +1176,7 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
                             </tbody>
                         </table>
                         <button className='btn-edit' onClick={handleEditDayToggle}>Edit</button>
+                        <button className='btn-edit' onClick={() => handleDeleteDay(selectedDay)}>Delete</button>
                     </>
                 )}
             </div>
