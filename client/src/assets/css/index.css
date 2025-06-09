@@ -858,6 +858,16 @@ ul {
   padding-right: 32px;
 } 
 
+.tab-right {
+  border-radius: 0 20px 0 0;
+  padding: 24px 24px 29px 24px;
+}
+
+.nav-tab-login {
+  margin-top: -8px;
+  padding: 24px 24px 28px 24px;
+}
+
 /* .ul-notif .li-notif:nth-child(even) {
   background-color: #dbdbdb;
 } */
@@ -935,11 +945,6 @@ ul {
 
 .blue-bright {
   background-color: #007BFF !important;
-}
-
-.tab-right {
-  border-radius: 0 20px 0 0;
-  padding: 24px 24px 28px 24px;
 }
 
 .center {
@@ -1127,6 +1132,7 @@ ul {
 .box-portal-home {
   background-color: white;
   width: fit-content;
+  max-width: calc(100% - 96px);
   margin-left: auto;
   margin-right: auto;
   padding: 16px 24px;
@@ -1778,10 +1784,6 @@ ul {
   border-radius: 0;
   font-weight: 500;
   transition: 0.1s;
-}
-
-.btn-nav-login {
-  margin-top: -8px;
 }
 
 .btn-tab {
