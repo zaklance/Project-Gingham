@@ -1114,7 +1114,7 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
                         <select
                             id="marketDaysSelect"
                             name="marketDays"
-                            value={selectedDay.id || ''}
+                            value={selectedDay?.id || ''}
                             onChange={handleDayChange}
                         >
                             {marketDays.map((day, index) => (
