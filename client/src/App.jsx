@@ -12,6 +12,7 @@ import { jwtDecode } from 'jwt-decode';
 import BrowserTimezone from './components/BrowserTimezone.jsx';
 import { ToastContainer, Slide } from 'react-toastify';
 import { toast } from 'react-toastify';
+import PaymentSuccess from './components/user/PaymentSuccess';
 
 function App() {
     const location = useLocation();
