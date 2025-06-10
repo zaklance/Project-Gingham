@@ -155,25 +155,39 @@ def handle_payment_success(payment_intent):
     total_amount = payment_intent["amount_received"] / 100  # Convert cents to dollars
     currency = payment_intent["currency"].upper()
 
-    # Get last 4 digits of the card
-    last4 = payment_intent["charges"]["data"][0]["payment_method_details"]["card"]["last4"]
-
-    # Get customer email
-    customer_email = payment_intent.get("charges", {}).get("data", [{}])[0].get("billing_details", {}).get("email", "N/A")
+    # Get last 4 digits of the card - safely handle missing charges data
+    last4 = "N/A"
+    customer_email = "N/A"
+    
+    try:
+        # Check if charges data exists and has data
+        if "charges" in payment_intent and payment_intent["charges"] and payment_intent["charges"].get("data"):
+            charge_data = payment_intent["charges"]["data"][0]
+            
+            # Safely get last 4 digits
+            if "payment_method_details" in charge_data and "card" in charge_data["payment_method_details"]:
+                last4 = charge_data["payment_method_details"]["card"].get("last4", "N/A")
+            
+            # Safely get customer email
+            if "billing_details" in charge_data and "email" in charge_data["billing_details"]:
+                customer_email = charge_data["billing_details"]["email"]
+    except (KeyError, IndexError, TypeError) as e:
+        print(f"Warning: Could not extract charge details from payment_intent: {e}")
+        # Continue with default values
 
     # Retrieve metadata for baskets (if stored in frontend during checkout)
     baskets = payment_intent.get("metadata", {}).get("baskets", "[]")
 
-    # print(f"Payment Successful: {payment_intent_id}")
-    # print(f"Customer: {customer_email}")
-    # print(f"Total Paid: ${total_amount} {currency}")
-    # print(f"Card Last 4: {last4}")
+    print(f"Payment Successful: {payment_intent_id}")
+    print(f"Customer: {customer_email}")
+    print(f"Total Paid: ${total_amount} {currency}")
+    print(f"Card Last 4: {last4}")
 
     # If baskets metadata exists, convert it from JSON format
     import json
     try:
         basket_data = json.loads(baskets)
-    except json.JSONDecordeError:
+    except json.JSONDecodeError:
         basket_data = []
 
     purchased_items = [
@@ -4574,7 +4588,7 @@ def notify_me_for_more_baskets():
             elif isinstance(vendor_data, str):
                 try:
                     vendor_dict = json.loads(vendor_data)  # Convert JSON string to dict
-                except json.JSONDecordeError:
+                except json.JSONDecodeError:
                     print(f"Invalid JSON format in vendor_id for VendorUser ID {vendor_user.id}")
                     continue  # Skip this record
             else:
