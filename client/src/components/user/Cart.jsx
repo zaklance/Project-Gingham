@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import objectHash from 'object-hash';
 import { timeConverter, formatBasketDate } from '../../utils/helpers';
+import { toast } from 'react-toastify';
 
 function Cart() {
     const { handlePopup, cartItems, setCartItems, amountInCart, setAmountInCart } = useOutletContext();
     const [cartTimer, setCartTimer] = useState(null);
-
     const navigate = useNavigate();
 
     const userId = parseInt(globalThis.localStorage.getItem('user_id'));
@@ -40,18 +40,8 @@ function Cart() {
                 throw new Error("Cart is empty.");
             }
 
-            // Fetch the Stripe publishable key from /api/config
-            console.log('Fetching Stripe publishable key...');
-            const configResponse = await fetch('/api/config');
-            if (!configResponse.ok) {
-                throw new Error(`Failed to fetch Stripe config: ${configResponse.statusText}`);
-            }
-            const { publishableKey } = await configResponse.json();
-            console.log('Received publishableKey:', publishableKey);
-    
             // Create PaymentIntent
-            console.log('Sending request to create PaymentIntent...');
-                const paymentResponse = await fetch('/api/create-payment-intent', {
+            const paymentResponse = await fetch('/api/create-payment-intent', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ baskets: cartItems }),
@@ -70,14 +60,9 @@ function Cart() {
             });
         } catch (error) {
             console.error('Error during checkout:', error);
+            toast.error(error.message || 'Failed to process checkout. Please try again.');
         }
     }
-    
-    // useEffect(() => {
-    //     console.log("Amount in cart:", amountInCart);
-    //     console.log("Cart items:", cartItems);
-    // }, [amountInCart, cartItems]);
-
 
     return (
         <div>
