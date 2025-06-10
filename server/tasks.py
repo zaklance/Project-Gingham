@@ -1293,6 +1293,7 @@ def process_transfers_task(self, payment_intent_id, baskets):
 def reverse_basket_transfer_task(self, basket_id, stripe_account_id, amount):
     from app import app
     with app.app_context():
+        print("🚀 Weekly Admin Summary task triggered")
         try:
             reversal_amount = int(amount * 100)
 
@@ -1328,7 +1329,7 @@ def reverse_basket_transfer_task(self, basket_id, stripe_account_id, amount):
             self.retry(exc=e, countdown=10, max_retries=3)
             return {"error": str(e)}
 
-@celery.task(bind=True, queue='default')
+@celery.task(queue='default')
 def send_weekly_admin_summary():
     from app import app
     with app.app_context():
@@ -1379,45 +1380,45 @@ def send_weekly_admin_summary():
         # Admin recipients (role <= 3)
         admins = [admin for admin in AdminUser.query.filter(AdminUser.admin_role <= 3).all()]
 
-        body_tag = f"""
-            <body>
-                <div class="email-container">
-                    <div class="header">
-                        <img class="img-logo" src="https://www.gingham.nyc/site-images/gingham-logo_04-2A.png" alt="logo"/>
-                    </div>
-                    <hr class="divider"/>
-                    <div>
-                        <p>Hi {admins.first_name},</p>
-                        <p>Here are the weekly gingham stats for the week, from {last_monday} to {last_sunday}!</p>
-                        <div class="content flex-center">
-                            <div class="box-callout margin-r-16">
-                                <h3 class="margin-4-0">User Stats:</h3>
-                                <p class="margin-4-0">New Users: {new_users}</p>
-                                <p class="margin-4-0">Total Users: {total_users}</p>
-                                <p class="margin-4-0">New Vendor Users: {new_vendor_users}</p>
-                                <p class="margin-4-0">Total Vendor Users: {total_vendor_users}</p>
-                                <p class="margin-4-0">New Vendors: {new_vendors}</p>
-                                <p class="margin-4-0">Total Vendors: {total_vendors}</p>
-                            </div>
-                            <div class="box-callout">
-                                <h3 class="margin-4-0">Basket Stats:</h3>
-                                <p class="margin-4-0">Baskets Created: {total_baskets_last_7_days}</p>
-                                <p class="margin-4-0">Baskets Sold: {sold_baskets_last_7_days}</p>
-                                <p class="margin-4-0">Sold Price: {sold_baskets_price_last_7_days}</p>
-                                <p class="margin-4-0">GINGHAM Fees: {sold_baskets_fees_last_7_days}</p>
-                            </div>
-                        </div>
-                        <p>— The gingham task robot</p>
-                    </div>
-                    <div class="footer">
-                        <div class-"footer-flex">
-                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
-                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
-                        </div>
-                    </div>
-                </div>
-            </body>
-            """
 
         for admin in admins:
+            body_tag = f"""
+                <body>
+                    <div class="email-container">
+                        <div class="header">
+                            <img class="img-logo" src="https://www.gingham.nyc/site-images/gingham-logo_04-2A.png" alt="logo"/>
+                        </div>
+                        <hr class="divider"/>
+                        <div>
+                            <p>Hi {admin.first_name},</p>
+                            <p>Here are the weekly gingham stats for the week, from {last_monday} to {last_sunday}!</p>
+                            <div class="content flex-center">
+                                <div class="box-callout margin-r-16">
+                                    <h3 class="margin-4-0">User Stats:</h3>
+                                    <p class="margin-4-0">New Users: {new_users}</p>
+                                    <p class="margin-4-0">Total Users: {total_users}</p>
+                                    <p class="margin-4-0">New Vendor Users: {new_vendor_users}</p>
+                                    <p class="margin-4-0">Total Vendor Users: {total_vendor_users}</p>
+                                    <p class="margin-4-0">New Vendors: {new_vendors}</p>
+                                    <p class="margin-4-0">Total Vendors: {total_vendors}</p>
+                                </div>
+                                <div class="box-callout">
+                                    <h3 class="margin-4-0">Basket Stats:</h3>
+                                    <p class="margin-4-0">Baskets Created: {total_baskets_last_7_days}</p>
+                                    <p class="margin-4-0">Baskets Sold: {sold_baskets_last_7_days}</p>
+                                    <p class="margin-4-0">Sold Price: {sold_baskets_price_last_7_days}</p>
+                                    <p class="margin-4-0">GINGHAM Fees: {sold_baskets_fees_last_7_days}</p>
+                                </div>
+                            </div>
+                            <p>— The gingham task robot</p>
+                        </div>
+                        <div class="footer">
+                            <div class-"footer-flex">
+                                <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
+                                <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
+                            </div>
+                        </div>
+                    </div>
+                </body>
+                """
             send_email_weekly_admin_update(email=admin.email, body_tag=body_tag)
