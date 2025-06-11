@@ -24,6 +24,27 @@ from celery.result import AsyncResult
 from celery_sqlalchemy_scheduler.models import PeriodicTask, IntervalSchedule, CrontabSchedule
 from uuid import uuid4
 import subprocess
+from utils.emails import ( send_email_user_fav_vendor_new_event, 
+                          send_email_user_fav_vendor_schedule_change,
+                          send_email_user_fav_market_new_vendor,
+                          send_email_admin_reported_review,
+                          send_email_user_fav_vendor_new_basket,
+                          send_email_vendor_market_new_event,
+                          send_email_vendor_market_schedule_change,
+                          send_email_vendor_basket_sold,
+                          send_email_user_fav_market_new_basket,
+                          send_email_user_basket_pickup_time,
+                          send_email_user_vendor_review_response,
+                          send_email_user_new_market_in_city,
+                          send_email_vendor_new_review,
+                          send_email_admin_new_vendor )
+from utils.sms import ( send_sms_user_fav_vendor_schedule_change,
+                       send_sms_admin_reported_review,
+                       send_sms_admin_reported_market_review,
+                       send_sms_vendor_basket_sold,
+                       send_sms_user_fav_market_new_basket,
+                       send_sms_user_basket_pickup_time,
+                       send_sms_vendor_market_schedule_change )
 
 def time_converter(time24):
     if isinstance(time24, time):
@@ -171,6 +192,32 @@ def vendor_market_event_or_schedule_change(mapper, connection, target):
 
                 notifications.append(notification)
 
+                # Send email notification if enabled
+                if is_schedule_change and settings.email_market_schedule_change:
+                    try:
+                        send_email_vendor_market_schedule_change(
+                            vendor_user.email, vendor_user, market_day.market, target, f"user/markets/{market_day.market.id}"
+                        )
+                        print(f"Email sent to {vendor_user.email} for market schedule change")
+                    except Exception as e:
+                        print(f"Error sending email to {vendor_user.email}: {e}")
+                elif not is_schedule_change and settings.email_market_new_event:
+                    try:
+                        send_email_vendor_market_new_event(
+                            vendor_user.email, vendor_user, market_day.market, target, f"user/markets/{market_day.market.id}"
+                        )
+                        print(f"Email sent to {vendor_user.email} for market new event")
+                    except Exception as e:
+                        print(f"Error sending email to {vendor_user.email}: {e}")
+
+                # Send SMS notification if enabled (only for schedule changes)
+                if is_schedule_change and settings.text_market_schedule_change and vendor_user.phone:
+                    try:
+                        send_sms_vendor_market_schedule_change(vendor_user.phone, vendor_user, market_day.market, target)
+                        print(f"SMS sent to {vendor_user.phone} for market schedule change")
+                    except Exception as e:
+                        print(f"Error sending SMS to {vendor_user.phone}: {e}")
+
         if notifications:
             session.bulk_save_objects(notifications)
             session.commit()
@@ -241,7 +288,7 @@ def track_fav_vendor_event(mapper, connection, target):
             if existing_notification:
                 continue
 
-            # Create notification
+            # Create site notification
             notification = UserNotification(
                 subject="Vendor Schedule Change" if is_schedule_change else "New Event from Your Favorite Vendor!",
                 message=f"The vendor, {vendor.name}, has updated their schedule temporarily."
@@ -255,6 +302,28 @@ def track_fav_vendor_event(mapper, connection, target):
             )
 
             notifications.append(notification)
+
+            # Send email notification if enabled
+            if is_schedule_change and settings.email_fav_vendor_schedule_change:
+                try:
+                    send_email_user_fav_vendor_schedule_change(user.email, user, vendor, target, f"/user/vendors/{vendor.id}")
+                    print(f"Email sent to {user.email} for vendor schedule change")
+                except Exception as e:
+                    print(f"Error sending email to {user.email}: {e}")
+            elif not is_schedule_change and settings.email_fav_vendor_new_event:
+                try:
+                    send_email_user_fav_vendor_new_event(user.email, user, vendor, target, f"/user/vendors/{vendor.id}")
+                    print(f"Email sent to {user.email} for vendor new event")
+                except Exception as e:
+                    print(f"Error sending email to {user.email}: {e}")
+
+            # Send SMS notification if enabled (only for schedule changes)
+            if is_schedule_change and settings.text_fav_vendor_schedule_change and user.phone:
+                try:
+                    send_sms_user_fav_vendor_schedule_change(user.phone, user, vendor, target)
+                    print(f"SMS sent to {user.phone} for vendor schedule change")
+                except Exception as e:
+                    print(f"Error sending SMS to {user.phone}: {e}")
 
         # Save notifications
         if notifications:
@@ -321,6 +390,7 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
             if existing_notification:
                 continue
 
+            # Create site notification
             notifications.append(UserNotification(
                 subject="New Vendor in Your Favorite Market!",
                 message=f"The vendor, {vendor.name}, has been added to one of your favorite markets: {market.name}.",
@@ -331,6 +401,18 @@ def notify_new_vendor_in_favorite_market(mapper, connection, target):
                 created_at=datetime.now(timezone.utc),
                 is_read=False
             ))
+
+            # Send email notification if enabled
+            if settings.email_fav_market_new_vendor:
+                try:
+                    send_email_user_fav_market_new_vendor(
+                        user.email, user, market, vendor, 
+                        f"/user/markets/{market.id}?day={market_day.id}#vendors", 
+                        f"/user/vendors/{vendor.id}"
+                    )
+                    print(f"Email sent to {user.email} for new vendor in favorite market")
+                except Exception as e:
+                    print(f"Error sending email to {user.email}: {e}")
 
         if notifications:
             session.bulk_save_objects(notifications)
@@ -369,6 +451,7 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
             notifications = []
             for admin in admins:
                 if admin.admin_role <= 5:
+                    # Create site notification
                     notifications.append(AdminNotification(
                         subject="Reported Vendor Review",
                         message=f"A review for vendor '{vendor.name}' has been reported.",
@@ -379,6 +462,28 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
                         created_at=datetime.now(timezone.utc),
                         is_read=False
                     ))
+
+                    # Get admin settings for email/SMS
+                    admin_settings = session.query(SettingsAdmin).filter_by(admin_id=admin.id).first()
+                    if admin_settings:
+                        # Retrieve the review for email context
+                        review = session.query(VendorReview).filter_by(vendor_id=vendor.id, is_reported=True).first()
+                        
+                        # Send email notification if enabled
+                        if admin_settings.email_report_review:
+                            try:
+                                send_email_admin_reported_review(admin.email, admin, None, vendor, review, "/admin/report#vendors")
+                                print(f"Email sent to {admin.email} for reported vendor review")
+                            except Exception as e:
+                                print(f"Error sending email to {admin.email}: {e}")
+
+                        # Send SMS notification if enabled
+                        if admin_settings.text_report_review and admin.phone:
+                            try:
+                                send_sms_admin_reported_review(admin.phone, admin, vendor, review)
+                                print(f"SMS sent to {admin.phone} for reported vendor review")
+                            except Exception as e:
+                                print(f"Error sending SMS to {admin.phone}: {e}")
 
             if notifications:
                 session.bulk_save_objects(notifications)
@@ -416,6 +521,7 @@ def notify_admin_market_review_reported(mapper, connection, target):
             notifications = []
             for admin in admins:
                 if admin.admin_role <= 5:
+                    # Create site notification
                     notifications.append(AdminNotification(
                         subject="Reported Market Review",
                         message=f"A review for market, '{market.name}', has been reported.",
@@ -426,6 +532,28 @@ def notify_admin_market_review_reported(mapper, connection, target):
                         created_at=datetime.now(timezone.utc),
                         is_read=False
                     ))
+
+                    # Get admin settings for email/SMS
+                    admin_settings = session.query(SettingsAdmin).filter_by(admin_id=admin.id).first()
+                    if admin_settings:
+                        # Retrieve the review for email context
+                        review = session.query(MarketReview).filter_by(market_id=market.id, is_reported=True).first()
+                        
+                        # Send email notification if enabled
+                        if admin_settings.email_report_review:
+                            try:
+                                send_email_admin_reported_review(admin.email, admin, market, None, review, "/admin/report#markets")
+                                print(f"Email sent to {admin.email} for reported market review")
+                            except Exception as e:
+                                print(f"Error sending email to {admin.email}: {e}")
+
+                        # Send SMS notification if enabled
+                        if admin_settings.text_report_review and admin.phone:
+                            try:
+                                send_sms_admin_reported_market_review(admin.phone, admin, market, review)
+                                print(f"SMS sent to {admin.phone} for reported market review")
+                            except Exception as e:
+                                print(f"Error sending SMS to {admin.phone}: {e}")
 
             if notifications:
                 session.bulk_save_objects(notifications)
@@ -473,9 +601,20 @@ def fav_vendor_new_baskets(mapper, connection, target):
             # Individual basket notification
             message = f"{vendor.name} has added a new basket! Check it out before it's gone!"
 
+        # Retrieve the market for email context
+        market_day = session.query(MarketDay).filter_by(id=target.market_day_id).first()
+        market = market_day.market if market_day else None
+
         # Prepare notifications for favorited users
         notifications = []
         for user in favorited_users:
+            # Retrieve user notification settings
+            settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
+
+            if not settings or not settings.site_fav_vendor_new_basket:
+                print(f"User ID={user.id} has new vendor basket notifications disabled.")
+                continue
+
             existing_notification = session.query(UserNotification).filter(
                 UserNotification.user_id == user.id,
                 UserNotification.vendor_id == vendor.id,
@@ -486,6 +625,7 @@ def fav_vendor_new_baskets(mapper, connection, target):
             if existing_notification:
                 continue
 
+            # Create site notification
             notification = UserNotification(
                 subject="New Baskets from Your Favorite Vendor!",
                 message=message,
@@ -496,6 +636,18 @@ def fav_vendor_new_baskets(mapper, connection, target):
                 is_read=False
             )
             notifications.append(notification)
+
+            # Send email notification if enabled and market is available
+            if settings.email_fav_vendor_new_basket and market:
+                try:
+                    send_email_user_fav_vendor_new_basket(
+                        user.email, user, market, vendor, 
+                        f"user/markets/{market.id}?day={target.market_day_id}#vendors", 
+                        f"user/vendors/{vendor.id}"
+                    )
+                    print(f"Email sent to {user.email} for new basket from favorite vendor")
+                except Exception as e:
+                    print(f"Error sending email to {user.email}: {e}")
 
         if notifications:
             session.bulk_save_objects(notifications)
@@ -647,6 +799,7 @@ def vendor_market_new_event(mapper, connection, target):
                 if market_day.id not in settings.market_locations:
                     continue
 
+                # Create site notification
                 notifications.append(VendorNotification(
                     subject="New Event in Your Market!",
                     message=f"The market, {market_day.market.name}, has created a new event: {target.title}.",
@@ -657,6 +810,17 @@ def vendor_market_new_event(mapper, connection, target):
                     created_at=datetime.now(timezone.utc),
                     is_read=False
                 ))
+
+                # Send email notification if enabled
+                if settings.email_market_new_event:
+                    try:
+                        send_email_vendor_market_new_event(
+                            vendor_user.email, vendor_user, market_day.market, target, 
+                            f"user/markets/{market_day.market.id}"
+                        )
+                        print(f"Email sent to {vendor_user.email} for new market event")
+                    except Exception as e:
+                        print(f"Error sending email to {vendor_user.email}: {e}")
 
         if notifications:
             session.bulk_save_objects(notifications)
@@ -751,6 +915,10 @@ def vendor_basket_sold(mapper, connection, target):
 
                         notifications = []
                         for vendor_user in matched_vendor_users:
+                            # Get vendor user settings for email/SMS
+                            settings = notif_session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
+                            
+                            # Create site notification
                             notifications.append(VendorNotification(
                                 subject="Basket Sales Update!",
                                 message=f"You have sold {total_sold} baskets so far for today ({sale_date}).",
@@ -760,6 +928,38 @@ def vendor_basket_sold(mapper, connection, target):
                                 created_at=datetime.now(timezone.utc),
                                 is_read=False
                             ))
+
+                            # Get market and basket info for email
+                            basket_info = notif_session.query(Basket).filter(
+                                Basket.vendor_id == vendor.id,
+                                Basket.sale_date == sale_date,
+                                Basket.is_sold == True
+                            ).first()
+                            
+                            if basket_info:
+                                basket_market_day = notif_session.query(MarketDay).filter_by(id=basket_info.market_day_id).first()
+                                basket_market = basket_market_day.market if basket_market_day else None
+
+                                # Send email notification if enabled
+                                if settings and settings.email_basket_sold and basket_market:
+                                    try:
+                                        send_email_vendor_basket_sold(
+                                            vendor_user.email, vendor_user, basket_market, vendor, 
+                                            total_sold, basket_info.pickup_start, basket_info.pickup_end, sale_date
+                                        )
+                                        print(f"Summary email sent to {vendor_user.email} for {total_sold} baskets sold")
+                                    except Exception as e:
+                                        print(f"Error sending summary email to {vendor_user.email}: {e}")
+
+                                # Send SMS notification if enabled
+                                if settings and settings.text_basket_sold and vendor_user.phone:
+                                    try:
+                                        send_sms_vendor_basket_sold(
+                                            vendor_user.phone, vendor_user, vendor, total_sold, sale_date
+                                        )
+                                        print(f"Summary SMS sent to {vendor_user.phone} for {total_sold} baskets sold")
+                                    except Exception as e:
+                                        print(f"Error sending summary SMS to {vendor_user.phone}: {e}")
 
                         if notifications:
                             notif_session.bulk_save_objects(notifications)
@@ -777,6 +977,10 @@ def vendor_basket_sold(mapper, connection, target):
         # If it's after 6AM on sale_date, send an individual notification for each basket sold
         notifications = []
         for vendor_user in matched_vendor_users:
+            # Get vendor user settings for email/SMS
+            settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
+            
+            # Create site notification
             notifications.append(VendorNotification(
                 subject="Basket Sold!",
                 message=f"One of your baskets has sold.",
@@ -786,6 +990,27 @@ def vendor_basket_sold(mapper, connection, target):
                 created_at=datetime.now(timezone.utc),
                 is_read=False
             ))
+
+            # Send email notification if enabled
+            if settings and settings.email_basket_sold:
+                try:
+                    send_email_vendor_basket_sold(
+                        vendor_user.email, vendor_user, market_day.market, vendor, 
+                        1, target.pickup_start, target.pickup_end, sale_date
+                    )
+                    print(f"Email sent to {vendor_user.email} for basket sold")
+                except Exception as e:
+                    print(f"Error sending email to {vendor_user.email}: {e}")
+
+            # Send SMS notification if enabled
+            if settings and settings.text_basket_sold and vendor_user.phone:
+                try:
+                    send_sms_vendor_basket_sold(
+                        vendor_user.phone, vendor_user, vendor, 1, sale_date
+                    )
+                    print(f"SMS sent to {vendor_user.phone} for basket sold")
+                except Exception as e:
+                    print(f"Error sending SMS to {vendor_user.phone}: {e}")
 
         # Save all notifications in bulk
         if notifications:
@@ -931,6 +1156,12 @@ def notify_fav_market_new_baskets(mapper, connection, target):
         if existing_notification:
             return
 
+        # Retrieve the vendor who created the basket for email context
+        vendor = session.query(Vendor).filter_by(id=target.vendor_id).first()
+        if not vendor:
+            print(f"Vendor not found for Basket vendor_id: {target.vendor_id}")
+            return
+
         # Prepare notifications for favorited users
         notifications = []
         for user in favorited_users:
@@ -940,6 +1171,7 @@ def notify_fav_market_new_baskets(mapper, connection, target):
                 print(f"User ID={user.id} has new basket notifications disabled.")
                 continue
 
+            # Create site notification
             notifications.append(UserNotification(
                 subject="New Baskets for Sale!",
                 message=f"New baskets have been added to one of your favorite markets, {market.name}, check it out!",
@@ -949,6 +1181,26 @@ def notify_fav_market_new_baskets(mapper, connection, target):
                 created_at=datetime.now(timezone.utc),
                 is_read=False
             ))
+
+            # Send email notification if enabled
+            if settings.email_fav_market_new_basket:
+                try:
+                    send_email_user_fav_market_new_basket(
+                        user.email, user, market, vendor,
+                        f"user/markets/{market.id}?day={target.market_day_id}#vendors",
+                        f"user/vendors/{vendor.id}"
+                    )
+                    print(f"Email sent to {user.email} for new basket in favorite market")
+                except Exception as e:
+                    print(f"Error sending email to {user.email}: {e}")
+
+            # Send SMS notification if enabled
+            if settings.text_fav_market_new_basket and user.phone:
+                try:
+                    send_sms_user_fav_market_new_basket(user.phone, user, market, vendor)
+                    print(f"SMS sent to {user.phone} for new basket in favorite market")
+                except Exception as e:
+                    print(f"Error sending SMS to {user.phone}: {e}")
 
         # Save notifications
         if notifications:
@@ -1009,6 +1261,7 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
                     current_month = datetime.now(timezone.utc).strftime("%B")
                     current_day = datetime.now(timezone.utc).strftime("%d")
 
+                    # Create site notification
                     notification = UserNotification(
                         subject="Time to Pick Up Your Basket!",
                         message=(
@@ -1024,6 +1277,34 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
                     notif_session.add(notification)
                     notif_session.commit()
                     print(f"Pickup reminder sent for Basket ID={basket_id}")
+
+                    # Get vendor and market data for email/SMS
+                    vendor = notif_session.query(Vendor).filter_by(id=basket.vendor_id).first()
+                    market_day = notif_session.query(MarketDay).filter_by(id=basket.market_day_id).first()
+                    market = market_day.market if market_day else None
+
+                    if vendor and market:
+                        # Send email notification if enabled
+                        if settings.email_basket_pickup_time:
+                            try:
+                                send_email_user_basket_pickup_time(
+                                    user.email, user, market, vendor, basket,
+                                    f"user/markets/{market.id}?day={basket.market_day_id}#vendors",
+                                    f"user/vendors/{vendor.id}"
+                                )
+                                print(f"Pickup email sent to {user.email}")
+                            except Exception as e:
+                                print(f"Error sending pickup email to {user.email}: {e}")
+
+                        # Send SMS notification if enabled
+                        if settings.text_basket_pickup_time and user.phone:
+                            try:
+                                send_sms_user_basket_pickup_time(
+                                    user.phone, user, vendor, basket.pickup_start, basket.pickup_end
+                                )
+                                print(f"Pickup SMS sent to {user.phone}")
+                            except Exception as e:
+                                print(f"Error sending pickup SMS to {user.phone}: {e}")
 
                 except Exception as e:
                     print(f"Error sending basket pickup notification: {e}")
@@ -1104,6 +1385,16 @@ def notify_user_vendor_review_response(mapper, connection, target):
             session.bulk_save_objects(notifications)
             session.commit()
 
+        # Send email notification if enabled
+        if settings.email_vendor_review_response:
+            try:
+                send_email_user_vendor_review_response(
+                    user.email, user, vendor, target, f"user/vendor/{vendor.id}#reviews"
+                )
+                print(f"Email sent to {user.email} for vendor review response")
+            except Exception as e:
+                print(f"Error sending email to {user.email}: {e}")
+
     except Exception as e:
         session.rollback()
         print(f"Error notifying user about vendor review response: {e}")
@@ -1141,6 +1432,16 @@ def notify_users_new_market_in_state(mapper, connection, target):
                     created_at=datetime.now(timezone.utc),
                     is_read=False
                 ))
+
+            # Send email notification if enabled
+            if settings.email_new_market_in_city:
+                try:
+                    send_email_user_new_market_in_city(
+                        user.email, user, target, f"user/markets/{target.id}"
+                    )
+                    print(f"Email sent to {user.email} for new market in city")
+                except Exception as e:
+                    print(f"Error sending email to {user.email}: {e}")
 
         # Save site notifications
         if notifications:
@@ -1187,6 +1488,12 @@ def notify_vendor_users_new_review(mapper, connection, target):
             print(f"No vendor users found for Vendor ID {target.vendor_id}. No notifications will be created.")
             return
 
+        # Retrieve the vendor for email context
+        vendor = session.query(Vendor).filter_by(id=target.vendor_id).first()
+        if not vendor:
+            print(f"Vendor not found for Vendor ID: {target.vendor_id}")
+            return
+
         # Prepare notifications (site, email, text)
         notifications = []
         for vendor_user in vendor_users:
@@ -1209,6 +1516,16 @@ def notify_vendor_users_new_review(mapper, connection, target):
                     created_at=datetime.now(timezone.utc),
                     is_read=False
                 ))
+
+            # Send email notification if enabled
+            if settings.email_new_review:
+                try:
+                    send_email_vendor_new_review(
+                        vendor_user.email, vendor_user, vendor, target, f"vendor/dashboard?tab=reviews"
+                    )
+                    print(f"Email sent to {vendor_user.email} for new vendor review")
+                except Exception as e:
+                    print(f"Error sending email to {vendor_user.email}: {e}")
 
         # Save site notifications
         if notifications:
@@ -1263,16 +1580,27 @@ def notify_admins_new_vendor(mapper, connection, target):
                 print(f"No settings found for Admin ID={admin.id}. Skipping notification.")
                 continue
 
-            # Site Notification
-            notifications.append(AdminNotification(
-                subject="New Vendor Registration",
-                message=f"A new vendor, {target.name}, has registered on the platform.",
-                link="/admin/vendors",
-                admin_id=admin.id,
-                admin_role=admin.admin_role,
-                created_at=datetime.now(timezone.utc),
-                is_read=False
-            ))
+            # Site Notification (with proper settings check)
+            if settings.site_new_vendor:
+                notifications.append(AdminNotification(
+                    subject="New Vendor Registration",
+                    message=f"A new vendor, {target.name}, has registered on the platform.",
+                    link="/admin/vendors",
+                    admin_id=admin.id,
+                    admin_role=admin.admin_role,
+                    created_at=datetime.now(timezone.utc),
+                    is_read=False
+                ))
+
+            # Send email notification if enabled
+            if settings.email_new_vendor:
+                try:
+                    send_email_admin_new_vendor(
+                        admin.email, admin, target, f"admin/vendors/{target.id}"
+                    )
+                    print(f"Email sent to {admin.email} for new vendor registration")
+                except Exception as e:
+                    print(f"Error sending email to {admin.email}: {e}")
 
         # Save notifications
         if notifications:
