@@ -89,7 +89,7 @@ def run():
         password = "lol"
         first_name = fake.first_name()
         last_name = fake.last_name()
-        phone = f'+1 {str(randint(1000000000,9999999999))}'
+        phone = f'+15555550000'
         address_1 = fake.street_address()
         address_2 = f'{choice(apartment)} {randint(1, 200)}'
         city = choice(['Brooklyn', 'Brooklyn', 'Brooklyn', 'Bronx', 'Bronx', 'Far Rockaway', 'New York', 'New York', 'New York', 'New York', 'Queens', 'Queens', 'Staten Island'])
@@ -3671,7 +3671,7 @@ def run():
         first_name = fake.first_name()
         last_name = fake.last_name()
         # phone = fake.phone_number()
-        phone = f'+1 {str(randint(1000000000,9999999999))}'
+        phone = f'+15555550000'
         active_vendor = rand_vendor_id
         vendor_id = choice_id[choice_num]
         vendor_role = choice_role[choice_num]
@@ -3771,7 +3771,7 @@ def run():
             password="lol",
             first_name="Ham-man",
             last_name="Gingy",
-            phone="+12095553880",
+            phone="+15555550000",
             admin_role=0
         ),
         AdminUser(
@@ -3779,7 +3779,7 @@ def run():
             password="lol",
             first_name="Zak",
             last_name="Wosewick",
-            phone="+10000000000",
+            phone="+15555550000",
             admin_role=1
         ),
         AdminUser(
@@ -3787,7 +3787,7 @@ def run():
             password="lol",
             first_name="Sand",
             last_name="Man",
-            phone="+10000000000",
+            phone="+15555550000",
             admin_role=1
         ),
         AdminUser(
@@ -3795,7 +3795,7 @@ def run():
             password="lol",
             first_name="Vinh",
             last_name="Cent",
-            phone="+10000000000",
+            phone="+15555550000",
             admin_role=1
         ),
         AdminUser(
@@ -3803,7 +3803,7 @@ def run():
             password="lol",
             first_name="Hell",
             last_name="Oh",
-            phone="+10000000000",
+            phone="+15555550000",
             admin_role=2
         ),
     ]
