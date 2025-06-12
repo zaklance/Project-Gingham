@@ -237,18 +237,18 @@ def track_fav_vendor_event(mapper, connection, target):
                 continue
 
             # Check for existing notifications
-            existing_notification = session.query(UserNotification).filter(
-                UserNotification.user_id == user.id,
-                UserNotification.vendor_id == vendor.id,
-                UserNotification.created_at >= datetime.now(timezone.utc).date(),
-                UserNotification.subject.in_([
-                    "New Event from Your Favorite Vendor!",
-                    "Vendor Schedule Change"
-                ])
-            ).first()
+            # existing_notification = session.query(UserNotification).filter(
+            #     UserNotification.user_id == user.id,
+            #     UserNotification.vendor_id == vendor.id,
+            #     UserNotification.created_at >= datetime.now(timezone.utc).date(),
+            #     UserNotification.subject.in_([
+            #         "New Event from Your Favorite Vendor!",
+            #         "Vendor Schedule Change"
+            #     ])
+            # ).first()
 
-            if existing_notification:
-                continue
+            # if existing_notification:
+            #     continue
 
             # Create site notification
             notification = UserNotification(
@@ -589,15 +589,15 @@ def fav_vendor_new_baskets(mapper, connection, target):
                 print(f"User ID={user.id} has new vendor basket notifications disabled.")
                 continue
 
-            existing_notification = session.query(UserNotification).filter(
-                UserNotification.user_id == user.id,
-                UserNotification.vendor_id == vendor.id,
-                UserNotification.created_at >= datetime.now(timezone.utc).date(),
-                UserNotification.subject == "New Baskets from Your Favorite Vendor!"
-            ).first()
+            # existing_notification = session.query(UserNotification).filter(
+            #     UserNotification.user_id == user.id,
+            #     UserNotification.vendor_id == vendor.id,
+            #     UserNotification.created_at >= datetime.now(timezone.utc).date(),
+            #     UserNotification.subject == "New Baskets from Your Favorite Vendor!"
+            # ).first()
 
-            if existing_notification:
-                continue
+            # if existing_notification:
+            #     continue
 
             # Create site notification
             notification = UserNotification(
@@ -1152,14 +1152,14 @@ def notify_fav_market_new_baskets(mapper, connection, target):
             return
 
         # Check if a notification for this market and basket type already exists today
-        existing_notification = session.query(UserNotification).filter(
-            UserNotification.market_id == market.id,
-            UserNotification.subject == "New Baskets for Sale!",
-            UserNotification.created_at >= datetime.now(timezone.utc).date()
-        ).first()
+        # existing_notification = session.query(UserNotification).filter(
+        #     UserNotification.market_id == market.id,
+        #     UserNotification.subject == "New Baskets for Sale!",
+        #     UserNotification.created_at >= datetime.now(timezone.utc).date()
+        # ).first()
 
-        if existing_notification:
-            return
+        # if existing_notification:
+        #     return
 
         # Retrieve the vendor who created the basket for email context
         vendor = session.query(Vendor).filter_by(id=target.vendor_id).first()
