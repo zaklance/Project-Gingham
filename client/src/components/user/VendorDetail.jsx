@@ -445,15 +445,6 @@ function VendorDetail() {
                                     </span>
                                     <>
                                         <br className='m-br'/>
-                                        {marketBaskets.filter((item) => item.market_day_id === marketDetail.id && item.is_sold === false).length > 0 ? (
-                                            <span className="market-price">
-                                                <span className="text-500">Price: ${firstBasket ? firstBasket.price : ''}</span>
-                                                <br/>
-                                                Value: ${firstBasket ? firstBasket.value : ''}
-                                            </span>
-                                        ) : (
-                                            <span className="market-price">Out of Stock</span>
-                                        )}
                                         {allBaskets.length > 4 ? (
                                             <span className="market-baskets d-nowrap">
                                                 Baskets Available
@@ -483,6 +474,15 @@ function VendorDetail() {
                                                 <br />
                                                 {formatPickupText(firstBasket, timeConverter, marketDateConvert)}
                                             </span>
+                                        )}
+                                        {marketBaskets.filter((item) => item.market_day_id === marketDetail.id && item.is_sold === false).length > 0 ? (
+                                            <span className="market-price">
+                                                <span className="text-500">Price: ${firstBasket ? firstBasket.price : ''}</span>
+                                                <br/>
+                                                Value: ${firstBasket ? firstBasket.value : ''}
+                                            </span>
+                                        ) : (
+                                            <span className="market-price">Out of Stock</span>
                                         )}
                                         {allBaskets.length > 0 ? (
                                             <button className="btn-add btn-add-green nowrap" onClick={() => handleAddToCart(marketDetail)}>
