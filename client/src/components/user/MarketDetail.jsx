@@ -652,7 +652,8 @@ function MarketDetail ({ match }) {
             )}
             {market?.bio && (
                 <div className='flex-start flex-bottom-align m-flex-wrap'>
-                    <h4>About: &emsp;</h4>
+                    <h4>About:</h4>
+                    <span> &emsp;</span>
                     <p>{market.bio}</p>
                 </div>
             )}
@@ -709,9 +710,9 @@ function MarketDetail ({ match }) {
                     return (
                     <div key={index} className="market-item flex-center-align">
                         <span className="market-name margin-l-16">
-                            <Link to={`/user/vendors/${vendorId}`} className="market-name"> {vendorDetail.name || 'Loading...'} </Link>
+                            <Link to={`/user/vendors/${vendorId}`} className="market-name text-hyphen"> {vendorDetail.name || 'Loading...'} </Link>
                             <br />
-                            <p><span className='m-hidden'>Products:</span>{" "}
+                            <p className='text-hyphen'><span className='m-hidden'>Products:</span>{" "}
                                 {products
                                     .filter((product) => vendorDetail.products?.includes(product.id))
                                     .map((product) => product.product)
@@ -722,15 +723,6 @@ function MarketDetail ({ match }) {
                                 }
                             </p>
                         </span>
-                        {availableBaskets.length > 0 ? (
-                        <span className="market-price">
-                            <span className="text-500">Price: ${firstBasket.price}</span>
-                            <br />
-                            Value: ${firstBasket.value}
-                        </span>
-                        ) : (
-                        <span className="market-price"></span>
-                        )}
                         {availableBaskets.length > 4 ? (
                         <span className="market-baskets d-nowrap">
                             Baskets Available
@@ -745,6 +737,15 @@ function MarketDetail ({ match }) {
                             <br />
                             {firstBasket && firstBasket.sale_date ? formatPickupText(firstBasket, timeConverter, marketDateConvert) : ""}
                         </span>
+                        )}
+                        {availableBaskets.length > 0 ? (
+                        <span className="market-price">
+                            <span className="text-500">Price: ${firstBasket.price}</span>
+                            <br />
+                            Value: ${firstBasket.value}
+                        </span>
+                        ) : (
+                        <span className="market-price"></span>
                         )}
                         {availableBaskets.length > 0 ? (
                         <button className="btn-add btn-add-green color-7 nowrap" onClick={() => handleAddToCart(vendorId, vendorDetail, availableBaskets)}>

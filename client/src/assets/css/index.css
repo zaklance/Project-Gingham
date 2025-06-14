@@ -430,6 +430,11 @@ p, li, div, form, input, select, button, textarea, td {
   word-break: break-all;
 }
 
+.text-hyphen {
+  hyphens: auto;
+  hyphenate-limit-chars: 6 3 2;
+}
+
 /* .text-block-header {
   break-inside: avoid;
   page-break-inside: avoid;
@@ -4341,12 +4346,19 @@ textarea {
     flex-wrap: wrap;
   }
 
-  .cell-title {
-    min-width: 0;
+  .market-item>button {
+    /* flex: 1; */
+    width: 100%;
+    max-width: 100% !important;
+  }
+  
+  .market-item>* {
+    /* max-width: 265px; */
+    max-width: 30%;
   }
 
-  .market-item>* {
-    max-width: 265px;
+  .cell-title {
+    min-width: 0;
   }
 
   #map {
