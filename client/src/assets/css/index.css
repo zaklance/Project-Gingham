@@ -3004,6 +3004,17 @@ textarea {
   width: 100%;
 }
 
+.react-player {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.react-player video {
+  display: block;
+}
+
 .icon-notif {
   background-image: url('../images/icons/icons8-notification.svg');
   background-repeat: no-repeat;

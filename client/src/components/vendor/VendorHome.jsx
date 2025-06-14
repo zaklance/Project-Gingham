@@ -1,4 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
+import ReactPlayer from 'react-player'
 import { useOutletContext } from "react-router-dom";
 import { blogTimeConverter } from "../../utils/helpers";
 
@@ -84,7 +85,15 @@ function Home() {
                     </p>
                 </div>
                 <div className="box-inside">
-                    <h3 className="margin-b-16">How <span className="font-cera-gingham text-900">GINGHAM</span> Works:</h3>
+                    <div className="react-player">
+                        <ReactPlayer
+                            url="/site-images/Gingham-How-To-01.mp4"
+                            controls={true}
+                            width="100%"
+                            height="100%"
+                        />
+                    </div>
+                    <h3 className=" margin-t-16 margin-b-16">How <span className="font-cera-gingham text-900">GINGHAM</span> Works:</h3>
                     <p>
                         <strong>
                             Build mystery baskets of bundled surplus products you'd like to sell quickly. With <span className="font-cera-gingham text-900">gingham</span>, 
