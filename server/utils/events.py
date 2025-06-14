@@ -835,11 +835,15 @@ def update_blog_notification_status(mapper, connection, target):
 @listens_for(Basket, 'after_update')
 def vendor_basket_sold(mapper, connection, target):
     session = Session(bind=connection)
-    # print(inspect.currentframe().f_code.co_name)
     try:
-        # Only notify if the basket was just marked as sold
-        if not target.is_sold:
-            return
+        # Check if is_sold changed from False to True
+        state = inspect(target)
+        history = state.attrs.is_sold.history
+
+        if not history.has_changes() or not history.added or history.added[0] != True:
+            return  # Skip if is_sold didn't change or was already True
+
+        print(f"Processing notification for basket {target.id}")
 
         # Retrieve the vendor
         vendor = session.query(Vendor).get(target.vendor_id)
@@ -872,6 +876,12 @@ def vendor_basket_sold(mapper, connection, target):
 
         matched_vendor_users = []
         for vendor_user in vendor_users:
+            if not vendor_user.vendor_id or not isinstance(vendor_user.vendor_id, dict):
+                continue
+
+            if str(vendor.id) not in vendor_user.vendor_id:
+                continue
+            
             settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
             if not settings or not settings.market_locations:
                 continue
@@ -1514,6 +1524,12 @@ def notify_vendor_users_new_review(mapper, connection, target):
         # Prepare notifications (site, email, text)
         notifications = []
         for vendor_user in vendor_users:
+            if not vendor_user.vendor_id or not isinstance(vendor_user.vendor_id, dict):
+                continue
+
+            if str(vendor.id) not in vendor_user.vendor_id:
+                continue
+            
             # Retrieve vendor user notification settings
             settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
             if not settings:
