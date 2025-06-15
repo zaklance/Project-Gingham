@@ -18,6 +18,7 @@ cd client
 2. Install necessary packages for React:
 ```
 npm install
+npm install -g mjml
 ```
 3. Run React:
 ```
