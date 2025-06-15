@@ -520,8 +520,14 @@ function MarketDetail ({ match }) {
     return (
         <div>
             <title>gingham • {market.name}</title>
-            <div className='flex-space-between'>
-                <h2>{market.name}</h2>
+            <div className='flex-space-between flex-gap-8'>
+                <div className='flex-start flex-gap-8'>
+                    <h2>{market.name}</h2>
+                    <button
+                        className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
+                        onClick={handleClick}>&emsp;
+                    </button>
+                </div>
                 <button onClick={handleBackButtonClick} className='btn btn-small m-hidden'>Back</button>
             </div>
             <div className={events.length < 1 ? 'flex-start flex-start-align flex-gap-16' : 'flex-start flex-gap-16'}>
@@ -584,19 +590,15 @@ function MarketDetail ({ match }) {
                     </Map>
                 </div>
             </div>
-            <div className='flex-start market-details margin-t-8'>
-                <h4>Location: &emsp;<a className='link-underline text-500' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
+            <div className='flex-start margin-t-8'>
+                <h4>Location: &emsp;<a className='link-underline text-400' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
                     {market.location}, {market.city}, {market.state}
                 </a></h4>
-                <button
-                    className={`btn-like ${isClicked || marketFavs.some(fav => fav.market_id === market.id) ? 'btn-like-on' : ''}`}
-                    onClick={handleClick}>&emsp;
-                </button>
             </div>
             <div className='flex-start flex-center-align m-flex-wrap'>
                 <label><h4>Schedule: &emsp;</h4></label>
                 {marketDays.length === 1 ? (
-                    <h4 className='text-500'>{weekDay[marketDays[0].day_of_week]}, &ensp;</h4>
+                    <h4 className='text-400'>{weekDay[marketDays[0].day_of_week]}, &ensp;</h4>
                 ) : (
                     <select
                         id="marketDaysSelect"
@@ -613,17 +615,17 @@ function MarketDetail ({ match }) {
                     </select>
                 )}
                 {selectedDay && (
-                    <h4 className='text-500'>{timeConverter(selectedDay.hour_start)} - {timeConverter(selectedDay.hour_end)}</h4>
+                    <h4 className='text-400'>{timeConverter(selectedDay.hour_start)} - {timeConverter(selectedDay.hour_end)}</h4>
                 )}
             </div>
             <div className='flex-start'>
                 {market.year_round === false && market.season_start && market.season_end ? (
-                    <h4>Season: &emsp;<span className='text-500'>{formatDate(market.season_start)} – {formatDate(market.season_end)}{!market.is_current && `, ${new Date().getFullYear() - 1}`}</span></h4>
+                    <h4>Season: &emsp;<span className='text-400'>{formatDate(market.season_start)} – {formatDate(market.season_end)}{!market.is_current && `, ${new Date().getFullYear() - 1}`}</span></h4>
                     ) : (
                         market.year_round === true ? (
-                            <h4>Season: &emsp;<span className='text-500'>Open Year Round {!market.is_current && `(${new Date().getFullYear() - 1})`}</span></h4>
+                            <h4>Season: &emsp;<span className='text-400'>Open Year Round {!market.is_current && `(${new Date().getFullYear() - 1})`}</span></h4>
                         ) : (
-                            <h4>Season: &emsp;<span className='text-500'>No Dates Available</span></h4>
+                            <h4>Season: &emsp;<span className='text-400'>No Dates Available</span></h4>
                         )
                     )}
             </div>
@@ -709,14 +711,15 @@ function MarketDetail ({ match }) {
 
                     return (
                     <div key={index} className="market-item flex-center-align">
-                        <span className="market-name margin-l-16">
+                        <span className="market-name d-margin-l-16">
                             <Link to={`/user/vendors/${vendorId}`} className="market-name text-hyphen"> {vendorDetail.name || 'Loading...'} </Link>
                             <br />
                             <p className='text-hyphen'><span className='m-hidden'>Products:</span>{" "}
                                 {products
                                     .filter((product) => vendorDetail.products?.includes(product.id))
                                     .map((product) => product.product)
-                                    .join(", ") || "No products listed"}
+                                    .join(", ") || "No products listed"
+                                }
                                 {vendorDetail.products_subcategories && "; "}
                                 {vendorDetail.products_subcategories?.length > 0 &&
                                     vendorDetail.products_subcategories.map(p => p).join(', ')

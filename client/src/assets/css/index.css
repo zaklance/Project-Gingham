@@ -340,6 +340,10 @@ p, li, div, form, input, select, button, textarea, td {
   font-weight: 300;
 }
 
+.text-400 {
+  font-weight: 400;
+}
+
 .text-500 {
   font-weight: 500;
 }
@@ -1275,6 +1279,10 @@ ul {
   max-width: calc(100%); 
 }
 
+.market-details>* {
+  margin-left: 4px;
+}
+
 .side-basket {
   min-width: 360px;
   margin-top: auto;
@@ -1447,8 +1455,8 @@ ul {
   height: 34px;
   width: 34px;
   font-size: .8em;
-  margin-left: 20px;
-  margin-top: -4px;
+  /* margin-left: 20px; */
+  /* margin-top: -4px; */
   padding: 9px 10px;
   border-radius: 8px;
   border: none;
@@ -4014,7 +4022,7 @@ textarea {
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 /* MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA MEDIA */
 @media (min-width: 820px) {
-.d-flex-space-between {
+  .d-flex-space-between {
     display: flex;
     justify-content: space-between;
   }
@@ -4025,6 +4033,10 @@ textarea {
 
   .d-width-50 {
     width: 50%;
+  }
+
+  .d-margin-l-16 {
+    margin-left: 16px;
   }
 }
 

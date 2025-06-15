@@ -329,12 +329,15 @@ function VendorDetail() {
     return (
         <div className='markets-container'>
             <title>gingham • {vendor.name}</title>
-            <div className='flex-space-between'>
-                <div className='flex-start flex-gap-8 flex-bottom-align'>
+            <div className='flex-space-between flex-gap-8'>
+                <div className='flex-start flex-gap-8 flex-center-align'>
                     <h2>{vendor.name}</h2>
-                    
+                    <button 
+                        className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
+                        onClick={handleClick}>&emsp;
+                    </button>
                 </div>
-                <button onClick={handleBackButtonClick} className='btn btn-small'>Back</button>
+                <button onClick={handleBackButtonClick} className='btn btn-small m-hidden'>Back</button>
             </div>
             <div className={events.length < 1 ? 'flex-start flex-start-align flex-gap-16' : 'flex-start flex-gap-16'}>
                 {events.length > 0 && (
@@ -366,32 +369,28 @@ function VendorDetail() {
                     <img className='img-vendor' src={`/vendor-images/_default-images/${vendor.image_default}`} alt="Vendor Image"/>
                 )}
             </div>
-            <div className='market-details'>
-                <div className='flex-start margin-t-8'>
-                    <h2 className='margin-r-8'>{productList?.length > 1 ? 'Products: ' : 'Product: '}</h2>
-                    <h3 className='margin-t-8 text-500'>{productList?.length > 0
+            <div className='market-details margin-t-8'>
+                <div className='flex-start flex-center-align'>
+                    <h3 className='margin-r-8'>{productList?.length > 1 ? 'Products: ' : 'Product: '}</h3>
+                    <h3 className='text-400'>{productList?.length > 0
                         ? productList.map(p => p.product).join(', ')
                         : "No products available"}
                     </h3>
                 </div>
                 {vendor.products_subcategories && (
-                    <h3 className='margin-t-4 margin-l-4'>
+                    <h3>
                         {vendor.products_subcategories?.length > 1 ? 'Subcategories:' : 'Subcategory:'}
-                        &emsp; <span className='text-500'>{vendor.products_subcategories?.length > 0 &&
+                        &emsp; <span className='text-400'>{vendor.products_subcategories?.length > 0 &&
                             vendor.products_subcategories.map(p => p).join(', ')
                         }</span>
                     </h3>
                 )}
-                <div className='flex-start flex-center-align margin-l-4'>
-                    <h3 className=''>Based out of: &emsp;<span className='text-500'>{vendor.city}, {vendor.state}</span></h3>
-                    <button 
-                        className={`btn-like ${isClicked || vendorFavs.some(fav => fav.vendor_id === vendor.id) ? 'btn-like-on' : ''}`}
-                        onClick={handleClick}>&emsp;
-                    </button>
+                <div className='flex-start flex-center-align'>
+                    <h3 className=''>Based out of: &emsp;<span className='text-400'>{vendor.city}, {vendor.state}</span></h3>
                 </div>
             </div>
             {vendor.website && (
-                <h3 className='margin-l-4 margin-t-4 text-500'>Click <a className='link-underline-inverse text-700' href={vendor.website} target='_blank' rel="noopener noreferrer">here</a> for {vendor.name} website!</h3>
+                <h3 className='margin-l-4 margin-t-4 text-400'><a className='link-underline-inverse text-700' href={vendor.website} target='_blank' rel="noopener noreferrer">Click</a> for their website!</h3>
             )}
             {vendor.bio && (
                 <>
