@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "@vitejs/plugin-react": "^4.5.1",
-    "crypto-browserify": "^3.12.1",
-    "vite": "^6.3.5"
-  }
-}
