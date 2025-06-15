@@ -1,7 +1,7 @@
 import os
 import json
 import inspect
-from sqlalchemy import event, func
+from sqlalchemy import event, func, and_
 from sqlalchemy.orm import Session
 from sqlalchemy.event import listens_for
 from datetime import datetime, date, timezone, timedelta, time
@@ -1711,30 +1711,38 @@ def delete_recipe_image(mapper, connection, target):
         except Exception as e:
             print(f"Error deleting recipe image {image_path}: {e}")
 
-@listens_for(Event, 'before_delete')
+@listens_for(Event, 'after_delete')
 def delete_event_notifications(mapper, connection, target):
     try:
-        # Delete user notifications for this event
+        # Delete user notifications for this event (match by vendor_id, market_id, message, and subject)
         connection.execute(
             UserNotification.__table__.delete().where(
-                # UserNotification.vendor_id == target.vendor_id,
-                UserNotification.message.like(f"%{target.message}%"),
-                UserNotification.subject.in_([
-                    "New Event from Your Favorite Vendor!",
-                    "Vendor Schedule Change"
-                ])
+                and_(
+                    UserNotification.vendor_id == target.vendor_id,
+                    UserNotification.market_id == target.market_id,
+                    UserNotification.message == target.message,
+                    UserNotification.subject.in_([
+                        "New Event from Your Favorite Vendor!",
+                        "Vendor Schedule Change",
+                        "Market Schedule Change",
+                        "New Event in Your Market!"
+                    ])
+                )
             )
         )
 
-        # Delete vendor notifications for this event
+        # Delete vendor notifications for this event (match by vendor_id, market_id, message, and subject)
         connection.execute(
             VendorNotification.__table__.delete().where(
-                # VendorNotification.vendor_id == target.vendor_id,
-                VendorNotification.message.like(f"%{target.message}%"),
-                VendorNotification.subject.in_([
-                    "New Event in Your Market!",
-                    "Market Schedule Change"
-                ])
+                and_(
+                    VendorNotification.vendor_id == target.vendor_id,
+                    VendorNotification.market_id == target.market_id,
+                    VendorNotification.message == target.message,
+                    VendorNotification.subject.in_([
+                        "New Event in Your Market!",
+                        "Market Schedule Change"
+                    ])
+                )
             )
         )
     except Exception as e:

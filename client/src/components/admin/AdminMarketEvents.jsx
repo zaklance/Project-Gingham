@@ -22,9 +22,10 @@ function AdminMarketEvents({ markets }) {
     }, [matchingMarketId]);
 
     const handleInputEventChange = (event) => {
+        const { name, value } = event.target;
         setNewEvent({
             ...newEvent,
-            [event.target.name]: event.target.value,
+            [name]: name === 'schedule_change' ? (value === 'true') : value,
         });
     };
     
