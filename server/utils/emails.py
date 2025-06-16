@@ -206,18 +206,17 @@ def send_contact_email(name, email, subject, message):
             """
         msg.attach(MIMEText(body, 'html'))
 
+        # Send email
         server = smtplib.SMTP(smtp, port)
         server.starttls()
         server.login(sender_email, password)
-        # print("SMTP Server is unreachable")
-
         server.sendmail(sender_email, recipient_email, msg.as_string())
         server.quit()
         
         return {"message": "Email sent successfully!"}
 
     except Exception as e: 
-        print("Error occured:", str(e))
+        print("Error occurred:", str(e))
         return {"error": str(e)}
 
 #  PASSWORD EMAILS PASSWORD EMAILS PASSWORD EMAILS PASSWORD EMAILS

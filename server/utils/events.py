@@ -996,7 +996,7 @@ def vendor_basket_sold(mapper, connection, target):
             notifications.append(VendorNotification(
                 subject="Basket Sold!",
                 message=f"One of your baskets has sold.",
-                link=f"/vendor/dashboard",
+                link=f"/vendor/dashboard?tab=baskets",
                 vendor_id=vendor.id,
                 vendor_user_id=vendor_user.id,
                 created_at=datetime.now(timezone.utc),
