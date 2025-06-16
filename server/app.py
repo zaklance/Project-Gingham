@@ -62,7 +62,7 @@ from celery_config import celery
 import base64
 
 
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 
 app = Flask(__name__, static_folder='public')
 
@@ -2488,80 +2488,140 @@ def all_events():
             return {'error': f'Exception: {str(e)}'}, 500
         
     if request.method == 'POST':
-        data = request.get_json()
-        print("Received Data:", data)
-
         try:
-            start_date = datetime.strptime(data.get('start_date'), '%Y-%m-%d').date()
-            end_date = datetime.strptime(data.get('end_date'), '%Y-%m-%d').date()
-        except ValueError as e:
-            return jsonify({"error": f"Invalid time format: {str(e)}"}), 400
+            data = request.get_json()
+            if not data:
+                return jsonify({"error": "No data provided"}), 400
 
-        vendor_id = data.get('vendor_id')
-        if isinstance(vendor_id, dict): 
+            # Validate required fields
+            required_fields = ['title', 'message', 'start_date', 'end_date']
+            for field in required_fields:
+                if field not in data:
+                    return jsonify({"error": f"Missing required field: {field}"}), 400
+
+            # Validate date formats
             try:
-                vendor_id = int(list(vendor_id.keys())[0])
-            except (ValueError, IndexError):
-                return jsonify({"error": "Invalid vendor_id format"}), 400
-        else:
-            try:
-                vendor_id = int(vendor_id) if vendor_id is not None else None
-            except (TypeError, ValueError):
-                return jsonify({"error": "Invalid vendor_id"}), 400
+                start_date = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
+                end_date = datetime.strptime(data['end_date'], '%Y-%m-%d').date()
+                
+                # Validate date range
+                if end_date < start_date:
+                    return jsonify({"error": "End date cannot be before start date"}), 400
+            except ValueError as e:
+                return jsonify({"error": f"Invalid date format: {str(e)}"}), 400
 
-        market_id = data.get('market_id')
+            # Validate vendor_id
+            vendor_id = data.get('vendor_id')
+            if vendor_id is not None:
+                if isinstance(vendor_id, dict):
+                    try:
+                        vendor_id = int(list(vendor_id.keys())[0])
+                    except (ValueError, IndexError):
+                        return jsonify({"error": "Invalid vendor_id format"}), 400
+                else:
+                    try:
+                        vendor_id = int(vendor_id)
+                    except (TypeError, ValueError):
+                        return jsonify({"error": "Invalid vendor_id"}), 400
 
-        new_event = Event(
-            vendor_id=vendor_id,
-            market_id=market_id,
-            title=data['title'],
-            message=data['message'],
-            start_date=start_date,
-            end_date=end_date
-        )
+            # Validate market_id
+            market_id = data.get('market_id')
+            if market_id is not None:
+                try:
+                    market_id = int(market_id)
+                except (TypeError, ValueError):
+                    return jsonify({"error": "Invalid market_id"}), 400
 
-        db.session.add(new_event)
-        db.session.commit()
+            # Create new event
+            new_event = Event(
+                vendor_id=vendor_id,
+                market_id=market_id,
+                title=data['title'],
+                message=data['message'],
+                start_date=start_date,
+                end_date=end_date
+            )
 
-        return new_event.to_dict(), 201
+            db.session.add(new_event)
+            db.session.commit()
 
-        return new_event.to_dict(), 201
+            return jsonify(new_event.to_dict()), 201
+
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f'Error creating event: {e}')
+            return jsonify({'error': f'Failed to create event: {str(e)}'}), 500
 
 @app.route('/api/events/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def event_by_id(id):
-    event = Event.query.filter(Event.id == id).first()
-    if not event:
-        return {'error': 'event not found'}, 404
-    if request.method == 'GET':
-        return event.to_dict(), 200
-    elif request.method == 'PATCH':
-        if not event:
-            return {'error': 'user not found'}, 404
-        try:
-            data = request.get_json()
-            event.title=data.get('title')
-            event.message=data.get('message')
-            event.schedule_change=data.get('schedule_change') in [True, 'true', 'True']
-            print(event.schedule_change)
-            if data.get('start_date'):
-                event.start_date = datetime.strptime(data.get('start_date'), '%Y-%m-%d').date()
-            if data.get('end_date'):
-                event.end_date = datetime.strptime(data.get('end_date'), '%Y-%m-%d').date()            
-            if 'vendor_id' in data:
-                event.vendor_id = data['vendor_id']
-            if 'market_id' in data:
-                event.market_id = data['market_id']
-            db.session.add(event)
-            db.session.commit()
-            return event.to_dict(), 200
-        except Exception as e:
-            db.session.rollback()
-            return {'error': str(e)}, 500
-    elif request.method == 'DELETE':
-        db.session.delete(event)
-        db.session.commit()
-        return {}, 204
+    try:
+        event = Event.query.get_or_404(id)
         
+        if request.method == 'GET':
+            return jsonify(event.to_dict()), 200
+            
+        elif request.method == 'PATCH':
+            try:
+                data = request.get_json()
+                if not data:
+                    return jsonify({"error": "No data provided"}), 400
+
+                # Update fields if provided
+                if 'title' in data:
+                    event.title = data['title']
+                if 'message' in data:
+                    event.message = data['message']
+                if 'schedule_change' in data:
+                    event.schedule_change = data['schedule_change'] in [True, 'true', 'True']
+                if 'start_date' in data:
+                    try:
+                        event.start_date = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
+                    except ValueError:
+                        return jsonify({"error": "Invalid start_date format"}), 400
+                if 'end_date' in data:
+                    try:
+                        event.end_date = datetime.strptime(data['end_date'], '%Y-%m-%d').date()
+                    except ValueError:
+                        return jsonify({"error": "Invalid end_date format"}), 400
+                if 'vendor_id' in data:
+                    try:
+                        event.vendor_id = int(data['vendor_id'])
+                    except (TypeError, ValueError):
+                        return jsonify({"error": "Invalid vendor_id"}), 400
+                if 'market_id' in data:
+                    try:
+                        event.market_id = int(data['market_id'])
+                    except (TypeError, ValueError):
+                        return jsonify({"error": "Invalid market_id"}), 400
+
+                # Validate date range if both dates are being updated
+                if 'start_date' in data and 'end_date' in data:
+                    if event.end_date < event.start_date:
+                        return jsonify({"error": "End date cannot be before start date"}), 400
+
+                db.session.commit()
+                return jsonify(event.to_dict()), 200
+
+            except Exception as e:
+                db.session.rollback()
+                app.logger.error(f'Error updating event: {e}')
+                return jsonify({'error': f'Failed to update event: {str(e)}'}), 500
+
+        elif request.method == 'DELETE':
+            try:
+                db.session.delete(event)
+                db.session.commit()
+                return '', 204
+            except Exception as e:
+                db.session.rollback()
+                app.logger.error(f'Error deleting event: {e}')
+                return jsonify({'error': f'Failed to delete event: {str(e)}'}), 500
+
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f'Error accessing event: {e}')
+        return jsonify({'error': f'Failed to access event: {str(e)}'}), 500
+
 @app.route('/api/baskets', methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def handle_baskets():
     if request.method == 'GET':
