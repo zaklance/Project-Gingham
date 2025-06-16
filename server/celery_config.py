@@ -31,6 +31,10 @@ def get_beat_schedule():
         'weekly_admin_summary': {
             'task': 'tasks.send_weekly_admin_summary',
             'schedule': crontab(minute=0, hour=13, day_of_week=1),
+        },
+        'monthly_vendor_statement': {
+            'task': 'tasks.send_monthly_vendor_statements',
+            'schedule': crontab(minute=0, hour=13, day_of_month=10),
         }
     }
 
