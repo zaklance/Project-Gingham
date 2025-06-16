@@ -23,8 +23,22 @@ from utils.emails import ( send_contact_email, send_user_password_reset_email,
                           send_vendor_password_reset_email, send_admin_password_reset_email, 
                           send_user_confirmation_email, send_vendor_confirmation_email, 
                           send_admin_confirmation_email, send_vendor_team_invite_email,
-                          send_email_weekly_admin_update 
-                          )
+                          send_email_weekly_admin_update,
+                          send_email_user_fav_vendor_new_event, 
+                          send_email_user_fav_vendor_schedule_change,
+                          send_email_user_fav_market_new_vendor,
+                          send_email_admin_reported_review,
+                          send_email_user_fav_vendor_new_basket,
+                          send_email_vendor_market_new_event,
+                          send_email_vendor_market_schedule_change,
+                          send_email_vendor_basket_sold,
+                          send_email_user_fav_market_new_basket,
+                          send_email_user_basket_pickup_time,
+                          send_email_user_vendor_review_response,
+                          send_email_user_new_market_in_city,
+                          send_email_vendor_new_review,
+                          send_email_admin_new_vendor,
+                          send_email_vendor_new_statement )
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
@@ -1314,7 +1328,7 @@ def process_transfers_task(self, payment_intent_id, baskets):
 def reverse_basket_transfer_task(self, basket_id, stripe_account_id, amount):
     from app import app
     with app.app_context():
-        print("🚀 Weekly Admin Summary task triggered")
+        print("Weekly Admin Summary task triggered")
         try:
             reversal_amount = int(amount * 100)
 
@@ -1443,3 +1457,79 @@ def send_weekly_admin_summary():
                 </body>
                 """
             send_email_weekly_admin_update(email=admin.email, body_tag=body_tag)
+
+@celery.task(queue='default')
+def send_monthly_vendor_statements(month=None, year=None):
+    """Send monthly statements to all vendors who have baskets for the given month/year"""
+    from app import app
+    from datetime import datetime
+    from sqlalchemy import extract
+    
+    with app.app_context():
+        try:
+            # If no month/year provided, use previous month
+            if not month or not year:
+                now = datetime.now()
+                if now.month == 1:
+                    month = 12
+                    year = now.year - 1
+                else:
+                    month = now.month - 1
+                    year = now.year
+            
+            # Get all vendors who had baskets in the specified month/year
+            vendors_with_baskets = db.session.query(Vendor).join(Basket).filter(
+                extract('month', Basket.sale_date) == month,
+                extract('year', Basket.sale_date) == year,
+                Basket.is_sold == True
+            ).distinct().all()
+            
+            if not vendors_with_baskets:
+                print(f"No vendors found with baskets for {month}/{year}")
+                return {'message': f'No vendors found with baskets for {month}/{year}'}
+            
+            statements_sent = 0
+            
+            for vendor in vendors_with_baskets:
+                # Get all vendor users for this vendor
+                vendor_users = db.session.query(VendorUser).filter(
+                    VendorUser.vendor_id.like(f'%{vendor.id}%')
+                ).all()
+                
+                for vendor_user in vendor_users:
+                    # Check settings to see if this vendor user wants statement notifications
+                    settings = db.session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
+                    
+                    if settings and settings.email_new_statement:
+                        try:
+                            # Create vendor notification
+                            vendor_notification = VendorNotification(
+                                subject="Monthly Statement Available",
+                                message=f"Your monthly statement for {month}/{year} is now available.",
+                                link="/vendor/sales?tab=statements",
+                                vendor_id=vendor.id,
+                                vendor_user_id=vendor_user.id,
+                                created_at=datetime.now(timezone.utc),
+                                is_read=False
+                            )
+                            db.session.add(vendor_notification)
+                            
+                            # Send email with CSV attachment
+                            send_email_vendor_new_statement(
+                                vendor_user.email, vendor_user, vendor, month, year
+                            )
+                            statements_sent += 1
+                            print(f"Statement sent to {vendor_user.email} for vendor {vendor.name}")
+                            
+                        except Exception as e:
+                            print(f"Error sending statement to {vendor_user.email}: {e}")
+            
+            db.session.commit()
+            return {'message': f'Monthly statements sent to {statements_sent} vendor users for {month}/{year}'}
+            
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error sending monthly vendor statements: {e}")
+            return {'error': f'Failed to send monthly vendor statements: {str(e)}'}
+        finally:
+            db.session.close()
