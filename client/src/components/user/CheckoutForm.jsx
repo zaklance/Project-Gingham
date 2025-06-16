@@ -14,6 +14,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
     const [paymentSuccess, setPaymentSuccess] = useState(false);
     const [receiptId, setReceiptId] = useState(null);
     const [error, setError] = useState(null);
+    const [savedCartItems, setSavedCartItems] = useState([]);
     const navigate = useNavigate();
 
     const stripe = useStripe();
@@ -120,7 +121,36 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 return;
             }
 
-            if (paymentIntent.status === 'succeeded') {
+            // If we get here, the payment was successful
+            if (paymentIntent && paymentIntent.status === 'succeeded') {
+                // Create receipt in backend
+                const receiptResponse = await fetch('/api/receipts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        baskets: cartItems,
+                        payment_intent_id: paymentIntent.id
+                    }),
+                });
+
+                const receiptResult = await receiptResponse.json();
+
+                if (!receiptResponse.ok) {
+                    console.error('Receipt creation failed:', receiptResult);
+                    setError(receiptResult.error || 'Failed to create receipt');
+                    setIsProcessing(false);
+                    return;
+                }
+
+                // Set receipt ID for PDF component
+                setReceiptId(receiptResult.id);
+
+                // Save cart items before clearing them
+                setSavedCartItems(cartItems);
+
                 // Process transfers
                 const response = await fetch('/api/process-transfers', {
                     method: 'POST',
@@ -171,8 +201,9 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                 setCartItems([]);
                 setAmountInCart(0);
 
-                // Redirect to success page
-                navigate('/payment-success');
+                // Set payment success state to show receipt and calendar buttons
+                setPaymentSuccess(true);
+                setIsProcessing(false);
             } else {
                 setError('Payment was not successful. Please try again.');
                 setIsProcessing(false);
@@ -236,15 +267,32 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                             </span>
                         </button>
                     ) : (
-                        <div className="margin-t-16 flex-start flex-gap-16">
-                            <PDFReceipt receiptId={receiptId} isPaymentCompleted={paymentSuccess} page={"checkout"} />
-                            <button 
-                                type="button"
-                                className="btn btn-checkout" 
-                                onClick={() => generateICSFile(cartItems)}
-                            >
-                                Add to Calendar
-                            </button>
+                        <div className="text-center">
+                            <h2 className="text-green margin-b-16">Payment Successful!</h2>
+                            <p className="margin-b-24">Thank you for your purchase. Your order has been confirmed.</p>
+                            <div className="margin-t-16 flex-start flex-gap-16">
+                                <PDFReceipt receiptId={receiptId} isPaymentCompleted={paymentSuccess} page={"checkout"} />
+                                <button 
+                                    type="button"
+                                    className="btn btn-checkout" 
+                                    onClick={() => generateICSFile(savedCartItems)}
+                                >
+                                    Add to Calendar
+                                </button>
+                            </div>
+                            <div className="margin-t-16">
+                                <Link to="/user/markets" className="btn btn-cart margin-r-12">
+                                    Continue Shopping
+                                </Link>
+                                <Link to={`/user/profile/${userId}`} className="btn btn-cart">
+                                    View Profile
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+                    {error && (
+                        <div className="margin-t-16">
+                            <p style={{ color: "#ff4b5a" }}>{error}</p>
                         </div>
                     )}
                 </div>
