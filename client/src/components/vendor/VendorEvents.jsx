@@ -237,6 +237,8 @@ function VendorEvents({ vendorId, vendorUserData }) {
         }));
     };
 
+    console.log(newEvent)
+
     return (
         <>
             <title>gingham • Vendor Events</title>
@@ -275,7 +277,15 @@ function VendorEvents({ vendorId, vendorUserData }) {
                                 data-testid="loader"
                             />
                         ) : allMarkets.length > 0 ? (
-                            <select id="marketSelect" name="market" onChange={handleMarketChange}>
+                            <select
+                                id="marketSelect"
+                                name="market"
+                                value={newEvent.market_id || ''}
+                                onChange={handleMarketChange}
+                            >
+                                <option>
+                                    Select
+                                </option>
                                 {allMarkets.map((market, index) => (
                                     <option key={index} value={market.id}>
                                         {market.name}

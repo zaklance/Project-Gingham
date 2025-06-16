@@ -42,9 +42,9 @@ def get_db_session(connection: Optional[Any] = None) -> Session:
     """Get a database session, either from a connection or create a new one."""
     try:
         if connection:
-            print("Creating session from existing connection")
+            # print("Creating session from existing connection")
             return Session(bind=connection)
-        print("Creating new session")
+        # print("Creating new session")
         return Session()
     except Exception as e:
         print(f"Error creating database session: {e}")
@@ -53,9 +53,9 @@ def get_db_session(connection: Optional[Any] = None) -> Session:
 def safe_commit(session: Session) -> None:
     """Safely commit a session with error handling."""
     try:
-        print("Attempting to commit session")
+        # print("Attempting to commit session")
         session.commit()
-        print("Session committed successfully")
+        # print("Session committed successfully")
     except Exception as e:
         print(f"Error committing session: {e}")
         session.rollback()
@@ -64,18 +64,18 @@ def safe_commit(session: Session) -> None:
 def safe_close(session: Session) -> None:
     """Safely close a session."""
     try:
-        print("Attempting to close session")
+        # print("Attempting to close session")
         session.close()
-        print("Session closed successfully")
+        # print("Session closed successfully")
     except Exception as e:
         print(f"Error closing session: {e}")
 
 def safe_rollback(session: Session) -> None:
     """Safely rollback a session with error handling."""
     try:
-        print("Attempting to rollback session")
+        # print("Attempting to rollback session")
         session.rollback()
-        print("Session rolled back successfully")
+        # print("Session rolled back successfully")
     except Exception as e:
         print(f"Error rolling back session: {e}")
 
@@ -168,18 +168,18 @@ def vendor_market_event_or_schedule_change(mapper: Any, connection: Any, target:
                         continue
                     if market_day.id not in (settings.market_locations or []):
                         continue
-                    existing_notification = session.query(VendorNotification).filter(
-                        VendorNotification.vendor_user_id == vendor_user.id,
-                        VendorNotification.vendor_id == vendor.id,
-                        VendorNotification.market_id == market_day.market.id,
-                        VendorNotification.created_at >= datetime.now(timezone.utc).date(),
-                        VendorNotification.subject.in_([
-                            "New Event in Your Market!",
-                            "Market Schedule Change"
-                        ])
-                    ).first()
-                    if existing_notification:
-                        continue
+                    # existing_notification = session.query(VendorNotification).filter(
+                    #     VendorNotification.vendor_user_id == vendor_user.id,
+                    #     VendorNotification.vendor_id == vendor.id,
+                    #     VendorNotification.market_id == market_day.market.id,
+                    #     VendorNotification.created_at >= datetime.now(timezone.utc).date(),
+                    #     VendorNotification.subject.in_([
+                    #         "New Event in Your Market!",
+                    #         "Market Schedule Change"
+                    #     ])
+                    # ).first()
+                    # if existing_notification:
+                    #     continue
                     notification = VendorNotification(
                         subject="Market Schedule Change" if is_schedule_change else "New Event in Your Market!",
                         message=f"The market, {market_day.market.name}, has updated its schedule temporarily."
