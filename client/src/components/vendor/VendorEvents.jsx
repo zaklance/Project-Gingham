@@ -237,7 +237,6 @@ function VendorEvents({ vendorId, vendorUserData }) {
         }));
     };
 
-    console.log(newEvent)
 
     return (
         <>

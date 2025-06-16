@@ -168,18 +168,18 @@ def vendor_market_event_or_schedule_change(mapper: Any, connection: Any, target:
                         continue
                     if market_day.id not in (settings.market_locations or []):
                         continue
-                    # existing_notification = session.query(VendorNotification).filter(
-                    #     VendorNotification.vendor_user_id == vendor_user.id,
-                    #     VendorNotification.vendor_id == vendor.id,
-                    #     VendorNotification.market_id == market_day.market.id,
-                    #     VendorNotification.created_at >= datetime.now(timezone.utc).date(),
-                    #     VendorNotification.subject.in_([
-                    #         "New Event in Your Market!",
-                    #         "Market Schedule Change"
-                    #     ])
-                    # ).first()
-                    # if existing_notification:
-                    #     continue
+                    existing_notification = session.query(VendorNotification).filter(
+                        VendorNotification.vendor_user_id == vendor_user.id,
+                        VendorNotification.vendor_id == vendor.id,
+                        VendorNotification.market_id == market_day.market.id,
+                        VendorNotification.created_at >= datetime.now(timezone.utc).date(),
+                        VendorNotification.subject.in_([
+                            "New Event in Your Market!",
+                            "Market Schedule Change"
+                        ])
+                    ).first()
+                    if existing_notification:
+                        continue
                     notification = VendorNotification(
                         subject="Market Schedule Change" if is_schedule_change else "New Event in Your Market!",
                         message=f"The market, {market_day.market.name}, has updated its schedule temporarily."
