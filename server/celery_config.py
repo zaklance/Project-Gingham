@@ -45,7 +45,11 @@ def configure_celery():
         task_send_sent_event=True,
         timezone='UTC',
         task_acks_late=True,
-        task_reject_on_worker_lost=True
+        task_reject_on_worker_lost=True,
+        task_serializer='json',
+        accept_content=['json'],
+        result_serializer='json',
+        enable_utc=True
     )
 
 configure_celery()
