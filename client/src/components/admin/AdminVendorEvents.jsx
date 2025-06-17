@@ -45,13 +45,24 @@ function AdminVendorEvents({ vendors }) {
 
     const handleSaveNewEvent = async () => {
         try {
-            // console.log(newEvent);
+            // Get vendor's market_id
+            let eventData = { ...newEvent };
+            if (matchingVendorId) {
+                const vendorMarketsResponse = await fetch(`/api/vendor-markets?vendor_id=${matchingVendorId}`);
+                if (vendorMarketsResponse.ok) {
+                    const vendorMarkets = await vendorMarketsResponse.json();
+                    if (vendorMarkets.length > 0) {
+                        eventData.market_id = vendorMarkets[0].market_day.market_id;
+                    }
+                }
+            }
+            
             const response = await fetch(`/api/events`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(newEvent),
+                body: JSON.stringify(eventData),
             });
 
             if (response.ok) {
