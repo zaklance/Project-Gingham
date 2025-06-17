@@ -19,7 +19,7 @@ import ErrorPage from './components/ErrorPage.jsx';
 
 // user routes
 import Cart from './components/user/Cart.jsx';
-import Payment from './components/user/Payment.jsx'
+import Payment from './components/user/Payment.jsx';
 import Completion from './components/user/Completion.jsx'
 import CheckSession from './components/user/CheckSession.jsx';
 import Login from './components/user/LoginPopup.jsx';

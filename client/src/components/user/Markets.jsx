@@ -306,7 +306,7 @@ function Markets() {
             setFilterZA(!filterZA)
             setFilterLocation(false)
             setFilterAddress(false)
-            setAddress()
+            setAddress('')
             setResultCoordinates(null)
         }
     }
@@ -329,6 +329,7 @@ function Markets() {
             setFilterLocation(false)
             setFilterAddress(!filterAddress)
             setResultCoordinates(null)
+            setAddress('')
         }
     }
     
