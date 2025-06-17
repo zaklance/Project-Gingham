@@ -54,11 +54,43 @@ import numpy as np
 import psutil
 import stripe
 import traceback
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.instrumentation.celery import CeleryInstrumentor
+from opentelemetry.instrumentation.redis import RedisInstrumentor
 
 serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 
 MAX_SIZE = 1.10 * 1024 * 1024
 MAX_RES = (1800, 1800)
+
+# Initialize OpenTelemetry for Celery worker
+def init_celery_telemetry():
+    resource = Resource.create({
+        "service.name": "celery-worker",
+        "service.version": "1.0.0",
+        "deployment.environment": os.getenv("VITE_ENVIRONMENT", "development")
+    })
+    
+    trace.set_tracer_provider(TracerProvider(resource=resource))
+    
+    otlp_exporter = OTLPSpanExporter(
+        endpoint=os.getenv("VITE_OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4317"),
+        headers={"Authorization": f"Bearer {os.getenv('VITE_OTEL_API_KEY', '')}"} if os.getenv('VITE_OTEL_API_KEY') else {}
+    )
+    
+    span_processor = BatchSpanProcessor(otlp_exporter)
+    trace.get_tracer_provider().add_span_processor(span_processor)
+    
+    # Instrument Celery and Redis
+    CeleryInstrumentor().instrument()
+    RedisInstrumentor().instrument()
+
+# Initialize telemetry
+init_celery_telemetry()
 
 def get_current_year():
     return datetime.now().year

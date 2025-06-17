@@ -8,11 +8,17 @@ import LoginPopup from './components/user/LoginPopup.jsx';
 import Footer from './components/Footer.jsx';
 import VendorLoginPopup from './components/vendor/VendorLoginPopup.jsx';
 import AdminLoginPopup from './components/admin/AdminLoginPopup.jsx';
+import initTelemetry from './utils/telemetry.js';
+import { trace } from '@opentelemetry/api';
 import { jwtDecode } from 'jwt-decode';
 import BrowserTimezone from './components/BrowserTimezone.jsx';
 import { ToastContainer, Slide } from 'react-toastify';
 import { toast } from 'react-toastify';
 import PaymentSuccess from './components/user/PaymentSuccess';
+
+initTelemetry();
+
+const tracer = trace.getTracer('react-app', '1.0.0');
 
 function App() {
     const location = useLocation();

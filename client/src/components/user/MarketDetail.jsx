@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, Link, useNavigate, useOutletContext, useSearchParams } from 'react-router-dom';
-// import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
 import { weekDay } from '../../utils/common';
 import { timeConverter, formatEventDate, formatDate, marketDateConvert, formatPickupText } from '../../utils/helpers';
 import ReviewMarket from './ReviewMarket';
