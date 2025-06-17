@@ -14,6 +14,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
     const [allMarkets, setAllMarkets] = useState([]);
     const [selectedMarket, setSelectedMarket] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isPosting, setIsPosting] = useState(false);
 
     const activeVendorId = vendorUserData?.active_vendor;
 
@@ -82,6 +83,8 @@ function VendorEvents({ vendorId, vendorUserData }) {
             });
             return;
         }
+
+        setIsPosting(true)
     
         try {
             console.log("Sending event data:", { vendor_id: vendorId, market_id: newEvent.market_id, title: newEvent.title, message: newEvent.message, start_date: newEvent.start_date, end_date: newEvent.end_date, schedule_change: newEvent.schedule_change });
@@ -110,13 +113,16 @@ function VendorEvents({ vendorId, vendorUserData }) {
                 });
                 setEvents((prevEvents) => [...prevEvents, createdEvent]);
                 setNewEvent({});
+                setIsPosting(false)
             } else {
                 console.log('Failed to save event details');
                 console.log('Response status:', response.status);
                 console.log('Response text:', await response.text());
+                setIsPosting(false)
             }
         } catch (error) {
             console.error('Error saving event details:', error);
+            setIsPosting(false)
         }
     };
     
@@ -327,7 +333,17 @@ function VendorEvents({ vendorId, vendorUserData }) {
                             <option value={false}>false</option>
                         </select>
                     </div>
-                    <button className='btn-edit' onClick={handleSaveNewEvent}>Create Event</button>
+                    {isPosting ? (
+                        <PulseLoader
+                            className='margin-t-12'
+                            color={'#ff806b'}
+                            size={10}
+                            aria-label="Loading Spinner"
+                            data-testid="loader"
+                        />
+                    ) : (
+                        <button className='btn-edit' onClick={handleSaveNewEvent}>Create Event</button>
+                    )}
                 </div>
             </div>
             <div className='box-bounding'>
