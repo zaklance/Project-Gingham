@@ -903,6 +903,7 @@ class SettingsUser(db.Model, SerializerMixin):
     site_vendor_review_response = db.Column(db.Boolean, default=True, nullable=False)
     site_new_blog = db.Column(db.Boolean, default=True, nullable=False)
     site_new_market_in_city = db.Column(db.Boolean, default=True, nullable=False)
+    site_user_notify_me = db.Column(db.Boolean, default=True, nullable=False)
     
     email_fav_market_new_event = db.Column(db.Boolean, default=True, nullable=False)
     email_fav_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
@@ -915,11 +916,13 @@ class SettingsUser(db.Model, SerializerMixin):
     email_vendor_review_response = db.Column(db.Boolean, default=False, nullable=False)
     email_new_blog = db.Column(db.Boolean, default=True, nullable=False)
     email_new_market_in_city = db.Column(db.Boolean, default=True, nullable=False)
+    email_user_notify_me = db.Column(db.Boolean, default=False, nullable=False)
     
     text_fav_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
     text_fav_market_new_basket = db.Column(db.Boolean, default=False, nullable=False)
     text_fav_vendor_schedule_change = db.Column(db.Boolean, default=False, nullable=False)
     text_basket_pickup_time = db.Column(db.Boolean, default=True, nullable=False)
+    text_user_notify_me = db.Column(db.Boolean, default=True, nullable=False)
 
     def __repr__(self) -> str:
         return f"<User Settings ID: {self.id}, User ID: {self.user_id}>"
@@ -949,7 +952,7 @@ class SettingsVendor(db.Model, SerializerMixin):
 
     text_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
     text_basket_sold = db.Column(db.Boolean, default=True, nullable=False)
-    text_vendor_notify_me = db.Column(db.Boolean, default=False, nullable=False)
+    text_vendor_notify_me = db.Column(db.Boolean, default=True, nullable=False)
 
     def __repr__(self) -> str:
         return f"<Vendor Settings ID: {self.id} Vendor User ID: {self.vendor_user_id}>"

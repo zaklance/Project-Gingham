@@ -1007,6 +1007,7 @@ function Profile({ marketData }) {
                                 <FormControlLabel control={<Switch checked={tempUserSettings.site_fav_vendor_new_basket} onChange={() => handleSwitchChange('site_fav_vendor_new_basket')} color={'secondary'} />} label="New basket for sale by a favorited vendor"/>
                                 <FormControlLabel control={<Switch checked={tempUserSettings.site_basket_pickup_time} onChange={() => handleSwitchChange('site_basket_pickup_time')} color={'secondary'} />} label="It is pickup time for a basket you purchased"/>
                                 {/* <FormControlLabel control={<Switch checked={tempUserSettings.site_new_blog} onChange={() => handleSwitchChange('site_new_blog')} color={'secondary'} />} label="A new blog has been posted"/> */}
+                                <FormControlLabel control={<Switch checked={tempUserSettings.site_user_notify_me} onChange={() => handleSwitchChange('site_user_notify_me')} color={'secondary'} />} label="When a vendor adds a basket that your requested"/>
                             </FormGroup>
                         )}
                         {activeTab === 'email' && (
@@ -1019,6 +1020,7 @@ function Profile({ marketData }) {
                                 <FormControlLabel control={<Switch checked={tempUserSettings.email_fav_vendor_new_basket} onChange={() => handleSwitchChange('email_fav_vendor_new_basket')} color={'secondary'} />} label="New basket for sale by a favorited vendor" />
                                 <FormControlLabel control={<Switch checked={tempUserSettings.email_basket_pickup_time} onChange={() => handleSwitchChange('email_basket_pickup_time')} color={'secondary'} />} label="it is pickup time for a basket you purchased" />
                                 <FormControlLabel control={<Switch checked={tempUserSettings.email_new_blog} onChange={() => handleSwitchChange('email_new_blog')} color={'secondary'} />} label="A new blog has been posted" />
+                                <FormControlLabel control={<Switch checked={tempUserSettings.email_user_notify_me} onChange={() => handleSwitchChange('email_user_notify_me')} color={'secondary'} />} label="When a vendor adds a basket that your requested"/>
                             </FormGroup>
                         )}
                         {activeTab === 'text' && (
@@ -1027,6 +1029,7 @@ function Profile({ marketData }) {
                                 <FormControlLabel control={<Switch checked={tempUserSettings.text_fav_market_new_basket} onChange={() => handleSwitchChange('text_fav_market_new_basket')} color={'secondary'} />} label="New basket for sale by a favorited market" />
                                 <FormControlLabel control={<Switch checked={tempUserSettings.text_fav_vendor_schedule_change} onChange={() => handleSwitchChange('text_fav_vendor_schedule_change')} color={'secondary'} />} label="Favorite vendor changes schedule" />
                                 <FormControlLabel control={<Switch checked={tempUserSettings.text_basket_pickup_time} onChange={() => handleSwitchChange('text_basket_pickup_time')} color={'secondary'} />} label="It is pickup time for a basket you purchased" />
+                                <FormControlLabel control={<Switch checked={tempUserSettings.text_user_notify_me} onChange={() => handleSwitchChange('text_user_notify_me')} color={'secondary'} />} label="When a vendor adds a basket that your requested"/>
                             </FormGroup>
                         )}
                         <button className='btn-edit' onClick={handleSaveSettings}>Save</button>
