@@ -3,7 +3,7 @@
 
 ## Overview
 Welcome to Phase 4's Project Gingham! This project is aimed to connect food lovers with farmers' markets while reducing waste and helping vendors sell out of product. Below are the steps you need to set up and run the project.
-<img width="1280" alt="Homepage" src="https://raw.githubusercontent.com/zaklance/Project-Gingham/main/client/src/assets/images/gingham-site.jpg">
+<img width="1280" alt="Homepage" src="https://github.com/zaklance/Project-Gingham/blob/main/client/src/assets/images/gingham-site.jpg?raw=true">
 
 
 ## Setting Up
