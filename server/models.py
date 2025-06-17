@@ -937,6 +937,7 @@ class SettingsVendor(db.Model, SerializerMixin):
     site_new_review = db.Column(db.Boolean, default=True, nullable=False)
     site_new_blog = db.Column(db.Boolean, default=True, nullable=False)
     site_new_statement = db.Column(db.Boolean, default=True, nullable=False)
+    site_vendor_notify_me = db.Column(db.Boolean, default=True, nullable=False)
 
     email_market_new_event = db.Column(db.Boolean, default=True, nullable=False)
     email_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
@@ -944,9 +945,11 @@ class SettingsVendor(db.Model, SerializerMixin):
     email_new_review = db.Column(db.Boolean, default=False, nullable=False)
     email_new_blog = db.Column(db.Boolean, default=True, nullable=False)
     email_new_statement = db.Column(db.Boolean, default=True, nullable=False)
+    email_vendor_notify_me = db.Column(db.Boolean, default=False, nullable=False)
 
     text_market_schedule_change = db.Column(db.Boolean, default=True, nullable=False)
     text_basket_sold = db.Column(db.Boolean, default=True, nullable=False)
+    text_vendor_notify_me = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self) -> str:
         return f"<Vendor Settings ID: {self.id} Vendor User ID: {self.vendor_user_id}>"

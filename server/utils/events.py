@@ -726,15 +726,17 @@ def fav_vendor_new_baskets(mapper, connection, target):
                 print(f"User ID={user.id} has new vendor basket notifications disabled.")
                 continue
 
-            # existing_notification = session.query(UserNotification).filter(
-            #     UserNotification.user_id == user.id,
-            #     UserNotification.vendor_id == vendor.id,
-            #     UserNotification.created_at >= datetime.now(timezone.utc).date(),
-            #     UserNotification.subject == "New Baskets from Your Favorite Vendor!"
-            # ).first()
+            # Check for duplicate notifications - prevent spam from multiple baskets per day
+            existing_notification = session.query(UserNotification).filter(
+                UserNotification.user_id == user.id,
+                UserNotification.vendor_id == vendor.id,
+                UserNotification.created_at >= datetime.now(timezone.utc).date(),
+                UserNotification.subject == "New Baskets from Your Favorite Vendor!"
+            ).first()
 
-            # if existing_notification:
-            #     continue
+            if existing_notification:
+                print(f"Duplicate vendor basket notification prevented for user {user.id}")
+                continue
 
             # Create site notification
             notification = UserNotification(
@@ -1214,14 +1216,8 @@ def notify_fav_market_new_baskets(mapper, connection, target):
             return
 
         # Check if a notification for this market and basket type already exists today
-        # existing_notification = session.query(UserNotification).filter(
-        #     UserNotification.market_id == market.id,
-        #     UserNotification.subject == "New Baskets for Sale!",
-        #     UserNotification.created_at >= datetime.now(timezone.utc).date()
-        # ).first()
-
-        # if existing_notification:
-        #     return
+        # We check per-user to avoid blocking all users if one already got notified
+        today = datetime.now(timezone.utc).date()
 
         # Retrieve the vendor who created the basket for email context
         vendor = session.query(Vendor).filter_by(id=target.vendor_id).first()
@@ -1236,6 +1232,18 @@ def notify_fav_market_new_baskets(mapper, connection, target):
             settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
             if not settings or not settings.site_fav_market_new_basket:
                 print(f"User ID={user.id} has new basket notifications disabled.")
+                continue
+                
+            # Check for duplicate notifications per user - prevent spam from multiple baskets per day
+            existing_notification = session.query(UserNotification).filter(
+                UserNotification.user_id == user.id,
+                UserNotification.market_id == market.id,
+                UserNotification.subject == "New Baskets for Sale!",
+                UserNotification.created_at >= today
+            ).first()
+            
+            if existing_notification:
+                print(f"Duplicate market basket notification prevented for user {user.id}")
                 continue
 
             # Create site notification
@@ -1898,6 +1906,210 @@ def notify_admin_product_request(mapper, connection, target):
 
     except Exception as e:
         print(f"Error in notify_admin_product_request: {e}")
+    finally:
+        session.close()
+
+def send_monthly_statement_notifications() -> None:
+    """Send monthly statement notifications to vendors on the 10th of each month.
+    
+    This function should be called by a scheduled job (cron/celery) on the 10th of each month.
+    It notifies vendors who sold at least one basket in the previous month.
+    """
+    session = Session()
+    try:
+        # Get the current date and calculate the previous month
+        now = datetime.now(timezone.utc)
+        
+        # Calculate the first day of the previous month
+        first_day_current_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        if first_day_current_month.month == 1:
+            # If current month is January, previous month is December of the previous year
+            first_day_previous_month = first_day_current_month.replace(
+                year=first_day_current_month.year - 1, 
+                month=12
+            )
+        else:
+            first_day_previous_month = first_day_current_month.replace(
+                month=first_day_current_month.month - 1
+            )
+        
+        # Calculate the last day of the previous month
+        last_day_previous_month = first_day_current_month - timedelta(days=1)
+        
+        # Get all vendors who sold at least one basket in the previous month
+        vendors_with_sales = session.query(Vendor.id).join(Basket).filter(
+            and_(
+                Basket.is_sold == True,
+                Basket.sale_date >= first_day_previous_month.date(),
+                Basket.sale_date <= last_day_previous_month.date()
+            )
+        ).distinct().all()
+        
+        if not vendors_with_sales:
+            print("No vendors with sales in the previous month. No statement notifications will be sent.")
+            return
+        
+        vendor_ids = [vendor.id for vendor in vendors_with_sales]
+        previous_month_name = first_day_previous_month.strftime("%B %Y")
+        
+        # Prepare notifications
+        notifications = []
+        for vendor_id in vendor_ids:
+            vendor = session.query(Vendor).get(vendor_id)
+            if not vendor:
+                continue
+                
+            # Get vendor users for this vendor
+            vendor_users = get_vendor_users(vendor_id, session)
+            if not vendor_users:
+                continue
+                
+            for vendor_user in vendor_users:
+                # Get vendor user settings
+                settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
+                if not settings:
+                    print(f"No settings found for Vendor User ID={vendor_user.id}. Skipping notification.")
+                    continue
+                
+                # Check if site notifications are enabled
+                if settings.site_new_statement:
+                    # Check for duplicate notifications to avoid sending multiple times
+                    existing_notification = session.query(VendorNotification).filter(
+                        VendorNotification.vendor_user_id == vendor_user.id,
+                        VendorNotification.vendor_id == vendor.id,
+                        VendorNotification.subject == "New Monthly Statement Available",
+                        VendorNotification.created_at >= first_day_current_month
+                    ).first()
+                    
+                    if existing_notification:
+                        print(f"Statement notification already exists for vendor user {vendor_user.id} this month")
+                        continue
+                    
+                    # Create site notification
+                    notification = VendorNotification(
+                        subject="New Monthly Statement Available",
+                        message=f"Your monthly statement for {previous_month_name} is now available for review.",
+                        link="/vendor/sales#statements",
+                        vendor_id=vendor.id,
+                        vendor_user_id=vendor_user.id,
+                        created_at=datetime.now(timezone.utc),
+                        is_read=False
+                    )
+                    notifications.append(notification)
+                
+                # Send email notification if enabled
+                # Check if in dev mode
+                is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
+                if not is_dev_mode and settings.email_new_statement:
+                    try:
+                        # Import the email function
+                        from utils.emails import send_email_vendor_new_statement
+                        send_email_vendor_new_statement(
+                            vendor_user.email, vendor_user, vendor, first_day_previous_month.month, first_day_previous_month.year
+                        )
+                        print(f"Statement email sent to {vendor_user.email} for {previous_month_name}")
+                    except Exception as e:
+                        print(f"Error sending statement email to {vendor_user.email}: {e}")
+        
+        # Save all notifications in bulk
+        if notifications:
+            session.bulk_save_objects(notifications)
+            safe_commit(session)
+            print(f"Sent {len(notifications)} monthly statement notifications for {previous_month_name}")
+        else:
+            print(f"No statement notifications to send for {previous_month_name}")
+            
+    except Exception as e:
+        print(f"Error in send_monthly_statement_notifications: {e}")
+        safe_rollback(session)
+    finally:
+        safe_close(session)
+
+@listens_for(VendorNotification, 'after_insert')
+def handle_vendor_notify_me_notification(mapper, connection, target):
+    """Handle email and SMS notifications when users click 'notify me for more baskets'."""
+    # Only handle "New Basket Interest" notifications (the subject set in the API endpoint)
+    if target.subject != "New Basket Interest":
+        return
+        
+    session = Session(bind=connection)
+    try:
+        # Check for duplicate notifications first - prevent spam
+        if target.user_id:
+            # Check if this user already has a recent "notify me" notification for this vendor
+            existing_notification = session.query(VendorNotification).filter(
+                VendorNotification.vendor_user_id == target.vendor_user_id,
+                VendorNotification.vendor_id == target.vendor_id,
+                VendorNotification.user_id == target.user_id,
+                VendorNotification.subject == "New Basket Interest",
+                VendorNotification.created_at >= datetime.now(timezone.utc) - timedelta(hours=24),  # Within last 24 hours
+                VendorNotification.id != target.id  # Exclude the current notification
+            ).first()
+            
+            if existing_notification:
+                print(f"Duplicate notify me notification prevented for user {target.user_id} to vendor user {target.vendor_user_id}")
+                session.delete(target)
+                session.commit()
+                return
+        
+        # Get the vendor user who should receive this notification
+        vendor_user = session.query(VendorUser).get(target.vendor_user_id)
+        if not vendor_user:
+            print(f"Vendor user not found for VendorNotification ID {target.id}")
+            return
+            
+        # Get vendor user settings
+        settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
+        if not settings:
+            print(f"No settings found for Vendor User ID={vendor_user.id}. Skipping notification.")
+            return
+            
+        # Only proceed if vendor_notify_me site notifications are enabled (already created, so just check for email/SMS)
+        if not settings.site_vendor_notify_me:
+            # If site notifications are disabled, delete the notification that was just created
+            session.delete(target)
+            session.commit()
+            print(f"Site notifications disabled for vendor user {vendor_user.id}. Notification removed.")
+            return
+            
+        # Get the user who clicked notify me
+        user = session.query(User).get(target.user_id) if target.user_id else None
+        if not user:
+            print(f"User not found for VendorNotification ID {target.id}")
+            return
+            
+        # Get the vendor
+        vendor = session.query(Vendor).get(target.vendor_id)
+        if not vendor:
+            print(f"Vendor not found for VendorNotification ID {target.id}")
+            return
+            
+        # Send email notification if enabled
+        # Check if in dev mode
+        is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
+        if not is_dev_mode and settings.email_vendor_notify_me:
+            try:
+                # Import the email function (will need to create this)
+                from utils.emails import send_email_vendor_notify_me
+                send_email_vendor_notify_me(
+                    vendor_user.email, vendor_user, vendor, user, target.link or "/vendor/dashboard?tab=baskets"
+                )
+                print(f"Notify me email sent to {vendor_user.email}")
+            except Exception as e:
+                print(f"Error sending notify me email to {vendor_user.email}: {e}")
+                
+        # Send SMS notification if enabled
+        if not is_dev_mode and settings.text_vendor_notify_me and vendor_user.phone:
+            try:
+                # Import the SMS function (will need to create this)
+                from utils.sms import send_sms_vendor_notify_me
+                send_sms_vendor_notify_me(vendor_user.phone, vendor_user, vendor, user)
+                print(f"Notify me SMS sent to {vendor_user.phone}")
+            except Exception as e:
+                print(f"Error sending notify me SMS to {vendor_user.phone}: {e}")
+                
+    except Exception as e:
+        print(f"Error in handle_vendor_notify_me_notification: {e}")
     finally:
         session.close()
 
