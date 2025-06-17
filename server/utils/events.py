@@ -1,7 +1,7 @@
 import os
 import json
 import inspect
-from sqlalchemy import event, func, and_
+from sqlalchemy import event, func, and_, or_
 from sqlalchemy.orm import Session
 from sqlalchemy.event import listens_for
 from datetime import datetime, date, timezone, timedelta, time
@@ -25,7 +25,9 @@ from utils.emails import (
     send_email_user_new_market_in_city,
     send_email_vendor_new_review,
     send_email_admin_new_vendor,
-    send_email_admin_product_request
+    send_email_admin_product_request,
+    send_email_user_fav_market_schedule_change,
+    send_email_user_fav_market_new_event
 )
 from utils.sms import (
     send_sms_user_fav_vendor_schedule_change,
@@ -35,7 +37,8 @@ from utils.sms import (
     send_sms_user_fav_market_new_basket,
     send_sms_user_basket_pickup_time,
     send_sms_vendor_market_schedule_change,
-    send_sms_admin_product_request
+    send_sms_admin_product_request,
+    send_sms_user_fav_market_schedule_change
 )
 
 def get_db_session(connection: Optional[Any] = None) -> Session:
@@ -133,6 +136,11 @@ def track_vendor_favorite(mapper: Any, connection: Any, target: VendorFavorite) 
 def vendor_market_event_or_schedule_change(mapper: Any, connection: Any, target: Event) -> None:
     session = get_db_session(connection)
     try:
+        # Only proceed if this event has a market_id
+        if not target.market_id:
+            print(f"Event ID={target.id} has no market_id. Skipping market notifications.")
+            return
+            
         market_day = session.query(MarketDay).filter_by(market_id=target.market_id).first()
         if not market_day:
             print(f"Market Day not found for Market ID: {target.market_id}")
@@ -168,17 +176,18 @@ def vendor_market_event_or_schedule_change(mapper: Any, connection: Any, target:
                         continue
                     if market_day.id not in (settings.market_locations or []):
                         continue
+                    # Check for duplicate notifications for this specific event only
+                    subject_to_check = "Market Schedule Change" if is_schedule_change else "New Event in Your Market!"
                     existing_notification = session.query(VendorNotification).filter(
                         VendorNotification.vendor_user_id == vendor_user.id,
                         VendorNotification.vendor_id == vendor.id,
                         VendorNotification.market_id == market_day.market.id,
                         VendorNotification.created_at >= datetime.now(timezone.utc).date(),
-                        VendorNotification.subject.in_([
-                            "New Event in Your Market!",
-                            "Market Schedule Change"
-                        ])
+                        VendorNotification.subject == subject_to_check,
+                        VendorNotification.message.like(f"%: {target.title}.%") if not is_schedule_change else VendorNotification.message.like(f"%. Event: {target.title}.%")
                     ).first()
                     if existing_notification:
+                        print(f"Duplicate notification exists for event '{target.title}', skipping vendor user {vendor_user.id}")
                         continue
                     notification = VendorNotification(
                         subject="Market Schedule Change" if is_schedule_change else "New Event in Your Market!",
@@ -229,7 +238,7 @@ def vendor_market_event_or_schedule_change(mapper: Any, connection: Any, target:
 
 # User - New Event for Fav Vendor
 @listens_for(Event, 'after_insert')
-def track_fav_vendor_event(mapper, connection, target):
+def track_fav_vendor_event(mapper: Any, connection: Any, target: Event) -> None:
     if not target.vendor_id:  # Ensure the event is associated with a vendor
         print(f"Event ID={target.id} is not associated with a vendor. Skipping user notifications.")
         return
@@ -269,17 +278,17 @@ def track_fav_vendor_event(mapper, connection, target):
                 if not is_schedule_change and not settings.site_fav_vendor_new_event:
                     print(f"User ID={user.id} has new event notifications disabled.")
                     continue
-                # Check for existing notifications
+                # Check for duplicate notifications for this specific event only
+                subject_to_check = "Vendor Schedule Change" if is_schedule_change else "New Event from Your Favorite Vendor!"
                 existing_notification = session.query(UserNotification).filter(
                     UserNotification.user_id == user.id,
                     UserNotification.vendor_id == vendor.id,
                     UserNotification.created_at >= datetime.now(timezone.utc).date(),
-                    UserNotification.subject.in_([
-                        "New Event from Your Favorite Vendor!",
-                        "Vendor Schedule Change"
-                    ])
+                    UserNotification.subject == subject_to_check,
+                    UserNotification.message.like(f"%: {target.title}%") if not is_schedule_change else UserNotification.message.like(f"%. Event: {target.title}.%")
                 ).first()
                 if existing_notification:
+                    print(f"Duplicate notification exists for event '{target.title}', skipping user {user.id}")
                     continue
                 # Create site notification
                 notification = UserNotification(
@@ -325,9 +334,113 @@ def track_fav_vendor_event(mapper, connection, target):
     finally:
         safe_close(session)
 
+# User - New Event in Fav Market
+@listens_for(Event, 'after_insert')
+def notify_fav_market_users_of_events(mapper: Any, connection: Any, target: Event) -> None:
+    # Only handle market events (not vendor events)
+    if not target.market_id:
+        return
+        
+    session = get_db_session(connection)
+    try:
+        # Get the market
+        market = session.query(Market).get(target.market_id)
+        if not market:
+            print(f"Market not found for Market ID: {target.market_id}")
+            return
+
+        # Retrieve users who have favorited this market
+        favorited_users = session.query(User).join(MarketFavorite).filter(
+            MarketFavorite.market_id == target.market_id
+        ).all()
+
+        if not favorited_users:
+            print(f"No favorited users for Market ID {target.market_id}. No notifications will be created.")
+            return
+
+        is_schedule_change = target.schedule_change
+
+        # Prepare notifications
+        notifications = []
+        for user in favorited_users:
+            try:
+                # Retrieve user notification settings
+                settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
+                if not settings:
+                    print(f"No settings found for User ID={user.id}, skipping notification.")
+                    continue
+                # Check if the user has notifications enabled for this type
+                if is_schedule_change and not settings.site_fav_market_schedule_change:
+                    print(f"User ID={user.id} has market schedule change notifications disabled.")
+                    continue
+                if not is_schedule_change and not settings.site_fav_market_new_event:
+                    print(f"User ID={user.id} has market new event notifications disabled.")
+                    continue
+                
+                # Check for duplicate notifications for this specific event only
+                subject_to_check = "Market Schedule Change" if is_schedule_change else "New Event in Your Favorite Market!"
+                existing_notification = session.query(UserNotification).filter(
+                    UserNotification.user_id == user.id,
+                    UserNotification.market_id == target.market_id,
+                    UserNotification.created_at >= datetime.now(timezone.utc).date(),
+                    UserNotification.subject == subject_to_check,
+                    UserNotification.message.like(f"%: {target.title}%") if not is_schedule_change else UserNotification.message.like(f"%. Event: {target.title}.%")
+                ).first()
+                if existing_notification:
+                    print(f"Duplicate notification exists for event '{target.title}', skipping user {user.id}")
+                    continue
+                
+                # Create site notification
+                notification = UserNotification(
+                    subject="Market Schedule Change" if is_schedule_change else "New Event in Your Favorite Market!",
+                    message=f"The market, {market.name}, has updated its schedule temporarily."
+                    if is_schedule_change
+                    else f"The market, {market.name}, has added a new event: {target.title}",
+                    link=f"/user/markets/{market.id}",
+                    user_id=user.id,
+                    market_id=target.market_id,
+                    created_at=datetime.now(timezone.utc),
+                    is_read=False
+                )
+                notifications.append(notification)
+                
+                # Send email notification if enabled
+                if is_schedule_change and settings.email_fav_market_schedule_change:
+                    try:
+                        send_email_user_fav_market_schedule_change(user.email, user, market, target, f"/user/markets/{market.id}")
+                        print(f"Email sent to {user.email} for market schedule change")
+                    except Exception as e:
+                        print(f"Error sending email to {user.email}: {e}")
+                elif not is_schedule_change and settings.email_fav_market_new_event:
+                    try:
+                        send_email_user_fav_market_new_event(user.email, user, market, target, f"/user/markets/{market.id}")
+                        print(f"Email sent to {user.email} for market new event")
+                    except Exception as e:
+                        print(f"Error sending email to {user.email}: {e}")
+                
+                # Send SMS notification if enabled (only for schedule changes)
+                if is_schedule_change and settings.text_fav_market_schedule_change and user.phone:
+                    try:
+                        send_sms_user_fav_market_schedule_change(user.phone, user, market, target)
+                        print(f"SMS sent to {user.phone} for market schedule change")
+                    except Exception as e:
+                        print(f"Error sending SMS to {user.phone}: {e}")
+                        
+            except Exception as e:
+                print(f"Error processing user {user.id}: {e}")
+        
+        # Save notifications
+        if notifications:
+            session.bulk_save_objects(notifications)
+            safe_commit(session)
+    except Exception as e:
+        print(f"Error in notify_fav_market_users_of_events: {e}")
+    finally:
+        safe_close(session)
+
 # User - New Vendor in Fav Market
 @listens_for(VendorMarket, 'after_insert')
-def notify_new_vendor_in_favorite_market(mapper, connection, target):
+def notify_new_vendor_in_favorite_market(mapper: Any, connection: Any, target: VendorMarket) -> None:
     session = get_db_session(connection)
     try:
         # Retrieve the market associated with the market day
@@ -751,98 +864,7 @@ def update_blog_notification_status(mapper, connection, target):
 #     finally:
 #         session.close()
 
-# Vendor User - New Market Event     
-# @listens_for(Event, 'after_insert')
-# def vendor_market_new_event(mapper, connection, target):
-#     session = Session(bind=connection)
-#     # print(inspect.currentframe().f_code.co_name)
-#     try:
-#         # Retrieve the market day associated with the event
-#         market_day = session.query(MarketDay).filter_by(market_id=target.market_id).first()
-#         if not market_day:
-#             print(f"Market Day not found for Market ID: {target.market_id}")
-#             return
-
-#         # Retrieve vendors associated with the market
-#         vendors = session.query(Vendor).join(VendorMarket).join(MarketDay).filter(
-#             MarketDay.market_id == target.market_id
-#         ).all()
-
-#         if not vendors:
-#             print(f"No vendors found for Market ID {target.market_id}. No notifications will be created.")
-#             return
-
-#         # Prepare notifications for vendors who have enabled new event notifications
-#         notifications = []
-#         for vendor in vendors:
-#             vendor_users = session.query(VendorUser).join(SettingsVendor).filter(
-#                 SettingsVendor.vendor_user_id == VendorUser.id,
-#                 SettingsVendor.site_market_new_event == True
-#             ).all()
-
-#             for vendor_user in vendor_users:
-#                 if not vendor_user.vendor_id or not isinstance(vendor_user.vendor_id, dict):
-#                     continue
-
-#                 if str(vendor.id) not in vendor_user.vendor_id:
-#                     continue
-                
-#                 # Ensure vendor user is associated with the correct market day
-#                 settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
-#                 if not settings or not settings.market_locations:
-#                     continue
-
-#                 if market_day.id not in settings.market_locations:
-#                     continue
-
-#                 notifications.append(VendorNotification(
-#                     subject="New Event in Your Market!",
-#                     message=f"The market, {market_day.market.name}, has created a new event: {target.title}.",
-#                     link=f"/user/markets/{market_day.market.id}",
-#                     vendor_id=vendor.id,
-#                     vendor_user_id=vendor_user.id,
-#                     market_id=market_day.market.id,
-#                     created_at=datetime.now(timezone.utc),
-#                     is_read=False
-#                 ))
-#                 # Create site notification
-#                 notifications.append(VendorNotification(
-#                     subject="New Event in Your Market!",
-#                     message=f"The market, {market_day.market.name}, has created a new event: {target.title}.",
-#                     link=f"/user/markets/{market_day.market.id}",
-#                     vendor_id=vendor.id,
-#                     vendor_user_id=vendor_user.id,
-#                     market_id=market_day.market.id,
-#                     created_at=datetime.now(timezone.utc),
-#                     is_read=False
-#                 ))
-
-#         if notifications:
-#             session.bulk_save_objects(notifications)
-#             session.commit()
-#                 # Send email notification if enabled
-                # # Check if in dev mode
-                # is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-                # if not is_dev_mode:
-    #                 if settings.email_market_new_event:
-    #                     try:
-    #                         send_email_vendor_market_new_event(
-    #                             vendor_user.email, vendor_user, market_day.market, target, 
-    #                             f"user/markets/{market_day.market.id}"
-    #                         )
-    #                         print(f"Email sent to {vendor_user.email} for new market event")
-    #                     except Exception as e:
-    #                         print(f"Error sending email to {vendor_user.email}: {e}")
-
-#         if notifications:
-#             session.bulk_save_objects(notifications)
-#             session.commit()
-
-#     except Exception as e:
-#         session.rollback()
-#         print(f"Error in vendor_market_new_event: {e}")
-#     finally:
-#         session.close()
+# This function was removed as vendor_market_event_or_schedule_change now handles both cases
 
 # Vendor User - Basket Sold   
 @listens_for(Basket, 'after_update')
@@ -1714,39 +1736,105 @@ def delete_recipe_image(mapper, connection, target):
 @listens_for(Event, 'after_delete')
 def delete_event_notifications(mapper, connection, target):
     try:
-        # Delete user notifications for this event (match by vendor_id, market_id, message, and subject)
-        connection.execute(
-            UserNotification.__table__.delete().where(
-                and_(
-                    UserNotification.vendor_id == target.vendor_id,
-                    UserNotification.market_id == target.market_id,
-                    UserNotification.message == target.message,
-                    UserNotification.subject.in_([
-                        "New Event from Your Favorite Vendor!",
-                        "Vendor Schedule Change",
-                        "Market Schedule Change",
-                        "New Event in Your Market!"
-                    ])
-                )
-            )
-        )
-
-        # Delete vendor notifications for this event (match by vendor_id, market_id, message, and subject)
-        connection.execute(
-            VendorNotification.__table__.delete().where(
-                and_(
-                    VendorNotification.vendor_id == target.vendor_id,
-                    VendorNotification.market_id == target.market_id,
-                    VendorNotification.message == target.message,
-                    VendorNotification.subject.in_([
-                        "New Event in Your Market!",
-                        "Market Schedule Change"
-                    ])
-                )
-            )
-        )
+        # Get the session to query for specific notifications
+        session = Session(bind=connection)
+        
+        # More specific matching: find notifications that mention this exact event title
+        is_schedule_change = target.schedule_change
+        vendor_notifications = []
+        user_notifications = []
+        user_market_notifications = []
+        
+        # For vendor notifications (market events)
+        if target.market_id:
+            if is_schedule_change:
+                # Delete schedule change notifications that match the exact event title
+                vendor_notifications = session.query(VendorNotification).filter(
+                    and_(
+                        VendorNotification.market_id == target.market_id,
+                        VendorNotification.subject == "Market Schedule Change",
+                        VendorNotification.message.like(f"%. Event: {target.title}.%")
+                    )
+                ).all()
+            else:
+                # Delete new event notifications that specifically mention this exact event title
+                vendor_notifications = session.query(VendorNotification).filter(
+                    and_(
+                        VendorNotification.market_id == target.market_id,
+                        VendorNotification.subject == "New Event in Your Market!",
+                        VendorNotification.message.like(f"%: {target.title}.%")
+                    )
+                ).all()
+            
+            for notification in vendor_notifications:
+                print(f"Deleting vendor notification ID {notification.id}: '{notification.subject}' for vendor user {notification.vendor_user_id}")
+                session.delete(notification)
+        
+        # For user notifications (favorite vendor events)
+        if target.vendor_id:
+            if is_schedule_change:
+                # Delete schedule change notifications for vendor events
+                user_notifications = session.query(UserNotification).filter(
+                    and_(
+                        UserNotification.vendor_id == target.vendor_id,
+                        UserNotification.subject == "Vendor Schedule Change",
+                        UserNotification.message.like(f"%. Event: {target.title}.%")
+                    )
+                ).all()
+            else:
+                # Delete new event notifications that specifically mention this exact event title
+                user_notifications = session.query(UserNotification).filter(
+                    and_(
+                        UserNotification.vendor_id == target.vendor_id,
+                        UserNotification.subject == "New Event from Your Favorite Vendor!",
+                        UserNotification.message.like(f"%: {target.title}%")
+                    )
+                ).all()
+            
+            for notification in user_notifications:
+                print(f"Deleting user notification ID {notification.id}: '{notification.subject}' for user {notification.user_id}")
+                session.delete(notification)
+        
+        # For user notifications (favorite market events)
+        if target.market_id:
+            if is_schedule_change:
+                # Delete schedule change notifications for market events
+                user_market_notifications = session.query(UserNotification).filter(
+                    and_(
+                        UserNotification.market_id == target.market_id,
+                        UserNotification.subject == "Market Schedule Change",
+                        UserNotification.message.like(f"%. Event: {target.title}.%")
+                    )
+                ).all()
+            else:
+                # Delete new event notifications for market events
+                user_market_notifications = session.query(UserNotification).filter(
+                    and_(
+                        UserNotification.market_id == target.market_id,
+                        UserNotification.subject == "New Event in Your Favorite Market!",
+                        UserNotification.message.like(f"%: {target.title}%")
+                    )
+                ).all()
+            
+            for notification in user_market_notifications:
+                print(f"Deleting user market notification ID {notification.id}: '{notification.subject}' for user {notification.user_id}")
+                session.delete(notification)
+        
+        session.commit()
+        
+        # Count total notifications deleted
+        total_vendor = len(vendor_notifications) if target.market_id else 0
+        total_user_vendor = len(user_notifications) if target.vendor_id else 0
+        total_user_market = len(user_market_notifications) if target.market_id else 0
+        total_deleted = total_vendor + total_user_vendor + total_user_market
+        
+        print(f"Deleted {total_deleted} notifications for event '{target.title}': {total_vendor} vendor, {total_user_vendor} user-vendor, {total_user_market} user-market")
+        
     except Exception as e:
+        session.rollback() if session else None
         print(f"Error deleting event notifications: {e}")
+    finally:
+        session.close() if session else None
 
 @listens_for(AdminNotification, 'after_insert')
 def notify_admin_product_request(mapper, connection, target):

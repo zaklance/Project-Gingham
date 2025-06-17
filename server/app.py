@@ -2531,6 +2531,15 @@ def all_events():
                     market_id = int(market_id)
                 except (TypeError, ValueError):
                     return jsonify({"error": "Invalid market_id"}), 400
+            
+            # If vendor_id is provided but market_id is not, automatically find the vendor's market
+            if vendor_id and not market_id:
+                vendor_market = VendorMarket.query.filter_by(vendor_id=vendor_id).first()
+                if vendor_market:
+                    market_day = MarketDay.query.get(vendor_market.market_day_id)
+                    if market_day:
+                        market_id = market_day.market_id
+                        print(f"Automatically setting market_id={market_id} for vendor_id={vendor_id}")
 
             # Create new event
             new_event = Event(
@@ -3908,7 +3917,7 @@ def incoming_vendor_sms():
         try:
             user = VendorUser.query.filter_by(phone=sender_phone).first()
             if user:
-                settings = SettingsVendor.query.filter_by(user_id=user.id).first()
+                settings = SettingsVendor.query.filter_by(vendor_user_id=user.id).first()
                 if settings:
                     settings.text_market_schedule_change = False
                     settings.text_basket_sold = False
@@ -3946,7 +3955,7 @@ def incoming_admin_sms():
         try:
             user = AdminUser.query.filter_by(phone=sender_phone).first()
             if user:
-                settings = SettingsAdmin.query.filter_by(user_id=user.id).first()
+                settings = SettingsAdmin.query.filter_by(admin_id=user.id).first()
                 if settings:
                     settings.text_market_schedule_change = False
                     settings.text_basket_sold = False
