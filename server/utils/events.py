@@ -2065,7 +2065,7 @@ def handle_vendor_notify_me_notification(mapper, connection, target):
             return
             
         # Only proceed if vendor_notify_me site notifications are enabled (already created, so just check for email/SMS)
-        if not settings.site_vendor_notify_me:
+        if not settings.site_notify_me:
             # If site notifications are disabled, delete the notification that was just created
             session.delete(target)
             session.commit()
@@ -2087,11 +2087,11 @@ def handle_vendor_notify_me_notification(mapper, connection, target):
         # Send email notification if enabled
         # Check if in dev mode
         is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-        if not is_dev_mode and settings.email_vendor_notify_me:
+        if not is_dev_mode and settings.email_notify_me:
             try:
                 # Import the email function (will need to create this)
-                from utils.emails import send_email_vendor_notify_me
-                send_email_vendor_notify_me(
+                from utils.emails import send_email_notify_me
+                send_email_notify_me(
                     vendor_user.email, vendor_user, vendor, user, target.link or "/vendor/dashboard?tab=baskets"
                 )
                 print(f"Notify me email sent to {vendor_user.email}")

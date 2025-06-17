@@ -981,6 +981,7 @@ function VendorProfile () {
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_new_review} onChange={() => handleSwitchChange('site_new_review')} color={'secondary'} />} label="When a new review has been posted"/>
                                         {/* <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_new_blog} onChange={() => handleSwitchChange('site_new_blog')} color={'secondary'} />} label="A new blog has been posted"/> */}
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_new_statement} onChange={() => handleSwitchChange('site_new_statement')} color={'secondary'} />} label="A new statement is available"/>
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.site_vendor_notify_me} onChange={() => handleSwitchChange('site_vendor_notify_me')} color={'secondary'} />} label="When a user requests a basket"/>
                                     </FormGroup>
                                 )}
                                 {activeTab === 'email' && (
@@ -991,12 +992,14 @@ function VendorProfile () {
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_new_review} onChange={() => handleSwitchChange('email_new_review')} color={'secondary'} />} label="When a new review has been posted" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_new_blog} onChange={() => handleSwitchChange('email_new_blog')} color={'secondary'} />} label="A new blog has been posted" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_new_statement} onChange={() => handleSwitchChange('email_new_statement')} color={'secondary'} />} label="A new statement is available" />
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.email_vendor_notify_me} onChange={() => handleSwitchChange('email_vendor_notify_me')} color={'secondary'} />} label="When a user requests a basket"/>
                                     </FormGroup>
                                 )}
                                 {activeTab === 'text' && (
                                     <FormGroup>
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.text_market_schedule_change} onChange={() => handleSwitchChange('text_market_schedule_change')} color={'secondary'} />} label="Market changes schedule" />
                                         <FormControlLabel control={<Switch checked={tempVendorUserSettings.text_basket_sold} onChange={() => handleSwitchChange('text_basket_sold')} color={'secondary'} />} label="When a basket is sold" />
+                                        <FormControlLabel control={<Switch checked={tempVendorUserSettings.text_vendor_notify_me} onChange={() => handleSwitchChange('text_vendor_notify_me')} color={'secondary'} />} label="When a user requests a basket"/>
                                     </FormGroup>
                                 )}
                                 <div>
