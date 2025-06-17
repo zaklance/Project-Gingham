@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PulseLoader from 'react-spinners/PulseLoader';
 import { toast } from 'react-toastify';
 
 function AdminMarketEvents({ markets }) {
@@ -7,6 +8,7 @@ function AdminMarketEvents({ markets }) {
     const [events, setEvents] = useState([]);
     const [editingEventId, setEditingEventId] = useState(null);
     const [tempEventData, setTempEventData] = useState(null);
+    const [isPosting, setIsPosting] = useState(false);
 
     const onUpdateQuery = event => setQuery(event.target.value);
     const filteredMarkets = markets.filter(market => market.name.toLowerCase().includes(query.toLowerCase()) && market.name !== query)
@@ -55,6 +57,8 @@ function AdminMarketEvents({ markets }) {
             ...newEvent,
             vendor_id: null,
         };
+
+        setIsPosting(true);
     
         try {
             console.log("Saving event with formatted data:", formattedEvent);
@@ -75,12 +79,15 @@ function AdminMarketEvents({ markets }) {
                 });
                 setEvents((prevEvents) => [...prevEvents, createdEvent]);
                 setNewEvent({});
+                setIsPosting(false);
             } else {
                 const errorMessage = await response.text();
                 console.error('Failed to save event:', errorMessage);
+                setIsPosting(false);
             }
         } catch (error) {
             console.error('Error saving event:', error);
+            setIsPosting(false);
         }
     };
 
@@ -252,7 +259,17 @@ function AdminMarketEvents({ markets }) {
                             <option value={false}>No</option>
                         </select>
                     </div>
-                    <button className='btn-edit' onClick={handleSaveNewEvent}>Create Event</button>
+                    {isPosting ? (
+                        <PulseLoader
+                            className='margin-t-12'
+                            color={'#ff806b'}
+                            size={10}
+                            aria-label="Loading Spinner"
+                            data-testid="loader"
+                        />
+                    ) : (
+                        <button className='btn-edit' onClick={handleSaveNewEvent}>Create Event</button>
+                    )}
                 </div>
             </div>
             <div className='box-bounding'>
