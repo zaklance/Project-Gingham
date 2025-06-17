@@ -222,9 +222,67 @@ def send_contact_email(name, email, subject, message):
 #  PASSWORD EMAILS PASSWORD EMAILS PASSWORD EMAILS PASSWORD EMAILS
 #  PASSWORD EMAILS PASSWORD EMAILS PASSWORD EMAILS PASSWORD EMAILS
 
-def send_user_password_reset_email(*args, **kwargs):
-    """Stub for send_user_password_reset_email to satisfy imports."""
-    return {'message': 'User password reset email sent (stub)'}
+def send_user_password_reset_email(email):
+    """
+    Sends a password reset email to the given user email.
+    """
+
+    # Generate token for password reset
+    token = serializer.dumps(email, salt='password-reset-salt')
+    reset_link = url_for('password_reset', token=token, _external=True)
+
+    try:
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+        recipient_email = email
+        smtp = os.getenv('EMAIL_SMTP')
+        port = os.getenv('EMAIL_PORT')
+
+        msg = MIMEMultipart()
+        msg['From'] = f'gingham NYC <{sender_email}>'
+        msg['To'] = recipient_email
+        msg['Subject'] = 'GINGHAM Password Reset'
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>gingham Password Reset</title>
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/site-images/gingham-logo_04-2A.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div class="content center">
+                        <p><strong>Please click the link to reset your password <br/></strong> <a class="button" href={reset_link}>Password Reset</a></p>
+                    </div>
+                    <div class="footer">
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        # Send email
+        server = smtplib.SMTP(smtp, port)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, recipient_email, msg.as_string())
+        server.quit()
+
+        return {'message': 'Password reset link sent'}
+
+    except Exception as e:
+        return {'error': f'Failed to send email: {str(e)}'}
 
 def send_vendor_password_reset_email(email):
     """
@@ -1961,26 +2019,114 @@ def send_email_vendor_new_blog(email, user, blog):
         print(f"Error during vendor new blog email sending: {str(e)}")
         return {'error': f'Failed to send vendor email: {str(e)}'}
 
-def send_email_vendor_new_statement(vendor_user, receipt):
-    """Send email to vendor user about new monthly statement."""
+def send_email_vendor_new_statement(email, user, vendor, month, year):
     try:
-        subject = "New Monthly Statement Available"
+        payload = {
+            'type': 'SettingsVendor',
+            'field': 'email_',
+            'id': user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
+        port = os.getenv('EMAIL_PORT')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+
+        msg = MIMEMultipart()
+        msg['From'] = f'gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'GINGHAM Monthly Statement'
+
         body = f"""
-        Hello {vendor_user.first_name},
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/site-images/gingham-logo_04-2A.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {user.first_name},</p>
+                        <p>A new monthly statement for {vendor.name} is out. Attached is a CSV with last months sales data. For a PDF summary, graphs, and previous months statements check the <strong><a class="link-underline" href='https://www.gingham.nyc/vendor/sales'>sales</a></strong> page.</p>
+                        <p>—The gingham team</p>
+                    </div>
+                    <div class="footer">
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
 
-        Your monthly statement for {receipt.sale_date.strftime('%B %Y')} is now available.
-        You can view it by clicking the link below:
+        output = StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_ALL)
 
-        /vendor/sales#statements
+        headers = ['ID', 'Sale Date', 'Pickup Start', 'Pickup End', 'Price',
+                   'Value', 'Fee', 'Is Sold', 'Is Grabbed', 'Is Refunded']
+        writer.writerow(headers)
 
-        Best regards,
-        The Gingham Team
-        """
-        send_email(vendor_user.email, subject, body)
-        return True
+        baskets = Basket.query.filter(
+            Basket.vendor_id == vendor.id,
+            extract('month', Basket.sale_date) == month,
+            extract('year', Basket.sale_date) == year
+        ).all()
+
+        for basket in baskets:
+            writer.writerow([
+                basket.id,
+                basket.sale_date.strftime('%Y-%m-%d') if basket.sale_date else '',
+                basket.pickup_start.strftime('%H:%M') if basket.pickup_start else '',
+                basket.pickup_end.strftime('%H:%M') if basket.pickup_end else '',
+                basket.price,
+                basket.value,
+                basket.fee_vendor,
+                'Yes' if basket.is_sold else 'No',
+                'Yes' if basket.is_grabbed else 'No',
+                'Yes' if basket.is_refunded else 'No'
+            ])
+
+        csv_bytes = BytesIO()
+        csv_bytes.write(output.getvalue().encode('utf-8'))
+        csv_bytes.seek(0)
+        output.close()
+
+        csv_filename = f'gingham_vendor-statement_{year}-{month:02d}.csv'
+        part = MIMEApplication(csv_bytes.read(), Name=csv_filename)
+        part['Content-Disposition'] = f'attachment; filename="{csv_filename}"'
+        msg.attach(part)
+
+        # print("Attempting to send vendor email...")
+        server = smtplib.SMTP(smtp, port)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Vendor statement email sent successfully.'}
+
     except Exception as e:
-        print(f"Error sending vendor new statement email: {e}")
-        return False
+        print(f"Error during vendor new statement email sending: {str(e)}")
+        return {'error': f'Failed to send vendor email: {str(e)}'}
 
 #  ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS
 #  ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS
@@ -2453,22 +2599,3 @@ def send_email_weekly_admin_update(email, body_tag):
         print(f"Error during weekly update email sending: {str(e)}")
         return {'error': f'Failed to send weekly update email: {str(e)}'}
 
-def send_email(to_email, subject, body):
-    """
-    Send an email to the specified recipient.
-
-    Args:
-        to_email (str): The recipient's email address.
-        subject (str): The email subject.
-        body (str): The email body.
-
-    Returns:
-        bool: True if the email was sent successfully, False otherwise.
-    """
-    try:
-        # Mock implementation for testing
-        print(f"Email would be sent to {to_email}: {subject}")
-        return True
-    except Exception as e:
-        print(f"Error sending email: {e}")
-        return False
