@@ -4,7 +4,6 @@ import { Resource } from '@opentelemetry/resources';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 import { FetchInstrumentation } from '@opentelemetry/instrumentation-fetch';
 import { XMLHttpRequestInstrumentation } from '@opentelemetry/instrumentation-xml-http-request';
-import { registerInstrumentations } from '@opentelemetry/instrumentation';
 
 const initTelemetry = () => {
     const proxyUrl = import.meta.env.VITE_PROXY_URL;
@@ -37,21 +36,16 @@ const initTelemetry = () => {
     provider.register();
 
     // Register instrumentations
-    registerInstrumentations({
-        instrumentations: [
-            new FetchInstrumentation({
-                propagateTraceHeaderCorsUrls: [
-                    apiRegex
-                ],
-                clearTimingResources: true,
-            }),
-            new XMLHttpRequestInstrumentation({
-                propagateTraceHeaderCorsUrls: [
-                    apiRegex
-                ],
-            }),
-        ],
+    const fetchInstrumentation = new FetchInstrumentation({
+        propagateTraceHeaderCorsUrls: [apiRegex],
+        clearTimingResources: true,
     });
+    fetchInstrumentation.enable();
+
+    const xhrInstrumentation = new XMLHttpRequestInstrumentation({
+        propagateTraceHeaderCorsUrls: [apiRegex],
+    });
+    xhrInstrumentation.enable();
 
     console.log('OpenTelemetry initialized successfully');
 };
