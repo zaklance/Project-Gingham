@@ -20,7 +20,7 @@ import ErrorPage from './components/ErrorPage.jsx';
 // user routes
 import Cart from './components/user/Cart.jsx';
 import Payment from './components/user/Payment.jsx';
-import Completion from './components/user/Completion.jsx'
+import Completion from './components/user/Completion.jsx';
 import CheckSession from './components/user/CheckSession.jsx';
 import Login from './components/user/LoginPopup.jsx';
 import Markets from './components/user/Markets.jsx';
@@ -210,10 +210,10 @@ const router = createBrowserRouter([
                     { path: "help", element: <UserFAQs /> },
                 ],
             },
-            { path: "vendor", element: <VendorHome /> },
             {
                 path: "vendor",
                 children: [
+                    { path: "", element: <VendorHome /> },
                     { path: "dashboard", element: <VendorAuthRoute><VendorDashboard /></VendorAuthRoute> },
                     { path: "sales", element: <VendorAuthRoute><VendorSales /></VendorAuthRoute> },
                     { path: "scan", element: <VendorAuthRoute><VendorScan /></VendorAuthRoute> },
@@ -234,10 +234,10 @@ const router = createBrowserRouter([
                     { path: "privacy-policy", element: <PrivacyPolicy /> },
                 ]
             },
-            { path: "admin", element: <AdminHome /> },
             {
                 path: "admin",
                 children: [
+                    { path: "", element: <AdminHome /> },
                     { path: "profile/:id",element:<AdminRoute><AdminProfile /></AdminRoute>},
                     { path: "markets", element: <AdminAuthRoute><AdminMarkets /></AdminAuthRoute>},
                     { path: "vendors", element: <AdminAuthRoute><AdminVendors /></AdminAuthRoute>},
