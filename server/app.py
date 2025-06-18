@@ -66,7 +66,6 @@ from opentelemetry import trace
 
 load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 
-init_telemetry()
 
 app = Flask(__name__, static_folder='public')
 
@@ -103,6 +102,7 @@ app.secret_key = os.environ['SECRET_KEY']
 # Serializer to create tokens
 serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 
+init_telemetry(app)
 db.init_app(app)
 Migrate(app, db)
 CORS(app, supports_credentials=True)
