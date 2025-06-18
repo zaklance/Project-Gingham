@@ -27,7 +27,8 @@ from utils.emails import (
     send_email_admin_new_vendor,
     send_email_admin_product_request,
     send_email_user_fav_market_schedule_change,
-    send_email_user_fav_market_new_event
+    send_email_user_fav_market_new_event,
+    send_email_notify_me
 )
 from utils.sms import (
     send_sms_user_fav_vendor_schedule_change,
@@ -38,7 +39,8 @@ from utils.sms import (
     send_sms_user_basket_pickup_time,
     send_sms_vendor_market_schedule_change,
     send_sms_admin_product_request,
-    send_sms_user_fav_market_schedule_change
+    send_sms_user_fav_market_schedule_change,
+    send_sms_vendor_notify_me
 )
 
 def get_db_session(connection: Optional[Any] = None) -> Session:
@@ -783,10 +785,15 @@ def schedule_blog_notifications(mapper, connection, target):
     try:
         now = datetime.now(timezone.utc).date()
         
+        # Ensure target.post_date is converted to date for comparison
+        if isinstance(target.post_date, datetime):
+            post_date = target.post_date.date()
+        else:
+            post_date = target.post_date
+        
         # If it's today or in the past, send immediately
-        if target.post_date <= now:
+        if post_date <= now:
             task_id = str(uuid4())
-            print(f"Type of send_blog_notifications: {type(send_blog_notifications)}")
             send_blog_notifications.apply_async(
                 args=[target.id],
                 kwargs={"task_id": task_id}

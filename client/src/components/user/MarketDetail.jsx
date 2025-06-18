@@ -420,7 +420,7 @@ function MarketDetail ({ match }) {
     
         try {
             const payload = {
-                subject: 'basket-notify',
+                subject: 'New Basket Interest',
                 message: `A user is interested in buying a basket at ${market.name}, consider adding more for sale.`,
                 link: "/vendor/dashboard?tab=baskets",
                 user_id: userId,

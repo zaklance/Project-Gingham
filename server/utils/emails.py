@@ -2128,10 +2128,91 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
         print(f"Error during vendor new statement email sending: {str(e)}")
         return {'error': f'Failed to send vendor email: {str(e)}'}
 
-#  ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS
-#  ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS
-#  ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS
-#  ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS
+def send_email_notify_me(email, vendor_user, vendor, user, link):
+    """Send email notification to vendor user when a user clicks 'notify me for more baskets'"""
+    try:
+        payload = {
+            'type': 'SettingsVendor',
+            'field': 'email_notify_me',
+            'id': vendor_user.id
+        }
+
+        token = serializer.dumps(payload, salt='unsubscribe')
+        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+
+        sender_email = os.getenv('EMAIL_USER')
+        password = os.getenv('EMAIL_PASS')
+        smtp = os.getenv('EMAIL_SMTP')
+        port = os.getenv('EMAIL_PORT')
+
+        if not sender_email or not password:
+            print("Email credentials are missing")
+            raise ValueError("Email credentials are missing in the environment variables.")
+        
+        full_link = f'https://www.gingham.nyc/{link}'
+
+        msg = MIMEMultipart()
+        msg['From'] = f'gingham NYC <{sender_email}>'
+        msg['To'] = email
+        msg['Subject'] = f'User Interested in More Baskets!'
+
+        body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                {EMAIL_STYLES}
+            </head>
+            <body>
+                <div class="email-container">
+                    <div class="header">
+                        <img class="img-logo" src="https://www.gingham.nyc/site-images/gingham-logo_04-2A.png" alt="logo"/>
+                    </div>
+                    <hr class="divider"/>
+                    <div>
+                        <p>Hi {vendor_user.first_name},</p>
+                        <p>A user is interested in buying more baskets from <strong>{vendor.name}</strong>! Consider adding more baskets for sale to meet the demand.</p>
+                        <div class="content flex-center">
+                            <div class='box-callout'>
+                                <p><strong>User:</strong> {user.first_name} {user.last_name}</p>
+                                <p><strong>From:</strong> {user.city}, {user.state}</p>
+                                <p>This user clicked "Notify Me" when your baskets were sold out, indicating strong interest in purchasing from you.</p>
+                            </div>
+                        </div>
+                        <div class="content center">
+                            <a class="button" href="{full_link}">Add More Baskets</a>
+                        </div>
+                        <p>—The gingham team</p>
+                    </div>
+                    <div class="footer">
+                        <div class-"footer-flex">
+                            <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
+                            <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
+                        </div>
+                        <a class="link-underline" href={unsubscribe_url}>
+                            Unsubscribe
+                        </a>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        msg.attach(MIMEText(body, 'html'))
+
+        # print("Attempting to send vendor email...")
+        server = smtplib.SMTP(smtp, port)
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # print("Vendor email sent successfully")
+        return {'message': 'Vendor notify me email sent successfully.'}
+    
+    except Exception as e:
+        print(f"Error during vendor notify me email sending: {str(e)}")
+        return {'error': f'Failed to send vendor email: {str(e)}'}
+
 #  ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS
 
 def send_email_admin_reported_review(email, user, market, vendor, review, link_review):
