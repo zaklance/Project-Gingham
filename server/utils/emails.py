@@ -2214,6 +2214,10 @@ def send_email_notify_me(email, vendor_user, vendor, user, link):
         return {'error': f'Failed to send vendor email: {str(e)}'}
 
 #  ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS
+#  ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS
+#  ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS
+#  ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS
+#  ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS ADMIN EMAILS
 
 def send_email_admin_reported_review(email, user, market, vendor, review, link_review):
     try:
