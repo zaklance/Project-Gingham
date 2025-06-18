@@ -203,8 +203,8 @@ def vendor_market_event_or_schedule_change(mapper: Any, connection: Any, target:
                     )
                     notifications.append(notification)
                     # Send email notification if enabled
-                    is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-                    if not is_dev_mode:
+                    is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+                    if is_production:
                         if is_schedule_change and settings.email_market_schedule_change:
                             try:
                                 send_email_vendor_market_schedule_change(
@@ -307,8 +307,8 @@ def track_fav_vendor_event(mapper: Any, connection: Any, target: Event) -> None:
                 )
                 notifications.append(notification)
                 # Send email notification if enabled
-                is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-                if not is_dev_mode:
+                is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+                if is_production:
                     if is_schedule_change and settings.email_fav_vendor_schedule_change:
                         try:
                             send_email_user_fav_vendor_schedule_change(user.email, user, vendor, target, f"/user/vendors/{vendor.id}")
@@ -411,8 +411,8 @@ def notify_fav_market_users_of_events(mapper: Any, connection: Any, target: Even
                 notifications.append(notification)
                 
                 # Send email notification if enabled
-                is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-                if not is_dev_mode:
+                is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+                if is_production:
                     if is_schedule_change and settings.email_fav_market_schedule_change:
                         try:
                             send_email_user_fav_market_schedule_change(user.email, user, market, target, f"/user/markets/{market.id}")
@@ -507,8 +507,8 @@ def notify_new_vendor_in_favorite_market(mapper: Any, connection: Any, target: V
                     is_read=False
                 ))
                 # Send email notification if enabled
-                is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-                if not is_dev_mode:
+                is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+                if is_production:
                     if settings.email_fav_market_new_vendor:
                         try:
                             send_email_user_fav_market_new_vendor(
@@ -576,8 +576,8 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
                         
                         # Send email notification if enabled
                         # Check if in dev mode
-                        is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-                        if not is_dev_mode:
+                        is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+                        if is_production:
                             if admin_settings.email_report_review:
                                 try:
                                     send_email_admin_reported_review(admin.email, admin, None, vendor, review, "/admin/report#vendors")
@@ -649,8 +649,8 @@ def notify_admin_market_review_reported(mapper, connection, target):
                         
                         # Send email notification if enabled
                         # Check if in dev mode
-                        is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-                        if not is_dev_mode:
+                        is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+                        if is_production:
                             if admin_settings.email_report_review:
                                 try:
                                     send_email_admin_reported_review(admin.email, admin, market, None, review, "/admin/report#markets")
@@ -752,8 +752,8 @@ def fav_vendor_new_baskets(mapper, connection, target):
 
             # Send email notification if enabled and market is available
             # Check if in dev mode
-            is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-            if not is_dev_mode:
+            is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+            if is_production:
                 if settings.email_fav_vendor_new_basket and market:
                     try:
                         send_email_user_fav_vendor_new_basket(
@@ -999,8 +999,8 @@ def vendor_basket_sold(mapper, connection, target):
 
                                 # Send email notification if enabled
                                 # Check if in dev mode
-                                is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-                                if not is_dev_mode:
+                                is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+                                if is_production:
                                     if settings and settings.email_basket_sold and basket_market:
                                         try:
                                             send_email_vendor_basket_sold(
@@ -1053,8 +1053,8 @@ def vendor_basket_sold(mapper, connection, target):
 
             # Send email notification if enabled
             # Check if in dev mode
-            is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-            if not is_dev_mode:
+            is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+            if is_production:
                 if settings and settings.email_basket_sold:
                     try:
                         send_email_vendor_basket_sold(
@@ -1259,8 +1259,8 @@ def notify_fav_market_new_baskets(mapper, connection, target):
 
             # Send email notification if enabled
             # Check if in dev mode
-            is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-            if not is_dev_mode:
+            is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+            if is_production:
                 if settings.email_fav_market_new_basket:
                     try:
                         send_email_user_fav_market_new_basket(
@@ -1364,8 +1364,8 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
                     if vendor and market:
                         # Send email notification if enabled
                         # Check if in dev mode
-                        is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-                        if not is_dev_mode:
+                        is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+                        if is_production:
                             if settings.email_basket_pickup_time:
                                 try:
                                     send_email_user_basket_pickup_time(
@@ -1468,8 +1468,8 @@ def notify_user_vendor_review_response(mapper, connection, target):
 
         # Send email notification if enabled
         # Check if in dev mode
-        is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-        if not is_dev_mode:
+        is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+        if is_production:
             if settings.email_vendor_review_response:
                 try:
                     send_email_user_vendor_review_response(
@@ -1519,8 +1519,8 @@ def notify_users_new_market_in_state(mapper, connection, target):
 
             # Send email notification if enabled
             # Check if in dev mode
-            is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-            if not is_dev_mode:
+            is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+            if is_production:
                 if settings.email_new_market_in_city:
                     try:
                         send_email_user_new_market_in_city(
@@ -1612,8 +1612,8 @@ def notify_vendor_users_new_review(mapper, connection, target):
 
             # Send email notification if enabled
             # Check if in dev mode
-            is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-            if not is_dev_mode:
+            is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+            if is_production:
                 if settings.email_new_review:
                     try:
                         send_email_vendor_new_review(
@@ -1690,8 +1690,8 @@ def notify_admins_new_vendor(mapper, connection, target):
 
             # Send email notification if enabled
             # Check if in dev mode
-            is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-            if not is_dev_mode:
+            is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+            if is_production:
                 if settings.email_new_vendor:
                     try:
                         send_email_admin_new_vendor(
@@ -1885,8 +1885,8 @@ def notify_admin_product_request(mapper, connection, target):
         admin_settings = session.query(SettingsAdmin).filter_by(admin_id=admin.id).first()
         if admin_settings:
             # Send email notification if enabled
-            is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-            if not is_dev_mode:
+            is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+            if is_production:
                 if admin_settings.email_product_request:
                     try:
                         send_email_admin_product_request(
@@ -1999,8 +1999,8 @@ def send_monthly_statement_notifications() -> None:
                 
                 # Send email notification if enabled
                 # Check if in dev mode
-                is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-                if not is_dev_mode and settings.email_new_statement:
+                is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+                if is_production and settings.email_new_statement:
                     try:
                         # Import the email function
                         from utils.emails import send_email_vendor_new_statement
@@ -2086,8 +2086,8 @@ def handle_vendor_notify_me_notification(mapper, connection, target):
             
         # Send email notification if enabled
         # Check if in dev mode
-        is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-        if not is_dev_mode and settings.email_notify_me:
+        is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+        if is_production and settings.email_notify_me:
             try:
                 # Import the email function (will need to create this)
                 from utils.emails import send_email_notify_me
@@ -2099,7 +2099,7 @@ def handle_vendor_notify_me_notification(mapper, connection, target):
                 print(f"Error sending notify me email to {vendor_user.email}: {e}")
                 
         # Send SMS notification if enabled
-        if not is_dev_mode and settings.text_vendor_notify_me and vendor_user.phone:
+        if is_production and settings.text_vendor_notify_me and vendor_user.phone:
             try:
                 # Import the SMS function (will need to create this)
                 from utils.sms import send_sms_vendor_notify_me
@@ -2200,8 +2200,8 @@ def send_notification_vendor_market_schedule_change(vendor_id: int, market_id: i
             )
             notifications.append(notification)
             
-            is_dev_mode = os.environ.get('IS_DEV_MODE', 'False').lower() == 'true'
-            if not is_dev_mode:
+            is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+            if is_production:
                 if settings.email_market_schedule_change:
                     try:
                         send_email_vendor_market_schedule_change(
