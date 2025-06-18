@@ -60,12 +60,9 @@ from tasks import ( send_mjml_email_task, send_html_email_task,
 from celery.result import AsyncResult
 from celery_config import celery
 import base64
-from telemetry import init_telemetry
-from opentelemetry import trace
 
 
 load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
-
 
 app = Flask(__name__, static_folder='public')
 
@@ -102,7 +99,6 @@ app.secret_key = os.environ['SECRET_KEY']
 # Serializer to create tokens
 serializer = URLSafeTimedSerializer(os.environ['SECRET_KEY'])
 
-init_telemetry(app)
 db.init_app(app)
 Migrate(app, db)
 CORS(app, supports_credentials=True)
@@ -243,12 +239,6 @@ def allowed_file(filename):
 @app.route('/api/hello', methods=['GET'])
 def hello_world():
     return 'Hello World'
-
-@app.route("/api/test-otel")
-def test_otel():
-    with trace.get_tracer(__name__).start_as_current_span("manual-test-span") as span:
-        span.set_attribute("test.manual", True)
-        return "Span sent!"
 
 @app.route('/api/task-status/<task_id>', methods=['GET'])
 def get_task_status(task_id):
