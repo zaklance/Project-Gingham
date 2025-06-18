@@ -212,3 +212,22 @@ def send_sms_user_fav_market_schedule_change(phone, user, market, event):
     except Exception as e:
         print(f"Error sending SMS to {phone}: {str(e)}")
         return {'error': f'Failed to send SMS: {str(e)}'}
+
+def send_sms_vendor_notify_me(phone, vendor_user, vendor, user):
+    """Send SMS notification to vendor user when a user clicks 'notify me for more baskets'"""
+    try:
+        # Format phone number for US numbers
+        if not phone.startswith('+'):
+            phone = f"+1{phone}"
+        
+        body = f"Hi {vendor_user.first_name}! A user ({user.first_name}) is interested in buying more baskets from {vendor.name}. Consider adding more for sale! Check your vendor dashboard. Reply STOP to unsubscribe."
+        
+        message = client.messages.create(
+            body=body,
+            from_=from_phone_number,
+            to=phone
+        )
+        return {'message': 'SMS sent successfully!', 'sid': message.sid}
+    except Exception as e:
+        print(f"Error sending SMS to {phone}: {str(e)}")
+        return {'error': f'Failed to send SMS: {str(e)}'}
