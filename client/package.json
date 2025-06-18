@@ -16,7 +16,6 @@
     "@mui/icons-material": "^6.4.8",
     "@mui/material": "^6.4.2",
     "@opentelemetry/exporter-otlp-http": "^0.26.0",
-    "@opentelemetry/instrumentation": "^0.46.0",
     "@opentelemetry/instrumentation-fetch": "^0.36.1",
     "@opentelemetry/instrumentation-xml-http-request": "^0.36.1",
     "@opentelemetry/resources": "^1.17.0",
