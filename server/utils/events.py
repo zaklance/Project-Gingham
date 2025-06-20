@@ -210,15 +210,16 @@ def vendor_market_event_or_schedule_change(mapper: Any, connection: Any, target:
                         if is_schedule_change and settings.email_market_schedule_change:
                             try:
                                 send_email_vendor_market_schedule_change(
-                                    vendor_user.email, vendor_user, market_day.market, target, f"user/markets/{market_day.market.id}"
+                                    vendor_user.email, vendor_user, market_day.market, target, f"/user/markets/{market_day.market.id}"
                                 )
                                 print(f"Email sent to {vendor_user.email} for market schedule change")
                             except Exception as e:
                                 print(f"Error sending email to {vendor_user.email}: {e}")
+                        
                         elif not is_schedule_change and settings.email_market_new_event:
                             try:
                                 send_email_vendor_market_new_event(
-                                    vendor_user.email, vendor_user, market_day.market, target, f"user/markets/{market_day.market.id}"
+                                    vendor_user.email, vendor_user, market_day.market, target, f"/user/markets/{market_day.market.id}"
                                 )
                                 print(f"Email sent to {vendor_user.email} for market new event")
                             except Exception as e:
@@ -226,7 +227,7 @@ def vendor_market_event_or_schedule_change(mapper: Any, connection: Any, target:
                         # Send SMS notification if enabled (only for schedule changes)
                         if is_schedule_change and settings.text_market_schedule_change and vendor_user.phone:
                             try:
-                                send_sms_vendor_market_schedule_change(vendor_user.phone, vendor_user, market_day.market, target)
+                                send_sms_vendor_market_schedule_change(vendor_user.phone, vendor_user, market_day.market, target, f"/user/markets/{market_day.market.id}")
                                 print(f"SMS sent to {vendor_user.phone} for market schedule change")
                             except Exception as e:
                                 print(f"Error sending SMS to {vendor_user.phone}: {e}")
@@ -326,7 +327,7 @@ def track_fav_vendor_event(mapper: Any, connection: Any, target: Event) -> None:
                     # Send SMS notification if enabled (only for schedule changes)
                     if is_schedule_change and settings.text_fav_vendor_schedule_change and user.phone:
                         try:
-                            send_sms_user_fav_vendor_schedule_change(user.phone, user, vendor, target)
+                            send_sms_user_fav_vendor_schedule_change(user.phone, user, vendor, target, f"/user/vendors/{vendor.id}")
                             print(f"SMS sent to {user.phone} for vendor schedule change")
                         except Exception as e:
                             print(f"Error sending SMS to {user.phone}: {e}")
@@ -431,7 +432,7 @@ def notify_fav_market_users_of_events(mapper: Any, connection: Any, target: Even
                     # Send SMS notification if enabled (only for schedule changes)
                     if is_schedule_change and settings.text_fav_market_schedule_change and user.phone:
                         try:
-                            send_sms_user_fav_market_schedule_change(user.phone, user, market, target)
+                            send_sms_user_fav_market_schedule_change(user.phone, user, market, target, f"/user/markets/{market.id}")
                             print(f"SMS sent to {user.phone} for market schedule change")
                         except Exception as e:
                             print(f"Error sending SMS to {user.phone}: {e}")
@@ -590,7 +591,7 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
                             # Send SMS notification if enabled
                             if admin_settings.text_report_review and admin.phone:
                                 try:
-                                    send_sms_admin_reported_review(admin.phone, admin, vendor, review)
+                                    send_sms_admin_reported_review(admin.phone, admin, vendor, review, "/admin/report#vendors")
                                     print(f"SMS sent to {admin.phone} for reported vendor review")
                                 except Exception as e:
                                     print(f"Error sending SMS to {admin.phone}: {e}")
@@ -663,7 +664,7 @@ def notify_admin_market_review_reported(mapper, connection, target):
                             # Send SMS notification if enabled
                             if admin_settings.text_report_review and admin.phone:
                                 try:
-                                    send_sms_admin_reported_market_review(admin.phone, admin, market, review)
+                                    send_sms_admin_reported_market_review(admin.phone, admin, market, review, "/admin/report#markets")
                                     print(f"SMS sent to {admin.phone} for reported market review")
                                 except Exception as e:
                                     print(f"Error sending SMS to {admin.phone}: {e}")
@@ -760,8 +761,8 @@ def fav_vendor_new_baskets(mapper, connection, target):
                     try:
                         send_email_user_fav_vendor_new_basket(
                             user.email, user, market, vendor, 
-                            f"user/markets/{market.id}?day={target.market_day_id}#vendors", 
-                            f"user/vendors/{vendor.id}"
+                            f"/user/markets/{market.id}?day={target.market_day_id}#vendors", 
+                            f"/user/vendors/{vendor.id}"
                         )
                         print(f"Email sent to {user.email} for new basket from favorite vendor")
                     except Exception as e:
@@ -1022,7 +1023,7 @@ def vendor_basket_sold(mapper, connection, target):
                                     if settings and settings.text_basket_sold and vendor_user.phone:
                                         try:
                                             send_sms_vendor_basket_sold(
-                                                vendor_user.phone, vendor_user, vendor, total_sold, sale_date
+                                                vendor_user.phone, vendor_user, vendor, total_sold, sale_date, "/vendor/dashboard?tab=baskets"
                                             )
                                             print(f"Summary SMS sent to {vendor_user.phone} for {total_sold} baskets sold")
                                         except Exception as e:
@@ -1076,7 +1077,7 @@ def vendor_basket_sold(mapper, connection, target):
                 if settings and settings.text_basket_sold and vendor_user.phone:
                     try:
                         send_sms_vendor_basket_sold(
-                            vendor_user.phone, vendor_user, vendor, 1, sale_date
+                            vendor_user.phone, vendor_user, vendor, 1, sale_date, "/vendor/dashboard?tab=baskets"
                         )
                         print(f"SMS sent to {vendor_user.phone} for basket sold")
                     except Exception as e:
@@ -1272,8 +1273,8 @@ def notify_fav_market_new_baskets(mapper, connection, target):
                     try:
                         send_email_user_fav_market_new_basket(
                             user.email, user, market, vendor,
-                            f"user/markets/{market.id}?day={target.market_day_id}#vendors",
-                            f"user/vendors/{vendor.id}"
+                            f"/user/markets/{market.id}?day={target.market_day_id}#vendors",
+                            f"/user/vendors/{vendor.id}"
                         )
                         print(f"Email sent to {user.email} for new basket in favorite market")
                     except Exception as e:
@@ -1282,7 +1283,11 @@ def notify_fav_market_new_baskets(mapper, connection, target):
                 # Send SMS notification if enabled
                 if settings.text_fav_market_new_basket and user.phone:
                     try:
-                        send_sms_user_fav_market_new_basket(user.phone, user, market, vendor)
+                        send_sms_user_fav_market_new_basket(
+                            user.phone, user, market, vendor,
+                            f"/user/markets/{market.id}?day={target.market_day_id}#vendors",
+                            f"/user/vendors/{vendor.id}"
+                        )
                         print(f"SMS sent to {user.phone} for new basket in favorite market")
                     except Exception as e:
                         print(f"Error sending SMS to {user.phone}: {e}")
@@ -1377,8 +1382,8 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
                                 try:
                                     send_email_user_basket_pickup_time(
                                         user.email, user, market, vendor, basket,
-                                        f"user/markets/{market.id}?day={basket.market_day_id}#vendors",
-                                        f"user/vendors/{vendor.id}"
+                                        f"/user/markets/{market.id}?day={basket.market_day_id}#vendors",
+                                        f"/user/vendors/{vendor.id}"
                                     )
                                     print(f"Pickup email sent to {user.email}")
                                 except Exception as e:
@@ -1388,7 +1393,7 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
                             if settings.text_basket_pickup_time and user.phone:
                                 try:
                                     send_sms_user_basket_pickup_time(
-                                        user.phone, user, vendor, basket.pickup_start, basket.pickup_end
+                                        user.phone, user, vendor, basket.pickup_start, basket.pickup_end, f"/user/vendors/{vendor.id}"
                                     )
                                     print(f"Pickup SMS sent to {user.phone}")
                                 except Exception as e:
@@ -1462,7 +1467,7 @@ def notify_user_vendor_review_response(mapper, connection, target):
             notifications.append(UserNotification(
                 subject="Vendor Responded to Your Review",
                 message=message,
-                link=f"/user/vendor/{vendor.id}#reviews",
+                link=f"/user/vendors/{vendor.id}#reviews",
                 user_id=user.id,
                 created_at=datetime.now(timezone.utc),
                 is_read=False
@@ -1480,7 +1485,7 @@ def notify_user_vendor_review_response(mapper, connection, target):
             if settings.email_vendor_review_response:
                 try:
                     send_email_user_vendor_review_response(
-                        user.email, user, vendor, target, f"user/vendor/{vendor.id}#reviews"
+                        user.email, user, vendor, target, f"/user/vendors/{vendor.id}#reviews"
                     )
                     print(f"Email sent to {user.email} for vendor review response")
                 except Exception as e:
@@ -1531,7 +1536,7 @@ def notify_users_new_market_in_state(mapper, connection, target):
                 if settings.email_new_market_in_city:
                     try:
                         send_email_user_new_market_in_city(
-                            user.email, user, target, f"user/markets/{target.id}"
+                            user.email, user, target, f"/user/markets/{target.id}"
                         )
                         print(f"Email sent to {user.email} for new market in city")
                     except Exception as e:
@@ -1624,7 +1629,7 @@ def notify_vendor_users_new_review(mapper, connection, target):
                 if settings.email_new_review:
                     try:
                         send_email_vendor_new_review(
-                            vendor_user.email, vendor_user, vendor, target, f"vendor/dashboard?tab=reviews"
+                            vendor_user.email, vendor_user, vendor, target, f"/vendor/dashboard?tab=reviews"
                         )
                         print(f"Email sent to {vendor_user.email} for new vendor review")
                     except Exception as e:
@@ -1702,7 +1707,7 @@ def notify_admins_new_vendor(mapper, connection, target):
                 if settings.email_new_vendor:
                     try:
                         send_email_admin_new_vendor(
-                            admin.email, admin, target, f"admin/vendors/{target.id}"
+                            admin.email, admin, target, f"/admin/vendors/{target.id}"
                         )
                         print(f"Email sent to {admin.email} for new vendor registration")
                     except Exception as e:
@@ -1906,7 +1911,7 @@ def notify_admin_product_request(mapper, connection, target):
                 # Send SMS notification if enabled
                 if admin_settings.text_product_request and admin.phone:
                     try:
-                        send_sms_admin_product_request(admin.phone, admin, vendor, new_product)
+                        send_sms_admin_product_request(admin.phone, admin, vendor, new_product, "/admin/vendors?tab=products")
                         print(f"SMS sent to {admin.phone} for product request")
                     except Exception as e:
                         print(f"Error sending SMS to {admin.phone}: {e}")
@@ -2110,7 +2115,7 @@ def handle_vendor_notify_me_notification(mapper, connection, target):
             try:
                 # Import the SMS function (will need to create this)
                 from utils.sms import send_sms_vendor_notify_me
-                send_sms_vendor_notify_me(vendor_user.phone, vendor_user, vendor, user)
+                send_sms_vendor_notify_me(vendor_user.phone, vendor_user, vendor, user, "/vendor/dashboard?tab=baskets")
                 print(f"Notify me SMS sent to {vendor_user.phone}")
             except Exception as e:
                 print(f"Error sending notify me SMS to {vendor_user.phone}: {e}")
@@ -2169,13 +2174,18 @@ def get_user_notification_settings(user: User) -> Dict[str, Any]:
         print(f"Error parsing notification settings for User ID {user.id}: {e}")
         return default_settings
 
-def send_notification_vendor_market_schedule_change(vendor_id: int, market_id: int, schedule_id: int) -> None:
+def send_notification_vendor_market_schedule_change(vendor_id: int, market_id: int, schedule_id: int, event_id: int = None) -> None:
     """Send notification for vendor market schedule change."""
     try:
         session = Session()
         vendor = session.query(Vendor).get(vendor_id)
         market = session.query(Market).get(market_id)
         market_day = session.query(MarketDay).get(schedule_id)
+        
+        # Get event if event_id is provided (needed for email notifications)
+        event = None
+        if event_id:
+            event = session.query(Event).get(event_id)
         
         if not all([vendor, market, market_day]):
             print("Missing required data for notification")
@@ -2210,16 +2220,26 @@ def send_notification_vendor_market_schedule_change(vendor_id: int, market_id: i
             is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
             if is_production:
                 if settings.email_market_schedule_change:
-                    try:
-                        send_email_vendor_market_schedule_change(
-                            vendor_user.email, vendor_user, market, market_day, f"user/markets/{market.id}"
-                        )
-                    except Exception as e:
-                        print(f"Error sending email to {vendor_user.email}: {e}")
+                    if event:
+                        # We have the event data, send the email
+                        try:
+                            send_email_vendor_market_schedule_change(
+                                vendor_user.email, vendor_user, market, event, f"/user/markets/{market.id}"
+                            )
+                            print(f"Email sent to {vendor_user.email} for market schedule change")
+                        except Exception as e:
+                            print(f"Error sending email to {vendor_user.email}: {e}")
+                    else:
+                        # No event data available, skip email
+                        print(f"Skipping email to {vendor_user.email} - no event data provided")
                         
                 if settings.text_market_schedule_change and vendor_user.phone:
                     try:
-                        send_sms_vendor_market_schedule_change(vendor_user.phone, vendor_user, market, market_day)
+                        if event:
+                            send_sms_vendor_market_schedule_change(vendor_user.phone, vendor_user, market, event, f"/user/markets/{market.id}")
+                            print(f"SMS sent to {vendor_user.phone} for market schedule change")
+                        else:
+                            print(f"Skipping SMS to {vendor_user.phone} - no event data provided")
                     except Exception as e:
                         print(f"Error sending SMS to {vendor_user.phone}: {e}")
                     
