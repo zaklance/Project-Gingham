@@ -195,7 +195,7 @@ def send_contact_email(name, email, subject, message):
                         <a href="mailto:{email}" class="button">Reply to {name}</a>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
@@ -258,10 +258,10 @@ def send_user_password_reset_email(email):
                     </div>
                     <hr class="divider"/>
                     <div class="content center">
-                        <p><strong>Please click the link to reset your password <br/></strong> <a class="button" href={reset_link}>Password Reset</a></p>
+                        <p><strong>Please click the link to reset your password <br/></strong> <a class="button" href="{reset_link}">Password Reset</a></p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
@@ -320,10 +320,10 @@ def send_vendor_password_reset_email(email):
                     </div>
                     <hr class="divider"/>
                     <div class="content center">
-                        <p><strong>Please click the link to reset your password <br/></strong> <a class="button" href={reset_link}>Password Reset</a></p>
+                        <p><strong>Please click the link to reset your password <br/></strong> <a class="button" href="{reset_link}">Password Reset</a></p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
@@ -383,10 +383,10 @@ def send_admin_password_reset_email(email):
                     </div>
                     <hr class="divider"/>
                     <div class="content center">
-                        <p><strong>Please click the link to reset your password <br/></strong> <a class="button" href={reset_link}>Password Reset</a></p>
+                        <p><strong>Please click the link to reset your password <br/></strong> <a class="button" href="{reset_link}">Password Reset</a></p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
@@ -446,10 +446,10 @@ def send_user_confirmation_email(email, user_data):
                     </div>
                     <hr class="divider"/>
                     <div class="content center">
-                        <p><strong>Please confirm your email by clicking this link: <br/></strong> <a class="button" href={confirmation_link}>Verify Email</a></p>
+                        <p><strong>Please confirm your email by clicking this link: <br/></strong> <a class="button" href="{confirmation_link}">Verify Email</a></p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
@@ -509,10 +509,10 @@ def send_vendor_confirmation_email(email, vendor_data):
                     </div>
                     <hr class="divider"/>
                     <div class="content center">
-                        <p><strong>Please confirm your email by clicking this link: <br/></strong> <a class="button" href={confirmation_link}>Verify Email</a></p>
+                        <p><strong>Please confirm your email by clicking this link: <br/></strong> <a class="button" href="{confirmation_link}">Verify Email</a></p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
@@ -557,7 +557,7 @@ def send_admin_confirmation_email(email, admin_data):
         msg['To'] = email
         msg['Subject'] = 'GINGHAM Admin Email Confirmation'
 
-        body = body = f"""
+        body = f"""
             <!DOCTYPE html>
             <html>
             <head>
@@ -572,10 +572,10 @@ def send_admin_confirmation_email(email, admin_data):
                     </div>
                     <hr class="divider"/>
                     <div class="content center">
-                        <p><strong>Please confirm your email by clicking this link: <br/></strong> <a class="button" href={confirmation_link}>Verify Email</a></p>
+                        <p><strong>Please confirm your email by clicking this link: <br/></strong> <a class="button" href="{confirmation_link}">Verify Email</a></p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
@@ -645,7 +645,7 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
             <html>
             <head>
                 <meta charset="UTF-8">
-                <title</title>
+                <title></title>
                 {EMAIL_STYLES}
             </head>
             <body>
@@ -656,7 +656,7 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>One of your favorite markets, <strong><a class="link-underline" href={full_link}>{market.name}</a></strong>, has a new event, check it out: </p>
+                        <p>One of your favorite markets, <strong><a class="link-underline" href="{full_link}">{market.name}</a></strong>, has a new event, check it out: </p>
                         <div class="content flex-center">
                             <div class="box-callout">
                                 <h3 class="margin-4-0">{event.title}</h3>
@@ -667,11 +667,11 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -744,7 +744,7 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>One of your favorite markets, <strong><a class="link-underline" href={full_link}>{market.name}</a></strong>, has temporarily changed their schedule, check it out: </p>
+                        <p>One of your favorite markets, <strong><a class="link-underline" href="{full_link}">{market.name}</a></strong>, has temporarily changed their schedule, check it out: </p>
                         <div class="content flex-center">
                             <div class="box-callout">
                                 <h3 class="margin-4-0">{event.title}</h3>
@@ -755,11 +755,11 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -839,7 +839,7 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>One of your favorite markets, <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>, has a new vendor: <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong>. Check it out!</p>
+                        <p>One of your favorite markets, <strong><a class="link-underline" href="{full_link_market}">{market.name}</a></strong>, has a new vendor: <strong><a class="link-underline" href="{full_link_vendor}">{vendor.name}</a></strong>. Check it out!</p>
                         <div class="content flex-center">
                             <div class="box-callout">
                                 <h3 class="margin-4-0">{vendor.name}</h3>
@@ -852,11 +852,11 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -946,7 +946,7 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>One of your favorite markets, <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>, has a new basket available at <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong>. Check it out before it's gone!</p>
+                        <p>One of your favorite markets, <strong><a class="link-underline" href="{full_link_market}">{market.name}</a></strong>, has a new basket available at <strong><a class="link-underline" href="{full_link_vendor}">{vendor.name}</a></strong>. Check it out before it's gone!</p>
                         <div class="content flex-center">
                             <div class="box-callout margin-r-16">
                                 <h3 class="margin-4-0">{vendor.name}</h3>
@@ -966,11 +966,11 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -1043,7 +1043,7 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>One of your favorite vendors, <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong>, has a new event, check it out!</p>
+                        <p>One of your favorite vendors, <strong><a class="link-underline" href="{full_link_vendor}">{vendor.name}</a></strong>, has a new event, check it out!</p>
                         <div class="content flex-center">
                             <div class="box-callout">
                                 <h3 class="margin-4-0">{event.title}</h3>
@@ -1054,11 +1054,11 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -1131,7 +1131,7 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>One of your favorite vendors, <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong>, has temporarily changed their schedule, check it out: </p>
+                        <p>One of your favorite vendors, <strong><a class="link-underline" href="{full_link_vendor}">{vendor.name}</a></strong>, has temporarily changed their schedule, check it out: </p>
                         <div class="content flex-center">
                             <div class="box-callout">
                                 <h3 class="margin-4-0">{event.title}</h3>
@@ -1142,11 +1142,11 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -1236,7 +1236,7 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>One of your favorite vendors, <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong>, has a new basket available at <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>. Check it out before it's gone!</p>
+                        <p>One of your favorite vendors, <strong><a class="link-underline" href="{full_link_vendor}">{vendor.name}</a></strong>, has a new basket available at <strong><a class="link-underline" href="{full_link_market}">{market.name}</a></strong>. Check it out before it's gone!</p>
                         <div class="content flex-center">
                             <div class="box-callout margin-r-16">
                                 <h3 class="margin-4-0">{vendor.name}</h3>
@@ -1256,11 +1256,11 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -1327,15 +1327,15 @@ def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>It's almost time to pickup your basket! <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong> set the pickup time from {time_converter(basket.pickup_start)} to {time_converter(basket.pickup_end)} at <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>. If it is a large farmers' market, be sure to allot time to find the vendor.</p>
+                        <p>It's almost time to pickup your basket! <strong><a class="link-underline" href="{full_link_vendor}">{vendor.name}</a></strong> set the pickup time from {time_converter(basket.pickup_start)} to {time_converter(basket.pickup_end)} at <strong><a class="link-underline" href="{full_link_market}">{market.name}</a></strong>. If it is a large farmers' market, be sure to allot time to find the vendor.</p>
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -1384,7 +1384,7 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
         msg = MIMEMultipart()
         msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
-        msg['Subject'] = f'Response to on of your Reviews'
+        msg['Subject'] = f'Response to one of your Reviews'
 
         body = f"""
             <!DOCTYPE html>
@@ -1401,7 +1401,7 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>A vendor responded to your review! Check out what <strong><a class="link-underline" href={full_link_review}>{vendor.name}</a></strong> said.</p>
+                        <p>A vendor responded to your review! Check out what <strong><a class="link-underline" href="{full_link_review}">{vendor.name}</a></strong> said.</p>
                         <div class="content flex-center">
                             <div class='box-callout'>
                                 <p>{review.review_text}</p>
@@ -1410,11 +1410,11 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -1478,7 +1478,7 @@ def send_email_user_new_blog(email, user, blog):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>A new blog post is out, check out <strong><a class="link-underline" href='https://www.gingham.nyc/'>{blog.title}</a></strong>!</p>
+                        <p>A new blog post is out, check out <strong><a class="link-underline" href='https://www.gingham.nyc/#blog'>{blog.title}</a></strong>!</p>
                         <div class="content flex-center">
                             <div class='box-callout'>
                                 {blog.body}
@@ -1486,11 +1486,11 @@ def send_email_user_new_blog(email, user, blog):
                         </div>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -1561,7 +1561,7 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>There is a new farmers' market in your city, {market.city}, <strong><a class="link-underline" href={full_link_market}>{market.name}</a></strong>. Check it out!</p>
+                        <p>There is a new farmers' market in your city, {market.city}, <strong><a class="link-underline" href="{full_link_market}">{market.name}</a></strong>. Check it out!</p>
                         <div class="content flex-center">
                             <div class="box-callout">
                                 <h3 class="margin-4-0">{market.name}</h3>
@@ -1574,11 +1574,11 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -1657,7 +1657,7 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>One of your the markets you are in, <strong><a class="link-underline" href={full_link}>{market.name}</a></strong>, has a new event, check it out: </p>
+                        <p>One of your the markets you are in, <strong><a class="link-underline" href="{full_link}">{market.name}</a></strong>, has a new event, check it out: </p>
                         <div class="content flex-center">
                             <div class="box-callout">
                                 <h3 class="margin-4-0">{event.title}</h3>
@@ -1668,11 +1668,11 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -1745,7 +1745,7 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>One of the markets you are in, <strong><a class="link-underline" href={full_link}>{market.name}</a></strong>, has temporarily changed their schedule, check it out: </p>
+                        <p>One of the markets you are in, <strong><a class="link-underline" href="{full_link}">{market.name}</a></strong>, has temporarily changed their schedule, check it out: </p>
                         <div class="content flex-center">
                             <div class="box-callout">
                                 <h3 class="margin-4-0">{event.title}</h3>
@@ -1756,11 +1756,11 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -1836,11 +1836,11 @@ def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pic
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -1906,7 +1906,7 @@ def send_email_vendor_new_review(email, user, vendor, review, link_review):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>A user posted a new <strong><a class="link-underline" href={full_link_review}>review</a></strong> about {vendor.name}!</p>
+                        <p>A user posted a new <strong><a class="link-underline" href="{full_link_review}">review</a></strong> about {vendor.name}!</p>
                         <div class="content flex-center">
                             <div class='box-callout'>
                                 <p>{review.review_text}</p>
@@ -1915,11 +1915,11 @@ def send_email_vendor_new_review(email, user, vendor, review, link_review):
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -1991,11 +1991,11 @@ def send_email_vendor_new_blog(email, user, blog):
                         </div>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -2063,11 +2063,11 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -2185,11 +2185,11 @@ def send_email_notify_me(email, vendor_user, vendor, user, link):
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -2266,7 +2266,7 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>A user reported a <strong><a class="link-underline" href={full_link_review}>review</a></strong> about {review_about}!</p>
+                        <p>A user reported a <strong><a class="link-underline" href="{full_link_review}">review</a></strong> about {review_about}!</p>
                         <div class="content flex-center">
                             <div class='box-callout'>
                                 <p>{review.review_text}</p>
@@ -2275,11 +2275,11 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -2362,7 +2362,7 @@ def send_email_admin_product_request(email, user, vendor, new_product, link_prod
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>A vendor, {vendor.name}, requested a new product <strong><a class="link-underline" href={full_link_product}>{new_product}</a></strong>!</p>
+                        <p>A vendor, {vendor.name}, requested a new product <strong><a class="link-underline" href="{full_link_product}">{new_product}</a></strong>!</p>
                         <div class="content flex-center">
                             <div class="box-callout">
                                 <h3 class="margin-4-0">{vendor.name}</h3>
@@ -2375,11 +2375,11 @@ def send_email_admin_product_request(email, user, vendor, new_product, link_prod
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -2443,7 +2443,7 @@ def send_email_admin_new_blog(email, user, blog):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>A new blog post is out, check out <strong><a class="link-underline" href='https://www.gingham.nyc/admin/profile/{user.id}'>{blog.title}</a></strong>!</p>
+                        <p>A new blog post is out, check out <strong><a class="link-underline" href='https://www.gingham.nyc/admin#blog'>{blog.title}</a></strong>!</p>
                         <div class="content flex-center">
                             <div class='box-callout'>
                                 {blog.body}
@@ -2451,11 +2451,11 @@ def send_email_admin_new_blog(email, user, blog):
                         </div>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -2521,7 +2521,7 @@ def send_email_admin_new_vendor(email, user, vendor, link_vendor):
         msg = MIMEMultipart()
         msg['From'] = f'gingham NYC <{sender_email}>'
         msg['To'] = email
-        msg['Subject'] = f'New Product Request on GINGHAM'
+        msg['Subject'] = f'New Vendor on GINGHAM'
 
         body = f"""
             <!DOCTYPE html>
@@ -2538,7 +2538,7 @@ def send_email_admin_new_vendor(email, user, vendor, link_vendor):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>A new vendor joined gingham, check <strong><a class="link-underline" href={full_link_vendor}>{vendor.name}</a></strong> out!</p>
+                        <p>A new vendor joined gingham, check <strong><a class="link-underline" href="{full_link_vendor}">{vendor.name}</a></strong> out!</p>
                         <div class="content flex-center">
                             <div class="box-callout">
                                 <h3 class="margin-4-0">{vendor.name}</h3>
@@ -2551,11 +2551,11 @@ def send_email_admin_new_vendor(email, user, vendor, link_vendor):
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>
-                        <a class="link-underline" href={unsubscribe_url}>
+                        <a class="link-underline" href="{unsubscribe_url}">
                             Unsubscribe
                         </a>
                     </div>
@@ -2617,10 +2617,10 @@ def send_vendor_team_invite_email(email, vendor_name, token):
                     <div class="content center">
                         <p><strong>{vendor_name}</strong> has invited you to join their team on gingham!</p>
                         <p>Click the button below to accept the invitation and set up your account:</p>
-                        <a class="button" href={invitation_link}>Join Team</a>
+                        <a class="button" href="{invitation_link}">Join Team</a>
                     </div>
                     <div class="footer">
-                        <div class-"footer-flex">
+                        <div class="footer-flex">
                             <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                             <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                         </div>

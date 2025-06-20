@@ -1448,7 +1448,7 @@ def send_weekly_admin_summary():
                             <p>— The gingham task robot</p>
                         </div>
                         <div class="footer">
-                            <div class-"footer-flex">
+                            <div class="footer-flex">
                                 <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-2B.png" alt="logo"/>
                                 <p>&copy; {get_current_year()} GINGHAM.NYC. All Rights Reserved.</p>
                             </div>
