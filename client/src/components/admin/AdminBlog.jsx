@@ -18,6 +18,8 @@ const AdminBlog = () => {
     const [openFolder, setOpenFolder] = useState({});
     const [pendingBlogImages, setPendingBlogImages] = useState([]);
 
+    const siteUrl = import.meta.env.VITE_SITE_URL;
+
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const tab = urlParams.get('tab');
@@ -318,7 +320,7 @@ const AdminBlog = () => {
                                                             title="delete"
                                                         >
                                                             &emsp;
-                                                        </button> <span className='text-500'>src=</span>{img}
+                                                        </button> <span className='text-500'>src=</span>{siteUrl}{img}
                                                     </p>
                                                 </div>
                                             </div>

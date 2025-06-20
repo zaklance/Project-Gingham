@@ -12,6 +12,7 @@ from datetime import datetime, date, time
 from models import (Product, Basket)
 
 serializer = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
+site_url = os.getenv('VITE_SITE_URL')
 
 def format_event_date(date_input):
     try:
@@ -415,8 +416,7 @@ def send_admin_password_reset_email(email):
 def send_user_confirmation_email(email, user_data):
     try:
         token = serializer.dumps(user_data, salt='user-confirmation-salt')  # Generate the token
-        VITE_SITE_URL = os.getenv('VITE_SITE_URL')
-        confirmation_link = f"{VITE_SITE_URL}/user/confirm-email/{token}"
+        confirmation_link = f"{site_url}/user/confirm-email/{token}"
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
         smtp = os.getenv('EMAIL_SMTP')
@@ -477,8 +477,7 @@ def send_user_confirmation_email(email, user_data):
 def send_vendor_confirmation_email(email, vendor_data):
     try:
         token = serializer.dumps(vendor_data, salt='vendor-confirmation-salt')
-        VITE_SITE_URL = os.getenv('VITE_SITE_URL')
-        confirmation_link = f"{VITE_SITE_URL}/vendor/confirm-email/{token}"
+        confirmation_link = f"{site_url}/vendor/confirm-email/{token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -540,8 +539,7 @@ def send_vendor_confirmation_email(email, vendor_data):
 def send_admin_confirmation_email(email, admin_data):
     try:
         token = serializer.dumps(admin_data, salt='admin-confirmation-salt')
-        VITE_SITE_URL = os.getenv('VITE_SITE_URL')
-        confirmation_link = f"{VITE_SITE_URL}/admin/confirm-email/{token}"
+        confirmation_link = f"{site_url}/admin/confirm-email/{token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -615,7 +613,7 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -626,7 +624,7 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link = f'https://www.gingham.nyc/{link}'
+        full_link = f'{site_url}{link}'
 
         start_date_formatted = format_event_date(event.start_date)
         end_date_formatted = format_event_date(event.end_date)
@@ -704,7 +702,7 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -715,7 +713,7 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link = f'https://www.gingham.nyc/{link}'
+        full_link = f'{site_url}{link}'
 
         start_date_formatted = format_event_date(event.start_date)
         end_date_formatted = format_event_date(event.end_date)
@@ -792,7 +790,7 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -803,8 +801,8 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link_market = f'https://www.gingham.nyc/{link_market}'
-        full_link_vendor = f'https://www.gingham.nyc/{link_vendor}'
+        full_link_market = f'{site_url}/{link_market}'
+        full_link_vendor = f'{site_url}/{link_vendor}'
 
         # Move this to events.py so there isn't a circular import, or will that create a longer circular import?
         if vendor.products:
@@ -889,7 +887,7 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -900,8 +898,8 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link_market = f'https://www.gingham.nyc/{link_market}'
-        full_link_vendor = f'https://www.gingham.nyc/{link_vendor}'
+        full_link_market = f'{site_url}/{link_market}'
+        full_link_vendor = f'{site_url}/{link_vendor}'
 
         # Move this to events.py so there isn't a circular import, or will that create a longer circular import?
         if vendor.products:
@@ -1003,7 +1001,7 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1014,7 +1012,7 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link_vendor = f'https://www.gingham.nyc/{link_vendor}'
+        full_link_vendor = f'{site_url}/{link_vendor}'
 
         start_date_formatted = format_event_date(event.start_date)
         end_date_formatted = format_event_date(event.end_date)
@@ -1091,7 +1089,7 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1102,7 +1100,7 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link_vendor = f'https://www.gingham.nyc/{link_vendor}'
+        full_link_vendor = f'{site_url}/{link_vendor}'
 
         start_date_formatted = format_event_date(event.start_date)
         end_date_formatted = format_event_date(event.end_date)
@@ -1179,7 +1177,7 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1190,8 +1188,8 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link_market = f'https://www.gingham.nyc/{link_market}'
-        full_link_vendor = f'https://www.gingham.nyc/{link_vendor}'
+        full_link_market = f'{site_url}/{link_market}'
+        full_link_vendor = f'{site_url}/{link_vendor}'
 
         # Move this to events.py so there isn't a circular import, or will that create a longer circular import?
         if vendor.products:
@@ -1293,7 +1291,7 @@ def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1304,8 +1302,8 @@ def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link_market = f'https://www.gingham.nyc/{link_market}'
-        full_link_vendor = f'https://www.gingham.nyc/{link_vendor}'
+        full_link_market = f'{site_url}/{link_market}'
+        full_link_vendor = f'{site_url}/{link_vendor}'
 
         msg = MIMEMultipart()
         msg['From'] = f'gingham NYC <{sender_email}>'
@@ -1368,7 +1366,7 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1379,7 +1377,7 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link_review = f'https://www.gingham.nyc/{link_review}'
+        full_link_review = f'{site_url}{link_review}'
 
         msg = MIMEMultipart()
         msg['From'] = f'gingham NYC <{sender_email}>'
@@ -1447,7 +1445,7 @@ def send_email_user_new_blog(email, user, blog):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1478,7 +1476,7 @@ def send_email_user_new_blog(email, user, blog):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>A new blog post is out, check out <strong><a class="link-underline" href='https://www.gingham.nyc/#blog'>{blog.title}</a></strong>!</p>
+                        <p>A new blog post is out, check out <strong><a class="link-underline" href='{site_url}/#blog'>{blog.title}</a></strong>!</p>
                         <div class="content flex-center">
                             <div class='box-callout'>
                                 {blog.body}
@@ -1523,7 +1521,7 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1534,7 +1532,7 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link_market = f'https://www.gingham.nyc/{link_market}'
+        full_link_market = f'{site_url}/{link_market}'
 
         if market.bio:
             market_bio_html = f"<p class='margin-12-0'>{market.bio}</p>"
@@ -1617,7 +1615,7 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1628,7 +1626,7 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link = f'https://www.gingham.nyc/{link}'
+        full_link = f'{site_url}{link}'
 
         start_date_formatted = format_event_date(event.start_date)
         end_date_formatted = format_event_date(event.end_date)
@@ -1705,7 +1703,7 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1716,7 +1714,7 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link = f'https://www.gingham.nyc/{link}'
+        full_link = f'{site_url}{link}'
 
         start_date_formatted = format_event_date(event.start_date)
         end_date_formatted = format_event_date(event.end_date)
@@ -1793,7 +1791,7 @@ def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pic
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1831,7 +1829,7 @@ def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pic
                         <p>Hi {user.first_name},</p>
                         <p>{vendor.name} has sold {basket_count} {basket_text} at {market.name} on {format_event_date(sale_date)}. You set the pickup time from {time_converter(pickup_start)} to {time_converter(pickup_end)}.</p>
                         <div class="flex-center">
-                            <p><strong><a class="button" href='https://www.gingham.nyc/vendor/scan'>Scan basket QR codes here!</a></strong></p>
+                            <p><strong><a class="button" href='{site_url}/vendor/scan'>Scan basket QR codes here!</a></strong></p>
                         </div>
                         <p>—The gingham team</p>
                     </div>
@@ -1873,7 +1871,7 @@ def send_email_vendor_new_review(email, user, vendor, review, link_review):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1884,7 +1882,7 @@ def send_email_vendor_new_review(email, user, vendor, review, link_review):
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link_review = f'https://www.gingham.nyc/{link_review}'
+        full_link_review = f'{site_url}{link_review}'
 
         msg = MIMEMultipart()
         msg['From'] = f'gingham NYC <{sender_email}>'
@@ -1952,7 +1950,7 @@ def send_email_vendor_new_blog(email, user, blog):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -1983,7 +1981,7 @@ def send_email_vendor_new_blog(email, user, blog):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>A new blog post is out, check out <strong><a class="link-underline" href='https://www.gingham.nyc/vendor#blog'>{blog.title}</a></strong>!</p>
+                        <p>A new blog post is out, check out <strong><a class="link-underline" href='{site_url}/vendor#blog'>{blog.title}</a></strong>!</p>
                         <div class="content flex-center">
                             <div class='box-callout'>
                                 {blog.body}
@@ -2028,7 +2026,7 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -2059,7 +2057,7 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>A new monthly statement for {vendor.name} is out. Attached is a CSV with last months sales data. For a PDF summary, graphs, and previous months statements check the <strong><a class="link-underline" href='https://www.gingham.nyc/vendor/sales'>sales</a></strong> page.</p>
+                        <p>A new monthly statement for {vendor.name} is out. Attached is a CSV with last months sales data. For a PDF summary, graphs, and previous months statements check the <strong><a class="link-underline" href='{site_url}/vendor/sales'>sales</a></strong> page.</p>
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
@@ -2138,7 +2136,7 @@ def send_email_notify_me(email, vendor_user, vendor, user, link):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -2149,7 +2147,7 @@ def send_email_notify_me(email, vendor_user, vendor, user, link):
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link = f'https://www.gingham.nyc/{link}'
+        full_link = f'{site_url}{link}'
 
         msg = MIMEMultipart()
         msg['From'] = f'gingham NYC <{sender_email}>'
@@ -2228,7 +2226,7 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -2239,7 +2237,7 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link_review = f'https://www.gingham.nyc/{link_review}'
+        full_link_review = f'{site_url}{link_review}'
 
         if market:
             review_about = f"{market.name}"
@@ -2312,7 +2310,7 @@ def send_email_admin_product_request(email, user, vendor, new_product, link_prod
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -2323,7 +2321,7 @@ def send_email_admin_product_request(email, user, vendor, new_product, link_prod
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link_product = f'https://www.gingham.nyc/{link_product}'
+        full_link_product = f'{site_url}/{link_product}'
 
         if vendor.products:
             product_names = [product.product for product in Product.query.filter(Product.id.in_(vendor.products)).all()]
@@ -2412,7 +2410,7 @@ def send_email_admin_new_blog(email, user, blog):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -2443,7 +2441,7 @@ def send_email_admin_new_blog(email, user, blog):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>A new blog post is out, check out <strong><a class="link-underline" href='https://www.gingham.nyc/admin#blog'>{blog.title}</a></strong>!</p>
+                        <p>A new blog post is out, check out <strong><a class="link-underline" href='{site_url}/admin#blog'>{blog.title}</a></strong>!</p>
                         <div class="content flex-center">
                             <div class='box-callout'>
                                 {blog.body}
@@ -2488,7 +2486,7 @@ def send_email_admin_new_vendor(email, user, vendor, link_vendor):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"https://www.gingham.nyc/unsubscribe?token={token}"
+        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
         sender_email = os.getenv('EMAIL_USER')
         password = os.getenv('EMAIL_PASS')
@@ -2499,7 +2497,7 @@ def send_email_admin_new_vendor(email, user, vendor, link_vendor):
             print("Email credentials are missing")
             raise ValueError("Email credentials are missing in the environment variables.")
         
-        full_link_vendor = f'https://www.gingham.nyc/{link_vendor}'
+        full_link_vendor = f'{site_url}/{link_vendor}'
 
         if vendor.products:
             product_names = [product.product for product in Product.query.filter(Product.id.in_(vendor.products)).all()]
