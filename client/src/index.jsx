@@ -23,6 +23,7 @@ import Payment from './components/user/Payment.jsx';
 import Completion from './components/user/Completion.jsx';
 import CheckSession from './components/user/CheckSession.jsx';
 import Login from './components/user/LoginPopup.jsx';
+import SignUp from './components/user/SignUp.jsx';
 import Markets from './components/user/Markets.jsx';
 import MarketDetail from './components/user/MarketDetail.jsx';
 import PickUp from './components/user/PickUp.jsx';
@@ -191,6 +192,7 @@ const router = createBrowserRouter([
                 path: "user",
                 children: [
                     { path: "login", element: <Login /> },
+                    { path: "signup", element: <SignUp /> },
                     { path: "profile/:id", element: <UserRoute><Profile /></UserRoute> },
                     { path: "logout", element: <Logout /> },
                     { path: "markets", element: <Markets /> },
