@@ -696,8 +696,8 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 ) : (
                     !isNotUser && (
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-3 tab-right btn-nav nav-tab-login' onClick={handlePopup} title="Login/Signup">
-                                Login/Signup
+                            <button className='nav-tab color-3 tab-right btn-nav nav-tab-login' onClick={handlePopup} title="Login/Sign-Up">
+                                Login/Sign-Up
                             </button>
                         </li>
                     )
@@ -712,8 +712,8 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 ) : (
                     isVendorPage && (
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-3 tab-right btn-nav nav-tab-login' onClick={handlePopup} title="Login/Signup">
-                                Login/Signup
+                            <button className='nav-tab color-3 tab-right btn-nav nav-tab-login' onClick={handlePopup} title="Login/Sign-Up">
+                                Login/Sign-Up
                             </button>
                         </li>
                     )
@@ -728,8 +728,8 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 ) : (
                     isAdminPage && (
                         <li style={{ marginLeft: 'auto' }}>
-                            <button className='nav-tab color-3 tab-right btn-nav nav-tab-login' onClick={handlePopup} title="Login/Signup">
-                                Login/Signup
+                            <button className='nav-tab color-3 tab-right btn-nav nav-tab-login' onClick={handlePopup} title="Login/Sign-Up">
+                                Login/Sign-Up
                             </button>
                         </li>
                     )

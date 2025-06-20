@@ -1165,7 +1165,7 @@ ul {
 }
 
 .box-blog, .box-recipe {
-  background-color: #fbf7eb;
+  background-color: #fbf7eb !important;
   padding: 16px;
   border-radius: 16px;
   height: min-content;
