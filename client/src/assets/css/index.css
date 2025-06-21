@@ -1157,6 +1157,16 @@ ul {
   border-radius: 24px;
 }
 
+.box-signup {
+  background-color: white;
+  width: fit-content;
+  max-width: calc(100% - 96px);
+  margin-left: auto;
+  margin-right: auto;
+  padding: 16px 24px;
+  border-radius: 24px;
+}
+
 .box-bounding {
   margin-top: 20px;
   padding: 20px;
@@ -2342,7 +2352,8 @@ link {
 }
 
 .input-phone input {
-  min-width: 236px !important;
+  min-width: 232px !important;
+  max-width: 232px !important;
 }
 
 .form-contact label{
@@ -3683,7 +3694,7 @@ textarea {
   border-radius: 16px;
 }
 
-.user-portal-background {
+.user-portal-background, .signup-background {
   background-size:cover;
   width: 100%;
   height: 100%;
@@ -3691,6 +3702,11 @@ textarea {
   padding-bottom: 12px;
   transition: background-image 1s;
   will-change: background-image;
+}
+
+.signup-background {
+  padding-top: 48px;
+  padding-bottom: 48px;
 }
 
 .footer {
@@ -4413,6 +4429,15 @@ textarea {
    margin: 16px; 
   }
 
+  .box-signup {
+    max-width: calc(100% - 16px);
+    margin: 8px;
+  }
+
+  .box-signup:not(:first-of-type) {
+      margin-top: 24px;
+  }
+
   .width-80 {
     width: 100%;
   }
@@ -4434,8 +4459,9 @@ textarea {
     min-width: 148px !important;
   }
 
-  .input-phone {
-    width: 128px !important;
+  .input-phone input {
+    min-width: 146px !important;
+    max-width: 146px !important;
   }
 
   .form-address input {
@@ -4608,6 +4634,11 @@ textarea {
 
   .box-unsubscribe>.title-big {
     font-size: 3.6em;
+  }
+
+  .signup-background {
+    background: none !important;
+    padding: 0;
   }
 }
 
