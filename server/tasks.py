@@ -171,8 +171,6 @@ def confirm_user_email_task(token, request_method):
                     first_name=data.get('first_name', ""),
                     last_name=data.get('last_name', ""),
                     phone=data.get('phone', ""),
-                    address_1=data.get('address1', ""),
-                    address_2=data.get('address2', ""),
                     city=data.get('city', ""),
                     state=data.get('state', ""),
                     zipcode=data.get('zipcode', ""),

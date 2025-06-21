@@ -60,7 +60,7 @@ function MarketCard({ marketData, user, haversineDistance, resultCoordinates, us
                             ? 'entered address'
                             : userCoordinates
                                 ? 'your location'
-                                : 'your home address'}
+                                : 'your zip code'}
                     </p>
                 ) : <></>}
                 <p><strong>Vendors:</strong> {countVendors(marketData)} on <span className='font-cera-gingham text-size-1-2'>gingham</span></p>
