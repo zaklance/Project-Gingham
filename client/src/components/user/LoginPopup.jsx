@@ -113,7 +113,6 @@ function Login({ handlePopup }) {
         setIsLoading(true);
         const apiKey = import.meta.env.VITE_RADAR_KEY;
         const query = `${signupZipCode}`;
-        console.log(resultCoordinates)
     
         try {
             if (!resultCoordinates) {
