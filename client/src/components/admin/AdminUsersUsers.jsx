@@ -134,26 +134,80 @@ const AdminUsersUsers = () => {
         
         if (confirm(`Are you sure you want to edit ${userData.first_name}'s account?`)) {
             try {
-                const response = await fetch(`/api/users/${userData.id}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(tempUserData)
-                });
+                const apiKey = import.meta.env.VITE_RADAR_KEY;
+                const query = `${tempUserData.zipcode}`;
+                if (tempUserData.zipcode !== userData.zipcode) {
+                    const responseRadar = await fetch(`https://api.radar.io/v1/geocode/forward?query=${encodeURIComponent(query)}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': apiKey,
+                        },
+                    });
+                    if (responseRadar.ok) {
+                        const data = await responseRadar.json();
+                        if (data.addresses && data.addresses.length > 0) {
+                            const { city, stateCode, latitude, longitude } = data.addresses[0];
 
-                // console.log('Request body:', JSON.stringify(tempUserData));
-
-                if (response.ok) {
-                    const updatedData = await response.json();
-                    setUserData(updatedData);
-                    setEditMode(false);
-                    // console.log('Profile data updated successfully:', updatedData);
+                            const response = await fetch(`/api/users/${userData.id}`, {
+                                method: 'PATCH',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    first_name: tempUserData.first_name,
+                                    last_name: tempUserData.last_name,
+                                    phone: tempUserData.phone,
+                                    city: city,
+                                    state: stateCode,
+                                    zipcode: tempUserData.zipcode,
+                                    avatar_default: tempUserData.avatar_default,
+                                    coordinates: { lat: latitude, lng: longitude }
+                                })
+                            });
+                            if (response.ok) {
+                                const updatedData = await response.json();
+                                setUserData(updatedData);
+                                setEditMode(false);
+                                // console.log('Profile data updated successfully:', updatedData);
+                            } else {
+                                console.log('Failed to save changes');
+                                console.log('Response status:', response.status);
+                                console.log('Response text:', await response.text());
+                            }
+                        }
+                    }
                 } else {
-                    console.log('Failed to save changes');
-                    console.log('Response status:', response.status);
-                    console.log('Response text:', await response.text());
+                    const response = await fetch(`/api/users/${userData.id}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            first_name: tempUserData.first_name,
+                            last_name: tempUserData.last_name,
+                            phone: tempUserData.phone,
+                            avatar_default: tempUserData.avatar_default
+                        })
+                    });
+
+                    if (response.ok) {
+                        const updatedData = await response.json();
+                        setUserData(updatedData);
+                        setEditMode(false);
+                        console.log('Profile data updated successfully:', updatedData);
+                        toast.success('Profile updated successfully.', {
+                            autoClose: 4000,
+                        });
+                    } else {
+                        console.log('Failed to save changes');
+                        console.log('Response status:', response.status);
+                        console.log('Response text:', await response.text());
+                        toast.error('Profile failed to update successfully.', {
+                            autoClose: 4000,
+                        });
+                    }
                 }
                 if (image) {
 
@@ -329,48 +383,8 @@ const AdminUsersUsers = () => {
                                     onChange={handleInputChange}
                                 /> */}
                             </div>
-                            <div className="form-address">
-                                <label>Address:</label>
-                                <input
-                                    type="text"
-                                    name="address_1"
-                                    size="36"
-                                    placeholder='Address 1'
-                                    value={tempUserData ? tempUserData.address_1 : ''}
-                                    onChange={handleInputChange}
-                                />
-                                <input
-                                    type="text"
-                                    name="address_2"
-                                    size="8"
-                                    placeholder='Apt, Floor, Suite # etc'
-                                    value={tempUserData ? tempUserData.address_2 : ''}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
                             <div className='form-address'>
-                                <label></label>
-                                <input
-                                    type="text"
-                                    name="city"
-                                    size="36"
-                                    placeholder='City'
-                                    value={tempUserData ? tempUserData.city : ''}
-                                    onChange={handleInputChange}
-                                />
-                                <select
-                                    className='select-state'
-                                    name="state"
-                                    value={tempUserData ? tempUserData.state : ''}
-                                    onChange={handleInputChange}
-                                >
-                                    <option value="">Select</option>
-                                    {states.map((state, index) => (
-                                        <option key={index} value={state}>
-                                            {state}
-                                        </option>
-                                    ))}
-                                </select>
+                                <label>Zip Code</label>
                                 <input
                                     type="text"
                                     name="zipcode"
@@ -447,12 +461,12 @@ const AdminUsersUsers = () => {
                                                 <td className='cell-text'>{formatPhoneNumber(userData?.phone) || ""}</td>
                                             </tr>
                                             <tr>
-                                                <td className='cell-title'>Address:</td>
-                                                    <td className='cell-text'>{userData ? `${userData?.address_1}, ${userData?.address_2}` : ""}</td>
+                                                <td className='cell-title'>City</td>
+                                                <td className='cell-text'>{userData ? `${userData?.city}, ${userData?.state}` : ""}</td>
                                             </tr>
                                             <tr>
-                                                <td className='cell-title'></td>
-                                                <td className='cell-text'>{userData ? `${userData?.city}, ${userData?.state} ${userData?.zipcode}` : ""}</td>
+                                                <td className='cell-title'>Zip Code</td>
+                                                <td className='cell-text'>{userData ? `${userData?.zipcode}` : ""}</td>
                                             </tr>
                                             <tr>
                                                 <td className='cell-title'>Default Avatar:</td>

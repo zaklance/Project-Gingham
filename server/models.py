@@ -87,7 +87,7 @@ class User(db.Model, SerializerMixin):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     phone = db.Column(db.String, nullable=False)
-    address_1 = db.Column(db.String, nullable=False)
+    address_1 = db.Column(db.String, nullable=True)
     address_2 = db.Column(db.String, nullable=True)
     city = db.Column(db.String, nullable=False)
     state = db.Column(db.String(2), nullable=False)

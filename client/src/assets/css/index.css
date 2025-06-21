@@ -2352,6 +2352,16 @@ link {
 }
 
 .input-phone input {
+  min-width: 236px !important;
+  max-width: 236px !important;
+}
+
+.input-phone-profile input {
+  min-width: 202px !important;
+  max-width: 202px !important;
+}
+
+.input-phone-standalone input {
   min-width: 232px !important;
   max-width: 232px !important;
 }

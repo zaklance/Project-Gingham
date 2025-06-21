@@ -10,12 +10,13 @@ const styles = StyleSheet.create({
     section: { marginBottom: 20 },
     row: { flexDirection: "row", justifyContent: "space-between" },
     rowItem: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
-    rowFooter: { flexDirection: "row", justifyContent: "space-between", gap: 172 },
+    rowFooter: { flexDirection: "row", justifyContent: "space-between" },
     rowStart: { flexDirection: "row", width: "100%" },
     total: { width: "75" },
     bold: { fontFamily: "Helvetica-Bold", fontWeight: "bold" },
     divider: { borderBottom: "2px solid #3b4752", marginVertical: 4 },
-    footer: { position: "absolute", bottom: 24 },
+    center: { margin: "0 auto" },
+    footer: { position: "absolute", width: "100%", paddingLeft: 30, paddingRight: 30, left: 0, bottom: 24 },
 });
 
 function getCurrentYear() {
@@ -40,11 +41,11 @@ const ReceiptDocument = ({ receipt, transaction }) => {
                     </View>
                     <View style={styles.row}>
                         <Text><Text style={styles.bold}>Purchase Date:</Text> {receiptDateConverter(receipt.created_at)}</Text>
-                        <Text>{receipt.user.address_1}{receipt.user.address_2 && ", "}{receipt.user.address_2}</Text>
+                        <Text>{receipt.user?.city || "N/A"}, {receipt.user?.state || "N/A"} {receipt.user?.zipcode || "N/A"}</Text>
                     </View>
                     <View style={styles.row}>
                         <Text><Text style={styles.bold}>Card:</Text> {`**** **** **** ${transaction?.card_id}` || "N/A"}</Text>
-                        <Text>{receipt.user?.city || "N/A"}, {receipt.user?.state || "N/A"} {receipt.user?.zipcode || "N/A"}</Text>
+                        <Text></Text>
                     </View>
                 </View>
 
@@ -89,8 +90,12 @@ const ReceiptDocument = ({ receipt, transaction }) => {
                 <View style={styles.footer} fixed>
                     <View style={styles.rowFooter}>
                         <Text style={styles.bold}>GINGHAM NYC {getCurrentYear()} &copy;</Text>
-                        <Text style={styles.bold} render={({ pageNumber }) => `${pageNumber}`}></Text>
                         <Text style={styles.bold}>www.gingham.nyc</Text>
+                    </View>
+                </View>
+                <View style={styles.footer} fixed>
+                    <View style={styles.center}>
+                        <Text style={styles.bold} render={({ pageNumber }) => `${pageNumber}`}></Text>
                     </View>
                 </View>
             </Page>

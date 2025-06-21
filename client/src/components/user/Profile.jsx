@@ -154,22 +154,13 @@ function Profile({ marketData }) {
         });
     };
 
-    const handleAddressInputChange = event => {
-        const { name, value } = event.target;
-        setTempProfileData({
-            ...tempProfileData,
-            [name]: value
-        });
-        handleAddress(event)
-    };
-
     const handleSaveChanges = async () => {
         let uploadedFilename = null;
         try {
             const apiKey = import.meta.env.VITE_RADAR_KEY;
-            const query = `${tempProfileData.address_1} ${tempProfileData.city} ${tempProfileData.state} ${tempProfileData.zipcode}`;
+            const query = `${tempProfileData.zipcode}`;
             try {
-                if (!resultCoordinates && (tempProfileData.address_1 !== profileData.address_1 || tempProfileData.city !== profileData.city || tempProfileData.state !== profileData.state || tempProfileData.zipcode !== profileData.zipcode)) {
+                if (!resultCoordinates || (tempProfileData.zipcode !== profileData.zipcode)) {
                     const responseRadar = await fetch(`https://api.radar.io/v1/geocode/forward?query=${encodeURIComponent(query)}`, {
                         method: 'GET',
                         headers: {
@@ -179,7 +170,7 @@ function Profile({ marketData }) {
                     if (responseRadar.ok) {
                         const data = await responseRadar.json();
                         if (data.addresses && data.addresses.length > 0) {
-                            const { latitude, longitude } = data.addresses[0];
+                            const { city, stateCode, latitude, longitude } = data.addresses[0];
 
                             const response = await fetch(`/api/users/${id}`, {
                                 method: 'PATCH',
@@ -191,10 +182,8 @@ function Profile({ marketData }) {
                                     first_name: tempProfileData.first_name,
                                     last_name: tempProfileData.last_name,
                                     phone: tempProfileData.phone,
-                                    address_1: tempProfileData.address_1,
-                                    address_2: tempProfileData.address_2,
-                                    city: tempProfileData.city,
-                                    state: tempProfileData.state,
+                                    city: city,
+                                    state: stateCode,
                                     zipcode: tempProfileData.zipcode,
                                     avatar_default: tempProfileData.avatar_default,
                                     coordinates: { lat: latitude, lng: longitude }
@@ -230,13 +219,7 @@ function Profile({ marketData }) {
                             first_name: tempProfileData.first_name,
                             last_name: tempProfileData.last_name,
                             phone: tempProfileData.phone,
-                            address_1: tempProfileData.address_1,
-                            address_2: tempProfileData.address_2,
-                            city: tempProfileData.city,
-                            state: tempProfileData.state,
-                            zipcode: tempProfileData.zipcode,
                             avatar_default: tempProfileData.avatar_default,
-                            coordinates: { lat: tempProfileData.coordinates.lat, lng: tempProfileData.coordinates.lng }
                         })
                     });
 
@@ -571,50 +554,6 @@ function Profile({ marketData }) {
         });
     };
 
-    const handleAddress = (event) => {
-        const query = event.target.value;
-        // Clear the previous debounce timer
-        if (debounceTimeout.current) {
-            clearTimeout(debounceTimeout.current);
-        }
-        // Start a new debounce timer
-        debounceTimeout.current = setTimeout(() => {
-            if (query.trim() !== '') {
-                handleSearchAddress(query);
-            }
-        }, 250);
-    };
-
-    const handleBlur = () => {
-        debounceTimeout.current = setTimeout(() => {
-            setShowAddressDropdown(false)
-        }, 200);
-    };
-    
-    const handleSearchAddress = async (query) => {
-        const apiKey = import.meta.env.VITE_RADAR_KEY;
-
-        try {
-            const responseRadar = await fetch(`https://api.radar.io/v1/search/autocomplete?query=${encodeURIComponent(query)}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': apiKey,
-                },
-            });
-            if (responseRadar.ok) {
-                const data = await responseRadar.json();
-                setAddressResults(data.addresses);
-                setShowAddressDropdown(true);
-
-                if (data.addresses && data.addresses.length > 0) {
-                    const { latitude, longitude } = data.addresses[0];
-                }
-            }
-        } catch (error) {
-            console.error('Error fetching address:', error);
-        }
-    };
-
     const handleClickOutsideAddressDropdown = (event) => {
         if (dropdownAddressRef.current && !dropdownAddressRef.current.contains(event.target)) {
             setShowAddressDropdown(false);
@@ -691,7 +630,7 @@ function Profile({ marketData }) {
                                 <div className="form-group">
                                     <label>Phone:</label>
                                     <PhoneInput
-                                        className='input-phone margin-l-8'
+                                        className='input-phone-profile margin-l-8'
                                         countryCallingCodeEditable={false}
                                         withCountryCallingCode
                                         country='US'
@@ -700,79 +639,9 @@ function Profile({ marketData }) {
                                         value={tempProfileData.phone || ''}
                                         onChange={(event) => handlePhoneInputChange(event)}
                                     />
-                                    {/* <input
-                                        type="tel"
-                                        name="phone"
-                                        value={tempProfileData ? formatPhoneNumber(tempProfileData.phone) : ''}
-                                        onChange={handleInputChange}
-                                    /> */}
-                                </div>
-                                <div className="form-address">
-                                    <label>Address:</label>
-                                    <input
-                                        type="text"
-                                        name="address_1"
-                                        size="36"
-                                        placeholder='Address 1'
-                                        onBlur={handleBlur}
-                                        value={tempProfileData ? tempProfileData.address_1 : ''}
-                                        onChange={handleAddressInputChange}
-                                    />
-                                    {showAddressDropdown && (
-                                        <ul className="dropdown-content-profile" ref={dropdownAddressRef}>
-                                            {addressResults.map(item => (
-                                                <li
-                                                    className="search-results-signup"
-                                                    key={item.formattedAddress}
-                                                    onClick={() => {
-                                                        setTempProfileData((prev) => ({
-                                                            ...prev,
-                                                            address_1: item.addressLabel,
-                                                            city: item.city,
-                                                            state: item.stateCode,
-                                                            zipcode: item.postalCode,
-                                                            coordinates: { 'lat': item.latitude, 'lng': item.longitude },
-                                                        }));
-                                                        setResultCoordinates({ 'lat': item.latitude, 'lng': item.longitude })
-                                                        setShowAddressDropdown(false);
-                                                    }}
-                                                >
-                                                    {item.formattedAddress}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
-                                    <input
-                                        type="text"
-                                        name="address_2"
-                                        size="8"
-                                        placeholder='Apt, Floor, Suite # etc'
-                                        value={tempProfileData ? tempProfileData.address_2 : ''}
-                                        onChange={handleInputChange}
-                                    />
                                 </div>
                                 <div className='form-address'>
-                                    <label></label>
-                                    <input
-                                        type="text"
-                                        name="city"
-                                        size="36"
-                                        placeholder='City'
-                                        value={tempProfileData ? tempProfileData.city : ''}
-                                        onChange={handleInputChange}
-                                    />
-                                    <select className='select-state'
-                                        name="state"
-                                        value={tempProfileData ? tempProfileData.state : ''}
-                                        onChange={handleInputChange}
-                                    >
-                                        <option value="">Select</option>
-                                        {states.map((state, index) => (
-                                            <option key={index} value={state}>
-                                                {state}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <label>Zip Code</label>
                                     <input
                                         type="text"
                                         name="zipcode"
@@ -858,12 +727,12 @@ function Profile({ marketData }) {
                                                     <td className='cell-text'>{formatPhoneNumber(profileData.phone)}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td className='cell-title'>Address:</td>
-                                                    <td className='cell-text'>{profileData.address_1}, {profileData.address_2}</td>
+                                                    <td className='cell-title'>City</td>
+                                                    <td className='cell-text'>{profileData.city}, {profileData.state}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td className='cell-title'></td>
-                                                    <td className='cell-text'>{profileData.city}, {profileData.state} {profileData.zipcode}</td>
+                                                    <td className='cell-title'>Zip Code</td>
+                                                    <td className='cell-text'>{profileData.zipcode}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

@@ -126,7 +126,7 @@ function Login({ handlePopup }) {
     
                 const data = await responseRadar.json();
                 if (data.addresses && data.addresses.length > 0) {
-                    const { latitude, longitude } = data.addresses[0];
+                    const { city, stateCode, latitude, longitude } = data.addresses[0];
                     setResultCoordinates({ lat: latitude, lng: longitude });
     
                     const signupResponse = await fetch("/api/signup", {
@@ -140,10 +140,8 @@ function Login({ handlePopup }) {
                             first_name: signupFirstName,
                             last_name: signupLastName,
                             phone: signupPhone,
-                            address1: signupAddress1,
-                            address2: signupAddress2,
-                            city: signupCity,
-                            state: signupState,
+                            city: city,
+                            state: stateCode,
                             zipcode: signupZipCode,
                             coordinates: { lat: latitude, lng: longitude },
                         }),
@@ -428,7 +426,7 @@ function Login({ handlePopup }) {
                         <div className='form-group form-login'>
                             <label>Phone: </label>
                             <PhoneInput
-                                className='input-phone margin-l-8'
+                                className='input-phone-standalone margin-l-8'
                                 countryCallingCodeEditable={false}
                                 withCountryCallingCode
                                 country='US'
@@ -437,74 +435,6 @@ function Login({ handlePopup }) {
                                 value={signupPhone}
                                 onChange={(event) => setSignupPhone(event)}
                             />
-                        </div>
-                        <div className="form-group form-login">
-                            <label>Address 1:</label>
-                            <input 
-                                type="text"
-                                value={signupAddress1}
-                                placeholder='enter your address 1'
-                                onChange={(event => { setSignupAddress1(event.target.value); handleAddress(event) })}
-                                onBlur={handleBlur}
-                                required
-                            />
-                            {showAddressDropdown && (
-                                <ul className="dropdown-content-signup" ref={dropdownAddressRef}>
-                                    {addressResults.map(item => (
-                                        <li
-                                            className="search-results-signup"
-                                            key={item.formattedAddress}
-                                            onClick={() => {
-                                                setSignupAddress1(item.addressLabel);
-                                                setSignupCity(item.city)
-                                                setSignupState(item.stateCode)
-                                                setSignupZipCode(item.postalCode)
-                                                setResultCoordinates({ 'lat': item.latitude, 'lng': item.longitude })
-                                                setShowAddressDropdown(false);
-                                            }}
-                                        >
-                                            {item.formattedAddress}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-                        <div className="form-group form-login">
-                            <label>Address 2:</label>
-                            <input 
-                                type="text"
-                                value={signupAddress2}
-                                placeholder='enter your address 2'
-                                onChange={(event => setSignupAddress2(event.target.value))}
-                            />
-                        </div>
-                        <div className="form-group form-login">
-                            <label>City:</label>
-                            <input 
-                                className='margin-r-8'
-                                type="text"
-                                value={signupCity}
-                                placeholder='enter your city'
-                                onChange={(event => setSignupCity(event.target.value))}
-                                required
-                            />
-                        </div>
-                        <div className="form-group form-login">
-                            <label>State:</label>
-                            <select 
-                                className='select-state margin-l-8'
-                                style={{borderRadius: '8px', marginBottom: '4px'}}
-                                name="state"
-                                value={signupState}
-                                onChange={(event => setSignupState(event.target.value))}
-                            >
-                                <option value="">Select</option>
-                                {states.map((state, index) => (
-                                    <option key={index} value={state}>
-                                        {state}
-                                    </option>
-                                ))}
-                            </select>
                         </div>
                         <div className="form-group form-login">
                             <label>Zip Code:</label>
