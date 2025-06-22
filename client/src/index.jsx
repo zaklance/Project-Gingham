@@ -188,6 +188,7 @@ const router = createBrowserRouter([
             { path: "privacy-policy", element: <PrivacyPolicy /> },
             { path: "unsubscribe", element: <Unsubscribe /> },
             { path: "maintenance", element: <Maintenance /> },
+            { path: "payment-success", element: <PaymentSuccess /> },
             {
                 path: "user",
                 children: [
@@ -261,7 +262,6 @@ const router = createBrowserRouter([
                     { path: "privacy-policy", element: <PrivacyPolicy /> },
                 ],
             },
-            { path: "payment-success", element: <PaymentSuccess /> },
         ],
     },
 ]);

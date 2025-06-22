@@ -1,8 +1,8 @@
 import os
 import json
 import inspect
-from sqlalchemy import event, func, and_, or_
-from sqlalchemy.orm import Session
+from sqlalchemy import event, func, and_, or_, inspect as SQLAlchemyInspect
+from sqlalchemy.orm import sessionmaker, Session as SQLAlchemySession
 from sqlalchemy.event import listens_for
 from datetime import datetime, date, timezone, timedelta, time
 from threading import Timer
@@ -43,7 +43,9 @@ from utils.sms import (
     send_sms_vendor_notify_me
 )
 
-def get_db_session(connection: Optional[Any] = None) -> Session:
+Session = sessionmaker()
+
+def get_db_session(connection: Optional[Any] = None) -> SQLAlchemySession:
     """Get a database session, either from a connection or create a new one."""
     try:
         if connection:
@@ -55,7 +57,7 @@ def get_db_session(connection: Optional[Any] = None) -> Session:
         print(f"Error creating database session: {e}")
         raise
 
-def safe_commit(session: Session) -> None:
+def safe_commit(session: SQLAlchemySession) -> None:
     """Safely commit a session with error handling."""
     try:
         # print("Attempting to commit session")
@@ -66,7 +68,7 @@ def safe_commit(session: Session) -> None:
         session.rollback()
         raise e
 
-def safe_close(session: Session) -> None:
+def safe_close(session: SQLAlchemySession) -> None:
     """Safely close a session."""
     try:
         # print("Attempting to close session")
@@ -75,7 +77,7 @@ def safe_close(session: Session) -> None:
     except Exception as e:
         print(f"Error closing session: {e}")
 
-def safe_rollback(session: Session) -> None:
+def safe_rollback(session: SQLAlchemySession) -> None:
     """Safely rollback a session with error handling."""
     try:
         # print("Attempting to rollback session")
@@ -829,7 +831,7 @@ def flag_blog_for_notifications(mapper, connection, target):
 
 @listens_for(Blog, 'after_update')
 def update_blog_notification_status(mapper, connection, target):
-    insp = inspect(target)
+    insp = SQLAlchemyInspect(target)
     if insp.attrs.post_date.history.has_changes():
         connection.execute(
             Blog.__table__.update()
@@ -893,7 +895,7 @@ def vendor_basket_sold(mapper, connection, target):
     session = Session(bind=connection)
     try:
         # Check if is_sold changed from False to True
-        state = inspect(target)
+        state = SQLAlchemyInspect(target)
         history = state.attrs.is_sold.history
 
         if not history.has_changes() or not history.added or history.added[0] != True:
@@ -2125,7 +2127,7 @@ def handle_vendor_notify_me_notification(mapper, connection, target):
     finally:
         session.close()
 
-def get_vendor_users(vendor_id: int, session: Session) -> List[VendorUser]:
+def get_vendor_users(vendor_id: int, session: SQLAlchemySession) -> List[VendorUser]:
     """Get all vendor users for a given vendor ID."""
     try:
         vendor_users = session.query(VendorUser).filter(
