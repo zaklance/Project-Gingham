@@ -61,17 +61,17 @@ function AdminVendors () {
         <>
             <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
                 <h1>Vendor Management</h1>
-                <div className='tabs margin-t-20 m-scroll'>
-                    <Link to="/admin/vendors?tab=edit" onClick={() => setActiveTab('edit')} className={activeTab === 'edit' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                <div className='tabs m-scroll'>
+                    <Link to="/admin/vendors?tab=edit" onClick={() => setActiveTab('edit')} className={activeTab === 'edit' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                         Edit
                     </Link>
-                    <Link to="/admin/vendors?tab=add" onClick={() => setActiveTab('add')} className={activeTab === 'add' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                    <Link to="/admin/vendors?tab=add" onClick={() => setActiveTab('add')} className={activeTab === 'add' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                         Add
                     </Link>
-                    <Link to="/admin/vendors?tab=delete" onClick={() => setActiveTab('delete')} className={activeTab === 'delete' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                    <Link to="/admin/vendors?tab=delete" onClick={() => setActiveTab('delete')} className={activeTab === 'delete' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                         Delete
                     </Link>
-                    <Link to="/admin/vendors?tab=events" onClick={() => setActiveTab('events')} className={activeTab === 'events' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                    <Link to="/admin/vendors?tab=events" onClick={() => setActiveTab('events')} className={activeTab === 'events' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                         Events
                     </Link>
                     <Link to="/admin/vendors?tab=products" onClick={() => setActiveTab('products')} className={activeTab === 'products' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
