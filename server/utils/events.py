@@ -9,26 +9,25 @@ from threading import Timer
 from uuid import uuid4
 from models import (db, User, Market, MarketDay, Vendor, MarketReview, VendorReview, MarketFavorite, VendorFavorite, VendorMarket, VendorUser, AdminUser, Basket, Event, UserNotification, VendorNotification, AdminNotification, SettingsUser, SettingsVendor, SettingsAdmin, Blog, Recipe, Instruction)
 from typing import List, Optional, Any, Union, Dict
-from tasks import send_blog_notifications
-from utils.emails import (
-    send_email_user_fav_vendor_new_event,
-    send_email_user_fav_vendor_schedule_change,
-    send_email_user_fav_market_new_vendor,
-    send_email_admin_reported_review,
-    send_email_user_fav_vendor_new_basket,
-    send_email_vendor_market_new_event,
-    send_email_vendor_market_schedule_change,
-    send_email_vendor_basket_sold,
-    send_email_user_fav_market_new_basket,
-    send_email_user_basket_pickup_time,
-    send_email_user_vendor_review_response,
-    send_email_user_new_market_in_city,
-    send_email_vendor_new_review,
-    send_email_admin_new_vendor,
-    send_email_admin_product_request,
-    send_email_user_fav_market_schedule_change,
-    send_email_user_fav_market_new_event,
-    send_email_notify_me
+from tasks import (
+    send_blog_notifications,
+    send_email_user_fav_vendor_new_event_task,
+    send_email_user_fav_vendor_schedule_change_task,
+    send_email_user_fav_market_new_vendor_task,
+    send_email_admin_reported_review_task,
+    send_email_user_fav_vendor_new_basket_task,
+    send_email_vendor_market_new_event_task,
+    send_email_vendor_market_schedule_change_task,
+    send_email_vendor_basket_sold_task,
+    send_email_user_fav_market_new_basket_task,
+    send_email_user_basket_pickup_time_task,
+    send_email_user_vendor_review_response_task,
+    send_email_user_new_market_in_city_task,
+    send_email_vendor_new_review_task,
+    send_email_admin_new_vendor_task,
+    send_email_admin_product_request_task,
+    send_email_user_fav_market_schedule_change_task,
+    send_email_user_fav_market_new_event_task
 )
 from utils.sms import (
     send_sms_user_fav_vendor_schedule_change,
@@ -211,18 +210,14 @@ def vendor_market_event_or_schedule_change(mapper: Any, connection: Any, target:
                     if is_production:
                         if is_schedule_change and settings.email_market_schedule_change:
                             try:
-                                send_email_vendor_market_schedule_change(
-                                    vendor_user.email, vendor_user, market_day.market, target, f"/user/markets/{market_day.market.id}"
-                                )
+                                send_email_vendor_market_schedule_change_task.delay(vendor_user.email, vendor_user.id, market_day.market.id, target.id, f"/user/markets/{market_day.market.id}")
                                 print(f"Email sent to {vendor_user.email} for market schedule change")
                             except Exception as e:
                                 print(f"Error sending email to {vendor_user.email}: {e}")
                         
                         elif not is_schedule_change and settings.email_market_new_event:
                             try:
-                                send_email_vendor_market_new_event(
-                                    vendor_user.email, vendor_user, market_day.market, target, f"/user/markets/{market_day.market.id}"
-                                )
+                                send_email_vendor_market_new_event_task.delay(vendor_user.email, vendor_user.id, market_day.market.id, target.id, f"/user/markets/{market_day.market.id}")
                                 print(f"Email sent to {vendor_user.email} for market new event")
                             except Exception as e:
                                 print(f"Error sending email to {vendor_user.email}: {e}")
@@ -316,13 +311,13 @@ def track_fav_vendor_event(mapper: Any, connection: Any, target: Event) -> None:
                 if is_production:
                     if is_schedule_change and settings.email_fav_vendor_schedule_change:
                         try:
-                            send_email_user_fav_vendor_schedule_change(user.email, user, vendor, target, f"/user/vendors/{vendor.id}")
+                            send_email_user_fav_vendor_schedule_change_task.delay(user.email, user.id, vendor.id, target.id, f"/user/vendors/{vendor.id}")
                             print(f"Email sent to {user.email} for vendor schedule change")
                         except Exception as e:
                             print(f"Error sending email to {user.email}: {e}")
                     elif not is_schedule_change and settings.email_fav_vendor_new_event:
                         try:
-                            send_email_user_fav_vendor_new_event(user.email, user, vendor, target, f"/user/vendors/{vendor.id}")
+                            send_email_user_fav_vendor_new_event_task.delay(user.email, user.id, vendor.id, target.id, f"/user/vendors/{vendor.id}")
                             print(f"Email sent to {user.email} for vendor new event")
                         except Exception as e:
                             print(f"Error sending email to {user.email}: {e}")
@@ -420,13 +415,17 @@ def notify_fav_market_users_of_events(mapper: Any, connection: Any, target: Even
                 if is_production:
                     if is_schedule_change and settings.email_fav_market_schedule_change:
                         try:
-                            send_email_user_fav_market_schedule_change(user.email, user, market, target, f"/user/markets/{market.id}")
+                            send_email_user_fav_market_schedule_change_task.delay(
+                                user.email, user.id, market.id, target.id, f"/user/markets/{market.id}"
+                            )
                             print(f"Email sent to {user.email} for market schedule change")
                         except Exception as e:
                             print(f"Error sending email to {user.email}: {e}")
                     elif not is_schedule_change and settings.email_fav_market_new_event:
                         try:
-                            send_email_user_fav_market_new_event(user.email, user, market, target, f"/user/markets/{market.id}")
+                            send_email_user_fav_market_new_event_task.delay(
+                                user.email, user.id, market.id, target.id, f"/user/markets/{market.id}"
+                            )
                             print(f"Email sent to {user.email} for market new event")
                         except Exception as e:
                             print(f"Error sending email to {user.email}: {e}")
@@ -516,10 +515,10 @@ def notify_new_vendor_in_favorite_market(mapper: Any, connection: Any, target: V
                 if is_production:
                     if settings.email_fav_market_new_vendor:
                         try:
-                            send_email_user_fav_market_new_vendor(
-                                user.email, user, market, vendor, 
+                            send_email_user_fav_market_new_vendor_task.delay(
+                                user.email, user, market, vendor,
                                 f"/user/markets/{market.id}?day={market_day.id}#vendors", 
-                                f"/user/vendors/{vendor.id}"
+                                f"/user/vendors/{vendor.id}",
                             )
                             print(f"Email sent to {user.email} for new vendor in favorite market")
                         except Exception as e:
@@ -585,11 +584,10 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
                         if is_production:
                             if admin_settings.email_report_review:
                                 try:
-                                    send_email_admin_reported_review(admin.email, admin, None, vendor, review, "/admin/report#vendors")
+                                    send_email_admin_reported_review_task.delay(admin.email, admin.id, None, vendor.id, review.id, "/admin/report#vendors")
                                     print(f"Email sent to {admin.email} for reported vendor review")
                                 except Exception as e:
                                     print(f"Error sending email to {admin.email}: {e}")
-
                             # Send SMS notification if enabled
                             if admin_settings.text_report_review and admin.phone:
                                 try:
@@ -658,7 +656,7 @@ def notify_admin_market_review_reported(mapper, connection, target):
                         if is_production:
                             if admin_settings.email_report_review:
                                 try:
-                                    send_email_admin_reported_review(admin.email, admin, market, None, review, "/admin/report#markets")
+                                    send_email_admin_reported_review_task.delay(admin.email, admin.id, market.id, None, review.id, "/admin/report#markets")
                                     print(f"Email sent to {admin.email} for reported market review")
                                 except Exception as e:
                                     print(f"Error sending email to {admin.email}: {e}")
@@ -761,11 +759,10 @@ def fav_vendor_new_baskets(mapper, connection, target):
             if is_production:
                 if settings.email_fav_vendor_new_basket and market:
                     try:
-                        send_email_user_fav_vendor_new_basket(
-                            user.email, user, market, vendor, 
+                        send_email_user_fav_vendor_new_basket_task.delay(
+                            user.email, user.id, market.id, vendor.id,
                             f"/user/markets/{market.id}?day={target.market_day_id}#vendors", 
-                            f"/user/vendors/{vendor.id}"
-                        )
+                            f"/user/vendors/{vendor.id}")
                         print(f"Email sent to {user.email} for new basket from favorite vendor")
                     except Exception as e:
                         print(f"Error sending email to {user.email}: {e}")
@@ -1013,8 +1010,8 @@ def vendor_basket_sold(mapper, connection, target):
                                 if is_production:
                                     if settings and settings.email_basket_sold and basket_market:
                                         try:
-                                            send_email_vendor_basket_sold(
-                                                vendor_user.email, vendor_user, basket_market, vendor, 
+                                            send_email_vendor_basket_sold_task.delay(
+                                                vendor_user.email, vendor_user.id, basket_market.id, vendor.id,
                                                 total_sold, basket_info.pickup_start, basket_info.pickup_end, sale_date
                                             )
                                             print(f"Summary email sent to {vendor_user.email} for {total_sold} baskets sold")
@@ -1067,8 +1064,8 @@ def vendor_basket_sold(mapper, connection, target):
             if is_production:
                 if settings and settings.email_basket_sold:
                     try:
-                        send_email_vendor_basket_sold(
-                            vendor_user.email, vendor_user, market_day.market, vendor, 
+                        send_email_vendor_basket_sold_task.delay(
+                            vendor_user.email, vendor_user, market_day.market, vendor,
                             1, target.pickup_start, target.pickup_end, sale_date
                         )
                         print(f"Email sent to {vendor_user.email} for basket sold")
@@ -1273,8 +1270,8 @@ def notify_fav_market_new_baskets(mapper, connection, target):
             if is_production:
                 if settings.email_fav_market_new_basket:
                     try:
-                        send_email_user_fav_market_new_basket(
-                            user.email, user, market, vendor,
+                        send_email_user_fav_market_new_basket_task.delay(
+                            user.email, user.id, market.id, vendor.id,
                             f"/user/markets/{market.id}?day={target.market_day_id}#vendors",
                             f"/user/vendors/{vendor.id}"
                         )
@@ -1382,8 +1379,8 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
                         if is_production:
                             if settings.email_basket_pickup_time:
                                 try:
-                                    send_email_user_basket_pickup_time(
-                                        user.email, user, market, vendor, basket,
+                                    send_email_user_basket_pickup_time_task.delay(
+                                        user.email, user.id, market.id, vendor.id, basket.id,
                                         f"/user/markets/{market.id}?day={basket.market_day_id}#vendors",
                                         f"/user/vendors/{vendor.id}"
                                     )
@@ -1486,8 +1483,8 @@ def notify_user_vendor_review_response(mapper, connection, target):
         if is_production:
             if settings.email_vendor_review_response:
                 try:
-                    send_email_user_vendor_review_response(
-                        user.email, user, vendor, target, f"/user/vendors/{vendor.id}#reviews"
+                    send_email_user_vendor_review_response_task.delay(
+                        user.email, user.id, vendor.id, target.id, f"/user/vendors/{vendor.id}#reviews"
                     )
                     print(f"Email sent to {user.email} for vendor review response")
                 except Exception as e:
@@ -1537,9 +1534,8 @@ def notify_users_new_market_in_state(mapper, connection, target):
             if is_production:
                 if settings.email_new_market_in_city:
                     try:
-                        send_email_user_new_market_in_city(
-                            user.email, user, target, f"/user/markets/{target.id}"
-                        )
+                        send_email_user_new_market_in_city_task.delay(
+                            user.email, user.id, target.id, f"/user/markets/{target.id}")
                         print(f"Email sent to {user.email} for new market in city")
                     except Exception as e:
                         print(f"Error sending email to {user.email}: {e}")
@@ -1627,15 +1623,15 @@ def notify_vendor_users_new_review(mapper, connection, target):
             # Send email notification if enabled
             # Check if in dev mode
             is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
-            if is_production:
-                if settings.email_new_review:
-                    try:
-                        send_email_vendor_new_review(
-                            vendor_user.email, vendor_user, vendor, target, f"/vendor/dashboard?tab=reviews"
-                        )
-                        print(f"Email sent to {vendor_user.email} for new vendor review")
-                    except Exception as e:
-                        print(f"Error sending email to {vendor_user.email}: {e}")
+            # if is_production:
+            if settings.email_new_review:
+                try:
+                    send_email_vendor_new_review_task.delay(
+                        vendor_user.email, vendor_user.id, vendor.id, target.id, f"/vendor/dashboard?tab=reviews"
+                    )
+                    print(f"Email sent to {vendor_user.email} for new vendor review")
+                except Exception as e:
+                    print(f"Error sending email to {vendor_user.email}: {e}")
 
         # Save site notifications
         if notifications:
@@ -1708,8 +1704,8 @@ def notify_admins_new_vendor(mapper, connection, target):
             if is_production:
                 if settings.email_new_vendor:
                     try:
-                        send_email_admin_new_vendor(
-                            admin.email, admin, target, f"/admin/vendors/{target.id}"
+                        send_email_admin_new_vendor_task.delay(
+                            admin.email, admin.id, target.id, f"/admin/vendors/{target.id}"
                         )
                         print(f"Email sent to {admin.email} for new vendor registration")
                     except Exception as e:
@@ -1903,8 +1899,8 @@ def notify_admin_product_request(mapper, connection, target):
             if is_production:
                 if admin_settings.email_product_request:
                     try:
-                        send_email_admin_product_request(
-                            admin.email, admin, vendor, new_product, target.link or "/admin/vendors?tab=products"
+                        send_email_admin_product_request_task.delay(
+                            admin.email, admin.id, vendor.id, new_product, target.link or "/admin/vendors?tab=products"
                         )
                         print(f"Email sent to {admin.email} for product request")
                     except Exception as e:
@@ -2103,10 +2099,8 @@ def handle_vendor_notify_me_notification(mapper, connection, target):
         is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
         if is_production and settings.email_notify_me:
             try:
-                # Import the email function (will need to create this)
-                from utils.emails import send_email_notify_me
-                send_email_notify_me(
-                    vendor_user.email, vendor_user, vendor, user, target.link or "/vendor/dashboard?tab=baskets"
+                send_email_user_fav_vendor_schedule_change_task.delay(
+                    vendor_user.email, vendor_user.id, vendor.id, user.id, target.link or "/vendor/dashboard?tab=baskets"
                 )
                 print(f"Notify me email sent to {vendor_user.email}")
             except Exception as e:
@@ -2116,7 +2110,6 @@ def handle_vendor_notify_me_notification(mapper, connection, target):
         if is_production and settings.text_vendor_notify_me and vendor_user.phone:
             try:
                 # Import the SMS function (will need to create this)
-                from utils.sms import send_sms_vendor_notify_me
                 send_sms_vendor_notify_me(vendor_user.phone, vendor_user, vendor, user, "/vendor/dashboard?tab=baskets")
                 print(f"Notify me SMS sent to {vendor_user.phone}")
             except Exception as e:
@@ -2175,84 +2168,3 @@ def get_user_notification_settings(user: User) -> Dict[str, Any]:
     except Exception as e:
         print(f"Error parsing notification settings for User ID {user.id}: {e}")
         return default_settings
-
-def send_notification_vendor_market_schedule_change(vendor_id: int, market_id: int, schedule_id: int, event_id: int = None) -> None:
-    """Send notification for vendor market schedule change."""
-    try:
-        session = Session()
-        vendor = session.query(Vendor).get(vendor_id)
-        market = session.query(Market).get(market_id)
-        market_day = session.query(MarketDay).get(schedule_id)
-        
-        # Get event if event_id is provided (needed for email notifications)
-        event = None
-        if event_id:
-            event = session.query(Event).get(event_id)
-        
-        if not all([vendor, market, market_day]):
-            print("Missing required data for notification")
-            return
-            
-        vendor_users = get_vendor_users(vendor_id, session)
-        if not vendor_users:
-            print(f"No vendor users found for Vendor ID {vendor_id}")
-            return
-            
-        notifications: List[VendorNotification] = []
-        for vendor_user in vendor_users:
-            settings = session.query(SettingsVendor).filter_by(vendor_user_id=vendor_user.id).first()
-            if not settings or not settings.site_market_schedule_change:
-                continue
-                
-            if market_day.id not in (settings.market_locations or []):
-                continue
-                
-            notification = VendorNotification(
-                subject="Market Schedule Change",
-                message=f"The market, {market.name}, has updated its schedule.",
-                link=f"/user/markets/{market.id}",
-                vendor_id=vendor.id,
-                vendor_user_id=vendor_user.id,
-                market_id=market.id,
-                created_at=datetime.now(timezone.utc),
-                is_read=False
-            )
-            notifications.append(notification)
-            
-            is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
-            if is_production:
-                if settings.email_market_schedule_change:
-                    if event:
-                        # We have the event data, send the email
-                        try:
-                            send_email_vendor_market_schedule_change(
-                                vendor_user.email, vendor_user, market, event, f"/user/markets/{market.id}"
-                            )
-                            print(f"Email sent to {vendor_user.email} for market schedule change")
-                        except Exception as e:
-                            print(f"Error sending email to {vendor_user.email}: {e}")
-                    else:
-                        # No event data available, skip email
-                        print(f"Skipping email to {vendor_user.email} - no event data provided")
-                        
-                if settings.text_market_schedule_change and vendor_user.phone:
-                    try:
-                        if event:
-                            send_sms_vendor_market_schedule_change(vendor_user.phone, vendor_user, market, event, f"/user/markets/{market.id}")
-                            print(f"SMS sent to {vendor_user.phone} for market schedule change")
-                        else:
-                            print(f"Skipping SMS to {vendor_user.phone} - no event data provided")
-                    except Exception as e:
-                        print(f"Error sending SMS to {vendor_user.phone}: {e}")
-                    
-        if notifications:
-            session.bulk_save_objects(notifications)
-            session.commit()
-            
-    except Exception as e:
-        print(f"Error in send_notification_vendor_market_schedule_change: {e}")
-        if session:
-            session.rollback()
-    finally:
-        if session:
-            session.close()
