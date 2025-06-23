@@ -16,18 +16,14 @@ function AdminMarketEvents({ markets }) {
     const matchingMarketId = matchingMarket ? matchingMarket.id : null;
 
 
-    useEffect(() => {
-        setNewEvent((prevEvent) => ({
-            ...prevEvent,
-            market_id: matchingMarketId,
-        }));
-    }, [matchingMarketId]);
-
     const handleInputEventChange = (event) => {
         const { name, value } = event.target;
         setNewEvent({
             ...newEvent,
-            [name]: name === 'schedule_change' ? (value === 'true') : value,
+            [name]:
+                name === 'schedule_change'
+                    ? value === 'true'
+                    : value,
         });
     };
     
@@ -45,14 +41,6 @@ function AdminMarketEvents({ markets }) {
     };
 
     const handleSaveNewEvent = async () => {
-        if (!newEvent.market_id) {
-            console.error("Market ID is missing. Cannot save event.");
-            toast.success('Please select a valid market before saving the event.', {
-                autoClose: 5000,
-            });
-            return;
-        }
-    
         const formattedEvent = {
             ...newEvent,
             vendor_id: null,
@@ -68,7 +56,10 @@ function AdminMarketEvents({ markets }) {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(formattedEvent),
+                body: JSON.stringify({
+                    ...formattedEvent,
+                    market_id: matchingMarketId
+                }),
             });
     
             if (response.ok) {
@@ -251,7 +242,13 @@ function AdminMarketEvents({ markets }) {
                         <label title="true or false">Change in Schedule:</label>
                         <select
                             name="schedule_change"
-                            value={newEvent.schedule_change || ''}
+                            value={
+                                newEvent.schedule_change === true
+                                    ? 'true'
+                                    : newEvent.schedule_change === false
+                                    ? 'false'
+                                    : ''
+                            }
                             onChange={handleInputEventChange}
                         >
                             <option value="">Select</option>
