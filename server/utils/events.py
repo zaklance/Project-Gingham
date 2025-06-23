@@ -1070,9 +1070,8 @@ def vendor_basket_sold(mapper, connection, target):
                 # Send SMS notification if enabled
                 if settings and settings.text_basket_sold and vendor_user.phone:
                     try:
-                        send_sms_task_vendor_basket_sold(
-                            vendor_user.phone, vendor_user, vendor, 1, sale_date, "/vendor/dashboard?tab=baskets"
-                        )
+                        body = f"Hi {vendor_user.first_name}! {vendor.name} sold a basket today. Pickup details: www.gingham.nyc/vendor/dashboard?tab=baskets Reply STOP to unsubscribe."
+                        send_sms_task.delay(body, vendor_user.phone)
                         print(f"SMS sent to {vendor_user.phone} for basket sold")
                     except Exception as e:
                         print(f"Error sending SMS to {vendor_user.phone}: {e}")
