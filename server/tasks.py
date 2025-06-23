@@ -19,26 +19,36 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     AdminNotification, QRCode, FAQ, Blog, BlogFavorite,
                     Receipt, SettingsUser, SettingsVendor, SettingsAdmin, 
                     UserIssue, bcrypt )
-from utils.emails import ( send_contact_email, send_user_password_reset_email, 
-                          send_vendor_password_reset_email, send_admin_password_reset_email, 
-                          send_user_confirmation_email, send_vendor_confirmation_email, 
-                          send_admin_confirmation_email, send_vendor_team_invite_email,
-                          send_email_weekly_admin_update,
-                          send_email_user_fav_vendor_new_event, 
-                          send_email_user_fav_vendor_schedule_change,
-                          send_email_user_fav_market_new_vendor,
-                          send_email_admin_reported_review,
-                          send_email_user_fav_vendor_new_basket,
-                          send_email_vendor_market_new_event,
-                          send_email_vendor_market_schedule_change,
-                          send_email_vendor_basket_sold,
-                          send_email_user_fav_market_new_basket,
-                          send_email_user_basket_pickup_time,
-                          send_email_user_vendor_review_response,
-                          send_email_user_new_market_in_city,
-                          send_email_vendor_new_review,
-                          send_email_admin_new_vendor,
-                          send_email_vendor_new_statement )
+from utils.emails import (
+    send_contact_email,
+    send_user_password_reset_email, 
+    send_vendor_password_reset_email,
+    send_admin_password_reset_email,
+    send_user_confirmation_email,
+    send_vendor_confirmation_email,
+    send_admin_confirmation_email,
+    send_vendor_team_invite_email,
+    send_email_weekly_admin_update,
+    send_email_user_fav_vendor_new_event,
+    send_email_user_fav_vendor_schedule_change,
+    send_email_user_fav_market_new_vendor,
+    send_email_admin_reported_review,
+    send_email_user_fav_vendor_new_basket,
+    send_email_vendor_market_new_event,
+    send_email_vendor_market_schedule_change,
+    send_email_vendor_basket_sold,
+    send_email_user_fav_market_new_basket,
+    send_email_user_basket_pickup_time,
+    send_email_user_vendor_review_response,
+    send_email_user_new_market_in_city,
+    send_email_vendor_new_review,
+    send_email_admin_new_vendor,
+    send_email_admin_product_request,
+    send_email_user_fav_market_schedule_change,
+    send_email_user_fav_market_new_event,
+    send_email_vendor_new_statement,
+    send_email_notify_me
+    )
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
@@ -625,9 +635,19 @@ def send_sendgrid_email_client_task(subject, body_type, body, from_email, to_ema
             return {"error": str(e), "status": 500}
 
     if body_type == 'plain':
-        message = Mail(from_email=from_email, to_emails=to_email, subject=subject, plain_text_content=compiled_html)
+        message = Mail(
+            from_email=from_email,
+            to_emails=to_email,
+            subject=subject,
+            plain_text_content=compiled_html
+        )
     else:
-        message = Mail(from_email=from_email, to_emails=to_email, subject=subject, html_content=compiled_html)
+        message = Mail(
+            from_email=from_email,
+            to_emails=to_email,
+            subject=subject,
+            html_content=compiled_html
+        )
 
     try:
         sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
@@ -635,6 +655,227 @@ def send_sendgrid_email_client_task(subject, body_type, body, from_email, to_ema
         return {"message": "Email sent successfully", "status_code": response.status_code}
     except Exception as e:
         return {"error": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_user_fav_vendor_new_event_task(email, user_id, vendor_id, event_id, link_vendor):
+    try:
+        from app import app
+        with app.app_context():
+            user = db.session.query(User).get(user_id)
+            vendor = db.session.query(Vendor).get(vendor_id)
+            event = db.session.query(Event).get(event_id)
+        send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor)
+    except Exception as e:
+        return {"error with send_email_user_fav_vendor_new_event": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_user_fav_vendor_schedule_change_task(email, user_id, vendor_id, event_id, link_vendor):
+    try:
+        from app import app
+        with app.app_context():
+            user = db.session.query(User).get(user_id)
+            vendor = db.session.query(Vendor).get(vendor_id)
+            event = db.session.query(Event).get(event_id)
+            send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_vendor)
+    except Exception as e:
+        return {"error with send_email_user_fav_vendor_schedule_change": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_user_fav_market_new_vendor_task(email, user_id, market_id, vendor_id, link_market, link_vendor):
+    try:
+        from app import app
+        with app.app_context():
+            user = db.session.query(User).get(user_id)
+            market = db.session.query(Market).get(market_id)
+            vendor = db.session.query(Vendor).get(vendor_id)
+            send_email_user_fav_market_new_vendor(email, user, market, vendor, link_market, link_vendor)
+    except Exception as e:
+        return {"error with send_email_user_fav_market_new_vendor": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_admin_reported_review_task(email, admin_id, market_id, vendor_id, review_id, link_review):
+    try:
+        print('running task')
+        from app import app
+        with app.app_context():
+            market = None
+            vendor = None
+            admin = db.session.query(AdminUser).get(admin_id)
+            if market_id != None:
+                market = db.session.query(Market).get(market_id)
+                review = db.session.query(MarketReview).get(review_id)
+            if vendor_id != None:
+                vendor = db.session.query(Vendor).get(vendor_id)
+                review = db.session.query(VendorReview).get(review_id)
+            send_email_admin_reported_review(email, admin, market, vendor, review, link_review)
+    except Exception as e:
+        return {"error with send_email_admin_reported_review": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_user_fav_vendor_new_basket_task(email, user_id, market_id, vendor_id, link_market, link_vendor):
+    try:
+        from app import app
+        with app.app_context():
+            user = db.session.query(User).get(user_id)
+            market = db.session.query(Market).get(market_id)
+            vendor = db.session.query(Vendor).get(vendor_id)
+            send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_market, link_vendor)
+    except Exception as e:
+        return {"error with send_email_user_fav_vendor_new_basket": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_vendor_market_new_event_task(email, user_id, market_id, event_id, link):
+    try:
+        from app import app
+        with app.app_context():
+            user = db.session.query(VendorUser).get(user_id)
+            market = db.session.query(Market).get(market_id)
+            event = db.session.query(Event).get(event_id)
+            send_email_vendor_market_new_event(email, user, market, event, link)
+    except Exception as e:
+        return {"error with send_email_vendor_market_new_event": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_vendor_market_schedule_change_task(email, user_id, market_id, event_id, link):
+    try:
+        from app import app
+        with app.app_context():
+            user = db.session.query(VendorUser).get(user_id)
+            market = db.session.query(Market).get(market_id)
+            event = db.session.query(Event).get(event_id)
+            send_email_vendor_market_schedule_change(email, user, market, event, link)
+    except Exception as e:
+        return {"error with send_email_vendor_market_schedule_change": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_vendor_basket_sold_task(email, user_id, market_id, vendor_id, basket_count, pickup_start, pickup_end, sale_date):
+    try:
+        from app import app
+        with app.app_context():
+            user = db.session.query(VendorUser).get(user_id)
+            market = db.session.query(Market).get(market_id)
+            vendor = db.session.query(Vendor).get(vendor_id)
+            send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pickup_start, pickup_end, sale_date)
+    except Exception as e:
+        return {"error with send_email_vendor_basket_sold": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_user_fav_market_new_basket_task(email, user_id, market_id, vendor_id, link_market, link_vendor):
+    try:
+        from app import app
+        with app.app_context():
+            user = db.session.query(User).get(user_id)
+            market = db.session.query(Market).get(market_id)
+            vendor = db.session.query(Vendor).get(vendor_id)
+            send_email_user_fav_market_new_basket(email, user, market, vendor, link_market, link_vendor)
+    except Exception as e:
+        return {"error with send_email_user_fav_market_new_basket": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_user_basket_pickup_time_task(email, user_id, market_id, vendor_id, basket_id, link_market, link_vendor):
+    try:
+        from app import app
+        with app.app_context():
+            user = db.session.query(User).get(user_id)
+            market = db.session.query(Market).get(market_id)
+            vendor = db.session.query(Vendor).get(vendor_id)
+            basket = db.session.query(Basket).get(basket_id)
+            send_email_user_basket_pickup_time(email, user, market, vendor, basket, link_market, link_vendor)
+    except Exception as e:
+        return {"error with send_email_user_basket_pickup_time": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_user_vendor_review_response_task(email, user_id, vendor_id, review_id, link_review):
+    try:
+        from app import app
+        with app.app_context():
+            user = db.session.query(User).get(user_id)
+            vendor = db.session.query(Vendor).get(vendor_id)
+            review = db.session.query(VendorReview).get(review_id)
+            send_email_user_vendor_review_response(email, user, vendor, review, link_review)
+    except Exception as e:
+        return {"error with send_email_user_vendor_review_response": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_user_new_market_in_city_task(email, user_id, market_id, link_market):
+    try:
+        from app import app
+        with app.app_context():
+            user = db.session.query(User).get(user_id)
+            market = db.session.query(Market).get(market_id)
+        send_email_user_new_market_in_city(email, user, market, link_market)
+    except Exception as e:
+        return {"error with send_email_user_new_market_in_city": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_vendor_new_review_task(email, user_id, vendor_id, review_id, link_review):
+    try:
+        from app import app
+        with app.app_context():
+            user = db.session.query(VendorUser).get(user_id)
+            vendor = db.session.query(Vendor).get(vendor_id)
+            review = db.session.query(VendorReview).get(review_id)
+            send_email_vendor_new_review(email, user, vendor, review, link_review)
+    except Exception as e:
+        return {"error with send_email_vendor_new_review": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_admin_new_vendor_task(email, admin_id, vendor_id, link_vendor):
+    try:
+        from app import app
+        with app.app_context():
+            admin = db.session.query(AdminUser).get(admin_id)
+            vendor = db.session.query(Vendor).get(vendor_id)
+            send_email_admin_new_vendor(email, admin, vendor, link_vendor)
+    except Exception as e:
+        return {"error with send_email_admin_new_vendor": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_admin_product_request_task(email, admin_id, vendor_id, new_product, link_product):
+    try:
+        from app import app
+        with app.app_context():
+            admin = db.session.query(AdminUser).get(admin_id)
+            vendor = db.session.query(Vendor).get(vendor_id)
+            send_email_admin_product_request(email, admin, vendor, new_product, link_product)
+    except Exception as e:
+        return {"error with send_email_admin_product_request": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_user_fav_market_schedule_change_task(email, user_id, market_id, event_id, link):
+    try:
+        from app import app
+        with app.app_context():
+            user = db.session.query(User).get(user_id)
+            market = db.session.query(Market).get(market_id)
+            event = db.session.query(Event).get(event_id)
+            send_email_user_fav_market_schedule_change(email, user, market, event, link)
+    except Exception as e:
+        return {"error with send_email_user_fav_market_schedule_change": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_user_fav_market_new_event_task(email, user_id, market_id, event_id, link):
+    try:
+        from app import app
+        with app.app_context():
+            user = db.session.query(User).get(user_id)
+            market = db.session.query(Market).get(market_id)
+            event = db.session.query(Event).get(event_id)
+            send_email_user_fav_market_new_event(email, user, market, event, link)
+    except Exception as e:
+        return {"error with send_email_user_fav_market_new_event": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_email_notify_me_task(email, vendor_user_id, vendor_id, user_id, link):
+    try:
+        from app import app
+        with app.app_context():
+            vendor_user = db.session.query(VendorUser).get(vendor_user_id)
+            vendor = db.session.query(Vendor).get(vendor_id)
+            user = db.session.query(User).get(user_id)
+            send_email_notify_me(email, vendor_user, vendor, user, link)
+    except Exception as e:
+        return {"error with send_email_notify_me": str(e), "status": 500}
 
 @celery.task(bind=True, queue='default')
 def export_csv_users_task(self):
