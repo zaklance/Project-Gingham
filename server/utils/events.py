@@ -27,20 +27,10 @@ from tasks import (
     send_email_admin_new_vendor_task,
     send_email_admin_product_request_task,
     send_email_user_fav_market_schedule_change_task,
-    send_email_user_fav_market_new_event_task
+    send_email_user_fav_market_new_event_task,
+    send_sms_task
 )
-from utils.sms import (
-    send_sms_user_fav_vendor_schedule_change,
-    send_sms_admin_reported_review,
-    send_sms_admin_reported_market_review,
-    send_sms_vendor_basket_sold,
-    send_sms_user_fav_market_new_basket,
-    send_sms_user_basket_pickup_time,
-    send_sms_vendor_market_schedule_change,
-    send_sms_admin_product_request,
-    send_sms_user_fav_market_schedule_change,
-    send_sms_vendor_notify_me
-)
+
 
 Session = sessionmaker()
 
@@ -224,7 +214,8 @@ def vendor_market_event_or_schedule_change(mapper: Any, connection: Any, target:
                         # Send SMS notification if enabled (only for schedule changes)
                         if is_schedule_change and settings.text_market_schedule_change and vendor_user.phone:
                             try:
-                                send_sms_vendor_market_schedule_change(vendor_user.phone, vendor_user, market_day.market, target, f"/user/markets/{market_day.market.id}")
+                                body = f"Hi {vendor_user.first_name}! {market_day.market.name} has a schedule change. Event: {target.title}. Details: www.gingham.nyc/user/markets/{market_day.market.id} Reply STOP to unsubscribe."
+                                send_sms_task(body, vendor_user.phone)
                                 print(f"SMS sent to {vendor_user.phone} for market schedule change")
                             except Exception as e:
                                 print(f"Error sending SMS to {vendor_user.phone}: {e}")
@@ -324,7 +315,8 @@ def track_fav_vendor_event(mapper: Any, connection: Any, target: Event) -> None:
                     # Send SMS notification if enabled (only for schedule changes)
                     if is_schedule_change and settings.text_fav_vendor_schedule_change and user.phone:
                         try:
-                            send_sms_user_fav_vendor_schedule_change(user.phone, user, vendor, target, f"/user/vendors/{vendor.id}")
+                            body = f"Hi {user.first_name}! Your favorite vendor, {vendor.name}, has updated their schedule temporarily. Event: {target.title}. View details: www.gingham.nyc/user/vendors/{vendor.id} Reply STOP to unsubscribe."
+                            send_sms_task(body, user.phone)
                             print(f"SMS sent to {user.phone} for vendor schedule change")
                         except Exception as e:
                             print(f"Error sending SMS to {user.phone}: {e}")
@@ -433,7 +425,8 @@ def notify_fav_market_users_of_events(mapper: Any, connection: Any, target: Even
                     # Send SMS notification if enabled (only for schedule changes)
                     if is_schedule_change and settings.text_fav_market_schedule_change and user.phone:
                         try:
-                            send_sms_user_fav_market_schedule_change(user.phone, user, market, target, f"/user/markets/{market.id}")
+                            body = f"Hi {user.first_name}! Your favorite market, {market.name}, has updated their schedule temporarily. Event: {target.title}. Details: www.gingham.nyc/user/markets/{market.id} Reply STOP to unsubscribe."
+                            send_sms_task(body, user.phone)
                             print(f"SMS sent to {user.phone} for market schedule change")
                         except Exception as e:
                             print(f"Error sending SMS to {user.phone}: {e}")
@@ -591,7 +584,8 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
                             # Send SMS notification if enabled
                             if admin_settings.text_report_review and admin.phone:
                                 try:
-                                    send_sms_admin_reported_review(admin.phone, admin, vendor, review, "/admin/report#vendors")
+                                    body = f"Hi {admin.first_name}! A review for vendor '{vendor.name}' has been reported and needs your attention. Review: www.gingham.nyc/admin/report#vendors Reply STOP to unsubscribe."
+                                    send_sms_task(body, admin.phone)
                                     print(f"SMS sent to {admin.phone} for reported vendor review")
                                 except Exception as e:
                                     print(f"Error sending SMS to {admin.phone}: {e}")
@@ -664,7 +658,8 @@ def notify_admin_market_review_reported(mapper, connection, target):
                             # Send SMS notification if enabled
                             if admin_settings.text_report_review and admin.phone:
                                 try:
-                                    send_sms_admin_reported_market_review(admin.phone, admin, market, review, "/admin/report#markets")
+                                    body = f"Hi {admin.first_name}! A review for market '{market.name}' has been reported and needs your attention. Review: www.gingham.nyc/admin/report#markets Reply STOP to unsubscribe."
+                                    send_sms_task(body, admin.phone)
                                     print(f"SMS sent to {admin.phone} for reported market review")
                                 except Exception as e:
                                     print(f"Error sending SMS to {admin.phone}: {e}")
@@ -1021,9 +1016,9 @@ def vendor_basket_sold(mapper, connection, target):
                                     # Send SMS notification if enabled
                                     if settings and settings.text_basket_sold and vendor_user.phone:
                                         try:
-                                            send_sms_vendor_basket_sold(
-                                                vendor_user.phone, vendor_user, vendor, total_sold, sale_date, "/vendor/dashboard?tab=baskets"
-                                            )
+                                            basket_text = "baskets" if total_sold > 1 else "basket"
+                                            body = f"Hi {vendor_user.first_name}! {vendor.name} sold {total_sold} {basket_text} on {sale_date.strftime('%B %d')}. Pickup details: www.gingham.nyc/vendor/dashboard?tab=baskets Reply STOP to unsubscribe."
+                                            send_sms_task(body, vendor_user.phone)
                                             print(f"Summary SMS sent to {vendor_user.phone} for {total_sold} baskets sold")
                                         except Exception as e:
                                             print(f"Error sending summary SMS to {vendor_user.phone}: {e}")
@@ -1075,7 +1070,7 @@ def vendor_basket_sold(mapper, connection, target):
                 # Send SMS notification if enabled
                 if settings and settings.text_basket_sold and vendor_user.phone:
                     try:
-                        send_sms_vendor_basket_sold(
+                        send_sms_task_vendor_basket_sold(
                             vendor_user.phone, vendor_user, vendor, 1, sale_date, "/vendor/dashboard?tab=baskets"
                         )
                         print(f"SMS sent to {vendor_user.phone} for basket sold")
@@ -1282,11 +1277,8 @@ def notify_fav_market_new_baskets(mapper, connection, target):
                 # Send SMS notification if enabled
                 if settings.text_fav_market_new_basket and user.phone:
                     try:
-                        send_sms_user_fav_market_new_basket(
-                            user.phone, user, market, vendor,
-                            f"/user/markets/{market.id}?day={target.market_day_id}#vendors",
-                            f"/user/vendors/{vendor.id}"
-                        )
+                        body = f"Hi {user.first_name}! New baskets available at {market.name} from {vendor.name}. Get yours: www.gingham.nyc/user/vendors/{vendor.id} Reply STOP to unsubscribe."
+                        send_sms_task(body, user.phone)
                         print(f"SMS sent to {user.phone} for new basket in favorite market")
                     except Exception as e:
                         print(f"Error sending SMS to {user.phone}: {e}")
@@ -1391,9 +1383,10 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
                             # Send SMS notification if enabled
                             if settings.text_basket_pickup_time and user.phone:
                                 try:
-                                    send_sms_user_basket_pickup_time(
-                                        user.phone, user, vendor, basket.pickup_start, basket.pickup_end, f"/user/vendors/{vendor.id}"
-                                    )
+                                    pickup_start_str = time_converter(basket.pickup_start)
+                                    pickup_end_str = time_converter(basket.pickup_end)
+                                    body = f"Hi {user.first_name}! Time to pick up your basket from {vendor.name}. Pickup: {pickup_start_str}-{pickup_end_str}. Details: www.gingham.nyc/user/vendors/{vendor.id} Reply STOP to unsubscribe."
+                                    send_sms_task(body, user.phone)
                                     print(f"Pickup SMS sent to {user.phone}")
                                 except Exception as e:
                                     print(f"Error sending pickup SMS to {user.phone}: {e}")
@@ -1909,7 +1902,8 @@ def notify_admin_product_request(mapper, connection, target):
                 # Send SMS notification if enabled
                 if admin_settings.text_product_request and admin.phone:
                     try:
-                        send_sms_admin_product_request(admin.phone, admin, vendor, new_product, "/admin/vendors?tab=products")
+                        body = f"Hi {admin.first_name}! {vendor.name} has requested a new product category: {new_product}. Manage: www.gingham.nyc/admin/vendors?tab=products Reply STOP to unsubscribe."
+                        send_sms_task(body, admin.phone)
                         print(f"SMS sent to {admin.phone} for product request")
                     except Exception as e:
                         print(f"Error sending SMS to {admin.phone}: {e}")
@@ -2109,8 +2103,8 @@ def handle_vendor_notify_me_notification(mapper, connection, target):
         # Send SMS notification if enabled
         if is_production and settings.text_vendor_notify_me and vendor_user.phone:
             try:
-                # Import the SMS function (will need to create this)
-                send_sms_vendor_notify_me(vendor_user.phone, vendor_user, vendor, user, "/vendor/dashboard?tab=baskets")
+                body = f"Hi {vendor_user.first_name}! A user ({user.first_name}) is interested in buying more baskets from {vendor.name}. Add more: www.gingham.nyc/vendor/dashboard?tab=baskets Reply STOP to unsubscribe."
+                send_sms_task(body, vendor_user.phone)
                 print(f"Notify me SMS sent to {vendor_user.phone}")
             except Exception as e:
                 print(f"Error sending notify me SMS to {vendor_user.phone}: {e}")

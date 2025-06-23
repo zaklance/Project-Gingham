@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app import app
-from sms import (send_sms_user_fav_market_schedule_change)
+from tasks import send_sms_task
 from models import (db, User, VendorUser, AdminUser, Market, Vendor, Event, Basket, VendorReview, Blog)
 
 phone = '+12095053880'
@@ -20,4 +20,5 @@ with app.app_context():
     review = db.session.get(VendorReview, 1)
     blog = db.session.get(Blog, 1)
 
-    send_sms_user_fav_market_schedule_change(phone=phone, user=user, market=market, event=event, link_market=f"/user/markets/{market.id}")
+    body = f"Hi {user.first_name}! Your favorite vendor, {vendor.name}, has updated their schedule temporarily. Event: {event.title}. View details: www.gingham.nyc/user/vendors/{vendor.id} Reply STOP to unsubscribe."
+    send_sms_task.delay(body, phone)

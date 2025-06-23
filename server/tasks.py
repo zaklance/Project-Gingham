@@ -49,6 +49,7 @@ from utils.emails import (
     send_email_vendor_new_statement,
     send_email_notify_me
     )
+from utils.sms import send_sms
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
@@ -876,6 +877,14 @@ def send_email_notify_me_task(email, vendor_user_id, vendor_id, user_id, link):
             send_email_notify_me(email, vendor_user, vendor, user, link)
     except Exception as e:
         return {"error with send_email_notify_me": str(e), "status": 500}
+
+@celery.task(queue='default')
+def send_sms_task(body, phone):
+    try:
+        send_sms(body, phone)
+        return
+    except Exception as e:
+        return {"error with send_sms": str(e), "status": 500}
 
 @celery.task(bind=True, queue='default')
 def export_csv_users_task(self):
