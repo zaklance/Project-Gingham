@@ -1,5 +1,6 @@
 import os
 import smtplib
+import base64
 from io import BytesIO, StringIO
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -10,6 +11,8 @@ from itsdangerous import URLSafeTimedSerializer
 from sqlalchemy import extract
 from datetime import datetime, date, time
 from models import (Product, Basket)
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition
 
 serializer = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
 site_url = os.getenv('VITE_SITE_URL')
@@ -161,17 +164,8 @@ EMAIL_STYLES = """
 
 # Email Contact Form
 def send_contact_email(name, email, subject, message): 
-    try: 
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        recipient_email = "admin@gingham.nyc"
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = recipient_email
-        msg['Subject'] = f"GINGHAM Contact Form Submission: {subject}"
+    try:
+        email_subject=f"GINGHAM Contact Form Submission: {subject}"
 
         body = f"""
             <!DOCTYPE html>
@@ -205,16 +199,20 @@ def send_contact_email(name, email, subject, message):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
-
-        # Send email
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, recipient_email, msg.as_string())
-        server.quit()
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails="hello@gingham.nyc",
+            subject=email_subject,
+            html_content=body
+        )
         
-        return {"message": "Email sent successfully!"}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
+        
 
     except Exception as e: 
         print("Error occurred:", str(e))
@@ -233,16 +231,7 @@ def send_user_password_reset_email(email):
     reset_link = url_for('password_reset', token=token, _external=True)
 
     try:
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        recipient_email = email
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = recipient_email
-        msg['Subject'] = 'GINGHAM Password Reset'
+        email_subject = 'GINGHAM Password Reset'
 
         body = f"""
             <!DOCTYPE html>
@@ -271,16 +260,20 @@ def send_user_password_reset_email(email):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # Send email
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, recipient_email, msg.as_string())
-        server.quit()
-
-        return {'message': 'Password reset link sent'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
 
     except Exception as e:
         return {'error': f'Failed to send email: {str(e)}'}
@@ -295,16 +288,7 @@ def send_vendor_password_reset_email(email):
     reset_link = url_for('vendor_password_reset', token=token, _external=True)
 
     try:
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        recipient_email = email
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = recipient_email
-        msg['Subject'] = 'GINGHAM Password Reset'
+        email_subject = 'GINGHAM Password Reset'
 
         body = f"""
             <!DOCTYPE html>
@@ -333,14 +317,20 @@ def send_vendor_password_reset_email(email):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # Send email
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, recipient_email, msg.as_string())
-        server.quit()
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
 
         return {'message': 'Password reset link sent'}
 
@@ -358,16 +348,7 @@ def send_admin_password_reset_email(email):
     reset_link = url_for('admin_password_reset', token=token, _external=True)
 
     try:
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        recipient_email = email
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = recipient_email
-        msg['Subject'] = 'GINGHAM Password Reset'
+        email_subject = 'GINGHAM Password Reset'
 
         body = f"""
             <!DOCTYPE html>
@@ -396,16 +377,20 @@ def send_admin_password_reset_email(email):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # Send email
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, recipient_email, msg.as_string())
-        server.quit()
-
-        return {'message': 'Password reset link sent'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
 
     except Exception as e:
         return {'error': f'Failed to send email: {str(e)}'}
@@ -417,19 +402,8 @@ def send_user_confirmation_email(email, user_data):
     try:
         token = serializer.dumps(user_data, salt='user-confirmation-salt')  # Generate the token
         confirmation_link = f"{site_url}/user/confirm-email/{token}"
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
 
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = 'GINGHAM Email Confirmation'
+        email_subject = 'GINGHAM Email Confirmation'
 
         body = f"""
             <!DOCTYPE html>
@@ -458,17 +432,20 @@ def send_user_confirmation_email(email, user_data):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Email sent successfully")
-        return {'message': 'Confirmation email sent successfully.', 'token': token}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
 
     except Exception as e:
         print(f"Error during email sending: {str(e)}")
@@ -478,20 +455,7 @@ def send_vendor_confirmation_email(email, vendor_data):
     try:
         token = serializer.dumps(vendor_data, salt='vendor-confirmation-salt')
         confirmation_link = f"{site_url}/vendor/confirm-email/{token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = 'GINGHAM Vendor Email Confirmation'
+        email_subject = 'GINGHAM Vendor Email Confirmation'
 
         body = f"""
             <!DOCTYPE html>
@@ -520,17 +484,19 @@ def send_vendor_confirmation_email(email, vendor_data):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'Vendor confirmation email sent successfully.', 'token': token}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
 
     except Exception as e:
         print(f"Error during vendor email sending: {str(e)}")
@@ -540,20 +506,7 @@ def send_admin_confirmation_email(email, admin_data):
     try:
         token = serializer.dumps(admin_data, salt='admin-confirmation-salt')
         confirmation_link = f"{site_url}/admin/confirm-email/{token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = 'GINGHAM Admin Email Confirmation'
+        email_subject = 'GINGHAM Admin Email Confirmation'
 
         body = f"""
             <!DOCTYPE html>
@@ -582,17 +535,19 @@ def send_admin_confirmation_email(email, admin_data):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send admin email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Admin email sent successfully")
-        return {'message': 'Admin confirmation email sent successfully.', 'token': token}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
 
     except Exception as e:
         print(f"Error during admin email sending: {str(e)}")
@@ -614,17 +569,8 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link = f'{site_url}{link}'
+        email_subject = f'New Event at {market.name}'
 
         start_date_formatted = format_event_date(event.start_date)
         end_date_formatted = format_event_date(event.end_date)
@@ -632,11 +578,6 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
             date_display = f"{start_date_formatted} — {end_date_formatted}"
         else:
             date_display = start_date_formatted
-
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'New Event at {market.name}'
 
         body = f"""
             <!DOCTYPE html>
@@ -677,17 +618,19 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'User notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
 
     except Exception as e:
         print(f"Error during user fav market new event email sending: {str(e)}")
@@ -703,17 +646,8 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link = f'{site_url}{link}'
+        email_subject = f'Schedule Change at {market.name}'
 
         start_date_formatted = format_event_date(event.start_date)
         end_date_formatted = format_event_date(event.end_date)
@@ -721,11 +655,6 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
             date_display = f"{start_date_formatted} — {end_date_formatted}"
         else:
             date_display = start_date_formatted
-
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'Schedule Change at {market.name}'
 
         body = f"""
             <!DOCTYPE html>
@@ -765,17 +694,19 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'User notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
 
     except Exception as e:
         print(f"Error during user fav market schedule change email sending: {str(e)}")
@@ -791,16 +722,6 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link_market = f'{site_url}/{link_market}'
         full_link_vendor = f'{site_url}/{link_vendor}'
 
@@ -817,10 +738,7 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
         else:
             subcategories_html = ""
 
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'New Vendor at {market.name}'
+        email_subject = f'New Vendor at {market.name}'
 
         body = f"""
             <!DOCTYPE html>
@@ -862,17 +780,19 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'User notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
 
     except Exception as e:
         print(f"Error during user fav market new vendor email sending: {str(e)}")
@@ -888,16 +808,6 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link_market = f'{site_url}/{link_market}'
         full_link_vendor = f'{site_url}/{link_vendor}'
 
@@ -924,10 +834,7 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
         else:
             vendor_bio_html = ""
 
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'New Basket Available at {market.name}'
+        email_subject = f'New Basket Available at {market.name}'
 
         body = f"""
             <!DOCTYPE html>
@@ -976,17 +883,19 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'User notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
     
     except Exception as e:
         print(f"Error during user fav market new basket email sending: {str(e)}")
@@ -1002,16 +911,6 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link_vendor = f'{site_url}/{link_vendor}'
 
         start_date_formatted = format_event_date(event.start_date)
@@ -1021,10 +920,7 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
         else:
             date_display = start_date_formatted
 
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'New Event by {vendor.name}'
+        email_subject = f'New Event by {vendor.name}'
 
         body = f"""
             <!DOCTYPE html>
@@ -1064,17 +960,19 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'User notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
 
     except Exception as e:
         print(f"Error during user fav vendor new event email sending: {str(e)}")
@@ -1090,16 +988,6 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link_vendor = f'{site_url}/{link_vendor}'
 
         start_date_formatted = format_event_date(event.start_date)
@@ -1109,10 +997,7 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
         else:
             date_display = start_date_formatted
 
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'Schedule Change for {vendor.name}'
+        email_subject = f'Schedule Change for {vendor.name}'
 
         body = f"""
             <!DOCTYPE html>
@@ -1152,17 +1037,19 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'User notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
 
     except Exception as e:
         print(f"Error during user fav vendor schedule change email sending: {str(e)}")
@@ -1178,16 +1065,6 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link_market = f'{site_url}/{link_market}'
         full_link_vendor = f'{site_url}/{link_vendor}'
 
@@ -1214,10 +1091,7 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
         else:
             market_bio_html = ""
 
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'New Basket Available from {vendor.name}'
+        email_subject = f'New Basket Available from {vendor.name}'
 
         body = f"""
             <!DOCTYPE html>
@@ -1266,17 +1140,19 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'User notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
     
     except Exception as e:
         print(f"Error during user fav vendor new basket email sending: {str(e)}")
@@ -1292,23 +1168,10 @@ def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link_market = f'{site_url}/{link_market}'
         full_link_vendor = f'{site_url}/{link_vendor}'
 
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'Almost Time to Pickup Your Basket'
+        email_subject = f'Almost Time to Pickup Your Basket'
 
         body = f"""
             <!DOCTYPE html>
@@ -1341,17 +1204,19 @@ def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'User notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
     
     except Exception as e:
         print(f"Error during user basket pickup time email sending: {str(e)}")
@@ -1367,22 +1232,9 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link_review = f'{site_url}{link_review}'
 
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'Response to one of your Reviews'
+        email_subject = f'Response to one of your Reviews'
 
         body = f"""
             <!DOCTYPE html>
@@ -1420,17 +1272,19 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'User notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
     
     except Exception as e:
         print(f"Error during user vendor review response email sending: {str(e)}")
@@ -1447,19 +1301,7 @@ def send_email_user_new_blog(email, user, blog):
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'New GINGHAM Blog Post!'
+        email_subject = f'New GINGHAM Blog Post!'
 
         body = f"""
             <!DOCTYPE html>
@@ -1496,17 +1338,19 @@ def send_email_user_new_blog(email, user, blog):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'User notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
     
     except Exception as e:
         print(f"Error during user new blog email sending: {str(e)}")
@@ -1522,16 +1366,6 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link_market = f'{site_url}/{link_market}'
 
         if market.bio:
@@ -1539,10 +1373,7 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
         else:
             market_bio_html = ""
 
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'New Market in {market.city}'
+        email_subject = f'New Market in {market.city}'
 
         body = f"""
             <!DOCTYPE html>
@@ -1584,17 +1415,19 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'User notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
     
     except Exception as e:
         print(f"Error during user new market in city email sending: {str(e)}")
@@ -1616,16 +1449,6 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link = f'{site_url}{link}'
 
         start_date_formatted = format_event_date(event.start_date)
@@ -1635,10 +1458,7 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
         else:
             date_display = start_date_formatted
 
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'New Event at {market.name}'
+        email_subject = f'New Event at {market.name}'
 
         body = f"""
             <!DOCTYPE html>
@@ -1678,17 +1498,19 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'Vendor notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
 
     except Exception as e:
         print(f"Error during vendor new market event email sending: {str(e)}")
@@ -1704,16 +1526,6 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link = f'{site_url}{link}'
 
         start_date_formatted = format_event_date(event.start_date)
@@ -1723,10 +1535,7 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
         else:
             date_display = start_date_formatted
 
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'Schedule Change at {market.name}'
+        email_subject = f'Schedule Change at {market.name}'
 
         body = f"""
             <!DOCTYPE html>
@@ -1766,17 +1575,19 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'Vendor notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
 
     except Exception as e:
         print(f"Error during vendor schedule change email sending: {str(e)}")
@@ -1793,24 +1604,12 @@ def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pic
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-
         if basket_count > 1:
             basket_text = "baskets"
         else:
             basket_text = "basket"
 
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'Basket sold'
+        email_subject = f'Basket sold'
 
         body = f"""
             <!DOCTYPE html>
@@ -1846,17 +1645,19 @@ def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pic
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'Vendor notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
     
     except Exception as e:
         print(f"Error during vendor basket sold email sending: {str(e)}")
@@ -1872,22 +1673,9 @@ def send_email_vendor_new_review(email, user, vendor, review, link_review):
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link_review = f'{site_url}{link_review}'
 
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'New Review on GINGHAM!'
+        email_subject = f'New Review on GINGHAM!'
 
         body = f"""
             <!DOCTYPE html>
@@ -1925,17 +1713,19 @@ def send_email_vendor_new_review(email, user, vendor, review, link_review):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'Vendor notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
     
     except Exception as e:
         print(f"Error during vendor new review email sending: {str(e)}")
@@ -1952,19 +1742,7 @@ def send_email_vendor_new_blog(email, user, blog):
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'New GINGHAM Vendor Blog Post!'
+        email_subject = f'New GINGHAM Vendor Blog Post!'
 
         body = f"""
             <!DOCTYPE html>
@@ -2001,17 +1779,19 @@ def send_email_vendor_new_blog(email, user, blog):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'Vendor notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
     
     except Exception as e:
         print(f"Error during vendor new blog email sending: {str(e)}")
@@ -2028,19 +1808,7 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'GINGHAM Monthly Statement'
+        email_subject = f'GINGHAM Monthly Statement'
 
         body = f"""
             <!DOCTYPE html>
@@ -2073,7 +1841,6 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
 
         output = StringIO()
         writer = csv.writer(output, quoting=csv.QUOTE_ALL)
@@ -2102,25 +1869,30 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
                 'Yes' if basket.is_refunded else 'No'
             ])
 
-        csv_bytes = BytesIO()
-        csv_bytes.write(output.getvalue().encode('utf-8'))
-        csv_bytes.seek(0)
+        csv_data = output.getvalue().encode('utf-8')
         output.close()
+        
+        # Encode attachment
+        encoded_file = base64.b64encode(csv_data).decode()
 
         csv_filename = f'gingham_vendor-statement_{year}-{month:02d}.csv'
-        part = MIMEApplication(csv_bytes.read(), Name=csv_filename)
-        part['Content-Disposition'] = f'attachment; filename="{csv_filename}"'
-        msg.attach(part)
+        attachment = Attachment()
+        attachment.file_content = FileContent(encoded_file)
+        attachment.file_type = FileType('text/csv')
+        attachment.file_name = FileName(csv_filename)
+        attachment.disposition = Disposition('attachment')
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
+        message.attachment = attachment
 
-        # print("Vendor email sent successfully")
-        return {'message': 'Vendor statement email sent successfully.'}
+        sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+        response = sg.send(message)
+        return {'message': 'Vendor statement email sent successfully.', 'status_code': response.status_code}
 
     except Exception as e:
         print(f"Error during vendor new statement email sending: {str(e)}")
@@ -2137,22 +1909,9 @@ def send_email_notify_me(email, vendor_user, vendor, user, link):
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link = f'{site_url}{link}'
 
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'User Interested in More Baskets!'
+        email_subject = f'User Interested in More Baskets!'
 
         body = f"""
             <!DOCTYPE html>
@@ -2195,17 +1954,19 @@ def send_email_notify_me(email, vendor_user, vendor, user, link):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'Vendor notify me email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
     
     except Exception as e:
         print(f"Error during vendor notify me email sending: {str(e)}")
@@ -2227,16 +1988,6 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link_review = f'{site_url}{link_review}'
 
         if market:
@@ -2244,10 +1995,7 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
         if vendor:
             review_about = f"{vendor.name}"
 
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'New Reported Review on GINGHAM :('
+        email_subject = f'New Reported Review on GINGHAM :('
 
         body = f"""
             <!DOCTYPE html>
@@ -2285,17 +2033,19 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'Admin notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
     
     except Exception as e:
         print(f"Error during admin reported review email sending: {str(e)}")
@@ -2311,16 +2061,6 @@ def send_email_admin_product_request(email, user, vendor, new_product, link_prod
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link_product = f'{site_url}/{link_product}'
 
         if vendor.products:
@@ -2340,10 +2080,7 @@ def send_email_admin_product_request(email, user, vendor, new_product, link_prod
         else:
             vendor_bio_html = ""
 
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'New Product Request on GINGHAM'
+        email_subject = f'New Product Request on GINGHAM'
 
         body = f"""
             <!DOCTYPE html>
@@ -2385,17 +2122,19 @@ def send_email_admin_product_request(email, user, vendor, new_product, link_prod
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'Admin notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
     
     except Exception as e:
         print(f"Error during admin product request email sending: {str(e)}")
@@ -2412,19 +2151,7 @@ def send_email_admin_new_blog(email, user, blog):
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
 
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'New GINGHAM Admin Blog Post!'
+        email_subject = f'New GINGHAM Admin Blog Post!'
 
         body = f"""
             <!DOCTYPE html>
@@ -2461,17 +2188,19 @@ def send_email_admin_new_blog(email, user, blog):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'Admin notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
 
     except Exception as e:
         print(f"Error during admin new blog email sending: {str(e)}")
@@ -2487,16 +2216,6 @@ def send_email_admin_new_vendor(email, user, vendor, link_vendor):
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-        
         full_link_vendor = f'{site_url}/{link_vendor}'
 
         if vendor.products:
@@ -2516,10 +2235,7 @@ def send_email_admin_new_vendor(email, user, vendor, link_vendor):
         else:
             vendor_bio_html = ""
 
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'New Vendor on GINGHAM'
+        email_subject = f'New Vendor on GINGHAM'
 
         body = f"""
             <!DOCTYPE html>
@@ -2561,17 +2277,19 @@ def send_email_admin_new_vendor(email, user, vendor, link_vendor):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        # print("Attempting to send vendor email...")
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'Admin notification email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
     
     except Exception as e:
         print(f"Error during admin product request email sending: {str(e)}")
@@ -2584,19 +2302,8 @@ def send_vendor_team_invite_email(email, vendor_name, token):
     try:
         VITE_SITE_URL = os.getenv('VITE_SITE_URL')
         invitation_link = f"{VITE_SITE_URL}/vendor/join-team/{token}"
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = f'Invitation to join {vendor_name} on GINGHAM'
+        
+        email_subject = f'Invitation to join {vendor_name} on GINGHAM'
 
         body = f"""
             <!DOCTYPE html>
@@ -2627,15 +2334,19 @@ def send_vendor_team_invite_email(email, vendor_name, token):
             </body>
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        return {'message': 'Team invitation email sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
 
     except Exception as e:
         print(f"Error during team invitation email sending: {str(e)}")
@@ -2643,19 +2354,7 @@ def send_vendor_team_invite_email(email, vendor_name, token):
 
 def send_email_weekly_admin_update(email, body_tag):
     try:
-        sender_email = os.getenv('EMAIL_USER')
-        password = os.getenv('EMAIL_PASS')
-        smtp = os.getenv('EMAIL_SMTP')
-        port = os.getenv('EMAIL_PORT')
-
-        if not sender_email or not password:
-            print("Email credentials are missing")
-            raise ValueError("Email credentials are missing in the environment variables.")
-
-        msg = MIMEMultipart()
-        msg['From'] = f'gingham NYC <{sender_email}>'
-        msg['To'] = email
-        msg['Subject'] = "Weekly Platform Summary"
+        email_subject = "Weekly Platform Summary"
 
         body = f"""
             <!DOCTYPE html>
@@ -2667,18 +2366,20 @@ def send_email_weekly_admin_update(email, body_tag):
                 {body_tag}
             </html>
             """
-        msg.attach(MIMEText(body, 'html'))
+        message = Mail(
+            from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
+            to_emails=email,
+            subject=email_subject,
+            html_content=body
+        )
 
-        server = smtplib.SMTP(smtp, port)
-        server.starttls()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, email, msg.as_string())
-        server.quit()
-
-        # print("Vendor email sent successfully")
-        return {'message': 'Weekly email update sent successfully.'}
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            response = sg.send(message)
+            return {"message": "Email sent successfully", "status_code": response.status_code}
+        except Exception as e:
+            return {"error": str(e), "status": 500}
 
     except Exception as e:
         print(f"Error during weekly update email sending: {str(e)}")
         return {'error': f'Failed to send weekly update email: {str(e)}'}
-

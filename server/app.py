@@ -3728,7 +3728,7 @@ def contact():
 
         print(f"Submitting contact request to Celery - Name: {name}, Email: {email}, Subject: {subject}, Message: {message}")
 
-        task = contact_task.apply_async(args=[name, email, subject, message])
+        task = contact_task.delay(name, email, subject, message)
 
         return jsonify({"message": "Your message has been received. We will get back to you shortly."}), 200
 
