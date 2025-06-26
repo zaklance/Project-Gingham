@@ -216,10 +216,10 @@ body {
 header {
   background: var(--accent-blue);
   color: #fff;
-  padding: 0px 0 12px 0;
+  /* padding: 0px 0 12px 0; */
   text-align: center;
   font-size: 24px;
-  margin-bottom: -20px;
+  height: 70px;
   border-radius: 20px 20px 0 0;
 }
 
@@ -239,8 +239,6 @@ main {
   padding: 20px;
   background: #fff;
   border-radius: 0 0 20px 20px;
-  /* box-shadow: 0 0 10px #b5b5b5; */
-  margin: 20px 0;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -834,7 +832,6 @@ ul {
   overflow-x: scroll;
   overflow-y: visible !important;
   height: 80px;
-  margin-bottom: -22px;
 }
 
 .nav-bar ul{
@@ -4129,7 +4126,6 @@ textarea {
     overflow-x: scroll;
     overflow-y: visible !important;
     height: 80px;
-    margin-bottom: -22px;
   }
 
   .nav-bar ul {
