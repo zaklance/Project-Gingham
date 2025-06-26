@@ -48,28 +48,28 @@ function Footer() {
         <>
             <br className='m-br'/>
             <div className='footer'>
-                <div className='flex-space-around flex-center-align box-blue'>
+                <div className='flex-space-around flex-center-align box-blue m-padding-8'>
                     <ul className='ul-footer column-footer'>
                         {navItems.map(({ path, label, condition }) =>
                             condition !== false && (
                                 <li key={path} className="footer-li font-cera text-700 link-underline">
-                                    <NavLink 
-                                        to={path} 
-                                        className={({ isActive }) => isActive ? "active-link" : ""}
-                                        onClick={() => handleClick(path)}
-                                    >
-                                        {label}
-                                    </NavLink>
-                                    {clickedPath === path && location.pathname === path && (
-                                        <div className="notification-box">
-                                            <div className="notification-triangle"></div>
+                                    {clickedPath === path && location.pathname === path ? (
+                                        <div className="box-here text-underline">
                                             You are here!
                                         </div>
+                                    ) : (
+                                        <NavLink 
+                                            to={path} 
+                                            className={({ isActive }) => isActive ? "active-link" : ""}
+                                            onClick={() => handleClick(path)}
+                                        >
+                                            {label}
+                                        </NavLink>
                                     )}
                                 </li>
                             )
                         )}
-                        <li className="footer-li-copy text-line-1 text-700">&copy; <span className='font-cera-gingham'>GINGHAM NYC</span>, {getCurrentYear()}</li>
+                        <li className="footer-li-copy text-line-1-4 text-700">&copy; <span className='font-cera-gingham text-line-1-4'>GINGHAM NYC</span>, {getCurrentYear()}</li>
                     </ul>
                     <div>
                         <img className="small-logo" src="/site-images/gingham-logo_04-3A.svg" alt="gingham logo" />

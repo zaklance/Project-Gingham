@@ -430,6 +430,10 @@ p, li, div, form, input, select, button, textarea, td {
   line-height: 1.4em;
 }
 
+.text-line-1-5 {
+  line-height: 1.5em !important;
+}
+
 .text-break-all {
   word-break: break-all;
 }
@@ -789,6 +793,7 @@ ul {
 
 .ul-footer {
   width: fit-content;
+  line-height: 1.5;
 }
 
 .ul-bullet {
@@ -808,8 +813,8 @@ ul {
 .footer-li, .footer-li-copy {
   position: relative;
   color: var(--off-black);
-  margin: 2px;
-  padding: 2px;
+  /* margin: 2px; */
+  /* padding: 2px; */
   font-size: .8em;
   text-transform: uppercase;
 }
@@ -1199,6 +1204,16 @@ ul {
   padding: 8px 16px;
   width: fit-content;
   height: fit-content;
+}
+
+.box-here {
+  z-index: 5;
+  background-color: #d8f4fe;
+  color: var(--off-black);
+  border-radius: 6px;
+  font-weight: 600;
+  font-style: italic;
+  white-space: nowrap;
 }
 
 .box-iframe {
@@ -3521,34 +3536,6 @@ textarea {
   z-index: 2;
 }
 
-.notification-box {
-  z-index: 5;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateY(-50%);
-  background-color: #fff;
-  color: var(--off-black);
-  padding: 4px 8px;
-  border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  font-size: 12px;
-  white-space: nowrap;
-}
-
-.notification-triangle {
-  z-index: 5;
-  position: absolute;
-  left: -7px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-top: 7px solid transparent;
-  border-bottom: 7px solid transparent;
-  border-right: 7px solid #fff;
-}
-
 .login-bar {
   /* width: 70%; */
   /* margin-left: 15%; */
@@ -4117,6 +4104,10 @@ textarea {
 
   .m-text-center {
     text-align: center;
+  }
+
+  .m-padding-8 {
+    padding: 8px;
   }
 
   .m-margin-0-24 {
