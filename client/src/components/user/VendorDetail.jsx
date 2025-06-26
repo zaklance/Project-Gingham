@@ -144,10 +144,10 @@ function VendorDetail() {
         }
     };
 
-    useEffect(() => {
-        console.log("Amount in cart:", amountInCart);
-        console.log("Cart items:", cartItems);
-    }, [amountInCart, cartItems]);
+    // useEffect(() => {
+    //     console.log("Amount in cart:", amountInCart);
+    //     console.log("Cart items:", cartItems);
+    // }, [amountInCart, cartItems]);
 
     // useEffect(() => {
     //     console.log("Selected Product in VendorDetail:", selectedProduct);
@@ -429,7 +429,6 @@ function VendorDetail() {
                             const allBaskets = marketBaskets.filter(
                                 (item) => item.market_day_id === marketDetail.id && item.is_sold === false
                             );
-                            console.log(markets)
 
                             return (
                                 <div key={index} className="market-item flex-gap-8" >
