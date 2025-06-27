@@ -124,20 +124,20 @@ function App() {
 
     return (
         <>
-            {isVendorPage ? (<div className='banner-vendor-portal'><h2 className='center text-light' style={{backgroundColor: "transparent"}}>Vendor Portal</h2></div>) : (<></>)}
-            {isAdminPage ? (<div className='banner-admin-portal'><h2 className='center text-light' style={{backgroundColor: "transparent"}}>Admin Portal</h2></div>) : (<></>)}
+            {isVendorPage && <div className='banner-vendor-portal'><h2 className='center text-light' style={{backgroundColor: "transparent"}}>Vendor Portal</h2></div>}
+            {isAdminPage && <div className='banner-admin-portal'><h2 className='center text-light' style={{backgroundColor: "transparent"}}>Admin Portal</h2></div>}
             <div className="container">
                 <header>
                     <NavBar amountInCart={amountInCart} isPopup={isPopup} setIsPopup={setIsPopup} handlePopup={handlePopup} />
                 </header>
                 <main>
-                    <div className={`popup ${isPopup ? 'popup-on' : ''}`} style={{ top: window.scrollY }}>
-                        {!isNotUser && (<LoginPopup handlePopup={handlePopup} />)}
-                        {isVendorPage && (<VendorLoginPopup handlePopup={handlePopup} />)}
-                        {isAdminPage && (<AdminLoginPopup handlePopup={handlePopup} />)}
+                    <div className={`popup ${isPopup && 'popup-on'}`} style={{ top: window.scrollY }}>
+                        {!isNotUser && <LoginPopup handlePopup={handlePopup} />}
+                        {isVendorPage && <VendorLoginPopup handlePopup={handlePopup} />}
+                        {isAdminPage && <AdminLoginPopup handlePopup={handlePopup} />}
                     </div>
                     <Outlet context={{ amountInCart, setAmountInCart, cartItems, setCartItems, isPopup, setIsPopup, handlePopup }} />
-                    {isVendorPage || isAdminPage ? <BrowserTimezone /> : null}
+                    {(isVendorPage || isAdminPage) && <BrowserTimezone />}
                 </main>
             </div>
             <Footer />

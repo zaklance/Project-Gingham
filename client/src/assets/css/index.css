@@ -3534,9 +3534,6 @@ textarea {
 }
 
 .login-bar {
-  /* width: 70%; */
-  /* margin-left: 15%; */
-  /* margin-right: 15%; */
   height: fit-content;
   font-size: 11pt;
 }
@@ -3567,13 +3564,14 @@ textarea {
   display: block;
   position: absolute;
   top: auto;
-  left: 20vw;
+  left: 50%;
+  transform: translateX(-50%);
   width: 90%;
   max-width: 580px;
   /* height: fit-content; */
   background-color: #fbf7eb;
   padding: 0px 0px 0px 0px;
-  margin-top: 40px;
+  margin-top: 90px;
   z-index: 1002;
   border-radius: 0px 40px 40px 40px;
   box-shadow: 0 30px 50px rgba(0, 0, 0, 0.36);
@@ -4158,11 +4156,11 @@ textarea {
   }
 
   .popup, .popup-on {
-    top: 0;
-    left: 0;
+    /* top: 0; */
+    /* left: 50%; */
     width: 100vw;
     padding: 0;
-    margin: 70px 0 0 0;
+    /* margin: 70px 0 0 0; */
   }
 
   .login-bar {
@@ -4594,6 +4592,10 @@ textarea {
 
   .cell-recipe {
     width: 90vw;
+  }
+
+  .popup-on {
+    margin-top: 70px;
   }
 }
 
