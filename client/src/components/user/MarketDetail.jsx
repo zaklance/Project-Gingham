@@ -620,16 +620,16 @@ function MarketDetail ({ match }) {
             <div className='flex-start'>
                 {market.year_round === false && market.season_start && market.season_end ? (
                     <h4>Season: &emsp;<span className='text-400'>{formatDate(market.season_start)} – {formatDate(market.season_end)}{!market.is_current && `, ${new Date().getFullYear() - 1}`}</span></h4>
+                ) : (
+                    market.year_round === true ? (
+                        <h4>Season: &emsp;<span className='text-400'>Open Year Round {!market.is_current && `(${new Date().getFullYear() - 1})`}</span></h4>
                     ) : (
-                        market.year_round === true ? (
-                            <h4>Season: &emsp;<span className='text-400'>Open Year Round {!market.is_current && `(${new Date().getFullYear() - 1})`}</span></h4>
-                        ) : (
-                            <h4>Season: &emsp;<span className='text-400'>No Dates Available</span></h4>
-                        )
-                    )}
+                        <h4>Season: &emsp;<span className='text-400'>No Dates Available</span></h4>
+                    )
+                )}
             </div>
             {market.maps && (
-                <div className='flex-start m-flex-wrap'>
+                <div className='flex-start flex-center-align m-flex-wrap'>
                     <h4>Maps: &emsp;</h4>
                     <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
                         {market.maps && Object.entries(market.maps).map(([dayKey, mapValue]) => (
@@ -762,7 +762,7 @@ function MarketDetail ({ match }) {
                     );
                 })
             ) : (
-                <p>No vendors on Gingham at this market</p>
+                <p>No vendors on gingham at this market</p>
             )}
             </div>
             <ReviewMarket market={market} />
