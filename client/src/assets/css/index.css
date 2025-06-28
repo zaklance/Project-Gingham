@@ -524,6 +524,10 @@ article {
   margin-right: 4px;
 }
 
+.margin-r-6 {
+  margin-right: 6px;
+}
+
 .margin-r-8 {
   margin-right: 8px;
 }
@@ -1684,7 +1688,7 @@ ul {
   height: 24px;
   padding: 0px 0px;
   font-size: 1em;
-  margin-top: 4px;
+  /* margin-top: 4px; */
 }
 
 .btn-report:hover {
@@ -1702,7 +1706,7 @@ ul {
   height: 24px;
   padding: 0px 0px;
   font-size: 1.3em;
-  margin-top: 4px;
+  /* margin-top: 4px; */
 }
 
 .btn-emoji-big {
@@ -3470,7 +3474,7 @@ textarea {
 .badge-votes {
   position: absolute;
   font-size: .5em;
-  top: -3px;
+  top: -6px;
   right: -6px;
   padding: 2px 5px;
   border-radius: 50px;

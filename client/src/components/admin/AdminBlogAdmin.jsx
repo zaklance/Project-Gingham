@@ -335,7 +335,7 @@ const AdminBlogAdmin = ({ blogs, activeTabMode }) => {
                                                 />
                                             </div>
                                             <button className='btn btn-small margin-t-24 margin-r-8' onClick={() => handleBlogUpdate(currentBlog.id)}>Save</button>
-                                            <button className='btn btn-small btn-gap' onClick={() => setEditingBlogId(null)}>Cancel</button>
+                                            <button className='btn btn-small' onClick={() => setEditingBlogId(null)}>Cancel</button>
                                         </div>
                                         <div className="box-blog margin-t-16 badge-container">
                                             <div className="badge-arrows">
@@ -366,7 +366,7 @@ const AdminBlogAdmin = ({ blogs, activeTabMode }) => {
                                             <button className='btn btn-small margin-b-16 margin-r-8 margin-t-8' onClick={() => handleBlogEditToggle(currentBlog.id, currentBlog.title, currentBlog.body, currentBlog.post_date, currentBlog.type)}>
                                             Edit
                                         </button>
-                                        <button className='btn btn-small btn-x btn-gap' onClick={() => handleBlogDelete(currentBlog.id)}>
+                                        <button className='btn btn-small btn-x' onClick={() => handleBlogDelete(currentBlog.id)}>
                                             Delete
                                         </button>
                                     </>

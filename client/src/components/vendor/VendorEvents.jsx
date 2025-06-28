@@ -409,7 +409,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
                                                 </select>
                                             </div>
                                             <button className='btn btn-small margin-t-24 margin-r-8' onClick={() => handleEventUpdate(event.id)}>Save</button>
-                                            <button className='btn btn-small btn-gap' onClick={() => setEditingEventId(null)}>Cancel</button>
+                                            <button className='btn btn-small' onClick={() => setEditingEventId(null)}>Cancel</button>
 
                                         </div>
                                     </>
@@ -428,7 +428,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
                                         <button className='btn btn-small margin-t-16 margin-r-8' onClick={() => handleEventEditToggle(event.id, event.title, event.message, event.start_date, event.end_date, event.schedule_change)}>
                                             Edit
                                         </button>
-                                        <button className='btn btn-small btn-x btn-gap' onClick={() => handleEventDelete(event.id)}>
+                                        <button className='btn btn-small btn-x' onClick={() => handleEventDelete(event.id)}>
                                             Delete
                                         </button>
                                     </>

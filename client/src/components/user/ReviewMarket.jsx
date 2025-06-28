@@ -494,36 +494,32 @@ function ReviewMarket({ market }) {
                                         )}
                                         <h4 className='margin-r-8'>{review.user ? review.user.first_name : 'Anonymous'}</h4>
                                         <p className='margin-r-8'>{review ? convertToLocalDate(review.post_date) : ''}</p>
-                                        <div className='notification margin-r-4'>
-                                            {filterRatingsUpVote(review.id).length > 0 ? (
+                                        <div className='notification margin-r-6'>
+                                            {filterRatingsUpVote(review.id).length > 0 && (
                                                 <p className='badge-votes'>{filterRatingsUpVote(review.id).length}</p>
-                                            ) : (
-                                                <></>
                                             )}
                                             
                                             <button 
-                                                className={`btn btn-emoji btn-gap btn-green ${isClickedUp[review.id] ? "btn btn-emoji-on btn-gap" : "" }`}
+                                                className={`btn btn-emoji btn-green ${isClickedUp[review.id] ? "btn btn-emoji-on" : "" }`}
                                                 onClick={() => handleClickUpVote(review)}
                                                 title="Up Vote" 
                                                 >&#9786;
                                             </button>
                                         </div>
-                                        <div className='notification margin-r-4'>
-                                            {filterRatingsDownVote(review.id).length > 0 ? (
+                                        <div className='notification margin-r-6'>
+                                            {filterRatingsDownVote(review.id).length > 0 && (
                                                 <p className='badge-votes'>{filterRatingsDownVote(review.id).length}</p>
-                                            ) : (
-                                                <></>
                                             )}
                                             
                                             <button
-                                                className={`btn btn-emoji btn-gap btn-red ${isClickedDown[review.id] ? "btn btn-emoji-on btn-gap" : ""}`}
+                                                className={`btn btn-emoji btn-red ${isClickedDown[review.id] ? "btn btn-emoji-on" : ""}`}
                                                 onClick={() => handleClickDownVote(review)}
                                                 title="Down Vote"
                                             >&#9785;
                                             </button>
                                         </div>
                                         <button
-                                            className='btn btn-report btn-gap'
+                                            className='btn btn-report'
                                             onClick={() => handleReviewReport(review.id)}
                                             title="Report Review"
                                             >&#9873;
@@ -537,7 +533,7 @@ function ReviewMarket({ market }) {
                                             {review.user.avatar !== null ? (
                                                 <img className='img-avatar margin-r-8' src={`${siteURL}${review.user.avatar}`} alt="Avatar" />
                                             ) : (
-                                                    <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
+                                                <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
                                             )}
                                         <h4 className='margin-r-8'>You</h4>
                                         <p className='margin-r-8'>{review ? convertToLocalDate(review.post_date) : ''}</p>
@@ -551,7 +547,7 @@ function ReviewMarket({ market }) {
                                         />
                                         <br></br>
                                         <button className='btn btn-small' onClick={() => handleReviewUpdate(review.id)}>Save</button>
-                                        <button className='btn btn-small btn-gap' onClick={() => setEditingReviewId(null)}>Cancel</button>
+                                        <button className='btn btn-small' onClick={() => setEditingReviewId(null)}>Cancel</button>
                                     </>
                                 ) : (
                                     <>
@@ -563,7 +559,7 @@ function ReviewMarket({ market }) {
                                         <button className='btn btn-small margin-r-8' onClick={() => handleReviewEditToggle(review.id, review.review_text)}>
                                             Edit
                                         </button>
-                                        <button className='btn btn-small btn-x btn-gap' onClick={() => handleReviewDelete(review.id)}>x</button>
+                                        <button className='btn btn-small btn-x' onClick={() => handleReviewDelete(review.id)}>x</button>
 
                                     </div>
                                 )}
