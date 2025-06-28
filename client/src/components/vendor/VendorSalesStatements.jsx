@@ -9,6 +9,7 @@ function VendorSalesStatements({ baskets, vendorId }) {
 	const [loading, setLoading] = useState(true);
 	const [isExporting, setIsExporting] = useState(false);
 	const [exportProgress, setExportProgress] = useState('');
+	const [preparePDF, setPreparePDF] = useState({});
 
 
 	const downloadCSV = async (year, month) => {
@@ -120,6 +121,17 @@ function VendorSalesStatements({ baskets, vendorId }) {
 			setOpenDetail(sortedYears.length > 0 ? sortedYears[0][0] : null)
 			setLoading(false)
 		}, 400);
+		
+		const keys = Object.keys(monthlyBaskets);
+		setPreparePDF(prev => {
+			const newState = { ...prev };
+			keys.forEach(monthKey => {
+				if (!(monthKey in newState)) {
+					newState[monthKey] = false;
+				}
+			});
+			return newState;
+		});
 	}, [monthlyBaskets]);
 	
 
@@ -181,7 +193,16 @@ function VendorSalesStatements({ baskets, vendorId }) {
 													<p>Baskets: {count}</p>
 												</div>
 												<div className='flex-column flex-space-between'>
-													<VendorPDFMonthlyBaskets monthlyBaskets={monthlyBaskets} year={year} month={month} vendorId={vendorId} />
+													{preparePDF[monthKey] ? (
+														<VendorPDFMonthlyBaskets monthlyBaskets={monthlyBaskets} year={year} month={month} vendorId={vendorId} />
+													) : (
+														<button
+															onClick={() => setPreparePDF(prev => ({ ...prev, [monthKey]: true }))}
+															className="btn btn-file"
+														>
+															Prepare PDF
+														</button>
+													)}
 													{isExporting ? (
 														<PulseLoader
 															className='margin-t-12 margin-l-40'

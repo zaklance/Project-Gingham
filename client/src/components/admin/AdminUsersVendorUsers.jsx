@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { formatPhoneNumber } from '../../utils/helpers';
-import { avatars_default, states, status } from '../../utils/common';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import PhoneInput from 'react-phone-number-input'
@@ -86,6 +85,12 @@ const AdminUsersVendorUsers = () => {
                     const updatedData = await response.json();
                     setUserData(updatedData);
                     setEditMode(false);
+                    setUsers(prevUsers =>
+                        prevUsers.map(user =>
+                            user.id === updatedData.id ? updatedData : user
+                        )
+                    );
+                    setQuery(updatedData.email)
                     // console.log('Profile data updated successfully:', updatedData);
                 } else {
                     console.log('Failed to save changes');
