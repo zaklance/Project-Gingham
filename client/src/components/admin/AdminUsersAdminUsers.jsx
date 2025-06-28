@@ -110,6 +110,12 @@ const AdminUsers = () => {
                     const updatedData = await response.json();
                     setUserData(updatedData);
                     setEditMode(false);
+                    setUsers(prevUsers =>
+                        prevUsers.map(user =>
+                            user.id === updatedData.id ? updatedData : user
+                        )
+                    );
+                    setQuery(updatedData.email)
                     // console.log('Profile data updated successfully:', updatedData);
                 } else {
                     console.log('Failed to save changes');
