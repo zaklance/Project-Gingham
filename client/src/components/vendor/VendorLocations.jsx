@@ -222,7 +222,7 @@ function VendorLocations({ vendors, vendorId, vendorUserData, allMarketDays, all
                                     <p className='margin-t-4 margin-l-8'>No market locations...</p> // Optional: Placeholder or spinner while loading
                                 )}
                             </div>
-                            <button className='btn btn-small btn-x btn-gap margin-t-16' onClick={() => handleMarketDayDelete(event)}>
+                            <button className='btn btn-small btn-x margin-t-16' onClick={() => handleMarketDayDelete(event)}>
                                 Delete
                             </button>
                         </form>

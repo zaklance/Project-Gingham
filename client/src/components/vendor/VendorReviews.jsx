@@ -184,7 +184,7 @@ function VendorReviews() {
                                             <h4 className='margin-r-8'>{review.user ? review.user.first_name : 'Anonymous'}</h4>
                                             <p className='margin-r-8'>{review ? convertToLocalDate(review.post_date) : ''}</p>
                                             <button 
-                                                className='btn btn-report btn-gap' 
+                                                className='btn btn-report' 
                                                 onClick={() => handleReviewReport(review.id)}
                                                 title="Report Review"
                                                 >&#9873;
@@ -222,7 +222,7 @@ function VendorReviews() {
                                                                 <p className='margin-b-4 text-500'>Response from the owner:</p>
                                                                 <p className='margin-b-8'>{review.vendor_response}</p>
                                                                 <button className='btn btn-small margin-r-8' onClick={() => handleReviewReplyEditToggle(review.id, review.vendor_response)}>Edit</button>
-                                                                <button className='btn btn-small btn-gap' onClick={() => handleReviewDelete(review.id)}>Delete</button>
+                                                                <button className='btn btn-small' onClick={() => handleReviewDelete(review.id)}>Delete</button>
                                                             </>
                                                         )}
                                                     </div>

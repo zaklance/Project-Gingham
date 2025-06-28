@@ -183,7 +183,7 @@ const AdminHelpTab = ({ fAQs, setFAQs, forUser, forVendor, forAdmin, userType })
                                                 />
                                             </div>
                                             <button className='btn btn-small margin-t-24' onClick={() => handleFAQUpdate(faq.id)}>Save</button>
-                                            <button className='btn btn-small btn-gap margin-l-8' onClick={() => setEditingFAQId(null)}>Cancel</button>
+                                            <button className='btn btn-small margin-l-8' onClick={() => setEditingFAQId(null)}>Cancel</button>
 
                                         </div>
                                     </>
@@ -196,7 +196,7 @@ const AdminHelpTab = ({ fAQs, setFAQs, forUser, forVendor, forAdmin, userType })
                                         <button className='btn btn-small' onClick={() => handleFAQEditToggle(faq.id, faq.question, faq.answer)}>
                                             Edit
                                         </button>
-                                        <button className='btn btn-small btn-x btn-gap margin-l-8' onClick={() => handleEventDelete(faq.id)}>
+                                        <button className='btn btn-small btn-x margin-l-8' onClick={() => handleEventDelete(faq.id)}>
                                             Delete
                                         </button>
                                     </>
