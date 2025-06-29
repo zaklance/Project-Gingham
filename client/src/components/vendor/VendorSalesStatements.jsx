@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { months } from '../../utils/common.js'
-import VendorPDFMonthlyBaskets from './VendorPDFMonthlyBaskets.jsx';
 import PulseLoader from 'react-spinners/PulseLoader';
+import { pdf } from '@react-pdf/renderer';
+import { saveAs } from 'file-saver';
+import ReceiptDocument from './VendorPDFMonthlyBaskets.jsx'
 
 function VendorSalesStatements({ baskets, vendorId }) {
 	const [monthlyBaskets, setMonthlyBaskets] = useState({});
@@ -10,7 +12,6 @@ function VendorSalesStatements({ baskets, vendorId }) {
 	const [isExporting, setIsExporting] = useState(false);
 	const [exportProgress, setExportProgress] = useState('');
 	const [preparePDF, setPreparePDF] = useState({});
-
 
 	const downloadCSV = async (year, month) => {
 		try {
@@ -133,6 +134,48 @@ function VendorSalesStatements({ baskets, vendorId }) {
 			return newState;
 		});
 	}, [monthlyBaskets]);
+
+	async function generateAndDownloadPDF(document, fileName) {
+		const blob = await pdf(document).toBlob();
+		saveAs(blob, fileName);
+	}
+
+	async function handleDownloadPDF(monthKey, year, month) {
+		if (!vendorId) return null
+		setPreparePDF(prev => ({ ...prev, [monthKey]: true }))
+
+		try {
+			const token = localStorage.getItem('vendor_jwt-token');
+			const response = await fetch(`/api/export-pdf/for-vendor/baskets?vendor_id=${vendorId}&year=${year}&month=${month}`, {
+				method: 'GET',
+				headers: {
+					'Authorization': `Bearer ${token}`,
+				},
+			});
+
+			const data = await response.json();
+			const filteredBaskets = data.filter(basket => basket.is_sold);
+
+			const doc = (
+				<ReceiptDocument
+					filteredBaskets={filteredBaskets}
+					year={year}
+					month={month}
+				/>
+			);
+
+			const fileName = `gingham_vendor-statement_${year}-${month.padStart(2, '0')}.pdf`;
+
+			await generateAndDownloadPDF(doc, fileName);
+
+		} catch (error) {
+			console.error("Error preparing PDF:", error);
+			setPreparePDF(prev => ({ ...prev, [monthKey]: false }))
+		} finally {
+			setIsExporting(false);
+			setPreparePDF(prev => ({ ...prev, [monthKey]: false }))
+		}
+	}
 	
 
 	return (
@@ -194,13 +237,19 @@ function VendorSalesStatements({ baskets, vendorId }) {
 												</div>
 												<div className='flex-column flex-space-between'>
 													{preparePDF[monthKey] ? (
-														<VendorPDFMonthlyBaskets monthlyBaskets={monthlyBaskets} year={year} month={month} vendorId={vendorId} />
+														<PulseLoader
+															className='margin-t-12 margin-l-40'
+															color={'#ff806b'}
+															size={10}
+															aria-label="Loading Spinner"
+															data-testid="loader"
+														/>
 													) : (
 														<button
-															onClick={() => setPreparePDF(prev => ({ ...prev, [monthKey]: true }))}
-															className="btn btn-file"
+																	className="btn btn-file"
+																	onClick={() => handleDownloadPDF(monthKey, year, month)}
 														>
-															Prepare PDF
+																	Download PDF
 														</button>
 													)}
 													{isExporting ? (
