@@ -11,17 +11,18 @@ const styles = StyleSheet.create({
     section: { marginBottom: 20 },
     row: { flexDirection: "row", justifyContent: "space-between" },
     rowItem: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
-    rowFooter: { flexDirection: "row", justifyContent: "space-between", gap: 172 },
+    rowFooter: { flexDirection: "row", justifyContent: "space-between" },
     bold: { fontFamily: "Helvetica-Bold", fontWeight: "bold" },
     divider: { borderBottom: "2px solid #3b4752", marginVertical: 4 },
-    footer: { position: "absolute", bottom: 24 },
+    center: { margin: "0 auto" },
+    footer: { position: "absolute", width: "100%", paddingLeft: 30, paddingRight: 30, left: 0, bottom: 24 },
 });
 
 function getCurrentYear() {
     return new Date().getFullYear();
 }
 
-const ReceiptDocument = ({ filteredBaskets, year, month }) => {
+export const ReceiptDocument = ({ filteredBaskets, year, month }) => {
 
     return (
         <Document>
@@ -81,8 +82,12 @@ const ReceiptDocument = ({ filteredBaskets, year, month }) => {
                 <View style={styles.footer} fixed>
                     <View style={styles.rowFooter}>
                         <Text style={styles.bold}>GINGHAM NYC {getCurrentYear()} &copy;</Text>
-                        <Text style={styles.bold} render={({ pageNumber }) => (`${pageNumber}`)}></Text>
                         <Text style={styles.bold}>www.gingham.nyc</Text>
+                    </View>
+                </View>
+                <View style={styles.footer} fixed>
+                    <View style={styles.center}>
+                        <Text style={styles.bold} render={({ pageNumber }) => (`${pageNumber}`)}></Text>
                     </View>
                 </View>
             </Page>
@@ -90,50 +95,6 @@ const ReceiptDocument = ({ filteredBaskets, year, month }) => {
     );
 };
 
-const VendorPDFMonthlyBaskets = ({ monthlyBaskets, year, month, vendorId }) => {
-    const [filteredBaskets, setFilteredBaskets] = useState({});
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    const token = localStorage.getItem('vendor_jwt-token');
 
 
-    useEffect(() => {
-        if (year && month) {
-            try {
-                fetch(`/api/export-pdf/for-vendor/baskets?vendor_id=${vendorId}&year=${year}&month=${month}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        const filteredData = data.filter(basket => basket.is_sold === true);
-                        setFilteredBaskets(filteredData);
-                        setLoading(false)
-                    })
-                    .catch(error => console.error('Error fetching baskets', error));
-            } catch {
-
-            }
-        }
-    }, [year, month]);
-
-    if (loading) return <p>Loading receipt...</p>;
-    // if (error) return <p style={{ color: "#ff4b5a" }}>Error: {error}</p>;;
-
-    return (
-        <>
-            <PDFDownloadLink
-                document={<ReceiptDocument filteredBaskets={filteredBaskets} year={year} month={month} />}
-                fileName={`gingham_vendor-statement_${year}-${month.padStart(2, '0')}.pdf`}
-                className="btn btn-file"
-            >
-                {({ loading }) => (loading ? "Preparing..." : "Download PDF")}
-            </PDFDownloadLink>
-        </>
-    );
-};
-
-export default VendorPDFMonthlyBaskets;
+export default ReceiptDocument;
