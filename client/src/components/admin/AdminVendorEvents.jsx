@@ -196,7 +196,7 @@ function AdminVendorEvents({ vendors }) {
                         />
                     </div>
                     <div className='form-group'>
-                        <label>Market ID:</label>
+                        <label>Vendor ID:</label>
                         <input
                             type="text"
                             name="vendor_id"
