@@ -94,7 +94,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
             if (response.ok) {
                 const createdEvent = await response.json();
                 console.log("Created Event:", createdEvent);
-                toast.success('Market Event successfully created!', {
+                toast.success('Vendor Event successfully created!', {
                     autoClose: 4000,
                 });
                 setEvents((prevEvents) => [...prevEvents, createdEvent]);
@@ -178,6 +178,9 @@ function VendorEvents({ vendorId, vendorUserData }) {
             }
         }
     }
+
+    console.log(events)
+    console.log(newEvent)
 
 
     return (
