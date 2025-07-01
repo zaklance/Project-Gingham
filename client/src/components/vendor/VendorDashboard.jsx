@@ -58,11 +58,11 @@ function VendorDashboard({ marketId }) {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log("Fetched vendor user data:", data);
+                // console.log("Fetched vendor user data:", data);
                 setVendorUserData(data);
 
                 if (data.vendor_id && data.vendor_role) {
-                    console.log("Active Vendor ID:", data.vendor_id[data.active_vendor]); // Debugging log
+                    // console.log("Active Vendor ID:", data.vendor_id[data.active_vendor]); // Debugging log
                     const activeVendorId = data.vendor_id[data.active_vendor];
                     setVendorId(activeVendorId);
                     
