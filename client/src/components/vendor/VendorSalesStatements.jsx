@@ -9,11 +9,12 @@ function VendorSalesStatements({ baskets, vendorId }) {
 	const [monthlyBaskets, setMonthlyBaskets] = useState({});
 	const [openDetail, setOpenDetail] = useState(null);
 	const [loading, setLoading] = useState(true);
-	const [isExporting, setIsExporting] = useState(false);
+	const [isExporting, setIsExporting] = useState({});
 	const [exportProgress, setExportProgress] = useState('');
-	const [preparePDF, setPreparePDF] = useState({});
+	const [isPreparing, setIsPreparing] = useState({});
 
-	const downloadCSV = async (year, month) => {
+	const downloadCSV = async (year, month, monthKey) => {
+		setIsExporting(prev => ({ ...prev, [monthKey]: true }))
 		try {
 			// Step 1: Queue the CSV generation task
 			const response = await fetch('/api/export-csv/vendor-baskets/baskets', {
@@ -36,7 +37,6 @@ function VendorSalesStatements({ baskets, vendorId }) {
 			const taskId = data.task_id;
 
 			// Set up state to track download progress
-			setIsExporting(true);
 			setExportProgress('Processing your CSV...');
 
 			// Step 2: Poll for task completion
@@ -48,11 +48,11 @@ function VendorSalesStatements({ baskets, vendorId }) {
 					setExportProgress('Download starting...');
 					// Start the download
 					window.location.href = statusData.download_url;
-					setIsExporting(false);
+					setIsExporting(prev => ({ ...prev, [monthKey]: false }))
 					return true;
 				} else if (statusData.status === 'failed') {
 					setExportProgress('Export failed: ' + statusData.error);
-					setIsExporting(false);
+					setIsExporting(prev => ({ ...prev, [monthKey]: false }))
 					return true;
 				} else {
 					// Still processing
@@ -71,7 +71,7 @@ function VendorSalesStatements({ baskets, vendorId }) {
 		} catch (error) {
 			console.error('Error exporting CSV:', error);
 			setExportProgress('Export failed: ' + error.message);
-			setIsExporting(false);
+			setIsExporting(prev => ({ ...prev, [monthKey]: false }))
 		}
 	};
 
@@ -124,7 +124,7 @@ function VendorSalesStatements({ baskets, vendorId }) {
 		}, 400);
 		
 		const keys = Object.keys(monthlyBaskets);
-		setPreparePDF(prev => {
+		setIsPreparing(prev => {
 			const newState = { ...prev };
 			keys.forEach(monthKey => {
 				if (!(monthKey in newState)) {
@@ -142,7 +142,7 @@ function VendorSalesStatements({ baskets, vendorId }) {
 
 	async function handleDownloadPDF(monthKey, year, month) {
 		if (!vendorId) return null
-		setPreparePDF(prev => ({ ...prev, [monthKey]: true }))
+		setIsPreparing(prev => ({ ...prev, [monthKey]: true }))
 
 		try {
 			const token = localStorage.getItem('vendor_jwt-token');
@@ -170,10 +170,10 @@ function VendorSalesStatements({ baskets, vendorId }) {
 
 		} catch (error) {
 			console.error("Error preparing PDF:", error);
-			setPreparePDF(prev => ({ ...prev, [monthKey]: false }))
+			setIsPreparing(prev => ({ ...prev, [monthKey]: false }))
 		} finally {
 			setIsExporting(false);
-			setPreparePDF(prev => ({ ...prev, [monthKey]: false }))
+			setIsPreparing(prev => ({ ...prev, [monthKey]: false }))
 		}
 	}
 	
@@ -236,7 +236,7 @@ function VendorSalesStatements({ baskets, vendorId }) {
 													<p>Baskets: {count}</p>
 												</div>
 												<div className='flex-column flex-space-between'>
-													{preparePDF[monthKey] ? (
+													{isPreparing[monthKey] ? (
 														<PulseLoader
 															className='margin-t-12 margin-l-40'
 															color={'#ff806b'}
@@ -252,7 +252,7 @@ function VendorSalesStatements({ baskets, vendorId }) {
 																	Download PDF
 														</button>
 													)}
-													{isExporting ? (
+													{isExporting[monthKey] ? (
 														<PulseLoader
 															className='margin-t-12 margin-l-40'
 															color={'#ff806b'}
@@ -262,7 +262,7 @@ function VendorSalesStatements({ baskets, vendorId }) {
 														/>
 													) : (
 														<button
-															onClick={() => downloadCSV(year, month)}
+															onClick={() => downloadCSV(year, month, monthKey)}
 															className="btn btn-file"
 														>
 															Download CSV
