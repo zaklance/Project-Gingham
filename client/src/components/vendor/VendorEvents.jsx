@@ -8,12 +8,6 @@ function VendorEvents({ vendorId, vendorUserData }) {
     const [pastEvents, setPastEvents] = useState([]);
     const [editingEventId, setEditingEventId] = useState(null);
     const [editedEventData, setEditedEventData] = useState({});
-    const [markets, setMarkets] = useState([]);
-    const [allVendorMarkets, setAllVendorMarkets] = useState([]);
-    const [allMarketDays, setAllMarketDays] = useState([]);
-    const [allMarkets, setAllMarkets] = useState([]);
-    const [selectedMarket, setSelectedMarket] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
     const [isPosting, setIsPosting] = useState(false);
 
     const activeVendorId = vendorUserData?.active_vendor;
@@ -64,13 +58,6 @@ function VendorEvents({ vendorId, vendorUserData }) {
             return;
         }
     
-        if (!newEvent.market_id) {
-            toast.warning('Please select a market.', {
-                autoClose: 4000,
-            });
-            return;
-        }
-    
         let vendorId = vendorUserData.vendor_id;
         if (typeof vendorId === 'object' && vendorId !== null) {
             vendorId = Object.keys(vendorId)[0];
@@ -87,7 +74,7 @@ function VendorEvents({ vendorId, vendorUserData }) {
         setIsPosting(true)
     
         try {
-            console.log("Sending event data:", { vendor_id: vendorId, market_id: newEvent.market_id, title: newEvent.title, message: newEvent.message, start_date: newEvent.start_date, end_date: newEvent.end_date, schedule_change: newEvent.schedule_change });
+            console.log("Sending event data:", { vendor_id: vendorId, title: newEvent.title, message: newEvent.message, start_date: newEvent.start_date, end_date: newEvent.end_date, schedule_change: newEvent.schedule_change });
             
             const response = await fetch(`/api/events`, {
                 method: 'POST',
@@ -96,7 +83,6 @@ function VendorEvents({ vendorId, vendorUserData }) {
                 },
                 body: JSON.stringify({
                     vendor_id: vendorId,
-                    market_id: newEvent.market_id,
                     title: newEvent.title,
                     message: newEvent.message,
                     start_date: newEvent.start_date,
@@ -193,56 +179,6 @@ function VendorEvents({ vendorId, vendorUserData }) {
         }
     }
 
-    useEffect(() => {
-        fetch(`/api/vendor-markets?vendor_id=${vendorId}`)
-            .then(response => response.json())
-            .then(data => {
-                setAllVendorMarkets(data)
-            })
-            .catch(error => console.error('Error fetching market locations:', error));
-    }, [vendorId]);
-
-    useEffect(() => {
-        fetch("/api/market-days")
-            .then(response => response.json())
-            .then(data => {
-                const filteredData = data.filter(item =>
-                    allVendorMarkets.some(vendorMarket => vendorMarket.market_day_id === item.id)
-                );
-                setAllMarketDays(filteredData)
-            })
-            .catch(error => console.error('Error fetching market days', error));
-    }, [allVendorMarkets]);
-
-    useEffect(() => {
-        setIsLoading(true)
-        fetch("/api/markets")
-            .then(response => response.json())
-            .then(data => {
-                const filteredData = data.filter(item =>
-                    allMarketDays.some(vendorMarket => vendorMarket.market_id === item.id)
-                );
-                setAllMarkets(filteredData)
-                setIsLoading(false)
-            })
-            .catch(error => console.error('Error fetching market days', error));
-    }, [allMarketDays]);
-
-    useEffect(() => {
-        if (allVendorMarkets.length > 0 && markets?.id) {
-            setSelectedMarket(allVendorMarkets[0]);
-        }
-    }, [allMarketDays]);
-
-    const handleMarketChange = (event) => {
-        const marketId = parseInt(event.target.value);
-        setSelectedMarket(marketId);
-        setNewEvent((prevEvent) => ({
-            ...prevEvent,
-            market_id: marketId,
-        }));
-    };
-
 
     return (
         <>
@@ -270,36 +206,6 @@ function VendorEvents({ vendorId, vendorUserData }) {
                             value={newEvent.message || ''}
                             onChange={handleInputEventChange}
                         />
-                    </div>
-                    <div className='form-group'>
-                        <label>Market:</label>
-                        {isLoading ? (
-                            <PulseLoader
-                                className='margin-t-12'
-                                color={'#ff806b'}
-                                size={10}
-                                aria-label="Loading Spinner"
-                                data-testid="loader"
-                            />
-                        ) : allMarkets.length > 0 ? (
-                            <select
-                                id="marketSelect"
-                                name="market"
-                                value={newEvent.market_id || ''}
-                                onChange={handleMarketChange}
-                            >
-                                <option>
-                                    Select
-                                </option>
-                                {allMarkets.map((market, index) => (
-                                    <option key={index} value={market.id}>
-                                        {market.name}
-                                    </option>
-                                ))}
-                            </select>
-                        ) : (
-                            <p className='margin-l-8'>Refresh if you expect to see markets</p>
-                        )}
                     </div>
                     <div className='form-group'>
                         <label title="yyyy-mm-dd">Event Start:</label>

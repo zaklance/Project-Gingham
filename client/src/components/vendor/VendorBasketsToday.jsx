@@ -15,16 +15,16 @@ function VendorBasketsToday({vendorId, todaysMarketDays, entry}) {
         if (vendorId && todaysMarketDays) {   
             const today = new Date();
             const formattedDate = today.toLocaleDateString('en-CA');
-            console.log('Formatted date being sent:', formattedDate);
+            // console.log('Formatted date being sent:', formattedDate);
     
             const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            console.log('Browser timezone:', browserTimezone);
+            // console.log('Browser timezone:', browserTimezone);
     
             async function fetchTodaysBaskets() {
                 try {
                     const today = new Date().toLocaleDateString('en-CA');
                     
-                    console.log('Formatted date being sent:', formattedDate);
+                    // console.log('Formatted date being sent:', formattedDate);
             
                     const response = await fetch(`/api/baskets?vendor_id=${vendorId}&sale_date=${formattedDate}`);
                     
@@ -35,7 +35,7 @@ function VendorBasketsToday({vendorId, todaysMarketDays, entry}) {
                     }
             
                     const data = await response.json();
-                    console.log('Fetched basket data:', data);
+                    // console.log('Fetched basket data:', data);
             
                     if (!Array.isArray(data)) {
                         console.error('Fetched data is not an array:', data);
@@ -45,18 +45,18 @@ function VendorBasketsToday({vendorId, todaysMarketDays, entry}) {
                     const todayBaskets = data.filter(basket => {
                         const basketLocalDate = basket.sale_date.substring(0, 10);
                     
-                        console.log(`Basket ID: ${basket.id}, Raw sale_date: ${basket.sale_date}, 
-                                     Extracted as local date: ${basketLocalDate}`);
+                        // console.log(`Basket ID: ${basket.id}, Raw sale_date: ${basket.sale_date}, 
+                        //              Extracted as local date: ${basketLocalDate}`);
                     
                         const isToday = basketLocalDate === today;
                         const isMarketDayValid = todaysMarketDays.some(marketDay => marketDay.id === basket.market_day_id);
                         
-                        console.log(`Basket ${basket.id} - isToday: ${isToday}, isMarketDayValid: ${isMarketDayValid}`);
+                        // console.log(`Basket ${basket.id} - isToday: ${isToday}, isMarketDayValid: ${isMarketDayValid}`);
                     
                         return isToday && isMarketDayValid;
                     });
             
-                    console.log('Filtered Today Baskets:', todayBaskets);
+                    // console.log('Filtered Today Baskets:', todayBaskets);
             
                     const groupedData = todayBaskets.reduce((acc, basket) => {
                         const { market_day_id, market_name } = basket;
@@ -67,7 +67,7 @@ function VendorBasketsToday({vendorId, todaysMarketDays, entry}) {
                         return acc;
                     }, {});
             
-                    console.log('Grouped Data:', groupedData);
+                    // console.log('Grouped Data:', groupedData);
                     setTodayBaskets(Object.values(groupedData));
             
                 } catch (error) {

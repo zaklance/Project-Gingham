@@ -24,7 +24,6 @@ function Footer() {
         { path: "/admin/faqs", label: "Admin Help", condition: isAdminLoggedIn && isAdminPage },
         { path: "/contact", label: "Contact", condition: !isNotUser },
         { path: "/vendor/contact", label: "Contact", condition: isVendorPage },
-        { path: "/admin/contact", label: "Contact", condition: isAdminPage },
         { path: "/terms-conditions", label: "Terms & Conditions", condition: !isNotUser },
         { path: "/vendor/terms-conditions", label: "Terms & Conditions", condition: isVendorPage },
         { path: "/admin/terms-conditions", label: "Terms & Conditions", condition: isAdminPage },
