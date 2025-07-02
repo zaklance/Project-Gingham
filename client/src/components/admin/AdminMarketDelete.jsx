@@ -195,6 +195,10 @@ function AdminMarketDelete({ markets }) {
                             <td className='cell-text'>{adminMarketData ? adminMarketData.schedule : ''}</td>
                         </tr>
                         <tr>
+                            <td className='cell-title' title="true or false">Is Farmstand:</td>
+                            <td className='cell-text'>{adminMarketData ? `${adminMarketData.is_farmstand}` : ''}</td>
+                        </tr>
+                        <tr>
                             <td className='cell-title' title="true or false">Is Flagship:</td>
                             <td className='cell-text'>{adminMarketData ? `${adminMarketData.is_flagship}` : ''}</td>
                         </tr>
