@@ -30,7 +30,7 @@ function MarketCard({ marketData, user, haversineDistance, resultCoordinates, us
                     <img className="img-market-card" src={`/market-images/_default-images/${marketData.image_default}`} alt="Market Image" />
                 )}
                 <div className='text-center'>
-                    <h4>{marketData.name}</h4>
+                    <h4 title={marketData.is_farmstand ? "Single-Vendor Farmstand" : "Multi-Vendor Farmers' Market"}>{marketData.name}</h4>
                     <p className='text-500 margin-b-16'>{marketData.city}, {marketData.state}</p>
                 </div>
                 <p><strong>Location:</strong> {marketData.location}</p>

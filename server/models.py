@@ -218,7 +218,7 @@ class Market(db.Model, SerializerMixin):
     year_round = db.Column(db.Boolean, nullable=True)
     season_start = db.Column(db.Date, nullable=True) # LOCAL TIME (user input)
     season_end = db.Column(db.Date, nullable=True) # LOCAL TIME (user input)
-    is_farmstand = db.Column(db.Boolean, nullable=True, default=False)
+    is_farmstand = db.Column(db.Boolean, nullable=False, default=False)
     is_flagship = db.Column(db.Boolean, nullable=False, default=False)
     is_current = db.Column(db.Boolean, nullable=False, default=True)
     is_visible = db.Column(db.Boolean, nullable=False, default=True)
