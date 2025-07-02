@@ -706,21 +706,30 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
                                 .map(market => (
                                     <div key={market.id} className='box-bounding'>
                                         <h4>{market.name}</h4>
-                                        <p className='margin-b-12 text-500' style={{ borderBottom: "1px solid #3b4752"}}>{market.city}, {market.state}</p>
-                                        <div className='text-line-1-4'>
-                                            <p>{market.is_farmstand ? "Farmstand" : "Farmers' Market"}</p>
-                                            {market.year_round === false && market.season_start && market.season_end ? (
-                                                <p>{formatDate(market.season_start)} – {formatDate(market.season_end)}</p>
-                                            ) : (
-                                                market.year_round === false && (!market.season_start || !market.season_end) ? (
-                                                    <></>
-                                                ) : (
-                                                    <p>Open Year Round</p>
-                                                )
-                                            )}
+                                        <p className='text-500'>{market.city}, {market.state}</p>
+                                        <h5 className='margin-b-8 text-500' style={{ borderBottom: "1px solid #3b4752"}}>{market.location}</h5>
+                                        <div className='text-line-1-2'>
                                             {/* <p>{market.schedule}</p> */}
-                                            <table>
+                                            <table className='table-market-edit'>
                                                 <tbody>
+                                                    <tr>
+                                                        <td colSpan={2}>
+                                                            {market.year_round === false && market.season_start && market.season_end ? (
+                                                                <span>{formatDate(market.season_start)} – {formatDate(market.season_end)}</span>
+                                                            ) : (
+                                                                market.year_round === false && (!market.season_start || !market.season_end) ? (
+                                                                    <></>
+                                                                ) : (
+                                                                    <span>Open Year Round</span>
+                                                                )
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colSpan={2}>
+                                                            <span>{market.is_farmstand ? "Farmstand" : "Farmers' Market"}</span>
+                                                        </td>
+                                                    </tr>
                                                     <tr>
                                                         <td>Is Visible: &#8202;</td>
                                                         <td className='text-center'>{market.is_visible ? 'Yes' : 'No'}</td>
