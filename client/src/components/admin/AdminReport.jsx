@@ -22,7 +22,8 @@ function AdminReport() {
         fetch(`/api/market-reviews?is_reported=True`)
             .then(response => response.json())
             .then(data => {
-                setMarketReported(data)
+                const sortedData = data.slice().sort((a, b) => new Date(a.post_date) - new Date(b.post_date));
+                setMarketReported(sortedData)
             })
             .catch(error => console.error('Error fetching market reviews', error));
     }, []);
@@ -69,7 +70,8 @@ function AdminReport() {
         fetch("/api/vendor-reviews?is_reported=True")
             .then(response => response.json())
             .then(data => {
-                setVendorReported(data)
+                const sortedData = data.slice().sort((a, b) => new Date(a.post_date) - new Date(b.post_date));
+                setVendorReported(sortedData)
             })
             .catch(error => console.error('Error fetching vendor reviews', error));
     }, []);
@@ -124,17 +126,21 @@ function AdminReport() {
                     {marketReported.length > 0 ? (
                         marketReported.map((review, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                                <div className='flex-start'>
+                                <div className='flex-start flex-center-align'>
                                     {review.user.avatar !== null ? (
                                         <img className='img-avatar margin-r-8' src={`${siteURL}${review.user.avatar}`} alt="Avatar" />
                                     ) : (
                                         <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
                                     )}
                                     <h4 className='margin-r-8'>{review.user ? `${review.user.first_name} ${review.user.last_name}` : 'Anonymous'}</h4>
+                                    <p className='margin-r-8'>{review.post_date}</p>
                                     <button className='btn btn-small btn-green btn-emoji-big margin-r-8' title='Approve review' onClick={() => handleMarketReviewUnReport(review.id, review.user_id)}>&#9786;</button>
                                     <button className='btn btn-small btn-red btn-admin' onClick={() => handleMarketReviewDelete(review.id, review.user_id)}>Delete</button>
                                 </div>
-                                <p className='margin-l-40'>{review.review_text}</p>
+                                <div className='margin-l-40'>
+                                    <p className='text-500'>{review.market.name}</p>
+                                    <p>{review.review_text}</p>
+                                </div>
                             </div>
                             
                         ))
@@ -149,17 +155,21 @@ function AdminReport() {
                     {vendorReported.length > 0 ? (
                         vendorReported.map((review, index) => (
                             <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-                                <div className='flex-start'>
+                                <div className='flex-start flex-center-align'>
                                     {review.user.avatar !== null ? (
                                         <img className='img-avatar margin-r-8' src={`${siteURL}${review.user.avatar}`} alt="Avatar" />
                                     ) : (
                                         <img className='img-avatar margin-r-8' src={`/user-images/_default-images/${review.user.avatar_default}`} alt="Avatar" />
                                     )}
                                     <h4 className='margin-r-8'>{review.user ? `${review.user.first_name} ${review.user.last_name}` : 'Anonymous'}</h4>
+                                    <p className='margin-r-8'>{review.post_date}</p>
                                     <button className='btn btn-small btn-green btn-emoji-big margin-r-8' title='Approve review' onClick={() => handleVendorReviewUnReport(review.id, review.user_id)}>&#9786;</button>
                                     <button className='btn btn-small btn-red btn-admin' onClick={() => handleVendorReviewDelete(review.id, review.user_id)}>Delete</button>
                                 </div>
-                                <p className='margin-l-40'>{review.review_text}</p>
+                                <div className='margin-l-40'>
+                                    <p className='text-500'>{review.vendor.name}</p>
+                                    <p>{review.review_text}</p>
+                                </div>
                             </div>
 
                         ))
