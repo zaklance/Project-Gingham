@@ -23,6 +23,8 @@ function Markets() {
     const [address, setAddress] = useState("");
     const [selectedDay, setSelectedDay] = useState('');
     const [isInSeason, setIsInSeason] = useState(false);
+    const [isFarmstand, setIsFarmstand] = useState(true);
+    const [isMarket, setIsMarket] = useState(true);
     const [addressResults, setAddressResults] = useState();
     const [showAddressDropdown, setShowAddressDropdown] = useState(false);
     const [resultCoordinates, setResultCoordinates] = useState();
@@ -82,7 +84,14 @@ function Markets() {
             marketDay.day_of_week === parseInt(selectedDay)
         );
 
+        const isFarmstandMatch = isFarmstand && market.is_farmstand === true;
+        const isMarketMatch = isMarket && market.is_farmstand === false;
+        const showAll = isFarmstand && isMarket;
+
+        const passesTypeFilter = showAll || isFarmstandMatch || isMarketMatch;
+
         return (
+            passesTypeFilter &&
             (!isClicked || marketFavs.some(fav => fav.market_id === market.id)) &&
             (!isInSeason || inSeason) &&
             (!selectedDay || matchesSelectedDay)
@@ -266,6 +275,14 @@ function Markets() {
 
     const handleInSeasonChange = (event) => {
         setIsInSeason(!isInSeason)
+    }
+
+    const handleFarmstandChange = (event) => {
+        setIsFarmstand(!isFarmstand)
+    }
+
+    const handleMarketChange = (event) => {
+        setIsMarket(!isMarket)
     }
 
     const closePopup = () => {
@@ -738,15 +755,51 @@ function Markets() {
                                                     </ul>
                                                 )}
                                             </div>
-                                            <div className='form-filters'>
-                                                <label className='margin-r-26'>In Season:</label>
-                                                <input
-                                                    type="checkbox"
-                                                    name="in_season"
-                                                    value={true}
-                                                    onChange={handleInSeasonChange}
-                                                />
-                                            </div>
+                                            <table className='form-filters'>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="in_season"
+                                                                value={true}
+                                                                onChange={handleInSeasonChange}
+                                                            />
+                                                        </td>
+                                                        <td>
+                                                            <label>In Season</label>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="is_farmstand"
+                                                                checked={isFarmstand}
+                                                                value={true}
+                                                                onChange={handleFarmstandChange}
+                                                            />
+                                                        </td>
+                                                        <td>
+                                                            <label>Farmstands</label>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="is_farmstand"
+                                                                checked={isMarket}
+                                                                value={true}
+                                                                onChange={handleMarketChange}
+                                                            />
+                                                        </td>
+                                                        <td>
+                                                            <label>Markets</label>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                             <select className='select-dropdown select-blue' value={selectedDay} onChange={handleDayChange}>
                                                 <option value="">Days Open</option>
                                                 {Array.isArray(weekDay) && weekDay.map((product, index) => (

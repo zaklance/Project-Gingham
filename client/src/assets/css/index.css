@@ -545,8 +545,8 @@ article {
   margin-right: 24px;
 }
 
-.margin-r-26 {
-  margin-right: 26px;
+.margin-r-36 {
+  margin-right: 41px;
 }
 
 .margin-r-48 {
@@ -2444,6 +2444,7 @@ link {
   background-color: #eef;
   padding: 6px;
   padding-left: 12px;
+  width: 100%;
 }
 
 .form-filters-markets {

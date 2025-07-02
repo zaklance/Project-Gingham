@@ -156,6 +156,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 26),
             season_end=date(2025, 11, 20),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -172,6 +173,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 7),
             season_end=date(2025, 11, 22),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -188,6 +190,7 @@ def run():
             schedule='Sunday (9 AM - 4 PM)',
             year_round=True,
             is_current=True,
+            is_farmstand=False,
             is_flagship=True
         ),
         Market(
@@ -202,6 +205,7 @@ def run():
             coordinates={"lat": "40.77397099020891", "lng": "-73.95064361322936"},
             schedule='Saturday (9 AM - 2:30 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -218,6 +222,7 @@ def run():
             season_start=date(2024, 6, 18),
             season_end=date(2024, 11, 19),
             is_visible=False,
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -232,6 +237,7 @@ def run():
             coordinates={"lat": "40.79433392796688", "lng": "-73.96852339557134"},
             schedule='Friday (8 AM - 2 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -246,6 +252,7 @@ def run():
             coordinates={"lat": "40.737268845844085", "lng": "-74.00531736212757"},
             schedule='Saturday (8 AM - 2 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -262,6 +269,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 3),
             season_end=date(2025, 11, 25),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -278,6 +286,7 @@ def run():
             year_round=False,
             season_start=date(2024, 4, 15),
             season_end=date(2024, 11, 25),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -294,6 +303,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 8),
             season_end=date(2024, 11, 25),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -310,6 +320,7 @@ def run():
             year_round=False,
             season_start=date(2024, 4, 20),
             season_end=date(2024, 12, 21),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -326,6 +337,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 10),
             season_end=date(2024, 11, 20),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -341,6 +353,7 @@ def run():
             coordinates={"lat": "40.80711550674964", "lng": "-73.9643334908912"},
             schedule='Thursday & Sunday (8 AM - 4 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -355,6 +368,7 @@ def run():
             coordinates={"lat": "40.752106980482026", "lng": "-73.96813449641382"},
             schedule='Wednesday (8 AM - 3 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -371,6 +385,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 3),
             season_end=date(2025, 11, 23),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -387,6 +402,7 @@ def run():
             schedule='Monday - Saturday (11:30 AM - 5 PM)',
             year_round=True,
             is_current=True,
+            is_farmstand=False,
             is_flagship=True
         ),
         Market(
@@ -403,6 +419,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 5),
             season_end=date(2024, 11, 22),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -417,6 +434,7 @@ def run():
             coordinates={"lat": "40.82373611412579", "lng": "-73.9435495760123"},
             schedule='Tuesday & Saturday (9 AM - 4 PM)',
             year_round=False,
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -433,6 +451,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 18),
             season_end=date(2024, 10, 29),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -449,6 +468,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 20),
             season_end=date(2024, 11, 30),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -465,6 +485,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 13),
             season_end=date(2024, 11, 14),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -481,6 +502,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 14),
             season_end=date(2024, 11, 15),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -497,6 +519,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 22),
             season_end=date(2024, 11, 16),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -513,6 +536,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 14),
             season_end=date(2024, 11, 15),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -528,6 +552,7 @@ def run():
             coordinates={"lat": "40.86911825882977", "lng": "-73.92025906885881"},
             schedule='Saturday (8 AM - 3 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -544,6 +569,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 5),
             season_end=date(2024, 11, 22),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -558,6 +584,7 @@ def run():
             coordinates={"lat": "40.801382884379336", "lng": "-73.95970142371496"},
             schedule='Saturday (9 AM - 2 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -574,6 +601,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 18),
             season_end=date(2025, 11, 26),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -588,6 +616,7 @@ def run():
             coordinates={"lat": "40.839630140355446", "lng": "-73.93889062898364"},
             schedule='Thursday (9 AM - 3 PM)',
             year_round=False,
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -602,6 +631,7 @@ def run():
             coordinates={"lat": "40.86600006214813", "lng": "-73.9263264427691"},
             schedule='Wednesday (9 AM - 3 PM)',
             year_round=False,
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -616,6 +646,7 @@ def run():
             coordinates={"lat": "40.718268229915765", "lng": "-73.98822774526953"},
             schedule='Wednesday - Sunday (11 AM - 7 PM)',
             year_round=False,
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -632,6 +663,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 11),
             season_end=date(2024, 11, 12),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -648,6 +680,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 1),
             season_end=date(2024, 11, 21),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -664,6 +697,7 @@ def run():
             year_round=False,
             season_start=date(2025, 5, 11),
             season_end=date(2025, 12, 14),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -679,6 +713,7 @@ def run():
             coordinates={"lat": "40.72606737678102", "lng": "-73.98333751481684"},
             schedule='Sunday (9 AM - 4 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -694,6 +729,7 @@ def run():
             coordinates={"lat": "40.71690089948348", "lng": "-74.01090464424209"},
             schedule='Wednesday & Saturday (8 AM - 2 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -708,6 +744,7 @@ def run():
             coordinates={"lat": "40.77367979894632", "lng": "-73.9819555713842"},
             schedule='Thursday (8 AM - 3 PM); Saturday (8 AM - 4 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -724,6 +761,7 @@ def run():
             year_round=False,
             season_start=date(2024, 5, 26),
             season_end=date(2024, 12, 15),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -742,6 +780,7 @@ def run():
             maps_organizer="GrowNYC",
             maps={"1": "https://www.grownyc.org/files/gmkt/usqmaps/unsq-mon.pdf", "3": "https://www.grownyc.org/files/gmkt/usqmaps/unsq-wed.pdf","5": "https://www.grownyc.org/files/gmkt/usqmaps/unsq-fri.pdf", "6": "https://www.grownyc.org/files/gmkt/usqmaps/unsq-sat.pdf"},
             is_current=True,
+            is_farmstand=False,
             is_flagship=True
         ),
         Market(
@@ -758,6 +797,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 12),
             season_end=date(2025, 10, 30),
+            is_farmstand=True,
             is_current=True
         ),
         Market(
@@ -774,6 +814,7 @@ def run():
             year_round=False,
             season_start=date(2025, 4, 15),
             season_end=date(2025, 11, 25),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -788,6 +829,7 @@ def run():
             coordinates={"lat": "40.80493954076873", "lng": "-73.93903600281972"},
             schedule='Wednesday (1:30 - 7 PM)',
             year_round=True,
+            is_farmstand=True,
             is_current=True
         ),
         Market(
@@ -802,6 +844,7 @@ def run():
             coordinates={"lat": "40.76668271329556", "lng": "-73.95721258190501"},
             schedule='Thursday (12 AM - 5 PM)',
             year_round=True,
+            is_farmstand=True,
             is_current=True
         ),
         Market(
@@ -817,6 +860,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 22),
             season_end=date(2025, 11, 23),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -833,6 +877,7 @@ def run():
             year_round=False,
             season_start=date(2025, 8, 13),
             season_end=date(2025, 10, 29),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -848,6 +893,7 @@ def run():
             year_round=False,
             season_start=date(2025, 7, 19),
             season_end=date(2025, 11, 22),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -862,6 +908,7 @@ def run():
             coordinates={"lat": "40.64611854880164", "lng": "-74.00210232700428"},
             schedule='Saturday (8 AM - 3 PM)',
             year_round=True,
+            is_farmstand=True,
             is_current=True
         ),
         Market(
@@ -876,6 +923,7 @@ def run():
             coordinates={"lat": "40.66093347326259", "lng": "-73.97983995813392"},
             schedule='Wednesday & Sunday (8 AM - 2 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -891,6 +939,7 @@ def run():
             year_round=False,
             season_start=date(2025, 5, 3),
             season_end=date(2025, 11, 22),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -906,6 +955,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 1),
             season_end=date(2025, 11, 23),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -921,6 +971,7 @@ def run():
             year_round=False,
             season_start=date(2025, 7, 10),
             season_end=date(2025, 11, 20),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -935,6 +986,7 @@ def run():
             coordinates={"lat": "40.69373734346325", "lng": "-73.99028138467902"},
             schedule='Tuesday & Saturday (8 AM - 3 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -948,6 +1000,7 @@ def run():
             coordinates={"lat": "40.68066564582587", "lng": "-73.99492222793602"},
             schedule='Sunday (8 AM - 2 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -962,6 +1015,7 @@ def run():
             coordinates={"lat": "40.64066550667735", "lng": "-73.96617270509422"},
             schedule='Sunday (8 AM - 2 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -978,6 +1032,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 15),
             season_end=date(2025, 11, 23),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -992,6 +1047,7 @@ def run():
             coordinates={"lat": "40.68975009223109", "lng": "-73.97325242641791"},
             schedule='Saturday (8 AM - 3 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1006,6 +1062,7 @@ def run():
             coordinates={"lat": "40.67245689931319", "lng": "-73.96983563878808"},
             schedule='Saturday (8 AM - 4 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1020,6 +1077,7 @@ def run():
             coordinates={"lat": "40.719618944319244", "lng": "-73.95254269383604"},
             schedule='Saturday (8 AM - 3 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1033,6 +1091,7 @@ def run():
             coordinates={"lat": "40.681341936525094", "lng": "-73.93488186255223"},
             schedule='Saturday (9 AM - 2:30 PM)',
             year_round=True,
+            is_farmstand=True,
             is_current=True
         ),
         Market(
@@ -1048,6 +1107,7 @@ def run():
             year_round=False,
             season_start=date(2025, 7, 6),
             season_end=date(2025, 11, 23),
+            is_farmstand=True,
             is_current=True
         ),
         Market(
@@ -1063,6 +1123,7 @@ def run():
             year_round=False,
             season_start=date(2025, 7, 5),
             season_end=date(2025, 11, 22),
+            is_farmstand=True,
             is_current=True
         ),
         Market(
@@ -1078,6 +1139,7 @@ def run():
             year_round=False,
             season_start=date(2025, 7, 3),
             season_end=date(2025, 11, 27),
+            is_farmstand=True,
             is_current=True
         ),
         Market(
@@ -1091,6 +1153,7 @@ def run():
             coordinates={"lat": "40.66642777862011", "lng": "-73.95098824442748"},
             schedule='Friday (9 AM - 2:30 PM)',
             year_round=True,
+            is_farmstand=True,
             is_current=True
         ),
         Market(
@@ -1106,6 +1169,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 14),
             season_end=date(2025, 11, 22),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1121,6 +1185,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 3),
             season_end=date(2025, 11, 25),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1136,6 +1201,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 20),
             season_end=date(2024, 11, 25),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1151,6 +1217,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 28),
             season_end=date(2024, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1166,6 +1233,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 24),
             season_end=date(2025, 11, 25),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1181,6 +1249,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 3),
             season_end=date(2024, 11, 27),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1196,6 +1265,7 @@ def run():
             year_round=False,
             season_start=date(2024, 5, 13),
             season_end=date(2024, 11, 29),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1209,6 +1279,7 @@ def run():
             coordinates={"lat": "40.88205803262807", "lng": "-73.88043055713167"},
             schedule='Thursday (9:30 AM - 3 PM)',
             year_round=True,
+            is_farmstand=True,
             is_current=True
         ),
         Market(
@@ -1224,6 +1295,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 13),
             season_end=date(2025, 11, 29),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1239,6 +1311,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 10),
             season_end=date(2025, 11, 25),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1254,6 +1327,7 @@ def run():
             year_round=False,
             season_start=date(2025, 7, 16),
             season_end=date(2025, 11, 26),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1268,6 +1342,7 @@ def run():
             coordinates={"lat": "40.72188032218282", "lng": "-73.84677718219234"},
             schedule='Sunday (8 AM - 2 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1282,6 +1357,7 @@ def run():
             coordinates={"lat": "40.75356895340519", "lng": "-73.88775343357531"},
             schedule='Sunday (8 AM - 3 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1296,6 +1372,7 @@ def run():
             coordinates={"lat": "40.74702085787132", "lng": "-73.92090207753752"},
             schedule='Saturday (8 AM - 3 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1311,6 +1388,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 5),
             season_end=date(2024, 11, 23),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1326,6 +1404,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 6),
             season_end=date(2024, 11, 23),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1339,6 +1418,7 @@ def run():
             coordinates={"lat": "40.64152934585844", "lng": "-74.07776631907625"},
             schedule='Saturday (8 AM - 1 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1354,6 +1434,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 7),
             season_end=date(2025, 11, 22),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1370,6 +1451,7 @@ def run():
             year_round=False,
             season_start=date(2024, 5, 19),
             season_end=date(2024, 10, 20),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1385,6 +1467,7 @@ def run():
             year_round=False,
             season_start=date(2025, 6, 28),
             season_end=date(2025, 11, 22),
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1400,6 +1483,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 3),
             season_end=date(2024, 10, 30),
+            is_farmstand=True,
             is_current=True
         ),
         Market(
@@ -1415,6 +1499,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1430,6 +1515,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1445,6 +1531,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1460,6 +1547,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1475,6 +1563,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1490,6 +1579,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1505,6 +1595,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 5),
             season_end=date(2024, 10, 26),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1520,6 +1611,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 6),
             season_end=date(2024, 10, 26),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1533,6 +1625,7 @@ def run():
             coordinates={"lat": "40.72446645270602", "lng": "-73.9433875621265"},
             schedule='Sunday (9 AM - 2 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1546,6 +1639,7 @@ def run():
             coordinates={"lat": "40.6728301883349", "lng": "-73.98508204366652"},
             schedule='Saturday (9 AM - 2 PM)',
             year_round=True,
+            is_farmstand=False,
             is_current=True
         ),
         Market(
@@ -1561,6 +1655,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1576,6 +1671,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 14),
             season_end=date(2024, 11, 15),
+            is_farmstand=True,
             is_current=True
         ),
         Market(
@@ -1591,6 +1687,7 @@ def run():
             year_round=False,
             season_start=date(2023, 5, 1),
             season_end=date(2023, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1606,6 +1703,7 @@ def run():
             year_round=False,
             season_start=date(2023, 5, 1),
             season_end=date(2023, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1621,6 +1719,7 @@ def run():
             year_round=False,
             season_start=date(2023, 5, 1),
             season_end=date(2023, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1636,6 +1735,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 1),
             season_end=date(2024, 11, 22),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1651,6 +1751,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1666,6 +1767,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1681,6 +1783,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 8),
             season_end=date(2024, 11, 16),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1696,6 +1799,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 4),
             season_end=date(2024, 10, 29),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1711,6 +1815,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1726,6 +1831,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1741,6 +1847,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1756,6 +1863,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 2),
             season_end=date(2024, 11, 24),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1771,6 +1879,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 10),
             season_end=date(2024, 11, 20),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1786,6 +1895,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 10),
             season_end=date(2024, 11, 20),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1801,6 +1911,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1816,6 +1927,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1831,6 +1943,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1846,6 +1959,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1861,6 +1975,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1876,6 +1991,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1891,6 +2007,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1906,6 +2023,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1921,6 +2039,7 @@ def run():
             year_round=False,
             season_start=date(2023, 7, 11),
             season_end=date(2023, 11, 14),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1936,6 +2055,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 10),
             season_end=date(2024, 11, 13),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1951,6 +2071,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1966,6 +2087,7 @@ def run():
             year_round=False,
             season_start=date(2024, 5, 22),
             season_end=date(2024, 10, 23),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -1981,6 +2103,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 3),
             season_end=date(2024, 11, 27),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -1996,6 +2119,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -2011,6 +2135,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -2026,6 +2151,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -2041,6 +2167,7 @@ def run():
             year_round=False,
             season_start=date(2025, 3, 30),
             season_end=date(2025, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -2056,6 +2183,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -2071,6 +2199,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 1),
             season_end=date(2024, 11, 30),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -2086,6 +2215,7 @@ def run():
             year_round=False,
             season_start=date(2025, 4, 20),
             season_end=date(2025, 11, 22),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -2101,6 +2231,7 @@ def run():
             year_round=False,
             season_start=date(2024, 5, 24),
             season_end=date(2024, 11, 8),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -2116,6 +2247,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 26),
             season_end=date(2024, 11, 6),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -2131,6 +2263,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 7),
             season_end=date(2024, 11, 22),
+            is_farmstand=True,
             is_current=False
         ),
         Market(
@@ -2146,6 +2279,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 21),
             season_end=date(2024, 11, 1),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -2161,6 +2295,7 @@ def run():
             year_round=False,
             season_start=date(2024, 6, 10),
             season_end=date(2024, 10, 7),
+            is_farmstand=False,
             is_current=False
         ),
         Market(
@@ -2176,6 +2311,7 @@ def run():
             year_round=False,
             season_start=date(2024, 7, 9),
             season_end=date(2024, 11, 19),
+            is_farmstand=True,
             is_current=False
         )
     ]

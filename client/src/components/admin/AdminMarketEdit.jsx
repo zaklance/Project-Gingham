@@ -18,6 +18,8 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
     const [isCurrent, setIsCurrent] = useState("");
     const [isVisible, setIsVisible] = useState("");
     const [isYearRound, setIsYearRound] = useState("");
+    const [isFarmstand, setIsFarmstand] = useState(true);
+    const [isMarket, setIsMarket] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [matchingMarketId, setMatchingMarketId] = useState("");
     const [editMode, setEditMode] = useState(false);
@@ -94,6 +96,12 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
         if (isCurrent !== "" && market.is_current !== isCurrent) return false;
         if (isYearRound !== "" && market.year_round !== isYearRound) return false;
 
+        const isFarmstandMatch = isFarmstand && market.is_farmstand === true;
+        const isMarketMatch = isMarket && market.is_farmstand === false;
+        const showAll = isFarmstand && isMarket;
+        const passesTypeFilter = showAll || isFarmstandMatch || isMarketMatch;
+        if (!passesTypeFilter) return false;
+
         return true
     });
 
@@ -113,6 +121,14 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
     
     const handleYearRoundChange = (value) => {
         setIsYearRound(prev => (prev === value ? "" : value));
+    };
+    
+    const handleFarmstandChange = (value) => {
+        setIsFarmstand(prev => (prev === value ? "" : value));
+    };
+    
+    const handleMarketChange = (value) => {
+        setIsMarket(prev => (prev === value ? "" : value));
     };
 
     const handleDropDownFilters = (event) => {
@@ -620,6 +636,44 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
                                                     />
                                                     <label className='margin-r-8'>No</label></td>
                                                 </tr>
+                                                <tr>
+                                                    <td><label className='text-500 margin-r-8'>Is Farmstand:&emsp;</label></td>
+                                                    <td><input
+                                                        className='scale-fix-125 margin-r-4'
+                                                        type='checkbox'
+                                                        checked={isFarmstand}
+                                                        value={true}
+                                                        onChange={() => handleFarmstandChange(true)}
+                                                    />
+                                                    <label className='margin-r-8'>Yes</label>
+                                                    <input
+                                                        className='scale-fix-125 margin-r-4'
+                                                        type='checkbox'
+                                                        checked={isFarmstand === false}
+                                                        value={false}
+                                                        onChange={() => handleFarmstandChange(false)}
+                                                    />
+                                                    <label className='margin-r-8'>No</label></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><label className='text-500 margin-r-8'>Is Market:&emsp;</label></td>
+                                                    <td><input
+                                                        className='scale-fix-125 margin-r-4'
+                                                        type='checkbox'
+                                                        checked={isMarket}
+                                                        value={true}
+                                                        onChange={() => handleMarketChange(true)}
+                                                    />
+                                                    <label className='margin-r-8'>Yes</label>
+                                                    <input
+                                                        className='scale-fix-125 margin-r-4'
+                                                        type='checkbox'
+                                                        checked={isMarket === false}
+                                                        value={false}
+                                                        onChange={() => handleMarketChange(false)}
+                                                    />
+                                                    <label className='margin-r-8'>No</label></td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -654,6 +708,7 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
                                         <h4>{market.name}</h4>
                                         <p className='margin-b-12 text-500' style={{ borderBottom: "1px solid #3b4752"}}>{market.city}, {market.state}</p>
                                         <div className='text-line-1-4'>
+                                            <p>{market.is_farmstand ? "Farmstand" : "Farmers' Market"}</p>
                                             {market.year_round === false && market.season_start && market.season_end ? (
                                                 <p>{formatDate(market.season_start)} – {formatDate(market.season_end)}</p>
                                             ) : (
