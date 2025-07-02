@@ -22,6 +22,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
         maps_organizer: '',
         maps: {},
         year_round: '',
+        is_farmstand: '',
         is_flagship: '',
         is_current: '',
         is_visible: '',
@@ -108,6 +109,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
             newMarket.is_current = newMarket.is_current === 'true' || newMarket.is_current === true;
             newMarket.is_visible = newMarket.is_visible === 'true' || newMarket.is_visible === true;
             newMarket.is_flagship = newMarket.is_flagship === 'true' || newMarket.is_flagship === true;
+            newMarket.is_farmstand = newMarket.is_farmstand === 'true' || newMarket.is_farmstand === true;
     
             // Save market details first
             const response = await fetch(`/api/markets`, {
@@ -403,6 +405,18 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                                   />
                                 ))}
                             </Stack>
+                        </div>
+                        <div className='form-group'>
+                            <label title="true or false">Is Farmstand:</label>
+                            <select
+                                name="is_farmstand"
+                                value={newMarket ? newMarket.is_farmstand : ''}
+                                onChange={handleInputMarketChange}
+                            >
+                                <option value="">Select</option>
+                                <option value={true}>Yes</option>
+                                <option value={false}>No</option>
+                            </select>
                         </div>
                         <div className='form-group'>
                             <label title="true or false">Is Flagship:</label>
