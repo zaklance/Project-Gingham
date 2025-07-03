@@ -320,23 +320,25 @@ function VendorCreate () {
                         </option>
                     ))}
                 </select>
-                <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddProduct(newProducts)}>Add</button>
-                <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-                    {vendorData?.products?.map((productId) => {
-                        const product = products.find((p) => p.id === productId);
-                        return (
-                            <Chip
-                                key={productId}
-                                style={{
-                                    backgroundColor: "#eee", fontSize: ".9em"
-                                }}
-                                label={product?.product || 'Unknown Product'}
-                                size="small"
-                                onDelete={() => handleDelete(productId)}
-                            />
-                        );
-                    })}
-                </Stack>
+                <button className='btn btn-small margin-l-8' onClick={() => handleAddProduct(newProducts)}>Add</button>
+                {vendorData?.products?.length > 0 && (
+                    <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                        {vendorData?.products?.map((productId) => {
+                            const product = products.find((p) => p.id === productId);
+                            return (
+                                <Chip
+                                    key={productId}
+                                    style={{
+                                        backgroundColor: "#eee", fontSize: ".9em"
+                                    }}
+                                    label={product?.product || 'Unknown Product'}
+                                    size="small"
+                                    onDelete={() => handleDelete(productId)}
+                                />
+                            );
+                        })}
+                    </Stack>
+                )}
             </div>
             {showNewProducts && (
                 <div className="form-group">
@@ -359,22 +361,24 @@ function VendorCreate () {
                     value={newProductSubcat ? newProductSubcat : ''}
                     onChange={(e) => setNewProductSubcat(e.target.value)}
                 />
-                <button className='btn btn-small margin-l-8 margin-b-4' onClick={() => handleAddProductSubcat(newProductSubcat)}>Add</button>
-                <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-                    {vendorData?.products_subcategories?.map((product) => {
-                        return (
-                            <Chip
-                                key={product}
-                                style={{
-                                    backgroundColor: "#eee", fontSize: ".9em"
-                                }}
-                                label={product || 'Unknown Product'}
-                                size="small"
-                                onDelete={() => handleDeleteProductSubcat(product)}
-                            />
-                        );
-                    })}
-                </Stack>
+                <button className='btn btn-small margin-l-8' onClick={() => handleAddProductSubcat(newProductSubcat)}>Add</button>
+                {vendorData?.products_subcategories?.length > 0 && (
+                    <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                        {vendorData?.products_subcategories?.map((product) => {
+                            return (
+                                <Chip
+                                    key={product}
+                                    style={{
+                                        backgroundColor: "#eee", fontSize: ".9em"
+                                    }}
+                                    label={product || 'Unknown Product'}
+                                    size="small"
+                                    onDelete={() => handleDeleteProductSubcat(product)}
+                                />
+                            );
+                        })}
+                    </Stack>
+                )}
             </div>
             <div className="form-group">
                 <label>Bio:</label>

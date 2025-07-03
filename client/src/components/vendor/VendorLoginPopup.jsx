@@ -298,7 +298,7 @@ function VendorLogin({ handlePopup }) {
                                     />
                                 ) : (
                                     <div className='flex-center-align flex-space-around margin-t-16 flex-gap-16'>
-                                        <button className='btn-login' onClick={handleSignup}>Sign-Up</button>
+                                        <button className='btn-login nowrap' onClick={handleSignup}>Sign-Up</button>
                                         <button className='btn-login' onClick={() => setIsSignUp(false)}>Cancel</button>
                                         <div className='flex-start flex-center-align'>
                                             <input

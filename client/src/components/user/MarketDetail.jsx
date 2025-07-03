@@ -589,75 +589,77 @@ function MarketDetail ({ match }) {
                     </Map>
                 </div>
             </div>
-            <div className='flex-start margin-t-8'>
-                <h4>Location: &emsp;<a className='link-underline text-400' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
-                    {market.location}, {market.city}, {market.state}
-                </a></h4>
-            </div>
-            <div className='flex-start flex-center-align m-flex-wrap'>
-                <label><h4>Schedule: &emsp;</h4></label>
-                {marketDays.length === 1 ? (
-                    <h4 className='text-400'>{weekDay[marketDays[0].day_of_week]}, &ensp;</h4>
-                ) : (
-                    <select
-                        id="marketDaysSelect"
-                        className='select-rounded margin-r-4'
-                        name="marketDays"
-                        value={selectedDay?.id || ''} 
-                        onChange={handleDayChange}
-                    >
-                        {marketDays.map((day, index) => (
-                            <option key={index} value={day.id}>
-                                {weekDay[day.day_of_week]}
-                            </option>
-                        ))}
-                    </select>
-                )}
-                {selectedDay && (
-                    <h4 className='text-400'>{timeConverter(selectedDay.hour_start)} - {timeConverter(selectedDay.hour_end)}</h4>
-                )}
-            </div>
-            <div className='flex-start'>
-                {market.year_round === false && market.season_start && market.season_end ? (
-                    <h4>Season: &emsp;<span className='text-400'>{formatDate(market.season_start)} – {formatDate(market.season_end)}{!market.is_current && `, ${new Date().getFullYear() - 1}`}</span></h4>
-                ) : (
-                    market.year_round === true ? (
-                        <h4>Season: &emsp;<span className='text-400'>Open Year Round {!market.is_current && `(${new Date().getFullYear() - 1})`}</span></h4>
-                    ) : (
-                        <h4>Season: &emsp;<span className='text-400'>No Dates Available</span></h4>
-                    )
-                )}
-            </div>
-            {market.maps && (
+            <div className='margin-t-8'>     
+                <div className='flex-start'>
+                    <h4>Location: &emsp;<a className='link-underline text-400' href={googleMapsLink} target="_blank" rel="noopener noreferrer">
+                        {market.location}, {market.city}, {market.state}
+                    </a></h4>
+                </div>
                 <div className='flex-start flex-center-align m-flex-wrap'>
-                    <h4>Maps: &emsp;</h4>
-                    <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-                        {market.maps && Object.entries(market.maps).map(([dayKey, mapValue]) => (
-                            <Chip
-                                key={dayKey}
-                                component="a"
-                                style={{
-                                    backgroundColor: "#eee",
-                                    fontSize: ".9em"
-                                }}
-                                label={weekDay[dayKey]}
-                                size="small"
-                                href={mapValue}
-                                target="_blank"
-                                rel="noreferrer"
-                                clickable
-                            />
-                        ))}
-                    </Stack>
+                    <label><h4>Schedule: &emsp;</h4></label>
+                    {marketDays.length === 1 ? (
+                        <h4 className='text-400'>{weekDay[marketDays[0].day_of_week]}, &ensp;</h4>
+                    ) : (
+                        <select
+                            id="marketDaysSelect"
+                            className='select-rounded margin-r-4'
+                            name="marketDays"
+                            value={selectedDay?.id || ''} 
+                            onChange={handleDayChange}
+                        >
+                            {marketDays.map((day, index) => (
+                                <option key={index} value={day.id}>
+                                    {weekDay[day.day_of_week]}
+                                </option>
+                            ))}
+                        </select>
+                    )}
+                    {selectedDay && (
+                        <h4 className='text-400'>{timeConverter(selectedDay.hour_start)} - {timeConverter(selectedDay.hour_end)}</h4>
+                    )}
                 </div>
-            )}
-            {market?.bio && (
-                <div className='flex-start flex-bottom-align m-flex-wrap'>
-                    <h4>About:</h4>
-                    <span> &emsp;</span>
-                    <p>{market.bio}</p>
+                <div className='flex-start'>
+                    {market.year_round === false && market.season_start && market.season_end ? (
+                        <h4>Season: &emsp;<span className='text-400'>{formatDate(market.season_start)} – {formatDate(market.season_end)}{!market.is_current && `, ${new Date().getFullYear() - 1}`}</span></h4>
+                    ) : (
+                        market.year_round === true ? (
+                            <h4>Season: &emsp;<span className='text-400'>Open Year Round {!market.is_current && `(${new Date().getFullYear() - 1})`}</span></h4>
+                        ) : (
+                            <h4>Season: &emsp;<span className='text-400'>No Dates Available</span></h4>
+                        )
+                    )}
                 </div>
-            )}
+                {market.maps && (
+                    <div className='flex-start flex-center-align m-flex-wrap'>
+                        <h4>Maps: &emsp;</h4>
+                        <Stack className='padding-4' direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                            {market.maps && Object.entries(market.maps).map(([dayKey, mapValue]) => (
+                                <Chip
+                                    key={dayKey}
+                                    component="a"
+                                    style={{
+                                        backgroundColor: "#eee",
+                                        fontSize: ".9em"
+                                    }}
+                                    label={weekDay[dayKey]}
+                                    size="small"
+                                    href={mapValue}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    clickable
+                                />
+                            ))}
+                        </Stack>
+                    </div>
+                )}
+                {market?.bio && (
+                    <div className='flex-start flex-bottom-align m-flex-wrap'>
+                        <h4>About:</h4>
+                        <span> &emsp;</span>
+                        <p>{market.bio}</p>
+                    </div>
+                )}
+            </div>
             <div id="vendors" className='flex-space-between margin-t-24'>
                 <h2>Vendors:</h2>
                 <div className='flex-start m-flex-wrap'>

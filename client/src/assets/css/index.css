@@ -34,6 +34,11 @@
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
 }
 
+::selection {
+  background-color: #ff7b8a;
+  color: #4f46e5;
+}
+
 @font-face {
   font-family: nf-le-petit-cochon;
   src: url(../fonts/nf-le-petit-cochon-regular.ttf);
@@ -2665,6 +2670,10 @@ link {
 
 .table-center {
   text-align: center;
+}
+
+.table-v-top td {
+  vertical-align: top;
 }
 
 .row-blank {

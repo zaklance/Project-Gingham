@@ -33,21 +33,34 @@ function MarketCard({ marketData, user, haversineDistance, resultCoordinates, us
                     <h4 title={marketData.is_farmstand ? "Single-Vendor Farmstand" : "Multi-Vendor Farmers' Market"}>{marketData.name}</h4>
                     <p className='text-500 margin-b-16'>{marketData.city}, {marketData.state}</p>
                 </div>
-                <p><strong>Location:</strong> {marketData.location}</p>
-                <p><strong>Schedule:</strong> {marketData.schedule}</p>
-
-                {marketData.year_round === false && marketData.season_start && marketData.season_end ? (
-                    <p><strong>Season:</strong> {formatDate(marketData.season_start)} – {formatDate(marketData.season_end)}</p>
-                ) : (
-                    marketData.year_round === false && (!marketData.season_start || !marketData.season_end) ? (
-                        <></>
+            </div>
+            <table className='table-v-top'>
+                <tbody>
+                    {marketData.year_round === false && marketData.season_start && marketData.season_end ? (
+                        <tr>
+                            <td className='text-600'>Season:</td>
+                            <td>{formatDate(marketData.season_start)} – {formatDate(marketData.season_end)}</td>
+                        </tr>
                     ) : (
-                        <p><strong>Open Year Round</strong></p>
-                    )
-                )}
-                {(user?.coordinates || resultCoordinates || userCoordinates) && marketData?.coordinates ? (
-                    <p>
-                        <strong>Distance:</strong> {(
+                        marketData.year_round === false && (!marketData.season_start || !marketData.season_end) ? (
+                            <></>
+                        ) : (
+                            <tr>
+                                <td className='text-600' colSpan={2}>Open Year Round</td>
+                            </tr>
+                        )
+                    )}
+                    <tr>
+                        <td className='text-600'>Schedule:</td>
+                        <td>{marketData.schedule}</td>
+                    </tr>
+                    <tr>
+                        <td className='text-600'>Location:</td>
+                        <td>{marketData.location}</td>
+                    </tr>
+                    <tr>
+                        <td className='text-600'>Distance:</td>
+                        <td>{(
                             haversineDistance(
                                 filterAddress 
                                     ? resultCoordinates 
@@ -60,11 +73,14 @@ function MarketCard({ marketData, user, haversineDistance, resultCoordinates, us
                             ? 'entered address'
                             : userCoordinates
                                 ? 'your location'
-                                : 'your zip code'}
-                    </p>
-                ) : <></>}
-                <p><strong>Vendors:</strong> {countVendors(marketData)} on <span className='font-cera-gingham text-size-1-2'>gingham</span></p>
-            </div>
+                                : 'your zip code'}</td>
+                    </tr>
+                    <tr>
+                        <td className='text-600'>Vendors:</td>
+                        <td>{countVendors(marketData)} on <span className='font-cera-gingham text-size-1-2'>gingham</span></td>
+                    </tr>
+                </tbody>
+            </table>
             <div>
                 <button className="btn-market-card" onClick={handleLearnMore}>Learn More!</button>
             </div>
