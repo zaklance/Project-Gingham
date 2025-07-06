@@ -35,8 +35,13 @@
 }
 
 ::selection {
-  background-color: #ff7b8a;
+  background-color: #ff7b8acc;
   color: #4f46e5;
+  text-decoration: underline 2px;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 @font-face {
@@ -271,6 +276,14 @@ p, li, div, form, input, select, button, textarea, td {
   font-optical-sizing: auto;
   font-weight: 300;
   font-style: normal;
+}
+
+input, textarea {
+  caret-color: #ff3399;
+}
+
+input[type=checkbox] input[type=radio] input[type=select] {
+  accent-color: #007BFF;
 }
 
 .title-big-gingham {
