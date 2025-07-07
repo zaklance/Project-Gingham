@@ -1,9 +1,7 @@
-// App.jsx
 import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import './assets/css/index.css';
 import NavBar from './components/NavBar.jsx';
-import Home from './components/Home.jsx'
 import LoginPopup from './components/user/LoginPopup.jsx';
 import Footer from './components/Footer.jsx';
 import VendorLoginPopup from './components/vendor/VendorLoginPopup.jsx';
@@ -12,7 +10,6 @@ import { jwtDecode } from 'jwt-decode';
 import BrowserTimezone from './components/BrowserTimezone.jsx';
 import { ToastContainer, Slide } from 'react-toastify';
 import { toast } from 'react-toastify';
-import PaymentSuccess from './components/user/PaymentSuccess';
 
 function App() {
     const location = useLocation();

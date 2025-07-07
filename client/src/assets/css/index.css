@@ -35,13 +35,14 @@
 }
 
 ::selection {
-  background-color: #ff7b8acc;
+  background-color: #ff7b8a99;
   color: #4f46e5;
   text-decoration: underline 2px;
 }
 
 html {
-  scroll-behavior: smooth;
+ scroll-padding-top: 16px;
+ scroll-behavior: smooth; 
 }
 
 @font-face {
@@ -180,10 +181,8 @@ body {
   background-color: white;
   width: fit-content;
   /* margin-top: 40px; */
-  margin-top: 1%;
-  margin-bottom: 5%;
-  margin-left: 5%;
-  margin-right: 5%;
+  /* margin: 1% 5% 5%; */
+  margin: 8px 30px 30px;
   padding: 20px;
   /* opacity: 75%; */
   border-radius: 20px;
@@ -282,7 +281,7 @@ input, textarea {
   caret-color: #ff3399;
 }
 
-input[type=checkbox] input[type=radio] input[type=select] {
+input[type=checkbox], input[type=radio] {
   accent-color: #007BFF;
 }
 
@@ -795,6 +794,11 @@ article {
 
 .column-3 {
   column-count: 3;
+}
+
+.column-3 article p {
+  orphans: 2;
+  widows: 2;
 }
 
 .column-footer {
@@ -1678,7 +1682,7 @@ ul {
 }
 
 .x-btn {
-  padding: 2px 8px;
+  padding: 2px 6px;
   margin-top: 4px;
   margin-left: 4px;
   margin-bottom: -10px;
@@ -3910,11 +3914,13 @@ textarea {
 
 .toc {
   position: sticky;
-  top: 0;
+  top: 16px;
   height: fit-content;
   padding: 16px;
   background-color: #eff;
   border-radius: 12px;
+  max-height: calc(100vh - 32px);
+  overflow: scroll;
 }
 
 .toc ul {

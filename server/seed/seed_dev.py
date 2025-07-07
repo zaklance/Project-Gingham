@@ -4442,7 +4442,7 @@ def run():
                     </article>
                     <article>
                         <p>
-                            <span class='font-cera text-size-1-2'>—The <span class="font-cera-gingham">gingham</span> team</span>
+                            <span class='font-cera text-size-1-2'>—the <span class="font-cera-gingham">gingham</span> team</span>
                         </p>
                     </article>
                     <img class="img-blog" src="/site-images/GINGHAM_VENDOR_FARMERSMARKET_800px.png" alt="logo" />
@@ -4482,7 +4482,7 @@ def run():
                     </article>
                     <article>
                         <p>
-                            <span class='font-cera text-size-1-2'>—The <span class="font-cera-gingham">gingham</span> team</span>
+                            <span class='font-cera text-size-1-2'>—the <span class="font-cera-gingham">gingham</span> team</span>
                         </p>
                     </article>
                 </div>

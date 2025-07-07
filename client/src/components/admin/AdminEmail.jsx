@@ -150,7 +150,7 @@ const AdminEmail = () => {
                 <div class="footer">
                     <div class="footer flex-center">
                         <img class="img-logo-small" src="https://www.gingham.nyc/site-images/gingham-logo_04-3B.png" alt="logo"/>
-                        <p>&copy; 2024 GINGHAM.NYC. All Rights Reserved.</p>
+                        <p>&copy; 2025 GINGHAM NYC. All Rights Reserved.</p>
                     </div>
                 </div>
             </div>
