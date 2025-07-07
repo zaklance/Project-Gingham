@@ -68,7 +68,7 @@ function Footer() {
                                 </li>
                             )
                         )}
-                        <li className="footer-li-copy text-line-1-4 text-500">&copy; <span className='font-cera-gingham text-line-1-4'>GINGHAM NYC</span>, {getCurrentYear()}</li>
+                        <li className="footer-li-copy text-line-1-4 text-500">&copy; {getCurrentYear()} <span className='font-cera-gingham text-line-1-4'>GINGHAM NYC</span></li>
                     </ul>
                     <div>
                         <img className="small-logo" src="/site-images/gingham-logo_04-3A.svg" alt="gingham logo" />

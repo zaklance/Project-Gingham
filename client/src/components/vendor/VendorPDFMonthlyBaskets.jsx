@@ -81,7 +81,7 @@ export const ReceiptDocument = ({ filteredBaskets, year, month }) => {
                     </Text>                </Text>
                 <View style={styles.footer} fixed>
                     <View style={styles.rowFooter}>
-                        <Text style={styles.bold}>GINGHAM NYC {getCurrentYear()} &copy;</Text>
+                        <Text style={styles.bold}>&copy; {getCurrentYear()} GINGHAM NYC</Text>
                         <Text style={styles.bold}>www.gingham.nyc</Text>
                     </View>
                 </View>
