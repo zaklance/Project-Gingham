@@ -54,7 +54,7 @@ services:
   maintenanceMode:
     uri: https://www.gingham.nyc/maintenance
 - type: web
-  name: gingham_client
+  name: gingham_www
   runtime: static
   repo: https://github.com/zaklance/Project-Gingham
   branch: deploy
@@ -76,6 +76,73 @@ services:
     paths:
     - client
   rootDir: client
+- type: web
+  name: gingham_www
+  runtime: static
+  repo: https://github.com/zaklance/Project-Gingham
+  branch: subdomains
+  envVars:
+  - fromGroup: gingham_env
+  buildCommand: npm run build
+  staticPublishPath: dist
+  domains:
+  - gingham.nyc
+  - www.gingham.nyc
+  routes:
+  - type: rewrite
+    source: /api/*
+    destination: https://gingham-server.onrender.com/api/*
+  - type: rewrite
+    source: /*
+    destination: /index.html
+  buildFilter:
+    paths:
+    - apps/www
+  rootDir: apps/www
+- type: web
+  name: gingham_vendor
+  runtime: subdomains
+  repo: https://github.com/zaklance/Project-Gingham
+  branch: subdomains
+  envVars:
+  - fromGroup: gingham_env
+  buildCommand: npm run build
+  staticPublishPath: dist
+  domains:
+  - vendor.gingham.nyc
+  routes:
+  - type: rewrite
+    source: /api/*
+    destination: https://gingham-server.onrender.com/api/*
+  - type: rewrite
+    source: /*
+    destination: /index.html
+  buildFilter:
+    paths:
+    - apps/vendor
+  rootDir: apps/vendor
+- type: web
+  name: gingham_admin
+  runtime: subdomains
+  repo: https://github.com/zaklance/Project-Gingham
+  branch: subdomains
+  envVars:
+  - fromGroup: gingham_env
+  buildCommand: npm run build
+  staticPublishPath: dist
+  domains:
+  - admin.gingham.nyc
+  routes:
+  - type: rewrite
+    source: /api/*
+    destination: https://gingham-server.onrender.com/api/*
+  - type: rewrite
+    source: /*
+    destination: /index.html
+  buildFilter:
+    paths:
+    - apps/admin
+  rootDir: apps/admin
 - type: keyvalue
   name: gingham_redis
   plan: starter
