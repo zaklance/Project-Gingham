@@ -187,7 +187,7 @@ def vendor_market_event_or_schedule_change(mapper: Any, connection: Any, target:
                         message=f"The market, {market_day.market.name}, has updated its schedule temporarily."
                         if is_schedule_change
                         else f"The market, {market_day.market.name}, has added a new event: {target.title}.",
-                        link=f"/user/markets/{market_day.market.id}",
+                        link=f"/markets/{market_day.market.id}",
                         vendor_id=vendor.id,
                         vendor_user_id=vendor_user.id,
                         market_id=market_day.market.id,
@@ -200,21 +200,21 @@ def vendor_market_event_or_schedule_change(mapper: Any, connection: Any, target:
                     if is_production:
                         if is_schedule_change and settings.email_market_schedule_change:
                             try:
-                                send_email_vendor_market_schedule_change_task.delay(vendor_user.email, vendor_user.id, market_day.market.id, target.id, f"/user/markets/{market_day.market.id}")
+                                send_email_vendor_market_schedule_change_task.delay(vendor_user.email, vendor_user.id, market_day.market.id, target.id, f"/markets/{market_day.market.id}")
                                 print(f"Email sent to {vendor_user.email} for market schedule change")
                             except Exception as e:
                                 print(f"Error sending email to {vendor_user.email}: {e}")
                         
                         elif not is_schedule_change and settings.email_market_new_event:
                             try:
-                                send_email_vendor_market_new_event_task.delay(vendor_user.email, vendor_user.id, market_day.market.id, target.id, f"/user/markets/{market_day.market.id}")
+                                send_email_vendor_market_new_event_task.delay(vendor_user.email, vendor_user.id, market_day.market.id, target.id, f"/markets/{market_day.market.id}")
                                 print(f"Email sent to {vendor_user.email} for market new event")
                             except Exception as e:
                                 print(f"Error sending email to {vendor_user.email}: {e}")
                         # Send SMS notification if enabled (only for schedule changes)
                         if is_schedule_change and settings.text_market_schedule_change and vendor_user.phone:
                             try:
-                                body = f"Hi {vendor_user.first_name}! {market_day.market.name} has a schedule change. Event: {target.title}. Details: www.gingham.nyc/user/markets/{market_day.market.id} Reply STOP to unsubscribe."
+                                body = f"Hi {vendor_user.first_name}! {market_day.market.name} has a schedule change. Event: {target.title}. Details: www.gingham.nyc/markets/{market_day.market.id} Reply STOP to unsubscribe."
                                 send_sms_task(body, vendor_user.phone)
                                 print(f"SMS sent to {vendor_user.phone} for market schedule change")
                             except Exception as e:
@@ -290,7 +290,7 @@ def track_fav_vendor_event(mapper: Any, connection: Any, target: Event) -> None:
                     message=f"The vendor, {vendor.name}, has updated their schedule temporarily."
                     if is_schedule_change
                     else f"The vendor, {vendor.name}, has added a new event: {target.title}",
-                    link=f"/user/vendors/{vendor.id}",
+                    link=f"/vendors/{vendor.id}",
                     user_id=user.id,
                     vendor_id=vendor.id,
                     created_at=datetime.now(timezone.utc),
@@ -302,20 +302,20 @@ def track_fav_vendor_event(mapper: Any, connection: Any, target: Event) -> None:
                 if is_production:
                     if is_schedule_change and settings.email_fav_vendor_schedule_change:
                         try:
-                            send_email_user_fav_vendor_schedule_change_task.delay(user.email, user.id, vendor.id, target.id, f"/user/vendors/{vendor.id}")
+                            send_email_user_fav_vendor_schedule_change_task.delay(user.email, user.id, vendor.id, target.id, f"/vendors/{vendor.id}")
                             print(f"Email sent to {user.email} for vendor schedule change")
                         except Exception as e:
                             print(f"Error sending email to {user.email}: {e}")
                     elif not is_schedule_change and settings.email_fav_vendor_new_event:
                         try:
-                            send_email_user_fav_vendor_new_event_task.delay(user.email, user.id, vendor.id, target.id, f"/user/vendors/{vendor.id}")
+                            send_email_user_fav_vendor_new_event_task.delay(user.email, user.id, vendor.id, target.id, f"/vendors/{vendor.id}")
                             print(f"Email sent to {user.email} for vendor new event")
                         except Exception as e:
                             print(f"Error sending email to {user.email}: {e}")
                     # Send SMS notification if enabled (only for schedule changes)
                     if is_schedule_change and settings.text_fav_vendor_schedule_change and user.phone:
                         try:
-                            body = f"Hi {user.first_name}! Your favorite vendor, {vendor.name}, has updated their schedule temporarily. Event: {target.title}. View details: www.gingham.nyc/user/vendors/{vendor.id} Reply STOP to unsubscribe."
+                            body = f"Hi {user.first_name}! Your favorite vendor, {vendor.name}, has updated their schedule temporarily. Event: {target.title}. View details: www.gingham.nyc/vendors/{vendor.id} Reply STOP to unsubscribe."
                             send_sms_task(body, user.phone)
                             print(f"SMS sent to {user.phone} for vendor schedule change")
                         except Exception as e:
@@ -394,7 +394,7 @@ def notify_fav_market_users_of_events(mapper: Any, connection: Any, target: Even
                     message=f"The market, {market.name}, has updated its schedule temporarily."
                     if is_schedule_change
                     else f"The market, {market.name}, has added a new event: {target.title}",
-                    link=f"/user/markets/{market.id}",
+                    link=f"/markets/{market.id}",
                     user_id=user.id,
                     market_id=target.market_id,
                     created_at=datetime.now(timezone.utc),
@@ -408,7 +408,7 @@ def notify_fav_market_users_of_events(mapper: Any, connection: Any, target: Even
                     if is_schedule_change and settings.email_fav_market_schedule_change:
                         try:
                             send_email_user_fav_market_schedule_change_task.delay(
-                                user.email, user.id, market.id, target.id, f"/user/markets/{market.id}"
+                                user.email, user.id, market.id, target.id, f"/markets/{market.id}"
                             )
                             print(f"Email sent to {user.email} for market schedule change")
                         except Exception as e:
@@ -416,7 +416,7 @@ def notify_fav_market_users_of_events(mapper: Any, connection: Any, target: Even
                     elif not is_schedule_change and settings.email_fav_market_new_event:
                         try:
                             send_email_user_fav_market_new_event_task.delay(
-                                user.email, user.id, market.id, target.id, f"/user/markets/{market.id}"
+                                user.email, user.id, market.id, target.id, f"/markets/{market.id}"
                             )
                             print(f"Email sent to {user.email} for market new event")
                         except Exception as e:
@@ -425,7 +425,7 @@ def notify_fav_market_users_of_events(mapper: Any, connection: Any, target: Even
                     # Send SMS notification if enabled (only for schedule changes)
                     if is_schedule_change and settings.text_fav_market_schedule_change and user.phone:
                         try:
-                            body = f"Hi {user.first_name}! Your favorite market, {market.name}, has updated their schedule temporarily. Event: {target.title}. Details: www.gingham.nyc/user/markets/{market.id} Reply STOP to unsubscribe."
+                            body = f"Hi {user.first_name}! Your favorite market, {market.name}, has updated their schedule temporarily. Event: {target.title}. Details: www.gingham.nyc/markets/{market.id} Reply STOP to unsubscribe."
                             send_sms_task(body, user.phone)
                             print(f"SMS sent to {user.phone} for market schedule change")
                         except Exception as e:
@@ -496,7 +496,7 @@ def notify_new_vendor_in_favorite_market(mapper: Any, connection: Any, target: V
                 notifications.append(UserNotification(
                     subject="New Vendor in Your Favorite Market!",
                     message=f"The vendor, {vendor.name}, has been added to one of your favorite markets: {market.name}.",
-                    link=f"/user/markets/{market.id}?day={market_day.id}#vendors",
+                    link=f"/markets/{market.id}?day={market_day.id}#vendors",
                     user_id=user.id,
                     market_id=market.id,
                     vendor_id=vendor.id,
@@ -510,8 +510,8 @@ def notify_new_vendor_in_favorite_market(mapper: Any, connection: Any, target: V
                         try:
                             send_email_user_fav_market_new_vendor_task.delay(
                                 user.email, user, market, vendor,
-                                f"/user/markets/{market.id}?day={market_day.id}#vendors", 
-                                f"/user/vendors/{vendor.id}",
+                                f"/markets/{market.id}?day={market_day.id}#vendors", 
+                                f"/vendors/{vendor.id}",
                             )
                             print(f"Email sent to {user.email} for new vendor in favorite market")
                         except Exception as e:
@@ -557,7 +557,7 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
                     notifications.append(AdminNotification(
                         subject="Reported Vendor Review",
                         message=f"A review for vendor '{vendor.name}' has been reported.",
-                        link="/admin/report#vendors",
+                        link="/report#vendors",
                         admin_id=admin.id,
                         admin_role=admin.admin_role,
                         vendor_id=vendor.id,
@@ -577,14 +577,14 @@ def notify_admin_vendor_review_reported(mapper, connection, target):
                         if is_production:
                             if admin_settings.email_report_review:
                                 try:
-                                    send_email_admin_reported_review_task.delay(admin.email, admin.id, None, vendor.id, review.id, "/admin/report#vendors")
+                                    send_email_admin_reported_review_task.delay(admin.email, admin.id, None, vendor.id, review.id, "/report#vendors")
                                     print(f"Email sent to {admin.email} for reported vendor review")
                                 except Exception as e:
                                     print(f"Error sending email to {admin.email}: {e}")
                             # Send SMS notification if enabled
                             if admin_settings.text_report_review and admin.phone:
                                 try:
-                                    body = f"Hi {admin.first_name}! A review for vendor '{vendor.name}' has been reported and needs your attention. Review: www.gingham.nyc/admin/report#vendors Reply STOP to unsubscribe."
+                                    body = f"Hi {admin.first_name}! A review for vendor '{vendor.name}' has been reported and needs your attention. Review: admin.gingham.nyc/report#vendors Reply STOP to unsubscribe."
                                     send_sms_task(body, admin.phone)
                                     print(f"SMS sent to {admin.phone} for reported vendor review")
                                 except Exception as e:
@@ -630,7 +630,7 @@ def notify_admin_market_review_reported(mapper, connection, target):
                     notifications.append(AdminNotification(
                         subject="Reported Market Review",
                         message=f"A review for market, '{market.name}', has been reported.",
-                        link="/admin/report#markets",
+                        link="/report#markets",
                         admin_id=admin.id,
                         admin_role=admin.admin_role,
                         market_id=market.id,
@@ -650,7 +650,7 @@ def notify_admin_market_review_reported(mapper, connection, target):
                         if is_production:
                             if admin_settings.email_report_review:
                                 try:
-                                    send_email_admin_reported_review_task.delay(admin.email, admin.id, market.id, None, review.id, "/admin/report#markets")
+                                    send_email_admin_reported_review_task.delay(admin.email, admin.id, market.id, None, review.id, "/report#markets")
                                     print(f"Email sent to {admin.email} for reported market review")
                                 except Exception as e:
                                     print(f"Error sending email to {admin.email}: {e}")
@@ -658,7 +658,7 @@ def notify_admin_market_review_reported(mapper, connection, target):
                             # Send SMS notification if enabled
                             if admin_settings.text_report_review and admin.phone:
                                 try:
-                                    body = f"Hi {admin.first_name}! A review for market '{market.name}' has been reported and needs your attention. Review: www.gingham.nyc/admin/report#markets Reply STOP to unsubscribe."
+                                    body = f"Hi {admin.first_name}! A review for market '{market.name}' has been reported and needs your attention. Review: admin.gingham.nyc/report#markets Reply STOP to unsubscribe."
                                     send_sms_task(body, admin.phone)
                                     print(f"SMS sent to {admin.phone} for reported market review")
                                 except Exception as e:
@@ -740,7 +740,7 @@ def fav_vendor_new_baskets(mapper, connection, target):
             notification = UserNotification(
                 subject="New Baskets from Your Favorite Vendor!",
                 message=message,
-                link=f"/user/vendors/{vendor.id}#markets",
+                link=f"/vendors/{vendor.id}#markets",
                 user_id=user.id,
                 vendor_id=vendor.id,
                 created_at=datetime.now(timezone.utc),
@@ -756,8 +756,8 @@ def fav_vendor_new_baskets(mapper, connection, target):
                     try:
                         send_email_user_fav_vendor_new_basket_task.delay(
                             user.email, user.id, market.id, vendor.id,
-                            f"/user/markets/{market.id}?day={target.market_day_id}#vendors", 
-                            f"/user/vendors/{vendor.id}")
+                            f"/markets/{market.id}?day={target.market_day_id}#vendors", 
+                            f"/vendors/{vendor.id}")
                         print(f"Email sent to {user.email} for new basket from favorite vendor")
                     except Exception as e:
                         print(f"Error sending email to {user.email}: {e}")
@@ -981,7 +981,7 @@ def vendor_basket_sold(mapper, connection, target):
                             notifications.append(VendorNotification(
                                 subject="Basket Sales Update!",
                                 message=f"You have sold {total_sold} baskets so far for today ({sale_date}).",
-                                link=f"/vendor/dashboard",
+                                link=f"/dashboard",
                                 vendor_id=vendor.id,
                                 vendor_user_id=vendor_user.id,
                                 created_at=datetime.now(timezone.utc),
@@ -1017,7 +1017,7 @@ def vendor_basket_sold(mapper, connection, target):
                                     if settings and settings.text_basket_sold and vendor_user.phone:
                                         try:
                                             basket_text = "baskets" if total_sold > 1 else "basket"
-                                            body = f"Hi {vendor_user.first_name}! {vendor.name} sold {total_sold} {basket_text} on {sale_date.strftime('%B %d')}. Pickup details: www.gingham.nyc/vendor/dashboard?tab=baskets Reply STOP to unsubscribe."
+                                            body = f"Hi {vendor_user.first_name}! {vendor.name} sold {total_sold} {basket_text} on {sale_date.strftime('%B %d')}. Pickup details: vendor.gingham.nyc/dashboard?tab=baskets Reply STOP to unsubscribe."
                                             send_sms_task(body, vendor_user.phone)
                                             print(f"Summary SMS sent to {vendor_user.phone} for {total_sold} baskets sold")
                                         except Exception as e:
@@ -1046,7 +1046,7 @@ def vendor_basket_sold(mapper, connection, target):
             notifications.append(VendorNotification(
                 subject="Basket Sold!",
                 message=f"One of your baskets has sold.",
-                link=f"/vendor/dashboard?tab=baskets",
+                link=f"/dashboard?tab=baskets",
                 vendor_id=vendor.id,
                 vendor_user_id=vendor_user.id,
                 created_at=datetime.now(timezone.utc),
@@ -1070,7 +1070,7 @@ def vendor_basket_sold(mapper, connection, target):
                 # Send SMS notification if enabled
                 if settings and settings.text_basket_sold and vendor_user.phone:
                     try:
-                        body = f"Hi {vendor_user.first_name}! {vendor.name} sold a basket today. Pickup details: www.gingham.nyc/vendor/dashboard?tab=baskets Reply STOP to unsubscribe."
+                        body = f"Hi {vendor_user.first_name}! {vendor.name} sold a basket today. Pickup details: vendor.gingham.nyc/dashboard?tab=baskets Reply STOP to unsubscribe."
                         send_sms_task.delay(body, vendor_user.phone)
                         print(f"SMS sent to {vendor_user.phone} for basket sold")
                     except Exception as e:
@@ -1123,7 +1123,7 @@ def notify_vendor_users_new_market_location(mapper, connection, target):
                     notifications.append(VendorNotification(
                         subject="New Market Location Added",
                         message=f"A new market location has been added to your notifications list: {market.name}. Go to profile settings to edit market location notifications.",
-                        link="/vendor/profile",
+                        link="/profile",
                         vendor_id=target.vendor_id,
                         vendor_user_id=vendor_user.id,
                         created_at=datetime.now(timezone.utc),
@@ -1251,7 +1251,7 @@ def notify_fav_market_new_baskets(mapper, connection, target):
             notifications.append(UserNotification(
                 subject="New Baskets for Sale!",
                 message=f"New baskets have been added to one of your favorite markets, {market.name}, check it out!",
-                link=f"/user/markets/{market.id}?day={target.market_day_id}#vendors",
+                link=f"/markets/{market.id}?day={target.market_day_id}#vendors",
                 user_id=user.id,
                 market_id=market.id,
                 created_at=datetime.now(timezone.utc),
@@ -1266,8 +1266,8 @@ def notify_fav_market_new_baskets(mapper, connection, target):
                     try:
                         send_email_user_fav_market_new_basket_task.delay(
                             user.email, user.id, market.id, vendor.id,
-                            f"/user/markets/{market.id}?day={target.market_day_id}#vendors",
-                            f"/user/vendors/{vendor.id}"
+                            f"/markets/{market.id}?day={target.market_day_id}#vendors",
+                            f"/vendors/{vendor.id}"
                         )
                         print(f"Email sent to {user.email} for new basket in favorite market")
                     except Exception as e:
@@ -1276,7 +1276,7 @@ def notify_fav_market_new_baskets(mapper, connection, target):
                 # Send SMS notification if enabled
                 if settings.text_fav_market_new_basket and user.phone:
                     try:
-                        body = f"Hi {user.first_name}! New baskets available at {market.name} from {vendor.name}. Get yours: www.gingham.nyc/user/vendors/{vendor.id} Reply STOP to unsubscribe."
+                        body = f"Hi {user.first_name}! New baskets available at {market.name} from {vendor.name}. Get yours: www.gingham.nyc/vendors/{vendor.id} Reply STOP to unsubscribe."
                         send_sms_task(body, user.phone)
                         print(f"SMS sent to {user.phone} for new basket in favorite market")
                     except Exception as e:
@@ -1348,7 +1348,7 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
                             f"Your purchased basket is ready for pickup! "
                             f"Pick it up between {pickup_time_str} and {pickup_end_str} on {current_month} {current_day}."
                         ),
-                        link="/user/pick-up",
+                        link="/pick-up",
                         user_id=user.id,
                         created_at=pickup_datetime_utc,
                         is_read=False
@@ -1372,8 +1372,8 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
                                 try:
                                     send_email_user_basket_pickup_time_task.delay(
                                         user.email, user.id, market.id, vendor.id, basket.id,
-                                        f"/user/markets/{market.id}?day={basket.market_day_id}#vendors",
-                                        f"/user/vendors/{vendor.id}"
+                                        f"/markets/{market.id}?day={basket.market_day_id}#vendors",
+                                        f"/vendors/{vendor.id}"
                                     )
                                     print(f"Pickup email sent to {user.email}")
                                 except Exception as e:
@@ -1384,7 +1384,7 @@ def schedule_and_notify_basket_pickup(mapper, connection, target):
                                 try:
                                     pickup_start_str = time_converter(basket.pickup_start)
                                     pickup_end_str = time_converter(basket.pickup_end)
-                                    body = f"Hi {user.first_name}! Time to pick up your basket from {vendor.name}. Pickup: {pickup_start_str}-{pickup_end_str}. Details: www.gingham.nyc/user/vendors/{vendor.id} Reply STOP to unsubscribe."
+                                    body = f"Hi {user.first_name}! Time to pick up your basket from {vendor.name}. Pickup: {pickup_start_str}-{pickup_end_str}. Details: www.gingham.nyc/vendors/{vendor.id} Reply STOP to unsubscribe."
                                     send_sms_task(body, user.phone)
                                     print(f"Pickup SMS sent to {user.phone}")
                                 except Exception as e:
@@ -1458,7 +1458,7 @@ def notify_user_vendor_review_response(mapper, connection, target):
             notifications.append(UserNotification(
                 subject="Vendor Responded to Your Review",
                 message=message,
-                link=f"/user/vendors/{vendor.id}#reviews",
+                link=f"/vendors/{vendor.id}#reviews",
                 user_id=user.id,
                 created_at=datetime.now(timezone.utc),
                 is_read=False
@@ -1476,7 +1476,7 @@ def notify_user_vendor_review_response(mapper, connection, target):
             if settings.email_vendor_review_response:
                 try:
                     send_email_user_vendor_review_response_task.delay(
-                        user.email, user.id, vendor.id, target.id, f"/user/vendors/{vendor.id}#reviews"
+                        user.email, user.id, vendor.id, target.id, f"/vendors/{vendor.id}#reviews"
                     )
                     print(f"Email sent to {user.email} for vendor review response")
                 except Exception as e:
@@ -1514,7 +1514,7 @@ def notify_users_new_market_in_state(mapper, connection, target):
                 notifications.append(UserNotification(
                     subject=f"New Market in {user.state}",
                     message=f"A new market, {target.name}, has opened in {user.city}! Click to explore.",
-                    link=f"/user/markets/{target.id}",
+                    link=f"/markets/{target.id}",
                     user_id=user.id,
                     created_at=datetime.now(timezone.utc),
                     is_read=False
@@ -1527,7 +1527,7 @@ def notify_users_new_market_in_state(mapper, connection, target):
                 if settings.email_new_market_in_city:
                     try:
                         send_email_user_new_market_in_city_task.delay(
-                            user.email, user.id, target.id, f"/user/markets/{target.id}")
+                            user.email, user.id, target.id, f"/markets/{target.id}")
                         print(f"Email sent to {user.email} for new market in city")
                     except Exception as e:
                         print(f"Error sending email to {user.email}: {e}")
@@ -1605,7 +1605,7 @@ def notify_vendor_users_new_review(mapper, connection, target):
                 notifications.append(VendorNotification(
                     subject="New Vendor Review!",
                     message=message,
-                    link=f"/vendor/dashboard?tab=reviews",
+                    link=f"/dashboard?tab=reviews",
                     vendor_user_id=vendor_user.id,
                     vendor_id=target.vendor_id,
                     created_at=datetime.now(timezone.utc),
@@ -1619,7 +1619,7 @@ def notify_vendor_users_new_review(mapper, connection, target):
             if settings.email_new_review:
                 try:
                     send_email_vendor_new_review_task.delay(
-                        vendor_user.email, vendor_user.id, vendor.id, target.id, f"/vendor/dashboard?tab=reviews"
+                        vendor_user.email, vendor_user.id, vendor.id, target.id, f"/dashboard?tab=reviews"
                     )
                     print(f"Email sent to {vendor_user.email} for new vendor review")
                 except Exception as e:
@@ -1683,7 +1683,7 @@ def notify_admins_new_vendor(mapper, connection, target):
                 notifications.append(AdminNotification(
                     subject="New Vendor Registration",
                     message=f"A new vendor, {target.name}, has registered on the platform.",
-                    link="/admin/vendors",
+                    link="/vendors",
                     admin_id=admin.id,
                     admin_role=admin.admin_role,
                     created_at=datetime.now(timezone.utc),
@@ -1697,7 +1697,7 @@ def notify_admins_new_vendor(mapper, connection, target):
                 if settings.email_new_vendor:
                     try:
                         send_email_admin_new_vendor_task.delay(
-                            admin.email, admin.id, target.id, f"/admin/vendors/{target.id}"
+                            admin.email, admin.id, target.id, f"/vendors/{target.id}"
                         )
                         print(f"Email sent to {admin.email} for new vendor registration")
                     except Exception as e:
@@ -1892,7 +1892,7 @@ def notify_admin_product_request(mapper, connection, target):
                 if admin_settings.email_product_request:
                     try:
                         send_email_admin_product_request_task.delay(
-                            admin.email, admin.id, vendor.id, new_product, target.link or "/admin/vendors?tab=products"
+                            admin.email, admin.id, vendor.id, new_product, target.link or "/vendors?tab=products"
                         )
                         print(f"Email sent to {admin.email} for product request")
                     except Exception as e:
@@ -1901,7 +1901,7 @@ def notify_admin_product_request(mapper, connection, target):
                 # Send SMS notification if enabled
                 if admin_settings.text_product_request and admin.phone:
                     try:
-                        body = f"Hi {admin.first_name}! {vendor.name} has requested a new product category: {new_product}. Manage: www.gingham.nyc/admin/vendors?tab=products Reply STOP to unsubscribe."
+                        body = f"Hi {admin.first_name}! {vendor.name} has requested a new product category: {new_product}. Manage: admin.gingham.nyc/vendors?tab=products Reply STOP to unsubscribe."
                         send_sms_task(body, admin.phone)
                         print(f"SMS sent to {admin.phone} for product request")
                     except Exception as e:
@@ -1992,7 +1992,7 @@ def send_monthly_statement_notifications() -> None:
                     notification = VendorNotification(
                         subject="New Monthly Statement Available",
                         message=f"Your monthly statement for {previous_month_name} is now available for review.",
-                        link="/vendor/sales#statements",
+                        link="/sales#statements",
                         vendor_id=vendor.id,
                         vendor_user_id=vendor_user.id,
                         created_at=datetime.now(timezone.utc),
@@ -2093,7 +2093,7 @@ def handle_vendor_notify_me_notification(mapper, connection, target):
         if is_production and settings.email_notify_me:
             try:
                 send_email_user_fav_vendor_schedule_change_task.delay(
-                    vendor_user.email, vendor_user.id, vendor.id, user.id, target.link or "/vendor/dashboard?tab=baskets"
+                    vendor_user.email, vendor_user.id, vendor.id, user.id, target.link or "/dashboard?tab=baskets"
                 )
                 print(f"Notify me email sent to {vendor_user.email}")
             except Exception as e:
@@ -2102,7 +2102,7 @@ def handle_vendor_notify_me_notification(mapper, connection, target):
         # Send SMS notification if enabled
         if is_production and settings.text_vendor_notify_me and vendor_user.phone:
             try:
-                body = f"Hi {vendor_user.first_name}! A user ({user.first_name}) is interested in buying more baskets from {vendor.name}. Add more: www.gingham.nyc/vendor/dashboard?tab=baskets Reply STOP to unsubscribe."
+                body = f"Hi {vendor_user.first_name}! A user ({user.first_name}) is interested in buying more baskets from {vendor.name}. Add more: vendor.gingham.nyc/dashboard?tab=baskets Reply STOP to unsubscribe."
                 send_sms_task(body, vendor_user.phone)
                 print(f"Notify me SMS sent to {vendor_user.phone}")
             except Exception as e:

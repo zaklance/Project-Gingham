@@ -145,14 +145,14 @@ def confirm_user_email_task(token, request_method):
         try:
             # Decode the token to get user data
             data = serializer.loads(token, salt='user-confirmation-salt', max_age=86400)
-            website = os.environ['VITE_SITE_URL']
+            website = os.environ['VITE_URL_WWW']
 
             user_id = data.get('user_id')
             email = data.get('email')
 
             if request_method == 'GET':
                 # Return a redirect response (or perform another action as needed)
-                return {'redirect': f'{website}/user/confirm-email/{token}'}
+                return {'redirect': f'{website}/confirm-email/{token}'}
 
             if request_method == 'POST':
                 existing_user = User.query.get(user_id)
@@ -274,14 +274,14 @@ def confirm_vendor_email_task(token, request_method):
         try:
             # Decode the token to get user data
             data = serializer.loads(token, salt='vendor-confirmation-salt', max_age=86400)
-            website = os.environ['VITE_SITE_URL']
+            website = os.environ['VITE_URL_VENDOR']
 
             vendor_id = data.get('vendor_id')
             email = data.get('email')
 
             if request_method == 'GET':
                 # Return a redirect response (or perform another action as needed)
-                return {'redirect': f'{website}/vendor/confirm-email/{token}'}
+                return {'redirect': f'{website}/confirm-email/{token}'}
             
             if request_method == 'POST':
                 existing_vendor = VendorUser.query.get(vendor_id)
@@ -400,14 +400,14 @@ def confirm_admin_email_task(token, request_method):
         try:
             # Decode the token to get user data
             data = serializer.loads(token, salt='admin-confirmation-salt', max_age=86400)
-            website = os.environ['VITE_SITE_URL']
+            website = os.environ['VITE_URL_ADMIN']
 
             admin_id = data.get('admin_id')
             email = data.get('email')
 
             if request_method == 'GET':
                 # Return a redirect response (or perform another action as needed)
-                return {'redirect': f'{website}/admin/confirm-email/{token}'}
+                return {'redirect': f'{website}/confirm-email/{token}'}
             
             if request_method == 'POST':
                 existing_admin = AdminUser.query.get(admin_id)
