@@ -1,0 +1,35 @@
+{
+  "name": "@repo/ui",
+  "version": "0.0.0",
+  "exports": {
+    "./About.jsx": "./components/About.jsx",
+    "./BrowserTimezone.jsx": "./components/BrowserTimezone.jsx",
+    "./Contact.jsx": "./components/Contact.jsx",
+    "./EmailVerification.jsx": "./components/EmailVerification.jsx",
+    "./ErrorPage.jsx": "./components/ErrorPage.jsx",
+    "./Footer.jsx": "./components/Footer.jsx",
+    "./Maintenance.jsx": "./components/Maintenance.jsx",
+    "./NavBar.jsx": "./components/NavBar.jsx",
+    "./PasswordReset.jsx": "./components/PasswordReset.jsx",
+    "./PasswordResetRequest.jsx": "./components/PasswordResetRequest.jsx",
+    "./PrivacyPolicy.jsx": "./components/PrivacyPolicy.jsx",
+    "./TermsAndConditions.jsx": "./components/TermsAndConditions.jsx",
+    "./Unsubscribe.jsx": "./components/Unsubscribe.jsx",
+    "./LoginPopup.jsx": "./components/LoginPopup.jsx",
+    "./VendorLoginPopup.jsx": "./components/VendorLoginPopup.jsx",
+    "./AdminLoginPopup.jsx": "./components/AdminLoginPopup.jsx",
+    "./common.js": "./utils/common.js",
+    "./helpers.js": "./utils/helpers.js",
+    "./index.css": "./assets/css/index.css"
+  },
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint \"**/*.ts\""
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "eslint": "^8.57.0",
+    "typescript": "5.5.4"
+  }
+}
