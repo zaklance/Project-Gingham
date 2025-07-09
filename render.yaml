@@ -41,8 +41,8 @@ services:
   runtime: static
   repo: https://github.com/zaklance/Project-Gingham
   branch: subdomains
-  # envVars:
-  # - fromGroup: gingham_env
+  envVars:
+  - fromGroup: gingham_env
   buildCommand: npm install && npm run build
   staticPublishPath: dist
   domains:
@@ -56,15 +56,15 @@ services:
     destination: /index.html
   buildFilter:
     paths:
-    - apps/vendor
-  rootDir: apps/vendor
+    - client/apps/vendor
+  rootDir: client/apps/vendor
 - type: web
   name: gingham_admin
   runtime: static
   repo: https://github.com/zaklance/Project-Gingham
   branch: subdomains
-  # envVars:
-  # - fromGroup: gingham_env
+  envVars:
+  - fromGroup: gingham_env
   buildCommand: npm install && npm run build
   staticPublishPath: dist
   domains:
@@ -78,8 +78,8 @@ services:
     destination: /index.html
   buildFilter:
     paths:
-    - apps/admin
-  rootDir: apps/admin
+    - client/apps/admin
+  rootDir: client/apps/admin
 - type: web
   name: gingham_server
   runtime: python
