@@ -21,7 +21,7 @@ services:
 #   envVars:
 #   - fromGroup: gingham_env
 #   buildCommand: npm install && cd apps/www && npm install && npm run build
-#   staticPublishPath: dist
+#   staticPublishPath: apps/www/dist
 #   domains:
 #   - gingham.nyc
 #   - www.gingham.nyc
@@ -44,7 +44,7 @@ services:
   envVars:
   - fromGroup: gingham_env
   buildCommand: npm install && cd apps/vendor && npm install && npm run build
-  staticPublishPath: dist
+  staticPublishPath: apps/vendor/dist
   domains:
   - vendor.gingham.nyc
   routes:
@@ -66,7 +66,7 @@ services:
   envVars:
   - fromGroup: gingham_env
   buildCommand: npm install && cd apps/admin && npm install && npm run build
-  staticPublishPath: dist
+  staticPublishPath: apps/admin/dist
   domains:
   - admin.gingham.nyc
   routes:
