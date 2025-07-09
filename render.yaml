@@ -20,7 +20,7 @@ services:
   branch: subdomains
   envVars:
   - fromGroup: gingham_env
-  buildCommand: npm run build
+  buildCommand: npm install && npm run build
   staticPublishPath: dist
   domains:
   - gingham.nyc
@@ -38,12 +38,12 @@ services:
   rootDir: apps/www
 - type: web
   name: gingham_vendor
-  runtime: subdomains
+  runtime: static
   repo: https://github.com/zaklance/Project-Gingham
   branch: subdomains
   envVars:
   - fromGroup: gingham_env
-  buildCommand: npm run build
+  buildCommand: npm install && npm run build
   staticPublishPath: dist
   domains:
   - vendor.gingham.nyc
@@ -60,12 +60,12 @@ services:
   rootDir: apps/vendor
 - type: web
   name: gingham_admin
-  runtime: subdomains
+  runtime: static
   repo: https://github.com/zaklance/Project-Gingham
   branch: subdomains
   envVars:
   - fromGroup: gingham_env
-  buildCommand: npm run build
+  buildCommand: npm install && npm run build
   staticPublishPath: dist
   domains:
   - admin.gingham.nyc
