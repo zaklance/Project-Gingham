@@ -64,13 +64,13 @@ function AdminMarkets () {
                     <Link to="#" onClick={() => setActiveTab('edit')} className={activeTab === 'edit' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                         Edit
                     </Link>
-                    <Link to="/admin/markets?tab=add" onClick={() => setActiveTab('add')} className={activeTab === 'add' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="/markets?tab=add" onClick={() => setActiveTab('add')} className={activeTab === 'add' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                         Add
                     </Link>
-                    <Link to="/admin/markets?tab=delete" onClick={() => setActiveTab('delete')} className={activeTab === 'delete' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="/markets?tab=delete" onClick={() => setActiveTab('delete')} className={activeTab === 'delete' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                         Delete
                     </Link>
-                    <Link to="/admin/markets?tab=event" onClick={() => setActiveTab('event')} className={activeTab === 'event' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="/markets?tab=event" onClick={() => setActiveTab('event')} className={activeTab === 'event' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                         Events
                     </Link>
                 </div>

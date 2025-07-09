@@ -62,7 +62,7 @@ const VendorRoute = ({ children }) => {
     const { id: routeId } = useParams();
 
     if ( !token || !storedId) {
-        return <Navigate to="/vendor" />;
+        return <Navigate to="/" />;
     }
 
     if (storedId !== routeId) {
@@ -82,7 +82,7 @@ const AdminRoute = ({ children }) => {
     const { id: routeId } = useParams();
 
     if (!token || !storedId) {
-        return <Navigate to="/admin" />;
+        return <Navigate to="/" />;
     }
 
     if (storedId !== routeId) {

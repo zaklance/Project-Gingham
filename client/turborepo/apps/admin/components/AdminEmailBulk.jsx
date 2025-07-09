@@ -51,7 +51,7 @@ const AdminEmailBulk = () => {
                         <mj-section mj-class="footer">
                             <mj-navbar>
                                 <mj-navbar-link href="https://www.gingham.nyc/" >Home</mj-navbar-link>
-                                <mj-navbar-link href="https://www.gingham.nyc/vendor" >Vendor Home</mj-navbar-link>
+                                <mj-navbar-link href="https://vendor.gingham.nyc/" >Vendor Home</mj-navbar-link>
                                 <mj-navbar-link href="mailto:hello@gingham.nyc" >Contact Us</mj-navbar-link>
                             </mj-navbar>
                         </mj-section>

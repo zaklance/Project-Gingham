@@ -73,12 +73,12 @@ function BasketSales() {
                                                 <tr key={`${index}-${subIndex}`}>
                                                     <td className={`group-bar ${isFirst ? 'group-bar-first' : ''} ${isLast ? 'group-bar-last' : ''}`}></td>
                                                     <td>
-                                                        <Link className='btn-nav' to={`/user/markets/${item.market_id}`}>
+                                                        <Link className='btn-nav' to={`/markets/${item.market_id}`}>
                                                             {item.market_name || 'No Market Name'}
                                                         </Link>
                                                     </td>
                                                     <td>
-                                                        <Link className='btn-nav' to={`/user/vendors/${item.vendor_id}`}>
+                                                        <Link className='btn-nav' to={`/vendors/${item.vendor_id}`}>
                                                             {item.vendor_name || 'No Vendor Name'}
                                                         </Link>
                                                     </td>

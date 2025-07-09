@@ -1343,7 +1343,7 @@ def send_blog_notifications(blog_id, task_id=None):
                     VendorNotification(
                         subject="New Blog Post Alert!",
                         message=f"A new blog post, {blog.title}, has been published. Check it out!",
-                        link=f"/vendor#blog",
+                        link=f"#blog",
                         vendor_user_id=vendor_user.id,
                         created_at=datetime.now(timezone.utc),
                         is_read=False,
@@ -1364,7 +1364,7 @@ def send_blog_notifications(blog_id, task_id=None):
                     AdminNotification(
                         subject="New Blog Post Alert!",
                         message=f"A new blog post, {blog.title}, has been published. Check it out!",
-                        link=f"/admin#blog",
+                        link=f"#blog",
                         admin_role=5,
                         admin_id=admin.id,
                         created_at=datetime.now(timezone.utc),
@@ -1754,7 +1754,7 @@ def send_monthly_vendor_statements(month=None, year=None):
                             vendor_notification = VendorNotification(
                                 subject="Monthly Statement Available",
                                 message=f"Your monthly statement for {month}/{year} is now available.",
-                                link="/vendor/sales?tab=statements",
+                                link="/sales?tab=statements",
                                 vendor_id=vendor.id,
                                 vendor_user_id=vendor_user.id,
                                 created_at=datetime.now(timezone.utc),

@@ -198,13 +198,13 @@ const AdminBlog = () => {
                 <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap margin-b-24'>
                     <h1>Blogs!</h1>
                     <div>
-                        <Link to="/admin/blog?tab=user" onClick={() => setActiveTab('user')} className={activeTab === 'user' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                        <Link to="/blog?tab=user" onClick={() => setActiveTab('user')} className={activeTab === 'user' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                             User
                         </Link>
-                        <Link to="/admin/blog?tab=vendor" onClick={() => setActiveTab('vendor')} className={activeTab === 'vendor' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                        <Link to="/blog?tab=vendor" onClick={() => setActiveTab('vendor')} className={activeTab === 'vendor' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
                             Vendor
                         </Link>
-                        <Link to="/admin/blog?tab=admin" onClick={() => setActiveTab('admin')} className={activeTab === 'admin' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                        <Link to="/blog?tab=admin" onClick={() => setActiveTab('admin')} className={activeTab === 'admin' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                             Admin
                         </Link>
                     </div>

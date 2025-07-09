@@ -540,7 +540,7 @@ function VendorProfile () {
                             vendor_id: vendorId,
                             vendor_user_id: id,
                             admin_role: 3,
-                            link: '/admin/vendors?tab=products',
+                            link: '/vendors?tab=products',
                             subject: 'product-request',
                             message: `${vendorData.name} has requested to for a new Product category: ${productRequest}.`,
                         }),

@@ -78,13 +78,13 @@ function VendorSales() {
             <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap margin-t-16'>
                 <h1>Vendor Sales</h1>
                 <div className='tabs margin-l-24 m-flex-wrap'>
-                    <Link to="/vendor/sales?tab=history" onClick={() => setActiveTab('history')} className={activeTab === 'history' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="/sales?tab=history" onClick={() => setActiveTab('history')} className={activeTab === 'history' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                         History
                     </Link>
-                    <Link to="/vendor/sales?tab=statements" onClick={() => setActiveTab('statements')} className={activeTab === 'statements' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="/sales?tab=statements" onClick={() => setActiveTab('statements')} className={activeTab === 'statements' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                         Statements
                     </Link>
-                    <Link to="/vendor/sales?tab=payout" onClick={() => setActiveTab('payout')} className={activeTab === 'payout' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="/sales?tab=payout" onClick={() => setActiveTab('payout')} className={activeTab === 'payout' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                         Payout
                     </Link>
                 </div>

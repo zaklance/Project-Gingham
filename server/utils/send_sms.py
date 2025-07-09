@@ -20,5 +20,5 @@ with app.app_context():
     review = db.session.get(VendorReview, 1)
     blog = db.session.get(Blog, 1)
 
-    body = f"Hi {user.first_name}! Your favorite vendor, {vendor.name}, has updated their schedule temporarily. Event: {event.title}. View details: www.gingham.nyc/user/vendors/{vendor.id} Reply STOP to unsubscribe."
+    body = f"Hi {user.first_name}! Your favorite vendor, {vendor.name}, has updated their schedule temporarily. Event: {event.title}. View details: www.gingham.nyc/vendors/{vendor.id} Reply STOP to unsubscribe."
     send_sms_task.delay(body, phone)
