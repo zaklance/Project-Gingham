@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { months } from "@repo/ui/common.js";
-import PulseLoader from 'react-spinners/PulseLoader';
+import PulseLoader from 'react-spinners/PulseLoader.js';
 import { pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import ReceiptDocument from './VendorPDFMonthlyBaskets.jsx'

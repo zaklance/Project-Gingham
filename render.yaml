@@ -17,7 +17,7 @@ services:
   name: gingham_www
   runtime: static
   repo: https://github.com/zaklance/Project-Gingham
-  branch: subdomains
+  branch: deploy
   envVars:
   - fromGroup: gingham_env
   buildCommand: npm install && cd apps/www && npm install && npm run build
@@ -34,13 +34,13 @@ services:
     destination: /index.html
   buildFilter:
     paths:
-    - client/gingham-nyc/apps/www
-  rootDir: client/gingham-nyc
+    - client/turborepo/apps/www
+  rootDir: client/turborepo
 - type: web
   name: gingham_vendor
   runtime: static
   repo: https://github.com/zaklance/Project-Gingham
-  branch: subdomains
+  branch: deploy
   envVars:
   - fromGroup: gingham_env
   buildCommand: npm install && cd apps/vendor && npm install && npm run build
@@ -56,13 +56,13 @@ services:
     destination: /index.html
   buildFilter:
     paths:
-    - client/gingham-nyc/apps/vendor
-  rootDir: client/gingham-nyc
+    - client/turborepo/apps/vendor
+  rootDir: client/turborepo
 - type: web
   name: gingham_admin
   runtime: static
   repo: https://github.com/zaklance/Project-Gingham
-  branch: subdomains
+  branch: deploy
   envVars:
   - fromGroup: gingham_env
   buildCommand: npm install && cd apps/admin && npm install && npm run build
@@ -78,8 +78,8 @@ services:
     destination: /index.html
   buildFilter:
     paths:
-    - client/gingham-nyc/apps/admin
-  rootDir: client/gingham-nyc
+    - client/turborepo/apps/admin
+  rootDir: client/turborepo
 - type: web
   name: gingham_server
   runtime: python
