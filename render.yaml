@@ -34,8 +34,8 @@ services:
 #     destination: /index.html
 #   buildFilter:
 #     paths:
-#     - apps/www
-#   rootDir: apps/www
+#     - client/gingham-nyc/apps/www
+#   rootDir: client/gingham-nyc/apps/www
 - type: web
   name: gingham_vendor
   runtime: static
@@ -56,8 +56,8 @@ services:
     destination: /index.html
   buildFilter:
     paths:
-    - client/apps/vendor
-  rootDir: client/apps/vendor
+    - client/gingham-nyc/apps/vendor
+  rootDir: client/gingham-nyc/apps/vendor
 - type: web
   name: gingham_admin
   runtime: static
@@ -78,8 +78,8 @@ services:
     destination: /index.html
   buildFilter:
     paths:
-    - client/apps/admin
-  rootDir: client/apps/admin
+    - client/gingham-nyc/apps/admin
+  rootDir: client/gingham-nyc/apps/admin
 - type: web
   name: gingham_server
   runtime: python
