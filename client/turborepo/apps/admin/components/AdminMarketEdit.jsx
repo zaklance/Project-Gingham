@@ -530,7 +530,7 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
                                     <div className="dropdown-content" ref={dropdownRef}>
                                         {
                                             (query || locationQuery[0] || locationQuery[1] || isCurrent !== "" || isVisible !== "") &&
-                                            filteredMarketsDropdown.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => { setQuery(item.name); setCityQuery(item.city); setStateQuery(item.state); setShowDropdown(false);}}>
+                                            filteredMarketsDropdown.slice(0, 10).map(item => <div className="search-results" key={item.id} onClick={(e) => { setQuery(item.name); setShowDropdown(false);}}>
                                                 {item.name} – {item.city}, {item.state}
                                             </div>)
                                         }
