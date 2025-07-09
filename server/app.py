@@ -3,6 +3,10 @@ import json
 import smtplib
 import csv
 import traceback
+
+from dotenv import load_dotenv
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
+
 from flask import Flask, Response, request, jsonify, session, send_from_directory, send_file, redirect, url_for
 from markupsafe import escape
 from models import ( db, User, Market, MarketDay, Vendor, MarketReview, 
@@ -15,7 +19,6 @@ from models import ( db, User, Market, MarketDay, Vendor, MarketReview,
                     UserIssue, Recipe, Ingredient, RecipeIngredient,
                     InstructionGroup, Instruction, RecipeFavorite,
                     Smallware, bcrypt )
-from dotenv import load_dotenv
 from sqlalchemy import cast, desc, extract, func, Integer
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload, Session
@@ -60,9 +63,6 @@ from tasks import ( send_mjml_email_task, send_html_email_task,
 from celery.result import AsyncResult
 from celery_config import celery
 import base64
-
-
-load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 
 app = Flask(__name__, static_folder='public')
 
@@ -4087,11 +4087,11 @@ def create_stripe_account():
 def create_account_link():
     try:
         stripe_account_id = request.get_json().get('stripe_account_id')
-        website = os.environ['VITE_SITE_URL']
+        website = os.environ['VITE_URL_VENDOR']
 
         account_link = stripe.AccountLink.create(
           account=stripe_account_id,
-          return_url=f"{website}/vendor/sales?tab=payout{stripe_account_id}",
+          return_url=f"{website}/sales?tab=payout{stripe_account_id}",
           refresh_url=f"{website}/refresh/{stripe_account_id}",
           type="account_onboarding",
           collect= 'eventually_due'
@@ -4430,9 +4430,9 @@ def user_password_reset_request():
 @app.route('/api/user/password-reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
     if request.method == 'GET':
-        website = os.environ['VITE_SITE_URL']
+        website = os.environ['VITE_URL_WWW']
         
-        return redirect(f'{website}/user/password-reset/{token}')
+        return redirect(f'{website}/password-reset/{token}')
 
     if request.method == 'POST':
         try:
@@ -4491,8 +4491,8 @@ def password_reset_request():
 @app.route('/api/vendor/password-reset/<token>', methods=['GET', 'POST'])
 def vendor_password_reset(token):
     if request.method == 'GET':
-        website = os.environ['VITE_SITE_URL']
-        return redirect(f'{website}/vendor/password-reset/{token}')
+        website = os.environ['VITE_URL_VENDOR']
+        return redirect(f'{website}/password-reset/{token}')
 
     if request.method == 'POST':
         try:
@@ -4539,8 +4539,8 @@ def admin_password_reset_request():
 @app.route('/api/admin/password-reset/<token>', methods=['GET', 'POST'])
 def admin_password_reset(token):
     if request.method == 'GET':
-        website = os.environ['VITE_SITE_URL']
-        return redirect(f'{website}/admin/password-reset/{token}')
+        website = os.environ['VITE_URL_ADMIN']
+        return redirect(f'{website}/password-reset/{token}')
 
     if request.method == 'POST':
         try:

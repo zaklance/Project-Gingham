@@ -15,7 +15,10 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition
 
 serializer = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
-site_url = os.getenv('VITE_SITE_URL')
+url_site = os.getenv('VITE_SITE_URL')
+url_www = os.getenv('VITE_SITE_WWW')
+url_vendor = os.getenv('VITE_SITE_VENDOR')
+url_admin = os.getenv('VITE_SITE_ADMIN')
 
 def format_event_date(date_input):
     try:
@@ -401,7 +404,7 @@ def send_admin_password_reset_email(email):
 def send_user_confirmation_email(email, user_data):
     try:
         token = serializer.dumps(user_data, salt='user-confirmation-salt')  # Generate the token
-        confirmation_link = f"{site_url}/user/confirm-email/{token}"
+        confirmation_link = f"{url_www}/confirm-email/{token}"
 
         email_subject = 'GINGHAM Email Confirmation'
 
@@ -454,7 +457,7 @@ def send_user_confirmation_email(email, user_data):
 def send_vendor_confirmation_email(email, vendor_data):
     try:
         token = serializer.dumps(vendor_data, salt='vendor-confirmation-salt')
-        confirmation_link = f"{site_url}/vendor/confirm-email/{token}"
+        confirmation_link = f"{url_vendor}/confirm-email/{token}"
         email_subject = 'GINGHAM Vendor Email Confirmation'
 
         body = f"""
@@ -505,7 +508,7 @@ def send_vendor_confirmation_email(email, vendor_data):
 def send_admin_confirmation_email(email, admin_data):
     try:
         token = serializer.dumps(admin_data, salt='admin-confirmation-salt')
-        confirmation_link = f"{site_url}/admin/confirm-email/{token}"
+        confirmation_link = f"{url_admin}/confirm-email/{token}"
         email_subject = 'GINGHAM Admin Email Confirmation'
 
         body = f"""
@@ -568,8 +571,8 @@ def send_email_user_fav_market_new_event(email, user, market, event, link):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link = f'{site_url}{link}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link = f'{url_www}{link}'
         email_subject = f'New Event at {market.name}'
 
         start_date_formatted = format_event_date(event.start_date)
@@ -645,8 +648,8 @@ def send_email_user_fav_market_schedule_change(email, user, market, event, link)
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link = f'{site_url}{link}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link = f'{url_www}{link}'
         email_subject = f'Schedule Change at {market.name}'
 
         start_date_formatted = format_event_date(event.start_date)
@@ -721,9 +724,9 @@ def send_email_user_fav_market_new_vendor(email, user, market, vendor, link_mark
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link_market = f'{site_url}/{link_market}'
-        full_link_vendor = f'{site_url}/{link_vendor}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link_market = f'{url_www}/{link_market}'
+        full_link_vendor = f'{url_www}/{link_vendor}'
 
         # Move this to events.py so there isn't a circular import, or will that create a longer circular import?
         if vendor.products:
@@ -807,9 +810,9 @@ def send_email_user_fav_market_new_basket(email, user, market, vendor, link_mark
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link_market = f'{site_url}/{link_market}'
-        full_link_vendor = f'{site_url}/{link_vendor}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link_market = f'{url_www}/{link_market}'
+        full_link_vendor = f'{url_www}/{link_vendor}'
 
         # Move this to events.py so there isn't a circular import, or will that create a longer circular import?
         if vendor.products:
@@ -910,8 +913,8 @@ def send_email_user_fav_vendor_new_event(email, user, vendor, event, link_vendor
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link_vendor = f'{site_url}/{link_vendor}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link_vendor = f'{url_www}/{link_vendor}'
 
         start_date_formatted = format_event_date(event.start_date)
         end_date_formatted = format_event_date(event.end_date)
@@ -987,8 +990,8 @@ def send_email_user_fav_vendor_schedule_change(email, user, vendor, event, link_
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link_vendor = f'{site_url}/{link_vendor}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link_vendor = f'{url_www}/{link_vendor}'
 
         start_date_formatted = format_event_date(event.start_date)
         end_date_formatted = format_event_date(event.end_date)
@@ -1064,9 +1067,9 @@ def send_email_user_fav_vendor_new_basket(email, user, market, vendor, link_mark
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link_market = f'{site_url}/{link_market}'
-        full_link_vendor = f'{site_url}/{link_vendor}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link_market = f'{url_www}/{link_market}'
+        full_link_vendor = f'{url_www}/{link_vendor}'
 
         # Move this to events.py so there isn't a circular import, or will that create a longer circular import?
         if vendor.products:
@@ -1167,9 +1170,9 @@ def send_email_user_basket_pickup_time(email, user, market, vendor, basket, link
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link_market = f'{site_url}/{link_market}'
-        full_link_vendor = f'{site_url}/{link_vendor}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link_market = f'{url_www}/{link_market}'
+        full_link_vendor = f'{url_www}/{link_vendor}'
 
         email_subject = f'Almost Time to Pickup Your Basket'
 
@@ -1231,8 +1234,8 @@ def send_email_user_vendor_review_response(email, user, vendor, review, link_rev
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link_review = f'{site_url}{link_review}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link_review = f'{url_www}{link_review}'
 
         email_subject = f'Response to one of your Reviews'
 
@@ -1299,7 +1302,7 @@ def send_email_user_new_blog(email, user, blog):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
 
         email_subject = f'New GINGHAM Blog Post!'
 
@@ -1318,7 +1321,7 @@ def send_email_user_new_blog(email, user, blog):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>A new blog post is out, check out <strong><a class="link-underline" href='{site_url}/#blog'>{blog.title}</a></strong>!</p>
+                        <p>A new blog post is out, check out <strong><a class="link-underline" href='{url_www}/#blog'>{blog.title}</a></strong>!</p>
                         <div class="content flex-center">
                             <div class='box-callout'>
                                 {blog.body}
@@ -1365,8 +1368,8 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link_market = f'{site_url}/{link_market}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link_market = f'{url_www}/{link_market}'
 
         if market.bio:
             market_bio_html = f"<p class='margin-12-0'>{market.bio}</p>"
@@ -1448,8 +1451,8 @@ def send_email_vendor_market_new_event(email, user, market, event, link):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link = f'{site_url}{link}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link = f'{url_www}{link}'
 
         start_date_formatted = format_event_date(event.start_date)
         end_date_formatted = format_event_date(event.end_date)
@@ -1525,8 +1528,8 @@ def send_email_vendor_market_schedule_change(email, user, market, event, link):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link = f'{site_url}{link}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link = f'{url_www}{link}'
 
         start_date_formatted = format_event_date(event.start_date)
         end_date_formatted = format_event_date(event.end_date)
@@ -1602,7 +1605,7 @@ def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pic
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
 
         if basket_count > 1:
             basket_text = "baskets"
@@ -1628,7 +1631,7 @@ def send_email_vendor_basket_sold(email, user, market, vendor, basket_count, pic
                         <p>Hi {user.first_name},</p>
                         <p>{vendor.name} has sold {basket_count} {basket_text} at {market.name} on {format_event_date(sale_date)}. You set the pickup time from {time_converter(pickup_start)} to {time_converter(pickup_end)}.</p>
                         <div class="flex-center">
-                            <p><strong><a class="button" href='{site_url}/vendor/scan'>Scan basket QR codes here!</a></strong></p>
+                            <p><strong><a class="button" href='{url_vendor}/scan'>Scan basket QR codes here!</a></strong></p>
                         </div>
                         <p>—The gingham team</p>
                     </div>
@@ -1672,8 +1675,8 @@ def send_email_vendor_new_review(email, user, vendor, review, link_review):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link_review = f'{site_url}{link_review}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link_review = f'{url_www}{link_review}'
 
         email_subject = f'New Review on GINGHAM!'
 
@@ -1740,7 +1743,7 @@ def send_email_vendor_new_blog(email, user, blog):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
 
         email_subject = f'New GINGHAM Vendor Blog Post!'
 
@@ -1759,7 +1762,7 @@ def send_email_vendor_new_blog(email, user, blog):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>A new blog post is out, check out <strong><a class="link-underline" href='{site_url}/vendor#blog'>{blog.title}</a></strong>!</p>
+                        <p>A new blog post is out, check out <strong><a class="link-underline" href='{url_vendor}#blog'>{blog.title}</a></strong>!</p>
                         <div class="content flex-center">
                             <div class='box-callout'>
                                 {blog.body}
@@ -1806,7 +1809,7 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
 
         email_subject = f'GINGHAM Monthly Statement'
 
@@ -1825,7 +1828,7 @@ def send_email_vendor_new_statement(email, user, vendor, month, year):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>A new monthly statement for {vendor.name} is out. Attached is a CSV with last months sales data. For a PDF summary, graphs, and previous months statements check the <strong><a class="link-underline" href='{site_url}/vendor/sales'>sales</a></strong> page.</p>
+                        <p>A new monthly statement for {vendor.name} is out. Attached is a CSV with last months sales data. For a PDF summary, graphs, and previous months statements check the <strong><a class="link-underline" href='{url_vendor}/sales'>sales</a></strong> page.</p>
                         <p>—The gingham team</p>
                     </div>
                     <div class="footer">
@@ -1908,8 +1911,8 @@ def send_email_notify_me(email, vendor_user, vendor, user, link):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link = f'{site_url}{link}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link = f'{url_vendor}{link}'
 
         email_subject = f'User Interested in More Baskets!'
 
@@ -1987,8 +1990,8 @@ def send_email_admin_reported_review(email, user, market, vendor, review, link_r
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link_review = f'{site_url}{link_review}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link_review = f'{url_admin}{link_review}'
 
         if market:
             review_about = f"{market.name}"
@@ -2060,8 +2063,8 @@ def send_email_admin_product_request(email, user, vendor, new_product, link_prod
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link_product = f'{site_url}/{link_product}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link_product = f'{url_admin}/{link_product}'
 
         if vendor.products:
             product_names = [product.product for product in Product.query.filter(Product.id.in_(vendor.products)).all()]
@@ -2149,7 +2152,7 @@ def send_email_admin_new_blog(email, user, blog):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
 
         email_subject = f'New GINGHAM Admin Blog Post!'
 
@@ -2168,7 +2171,7 @@ def send_email_admin_new_blog(email, user, blog):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>A new blog post is out, check out <strong><a class="link-underline" href='{site_url}/admin#blog'>{blog.title}</a></strong>!</p>
+                        <p>A new blog post is out, check out <strong><a class="link-underline" href='{url_admin}#blog'>{blog.title}</a></strong>!</p>
                         <div class="content flex-center">
                             <div class='box-callout'>
                                 {blog.body}
@@ -2215,8 +2218,8 @@ def send_email_admin_new_vendor(email, user, vendor, link_vendor):
         }
 
         token = serializer.dumps(payload, salt='unsubscribe')
-        unsubscribe_url = f"{site_url}/unsubscribe?token={token}"
-        full_link_vendor = f'{site_url}/{link_vendor}'
+        unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
+        full_link_vendor = f'{url_www}/{link_vendor}'
 
         if vendor.products:
             product_names = [product.product for product in Product.query.filter(Product.id.in_(vendor.products)).all()]
