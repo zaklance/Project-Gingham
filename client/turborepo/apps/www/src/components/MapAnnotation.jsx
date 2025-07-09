@@ -14,7 +14,7 @@ function MapAnnotation({ handleMarkerHoverOn, handleMarkerHoverOff, isHover, mar
             calloutElement={
                 <div className="map-marker-details">
                     <div className='text-center'>
-                        <div className="marker-name"><Link className='link-underline link-scale-96' to={`/user/markets/${market.id}`}>{market.name}</Link></div>
+                        <div className="marker-name"><Link className='link-underline link-scale-96' to={`/markets/${market.id}`}>{market.name}</Link></div>
                         <div className="marker-day">{market.schedule}</div>
                         {market.year_round ? (
                             <div className="marker-day">Open Year-Round</div>

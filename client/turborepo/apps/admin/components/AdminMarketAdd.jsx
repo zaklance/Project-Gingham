@@ -127,7 +127,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                 if (image) {
                     await handleImageUpload(updatedData.id);
                 }
-                window.location.href = "/admin/markets?tab=add";
+                window.location.href = "/markets?tab=add";
             } else {
                 console.error('Failed to save market details');
                 console.error('Response:', await response.text());

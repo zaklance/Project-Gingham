@@ -9,10 +9,10 @@ function PaymentSuccess() {
                 <h1 className="title-big text-green">Payment Successful!</h1>
                 <p className="margin-t-12">Thank you for your purchase. Your order has been confirmed.</p>
                 <div className="margin-t-24">
-                    <Link to="/user/markets" className="btn btn-checkout margin-r-12">
+                    <Link to="/markets" className="btn btn-checkout margin-r-12">
                         Continue Shopping
                     </Link>
-                    <Link to={`/user/profile/${localStorage.getItem('user_id')}`} className="btn btn-cart">
+                    <Link to={`/profile/${localStorage.getItem('user_id')}`} className="btn btn-cart">
                         View Profile
                     </Link>
                 </div>

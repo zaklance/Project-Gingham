@@ -422,7 +422,7 @@ function MarketDetail ({ match }) {
             const payload = {
                 subject: 'New Basket Interest',
                 message: `A user is interested in buying a basket at ${market.name}, consider adding more for sale.`,
-                link: "/vendor/dashboard?tab=baskets",
+                link: "/dashboard?tab=baskets",
                 user_id: userId,
                 market_id: market?.id, // Ensure market.id is defined
                 vendor_id: vendor?.id,  // Ensure vendor.id is defined
@@ -713,7 +713,7 @@ function MarketDetail ({ match }) {
                     return (
                     <div key={index} className="market-item flex-center-align">
                         <span className="market-name d-margin-l-16">
-                            <Link to={`/user/vendors/${vendorId}`} className="market-name text-hyphen"> {vendorDetail.name || 'Loading...'} </Link>
+                            <Link to={`/vendors/${vendorId}`} className="market-name text-hyphen"> {vendorDetail.name || 'Loading...'} </Link>
                             <br />
                             <p className='text-hyphen'><span className='m-hidden'>Products:</span>{" "}
                                 {products

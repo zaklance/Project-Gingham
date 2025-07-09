@@ -306,7 +306,7 @@ function ProfileFavorites() {
                         .sort((a, b) => a.vendor.name.localeCompare(b.vendor.name))
                             .map((data) => (
                                 <li key={data.id}>
-                                    <Link to={`/user/vendors/${data.vendor_id}`}><b>{data.vendor.name}</b> <i>of {data.vendor.city}, {data.vendor.state}</i></Link>
+                                    <Link to={`/vendors/${data.vendor_id}`}><b>{data.vendor.name}</b> <i>of {data.vendor.city}, {data.vendor.state}</i></Link>
                                     <button
                                         className={`btn-fav-blog margin-l-8 ${isClickedVendor[data.vendor_id] || vendorFavs.some(fav => fav.vendor_id === data.vendor_id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
                                         title="remove vendor from favorites"
@@ -333,7 +333,7 @@ function ProfileFavorites() {
                             .sort((a, b) => a.market.name.localeCompare(b.market.name))
                             .map((data) => (
                                 <li key={data.id}>
-                                    <Link to={`/user/markets/${data.market_id}`}><b>{data.market.name}</b> <i>open {data.market.schedule}</i></Link>
+                                    <Link to={`/markets/${data.market_id}`}><b>{data.market.name}</b> <i>open {data.market.schedule}</i></Link>
                                     <button
                                         className={`btn-fav-blog margin-l-8 ${isClickedMarket[data.market_id] || marketFavs.some(fav => fav.market_id === data.market_id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
                                         title="remove market from favorites"
@@ -360,7 +360,7 @@ function ProfileFavorites() {
                             .sort((a, b) => a.recipe.title.localeCompare(b.recipe.title))
                             .map((data) => (
                                 <li key={data.id}>
-                                    <Link to={`/user/recipe/${data.recipe_id}`}><b>{data.recipe.title}</b> <i>by {data.recipe.author}</i></Link>
+                                    <Link to={`/recipe/${data.recipe_id}`}><b>{data.recipe.title}</b> <i>by {data.recipe.author}</i></Link>
                                     <button
                                         className={`btn-fav-blog margin-l-8 ${isClickedRecipe[data.recipe_id] || recipeFavs.some(fav => fav.recipe_id === data.recipe_id) ? 'btn-fav-blog-on margin-l-8' : ''}`}
                                         title="remove recipe from favorites"

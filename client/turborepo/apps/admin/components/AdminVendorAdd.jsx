@@ -84,7 +84,7 @@ function AdminVendorEdit({ vendors }) {
                 if (image) {
                     await handleImageUpload(updatedData.id);
                 }
-                window.location.href = "/admin/vendors?tab=add";
+                window.location.href = "/vendors?tab=add";
             } else {
                 console.error('Failed to save vendor details');
                 console.log('Response status:', response.status);

@@ -2304,7 +2304,7 @@ def send_vendor_team_invite_email(email, vendor_name, token):
     """
     try:
         VITE_SITE_URL = os.getenv('VITE_SITE_URL')
-        invitation_link = f"{VITE_SITE_URL}/vendor/join-team/{token}"
+        invitation_link = f"{VITE_SITE_URL}/join-team/{token}"
         
         email_subject = f'Invitation to join {vendor_name} on GINGHAM'
 

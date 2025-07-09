@@ -76,7 +76,7 @@ function AdminVendorDelete({ vendors }) {
                 toast.success(`Market "${matchingVendor.name}" was successfully deleted.`, {
                     autoClose: 4000,
                 });
-                window.location.href = "/admin/vendors?tab=delete";
+                window.location.href = "/vendors?tab=delete";
             } catch (error) {
                 console.error('Error deleting market or associated days:', error);
                 toast.error('An error occurred while deleting the market and its associated days.', {

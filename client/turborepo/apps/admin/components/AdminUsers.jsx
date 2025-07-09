@@ -53,14 +53,14 @@ function AdminUsers() {
                     <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
                         <h1>User Management</h1>
                         <div className='tabs'>
-                            <Link to="/admin/users?tab=user" onClick={() => setActiveTab('user')} className={activeTab === 'user' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                            <Link to="/users?tab=user" onClick={() => setActiveTab('user')} className={activeTab === 'user' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                                 User
                             </Link>
-                            <Link to="/admin/users?tab=vendor-user" onClick={() => setActiveTab('vendor-user')} className={activeTab === 'vendor-user' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                            <Link to="/users?tab=vendor-user" onClick={() => setActiveTab('vendor-user')} className={activeTab === 'vendor-user' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                                 Vendor User
                             </Link>
                             {adminUserData.admin_role <= 2 ? (
-                                <Link to="/admin/users?tab=admin-user" onClick={() => setActiveTab('admin-user')} className={activeTab === 'admin-user' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                                <Link to="/users?tab=admin-user" onClick={() => setActiveTab('admin-user')} className={activeTab === 'admin-user' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
                                     Admin User
                                 </Link>
                             ) : null}

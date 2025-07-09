@@ -125,8 +125,8 @@ function App() {
     }
 
     checkTokenExpiration("user", "user", "/")
-    checkTokenExpiration("vendor", "vendor_user", "/vendor/")
-    checkTokenExpiration("admin", "admin_user", "/admin/")
+    checkTokenExpiration("vendor", "vendor_user", "/")
+    checkTokenExpiration("admin", "admin_user", "/")
 
 
     return (

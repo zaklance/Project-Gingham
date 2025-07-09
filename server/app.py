@@ -4683,7 +4683,7 @@ def notify_me_for_more_baskets():
             VendorNotification(
                 subject=data.get('subject', 'New Basket Interest'),
                 message=data.get('message', f"A user is interested in buying a basket at {vendor.name}."),
-                link=data.get('link', "/vendor/dashboard?tab=baskets"),
+                link=data.get('link', "/dashboard?tab=baskets"),
                 user_id=user.id,
                 vendor_id=vendor.id,
                 vendor_user_id=vendor_user.id,

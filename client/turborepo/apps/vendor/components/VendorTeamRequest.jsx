@@ -138,7 +138,7 @@ const VendorTeamRequest = ({ className, vendorUserId, vendorUserData }) => {
                 },
                 body: JSON.stringify({
                     subject: 'team-request',
-                    link: "/vendor/dashboard?tab=team",
+                    link: "/dashboard?tab=team",
                     vendor_id: selectedVendor.id,
                     data: vendorUserId,
                     message: `${vendorUserData.first_name} ${vendorUserData.last_name} has requested to join your vendor team.`,

@@ -277,7 +277,7 @@ function AdminRecipeDelete({ recipes, smallwares, ingredients, recipeIngredients
                 });
 
                 alert(`Recipe "${selectedRecipe.title}" was successfully deleted.`);
-                window.location.href = "/admin/recipes?tab=delete";
+                window.location.href = "/recipes?tab=delete";
             } catch (error) {
                 console.error('Error deleting recipe:', error);
                 toast.error('An error occurred while deleting the recipe and its associated instructions, instruction-groups, and recipe-ingredients.', {

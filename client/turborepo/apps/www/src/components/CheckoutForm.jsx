@@ -221,7 +221,7 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
             <title>gingham • Checkout</title>
             <div className="flex-space-between flex-bottom-align">
                 <h1 className="title-med">Payments</h1>
-                <button className="btn btn-cart"><Link to="/user/cart">Back</Link></button>
+                <button className="btn btn-cart"><Link to="/cart">Back</Link></button>
             </div>
             <form id="payment-form" className="flex-space-between box-bounding m-flex-wrap flex-gap-8" onSubmit={handleSubmit}>
                 <div className="width-fit">
@@ -282,10 +282,10 @@ function CheckoutForm({ totalPrice, cartItems, setCartItems, amountInCart, setAm
                                 </button>
                             </div>
                             <div className="flex-start flex-gap-16">
-                                <Link to="/user/markets" className="btn btn-checkout margin-r-12">
+                                <Link to="/markets" className="btn btn-checkout margin-r-12">
                                     Continue Shopping
                                 </Link>
-                                <Link to={`/user/profile/${userId}`} className="btn btn-checkout">
+                                <Link to={`/profile/${userId}`} className="btn btn-checkout">
                                     View Profile
                                 </Link>
                             </div>

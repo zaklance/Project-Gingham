@@ -321,7 +321,7 @@ function VendorSalesHistory({ baskets, vendorId }) {
                                         <tr key={index}>
                                             <td className='table-center nowrap m-wrap'>{convertToLocalDate(history.sale_date) || 'N/A'}</td>
                                             <td>
-                                                <Link className='link-underline' to={`/user/markets/${history.market_id}`}>
+                                                <Link className='link-underline' to={`/markets/${history.market_id}`}>
                                                     {history.market_name || 'No Market Name'}
                                                 </Link>
                                             </td>

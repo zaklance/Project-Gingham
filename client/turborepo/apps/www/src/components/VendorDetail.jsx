@@ -294,7 +294,7 @@ function VendorDetail() {
                 body: JSON.stringify({
                     subject: 'New Basket Interest',
                     message: `A user is interested in buying a basket at ${market.name}, consider adding more for sale.`,
-                    link: "/vendor/dashboard?tab=baskets",
+                    link: "/dashboard?tab=baskets",
                     user_id: userId,
                     market_id: market.id,
                     vendor_id: vendor.id,
@@ -433,7 +433,7 @@ function VendorDetail() {
                             return (
                                 <div key={index} className="market-item flex-gap-8" >
                                     <span className='width-40'>
-                                        <Link to={`/user/markets/${market.market_day.market_id}?day=${market.market_day.id}`} className="market-name">
+                                        <Link to={`/markets/${market.market_day.market_id}?day=${market.market_day.id}`} className="market-name">
                                             {marketDetail?.market?.name || 'Loading...'}
                                         </Link>
                                         <br/>
