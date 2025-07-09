@@ -28,7 +28,7 @@ services:
   routes:
   - type: rewrite
     source: /api/*
-    destination: https://gingham-server.onrender.com/api/*
+    destination: https://server.gingham.nyc/api/*
   - type: rewrite
     source: /*
     destination: /index.html
@@ -50,7 +50,7 @@ services:
   routes:
   - type: rewrite
     source: /api/*
-    destination: https://gingham-server.onrender.com/api/*
+    destination: https://server.gingham.nyc/api/*
   - type: rewrite
     source: /*
     destination: /index.html
@@ -72,7 +72,7 @@ services:
   routes:
   - type: rewrite
     source: /api/*
-    destination: https://gingham-server.onrender.com/api/*
+    destination: https://server.gingham.nyc/api/*
   - type: rewrite
     source: /*
     destination: /index.html
