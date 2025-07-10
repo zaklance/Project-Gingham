@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, NavLink, Link, Route, Routes, BrowserRouter as Router} from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { vendors_default, states, weekDay } from "@repo/ui/common.js";
 import { formatPhoneNumber } from "@repo/ui/helpers.js";
 import PasswordStrengthBar from 'react-password-strength-bar';
@@ -16,6 +16,7 @@ import VendorActiveVendor from './VendorActiveVendor';
 import VendorTeamLeave from './VendorTeamLeave';
 import { toast } from 'react-toastify';
 import PhoneInput from 'react-phone-number-input'
+import PulseLoader from 'react-spinners/PulseLoader';
 import 'react-phone-number-input/style.css'
 import DOMPurify from 'dompurify';
 
@@ -516,18 +517,24 @@ function VendorProfile () {
                 body: JSON.stringify(updatedVendorData),
             });
             
-            console.log('Request body:', JSON.stringify(updatedVendorData));
+            // console.log('Request body:', JSON.stringify(updatedVendorData));
             
             if (response.ok) {
                 const updatedData = await response.json();
                 setVendorData(updatedData);
                 setVendorEditMode(false);
-                console.log('Vendor data updated successfully:', updatedData);
+                // console.log('Vendor data updated successfully:', updatedData);
                 // window.location.reload()
+                toast.success('Image deleted successfully.', {
+                    autoClose: 4000,
+                });
             } else {
                 console.log('Failed to save changes');
                 console.log('Response status:', response.status);
                 console.log('Response text:', await response.text());
+                toast.error(`Failed to delete the image: ${JSON.parse(errorText).error}`, {
+                    autoClose: 4000,
+                });
             }
             if (tempVendorData.products.includes(1) && productRequest.trim() !== '') {
                 try {
@@ -605,7 +612,7 @@ function VendorProfile () {
         }
     
         try {
-            console.log('Attempting to delete image:', vendorData.image);
+            // console.log('Attempting to delete image:', vendorData.image);
     
             const response = await fetch(`/api/delete-image`, {
                 method: 'DELETE',
@@ -625,6 +632,10 @@ function VendorProfile () {
                 console.log('Image deleted response:', result);
     
                 setVendorData((prevData) => ({
+                    ...prevData,
+                    image: null,
+                }));
+                setTempVendorData((prevData) => ({
                     ...prevData,
                     image: null,
                 }));
@@ -1239,7 +1250,17 @@ function VendorProfile () {
                                         </div>
                                     </div>
                                     <div className='flex-start flex-gap-8'>
-                                        <button className='btn-edit nowrap' onClick={handleSaveVendorChanges}>Save Changes</button>
+                                        {uploading ? (
+                                            <PulseLoader
+                                                className='margin-t-16'
+                                                color={'#ff806b'}
+                                                size={10}
+                                                aria-label="Loading Spinner"
+                                                data-testid="loader"
+                                            />
+                                        ) : (
+                                            <button className='btn-edit nowrap' onClick={handleSaveVendorChanges}>Save Changes</button>
+                                        )}
                                         <button className='btn-edit' onClick={handleVendorEditToggle}>Cancel</button>
                                         <div className='alert-container'>
                                             <div className={status === 'fail' ? 'alert alert-favorites alert-fail' : 'alert-favorites-hidden'}>
