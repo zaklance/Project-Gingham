@@ -85,14 +85,14 @@ function Home() {
                     </p>
                 </div>
                 <div className="box-inside">
-                    {/* <div className="react-player">
+                    <div className="react-player">
                         <ReactPlayer
-                            url="/site-images/Gingham-How-To-01.mp4"
+                            url="/site-images/Gingham_Vendor-How-To-070725_web.mp4"
                             controls={true}
                             width="100%"
                             height="100%"
                         />
-                    </div> */}
+                    </div>
                     <h3 className=" margin-t-16 margin-b-16">How <span className="font-cera-gingham text-900">GINGHAM</span> Works:</h3>
                     <p>
                         <strong>
