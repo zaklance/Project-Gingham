@@ -1236,9 +1236,11 @@ function VendorProfile () {
                                             <p>No image uploaded.</p>
                                         )}
                                         <div className='flex-start flex-center-align'>
-                                            <div className='margin-l-8'>
-                                                <button className='btn btn-small btn-blue' onClick={handleDeleteProductImage}>Delete Image</button>
-                                            </div>
+                                            {tempVendorData.image && (
+                                                <div className='margin-l-8'>
+                                                    <button className='btn btn-small btn-blue' onClick={handleDeleteProductImage}>Delete Image</button>
+                                                </div>
+                                            )}
                                             <label htmlFor='file-upload' className='btn btn-small btn-file nowrap'>Choose File <span className='text-white-background'>{image?.name}</span></label>
                                             <input
                                                 id="file-upload"
@@ -1273,89 +1275,89 @@ function VendorProfile () {
                                     </div>
                                 </>
                             ) : (
-                                    <>
-                                        <div className='flex-start flex-gap-48'>
-                                            <table>
-                                                <tbody>
-                                                    <tr>
-                                                        <td className='cell-title'>Role:</td>
-                                                        <td className='cell-text'>
-                                                            {(() => {
-                                                                const role = vendorUserData?.vendor_role[vendorUserData.active_vendor];
-                                                                if (role === 0) return 'Owner';
-                                                                if (role === 1) return 'Admin';
-                                                                if (role === 2) return 'Employee';
-                                                                return 'Unknown Role';
-                                                            })()}
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className='cell-title'>Name:</td>
-                                                        <td className='cell-text'>{vendorData ? vendorData.name : ' Loading...'}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className='cell-title'>Website:</td>
-                                                        <td className='cell-text'><a className='link-underline' href={vendorData ? vendorData.website : ''} target='_blank' rel="noopener noreferrer">{vendorData ? vendorData.website : ''}</a></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className='cell-title'>Product:</td>
-                                                        <td className='cell-text'>
-                                                            {products
-                                                                .filter(p => vendorData?.products?.includes(p.id))
-                                                                .map(p => p.product)
-                                                                .join(', ') || ''}
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className='cell-title'>Product Subcategories:</td>
-                                                        <td className='cell-text'>
-                                                            {vendorData?.products_subcategories
-                                                                ?.map(p => p)
-                                                                .join(', ') || ''}
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className='cell-title'>Bio:</td>
-                                                        <td className='cell-text'>{vendorData ? vendorData.bio : ' Loading...'}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className='cell-title'>Based in:</td>
-                                                        <td className='cell-text'>{vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className='cell-title'>Image:</td>
-                                                        <td className='cell-text'>{vendorData ? <img src={vendorData.image ? `${siteURL}${vendorData.image}` : `/vendor-images/_default-images/${vendorData.image_default}`} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        {vendorUserData?.vendor_role[vendorUserData.active_vendor] <= 1 && (    
-                                           <>
-                                                <div className='flex-start'>
-                                                    <button className='btn-edit' onClick={handleVendorEditToggle}>Edit</button>
-                                                    <div className='alert-container'>
-                                                        <div className={status === 'success' ? 'alert alert-favorites' : 'alert-favorites-hidden'}>
-                                                            Success Uploading Image
-                                                        </div>
+                                <>
+                                    <div className='flex-start flex-gap-48'>
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td className='cell-title'>Role:</td>
+                                                    <td className='cell-text'>
+                                                        {(() => {
+                                                            const role = vendorUserData?.vendor_role[vendorUserData.active_vendor];
+                                                            if (role === 0) return 'Owner';
+                                                            if (role === 1) return 'Admin';
+                                                            if (role === 2) return 'Employee';
+                                                            return 'Unknown Role';
+                                                        })()}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Name:</td>
+                                                    <td className='cell-text'>{vendorData ? vendorData.name : ' Loading...'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Website:</td>
+                                                    <td className='cell-text'><a className='link-underline' href={vendorData ? vendorData.website : ''} target='_blank' rel="noopener noreferrer">{vendorData ? vendorData.website : ''}</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Product:</td>
+                                                    <td className='cell-text'>
+                                                        {products
+                                                            .filter(p => vendorData?.products?.includes(p.id))
+                                                            .map(p => p.product)
+                                                            .join(', ') || ''}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Product Subcategories:</td>
+                                                    <td className='cell-text'>
+                                                        {vendorData?.products_subcategories
+                                                            ?.map(p => p)
+                                                            .join(', ') || ''}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Bio:</td>
+                                                    <td className='cell-text'>{vendorData ? vendorData.bio : ' Loading...'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Based in:</td>
+                                                    <td className='cell-text'>{vendorData ? `${vendorData.city}, ${vendorData.state}` : ' Loading...'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td className='cell-title'>Image:</td>
+                                                    <td className='cell-text'>{vendorData ? <img src={vendorData.image ? `${siteURL}${vendorData.image}` : `/vendor-images/_default-images/${vendorData.image_default}`} alt="Vendor" style={{ maxWidth: '100%', height: 'auto' }} /> : ''}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {vendorUserData?.vendor_role[vendorUserData.active_vendor] <= 1 && (    
+                                        <>
+                                            <div className='flex-start'>
+                                                <button className='btn-edit' onClick={handleVendorEditToggle}>Edit</button>
+                                                <div className='alert-container'>
+                                                    <div className={status === 'success' ? 'alert alert-favorites' : 'alert-favorites-hidden'}>
+                                                        Success Uploading Image
                                                     </div>
                                                 </div>
-                                                <VendorLocations 
-                                                    vendorId={vendorId} 
-                                                    vendorUserData={vendorUserData}
-                                                    allVendorMarkets={allVendorMarkets} 
-                                                    allMarketDays={allMarketDays} 
-                                                    allMarkets={allMarkets} 
-                                                    filteredMarketDays={filteredMarketDays} 
-                                                    setFilteredMarketDays={setFilteredMarketDays} 
-                                                    filteredMarkets={filteredMarkets}
-                                                />
-                                            </>
-                                        )}
-                                    </>
-                                )
-                            ) : (
+                                            </div>
+                                            <VendorLocations 
+                                                vendorId={vendorId} 
+                                                vendorUserData={vendorUserData}
+                                                allVendorMarkets={allVendorMarkets} 
+                                                allMarketDays={allMarketDays} 
+                                                allMarkets={allMarkets} 
+                                                filteredMarketDays={filteredMarketDays} 
+                                                setFilteredMarketDays={setFilteredMarketDays} 
+                                                filteredMarkets={filteredMarkets}
+                                            />
+                                        </>
+                                    )}
+                                </>
+                            )
+                        ) : (
                             <VendorCreate />
-                            )}
+                        )}
                     </div>
                 </div>
             </div>

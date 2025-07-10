@@ -91,10 +91,28 @@ function VendorCreate () {
     
     useEffect(() => {
         if (newVendor && !vendorData) {
-            setVendorData({ name: '', city: '', state: '', bio: '', products: '', products_subcategories: '', website: '', image: '' });
+            setVendorData({
+                name: '', 
+                city: '', 
+                state: '', 
+                bio: '', 
+                products: '', 
+                products_subcategories: '', 
+                website: '', 
+                image: '' 
+            });
             setVendorEditMode(true); 
         } else if (vendorUserData) {
-            setVendorData({ name: vendorUserData.name || '', city: vendorUserData.city || '', state: vendorUserData.state || '', bio: vendorUserData.bio || '', product: vendorUserData.product || '', image: vendorUserData.image || '' });
+            setVendorData({
+                name: vendorUserData.name || '',
+                city: vendorUserData.city || '',
+                state: vendorUserData.state || '',
+                bio: vendorUserData.bio || '',
+                product: vendorUserData.product || '',
+                product_subcategories: vendorUserData.product_subcategories || '',
+                website: vendorUserData.website || '',
+                image: vendorUserData.image || ''
+            });
             setVendorEditMode(true);
         }
     }, [newVendor, vendorUserData]);

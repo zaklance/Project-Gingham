@@ -685,9 +685,11 @@ function Profile({ marketData }) {
                                         <p>No image uploaded.</p>
                                     )}
                                     <div className='flex-start flex-center-align'>
-                                        <div className='margin-l-8'>
-                                            <button className='btn btn-small btn-blue' onClick={handleDeleteImage}>Delete Image</button>
-                                        </div>
+                                        {tempProfileData.avatar && (
+                                            <div className='margin-l-8'>
+                                                <button className='btn btn-small btn-blue' onClick={handleDeleteImage}>Delete Image</button>
+                                            </div>
+                                        )}
                                         <label htmlFor='file-upload' className='btn btn-small btn-file btn-blue nowrap'>Choose File{image && <span id="file-name" className='text-white-background margin-l-8'>{image.name}</span>}</label>
                                         <input
                                             id="file-upload"
