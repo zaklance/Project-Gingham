@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { avatars_default, states } from "@repo/ui/common.js";
-import { blogTimeConverter, formatPhoneNumber, timeConverter } from "@repo/ui/helpers.js";
+import { avatars_default } from "@repo/ui/common.js";
+import { formatPhoneNumber } from "@repo/ui/helpers.js";
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
@@ -193,8 +193,8 @@ function Profile({ marketData }) {
                             if (response.ok) {
                                 const updatedData = await response.json();
                                 setProfileData(updatedData);
-                                setEditMode(false);
-                                console.log('Profile data updated successfully:', updatedData);
+                                // setEditMode(false);
+                                // console.log('Profile data updated successfully:', updatedData);
                                 toast.success('Profile updated successfully.', {
                                     autoClose: 4000,
                                 });
@@ -226,8 +226,8 @@ function Profile({ marketData }) {
                     if (response.ok) {
                         const updatedData = await response.json();
                         setProfileData(updatedData);
-                        setEditMode(false);
-                        console.log('Profile data updated successfully:', updatedData);
+                        // setEditMode(false);
+                        // console.log('Profile data updated successfully:', updatedData);
                         toast.success('Profile updated successfully.', {
                             autoClose: 4000,
                         });
@@ -291,12 +291,12 @@ function Profile({ marketData }) {
                         uploadedFilename = `/api/uploads/user-images/${id}/${data.filename}`;
                         console.log('Image processing complete:', uploadedFilename);
                         setStatus('success');
-                        setUploading(false)
-
                         setProfileData((prevData) => ({
                             ...prevData,
                             avatar: uploadedFilename,
                         }));
+                        setUploading(false)
+                        setEditMode(false);
                     } else {
                         console.log('Image upload failed');
                         console.log('Response:', await result.text());
@@ -460,8 +460,8 @@ function Profile({ marketData }) {
         }
     
         try {
-            console.log('Deleting image with filename:', profileData.avatar);
-            console.log('User ID:', userId);
+            // console.log('Deleting image with filename:', profileData.avatar);
+            // console.log('User ID:', userId);
     
             const response = await fetch(`/api/delete-image`, {
                 method: 'DELETE',
@@ -481,6 +481,10 @@ function Profile({ marketData }) {
                 console.log('Image deleted response:', result);
     
                 setProfileData((prevData) => ({
+                    ...prevData,
+                    avatar: null,
+                }));
+                setTempProfileData((prevData) => ({
                     ...prevData,
                     avatar: null,
                 }));
@@ -694,18 +698,20 @@ function Profile({ marketData }) {
                                         />
                                     </div>
                                 </div>
-                                {uploading ? (
-                                    <PulseLoader
-                                        className='margin-t-16'
-                                        color={'#ff806b'}
-                                        size={10}
-                                        aria-label="Loading Spinner"
-                                        data-testid="loader"
-                                    />
-                                ) : (
-                                    <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
-                                )}
-                                <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
+                                <div className='flex-start'>
+                                    {uploading ? (
+                                        <PulseLoader
+                                            className='margin-t-16 margin-l-16 margin-r-16'
+                                            color={'#ff806b'}
+                                            size={10}
+                                            aria-label="Loading Spinner"
+                                            data-testid="loader"
+                                        />
+                                    ) : (
+                                        <button className='btn-edit' onClick={handleSaveChanges}>Save Changes</button>
+                                    )}
+                                    <button className='btn-edit' onClick={handleEditToggle}>Cancel</button>
+                                </div>
                             </div>
                         ) : (
                             <>
