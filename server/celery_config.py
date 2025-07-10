@@ -38,6 +38,8 @@ def get_beat_schedule():
         }
     }
 
+broker_transport_options = {"visibility_timeout": 3600}
+
 def configure_celery():
     celery.conf.update(
         beat_schedule=get_beat_schedule(),

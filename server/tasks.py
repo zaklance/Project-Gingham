@@ -54,6 +54,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from sqlalchemy.sql.expression import extract
+from sqlalchemy.dialects.postgresql import JSONB
 from datetime import datetime, time, timedelta, timezone
 import time as time2
 from sqlalchemy.orm import Session
@@ -1717,13 +1718,13 @@ def send_monthly_vendor_statements(month=None, year=None):
         try:
             # If no month/year provided, use previous month
             if not month or not year:
-                now = datetime.now()
-                if now.month == 1:
+                current_time = datetime.now()
+                if current_time.month == 1:
                     month = 12
-                    year = now.year - 1
+                    year = current_time.year - 1
                 else:
-                    month = now.month - 1
-                    year = now.year
+                    month = current_time.month - 1
+                    year = current_time.year
             
             # Get all vendors who had baskets in the specified month/year
             vendors_with_baskets = db.session.query(Vendor).join(Basket).filter(
@@ -1741,7 +1742,7 @@ def send_monthly_vendor_statements(month=None, year=None):
             for vendor in vendors_with_baskets:
                 # Get all vendor users for this vendor
                 vendor_users = db.session.query(VendorUser).filter(
-                    VendorUser.vendor_id.like(f'%{vendor.id}%')
+                    func.json_extract(VendorUser.vendor_id, f'$.{vendor.id}').isnot(None)
                 ).all()
                 
                 for vendor_user in vendor_users:
