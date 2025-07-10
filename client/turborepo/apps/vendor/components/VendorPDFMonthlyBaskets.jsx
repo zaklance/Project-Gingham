@@ -48,7 +48,7 @@ export const ReceiptDocument = ({ filteredBaskets, year, month }) => {
                     </View>
                 </View>
 
-                <Text style={styles.bold}>Items Purchased:</Text>
+                <Text style={styles.bold}>Items Sold:</Text>
                 <View style={styles.divider} />
 
                 {/* Prevent mapping error by ensuring `basketItems` is always an array */}
