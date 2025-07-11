@@ -477,13 +477,13 @@ function VendorProfile () {
                     }
 
                     uploadedFilename = `/api/uploads/vendor-images/${vendorId}/${data.filename}`;
-                    console.log('Image processing complete:', uploadedFilename);
+                    // console.log('Image processing complete:', uploadedFilename);
                     setStatus('success');
                     setUploading(false)
 
                     setVendorImageURL(`${vendorData.id}/${uploadedFilename}`);
 
-                    window.location.reload();
+                    // window.location.reload();
                 } else {
                     console.log('Image upload failed');
                     console.log('Response:', await result.text());

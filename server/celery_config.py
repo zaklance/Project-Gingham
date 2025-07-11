@@ -38,7 +38,7 @@ def get_beat_schedule():
         }
     }
 
-broker_transport_options = {"visibility_timeout": 3600}
+broker_transport_options = {"visibility_timeout": 120}
 
 def configure_celery():
     celery.conf.update(
@@ -49,6 +49,7 @@ def configure_celery():
         task_acks_late=True,
         task_reject_on_worker_lost=True,
         task_serializer='json',
+        task_track_started=True,
         accept_content=['json'],
         result_serializer='json',
         enable_utc=True
