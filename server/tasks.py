@@ -1664,7 +1664,6 @@ def send_weekly_admin_summary():
         # Admin recipients (role <= 3)
         admins = [admin for admin in AdminUser.query.filter(AdminUser.admin_role <= 3).all()]
 
-
         for admin in admins:
             body_tag = f"""
                 <body>
@@ -1705,7 +1704,10 @@ def send_weekly_admin_summary():
                     </div>
                 </body>
                 """
-            send_email_weekly_admin_update(email=admin.email, body_tag=body_tag)
+            
+            is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+            if is_production:
+                send_email_weekly_admin_update(email=admin.email, body_tag=body_tag)
 
 @celery.task(queue='default')
 def send_monthly_vendor_statements(month=None, year=None):
@@ -1764,11 +1766,13 @@ def send_monthly_vendor_statements(month=None, year=None):
                             db.session.add(vendor_notification)
                             
                             # Send email with CSV attachment
-                            send_email_vendor_new_statement(
-                                vendor_user.email, vendor_user, vendor, month, year
-                            )
-                            statements_sent += 1
-                            print(f"Statement sent to {vendor_user.email} for vendor {vendor.name}")
+                            is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+                            if is_production:
+                                send_email_vendor_new_statement(
+                                    vendor_user.email, vendor_user, vendor, month, year
+                                )
+                                statements_sent += 1
+                                print(f"Statement sent to {vendor_user.email} for vendor {vendor.name}")
                             
                         except Exception as e:
                             print(f"Error sending statement to {vendor_user.email}: {e}")

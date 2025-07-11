@@ -312,7 +312,9 @@ function Profile({ marketData }) {
                     toast.error('Image failed to upload successfully. Only jpeg, svg, and heic files are allowed.', { autoClose: 6000 });
                     return;
                 }
-                window.location.reload()
+                // window.location.reload()
+            } else {
+                setEditMode(false);
             }
         } catch (error) {
             console.error('Error saving changes:', error);

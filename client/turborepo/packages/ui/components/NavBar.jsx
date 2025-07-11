@@ -169,7 +169,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 if (response.ok) {
                     setNotifications([]);
                     const updatedData = await response.json();
-                    console.log('Notification updated successfully:', updatedData);
+                    // console.log('Notification updated successfully:', updatedData);
                     setIsNotifPopup(false)
                 } else {
                     console.error('Failed to update notification:', await response.text());
@@ -201,7 +201,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             : notification
                     )
                 );
-                console.log('Notification updated successfully:', updatedData);
+                // console.log('Notification updated successfully:', updatedData);
             } else {
                 console.error('Failed to update notification:', await response.text());
             }
@@ -241,7 +241,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 if (response.ok) {
                     const updatedData = await response.json();
                     setVendorNotifications((prev) => prev.filter((notif) => notif.subject === 'team-request'));
-                    console.log('Notification updated successfully:', updatedData);
+                    // console.log('Notification updated successfully:', updatedData);
                     setIsNotifPopup(false)
                 } else {
                     console.error('Failed to update notification:', await response.text());
@@ -290,7 +290,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                             : notification
                     )
                 );
-                console.log('Notification updated successfully:', updatedData);
+                // console.log('Notification updated successfully:', updatedData);
             } else {
                 console.error('Failed to update notification:', await response.text());
             }
@@ -330,7 +330,7 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
                 if (response.ok) {
                     const updatedData = await response.json();
                     setAdminNotifications((prev) => prev.filter((notif) => notif.subject === 'product-request'));
-                    console.log('Notification updated successfully:', updatedData);
+                    // console.log('Notification updated successfully:', updatedData);
                     setIsNotifPopup(false)
                     window.location.reload()
                 } else {
