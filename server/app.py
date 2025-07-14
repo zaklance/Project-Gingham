@@ -5161,24 +5161,24 @@ def blogs():
             user_result = query.all()
             if user_result:
                 return jsonify([blog.to_dict() for blog in user_result]), 200
-            return jsonify({'error': 'User Blogs not found'}), 404
+            return jsonify({'error': 'User Blogs not found'}), 204
         elif for_vendor:
             query = query.filter(Blog.for_vendor == True)
             vendor_result = query.all()
             if vendor_result:
                 return jsonify([blog.to_dict() for blog in vendor_result]), 200
-            return jsonify({'error': 'Vendor Blogs not found'}), 404
+            return jsonify({'error': 'Vendor Blogs not found'}), 204
         elif for_admin:
             query = query.filter(Blog.for_admin == True)
             admin_result = query.all()
             if admin_result:
                 return jsonify([blog.to_dict() for blog in admin_result]), 200
-            return jsonify({'error': 'Admin Blog not found'}), 404
+            return jsonify({'error': 'Admin Blog not found'}), 204
         elif not for_user and not for_vendor and not for_admin:
             result = query.all()
             if result:
                 return jsonify([blog.to_dict() for blog in result]), 200
-            return jsonify({'error': 'No Blogs found'}), 404
+            return jsonify({'error': 'No Blogs found'}), 204
         return jsonify({'error': 'Invalid query parameters'}), 400
 
     elif request.method == 'POST':

@@ -16,11 +16,11 @@ function VendorHelpCenter() {
         <>
             <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap margin-t-16'>
                 <h2 className=''>Vendor Help Center</h2>
-                <div className='tabs margin-t-20 margin-l-24'>
-                    <Link to="#" onClick={() => setActiveTab('faqs')} className={activeTab === 'faqs' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                <div className='tabs'>
+                    <Link to="#" onClick={() => setActiveTab('faqs')} className={`btn btn-reset btn-tab ${activeTab === 'faqs' && 'active-tab'}`}>
                         FAQs
                     </Link>
-                    <Link to="#" onClick={() => setActiveTab('guide')} className={activeTab === 'guide' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                    <Link to="#" onClick={() => setActiveTab('guide')} className={`btn btn-reset btn-tab ${activeTab === 'guide' && 'active-tab'}`}>
                         How-To Guide
                     </Link>
 

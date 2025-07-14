@@ -294,6 +294,8 @@ input[type=checkbox], input[type=radio] {
 
 .title-big {
   font-size: 6em;
+  font-weight: 900 !important;
+  font-style: italic;
   line-height: normal !important;
 }
 
@@ -4065,6 +4067,11 @@ textarea {
     position: auto;
     top: calc(20vh);
   }
+
+
+  .title-big-gingham {
+    font-size: 7.2em;
+  }
 }
 
 
@@ -4286,7 +4293,11 @@ textarea {
   }
 
   .title-big-gingham {
-    font-size: 5.6em;
+    font-size: 4.6em;
+  }
+
+  .title-big {
+    font-size: 4.2em;
   }
 
   .box-unsubscribe {

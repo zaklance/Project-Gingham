@@ -863,13 +863,13 @@ function Profile({ marketData }) {
                         <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap margin-b-16'>
                             <h2>Settings</h2>
                             <div className='tabs'>                
-                                <Link to="#" onClick={() => setActiveTab('website')} className={activeTab === 'website' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                                <Link to="#" onClick={() => setActiveTab('website')} className={`btn btn-reset btn-tab ${activeTab === 'website' && 'active-tab'}`}>
                                     Website
                                 </Link>
-                                <Link to="#" onClick={() => setActiveTab('email')} className={activeTab === 'email' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                                <Link to="#" onClick={() => setActiveTab('email')} className={`btn btn-reset btn-tab ${activeTab === 'email' && 'active-tab'}`}>
                                     Email
                                 </Link>
-                                <Link to="#" onClick={() => setActiveTab('text')} className={activeTab === 'text' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                                <Link to="#" onClick={() => setActiveTab('text')} className={`btn btn-reset btn-tab ${activeTab === 'text' && 'active-tab'}`}>
                                     Text
                                 </Link>
                             </div>

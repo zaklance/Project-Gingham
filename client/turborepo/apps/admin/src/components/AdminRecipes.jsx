@@ -52,16 +52,16 @@ const AdminRecipes = () => {
             <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
                 <h1>Recipe Management</h1>
                 <div className='tabs m-scroll'>
-                    <Link to="/recipes?tab=add" onClick={() => setActiveTab('add')} className={activeTab === 'add' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="/recipes?tab=add" onClick={() => setActiveTab('add')} className={`btn btn-reset btn-tab ${activeTab === 'add' && 'active-tab'}`}>
                         Add
                     </Link>
-                    <Link to="/recipes?tab=edit" onClick={() => setActiveTab('edit')} className={activeTab === 'edit' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="/recipes?tab=edit" onClick={() => setActiveTab('edit')} className={`btn btn-reset btn-tab ${activeTab === 'edit' && 'active-tab'}`}>
                         Edit
                     </Link>
-                    <Link to="/recipes?tab=delete" onClick={() => setActiveTab('delete')} className={activeTab === 'delete' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="/recipes?tab=delete" onClick={() => setActiveTab('delete')} className={`btn btn-reset btn-tab ${activeTab === 'delete' && 'active-tab'}`}>
                         Delete
                     </Link>
-                    <Link to="/recipes?tab=ingredient" onClick={() => setActiveTab('ingredient')} className={activeTab === 'ingredient' ? 'active-tab btn btn-reset btn-tab margin-r-24' : 'btn btn-reset btn-tab margin-r-24'}>
+                    <Link to="/recipes?tab=ingredient" onClick={() => setActiveTab('ingredient')} className={`btn btn-reset btn-tab ${activeTab === 'ingredient' && 'active-tab'}`}>
                         Ingredients
                     </Link>
                 </div>
