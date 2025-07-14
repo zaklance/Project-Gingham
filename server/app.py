@@ -813,7 +813,7 @@ def vendor_signup():
         existing_user = VendorUser.query.filter_by(email=email).first()
 
         if existing_user:
-            return {'error': 'This email is already registered. Please log in or use a different email.'}
+            return jsonify({'error': 'This email is already registered. Please log in or use a different email.'}), 302
 
         # Send user confirmation email
         result = vendor_signup_task.apply_async(args=[data])
