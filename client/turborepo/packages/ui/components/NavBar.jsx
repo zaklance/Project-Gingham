@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const [notifications, setNotifications] = useState([]);
@@ -11,7 +11,6 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const [baskets, setBaskets] = useState([])
     const [subdomain, setSubdomain] = useState('');
 
-    const location = useLocation();
     const userId = globalThis.localStorage.getItem('user_id');
     const vendorUserId = globalThis.localStorage.getItem('vendor_user_id');
     const adminUserId = globalThis.localStorage.getItem('admin_user_id');
@@ -19,7 +18,6 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
     const isVendorLoggedIn = vendorUserId;
     const isAdminLoggedIn = adminUserId;
 
-    const navigate = useNavigate();
     const userToken = localStorage.getItem('user_jwt-token');
     const vendorToken = localStorage.getItem('vendor_jwt-token');
     const adminToken = localStorage.getItem('admin_jwt-token');
@@ -76,35 +74,6 @@ function NavBar({ amountInCart, isPopup, setIsPopup, handlePopup }) {
             console.error("Error deleting notification", error);
         }
     };
-
-    // useEffect(() => {
-    //     const fetchVendorUserData = async () => {
-    //         if (vendorUserId) {
-    //             try {
-    //                 const response = await fetch(`/api/vendor-users/${vendorUserId}`, {
-    //                     method: 'GET',
-    //                     headers: {
-    //                         'Authorization': `Bearer ${vendorToken}`,
-    //                         'Content-Type': 'application/json'
-    //                     }
-    //                 });
-    //                 if (!response.ok) {
-    //                     console.error('Failed to fetch vendor user data:', response.statusText);
-    //                     return;
-    //                 }
-    //                 const data = await response.json();
-    //                 setVendorUserData(data);
-    //                 // console.log('Fetched Vendor User Data:', data);
-    //                 // console.log('Vendor User ID:', vendorUserId);
-
-    //             } catch (error) {
-    //                 console.error('Error fetching vendor user data:', error);
-    //             }
-    //         }
-    //     };
-    //     fetchVendorUserData();
-    // }, [vendorUserId]);
-
 
     useEffect(() => {
         if (isVendorLoggedIn) {

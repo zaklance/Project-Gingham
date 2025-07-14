@@ -36,13 +36,13 @@ const AdminHelp = () => {
             <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
                 <h1>Admin Help Center</h1>
                 <div className='tabs'>
-                    <Link to="/help?tab=user" onClick={() => setActiveTab('user')} className={activeTab === 'user' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="/help?tab=user" onClick={() => setActiveTab('user')} className={`btn btn-reset btn-tab ${activeTab === 'user' && 'active-tab'}`}>
                         User
                     </Link>
-                    <Link to="/help?tab=vendor" onClick={() => setActiveTab('vendor')} className={activeTab === 'vendor' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="/help?tab=vendor" onClick={() => setActiveTab('vendor')} className={`btn btn-reset btn-tab ${activeTab === 'vendor' && 'active-tab'}`}>
                         Vendor
                     </Link>
-                    <Link to="/help?tab=admin" onClick={() => setActiveTab('admin')} className={activeTab === 'admin' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="/help?tab=admin" onClick={() => setActiveTab('admin')} className={`btn btn-reset btn-tab ${activeTab === 'admin' && 'active-tab'}`}>
                         Admin
                     </Link>
                 </div>

@@ -61,16 +61,16 @@ function AdminMarkets () {
             <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap'>
                 <h1>Markets Management:</h1>
                 <div className='tabs'>                
-                    <Link to="#" onClick={() => setActiveTab('edit')} className={activeTab === 'edit' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="#" onClick={() => setActiveTab('edit')} className={`btn btn-reset btn-tab ${activeTab === 'edit' && 'active-tab'}`}>
                         Edit
                     </Link>
-                    <Link to="/markets?tab=add" onClick={() => setActiveTab('add')} className={activeTab === 'add' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="/markets?tab=add" onClick={() => setActiveTab('add')} className={`btn btn-reset btn-tab ${activeTab === 'add' && 'active-tab'}`}>
                         Add
                     </Link>
-                    <Link to="/markets?tab=delete" onClick={() => setActiveTab('delete')} className={activeTab === 'delete' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="/markets?tab=delete" onClick={() => setActiveTab('delete')} className={`btn btn-reset btn-tab ${activeTab === 'delete' && 'active-tab'}`}>
                         Delete
                     </Link>
-                    <Link to="/markets?tab=event" onClick={() => setActiveTab('event')} className={activeTab === 'event' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                    <Link to="/markets?tab=event" onClick={() => setActiveTab('event')} className={`btn btn-reset btn-tab ${activeTab === 'event' && 'active-tab'}`}>
                         Events
                     </Link>
                 </div>

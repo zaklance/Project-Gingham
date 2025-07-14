@@ -155,25 +155,25 @@ function VendorDashboard({ marketId }) {
             <div className='flex-start flex-center-align flex-gap-24 m-flex-wrap margin-t-16'>
                 <h1 className=''>Vendor Dashboard</h1>
                 {tabsReady && (
-                    <div className='tabs margin-l-24 m-flex-wrap'>
+                    <div className='tabs m-flex-wrap'>
                         {isOnboarded ? (
                             <>
-                                <Link to="/dashboard?tab=baskets" onClick={() => setActiveTab('baskets')} className={activeTab === 'baskets' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                                <Link to="/dashboard?tab=baskets" onClick={() => setActiveTab('baskets')} className={`btn btn-reset btn-tab ${activeTab === 'baskets' && 'active-tab'}`}>
                                     Baskets
                                 </Link>
-                                <Link to="/dashboard?tab=events" onClick={() => setActiveTab('events')} className={activeTab === 'events' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                                <Link to="/dashboard?tab=events" onClick={() => setActiveTab('events')} className={`btn btn-reset btn-tab ${activeTab === 'events' && 'active-tab'}`}>
                                     Events
                                 </Link>
-                                <Link to="/dashboard?tab=team" onClick={() => setActiveTab('team')} className={activeTab === 'team' ? 'notification active-tab btn btn-reset btn-tab' : 'notification btn btn-reset btn-tab'}>
+                                <Link to="/dashboard?tab=team" onClick={() => setActiveTab('team')} className={`notification btn btn-reset btn-tab ${activeTab === 'team' && 'active-tab'}`}>
                                     Team
                                     {notifications.length > 0 && <p className='badge'>{notifications.length}</p>}
                                 </Link>
-                                <Link to="/dashboard?tab=reviews" onClick={() => setActiveTab('reviews')} className={activeTab === 'reviews' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                                <Link to="/dashboard?tab=reviews" onClick={() => setActiveTab('reviews')} className={`btn btn-reset btn-tab ${activeTab === 'reviews' && 'active-tab'}`}>
                                     Reviews
                                 </Link>
                             </>
                         ) : (
-                            <Link to="/dashboard?tab=payout" onClick={() => setActiveTab('payout')} className={activeTab === 'payout' ? 'active-tab btn btn-reset btn-tab' : 'btn btn-reset btn-tab'}>
+                            <Link to="/dashboard?tab=payout" onClick={() => setActiveTab('payout')} className={`btn btn-reset btn-tab ${activeTab === 'payout' && 'active-tab'}`}>
                                 Payout
                             </Link>
                         )}
