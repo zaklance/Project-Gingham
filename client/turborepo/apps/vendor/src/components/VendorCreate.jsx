@@ -25,7 +25,6 @@ function VendorCreate () {
     const location = useLocation();
     const { handlePopup } = useOutletContext();
 
-
     useEffect(() => {
         fetch("/api/products")
             .then(response => response.json())
@@ -138,12 +137,29 @@ function VendorCreate () {
                 .join(' ');
         };
         const formattedProduct = toTitleCase(newProduct);
-        setVendorData((prev) => ({
+        setVendorData((prev) => {
+            const current = prev.products_subcategories || [];
+
+            // Limit to 6 items
+            if (current.length >= 6) {
+                toast.warning('You can only select up to 6 subcategories.', {
+                    autoClose: 5000,
+                });
+                return prev;
+            }
+
+            // Prevent duplicates
+            if (current.includes(formattedProduct)) {
+                return prev;
+            }
+
+            return{
             ...prev,
             products_subcategories: (prev.products_subcategories || []).includes(formattedProduct)
                 ? prev.products_subcategories
                 : [...(prev.products_subcategories || []), formattedProduct],
-        }));
+            }
+        });
         setNewProductSubcat('')
     };
 
