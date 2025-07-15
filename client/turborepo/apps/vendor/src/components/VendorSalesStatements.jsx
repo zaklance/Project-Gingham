@@ -89,7 +89,7 @@ function VendorSalesStatements({ baskets, vendorId }) {
 		baskets.forEach(basket => {
 			if (basket.sale_date) {
 				const date = new Date(basket.sale_date);
-				const key = `${date.getFullYear()}-${date.getMonth() + 1}`;
+				const key = `${date.getUTCFullYear()}-${date.getUTCMonth() + 1}`;
 				if (!monthlyData[key]) {
 					monthlyData[key] = [];
 				}

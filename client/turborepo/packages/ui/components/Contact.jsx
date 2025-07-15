@@ -45,11 +45,11 @@ function Contact() {
     return(
         <div className=''>
             <title>gingham • Contact</title>
-            <div>
-                <h2 className='margin-t-16 margin-b-16'>Contact Us!</h2>
-                <p>Is there something you love, dislike, or have a question for us? Feel Free to send us an message using the form below:</p>
+            <div className='box-bounding'>
+                <h1 className='margin-b-16'>Contact Us!</h1>
+                <p>Is there something you love, dislike, or have a question for us? Feel Free to send us an message using the form below.</p>
                 <div>
-                    <p>Prefer to email us directly? Click here: &ensp;<strong>
+                    <p>Prefer to email us directly? Click here: <strong>
                         <a href={`mailto:hello@mufo.nyc`} target="_blank" rel="noopener noreferrer">
                             Email Us
                         </a>
