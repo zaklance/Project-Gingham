@@ -398,7 +398,7 @@ function VendorTeam({ vendorId, vendorUserData, notifications, setNotifications 
                                                             <>
                                                                 <button className="btn btn-small btn-white margin-r-8" 
                                                                     onClick={() => handleToggleRole(member, member.vendor_role[vendorId])}>
-                                                                        Switch to {member.vendor_role[vendorId] === 1 ? 'Owner' : member.vendor_role[vendorId] === 0 ? 'Employee' : 'Admin'}
+                                                                        Switch Role
                                                                 </button>
                                                                 <button className="btn btn-small btn-unreport" onClick={() => handleDeleteTeamMember(member.id)} > Remove from Team</button>
                                                             </>

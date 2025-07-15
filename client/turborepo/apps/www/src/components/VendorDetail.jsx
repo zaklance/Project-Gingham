@@ -371,26 +371,26 @@ function VendorDetail() {
             </div>
             <div className='market-details margin-t-8'>
                 <div className='flex-start flex-center-align'>
-                    <h3 className='margin-r-8'>{productList?.length > 1 ? 'Products: ' : 'Product: '}</h3>
-                    <h3 className='text-400'>{productList?.length > 0
+                    <h4 className='margin-r-8'>{productList?.length > 1 ? 'Products: ' : 'Product: '}</h4>
+                    <h4 className='text-400'>{productList?.length > 0
                         ? productList.map(p => p.product).join(', ')
                         : "No products available"}
-                    </h3>
+                    </h4>
                 </div>
                 {vendor.products_subcategories && (
-                    <h3>
+                    <h4>
                         {vendor.products_subcategories?.length > 1 ? 'Subcategories:' : 'Subcategory:'}
                         &emsp; <span className='text-400'>{vendor.products_subcategories?.length > 0 &&
                             vendor.products_subcategories.map(p => p).join(', ')
                         }</span>
-                    </h3>
+                    </h4>
                 )}
                 <div className='flex-start flex-center-align'>
-                    <h3 className=''>Based out of: &emsp;<span className='text-400'>{vendor.city}, {vendor.state}</span></h3>
+                    <h4 className=''>Based out of: &emsp;<span className='text-400'>{vendor.city}, {vendor.state}</span></h4>
                 </div>
             </div>
             {vendor.website && (
-                <h3 className='margin-l-4 margin-t-4 text-400'><a className='link-underline-inverse text-700' href={vendor.website} target='_blank' rel="noopener noreferrer">Click</a> for their website!</h3>
+                <h4 className='margin-l-4 margin-t-4 text-400'><a className='link-underline-inverse text-700' href={vendor.website} target='_blank' rel="noopener noreferrer">Click</a> for their website!</h4>
             )}
             {vendor.bio && (
                 <>
