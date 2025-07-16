@@ -8,27 +8,15 @@ updates:
 
   # Apps
   - package-ecosystem: "npm"
-    directory: "/client"
+    directory: 
+    - "/client"
+    - "/client/turborepo/apps/www"
+    - "/client/turborepo/apps/vendor
+    - "/client/turborepo/apps/admin
+    - "/client/turborepo/packages/ui
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "npm"
-    directory: "/client/turborepo/apps/www"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "npm"
-    directory: "/client/turborepo/apps/vendor"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "npm"
-    directory: "/client/turborepo/apps/admin"
-    schedule:
-      interval: "weekly"
-
-  # Packages
-  - package-ecosystem: "npm"
-    directory: "/client/turborepo/packages/ui"
-    schedule:
-      interval: "weekly"
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
