@@ -11,9 +11,9 @@ updates:
     directory: 
     - "/client"
     - "/client/turborepo/apps/www"
-    - "/client/turborepo/apps/vendor
-    - "/client/turborepo/apps/admin
-    - "/client/turborepo/packages/ui
+    - "/client/turborepo/apps/vendor"
+    - "/client/turborepo/apps/admin"
+    - "/client/turborepo/packages/ui"
     schedule:
       interval: "weekly"
     groups:
