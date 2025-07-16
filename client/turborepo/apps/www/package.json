@@ -17,6 +17,6 @@
     "@repo/typescript-config": "*",
     "eslint": "^9.31.0",
     "typescript": "5.8.3",
-    "vite": "^5.1.4"
+    "vite": "^7.0.4"
   }
 }
