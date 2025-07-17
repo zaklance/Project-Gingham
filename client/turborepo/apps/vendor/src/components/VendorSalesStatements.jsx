@@ -246,10 +246,10 @@ function VendorSalesStatements({ baskets, vendorId }) {
 														/>
 													) : (
 														<button
-																	className="btn btn-file"
-																	onClick={() => handleDownloadPDF(monthKey, year, month)}
+															className="btn btn-file"
+															onClick={() => handleDownloadPDF(monthKey, year, month)}
 														>
-																	Download PDF
+															Download PDF
 														</button>
 													)}
 													{isExporting[monthKey] ? (
