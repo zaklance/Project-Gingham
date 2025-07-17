@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useLocation, useOutletContext } from 'react-router-dom';
+import { useLocation, useOutletContext } from 'react-router-dom';
 import { ColorScheme, FeatureVisibility, Map } from 'mapkit-react';
 import Fuse from 'fuse.js';
 import { weekDay } from "@repo/ui/common.js";
@@ -640,7 +640,8 @@ function Markets() {
                                         type="text" 
                                         placeholder="Search markets..." 
                                         value={query || ""} 
-                                        onChange={onUpdateQuery} />
+                                        onChange={onUpdateQuery}
+                                    />
                                     {showDropdown && (
                                         <ul className="dropdown-content" ref={dropdownRef}>
                                             {filteredMarketsDropdown

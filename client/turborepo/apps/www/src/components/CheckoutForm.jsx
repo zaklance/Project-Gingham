@@ -1,10 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from 'react-router-dom';
 import { PaymentElement } from "@stripe/react-stripe-js";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
-import { toast } from 'react-toastify';
-// import { timeConverter, formatBasketDate } from "@repo/ui/helpers";
-import objectHash from 'object-hash';
 import PDFReceipt from "./PDFReceipt";
 import { useNavigate } from 'react-router-dom';
 import { timeConverter } from "@repo/ui/helpers.js";

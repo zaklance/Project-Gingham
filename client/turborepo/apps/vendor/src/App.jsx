@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import '@repo/ui/index.css';
 import NavBar from '@repo/ui/NavBar.jsx';
 import Footer from '@repo/ui/Footer.jsx';

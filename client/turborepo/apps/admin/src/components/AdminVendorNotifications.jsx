@@ -2,10 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 function AdminVendorNotifications({ notifications, setNotifications }) {
-    // const [notifications, setNotifications] = useState([]);
     const [newProduct, setNewProduct] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     const handleApprove = async (notification, ) => {
         console.log(`Approval notification with ID: ${notification.id}`);

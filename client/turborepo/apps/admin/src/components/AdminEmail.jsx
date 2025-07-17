@@ -5,8 +5,6 @@ import { toast } from 'react-toastify';
 const AdminEmail = () => {
     const [previewHtml, setPreviewHtml] = useState('');
     const [bodyType, setBodyType] = useState('plain')
-    const [password, setPassword] = useState('')
-    const [showPassword, setShowPassword] = useState(false)
     const [newSubject, setNewSubject] = useState('')
     const [singleEmail, setSingleEmail] = useState('')
     const [isLoading, setIsLoading] = useState(false);

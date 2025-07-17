@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate, useOutletContext, useSearchParams } from 
 import { weekDay } from "@repo/ui/common.js";
 import { timeConverter, formatEventDate, formatDate, marketDateConvert, formatPickupText } from "@repo/ui/helpers.js";
 import ReviewMarket from './ReviewMarket';
-import { Annotation, ColorScheme, FeatureVisibility, Map, Marker } from 'mapkit-react'
+import { ColorScheme, FeatureVisibility, Map } from 'mapkit-react'
 import { toast } from 'react-toastify';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';

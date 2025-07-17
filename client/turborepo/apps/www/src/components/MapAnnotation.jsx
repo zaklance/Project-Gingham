@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Annotation } from 'mapkit-react';
 import { formatDate } from "@repo/ui/helpers.js";
@@ -31,8 +31,6 @@ function MapAnnotation({ handleMarkerHoverOn, handleMarkerHoverOff, isHover, mar
                 </div> 
             }
             calloutEnabled
-            // size={{width: 32, height: 46}}
-            // calloutOffsetY={-43}
         >
             <div
                 className='map-marker'

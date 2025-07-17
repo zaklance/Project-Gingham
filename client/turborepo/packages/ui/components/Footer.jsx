@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useRouteError, NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 function Footer() {
     const [clickedPath, setClickedPath] = useState(null);
