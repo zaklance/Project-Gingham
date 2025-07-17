@@ -10,8 +10,6 @@ instance/
 env/
 .venv/
 
-.DS_Store
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -222,3 +220,10 @@ packages/react-devtools-timeline/dist
 sendgrid.env
 dump.rdb
 celerybeat-schedule.db
+
+.turbo
+dist
+dist-ssr
+*.local
+server/dist
+public/dist

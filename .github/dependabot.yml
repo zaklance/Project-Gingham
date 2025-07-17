@@ -2,7 +2,7 @@ version: 2
 updates:
   # Root
   - package-ecosystem: "npm"
-    directory: "/" # root directory
+    directory: "/"
     schedule:
       interval: "weekly"
 
