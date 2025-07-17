@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
-import { formatMinutes } from '@repo/ui/helpers.js';
 
 function RecipeCard({ recipe, recipeFavs, handleClick, isClicked, setSelectedCategories, setSelectedDiets }) {
     const navigate = useNavigate();

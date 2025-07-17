@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import PasswordStrengthBar from 'react-password-strength-bar';
 import PasswordChecklist from "react-password-checklist"
-import PulseLoader from 'react-spinners/PulseLoader';
 import PhoneInput, { isPossiblePhoneNumber } from 'react-phone-number-input'
 
 function VendorJoinTeam() {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import VendorBaskets from './VendorBaskets';
 import VendorEvents from './VendorEvents';
 import VendorTeam from './VendorTeam';

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import objectHash from 'object-hash';
 import { timeConverter, formatBasketDate } from "@repo/ui/helpers.js";
 import { toast } from 'react-toastify';
 

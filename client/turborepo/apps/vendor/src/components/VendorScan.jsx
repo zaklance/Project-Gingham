@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import VendorActiveVendor from './VendorActiveVendor';
 import { toast } from 'react-toastify';

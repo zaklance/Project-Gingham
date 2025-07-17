@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useOutletContext, useNavigate, useLocation } from 'react-router-dom';
 import { weekDay } from "@repo/ui/common.js";
 import { timeConverter, formatEventDate, marketDateConvert, formatPickupText } from "@repo/ui/helpers.js";
-import MarketCard from './MarketCard';
 import ReviewVendor from './ReviewVendor';
 import { toast } from 'react-toastify';
 

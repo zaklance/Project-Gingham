@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, NavLink, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { formatPhoneNumber } from "@repo/ui/helpers.js";
 import PasswordStrengthBar from 'react-password-strength-bar';
 import PasswordChecklist from "react-password-checklist"

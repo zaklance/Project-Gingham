@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { PDFViewer, Document, Image, Page, Text, View, StyleSheet, PDFDownloadLink } from "@react-pdf/renderer";
+import React from "react";
+import { Document, Image, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import { formatBasketDate } from "@repo/ui/helpers.js";
 import { months } from "@repo/ui/common.js";
 

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import { timeConverter } from "@repo/ui/helpers.js";
 import { QRCodeSVG } from 'qrcode.react';
 import UserIssues from './UserIssues';

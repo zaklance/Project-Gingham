@@ -5,7 +5,6 @@ import { formatDate } from "@repo/ui/helpers.js";
 import { toast } from 'react-toastify';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-import DeleteIcon from '@mui/icons-material/Cancel';
 import PulseLoader from 'react-spinners/PulseLoader';
 
 function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayReverse }) {

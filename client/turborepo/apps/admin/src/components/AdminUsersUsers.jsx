@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { formatPhoneNumber } from "@repo/ui/helpers.js";
-import { avatars_default, states, status } from "@repo/ui/common.js";
+import { avatars_default, status } from "@repo/ui/common.js";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import PhoneInput from 'react-phone-number-input'
