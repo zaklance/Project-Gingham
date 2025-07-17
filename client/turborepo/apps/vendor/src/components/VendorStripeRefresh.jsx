@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams} from 'react-router-dom';
 
 export default function Refresh() {
@@ -6,7 +6,7 @@ export default function Refresh() {
     const [accountLinkCreatePending, setAccountLinkCreatePending] = useState(false);
     const [error, setError] = useState(false);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (connectedAccountId) {
             setAccountLinkCreatePending(true);
                 fetch("/account_link", {

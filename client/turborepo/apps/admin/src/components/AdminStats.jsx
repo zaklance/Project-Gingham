@@ -449,8 +449,6 @@ function AdminStats() {
         setSelectedUserRangeGraph(event.target.value);
     };
 
-    console.log(baskets)
-
     useEffect(() => {
         const ctx = document.getElementById(`chart-baskets`);
 
@@ -668,7 +666,7 @@ function AdminStats() {
         return () => {
             chartInstance.destroy();
         };
-    }, [userJoinDates, userJoinDatesFiltered, selectedUserRangeGraph]);
+    }, [userJoinDates, userJoinDatesFiltered, vendorUserJoinDatesFiltered, adminUserJoinDatesFiltered, vendorJoinDatesFiltered, selectedUserRangeGraph]);
 
 
     return (
