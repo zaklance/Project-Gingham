@@ -163,8 +163,14 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
     const handleCreateMarketDay = async (event) => {
         event.preventDefault();
         try {
-            if (!newMarketDay.market_id || !newMarketDay.day_of_week) {
-                toast.warning('Market ID and Day of Week are required.', {
+            if (newMarketDay.market_id == null) {
+                toast.warning('Market ID is required.', {
+                    autoClose: 4000,
+                });
+                return;
+            }
+            if (newMarketDay.day_of_week == null) {
+                toast.warning('Day of Week is required.', {
                     autoClose: 4000,
                 });
                 return;
@@ -340,7 +346,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                             <input
                                 type="text"
                                 name="schedule"
-                                placeholder='Friday & Saturday (8 a.m. - 6 p.m.)'
+                                placeholder='Friday & Saturday (8 AM - 6 PM)'
                                 value={newMarket ? newMarket.schedule : ''}
                                 onChange={handleInputMarketChange}
                             />
