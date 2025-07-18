@@ -672,7 +672,7 @@ def expired_token_callback(jwt_header, jwt_payload):
     return jsonify({
         'error': 'Token has expired',
         'message': 'Your session has expired. Please log in again.'
-    }), 401
+    }), 498
 
 # Handle invalid or malformed token for all account types
 @jwt.invalid_token_loader
@@ -680,7 +680,7 @@ def invalid_token_callback(error):
     return jsonify({
         'error': 'Invalid token',
         'message': 'The token provided is invalid. Please log in again.'
-    }), 401
+    }), 498
 
 # Handle unauthorized access for all account types
 @jwt.unauthorized_loader
@@ -734,6 +734,11 @@ def logout():
 def signup():
     try:
         data = request.get_json()
+        
+        email = data.get('email')
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            return {'error': 'This email is already registered. Please log in or use a different email.'}, 302
 
         result = user_signup_task.apply_async(args=[data])
 
@@ -889,6 +894,17 @@ def admin_login():
 def admin_signup():
     try:
         data = request.get_json()
+
+        email = data.get('email')
+        password = data.get('password')
+
+        if not email or not password:
+            return {'error': 'Email and password are required'}
+
+        existing_user = AdminUser.query.filter_by(email=email).first()
+
+        if existing_user:
+            return jsonify({'error': 'This email is already registered. Please log in or use a different email.'}), 302
 
         result = admin_signup_task.apply_async(args=[data])
 
@@ -3825,7 +3841,7 @@ def unsubscribe_user():
     try:
         payload = serializer.loads(token, salt='unsubscribe')
     except Exception as e:
-        return jsonify({'error': 'Invalid or expired token'}), 400
+        return jsonify({'error': 'Invalid or expired token'}), 498
 
     model_type = payload.get('type')
     field = payload.get('field')
