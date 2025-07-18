@@ -846,7 +846,7 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
                                 />
                             </div>
                             <div className='form-group'>
-                                <label title="Day ( # a.m. - # p.m.)">Schedule:</label>
+                                <label title="Day ( # AM - # PM)">Schedule:</label>
                                 <input
                                     type="text"
                                     name="schedule"
