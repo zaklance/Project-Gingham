@@ -3,6 +3,8 @@ import csv
 import smtplib
 import json
 import subprocess
+from dotenv import load_dotenv
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 from io import StringIO, BytesIO
 from celery_config import celery
 from celery import Celery

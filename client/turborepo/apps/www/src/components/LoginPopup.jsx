@@ -111,6 +111,7 @@ function Login({ handlePopup }) {
         setIsLoading(true);
         const apiKey = import.meta.env.VITE_RADAR_KEY;
         const query = `${signupZipCode}`;
+        console.log(resultCoordinates)
     
         try {
             if (!resultCoordinates) {
@@ -127,7 +128,7 @@ function Login({ handlePopup }) {
                 if (data.addresses && data.addresses.length > 0) {
                     const { city, stateCode, latitude, longitude } = data.addresses[0];
                     setResultCoordinates({ lat: latitude, lng: longitude });
-    
+                    console.log(city)
                     const signupResponse = await fetch("/api/signup", {
                         method: "POST",
                         headers: {
@@ -221,6 +222,7 @@ function Login({ handlePopup }) {
         setSignupZipCode('');
         setTermsConditions(false);
         setIsSignUp(false);
+        setResultCoordinates(null);
     };
 
     const togglePasswordVisibility = (field) => {
