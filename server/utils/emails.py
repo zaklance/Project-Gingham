@@ -16,9 +16,9 @@ from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileT
 
 serializer = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
 url_site = os.getenv('VITE_SITE_URL')
-url_www = os.getenv('VITE_SITE_WWW')
-url_vendor = os.getenv('VITE_SITE_VENDOR')
-url_admin = os.getenv('VITE_SITE_ADMIN')
+url_www = os.getenv('VITE_URL_WWW')
+url_vendor = os.getenv('VITE_URL_VENDOR')
+url_admin = os.getenv('VITE_URL_ADMIN')
 
 def format_event_date(date_input):
     try:
@@ -406,8 +406,9 @@ def send_user_confirmation_email(email, user_data):
         token = serializer.dumps(user_data, salt='user-confirmation-salt')  # Generate the token
         confirmation_link = f"{url_www}/confirm-email/{token}"
 
+        print("VITE_SITE_WWW =", os.getenv("VITE_SITE_WWW"))
         email_subject = 'GINGHAM Email Confirmation'
-
+        print(url_www)
         body = f"""
             <!DOCTYPE html>
             <html>
