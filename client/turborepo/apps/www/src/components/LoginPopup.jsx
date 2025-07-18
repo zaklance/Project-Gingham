@@ -111,59 +111,22 @@ function Login({ handlePopup }) {
         setIsLoading(true);
         const apiKey = import.meta.env.VITE_RADAR_KEY;
         const query = `${signupZipCode}`;
-        console.log(resultCoordinates)
     
         try {
-            if (!resultCoordinates) {
-                const responseRadar = await fetch(
-                    `https://api.radar.io/v1/geocode/forward?query=${encodeURIComponent(query)}`,
-                    {
-                        method: "GET",
-                        headers: { Authorization: apiKey },
-                    }
-                );
-    
-                const data = await responseRadar.json();
-                console.log(data)
-                if (data.addresses && data.addresses.length > 0) {
-                    const { city, stateCode, latitude, longitude } = data.addresses[0];
-                    setResultCoordinates({ lat: latitude, lng: longitude });
-                    console.log(city)
-                    const signupResponse = await fetch("/api/signup", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            email: signupEmail,
-                            password: signupPassword,
-                            first_name: signupFirstName,
-                            last_name: signupLastName,
-                            phone: signupPhone,
-                            city: city,
-                            state: stateCode,
-                            zipcode: signupZipCode,
-                            coordinates: { lat: latitude, lng: longitude },
-                        }),
-                    });
-    
-                    const result = await signupResponse.json();
-    
-                    if (!signupResponse.ok) {
-                        if (signupResponse.status === 400 && result.error.includes("already registered")) {
-                            alert("This email is already registered. Please log in or use a different email.");
-                        } else {
-                            alert(result.error || "Signup failed.");
-                        }
-                        return;
-                    }
-    
-                    resetSignupForm();
-                    alert("Signup successful! A confirmation email has been sent.");
-                } else {
-                    alert("Unable to geocode the address. Please try again.");
+            const responseRadar = await fetch(
+                `https://api.radar.io/v1/geocode/forward?query=${encodeURIComponent(query)}`,
+                {
+                    method: "GET",
+                    headers: { Authorization: apiKey },
                 }
-            } else {
+            );
+
+            const data = await responseRadar.json();
+
+            if (data.addresses && data.addresses.length > 0) {
+                const { city, stateCode, latitude, longitude } = data.addresses[0];
+                setResultCoordinates({ lat: latitude, lng: longitude });
+
                 const signupResponse = await fetch("/api/signup", {
                     method: "POST",
                     headers: {
@@ -175,28 +138,28 @@ function Login({ handlePopup }) {
                         first_name: signupFirstName,
                         last_name: signupLastName,
                         phone: signupPhone,
-                        address1: signupAddress1,
-                        address2: signupAddress2,
-                        city: signupCity,
-                        state: signupState,
+                        city: city,
+                        state: stateCode,
                         zipcode: signupZipCode,
-                        coordinates: { lat: resultCoordinates.lat, lng: resultCoordinates.lng },
+                        coordinates: { lat: latitude, lng: longitude },
                     }),
                 });
-    
+
                 const result = await signupResponse.json();
-    
+
                 if (!signupResponse.ok) {
-                    if (signupResponse.status === 400 && result.error.includes("already registered")) {
+                    if (signupResponse.status === 302 && result.error.includes("already registered")) {
                         alert("This email is already registered. Please log in or use a different email.");
                     } else {
                         alert(result.error || "Signup failed.");
                     }
                     return;
                 }
-    
+
                 resetSignupForm();
-                alert("Signup successful! A verification email has been sent. Please click the link to activate your account.");
+                alert("Signup successful! A confirmation email has been sent. Please click the link in the email to sign up.");
+            } else {
+                alert("Unable to geocode the address. Please try again.");
             }
         } catch (error) {
             console.error("Error during signup:", error);
