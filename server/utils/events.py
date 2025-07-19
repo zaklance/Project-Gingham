@@ -1488,63 +1488,60 @@ def notify_user_vendor_review_response(mapper, connection, target):
     finally:
         session.close()
 
-# @listens_for(Market, 'after_insert')
-# def notify_users_new_market_in_city(mapper, connection, target):
-#     session = Session(bind=connection)
-#     # print(inspect.currentframe().f_code.co_name)
-#     try:
-#         # Retrieve users who reside in the same city as the new market (case-insensitive)
-#         users_in_city_and_state = session.query(User).filter(
-#             func.lower(User.state) == func.lower(target.state),
-#             func.lower(User.city) == func.lower(target.city)
-#         ).all()
+@listens_for(Market, 'after_insert')
+def notify_users_new_market_in_state(mapper, connection, target):
+    session = Session(bind=connection)
+    # print(inspect.currentframe().f_code.co_name)
+    try:
+        # Retrieve users who reside in the same city as the new market (case-insensitive)
+        users_in_state = session.query(User).filter(func.lower(User.state) == func.lower(target.state)).all()
 
-#         if not users_in_city_and_state:
-#             print(f"No users found in {target.city}, {target.state}. No notifications will be created.")
-#             return
+        if not users_in_state:
+            print(f"No users found in {target.city} {target.state}. No notifications will be created.")
+            return
 
-#         # Prepare notifications (site, email)
-#         notifications = []
-#         for user in users_in_city_and_state:
-#             # Retrieve user notification settings
-#             settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
-#             if not settings:
-#                 print(f"No settings found for User ID={user.id}. Skipping notification.")
-#                 continue
+        # Prepare notifications (site, email)
+        notifications = []
+        for user in users_in_state:
+            # Retrieve user notification settings
+            settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
+            if not settings:
+                print(f"No settings found for User ID={user.id}. Skipping notification.")
+                continue
 
-#             # Site Notification
-#             if settings.site_new_market_in_city:
-#                 notifications.append(UserNotification(
-#                     subject=f"New Market in {user.city}",
-#                     message=f"A new market, {target.name}, has opened in {user.city}! Click to explore.",
-#                     link=f"/markets/{target.id}",
-#                     user_id=user.id,
-#                     created_at=datetime.now(timezone.utc),
-#                     is_read=False
-#                 ))
+            # Site Notification
+            if settings.site_new_market_in_city:
+                notifications.append(UserNotification(
+                    subject=f"New Market in {user.state}",
+                    message=f"A new market, {target.name}, has opened in {user.city}! Click to explore.",
+                    link=f"/markets/{target.id}",
+                    user_id=user.id,
+                    created_at=datetime.now(timezone.utc),
+                    is_read=False
+                ))
 
-#             # Send email notification if enabled
-#             # Check if in dev mode
-#             is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
-#             if is_production:
-#                 if settings.email_new_market_in_city:
-#                     try:
-#                         send_email_user_new_market_in_city_task.delay(
-#                             user.email, user.id, target.id, f"/markets/{target.id}")
-#                         print(f"Email sent to {user.email} for new market in city")
-#                     except Exception as e:
-#                         print(f"Error sending email to {user.email}: {e}")
+            # Send email notification if enabled
+            # Check if in dev mode
+            is_production = os.environ.get('VITE_ENVIRONMENT', 'development').lower() == 'production'
+            if is_production:
+                if settings.email_new_market_in_city:
+                    try:
+                        send_email_user_new_market_in_city_task.delay(
+                            user.email, user.id, target.id, f"/markets/{target.id}")
+                        print(f"Email sent to {user.email} for new market in city")
+                    except Exception as e:
+                        print(f"Error sending email to {user.email}: {e}")
 
-#         # Save site notifications
-#         if notifications:
-#             session.bulk_save_objects(notifications)
-#             session.commit()
+        # Save site notifications
+        if notifications:
+            session.bulk_save_objects(notifications)
+            session.commit()
 
-#     except Exception as e:
-#         session.rollback()
-#         print(f"Error notifying users about new market in city: {e}")
-#     finally:
-#         session.close()
+    except Exception as e:
+        session.rollback()
+        print(f"Error notifying users about new market in city: {e}")
+    finally:
+        session.close()
 
 @listens_for(VendorUser, 'after_insert')
 def create_vendor_user_settings(mapper, connection, target):
