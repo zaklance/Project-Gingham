@@ -1489,20 +1489,23 @@ def notify_user_vendor_review_response(mapper, connection, target):
         session.close()
 
 @listens_for(Market, 'after_insert')
-def notify_users_new_market_in_state(mapper, connection, target):
+def notify_users_new_market_in_city(mapper, connection, target):
     session = Session(bind=connection)
     # print(inspect.currentframe().f_code.co_name)
     try:
         # Retrieve users who reside in the same city as the new market (case-insensitive)
-        users_in_state = session.query(User).filter(func.lower(User.state) == func.lower(target.state)).all()
+        users_in_city_and_state = session.query(User).filter(
+            func.lower(User.state) == func.lower(target.state),
+            func.lower(User.city) == func.lower(target.city)
+        ).all()
 
-        if not users_in_state:
-            print(f"No users found in {target.city} {target.state}. No notifications will be created.")
+        if not users_in_city_and_state:
+            print(f"No users found in {target.city}, {target.state}. No notifications will be created.")
             return
 
         # Prepare notifications (site, email)
         notifications = []
-        for user in users_in_state:
+        for user in users_in_city_and_state:
             # Retrieve user notification settings
             settings = session.query(SettingsUser).filter_by(user_id=user.id).first()
             if not settings:
@@ -1512,7 +1515,7 @@ def notify_users_new_market_in_state(mapper, connection, target):
             # Site Notification
             if settings.site_new_market_in_city:
                 notifications.append(UserNotification(
-                    subject=f"New Market in {user.state}",
+                    subject=f"New Market in {user.city}",
                     message=f"A new market, {target.name}, has opened in {user.city}! Click to explore.",
                     link=f"/markets/{target.id}",
                     user_id=user.id,
