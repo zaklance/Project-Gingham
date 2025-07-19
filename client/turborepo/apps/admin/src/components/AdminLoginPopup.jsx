@@ -109,8 +109,16 @@ function Login({ handlePopup }) {
             }),
             credentials: 'include'
         });
+        const result = await response.json();
+        if (!response.ok) {
+            if (response.status === 302 && result.error.includes("already registered")) {
+                alert("This email is already registered. Please log in or use a different email.");
+            } else {
+                alert(result.error || "Signup failed.");
+            }
+            return;
+        }
         if (response.ok) {
-            const data = await response.json();
             setSignupEmail('');
             setSignupConfirmEmail('');
             setSignupPassword('');
