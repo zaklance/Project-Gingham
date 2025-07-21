@@ -35,7 +35,7 @@
     "object-hash": "^3.0.0",
     "qrcode.react": "^4.2.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react-dom": "^19.1.0",
     "react-input-mask": "^2.0.4",
     "react-password-checklist": "^1.8.1",
     "react-password-strength-bar": "^0.4.1",
@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.2.22",
+    "@types/react-dom": "^19.1.6",
     "env-cmd": "^10.1.0",
     "vite": "^6.3.5"
   },
