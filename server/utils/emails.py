@@ -126,6 +126,11 @@ EMAIL_STYLES = """
         .center {
             text-align: center;
         }
+        .flex-start {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
         .flex-center {
             display: flex;
             justify-content: center;
@@ -137,6 +142,9 @@ EMAIL_STYLES = """
         .flex-gap-16 {
             gap: 16px;
         }
+        .min-width-40 {
+            min-width: 40%;
+        }
         .margin-4-0 {
             margin: 4px;
         }
@@ -145,6 +153,9 @@ EMAIL_STYLES = """
         }
         .margin-r-16 {
             margin-right: 16px;
+        }
+        .margin-l-16 {
+            margin-left: 16px;
         }
         .link-underline {
             color: #ff806b;
@@ -1360,7 +1371,7 @@ def send_email_user_new_blog(email, user, blog):
         print(f"Error during user new blog email sending: {str(e)}")
         return {'error': f'Failed to send user email: {str(e)}'}
 
-def send_email_user_new_market_in_city(email, user, market, link_market):
+def send_email_user_new_market_in_city(email, user, markets_html):
     try:
         payload = {
             'type': 'SettingsUser',
@@ -1370,14 +1381,10 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
 
         token = serializer.dumps(payload, salt='unsubscribe')
         unsubscribe_url = f"{url_www}/unsubscribe?token={token}"
-        full_link_market = f'{url_www}/{link_market}'
 
-        if market.bio:
-            market_bio_html = f"<p class='margin-12-0'>{market.bio}</p>"
-        else:
-            market_bio_html = ""
+        email_subject = f'New Market in {user.city}'
 
-        email_subject = f'New Market in {market.city}'
+        plural = "There are new farmers' markets in your city, check them out!" if len(markets_html) > 1 else "There is a new farmers' market in your city, check it out!"
 
         body = f"""
             <!DOCTYPE html>
@@ -1394,15 +1401,9 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
                     <hr class="divider"/>
                     <div>
                         <p>Hi {user.first_name},</p>
-                        <p>There is a new farmers' market in your city, {market.city}, <strong><a class="link-underline" href="{full_link_market}">{market.name}</a></strong>. Check it out!</p>
-                        <div class="content flex-center">
-                            <div class="box-callout">
-                                <h3 class="margin-4-0">{market.name}</h3>
-                                <h5 class="margin-4-0">{market.location}</h5>
-                                <h5 class="margin-4-0">{market.city}, {market.state}</h5>
-                                <h5 class="margin-4-0">{market.schedule}</h5>
-                                {market_bio_html}
-                            </div>
+                        <p>{plural}</p>
+                        <div class="content">
+                            {markets_html}
                         </div>
                         <p>—The gingham team</p>
                     </div>
@@ -1419,6 +1420,7 @@ def send_email_user_new_market_in_city(email, user, market, link_market):
             </body>
             </html>
             """
+
         message = Mail(
             from_email=f"{os.getenv('EMAIL_NAME')} <{os.getenv('EMAIL_USER')}>",
             to_emails=email,

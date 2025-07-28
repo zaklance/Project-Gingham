@@ -222,6 +222,7 @@ class Market(db.Model, SerializerMixin):
     is_flagship = db.Column(db.Boolean, nullable=False, default=False)
     is_current = db.Column(db.Boolean, nullable=False, default=True)
     is_visible = db.Column(db.Boolean, nullable=False, default=True)
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     # Relationships
     reviews = db.relationship('MarketReview', back_populates='market', lazy='dynamic', cascade="all, delete-orphan")

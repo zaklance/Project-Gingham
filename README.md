@@ -81,7 +81,7 @@ cd server
 ```
 2. Start Celery Worker:
 ```
-celery -A app.celery worker -n blog_worker -Q blog_notifications --loglevel=debug --concurrency=1
+celery -A app.celery worker -n notification_worker -Q timed_notifications --loglevel=debug --concurrency=1
 ```
 
 ### Terminal 7, Celery Image Worker Setup
