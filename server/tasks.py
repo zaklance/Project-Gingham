@@ -800,14 +800,66 @@ def send_email_user_vendor_review_response_task(email, user_id, vendor_id, revie
     except Exception as e:
         return {"error with send_email_user_vendor_review_response": str(e), "status": 500}
 
+@celery.task(queue='timed_notifications')
+def send_daily_city_market_emails():
+    from app import app
+    with app.app_context():
+        try:
+            yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).date()
+
+            # Get all cities with new markets today
+            city_states = db.session.query(Market.city, Market.state).filter(
+                func.date(Market.created_at) == yesterday
+            ).distinct().all()
+
+            for city, state in city_states:
+                # Get all users in that city/state
+                users = db.session.query(User).filter(
+                    func.lower(User.city) == func.lower(city),
+                    func.lower(User.state) == func.lower(state),
+                    func.lower(User.first_name) == "zak",
+                ).all()
+
+                # Get all markets in that city/state created today
+                markets = db.session.query(Market).filter(
+                    func.lower(Market.city) == func.lower(city),
+                    func.lower(Market.state) == func.lower(state),
+                    func.date(Market.created_at) == yesterday
+                ).all()
+
+                if not markets:
+                    continue
+
+                for user in users:
+                    settings = db.session.query(SettingsUser).filter_by(user_id=user.id).first()
+                    if not settings or not settings.email_new_market_in_city:
+                        continue
+
+                    try:
+                        # Send email with all markets
+                        send_email_user_daily_market_in_city_task.delay(
+                            "zak@gingham.nyc",
+                            user.id,
+                            [{'name': m.name, 'id': m.id, 'location': m.location, 'schedule': m.schedule, 'bio': m.bio} for m in markets]
+                        )
+                        print(f"Sent daily market email to {user.email}")
+                    except Exception as e:
+                        print(f"Error sending daily digest to {user.email}: {e}")
+
+        except Exception as e:
+            print(f"Daily digest task failed: {e}")
+        finally:
+            db.session.close()
+
 @celery.task(queue='default')
-def send_email_user_new_market_in_city_task(email, user_id, market_id, link_market):
+def send_email_user_daily_market_in_city_task(email, user_id, markets):
     try:
         from app import app
         with app.app_context():
             user = db.session.query(User).get(user_id)
-            market = db.session.query(Market).get(market_id)
-        send_email_user_new_market_in_city(email, user, market, link_market)
+            url_www = os.getenv('VITE_URL_WWW')
+            markets_html = [f"""<div class="box-callout flex-start"><div class='min-width-40'><h3 class="margin-4-0"><a class="link-underline" href="{url_www}/markets/{m['id']}">{m['name']}</a></h3><h5 class="margin-4-0">{m['location']}</h5><h5 class="margin-4-0">{m['schedule']}</h5></div>{f"<div class='margin-l-16'><p>{m['bio']}</div>" if m['bio'] != None else None}</div> """ for m in markets]
+            send_email_user_new_market_in_city(email, user, '<br/>'.join(markets_html))
     except Exception as e:
         return {"error with send_email_user_new_market_in_city": str(e), "status": 500}
 
@@ -1403,7 +1455,7 @@ def send_blog_notifications(blog_id, task_id=None):
         finally:
             db.session.close()
 
-@celery.task(queue='blog_notifications')
+@celery.task(queue='timed_notifications')
 def check_scheduled_blog_notifications():
     """Check for blogs that need notifications today"""
     from app import app

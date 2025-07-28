@@ -103,6 +103,50 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
 
     const handleCreateMarket = async (event) => {
         event.preventDefault();
+
+        if (!newMarket.location || !newMarket.city || !newMarket.state || !newMarket.zipcode || !newMarket.coordinates.lat || !newMarket.coordinates.lng || !newMarket.schedule) {
+            toast.warning('Fill out all required fields.', {
+                autoClose: 4000,
+            });
+            return
+        }
+        if (newMarket.is_farmstand !== ('true' || 'false')) {
+            toast.warning('Is Farmstand is required.', {
+                autoClose: 4000,
+            });
+            return
+        }
+        if (newMarket.is_flagship !== ('true' || 'false')) {
+            toast.warning('Is Flagship is required.', {
+                autoClose: 4000,
+            });
+            return
+        }
+        if (newMarket.is_current !== ('true' || 'false')) {
+            toast.warning('Is Current is required.', {
+                autoClose: 4000,
+            });
+            return
+        }
+        if (newMarket.is_visible !== ('true' || 'false')) {
+            toast.warning('Is Visible is required.', {
+                autoClose: 4000,
+            });
+            return
+        }
+        if (newMarket.is_current !== ('true' || 'false')) {
+            toast.warning('Is Current is required.', {
+                autoClose: 4000,
+            });
+            return
+        }
+        if (newMarket.year_round !== ('true' || 'false')) {
+            toast.warning('Year Round is required.', {
+                autoClose: 4000,
+            });
+            return
+        }
+        
         try {
             // Convert year_round to boolean
             newMarket.year_round = newMarket.year_round === 'true' || newMarket.year_round === true;
