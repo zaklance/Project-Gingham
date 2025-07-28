@@ -817,7 +817,6 @@ def send_daily_city_market_emails():
                 users = db.session.query(User).filter(
                     func.lower(User.city) == func.lower(city),
                     func.lower(User.state) == func.lower(state),
-                    func.lower(User.first_name) == "zak",
                 ).all()
 
                 # Get all markets in that city/state created today
@@ -838,7 +837,7 @@ def send_daily_city_market_emails():
                     try:
                         # Send email with all markets
                         send_email_user_daily_market_in_city_task.delay(
-                            "zak@gingham.nyc",
+                            user.email,
                             user.id,
                             [{'name': m.name, 'id': m.id, 'location': m.location, 'schedule': m.schedule, 'bio': m.bio} for m in markets]
                         )
