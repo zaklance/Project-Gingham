@@ -9,7 +9,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
     const [image, setImage] = useState(null)
     const [status, setStatus] = useState('initial')
     const [query, setQuery] = useState("");
-    const [adminMarketDayData, setAdminMarketDayData] = useState(null);
+    const [missingFields, setMissingFields] = useState([]);
     const [newMapDay, setNewMapDay] = useState(0);
     const [newMapLink, setNewMapLink] = useState(null);
     const [newMarket, setNewMarket] = useState({
@@ -104,51 +104,45 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
     const handleCreateMarket = async (event) => {
         event.preventDefault();
 
-        if (!newMarket.location || !newMarket.city || !newMarket.state || !newMarket.zipcode || !newMarket.coordinates.lat || !newMarket.coordinates.lng || !newMarket.schedule) {
-            toast.warning('Fill out all required fields.', {
-                autoClose: 4000,
-            });
-            return
+        const requiredFields = [
+            'name',
+            'location',
+            'city',
+            'state',
+            'zipcode',
+            'coordinates_lat',
+            'coordinates_lng',
+            'schedule',
+            'maps_organizer',
+            'is_farmstand',
+            'is_flagship',
+            'is_current',
+            'is_visible',
+            'year_round',
+        ];
+
+        if (newMarket?.year_round === 'false') {
+            requiredFields.push('season_start', 'season_end');
         }
-        if (newMarket.is_farmstand !== ('true' || 'false')) {
-            toast.warning('Is Farmstand is required.', {
-                autoClose: 4000,
-            });
-            return
+
+        const missing = requiredFields.filter((field) => {
+            const value =
+                field === 'coordinates_lat' ? newMarket?.coordinates?.lat :
+                field === 'coordinates_lng' ? newMarket?.coordinates?.lng :
+                newMarket?.[field];
+
+            return value === undefined || value === null || value === '';
+        });
+
+        if (missing.length > 0) {
+            setMissingFields(missing);
+            return;
         }
-        if (newMarket.is_flagship !== ('true' || 'false')) {
-            toast.warning('Is Flagship is required.', {
-                autoClose: 4000,
-            });
-            return
-        }
-        if (newMarket.is_current !== ('true' || 'false')) {
-            toast.warning('Is Current is required.', {
-                autoClose: 4000,
-            });
-            return
-        }
-        if (newMarket.is_visible !== ('true' || 'false')) {
-            toast.warning('Is Visible is required.', {
-                autoClose: 4000,
-            });
-            return
-        }
-        if (newMarket.is_current !== ('true' || 'false')) {
-            toast.warning('Is Current is required.', {
-                autoClose: 4000,
-            });
-            return
-        }
-        if (newMarket.year_round !== ('true' || 'false')) {
-            toast.warning('Year Round is required.', {
-                autoClose: 4000,
-            });
-            return
-        }
+
+        setMissingFields([]);
         
         try {
-            // Convert year_round to boolean
+            // Convert to boolean
             newMarket.year_round = newMarket.year_round === 'true' || newMarket.year_round === true;
             newMarket.is_current = newMarket.is_current === 'true' || newMarket.is_current === true;
             newMarket.is_visible = newMarket.is_visible === 'true' || newMarket.is_visible === true;
@@ -292,11 +286,13 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                         <div className='form-group'>
                             <label>Market Name:</label>
                             <input
+                                className={missingFields.includes("name") ? "input-error" : ""}
                                 type="text"
                                 name="name"
                                 placeholder='Union Square Greenmarket'
                                 value={newMarket ? newMarket.name : ''}
                                 onChange={handleInputMarketChange}
+                                required
                             />
                         </div>
                         <div className='form-group'>
@@ -322,30 +318,35 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                         <div className='form-group'>
                             <label>Location:</label>
                             <input
+                                className={missingFields.includes("location") ? "input-error" : ""}
                                 type="text"
                                 name="location"
                                 placeholder='E. 17th St. & Union Square W.'
                                 value={newMarket ? newMarket.location : ''}
                                 onChange={handleInputMarketChange}
+                                required
                             />
                         </div>
                         <div className='form-group'>
                             <label>City:</label>
                             <input
+                                className={missingFields.includes("city") ? "input-error" : ""}
                                 type="text"
                                 name="city"
                                 placeholder='New York'
                                 value={newMarket ? newMarket.city : ''}
                                 onChange={handleInputMarketChange}
+                                required
                             />
                         </div>
                         <div className='form-group'>
                             <label>State:</label>
                             <select
-                                className='select-state'
+                                className={missingFields.includes("state") ? "input-error select-state" : "select-state"}
                                 name="state"
                                 value={newMarket ? newMarket.state : ''}
                                 onChange={handleInputMarketChange}
+                                required
                             >
                                 <option value="">Select</option>
                                 {states.map((state, index) => (
@@ -358,41 +359,49 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                         <div className='form-group'>
                             <label>Zipcode:</label>
                             <input
+                                className={missingFields.includes("zipcode") ? "input-error" : ""}
                                 type="text"
                                 name="zipcode"
                                 placeholder='10003'
                                 value={newMarket ? newMarket.zipcode : ''}
                                 onChange={handleInputMarketChange}
+                                required
                             />
                         </div>
                         <div className='form-group'>
                             <label>Latitude:</label>
                             <input
+                                className={missingFields.includes("coordinates_lat") ? "input-error" : ""}
                                 type="text"
                                 name="coordinates_lat"
                                 placeholder='40.736358642578125'
                                 value={newMarket ? newMarket.coordinates?.lat : ''}
                                 onChange={handleInputMarketChange}
+                                required
                             />
                         </div>
                         <div className='form-group'>
                             <label>Longitude:</label>
                             <input
+                                className={missingFields.includes("coordinates_lng") ? "input-error" : ""}
                                 type="text"
                                 name="coordinates_lng"
                                 placeholder='-73.99076080322266'
                                 value={newMarket ? newMarket.coordinates?.lng : ''}
                                 onChange={handleInputMarketChange}
+                                required
                             />
                         </div>
                         <div className='form-group'>
                             <label title="Day ( # a.m. - # p.m.)">Schedule:</label>
                             <input
+                                className={missingFields.includes("schedule") ? "input-error" : ""}
                                 type="text"
                                 name="schedule"
                                 placeholder='Friday & Saturday (8 AM - 6 PM)'
                                 value={newMarket ? newMarket.schedule : ''}
                                 onChange={handleInputMarketChange}
+                                required
                             />
                         </div>
                         <div className='form-group'>
@@ -459,9 +468,11 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                         <div className='form-group'>
                             <label title="true or false">Is Farmstand:</label>
                             <select
+                                className={missingFields.includes("is_farmstand") ? "input-error" : ""}
                                 name="is_farmstand"
                                 value={newMarket ? newMarket.is_farmstand : ''}
                                 onChange={handleInputMarketChange}
+                                required
                             >
                                 <option value="">Select</option>
                                 <option value={true}>Yes</option>
@@ -471,9 +482,11 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                         <div className='form-group'>
                             <label title="true or false">Is Flagship:</label>
                             <select
+                                className={missingFields.includes("is_flagship") ? "input-error" : ""}
                                 name="is_flagship"
                                 value={newMarket ? newMarket.is_flagship : ''}
                                 onChange={handleInputMarketChange}
+                                required
                             >
                                 <option value="">Select</option>
                                 <option value={true}>Yes</option>
@@ -483,9 +496,11 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                         <div className='form-group'>
                             <label title="true or false">Is Current:</label>
                             <select
+                                className={missingFields.includes("is_current") ? "input-error" : ""}
                                 name="is_current"
                                 value={newMarket ? newMarket.is_current : ''}
                                 onChange={handleInputMarketChange}
+                                required
                             >
                                 <option value="">Select</option>
                                 <option value={true}>Yes</option>
@@ -495,9 +510,11 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                         <div className='form-group'>
                             <label title="true or false">Is Visible:</label>
                             <select
+                                className={missingFields.includes("is_visible") ? "input-error" : ""}
                                 name="is_visible"
                                 value={newMarket ? newMarket.is_visible : ''}
                                 onChange={handleInputMarketChange}
+                                required
                             >
                                 <option value="">Select</option>
                                 <option value={true}>Yes</option>
@@ -507,9 +524,11 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                         <div className='form-group'>
                             <label title="true or false">Year Round:</label>
                             <select
+                                className={missingFields.includes("year_round") ? "input-error" : ""}
                                 name="year_round"
                                 value={newMarket ? newMarket.year_round : ''}
                                 onChange={handleInputMarketChange}
+                                required
                             >
                                 <option value="">Select</option>
                                 <option value={true}>Yes</option>
@@ -521,6 +540,7 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                                 <div className='form-group'>
                                     <label title="yyyy-mm-dd">Season Start:</label>
                                     <input
+                                        className={missingFields.includes("season_start") ? "input-error" : ""}
                                         type="date"
                                         name="season_start"
                                         placeholder='yyyy-mm-dd'
@@ -532,7 +552,8 @@ function AdminMarketAdd({ markets, weekDayReverse }) {
                                 <div className='form-group'>
                                     <label title="yyyy-mm-dd">Season End:</label>
                                     <input
-                                        type="date"  // Changed to 'date' to enforce the format
+                                        className={missingFields.includes("season_end") ? "input-error" : ""}
+                                        type="date"
                                         name="season_end"
                                         placeholder='yyyy-mm-dd'
                                         value={newMarket ? newMarket.season_end : ''}
