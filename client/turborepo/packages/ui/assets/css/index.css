@@ -2397,7 +2397,7 @@ link {
   min-width: 280px;
 }
 
-input:user-invalid .input-error:invalid {
+input:user-invalid, .input-error:invalid {
   outline: 2px solid #ff4b5a;
   border-radius: 2px;
   border: none;
