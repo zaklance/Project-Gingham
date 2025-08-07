@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import ReactPlayer from 'react-player'
 import { useOutletContext } from "react-router-dom";
 import { blogTimeConverter } from "@repo/ui/helpers.js";
 
@@ -86,8 +85,8 @@ function Home() {
                 </div>
                 <div className="box-inside">
                     <div className="react-player">
-                        <ReactPlayer
-                            url="/site-images/Gingham_Vendor-How-To-070725_web.mp4"
+                        <video
+                            src="/site-images/Gingham_Vendor-How-To-070725_web.mp4"
                             controls={true}
                             width="100%"
                             height="100%"

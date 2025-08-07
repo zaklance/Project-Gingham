@@ -146,8 +146,6 @@ const AdminAuthRoute = ({ children }) => {
     return children;
 };
 
-console.log('test')
-
 const router = createBrowserRouter([
     {
         path: "/",
