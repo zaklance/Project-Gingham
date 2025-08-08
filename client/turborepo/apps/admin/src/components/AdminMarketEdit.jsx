@@ -520,7 +520,7 @@ function AdminMarketEdit({ markets, setMarkets, timeConverter, weekDay, weekDayR
                                 <input
                                     id='search'
                                     className="search-bar-markets"
-                                    type="text"
+                                    type="search"
                                     placeholder="Search market names..."
                                     value={query}
                                     onChange={onUpdateQuery}
