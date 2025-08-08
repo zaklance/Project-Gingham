@@ -287,7 +287,7 @@ function AdminVendorEdit({ vendors }) {
                         <tr>
                             <td className='cell-title'>Search:</td>
                             <td className='cell-text'>
-                                <input id='search' className="search-bar" type="text" placeholder="Search vendors..." value={query} onChange={onUpdateQuery} />
+                                <input id='search' className="search-bar" type="search" placeholder="Search vendors..." value={query} onChange={onUpdateQuery} />
                                 <div className="dropdown-content">
                                     {
                                         query &&
@@ -315,7 +315,7 @@ function AdminVendorEdit({ vendors }) {
                             <div className='form-group'>
                                 <label>Website</label>
                                 <input 
-                                    type="text"
+                                    type="url"
                                     name="website"
                                     placeholder='Include https://'
                                     value={tempVendorData ? tempVendorData.website : ''}

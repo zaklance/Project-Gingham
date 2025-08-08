@@ -333,7 +333,7 @@ function VendorCreate () {
             <div className='form-group'>
                 <label>Website</label>
                 <input 
-                    type="text"
+                    type="url"
                     name="website"
                     placeholder='Include https://'
                     value={vendorData ? vendorData.website : ''}

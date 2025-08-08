@@ -637,7 +637,7 @@ function Markets() {
                                     <input
                                         id='search'
                                         className="search-bar" 
-                                        type="text" 
+                                        type="search" 
                                         placeholder="Search markets..." 
                                         value={query || ""} 
                                         onChange={onUpdateQuery}
