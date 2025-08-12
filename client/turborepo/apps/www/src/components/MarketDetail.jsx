@@ -513,7 +513,8 @@ function MarketDetail ({ match }) {
 
     const googleMapsLink = market?.coordinates ? `https://www.google.com/maps?q=${market.coordinates.lat},${market.coordinates.lng}` : '#';
     const marketLocation = { 'lat': parseFloat(market.coordinates.lat), 'lng': parseFloat(market.coordinates.lng) }
-    const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
+    // const mapToken = import.meta.env.VITE_MAPKIT_TOKEN;
+    const mapToken = "eyJraWQiOiJSNTdRS05ZN0ZHIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJZSjhXNlhRSEg3IiwiaWF0IjoxNzU1MDA1OTAxLCJleHAiOjE3NTU2NzMxOTl9.nQhp6Cj6algsJtImqGUqyd0-4xdatZdasiTmsRdfRMKE6HzS-G60Gp065ivGLTJ0SK6pAwpq9MehjJCfyehxaw"
 
 
     return (

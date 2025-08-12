@@ -58,23 +58,27 @@ function MarketCard({ marketData, user, haversineDistance, resultCoordinates, us
                         <td className='text-600'>Location:</td>
                         <td>{marketData.location}</td>
                     </tr>
-                    <tr>
-                        <td className='text-600'>Distance:</td>
-                        <td>{(
-                            haversineDistance(
-                                filterAddress 
-                                    ? resultCoordinates 
-                                    : userCoordinates 
-                                    ? userCoordinates 
-                                    : user?.coordinates,
-                                marketData.coordinates
-                            ) || 0
-                        ).toFixed(2)} miles from {filterAddress
-                            ? 'entered address'
-                            : userCoordinates
-                                ? 'your location'
-                                : 'your zip code'}</td>
-                    </tr>
+                    {(user?.coordinates != null | userCoordinates != null) ? (
+                        <tr>
+                            <td className='text-600'>Distance:</td>
+                            <td>{(
+                                haversineDistance(
+                                    filterAddress 
+                                        ? resultCoordinates 
+                                        : userCoordinates 
+                                        ? userCoordinates 
+                                        : user?.coordinates,
+                                    marketData.coordinates
+                                ) || 0
+                            ).toFixed(2)} miles from {filterAddress
+                                ? 'entered address'
+                                : userCoordinates
+                                    ? 'your location'
+                                    : 'your zip code'}</td>
+                        </tr>
+                    ) : (
+                        null
+                    )}
                     <tr>
                         <td className='text-600'>Vendors:</td>
                         <td>{countVendors(marketData)} on <span className='font-cera-gingham text-size-1-2'>gingham</span></td>
