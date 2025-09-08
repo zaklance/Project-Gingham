@@ -20,7 +20,7 @@
     "@stripe/react-stripe-js": "^2.8.1",
     "@stripe/stripe-js": "^4.9.0",
     "@vis.gl/react-google-maps": "^1.1.0",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react": "^5.0.2",
     "@yudiel/react-qr-scanner": "^2.0.8",
     "chart.js": "^4.4.6",
     "crypto-browserify": "^3.12.1",
